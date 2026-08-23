@@ -4,8 +4,11 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc_host_task_graph.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
+#include <cstddef>
 #include <cstdint>
+#include <limits>
 #include <set>
 #include <string>
 #include <span>
@@ -16,10 +19,17 @@
 namespace opensn
 {
 
-/// CBC sweep-plane data structure.
+/// Cell-by-cell sweep ordering, task dependencies and local face-storage plan.
 class CBC_SPDS : public SPDS
 {
 public:
+  /// Task representation selected when the sweep ordering is constructed.
+  enum class TaskStorage
+  {
+    DEVICE_TASKS, ///< Per-cell task objects used by device sweeps and task-list callers.
+    HOST_CSR      ///< Host compressed sparse row task arrays.
+  };
+
   /// Weighted directed edge in the interpartition CBC sweep graph.
   struct GlobalSweepEdge
   {
@@ -43,35 +53,22 @@ public:
   };
 
   /**
-   * Add the local cell graph and remove a weighted feedback arc set (FAS) from it.
-   *
-   * Faces between the same ordered pair of cells become one edge whose weight is the sum of their
-   * weights, added in the order of the first such face, so the FAS lists every removed cell pair
-   * once. Lagging a removed pair lags all faces between the two cells. The shared algorithm is
-   * exact for small SCCs and greedy above MAX_EXACT_FAS_SCC_SIZE.
-   *
-   * \param graph Graph with one vertex per local cell and no edges. On return it holds the
-   *        acyclic cell graph.
-   * \param face_edges One entry per outgoing local face. The upwind and downwind cells differ.
-   * \return The removed (upwind, downwind) cell pairs.
-   */
-  static std::vector<std::pair<std::uint32_t, std::uint32_t>>
-  RemoveLocalCellCycles(Graph& graph, const std::vector<LocalFaceEdge>& face_edges);
-
-  /**
-   * Construct a cell-by-cell sweep-plane data structure for the given direction and grid.
+   * Cell-by-cell sweep-plane data structure for the given direction and grid.
    *
    * \param id Process-independent CBC SPDS ordinal.
    * \param omega The angular direction vector.
    * \param grid Reference to the grid.
    * \param face_neighbor_info Cached neighbor information for every local cell face.
    * \param allow_cycles Whether cycles are allowed in the local sweep dependency graph.
+   * \param task_storage Task representation selected from use_gpus during runtime construction.
+   *        The default constructs task-list objects for direct C++ callers.
    */
   CBC_SPDS(int id,
            const Vector3& omega,
            const std::shared_ptr<Mesh>& grid,
            const SPDSFaceNeighborInfoVec& face_neighbor_info,
-           bool allow_cycles);
+           bool allow_cycles,
+           TaskStorage task_storage = TaskStorage::DEVICE_TASKS);
 
   /// Return the process-independent CBC SPDS ordinal.
   int GetId() const noexcept { return id_; }
@@ -79,12 +76,44 @@ public:
   /// Return whether cyclic dependencies may be lagged.
   bool AllowCycles() const noexcept { return allow_cycles_; }
 
-  /// Collectively return a global cell-cycle witness for this no-lag ordering, or an empty string.
-  /// All ranks participate, including ranks without cells. No sweep state is modified.
+  /**
+   * Check collectively for a global cell cycle when cycles are disallowed.
+   *
+   * All ranks in mpi_comm participate, including ranks without cells.
+   * No sweep state is modified.
+   *
+   * \return The same cycle witness on every rank, or an empty string for an acyclic graph.
+   * \throw std::logic_error If AllowCycles is true.
+   */
   std::string CheckGlobalCellCycles() const;
 
-  /// Return the local cell task list.
+  /**
+   * Return the per-cell task list.
+   *
+   * \return Task-list storage owned by this SPDS, replaced by a task rebuild.
+   * \throw std::logic_error If this SPDS uses HOST_CSR storage.
+   */
   const std::vector<Task>& GetTaskList() const;
+
+  /**
+   * Prepare the host CSR during angle-set construction.
+   * Device-task SPDS instances cache a CSR for host callers. Call only during setup,
+   * without concurrent task rebuilds or sweeps.
+   *
+   * \return Borrowed immutable CSR until the next task rebuild or SPDS destruction.
+   */
+  const detail::CBCHostTaskGraph& PrepareHostTaskGraph() const;
+
+  /**
+   * Return the prepared host task graph.
+   *
+   * Reset angle sets before a task rebuild. Call PrepareHostTaskGraph during setup
+   * when this SPDS uses DEVICE_TASKS storage.
+   *
+   * \return SPDS-owned immutable graph; its arrays are replaced on a task rebuild.
+   * \throw std::logic_error If the host representation has not been prepared.
+   */
+  const detail::CBCHostTaskGraph& GetHostTaskGraph() const;
 
   /// Return the initial unsatisfied dependency count indexed by local task ID.
   const std::vector<unsigned int>& GetInitialTaskDependencyCounts() const noexcept
@@ -151,16 +180,87 @@ public:
   bool IsDelayedLocalDependency(std::uint32_t upwind_local_id,
                                 std::uint32_t downwind_local_id) const noexcept;
 
+  /**
+   * Return the number of face nodes allocated by the ordinary local slot plan.
+   */
+  std::size_t GetTotalLocalFaceSlotNodes() const noexcept { return total_local_face_slot_nodes_; }
+
+  /**
+   * Return the cell-face prefix offsets shared with host CBC FLUDS common data.
+   * The vector object lives as long as this SPDS. The mesh and slot plan must remain unchanged
+   * while common data or FLUDS banks constructed from them are in use.
+   *
+   * \return SPDS-owned cell-face offsets, valid for this SPDS lifetime.
+   */
+  const std::vector<std::uint32_t>& GetCellFaceOffsets() const noexcept
+  {
+    return cell_face_offsets_;
+  }
+
+  /**
+   * Return the local slot-node offsets indexed by cell face, including INVALID_SLOT_NODE_OFFSET.
+   * Ownership and lifetime are the same as GetCellFaceOffsets().
+   *
+   * \return Slot-node offsets indexed by local cell face.
+   */
+  const std::vector<std::uint32_t>& GetLocalFaceSlotNodeOffsets() const noexcept
+  {
+    return local_face_slot_node_offsets_;
+  }
+
+  /**
+   * Both ends of an ordinary local face use the same offset and the producer's node order.
+   *
+   * \param cell_local_id Local cell ID.
+   * \param face_id Face index in that cell.
+   * \return Node offset in the local slot bank, or INVALID_SLOT_NODE_OFFSET.
+   */
+  std::uint32_t GetLocalFaceSlotNodeOffset(std::uint32_t cell_local_id,
+                                           unsigned int face_id) const noexcept
+  {
+    return local_face_slot_node_offsets_[cell_face_offsets_[cell_local_id] + face_id];
+  }
+
 protected:
   /// Build local sweep tasks from current local and delayed dependencies.
   void BuildTaskList();
+
+  /// Build checked host CSR directly, without allocating per-cell successor vectors.
+  void BuildHostTaskGraph();
+
+  /// Construct the host CSR representation from the per-cell task list.
+  void BuildHostTaskGraphFromTasks() const;
+
+  /**
+   * Build the ordinary local face plan and record the bank's node offsets.
+   */
+  void BuildLocalFaceSlotPlan(const SPDSFaceNeighborInfoVec& face_neighbor_info);
+
+  /**
+   * Number ordinary local faces by producer topological rank and producer face index.
+   * Record each face ID at both endpoints in local_face_slot_node_offsets_.
+   *
+   * \param face_neighbor_info Cached neighbor information for every local cell face.
+   * \param producer_face_offsets Output CSR offsets of the faces indexed by producer task rank.
+   * \param consumer_ranks Output consumer task rank indexed by face ID.
+   * \param node_counts Output node count indexed by face ID. It is the face's vertex count, which
+   *        equals its number of face nodes for the PWLD discretization that the sweeps use.
+   */
+  void BuildLocalFaceReuseData(const SPDSFaceNeighborInfoVec& face_neighbor_info,
+                               std::vector<std::uint32_t>& producer_face_offsets,
+                               std::vector<std::uint32_t>& consumer_ranks,
+                               std::vector<std::uint16_t>& node_counts);
 
   /// Process-independent ordinal used to order CBC collectives.
   int id_ = 0;
   /// Whether cyclic dependencies may be broken by lagging fluxes.
   bool allow_cycles_ = false;
-  /// Cell-by-cell task list.
+  /// Backend selection, fixed for the SPDS lifetime.
+  TaskStorage task_storage_;
+  /// Per-cell task-list objects, unallocated on the host CSR path.
   std::vector<Task> task_list_;
+  /// Host CSR arrays; a device-only SPDS never allocates them.
+  mutable detail::CBCHostTaskGraph host_task_graph_;
   /// Contiguous initial dependency counts used to reset every angle-set sweep.
   std::vector<unsigned int> initial_task_dependency_counts_;
   /// Initially ready tasks in local-cell order.
@@ -175,6 +275,32 @@ protected:
   std::set<std::uint64_t> delayed_local_dependency_set_;
   /// MPI-rank-indexed flags for delayed incoming location dependencies.
   std::vector<unsigned char> delayed_location_dependency_flags_;
+
+  /// Prefix offsets into cell-face-indexed arrays.
+  std::vector<std::uint32_t> cell_face_offsets_;
+  /// Slot node offset indexed by cell face (see GetLocalFaceSlotNodeOffset).
+  std::vector<std::uint32_t> local_face_slot_node_offsets_;
+  /// Total number of nodes of the local-face slot bank.
+  std::size_t total_local_face_slot_nodes_ = 0;
+
+public:
+  /**
+   * Add the local cell graph and remove a weighted feedback arc set (FAS) from it.
+   *
+   * Combine parallel faces into one edge with summed weight, in first-face order.
+   * Cutting the edge lags every face between the ordered cell pair.
+   *
+   * \param graph Graph with one vertex per local cell and no edges. On return it holds the
+   *        acyclic cell graph.
+   * \param face_edges One entry per outgoing local face. The upwind and downwind cells differ.
+   * \return The removed (upwind, downwind) cell pairs.
+   */
+  static std::vector<std::pair<std::uint32_t, std::uint32_t>>
+  RemoveLocalCellCycles(Graph& graph, const std::vector<LocalFaceEdge>& face_edges);
+
+  /// Slot node offset of a cell face that is not a non-delayed local face.
+  static constexpr std::uint32_t INVALID_SLOT_NODE_OFFSET =
+    std::numeric_limits<std::uint32_t>::max();
 };
 
 } // namespace opensn

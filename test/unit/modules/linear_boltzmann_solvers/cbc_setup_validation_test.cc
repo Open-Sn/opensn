@@ -7,8 +7,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds_common_data.h"
 #include "framework/mesh/mesh/mesh.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/runtime.h"
 #include "gtest/gtest.h"
 #include <algorithm>
@@ -65,11 +63,9 @@ TEST(CBCSetupValidation, EmptyFLUDSRequiresFinalization)
   CBC_SPDS spds(0, Vector3{1, 0, 0}, mesh, {}, false);
   const std::vector<CellFaceNodalMapping> mappings;
   const auto common = CBC_FLUDSCommonData::MakeAlpha(spds, mappings);
-  const auto sdm = PieceWiseLinearDiscontinuous::New(Mesh::New());
-  const auto unknown = UnknownManager::GetUnitaryUnknownManager();
-  EXPECT_THROW((CBC_FLUDS(1, 1, *common, unknown, *sdm)), std::logic_error);
+  EXPECT_THROW((CBC_FLUDS(1, 1, *common)), std::logic_error);
   common->FinalizeBeta();
-  EXPECT_NO_THROW((CBC_FLUDS(1, 1, *common, unknown, *sdm)));
+  EXPECT_NO_THROW((CBC_FLUDS(1, 1, *common)));
 }
 
 namespace
@@ -207,9 +203,7 @@ TEST(CBCSetupValidation, NonemptyFLUDSRequiresFinalization)
   CBC_SPDS spds(0, Vector3{1, 0, 0}, mesh, SPDSFaceNeighborInfoVec(1), false);
   const std::vector<CellFaceNodalMapping> mappings(1);
   const auto common = CBC_FLUDSCommonData::MakeAlpha(spds, mappings);
-  const auto sdm = PieceWiseLinearDiscontinuous::New(Mesh::New());
-  const auto unknown = UnknownManager::GetUnitaryUnknownManager();
-  EXPECT_THROW((CBC_FLUDS(1, 1, *common, unknown, *sdm)), std::logic_error);
+  EXPECT_THROW((CBC_FLUDS(1, 1, *common)), std::logic_error);
 }
 
 TEST(CBCSetupValidation, RankGraphDimensionsAndEndpoints)

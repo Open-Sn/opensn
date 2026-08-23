@@ -106,6 +106,21 @@ public:
   /// Return whether normal face data has been queued since the last SendData call.
   bool HasUnsentMessages() const noexcept { return has_unsent_messages_; }
 
+  /// Return whether a normal message could not accept the next queued record.
+  bool HasClosedNormalSendBuffer() const noexcept { return has_closed_normal_send_buffer_; }
+
+  /**
+   * Release completed send storage and ordinary receive scratch.
+   *
+   * Call after this angle set finishes. Active ordinary and delayed send buffers
+   * remain owned until their MPI requests complete.
+   */
+  void ReleaseCompletedSendBuffers()
+  {
+    reusable_send_buffers_.clear();
+    std::vector<char>().swap(receive_buffer_);
+  }
+
   /**
    * Reset send and receive state for another sweep.
    *
@@ -294,6 +309,8 @@ private:
   std::size_t remaining_incoming_faces_ = 0;
   /// Whether a cell queued normal face data since the last SendData call.
   bool has_unsent_messages_ = false;
+  /// Whether the message-size bound closed a normal message in this visit.
+  bool has_closed_normal_send_buffer_ = false;
   /// Whether delayed completion markers have been queued this sweep.
   bool delayed_completion_markers_queued_ = false;
   /// Maximum serialized MPI message size.

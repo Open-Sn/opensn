@@ -12,6 +12,10 @@ namespace opensn
 {
 
 class CBC_SPDS;
+namespace detail
+{
+struct CBCHostTaskGraph;
+}
 
 /// Host CBC angle set.
 class CBC_AngleSet : public AngleSet
@@ -83,14 +87,18 @@ public:
   /// Reset task and communication state before another sweep.
   void ResetSweepBuffers() override;
 
-  /// Receive delayed data until all delayed upstream locations are complete.
+  /**
+   * Receive available delayed face data and completion markers.
+   *
+   * \return True when every delayed upstream location has completed.
+   */
   bool ReceiveDelayedData() override { return async_comm_.ReceiveDelayedData(); }
 
 protected:
   /// CBC sweep-plane data structure.
   const CBC_SPDS& cbc_spds_;
-  /// Current CBC task list.
-  const std::vector<Task>* task_list_ = nullptr;
+  /// Borrowed SPDS task graph. A rebuild can replace its arrays.
+  const detail::CBCHostTaskGraph* task_graph_ = nullptr;
   /// Unsatisfied dependency count by task.
   std::vector<unsigned int> remaining_dependency_counts_;
   /// Ready task stack.
@@ -101,6 +109,8 @@ protected:
   std::size_t num_completed_tasks_ = 0;
   /// Maximum number of buffered messages.
   int max_buffer_messages_ = 0;
+  /// Whether dependency counts/ready state have been initialized for this sweep.
+  bool task_state_initialized_ = false;
   /// CBC asynchronous communicator.
   CBC_AsynchronousCommunicator async_comm_;
 };

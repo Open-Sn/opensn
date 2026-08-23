@@ -5,8 +5,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "framework/mesh/mesh/mesh.h"
-#include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
-#include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/runtime.h"
 #include "gtest/gtest.h"
 #include <cstring>
@@ -74,8 +72,6 @@ protected:
     if (mpi_comm.size() < 2)
       GTEST_SKIP() << "The face-stream fixture requires at least two MPI ranks";
     grid_ = Mesh::New();
-    grid_->AddGlobalVertex(0, Vector3{0.0, 0.0, 0.0});
-    grid_->AddGlobalVertex(1, Vector3{0.0, 0.0, 1.0});
     // Two reciprocal faces form a rank cycle. Cut 0 -> 1: rank 0 receives an ordinary face
     // from rank 1, rank 1 receives a delayed face from rank 0, and further ranks own no cells.
     for (unsigned int rank = 0; rank < 2; ++rank)
@@ -96,7 +92,8 @@ protected:
       grid_->AddGlobalCell(cell);
     }
     const auto face_info = BuildSPDSFaceNeighborInfo(*grid_);
-    spds_ = std::make_unique<CBC_SPDS>(0, Vector3{0.0, 0.0, 1.0}, grid_, face_info, true);
+    spds_ = std::make_unique<CBC_SPDS>(
+      0, Vector3{0.0, 0.0, 1.0}, grid_, face_info, true, CBC_SPDS::TaskStorage::HOST_CSR);
     spds_->SetGlobalSweepFAS({0, 1});
     spds_->ApplyGlobalSweepFAS();
     // FaceNodalMapping has const members, so build the vector rather than assign its elements.
@@ -105,9 +102,7 @@ protected:
       CellFaceNodalMapping{FaceNodalMapping(0, {0}, {0}), FaceNodalMapping(1, {0}, {1})});
     common_ = CBC_FLUDSCommonData::MakeAlpha(*spds_, mappings_);
     common_->FinalizeBeta();
-    unknown_.AddUnknown(UnknownType::VECTOR_N, FACE_VALUES);
-    sdm_ = PieceWiseLinearDiscontinuous::New(grid_);
-    fluds_ = std::make_unique<CBC_FLUDS>(FACE_VALUES, 1, *common_, unknown_, *sdm_);
+    fluds_ = std::make_unique<CBC_FLUDS>(FACE_VALUES, 1, *common_);
     sweep_comm_ = std::make_unique<SweepCommunicator>(mpi_comm, 1);
     comm_ = std::make_unique<TestCommunicator>(0, 0, *fluds_, WHOLE_MESSAGE_BYTES, *sweep_comm_);
     comm_->InitializeDelayedUpstreamData();
@@ -149,8 +144,6 @@ protected:
   std::vector<CellFaceNodalMapping> mappings_;
   std::unique_ptr<CBC_SPDS> spds_;
   std::unique_ptr<CBC_FLUDSCommonData> common_;
-  UnknownManager unknown_;
-  std::shared_ptr<PieceWiseLinearDiscontinuous> sdm_;
   std::unique_ptr<CBC_FLUDS> fluds_;
   std::unique_ptr<SweepCommunicator> sweep_comm_;
   std::unique_ptr<TestCommunicator> comm_;
@@ -294,8 +287,7 @@ TEST_F(CBCAsyncComm, PackedRecordsAndMalformedSuffix)
 
 TEST_F(CBCAsyncComm, RejectZeroSizedFaceMetadata)
 {
-  // Zero directions make face payloads empty without dividing by zero groups in cell storage.
-  CBC_FLUDS empty_values(FACE_VALUES, 0, *common_, unknown_, *sdm_);
+  CBC_FLUDS empty_values(0, 1, *common_);
   if (Active())
     EXPECT_THROW((TestCommunicator(0, 0, empty_values, WHOLE_MESSAGE_BYTES, *sweep_comm_)),
                  std::logic_error);
@@ -350,14 +342,11 @@ TEST(CBCAsyncCommEmpty, ZeroWorkRank)
 {
   const auto grid = Mesh::New();
   const auto face_info = BuildSPDSFaceNeighborInfo(*grid);
-  CBC_SPDS spds(0, Vector3{0.0, 0.0, 1.0}, grid, face_info, true);
+  CBC_SPDS spds(0, Vector3{0.0, 0.0, 1.0}, grid, face_info, true, CBC_SPDS::TaskStorage::HOST_CSR);
   const std::vector<CellFaceNodalMapping> mappings;
   auto common = CBC_FLUDSCommonData::MakeAlpha(spds, mappings);
   common->FinalizeBeta();
-  const auto sdm = PieceWiseLinearDiscontinuous::New(grid);
-  UnknownManager unknown;
-  unknown.AddUnknown(UnknownType::VECTOR_N, FACE_VALUES);
-  CBC_FLUDS fluds(FACE_VALUES, 1, *common, unknown, *sdm);
+  CBC_FLUDS fluds(FACE_VALUES, 1, *common);
   SweepCommunicator sweep_comm(mpi_comm, 1);
   TestCommunicator comm(0, 0, fluds, WHOLE_MESSAGE_BYTES, sweep_comm);
   comm.InitializeDelayedUpstreamData();

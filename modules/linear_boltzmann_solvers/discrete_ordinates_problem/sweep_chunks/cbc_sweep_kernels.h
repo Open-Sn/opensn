@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include <algorithm>
 #include <span>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -37,13 +38,63 @@ struct CBCSweepWorkspace
   std::vector<OutgoingFacePsi> nonlocal_outgoing_psi;
   /// Face-indexed lookup for staged outgoing psi.
   std::vector<OutgoingFacePsi*> outgoing_psi_by_face;
+  /// Number of active entries in `nonlocal_outgoing_psi`.
   std::size_t num_nonlocal_outgoing_psi = 0;
+  /// Fixed-node kernel right-hand-side storage.
   std::vector<double> rhs_values;
+  /// Fixed-node kernel total cross-section block.
   std::vector<double> sigma_t_group_block;
+  /// Fixed-node kernel moment degree-of-freedom map.
   std::vector<std::size_t> moment_dof_map;
   /// Angular source of one direction at the nodes of the cell, node-major then group.
   std::vector<double> nodal_angular_source;
+  /// Direction cosines for the current cell faces.
   std::vector<double> face_mu_values;
+  /// Generic-kernel transport operator.
+  DenseMatrix<double> system_matrix;
+  /// Generic-kernel group-specific transport operator.
+  DenseMatrix<double> system_matrix_work;
+  /// Generic-kernel angular flux right-hand sides by group.
+  std::vector<Vector<double>> rhs_vectors;
+  /// Generic-kernel nodal source values.
+  std::vector<double> source_values;
+  /// Generic transient-kernel time-removal coefficients.
+  std::vector<double> transient_coefficients;
+
+  /**
+   * Prepare generic-kernel work arrays for this sweep chunk.
+   *
+   * Subsequent calls reuse the arrays. Both dimensions must remain unchanged.
+   *
+   * \param max_num_cell_dofs Largest cell-node count supported by the chunk.
+   * \param num_groups Number of groups in its fixed groupset.
+   * \throw std::logic_error If either dimension changes after preparation.
+   */
+  void PrepareGeneric(std::size_t max_num_cell_dofs, std::size_t num_groups)
+  {
+    if (generic_prepared_)
+    {
+      if (max_num_cell_dofs != generic_max_num_cell_dofs_ or num_groups != generic_num_groups_)
+        throw std::logic_error("CBC generic workspace dimensions changed after preparation.");
+      return;
+    }
+
+    system_matrix.resize({max_num_cell_dofs, max_num_cell_dofs});
+    system_matrix_work.resize({max_num_cell_dofs, max_num_cell_dofs});
+    rhs_vectors.resize(num_groups);
+    for (auto& rhs : rhs_vectors)
+      rhs.Resize(static_cast<unsigned int>(max_num_cell_dofs));
+    source_values.resize(max_num_cell_dofs);
+    transient_coefficients.resize(num_groups);
+    generic_max_num_cell_dofs_ = max_num_cell_dofs;
+    generic_num_groups_ = num_groups;
+    generic_prepared_ = true;
+  }
+
+private:
+  std::size_t generic_max_num_cell_dofs_ = 0;
+  std::size_t generic_num_groups_ = 0;
+  bool generic_prepared_ = false;
 };
 
 /// Prepare staged nonlocal outgoing face psi for one cell.
@@ -137,16 +188,19 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   const auto& m2d_op = groupset.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset.quadrature->GetDiscreteToMomentOperator();
 
-  DenseMatrix<double> Amat(sweep_chunk.max_num_cell_dofs_, sweep_chunk.max_num_cell_dofs_);
-  DenseMatrix<double> Atemp(sweep_chunk.max_num_cell_dofs_, sweep_chunk.max_num_cell_dofs_);
-  std::vector<Vector<double>> b(gs_size, Vector<double>(sweep_chunk.max_num_cell_dofs_));
-  std::vector<double> source(sweep_chunk.max_num_cell_dofs_);
-  std::vector<double> face_mu_values(cell_num_faces);
+  auto& workspace = sweep_chunk.workspace_;
+  workspace.PrepareGeneric(sweep_chunk.max_num_cell_dofs_, gs_size);
+  auto& Amat = workspace.system_matrix;
+  auto& Atemp = workspace.system_matrix_work;
+  auto& b = workspace.rhs_vectors;
+  auto& source = workspace.source_values;
+  auto& face_mu_values = workspace.face_mu_values;
+  face_mu_values.resize(cell_num_faces);
 
   const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[cell_local_id];
   const auto& sigma_t = sweep_chunk.xs_.at(cell.block_id)->GetSigmaTotal();
 
-  std::vector<double> tau_gsg;
+  auto& tau_gsg = workspace.transient_coefficients;
   if constexpr (time_dependent)
   {
     const auto& inv_velg = sweep_chunk.xs_.at(cell.block_id)->GetInverseVelocity();
@@ -155,7 +209,6 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     const double dt = sweep_chunk.problem_.GetTimeStep();
     const double inv_dt = 1.0 / dt;
 
-    tau_gsg.assign(gs_size, 0.0);
     for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
       tau_gsg[gsg] = inv_velg[gs_gi + gsg] * inv_theta * inv_dt;
   }
@@ -242,8 +295,9 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
             psi = fluds.DelayedNLUpwindPsi(
               delayed_nonlocal_face_info, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
           else if (is_local_face)
-            psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
-                                  face_nodal_mapping->cell_node_mapping_[fj],
+            psi = fluds.UpwindPsi(cell_local_id,
+                                  static_cast<unsigned int>(f),
+                                  face_nodal_mapping->face_node_mapping_[fj],
                                   as_ss_idx);
           else if (not is_boundary_face)
             psi = fluds.NLUpwindPsi(
@@ -403,7 +457,8 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
                                               static_cast<unsigned int>(fi),
                                               as_ss_idx);
         else if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+          psi = fluds.OutgoingPsi(
+            cell_local_id, static_cast<unsigned int>(f), static_cast<unsigned int>(fi), as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)

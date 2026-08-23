@@ -188,13 +188,26 @@ CBC_AsynchronousCommunicator::GetOpenSendBuffer(std::size_t peer_index,
                                                 std::vector<mpi::Request>& requests,
                                                 std::vector<std::size_t>& open_buffer_indices)
 {
+  // Cap buffer growth at the serialized message limit.
+  const auto ReserveRecord = [this, record_size](BufferItem& buffer) -> BufferItem&
+  {
+    const auto required = buffer.data.size() + record_size;
+    if (required > buffer.data.capacity())
+      buffer.data.reserve(
+        std::min(max_mpi_message_size_,
+                 std::max(required, buffer.data.capacity() + buffer.data.capacity())));
+    return buffer;
+  };
+
   auto& open_buffer_index = open_buffer_indices[peer_index];
   if (open_buffer_index != INVALID_BUFFER_INDEX)
   {
     auto& buffer = buffers[open_buffer_index];
     if (buffer.data.size() + record_size <= max_mpi_message_size_)
-      return buffer;
+      return ReserveRecord(buffer);
 
+    if (&buffers == &send_buffer_)
+      has_closed_normal_send_buffer_ = true;
     open_buffer_index = INVALID_BUFFER_INDEX;
   }
 
@@ -214,7 +227,7 @@ CBC_AsynchronousCommunicator::GetOpenSendBuffer(std::size_t peer_index,
   buffer.data.clear();
 
   open_buffer_index = buffer_index;
-  return buffer;
+  return ReserveRecord(buffer);
 }
 
 void
@@ -297,6 +310,8 @@ CBC_AsynchronousCommunicator::SendMessages(std::vector<BufferItem>& buffers,
     auto& buffer_item = buffers[i];
     if (not buffer_item.send_initiated)
     {
+      // Release unused capacity before the buffer is handed to MPI.
+      buffer_item.data.shrink_to_fit();
       requests[i] =
         sweep_communicator_.GetCommunicator().isend(buffer_item.rank, tag, buffer_item.data);
       buffer_item.send_initiated = true;
@@ -314,7 +329,7 @@ CBC_AsynchronousCommunicator::SendMessages(std::vector<BufferItem>& buffers,
     const auto i = static_cast<std::size_t>(completed_index);
     auto& buffer_item = buffers[i];
     buffer_item.send_initiated = false;
-    buffer_item.data.clear();
+    std::vector<char>().swap(buffer_item.data);
     reusable_send_buffers_.push_back(std::move(buffer_item));
     if (i != buffers.size() - 1)
     {
@@ -335,6 +350,7 @@ CBC_AsynchronousCommunicator::SendData()
   CALI_CXX_MARK_SCOPE("CBC_AsynchronousCommunicator::SendData");
 
   has_unsent_messages_ = false;
+  has_closed_normal_send_buffer_ = false;
   return SendMessages(send_buffer_, send_requests_, open_send_buffer_indices_, message_tag_);
 }
 
@@ -378,10 +394,8 @@ CBC_AsynchronousCommunicator::Reset()
   send_requests_.clear();
   delayed_send_buffer_.clear();
   delayed_send_requests_.clear();
-  std::erase_if(reusable_send_buffers_,
-                [this](const auto& buffer)
-                { return buffer.data.capacity() > max_mpi_message_size_; });
-  receive_buffer_.clear();
+  reusable_send_buffers_.clear();
+  std::vector<char>().swap(receive_buffer_);
   received_task_scratch_.clear();
   ResetReceiveState();
   remaining_incoming_faces_ = cbc_fluds_.GetCommonData().NumIncomingFaces();
@@ -521,6 +535,8 @@ CBC_AsynchronousCommunicator::ReceiveAvailableMessages(
       throw;
     }
   }
+  // Release the receive scratch while no caller holds a message view.
+  std::vector<char>().swap(receive_buffer_);
 }
 
 void
