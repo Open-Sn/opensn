@@ -20,6 +20,7 @@
 #include "framework/utils/hdf_utils.h"
 #include <memory>
 #include <utility>
+#include <set>
 #include <petscksp.h>
 #include <chrono>
 #include <functional>
@@ -331,9 +332,23 @@ public:
   std::shared_ptr<FieldFunctionGridBased> CreateScalarFluxFieldFunction(unsigned int g,
                                                                         unsigned int m = 0);
 
-  /// Creates a named field function from a 1D XS or the special case `power`.
-  std::shared_ptr<FieldFunctionGridBased> CreateFieldFunction(
-    const std::string& name, const std::string& xs_name, double power_normalization_target = -1.0);
+  /**
+   * Creates a named field function from a 1D XS or the special case `power`.
+   *
+   * For an ordinary XS name the field is the reaction-rate density `xs[g] * phi_g`. If \p group
+   * has a value only that group contributes, otherwise the field is summed over all groups.
+   * If \p block_ids is non-empty only cells whose block id appears in the list contribute; every
+   * other node is left at zero.
+   *
+   * \p group and \p block_ids are not supported for `power` or for the specialized CSDA deposition
+   * fields.
+   */
+  std::shared_ptr<FieldFunctionGridBased>
+  CreateFieldFunction(const std::string& name,
+                      const std::string& xs_name,
+                      double power_normalization_target = -1.0,
+                      std::optional<unsigned int> group = std::nullopt,
+                      const std::vector<unsigned int>& block_ids = {});
 
   /**
    * Returns the scale factor (power_normalization_target / global total power) that
@@ -487,7 +502,9 @@ protected:
   void UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff, unsigned int g, unsigned int m);
   void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                   const std::string& xs_name,
-                                  double power_normalization_target);
+                                  double power_normalization_target,
+                                  std::optional<unsigned int> group,
+                                  const std::set<unsigned int>& block_ids);
   virtual std::optional<std::vector<double>>
   ComputeDerivedFieldFunctionData(const std::string& xs_name) const;
   virtual bool ReadProblemRestartData(hid_t file_id,
@@ -563,7 +580,9 @@ private:
   void InitializeParrays();
   std::string MakeScalarFluxFieldFunctionName(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeScalarFluxFieldFunctionData(unsigned int g, unsigned int m) const;
-  std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name) const;
+  std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name,
+                                                 std::optional<unsigned int> group,
+                                                 const std::set<unsigned int>& block_ids) const;
   std::vector<double> ComputePowerFieldFunctionData(double& local_total_power) const;
   /// Initializes data carriers to GPUs and memory pinner.
   void InitializeGPUExtras();

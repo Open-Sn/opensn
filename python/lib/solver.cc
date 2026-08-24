@@ -231,8 +231,7 @@ WrapLBS(py::module& slv)
   );
   lbs_problem.def(
     "CreateFieldFunction",
-    static_cast<std::shared_ptr<FieldFunctionGridBased> (LBSProblem::*)(
-      const std::string&, const std::string&, double)>(&LBSProblem::CreateFieldFunction),
+    &LBSProblem::CreateFieldFunction,
     R"(
     Create a named scalar field function derived from a 1D XS or ``power``.
 
@@ -253,11 +252,20 @@ WrapLBS(py::module& slv)
     power_normalization_target : float, default=-1.0
         If positive, scale the derived field function so that the raw power field would
         integrate to this total power.
+    group : int, optional
+        Energy group to restrict the reaction-rate density to. If unspecified, the field is
+        summed over all groups. Not supported for ``"power"`` or the CSDA deposition fields.
+    block_ids : List[int], default=[]
+        Restrict the field to these block ids. Empty means every cell contributes. Each id
+        must be a block of the problem. Not supported for ``"power"`` or the CSDA deposition
+        fields.
 
     Notes
     -----
     The returned field function is created on demand from the current scalar-flux iterate.
-    For ordinary XS names this computes ``sum_g xs[g] * phi_g`` at each node.
+    For ordinary XS names this computes the reaction-rate density ``sum_g xs[g] * phi_g`` at
+    each node, or ``xs[g] * phi_g`` for a single ``group``. Nodes belonging only to cells
+    outside ``block_ids`` are left at zero.
 
     The returned field function is a snapshot of the solver state at creation time; it is not
     refreshed automatically if the solver state changes. It supports ``CanUpdate()`` and
@@ -280,7 +288,9 @@ WrapLBS(py::module& slv)
     )",
     py::arg("name"),
     py::arg("xs_name"),
-    py::arg("power_normalization_target") = -1.0
+    py::arg("power_normalization_target") = -1.0,
+    py::arg("group") = py::none(),
+    py::arg("block_ids") = std::vector<unsigned int>{}
   );
   lbs_problem.def(
     "ComputeFieldFunctionPowerScaleFactor",

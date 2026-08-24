@@ -9,8 +9,10 @@
 #include "framework/utils/error.h"
 #include <iomanip>
 #include <memory>
+#include <set>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 namespace opensn
@@ -42,24 +44,44 @@ LBSProblem::CreateScalarFluxFieldFunction(unsigned int g, unsigned int m)
 std::shared_ptr<FieldFunctionGridBased>
 LBSProblem::CreateFieldFunction(const std::string& name,
                                 const std::string& xs_name,
-                                const double power_normalization_target)
+                                const double power_normalization_target,
+                                const std::optional<unsigned int> group,
+                                const std::vector<unsigned int>& block_ids)
 {
+  // Validate the energy/spatial restriction up front instead of later in the compute routines.
+  // The parameters are captured by the update callback below, so a single check at creation
+  // covers every later update as well.
+  const bool is_power = (xs_name == "power");
+  OpenSnInvalidArgumentIf(is_power and (group.has_value() or not block_ids.empty()),
+                          GetName() + ": 'group' and 'block_ids' are not supported for the "
+                                      "\"power\" field function.");
+  OpenSnInvalidArgumentIf(group.has_value() and group.value() >= num_groups_,
+                          GetName() + ": 'group' must be less than " + std::to_string(num_groups_) +
+                            ".");
+  for (const auto block_id : block_ids)
+    OpenSnInvalidArgumentIf(not block_id_to_xs_map_.contains(block_id),
+                            GetName() + ": 'block_ids' contains block id " +
+                              std::to_string(block_id) + ", which is not a block of this problem.");
+
+  // Built once here so the per-cell lookup during every update is O(log n).
+  const std::set<unsigned int> block_id_set(block_ids.begin(), block_ids.end());
+
   const std::string ff_name = MakeFieldFunctionName(name);
   auto ff_ptr = CreateEmptyFieldFunction(ff_name);
 
-  UpdateDerivedFieldFunction(*ff_ptr, xs_name, power_normalization_target);
+  UpdateDerivedFieldFunction(*ff_ptr, xs_name, power_normalization_target, group, block_id_set);
 
   const std::weak_ptr<LBSProblem> weak_owner = weak_from_this();
-  auto xs_name_copy = xs_name;
   ff_ptr->SetUpdateCallback(
-    [weak_owner, xs_name = std::move(xs_name_copy), power_normalization_target](
+    [weak_owner, xs_name, power_normalization_target, group, block_id_set](
       FieldFunctionGridBased& ff)
     {
       auto owner = weak_owner.lock();
       OpenSnLogicalErrorIf(not owner,
                            "Cannot update field function after its owning problem has "
                            "been destroyed.");
-      owner->UpdateDerivedFieldFunction(ff, xs_name, power_normalization_target);
+      owner->UpdateDerivedFieldFunction(
+        ff, xs_name, power_normalization_target, group, block_id_set);
     },
     [weak_owner]() { return not weak_owner.expired(); });
   return ff_ptr;
@@ -109,7 +131,9 @@ LBSProblem::UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff,
 void
 LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                        const std::string& xs_name,
-                                       const double power_normalization_target)
+                                       const double power_normalization_target,
+                                       const std::optional<unsigned int> group,
+                                       const std::set<unsigned int>& block_ids)
 {
   std::vector<double> data_vector_local;
   if (xs_name == "power")
@@ -119,11 +143,17 @@ LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
   }
   else if (const auto specialized_data = ComputeDerivedFieldFunctionData(xs_name))
   {
+    // Specialized fields (e.g. CSDA deposition) do not apply the restriction, so reject it rather
+    // than silently return the unrestricted field. CreateFieldFunction calls this immediately, so
+    // the error is raised at creation.
+    OpenSnInvalidArgumentIf(group.has_value() or not block_ids.empty(),
+                            GetName() + ": 'group' and 'block_ids' are not supported for the \"" +
+                              xs_name + "\" field function.");
     data_vector_local = *specialized_data;
   }
   else
   {
-    data_vector_local = ComputeXSFieldFunctionData(xs_name);
+    data_vector_local = ComputeXSFieldFunctionData(xs_name, group, block_ids);
   }
 
   if (power_normalization_target > 0.0)
@@ -184,14 +214,24 @@ LBSProblem::ComputeDerivedFieldFunctionData(const std::string& /*xs_name*/) cons
 }
 
 std::vector<double>
-LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
+LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name,
+                                       const std::optional<unsigned int> group,
+                                       const std::set<unsigned int>& block_ids) const
 {
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
+  // Half-open group range so that a single-group request and the all-groups default share one
+  // loop without underflowing when num_groups_ is zero.
+  const unsigned int first_group = group.has_value() ? group.value() : 0;
+  const unsigned int end_group = group.has_value() ? group.value() + 1 : num_groups_;
+
   for (const auto& cell : grid_->GetLocalCells())
   {
+    if (not block_ids.empty() and not block_ids.contains(cell->block_id))
+      continue;
+
     const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xs = block_id_to_xs_map_.at(cell->block_id);
@@ -210,7 +250,7 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
       const auto imapB = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, 0);
 
       double nodal_value = 0.0;
-      for (unsigned int g = 0; g < num_groups_; ++g)
+      for (unsigned int g = first_group; g < end_group; ++g)
         nodal_value += coeffs->at(g) * phi_new_local_[imapB + g];
 
       data_vector_local[imapA] = nodal_value;
