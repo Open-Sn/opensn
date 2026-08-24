@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
 
+#include <algorithm>
 #include <iomanip>
 #include <memory>
 #include <sstream>
@@ -43,24 +44,30 @@ LBSProblem::CreateScalarFluxFieldFunction(unsigned int g, unsigned int m)
 std::shared_ptr<FieldFunctionGridBased>
 LBSProblem::CreateFieldFunction(const std::string& name,
                                 const std::string& xs_name,
-                                const double power_normalization_target)
+                                const double power_normalization_target,
+                                const int group,
+                                const std::vector<int>& block_ids)
 {
   const std::string ff_name = MakeFieldFunctionName(name);
   auto ff_ptr = CreateEmptyFieldFunction(ff_name);
 
-  UpdateDerivedFieldFunction(*ff_ptr, xs_name, power_normalization_target);
+  UpdateDerivedFieldFunction(*ff_ptr, xs_name, power_normalization_target, group, block_ids);
 
   const std::weak_ptr<LBSProblem> weak_owner = weak_from_this();
   auto xs_name_copy = xs_name;
+  auto block_ids_copy = block_ids;
   ff_ptr->SetUpdateCallback(
-    [weak_owner, xs_name = std::move(xs_name_copy), power_normalization_target](
-      FieldFunctionGridBased& ff)
+    [weak_owner,
+     xs_name = std::move(xs_name_copy),
+     power_normalization_target,
+     group,
+     block_ids = std::move(block_ids_copy)](FieldFunctionGridBased& ff)
     {
       auto owner = weak_owner.lock();
       OpenSnLogicalErrorIf(not owner,
                            "Cannot update field function after its owning problem has "
                            "been destroyed.");
-      owner->UpdateDerivedFieldFunction(ff, xs_name, power_normalization_target);
+      owner->UpdateDerivedFieldFunction(ff, xs_name, power_normalization_target, group, block_ids);
     },
     [weak_owner]() { return not weak_owner.expired(); });
   return ff_ptr;
@@ -110,17 +117,22 @@ LBSProblem::UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff,
 void
 LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                        const std::string& xs_name,
-                                       const double power_normalization_target)
+                                       const double power_normalization_target,
+                                       const int group,
+                                       const std::vector<int>& block_ids)
 {
   std::vector<double> data_vector_local;
   if (xs_name == "power")
   {
+    OpenSnInvalidArgumentIf(group >= 0 or not block_ids.empty(),
+                            GetName() + ": group and block_ids are not supported for the "
+                                        "\"power\" field function.");
     double local_total_power = 0.0;
     data_vector_local = ComputePowerFieldFunctionData(local_total_power);
   }
   else
   {
-    data_vector_local = ComputeXSFieldFunctionData(xs_name);
+    data_vector_local = ComputeXSFieldFunctionData(xs_name, group, block_ids);
   }
 
   if (power_normalization_target > 0.0)
@@ -175,14 +187,30 @@ LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalizatio
 }
 
 std::vector<double>
-LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
+LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name,
+                                       const int group,
+                                       const std::vector<int>& block_ids) const
 {
+  OpenSnInvalidArgumentIf(group < -1,
+                          GetName() + ": group must be -1 (all groups) or a valid group index.");
+  OpenSnInvalidArgumentIf(std::cmp_greater_equal(group, num_groups_),
+                          GetName() + ": Group index out of range.");
+
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
+  // Half-open group range so that a single-group request and the all-groups default share one
+  // loop without underflowing when num_groups_ is zero.
+  const unsigned int first_group = group < 0 ? 0 : static_cast<unsigned int>(group);
+  const unsigned int end_group = group < 0 ? num_groups_ : static_cast<unsigned int>(group) + 1;
+
   for (const auto& cell : grid_->local_cells)
   {
+    if (not block_ids.empty() and
+        std::find(block_ids.begin(), block_ids.end(), cell.block_id) == block_ids.end())
+      continue;
+
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& xs = block_id_to_xs_map_.at(cell.block_id);
@@ -201,7 +229,7 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
       const auto imapB = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
 
       double nodal_value = 0.0;
-      for (unsigned int g = 0; g < num_groups_; ++g)
+      for (unsigned int g = first_group; g < end_group; ++g)
         nodal_value += coeffs->at(g) * phi_new_local_[imapB + g];
 
       data_vector_local[imapA] = nodal_value;
