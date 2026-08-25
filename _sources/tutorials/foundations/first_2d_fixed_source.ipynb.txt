@@ -1,0 +1,258 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "cc01bbdd",
+   "metadata": {},
+   "source": [
+    "# Your First 2D Fixed-Source Calculation\n",
+    "\n",
+    "This notebook extends the one-dimensional slab calculation to a square Cartesian domain.\n",
+    "\n",
+    "## Learning objectives\n",
+    "\n",
+    "You will create a two-dimensional mesh, name its orthogonal boundaries, choose a quadrature appropriate to 2D Cartesian transport, solve a one-group fixed-source problem, and verify the scalar flux.\n",
+    "\n",
+    "**Prerequisite:** [Your First 1D Fixed-Source Calculation](first_1d_fixed_source.ipynb)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "af52c46c",
+   "metadata": {},
+   "source": [
+    "## Import the OpenSn objects"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8ed7d2fa",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.131497Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.131404Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.488229Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.487738Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "if \"opensn_console\" not in globals():\n",
+    "    from mpi4py import MPI\n",
+    "    from pyopensn.aquad import GLCProductQuadrature2DXY\n",
+    "    from pyopensn.context import Finalize, UseColor\n",
+    "    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume\n",
+    "    from pyopensn.logvol import RPPLogicalVolume\n",
+    "    from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "    from pyopensn.source import VolumetricSource\n",
+    "    from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "    rank = MPI.COMM_WORLD.rank\n",
+    "    UseColor(False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a50fc8a",
+   "metadata": {},
+   "source": [
+    "## Create the square mesh\n",
+    "\n",
+    "Supplying two node sets creates a Cartesian mesh in the $x$-$y$ plane. `SetOrthogonalBoundaries` assigns the names `xmin`, `xmax`, `ymin`, and `ymax`; the problem uses vacuum conditions on all four by default."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "e806ccae",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.490123Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.489977Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.494205Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.493794Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "num_cells = 16\n",
+    "length = 4.0\n",
+    "nodes = [length * i / num_cells for i in range(num_cells + 1)]\n",
+    "mesh = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()\n",
+    "mesh.SetOrthogonalBoundaries()\n",
+    "mesh.SetUniformBlockID(0)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "ec30dd99",
+   "metadata": {},
+   "source": [
+    "## Define the physical and angular model\n",
+    "\n",
+    "As in the 1D example, the material is purely absorbing and a uniform isotropic source fills the domain. The two-dimensional product quadrature combines polar and azimuthal directions so particles can travel throughout the $x$-$y$ plane."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "caa16ef0",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.495149Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.495051Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.497128Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.496757Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "cross_sections = MultiGroupXS()\n",
+    "cross_sections.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)\n",
+    "source = VolumetricSource(block_ids=[0], group_strength=[1.0])\n",
+    "quadrature = GLCProductQuadrature2DXY(\n",
+    "    n_polar=2, n_azimuthal=8, scattering_order=0\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "1a867d5b",
+   "metadata": {},
+   "source": [
+    "## Assemble and solve the problem\n",
+    "\n",
+    "The same problem-and-solver pattern applies in any dimension. Only the mesh and angular quadrature have changed from the slab example."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "a92ac294",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.498086Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.497992Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.510914Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.510520Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "problem = DiscreteOrdinatesProblem(\n",
+    "    mesh=mesh,\n",
+    "    num_groups=1,\n",
+    "    groupsets=[\n",
+    "        {\n",
+    "            \"groups_from_to\": (0, 0),\n",
+    "            \"angular_quadrature\": quadrature,\n",
+    "            \"inner_linear_method\": \"petsc_gmres\",\n",
+    "            \"l_abs_tol\": 1.0e-10,\n",
+    "            \"l_max_its\": 100,\n",
+    "            \"gmres_restart_interval\": 30,\n",
+    "        }\n",
+    "    ],\n",
+    "    xs_map=[{\"block_ids\": [0], \"xs\": cross_sections}],\n",
+    "    volumetric_sources=[source],\n",
+    ")\n",
+    "\n",
+    "solver = SteadyStateSourceSolver(problem=problem)\n",
+    "solver.Initialize()\n",
+    "solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "3cc8ff53",
+   "metadata": {},
+   "source": [
+    "## Verify and interpret the scalar flux\n",
+    "\n",
+    "The scalar flux is symmetric about both centerlines because the square, material, source, and boundary conditions are symmetric. Its maximum is near the center and below the infinite-medium value of 1 because particles can leak through four vacuum boundaries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "520586d6",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.512028Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.511934Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.514870Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.514477Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "whole_domain = RPPLogicalVolume(infx=True, infy=True, infz=True)\n",
+    "interpolator = FieldFunctionInterpolationVolume()\n",
+    "interpolator.SetOperationType(\"max\")\n",
+    "interpolator.SetLogicalVolume(whole_domain)\n",
+    "interpolator.AddFieldFunction(problem.GetScalarFluxFieldFunction()[0])\n",
+    "interpolator.Execute()\n",
+    "max_flux = interpolator.GetValue()\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"FOUNDATION_2D_MAX_FLUX={max_flux:.8e}\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "5ba7c37e",
+   "metadata": {},
+   "source": [
+    "## Exercises and next steps\n",
+    "\n",
+    "Try using a rectangular domain, increasing `n_azimuthal`, or making one boundary reflecting. Before rerunning, predict whether the maximum scalar flux should rise or fall.\n",
+    "\n",
+    "Next: *Running in Serial and Parallel*. The modeling tutorials cover mesh, logical-volume, material, source, boundary, and groupset choices in more detail."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "77889159",
+   "metadata": {
+    "execution": {
+     "iopub.execute_input": "2026-08-21T03:37:03.516113Z",
+     "iopub.status.busy": "2026-08-21T03:37:03.515922Z",
+     "iopub.status.idle": "2026-08-21T03:37:03.561265Z",
+     "shell.execute_reply": "2026-08-21T03:37:03.560846Z"
+    }
+   },
+   "outputs": [],
+   "source": [
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

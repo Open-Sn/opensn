@@ -1,0 +1,173 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>2.3.1. Introduction to Angular Quadratures &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="2.3.2. Product Quadrature" href="product_GLC.html" />
+    <link rel="prev" title="2.3. Angular Quadrature" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../foundations/index.html">1. Foundations</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">2. Modeling</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../mesh/index.html">2.1. Meshing and Partitioning</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../cross_sections/index.html">2.2. Cross Sections</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">2.3. Angular Quadrature</a><ul class="current">
+<li class="toctree-l4 current"><a class="current reference internal" href="#">2.3.1. Introduction to Angular Quadratures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="product_GLC.html">2.3.2. Product Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="triangular_GLC.html">2.3.3. Triangular Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="sLDFE.html">2.3.4. Simplified Linear Discontinuous Finite Element (LDFE) Quadrature</a></li>
+<li class="toctree-l4"><a class="reference internal" href="lebedev.html">2.3.5. Lebedev Quadrature</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../logvols/index.html">2.4. Logical Volumes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../groupsets/index.html">2.5. Groupsets</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../problems/index.html">3. Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../workflows/index.html">4. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../numerical_methods/index.html">5. Numerical Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">2. </span>Modeling</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">2.3. </span>Angular Quadrature</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">2.3.1. </span>Introduction to Angular Quadratures</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="introduction-to-angular-quadratures">
+<h1><span class="section-number">2.3.1. </span>Introduction to Angular Quadratures<a class="headerlink" href="#introduction-to-angular-quadratures" title="Link to this heading"></a></h1>
+<p>Discrete-ordinates calculations use an angular quadrature to select sweep directions, associate a
+weight with each direction, and transform between angular fluxes and flux moments. These shared
+properties and operators are exposed by <a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature" title="pyopensn.aquad.AngularQuadrature"><code class="xref py py-class docutils literal notranslate"><span class="pre">AngularQuadrature</span></code></a>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">pyopensn.aquad</span></code> module provides the following concrete quadratures:</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLProductQuadrature1DSlab.html#pyopensn.aquad.GLProductQuadrature1DSlab" title="pyopensn.aquad.GLProductQuadrature1DSlab"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code></a> is a Gauss-Legendre product rule for
+one-dimensional slab geometry.</p></li>
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLCProductQuadrature2DXY.html#pyopensn.aquad.GLCProductQuadrature2DXY" title="pyopensn.aquad.GLCProductQuadrature2DXY"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code></a> and
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLCProductQuadrature3DXYZ.html#pyopensn.aquad.GLCProductQuadrature3DXYZ" title="pyopensn.aquad.GLCProductQuadrature3DXYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code></a> combine Gauss-Legendre polar points with
+Gauss-Chebyshev azimuthal points for Cartesian geometry.</p></li>
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLCProductQuadrature2DRZ</span></code></a> provides the corresponding product rule
+for two-dimensional cylindrical geometry.</p></li>
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLCTriangularQuadrature2DXY.html#pyopensn.aquad.GLCTriangularQuadrature2DXY" title="pyopensn.aquad.GLCTriangularQuadrature2DXY"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLCTriangularQuadrature2DXY</span></code></a> and
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.GLCTriangularQuadrature3DXYZ.html#pyopensn.aquad.GLCTriangularQuadrature3DXYZ" title="pyopensn.aquad.GLCTriangularQuadrature3DXYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">GLCTriangularQuadrature3DXYZ</span></code></a> decrease the azimuthal order toward the
+poles to form triangular quadrature sets.</p></li>
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.SLDFEsqQuadrature2DXY.html#pyopensn.aquad.SLDFEsqQuadrature2DXY" title="pyopensn.aquad.SLDFEsqQuadrature2DXY"><code class="xref py py-class docutils literal notranslate"><span class="pre">SLDFEsqQuadrature2DXY</span></code></a> and
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.SLDFEsqQuadrature3DXYZ.html#pyopensn.aquad.SLDFEsqQuadrature3DXYZ" title="pyopensn.aquad.SLDFEsqQuadrature3DXYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">SLDFEsqQuadrature3DXYZ</span></code></a> use square linear-discontinuous finite
+elements and support local refinement in angle.</p></li>
+<li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.LebedevQuadrature2DXY.html#pyopensn.aquad.LebedevQuadrature2DXY" title="pyopensn.aquad.LebedevQuadrature2DXY"><code class="xref py py-class docutils literal notranslate"><span class="pre">LebedevQuadrature2DXY</span></code></a> and
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.aquad.LebedevQuadrature3DXYZ.html#pyopensn.aquad.LebedevQuadrature3DXYZ" title="pyopensn.aquad.LebedevQuadrature3DXYZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">LebedevQuadrature3DXYZ</span></code></a> use Lebedev point sets.</p></li>
+</ul>
+<p>Each constructor accepts an <code class="docutils literal notranslate"><span class="pre">operator_method</span></code> selecting how the discrete-to-moment and
+moment-to-discrete maps are built. The available values are <code class="docutils literal notranslate"><span class="pre">&quot;standard&quot;</span></code>,
+<code class="docutils literal notranslate"><span class="pre">&quot;galerkin_one&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;galerkin_three&quot;</span></code>.</p>
+<p>See the <a class="reference internal" href="../../../pyapi/index.html"><span class="doc">Python API reference</span></a> for quadrature orders, scattering-order
+requirements, and the data and operators available on each class.</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="2.3. Angular Quadrature" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="product_GLC.html" class="btn btn-neutral float-right" title="2.3.2. Product Quadrature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

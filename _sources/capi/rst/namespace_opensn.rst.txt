@@ -1299,11 +1299,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 
+- :ref:`exhale_function_namespaceopensn_1a453c952935eb4bd4e5b4f15e048758b9`
+
 - :ref:`exhale_function_namespaceopensn_1a011ab6fa829baf57968f74b833b3fed0`
 
 - :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
-
-- :ref:`exhale_function_namespaceopensn_1a453c952935eb4bd4e5b4f15e048758b9`
 
 - :ref:`exhale_function_namespaceopensn_1a6c0ed6c651dd58f8d684435e40c94d95`
 

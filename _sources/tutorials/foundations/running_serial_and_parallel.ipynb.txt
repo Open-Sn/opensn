@@ -1,0 +1,69 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "title",
+   "metadata": {},
+   "source": [
+    "# Running in Serial and Parallel\n",
+    "\n",
+    "The foundational calculations are deliberately small and should first be run with one MPI rank."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "regression-runner",
+   "metadata": {},
+   "source": [
+    "## Run the Foundations regression examples\n",
+    "\n",
+    "From the repository root, run:\n",
+    "\n",
+    "```console\n",
+    "test/run_tests -d doc/source/tutorials/foundations --engine=jupyter -j 1 -v 1\n",
+    "```\n",
+    "\n",
+    "To execute an individual notebook interactively, start Jupyter from an environment in which the `pyopensn` package is installed and open the notebook normally."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "mpi",
+   "metadata": {},
+   "source": [
+    "## Launch an input with MPI\n",
+    "\n",
+    "### Installed Python package\n",
+    "\n",
+    "When the `pyopensn` package is installed in the active Python environment, launch an input script on four ranks with:\n",
+    "\n",
+    "```console\n",
+    "mpiexec -n 4 python input.py\n",
+    "```\n",
+    "\n",
+    "### OpenSn console mode\n",
+    "\n",
+    "The same input can be run through the OpenSn console without installing `pyopensn` into the active Python environment. If the OpenSn executable is on `PATH`, run:\n",
+    "\n",
+    "```console\n",
+    "mpiexec -np 4 opensn -i input.py\n",
+    "```\n",
+    "\n",
+    "The number of ranks changes how the mesh is partitioned, but it should not change the physical problem being solved."
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
