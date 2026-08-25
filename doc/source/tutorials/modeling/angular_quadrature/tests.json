@@ -1,0 +1,66 @@
+[
+  {
+    "file": "product_GLC.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of directions =",
+        "goldvalue": 24,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "lebedev.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of directions =",
+        "goldvalue": 14,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "triangular_GLC.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of directions =",
+        "goldvalue": 12,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
+    "file": "sLDFE.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "number of directions =",
+        "goldvalue": 6240,
+        "abs_tol": 1e-8
+      }
+    ]
+  }
+]
