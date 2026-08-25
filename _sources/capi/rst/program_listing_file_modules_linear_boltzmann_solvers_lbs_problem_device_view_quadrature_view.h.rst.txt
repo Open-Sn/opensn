@@ -18,15 +18,18 @@ Program Listing for File quadrature_view.h
    #include "modules/linear_boltzmann_solvers/lbs_problem/device/view/inline_macro.h"
    #include <array>
    #include <cstdint>
+   #include <cstddef>
    
    namespace opensn
    {
    
+   // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast)
+   
    /// Direction view.
    struct DirectionView
    {
-     __inline_host_dev__ DirectionView() {}
-     __inline_host_dev__ void Update(const double* direction_data, const std::uint32_t& num_moments)
+     OPENSN_INLINE_HOST_DEV DirectionView() : omega{}, weight(0.0), m2d(nullptr), d2m(nullptr) {}
+     OPENSN_INLINE_HOST_DEV void Update(const double* direction_data, const std::uint32_t& num_moments)
      {
        omega[0] = direction_data[0];
        omega[1] = direction_data[1];
@@ -45,26 +48,30 @@ Program Listing for File quadrature_view.h
    /// Quadrature view.
    struct QuadratureView
    {
-     __inline_host_dev__ QuadratureView(const char* quad_data)
+     OPENSN_INLINE_HOST_DEV QuadratureView(const char* quad_data)
+       : num_angles(0),
+         num_moments(0),
+         direction_data(
+           reinterpret_cast<const double*>(reinterpret_cast<const std::uint32_t*>(quad_data) + 2))
      {
        // number of angles and number of moments
-       const std::uint32_t* num_angles_and_moments_data =
-         reinterpret_cast<const std::uint32_t*>(quad_data);
-       num_angles = *(num_angles_and_moments_data++);
-       num_moments = *(num_angles_and_moments_data++);
-       quad_data = reinterpret_cast<const char*>(num_angles_and_moments_data);
-       // direction data
-       direction_data = reinterpret_cast<const double*>(quad_data);
+       const auto* num_angles_and_moments_data = reinterpret_cast<const std::uint32_t*>(quad_data);
+       num_angles = num_angles_and_moments_data[0];
+       num_moments = num_angles_and_moments_data[1];
      }
    
-     __inline_host_dev__ void GetDirectionView(DirectionView& direction, const std::uint32_t& index)
+     OPENSN_INLINE_HOST_DEV void GetDirectionView(DirectionView& direction,
+                                                  const std::uint32_t& index) const
      {
-       direction.Update(direction_data + index * (4 + 2 * num_moments), num_moments);
+       direction.Update(direction_data + static_cast<std::size_t>(index) * (4 + 2 * num_moments),
+                        num_moments);
      }
    
      std::uint32_t num_angles;
      std::uint32_t num_moments;
      const double* direction_data;
    };
+   
+   // NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast)
    
    } // namespace opensn

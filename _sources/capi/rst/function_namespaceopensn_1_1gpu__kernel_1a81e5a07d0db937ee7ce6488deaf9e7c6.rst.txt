@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1aa73cb7e16b68e9f77691eae78cf856bd:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a81e5a07d0db937ee7ce6488deaf9e7c6:
 
 Template Function opensn::gpu_kernel::SweepDispatch
 ===================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::SweepDispatch(std::uint32_t, Args&&...)
+.. doxygenfunction:: opensn::gpu_kernel::SweepDispatch(std::uint32_t, Args&...)
    :project: opensn

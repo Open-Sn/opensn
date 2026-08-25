@@ -164,7 +164,7 @@
 <span class="w">  </span><span class="c1">/// Reference to the offsets of each location.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">location_offsets</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Stride size.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="c1">/// Non-local delayed bank storage structure.</span>
@@ -227,22 +227,22 @@
 <span class="w">  </span><span class="c1">/// \name Size getters</span>
 <span class="w">  </span><span class="c1">/// \{</span>
 <span class="w">  </span><span class="c1">/// Get size of non-local incoming bank.</span>
-<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalIncomingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalIncomingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">common_data_</span><span class="p">.</span><span class="n">GetNumNonLocalIncomingNodes</span><span class="p">()[</span><span class="n">loc</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get size of non-local delayed incoming bank</span>
-<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalDelayedIncomingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalDelayedIncomingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">common_data_</span><span class="p">.</span><span class="n">GetNumNonLocalDelayedIncomingNodes</span><span class="p">()[</span><span class="n">loc</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get size of non-local outgoing bank</span>
-<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalOutgoingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNonLocalOutgoingNumUnknowns</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">loc</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">common_data_</span><span class="p">.</span><span class="n">GetNumNonLocalOutgoingNodes</span><span class="p">()[</span><span class="n">loc</span><span class="p">]</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Get number of groups by number of angles</span>
-<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetStrideSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetStrideSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Copy delayed fluxes</span>

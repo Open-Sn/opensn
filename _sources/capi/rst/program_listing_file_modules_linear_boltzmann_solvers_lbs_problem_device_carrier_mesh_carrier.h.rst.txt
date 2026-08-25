@@ -33,7 +33,7 @@ Program Listing for File mesh_carrier.h
      MeshCarrier(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrier& outflow);
    
      /// Total number of cell nodes in the mesh.
-     std::uint64_t num_nodes_total;
+     std::uint64_t num_nodes_total = 0;
      /// Vector storing offset for save angular flux for each cell.
      std::vector<std::uint64_t> saved_psi_offset;
    

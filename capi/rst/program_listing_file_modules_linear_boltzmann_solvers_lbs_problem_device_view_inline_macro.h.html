@@ -91,9 +91,9 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#if defined(__NVCC__) || defined(__HIPCC__)</span>
-<span class="cp">#define __inline_host_dev__ inline __host__ __device__</span>
+<span class="cp">#define OPENSN_INLINE_HOST_DEV inline __host__ __device__</span>
 <span class="cp">#else</span>
-<span class="cp">#define __inline_host_dev__ inline</span>
+<span class="cp">#define OPENSN_INLINE_HOST_DEV inline</span>
 <span class="cp">#endif</span>
 </pre></div>
 </div>

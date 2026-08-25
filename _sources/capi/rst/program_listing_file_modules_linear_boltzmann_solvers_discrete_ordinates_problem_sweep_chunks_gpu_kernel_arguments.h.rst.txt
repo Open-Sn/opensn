@@ -61,56 +61,54 @@ Program Listing for File arguments.h
                AngleSetType& angle_set,
                FLUDSType& fluds,
                bool is_active)
+       : boundary(problem.GetBoundaryCarrier()->GetDevicePtr(groupset.id)),
+         directions(angle_set.GetDeviceAngleIndices()),
+         angleset_size(angle_set.GetNumAngles()),
+         num_groups(problem.GetNumGroups()),
+         groupset_start(groupset.first_group),
+         groupset_size(groupset.GetNumGroups()),
+         is_surface_source_active(is_active)
      {
        // Get mesh and quadrature data
        auto* mesh = problem.GetMeshCarrier();
        mesh_data = mesh->GetDevicePtr();
        auto quadrature = groupset.quad_carrier;
        quad_data = quadrature->GetDevicePtr();
-       // Get boundary
-       boundary = problem.GetBoundaryCarrier()->GetDevicePtr(groupset.id);
        // Copy source moment and destination phi data to GPU
        auto* src = problem.GetSourceMomentsPinner();
        src_moment = src->GetDevicePtr();
        DeviceVectorMirror<double>* scalar_flux = problem.GetPhiPinner();
        phi = scalar_flux->GetDevicePtr();
        // Copy groupset data to GPU
-       groupset_size = groupset.GetNumGroups();
-       groupset_start = groupset.first_group;
-       num_groups = problem.GetNumGroups();
-       // Copy angleset data to GPU
-       directions = angle_set.GetDeviceAngleIndices();
-       angleset_size = angle_set.GetNumAngles();
        if constexpr (k == SweepKind::AAH)
          boundary_offset = angle_set.GetDeviceBoudnaryOffset();
        // Copy FLUDS data to GPU and retrieve the pointer set
        flud_data = fluds.GetDevicePointerSet();
        flud_index = fluds.GetCommonData().GetDeviceIndex();
        // Copy surface source active
-       is_surface_source_active = is_active;
      }
    
      // Mesh and quadrature
-     const char* __restrict__ mesh_data;
-     const char* __restrict__ quad_data;
+     const char* __restrict__ mesh_data = nullptr;
+     const char* __restrict__ quad_data = nullptr;
      // Source moments and phi
-     const double* __restrict__ src_moment;
-     double* __restrict__ phi;
+     const double* __restrict__ src_moment = nullptr;
+     double* __restrict__ phi = nullptr;
      // Boundary
-     double* __restrict__ boundary;
+     double* __restrict__ boundary = nullptr;
      // Angle set
-     const std::uint32_t* __restrict__ directions;
-     const std::uint64_t* __restrict__ boundary_offset;
-     std::uint32_t angleset_size;
+     const std::uint32_t* __restrict__ directions = nullptr;
+     const std::uint64_t* __restrict__ boundary_offset = nullptr;
+     std::uint32_t angleset_size = 0;
      // Group set
-     std::uint32_t num_groups;
-     std::uint32_t groupset_start;
-     std::uint32_t groupset_size;
+     std::uint32_t num_groups = 0;
+     std::uint32_t groupset_start = 0;
+     std::uint32_t groupset_size = 0;
      // FLUDS
-     const std::uint64_t* __restrict__ flud_index;
+     const std::uint64_t* __restrict__ flud_index = nullptr;
      FLUDSPointerSetType flud_data;
      // Source active
-     bool is_surface_source_active;
+     bool is_surface_source_active = false;
    };
    
    } // namespace opensn::gpu_kernel

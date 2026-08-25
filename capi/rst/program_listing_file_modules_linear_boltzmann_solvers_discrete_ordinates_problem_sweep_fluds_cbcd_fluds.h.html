@@ -124,7 +124,7 @@
 <span class="w">             </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sdm</span><span class="p">,</span>
 <span class="w">             </span><span class="kt">bool</span><span class="w"> </span><span class="n">save_angular_flux</span><span class="p">);</span>
 
-<span class="w">  </span><span class="o">~</span><span class="n">CBCD_FLUDS</span><span class="p">();</span>
+<span class="w">  </span><span class="o">~</span><span class="n">CBCD_FLUDS</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Get reference to the common data.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">CBCD_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetCommonData</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -136,7 +136,7 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AllocateLocalAndSavedPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Get the face-node angular-flux stride.</span>
-<span class="w">  </span><span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetStrideSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetStrideSize</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_groups_and_angles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Get the local cells ready for device sweep.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">MappedHostVector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalCellIDs</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">local_cell_ids_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>

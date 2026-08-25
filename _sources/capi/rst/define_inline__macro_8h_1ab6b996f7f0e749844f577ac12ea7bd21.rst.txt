@@ -1,0 +1,14 @@
+.. _exhale_define_inline__macro_8h_1ab6b996f7f0e749844f577ac12ea7bd21:
+
+Define OPENSN_INLINE_HOST_DEV
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_device_view_inline_macro.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OPENSN_INLINE_HOST_DEV
+   :project: opensn

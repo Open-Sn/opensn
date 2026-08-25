@@ -28,13 +28,13 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a89f1d28899c3902e1e5c35acbb61fc76`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8af6331ac95a0d066f11fdb7a37ef813`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8e0164ee46c7df83da4a00e18d11a120`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1afa2ed9e7daedd81ab28258ca80fa4b81`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a384cb3ea678f19b0c7355f0190cfa3fa`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a236412bb9d29eaa969de17f9523d9061`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a06023a9e39c4a3d0175ce890be877abe`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a1c83f56171bd0b9f6fd3cfb51d79e179`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a037be16d0adaf37b53a8914357dbe8ad`
 
@@ -44,13 +44,13 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a25693e314075db210ec55b6f61a39fe3`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aa73cb7e16b68e9f77691eae78cf856bd`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a81e5a07d0db937ee7ce6488deaf9e7c6`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a896b6d4c91cb1d72eae8016c6af3c24a`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aebb6419c2f1719eb13be50df3f224ea5`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ac088369b7577297f61fb1ccc253ccce3`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a4e4102e103498481fc779bc8c0416d55`
 
 
 Typedefs

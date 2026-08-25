@@ -66,7 +66,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a89f1d28899c3902e1e5c35acbb61fc76`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8af6331ac95a0d066f11fdb7a37ef813`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8e0164ee46c7df83da4a00e18d11a120`
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1afa2ed9e7daedd81ab28258ca80fa4b81`
 
@@ -76,5 +76,5 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a25693e314075db210ec55b6f61a39fe3`
 
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1ac088369b7577297f61fb1ccc253ccce3`
+- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a4e4102e103498481fc779bc8c0416d55`
 

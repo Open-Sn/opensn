@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a384cb3ea678f19b0c7355f0190cfa3fa:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a236412bb9d29eaa969de17f9523d9061:
 
 Template Function opensn::gpu_kernel::ForDOFs1ToMax
 ===================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToMax(F&&)
+.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToMax(F&)
    :project: opensn

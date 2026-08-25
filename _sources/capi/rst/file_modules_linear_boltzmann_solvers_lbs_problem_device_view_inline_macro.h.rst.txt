@@ -45,5 +45,5 @@ Defines
 -------
 
 
-- :ref:`exhale_define_inline__macro_8h_1aee06755a82a192ec6876e3c80dce7345`
+- :ref:`exhale_define_inline__macro_8h_1ab6b996f7f0e749844f577ac12ea7bd21`
 

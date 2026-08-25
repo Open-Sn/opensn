@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a06023a9e39c4a3d0175ce890be877abe:
+.. _exhale_function_namespaceopensn_1_1gpu__kernel_1a1c83f56171bd0b9f6fd3cfb51d79e179:
 
 Template Function opensn::gpu_kernel::ForDOFs1ToN
 =================================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&&)
+.. doxygenfunction:: opensn::gpu_kernel::ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&)
    :project: opensn
