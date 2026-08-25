@@ -9,7 +9,9 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/thread_utils.h"
 #include <algorithm>
+#include <stdexcept>
 #include <unordered_map>
 
 namespace opensn
@@ -60,6 +62,31 @@ SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
   {
     pool_.Resize(angle_agg_.GetNumAngleSets());
     execution_order_.reserve(angle_agg_.GetNumAngleSets());
+  }
+  else if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
+  {
+    const auto thread_info = GetThreadResourceInfo();
+    const bool uses_communication =
+      std::any_of(angle_agg_.begin(),
+                  angle_agg_.end(),
+                  [](const auto& angle_set)
+                  {
+                    const auto& spds = angle_set->GetSPDS();
+                    return not spds.GetLocationDependencies().empty() or
+                           not spds.GetLocationSuccessors().empty();
+                  });
+
+    const std::size_t reserved_communication_threads =
+      uses_communication and thread_info.available_threads > 1 ? 1 : 0;
+    const auto worker_limit = thread_info.available_threads - reserved_communication_threads;
+    const auto num_workers =
+      std::max<std::size_t>(1, std::min(angle_agg_.GetNumAngleSets(), worker_limit));
+
+    log.Log0Verbose1() << "CBCD scheduler: policy=resource-aware, workers=" << num_workers
+                       << ", communicator_threads=1, reserved_communicator_threads="
+                       << reserved_communication_threads << ", "
+                       << FormatThreadResourceInfo(thread_info) << ".";
+    pool_.Resize(num_workers);
   }
 
   // Initialize delayed upstream data
