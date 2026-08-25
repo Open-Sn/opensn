@@ -37,7 +37,7 @@ public:
              const SpatialDiscretization& sdm,
              bool save_angular_flux);
 
-  ~CBCD_FLUDS();
+  ~CBCD_FLUDS() override;
 
   /// Get reference to the common data.
   const CBCD_FLUDSCommonData& GetCommonData() const { return common_data_; }
@@ -49,7 +49,7 @@ public:
   void AllocateLocalAndSavedPsi();
 
   /// Get the face-node angular-flux stride.
-  inline std::size_t GetStrideSize() const { return num_groups_and_angles_; }
+  std::size_t GetStrideSize() const { return num_groups_and_angles_; }
 
   /// Get the local cells ready for device sweep.
   crb::MappedHostVector<std::uint32_t>& GetLocalCellIDs() { return local_cell_ids_; }

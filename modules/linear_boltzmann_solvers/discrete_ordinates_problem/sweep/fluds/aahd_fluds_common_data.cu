@@ -22,7 +22,7 @@ AAHD_FLUDSCommonData::UpdateBoundaryAndSyncWithDevice(
 {
   ComputeNodeIndexForBoundaryFaces(sdm, boundaries);
   CopyFlattenNodeIndexToDevice(sdm);
-  for (auto angleset : associated_anglesets_)
+  for (auto* angleset : associated_anglesets_)
   {
     angleset->CopyBoundaryOffsetToDevice();
   }
@@ -52,7 +52,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode fn(cell.local_id, f, fnode);
-          for (auto angleset : associated_anglesets_)
+          for (auto* angleset : associated_anglesets_)
           {
             std::uint64_t offset = boundary.GetOffsetToAngleset(fn, *angleset, false);
             angleset->AddBoundaryOffset(offset);
@@ -70,7 +70,7 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
         for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)
         {
           FaceNode fn(cell.local_id, f, fnode);
-          for (auto angleset : associated_anglesets_)
+          for (auto* angleset : associated_anglesets_)
           {
             std::uint64_t offset = boundary.GetOffsetToAngleset(fn, *angleset, true);
             angleset->AddBoundaryOffset(offset);

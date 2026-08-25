@@ -14,6 +14,8 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
+
 /// Compute the sweep matrix from gradient, mass, and the source term
 template <std::size_t ndofs, SweepKind k>
 __CRB_DEVICE_FUNC__ void
@@ -162,7 +164,7 @@ GaussianElimination(double* sweep_matrix, double* psi)
 /// Record angular flux to downwind and compute outflow for boundary faces.
 template <SweepKind k>
 __CRB_DEVICE_FUNC__ void
-WritePsiToFludsAndOutflow(double* psi,
+WritePsiToFludsAndOutflow(const double* psi,
                           CellView& cell,
                           DirectionView& direction,
                           const std::uint64_t* cell_edge_data,
@@ -227,7 +229,7 @@ WritePsiToFludsAndOutflow(double* psi,
 /// Compute the scalar flux.
 template <std::size_t ndofs, SweepKind k>
 __CRB_DEVICE_FUNC__ void
-ComputePhi(double* psi,
+ComputePhi(const double* psi,
            CellView& cell,
            DirectionView& direction,
            const unsigned int& group_idx,
@@ -293,5 +295,7 @@ Sweep(const Arguments<k>& args,
       buffer.b(), saved_psi, cell, angle_group_idx, args.flud_data.stride_size);
   }
 }
+
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
 
 } // namespace opensn::gpu_kernel

@@ -39,7 +39,7 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
   // Iterate over cells to fill the map and populate metadata structures
   for (const auto& cell : grid.local_cells)
   {
-    cell_offsets_ptr[2 * cell.local_id] = current_index_offset;
+    cell_offsets_ptr[static_cast<std::size_t>(2) * cell.local_id] = current_index_offset;
     std::uint64_t num_cell_nodes = 0;
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {

@@ -40,14 +40,14 @@ void
 AAHDSweepChunk::Sweep(AngleSet& angle_set)
 {
   // prepare arguments
-  auto& aahd_angle_set = static_cast<AAHD_AngleSet&>(angle_set);
-  auto& fluds = static_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
+  auto& aahd_angle_set = dynamic_cast<AAHD_AngleSet&>(angle_set);
+  auto& fluds = dynamic_cast<AAHD_FLUDS&>(aahd_angle_set.GetFLUDS());
   auto& stream = aahd_angle_set.GetStream();
   gpu_kernel::Arguments<SweepKind::AAH> args(
     problem_, groupset_, aahd_angle_set, fluds, surface_source_active_);
   double* saved_psi = fluds.GetSavedAngularFluxDevicePointer();
   // retrieve SPDS levels
-  const auto& spds = static_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
+  const auto& spds = dynamic_cast<const AAH_SPDS&>(aahd_angle_set.GetSPDS());
   const auto& levelized_spls = spds.GetLevelizedLocalSubgrid();
   // compute block size
   unsigned int stride_size =

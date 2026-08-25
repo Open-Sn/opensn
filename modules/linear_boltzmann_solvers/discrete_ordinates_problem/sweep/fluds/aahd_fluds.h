@@ -77,7 +77,7 @@ struct AAHD_NonLocalBank : public AAHD_Bank
   /// Reference to the offsets of each location.
   const std::vector<std::size_t>* location_offsets = nullptr;
   /// Stride size.
-  std::size_t stride_size;
+  std::size_t stride_size = 0;
 };
 
 /// Non-local delayed bank storage structure.
@@ -140,22 +140,22 @@ public:
   /// \name Size getters
   /// \{
   /// Get size of non-local incoming bank.
-  inline std::size_t GetNonLocalIncomingNumUnknowns(std::size_t loc) const
+  std::size_t GetNonLocalIncomingNumUnknowns(std::size_t loc) const
   {
     return common_data_.GetNumNonLocalIncomingNodes()[loc] * num_groups_and_angles_;
   }
   /// Get size of non-local delayed incoming bank
-  inline std::size_t GetNonLocalDelayedIncomingNumUnknowns(std::size_t loc) const
+  std::size_t GetNonLocalDelayedIncomingNumUnknowns(std::size_t loc) const
   {
     return common_data_.GetNumNonLocalDelayedIncomingNodes()[loc] * num_groups_and_angles_;
   }
   /// Get size of non-local outgoing bank
-  inline std::size_t GetNonLocalOutgoingNumUnknowns(std::size_t loc) const
+  std::size_t GetNonLocalOutgoingNumUnknowns(std::size_t loc) const
   {
     return common_data_.GetNumNonLocalOutgoingNodes()[loc] * num_groups_and_angles_;
   }
   /// Get number of groups by number of angles
-  inline std::size_t GetStrideSize() const { return num_groups_and_angles_; }
+  std::size_t GetStrideSize() const { return num_groups_and_angles_; }
   /// \}
 
   /// \name Copy delayed fluxes

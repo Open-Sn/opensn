@@ -195,7 +195,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
         const int locality =
           sweep_chunk.GetCellTransportView(node.cell_local_id).FaceLocality(node.face_id);
         auto& async_comm =
-          static_cast<CBCD_AsynchronousCommunicator&>(*angle_set->GetCommunicator());
+          dynamic_cast<CBCD_AsynchronousCommunicator&>(*angle_set->GetCommunicator());
         std::vector<double>* psi_nonlocal_outgoing = &async_comm.InitGetDownwindMessageData(
           locality, face.neighbor_id, face_nodal_mapping.associated_face_, face_data_size);
         for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
@@ -226,7 +226,7 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
   DiscreteOrdinatesProblem& problem = sweep_chunk.GetProblem();
   auto* mesh = problem.GetMeshCarrier();
   auto grid = problem.GetGrid();
-  auto& groupset = sweep_chunk.GetGroupset();
+  const auto& groupset = sweep_chunk.GetGroupset();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   const std::size_t groupset_angle_group_stride =
@@ -244,8 +244,8 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
       for (std::uint32_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
       {
         auto direction_num = angle_indices[as_ss_idx];
-        double* dst = dst_psi + direction_num * num_groups_;
-        double* src = src_psi + as_ss_idx * num_groups_;
+        double* dst = dst_psi + static_cast<std::size_t>(direction_num) * num_groups_;
+        double* src = src_psi + static_cast<std::size_t>(as_ss_idx) * num_groups_;
         std::copy(src, src + num_groups_, dst);
       }
       dst_psi += groupset_angle_group_stride;

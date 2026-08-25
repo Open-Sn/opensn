@@ -29,8 +29,8 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
 {
   for (auto& as : *(groupset.angle_agg))
   {
-    auto* angle_set = static_cast<CBCD_AngleSet*>(as.get());
-    auto* fluds = static_cast<CBCD_FLUDS*>(&(angle_set->GetFLUDS()));
+    auto* angle_set = dynamic_cast<CBCD_AngleSet*>(as.get());
+    auto* fluds = dynamic_cast<CBCD_FLUDS*>(&(angle_set->GetFLUDS()));
     angle_sets_.push_back(angle_set);
     fluds_list_.push_back(fluds);
     streams_list_.push_back(angle_set->GetStream());
@@ -42,7 +42,7 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
     unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
     unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
     unsigned int grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
-    block_sizes_.push_back(crb::Dim3(block_size_x, block_size_y));
+    block_sizes_.emplace_back(block_size_x, block_size_y);
     grid_size_x_list_.push_back(grid_size_x);
   }
 }
@@ -57,7 +57,7 @@ CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, std::siz
   std::copy(cell_local_ids.begin(), cell_local_ids.end(), host_cell_local_ids.begin());
   const auto& args = kernel_args_list_[angle_set_id];
   crb::Dim3 block_size = block_sizes_[angle_set_id];
-  unsigned int num_ready_cells = static_cast<unsigned int>(cell_local_ids.size());
+  auto num_ready_cells = static_cast<unsigned int>(cell_local_ids.size());
   unsigned int grid_size_x = grid_size_x_list_[angle_set_id];
   unsigned int grid_size_y = (num_ready_cells + block_size.y - 1) / block_size.y;
   crb::Dim3 grid_size(grid_size_x, grid_size_y);

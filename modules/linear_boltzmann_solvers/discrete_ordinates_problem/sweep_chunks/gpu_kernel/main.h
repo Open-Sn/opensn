@@ -18,34 +18,34 @@ namespace opensn::gpu_kernel
 
 template <std::uint32_t... I, class F>
 __CRB_DEVICE_FUNC__ void
-ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...>, F&& f)
+ForDOFs1ToN(std::integer_sequence<std::uint32_t, I...> sequence, F& f)
 {
+  static_cast<void>(sequence);
   (f(std::integral_constant<std::uint32_t, I + 1>{}), ...);
 }
 
 template <class F>
 __CRB_DEVICE_FUNC__ void
-ForDOFs1ToMax(F&& f)
+ForDOFs1ToMax(F& f)
 {
-  ForDOFs1ToN(std::make_integer_sequence<std::uint32_t, LBSProblem::max_dofs_gpu>{},
-              std::forward<F>(f));
+  ForDOFs1ToN(std::make_integer_sequence<std::uint32_t, LBSProblem::max_dofs_gpu>{}, f);
 }
 
 template <SweepKind k, class... Args>
 __CRB_DEVICE_FUNC__ void
-SweepDispatch(std::uint32_t n, Args&&... args)
+SweepDispatch(std::uint32_t n, Args&... args)
 {
   bool done = false;
-  ForDOFs1ToMax(
-    [&](auto dof_c)
+  auto dispatch = [&](auto dof_c)
+  {
+    constexpr std::uint32_t dof = decltype(dof_c)::value;
+    if (!done && n == dof)
     {
-      constexpr std::uint32_t dof = decltype(dof_c)::value;
-      if (!done && n == dof)
-      {
-        gpu_kernel::Sweep<dof, k>(std::forward<Args>(args)...);
-        done = true;
-      }
-    });
+      gpu_kernel::Sweep<dof, k>(args...);
+      done = true;
+    }
+  };
+  ForDOFs1ToMax(dispatch);
 }
 
 template <SweepKind k>

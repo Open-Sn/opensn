@@ -10,11 +10,16 @@
 namespace opensn
 {
 
+// NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast,
+//             cppcoreguidelines-pro-type-member-init,
+//             modernize-use-auto,
+//             bugprone-implicit-widening-of-multiplication-result)
+
 /// Face view from contiguous block of memory
 struct FaceView
 {
-  __inline_host_dev__ FaceView() {}
-  __inline_host_dev__ void Update(const char* face_data)
+  OPENSN_INLINE_HOST_DEV FaceView() {}
+  OPENSN_INLINE_HOST_DEV void Update(const char* face_data)
   {
     // number of face nodes
     const std::uint64_t* num_face_nodes_data = reinterpret_cast<const std::uint64_t*>(face_data);
@@ -51,8 +56,8 @@ struct FaceView
 /// Cell view from contiguous block of memory
 struct CellView
 {
-  __inline_host_dev__ CellView() {}
-  __inline_host_dev__ void Update(const char* cell_data)
+  OPENSN_INLINE_HOST_DEV CellView() {}
+  OPENSN_INLINE_HOST_DEV void Update(const char* cell_data)
   {
     // number of faces and nodes (num_node = num_dof!)
     const std::uint32_t* num_node_and_face_data = reinterpret_cast<const std::uint32_t*>(cell_data);
@@ -79,7 +84,7 @@ struct CellView
     face_data = reinterpret_cast<const char*>(offset_face_data + num_faces);
   }
 
-  __inline_host_dev__ void GetFaceView(FaceView& face, const std::uint32_t& face_index)
+  OPENSN_INLINE_HOST_DEV void GetFaceView(FaceView& face, const std::uint32_t& face_index)
   {
     face.Update(face_data + offset_face_data[face_index]);
   }
@@ -97,7 +102,7 @@ struct CellView
 /// Mesh view from contiguous block of memory
 struct MeshView
 {
-  __inline_host_dev__ MeshView(const char* mesh_data)
+  OPENSN_INLINE_HOST_DEV MeshView(const char* mesh_data)
   {
     const std::uint64_t* num_cells_data = reinterpret_cast<const std::uint64_t*>(mesh_data);
     num_cells = *(num_cells_data++);
@@ -105,7 +110,7 @@ struct MeshView
     cell_data = reinterpret_cast<const char*>(offset_cell_data + num_cells);
   }
 
-  __inline_host_dev__ void GetCellView(CellView& cell, const std::uint32_t& cell_index)
+  OPENSN_INLINE_HOST_DEV void GetCellView(CellView& cell, const std::uint32_t& cell_index)
   {
     cell.Update(cell_data + offset_cell_data[cell_index]);
   }
@@ -114,5 +119,10 @@ struct MeshView
   std::uint64_t num_cells;
   const std::uint64_t* offset_cell_data;
 };
+
+// NOLINTEND(cppcoreguidelines-pro-type-reinterpret-cast,
+//           cppcoreguidelines-pro-type-member-init,
+//           modernize-use-auto,
+//           bugprone-implicit-widening-of-multiplication-result)
 
 } // namespace opensn
