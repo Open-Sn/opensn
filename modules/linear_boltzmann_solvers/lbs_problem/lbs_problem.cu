@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/outflow/outflow_carrier.h"
 #include "framework/utils/error.h"
+#include "framework/utils/caliper_scopes.h"
 
 namespace opensn
 {
@@ -19,6 +20,7 @@ LBSProblem::InitializeGPUExtras()
   {
     return;
   }
+  CaliperRegionScope cali_gpu_setup_scope("GPUSetup", CaliperGPUSetupScopeDepth());
   // initialize carriers
   total_xs_carrier_ = std::make_shared<TotalXSCarrier>(*this);
   outflow_carrier_ = std::make_shared<OutflowCarrier>(*this);

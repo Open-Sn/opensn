@@ -173,7 +173,7 @@ UncollidedProblem::UncollidedProblem(const InputParameters& params)
 void
 UncollidedProblem::InitializeSpatialDiscretization()
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::InitializeSpatialDiscretization");
+  CALI_CXX_MARK_SCOPE("InitializeSpatialDiscretization");
 
   log.Log() << "Initializing spatial discretization.\n";
   discretization_ = PieceWiseLinearDiscontinuous::New(grid_, QuadratureOrder::FOURTH);
@@ -441,7 +441,7 @@ UncollidedProblem::PrintSimHeader()
 void
 UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::BuildSweepOrdering");
+  CALI_CXX_MARK_SCOPE("BuildSweepOrdering");
 
   constexpr double tolerance = 1.0e-16;
 
@@ -593,7 +593,7 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 void
 UncollidedProblem::Execute(const std::string& file_name, const unsigned int progress_interval)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::Execute");
+  CALI_CXX_MARK_SCOPE("GenerateUncollidedFlux");
 
   std::fill(phi_new_local_.begin(), phi_new_local_.end(), 0.0);
   production_ = 0.0;
@@ -942,7 +942,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
 void
 UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_interval)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::ProjectReflectedImageSources");
+  CALI_CXX_MARK_SCOPE("ProjectReflectedImageSources");
 
   const auto& sdm = *discretization_;
   const size_t num_cells = grid_->local_cells.size();
@@ -1155,7 +1155,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
 void
 UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::RaytraceNearSourceRegion");
+  CALI_CXX_MARK_SCOPE("RaytraceNearSourceRegion");
   log.Log() << "\nRay-tracing near-source region.\n";
 
   const auto& sdm = *discretization_;
@@ -1499,7 +1499,7 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
 void
 UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::SweepBulkRegion");
+  CALI_CXX_MARK_SCOPE("SweepBulkRegion");
   log.Log() << "Sweeping bulk region.\n";
 
   const auto& sdm = *discretization_;
@@ -1732,7 +1732,7 @@ UncollidedProblem::ComputeUncollidedIntegrals(const Cell& cell, const Vector3& p
 void
 UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::UpdateBalance");
+  CALI_CXX_MARK_SCOPE("UpdateBalance");
 
   const auto& sdm = *discretization_;
 
@@ -1795,7 +1795,7 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
 void
 UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::AccumulateMoments");
+  CALI_CXX_MARK_SCOPE("AccumulateMoments");
 
   const auto& sdm = *discretization_;
   const auto swf = SpatialWeightFunction::FromCoordinateType(grid_->GetCoordinateSystem());
@@ -1860,7 +1860,7 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
 void
 UncollidedProblem::WriteFluxMoments(hid_t file)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::WriteFluxMoments");
+  CALI_CXX_MARK_SCOPE("WriteFluxMoments");
 
   OpenSnLogicalErrorIf(not H5WriteDataset1D<double>(file, "0,0", phi_new_local_),
                        GetName() + ": failed to write uncollided scalar flux.");
@@ -1873,7 +1873,7 @@ UncollidedProblem::WriteFluxMoments(hid_t file)
 void
 UncollidedProblem::FinalizeBalance(hid_t file)
 {
-  CALI_CXX_MARK_SCOPE("UncollidedProblem::FinalizeBalance");
+  CALI_CXX_MARK_SCOPE("FinalizeBalance");
 
   const double conservative_outflow = std::max(0.0, production_ - removal_);
   const double outflow_difference = conservative_outflow - out_flow_;

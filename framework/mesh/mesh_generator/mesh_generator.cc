@@ -9,6 +9,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/cell/cell.h"
+#include "framework/utils/caliper_scopes.h"
 #include "framework/utils/error.h"
 #include <memory>
 
@@ -44,6 +45,9 @@ MeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMesh> inpu
 std::shared_ptr<MeshContinuum>
 MeshGenerator::Execute()
 {
+  CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
+  CaliperRegionScope cali_meshgen_scope("MeshGeneration", CaliperMeshGenerationScopeDepth());
+
   // Execute all input generators
   // Note these could be empty
   std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
@@ -96,6 +100,8 @@ MeshGenerator::Execute()
 std::vector<int>
 MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num_partitions) const
 {
+  CaliperRegionScope cali_partitioning_scope("Partitioning", CaliperPartitioningScopeDepth());
+
   const auto& raw_cells = input_umesh.GetRawCells();
   const auto num_raw_cells = raw_cells.size();
 

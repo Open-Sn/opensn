@@ -5,6 +5,7 @@
 #include "framework/utils/utils.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include "framework/utils/caliper_scopes.h"
 
 #include <cmath>
 #include <unordered_set>
@@ -27,6 +28,8 @@ XSFile::XSFile(const std::string& file_name)
 void
 XSFile::Read()
 {
+  CaliperRegionScope cali_xs_read_scope("CrossSectionRead", CaliperCrossSectionReadScopeDepth());
+
   std::string word, line;
   size_t line_number = 0;
   bool read_num_groups = false;

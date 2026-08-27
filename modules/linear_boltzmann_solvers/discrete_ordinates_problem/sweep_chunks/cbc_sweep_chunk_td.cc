@@ -69,7 +69,7 @@ CBCSweepChunkTD::CBCSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset&
 void
 CBCSweepChunkTD::SetAngleSet(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("CBCSweepChunkTD::SetAngleSet");
+  CALI_CXX_MARK_SCOPE("SetAngleSet");
 
   fluds_ = &dynamic_cast<CBC_FLUDS&>(angle_set.GetFLUDS());
   async_comm_ = &dynamic_cast<CBC_AsynchronousCommunicator&>(*angle_set.GetCommunicator());
@@ -84,7 +84,7 @@ CBCSweepChunkTD::Sweep(AngleSet& angle_set)
 void
 CBCSweepChunkTD::Sweep_Generic(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("CBCSweepChunkTD::Sweep_Generic");
+  CALI_CXX_MARK_SCOPE("Sweep_Generic");
 
   CBC_Sweep_Generic<true>(*this, angle_set);
 }
@@ -93,7 +93,7 @@ template <unsigned int NumNodes>
 void
 CBCSweepChunkTD::Sweep_FixedN(AngleSet& angle_set)
 {
-  CALI_CXX_MARK_SCOPE("CBCSweepChunkTD::Sweep_FixedN");
+  CALI_CXX_MARK_SCOPE("Sweep_FixedN");
 
   CBC_Sweep_FixedN<NumNodes, true>(*this, angle_set);
 }

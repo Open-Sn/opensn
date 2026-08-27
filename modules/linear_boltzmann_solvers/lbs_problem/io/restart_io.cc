@@ -7,6 +7,7 @@
 #include "framework/utils/hdf_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/utils/caliper_scopes.h"
 #include <algorithm>
 #include <iostream>
 
@@ -93,6 +94,8 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
                             const std::filesystem::path& read_path,
                             bool allow_transient_initialization_from_steady)
 {
+  CaliperRegionScope cali_restart_io_scope("RestartIO", CaliperRestartIOScopeDepth());
+
   const auto& fname = read_path.empty() ? GetOptions().restart.read_path : read_path;
   OpenSnInvalidArgumentIf(fname.empty(), GetName() + ": restart read path is empty.");
 
@@ -182,6 +185,8 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
 bool
 LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
 {
+  CaliperRegionScope cali_restart_io_scope("RestartIO", CaliperRestartIOScopeDepth());
+
   const auto& fname = GetOptions().restart.write_path;
   OpenSnInvalidArgumentIf(fname.empty(), GetName() + ": restart write path is empty.");
 

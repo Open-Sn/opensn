@@ -453,7 +453,7 @@ DiscreteOrdinatesProblem::BuildRuntime()
 void
 DiscreteOrdinatesProblem::InitializeFCS()
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeFCS");
+  CALI_CXX_MARK_SCOPE("InitializeFCS");
 
   if (uncollided_flux_file_.empty())
     return;
@@ -564,7 +564,7 @@ DiscreteOrdinatesProblem::SetSweepChunkMode(SweepChunkMode mode)
 void
 DiscreteOrdinatesProblem::InitializeSolverSchemes()
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::InitializeSolverSchemes");
+  CALI_CXX_MARK_SCOPE("InitializeSolverSchemes");
   auto solver_scheme =
     BuildSolvers(*this,
                  active_set_source_function_,
@@ -871,7 +871,7 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 void
 DiscreteOrdinatesProblem::ReorientAdjointSolution()
 {
-  CALI_CXX_MARK_SCOPE("DiscreteOrdinatesProblem::ReorientAdjointSolution");
+  CALI_CXX_MARK_SCOPE("ReorientAdjointSolution");
 
   for (const auto& groupset : groupsets_)
   {

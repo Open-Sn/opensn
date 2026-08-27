@@ -782,6 +782,8 @@ LBSProblem::BuildRuntime()
 void
 LBSProblem::InitializeRuntimeCore()
 {
+  CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
+
   InitializeSpatialDiscretization();
   InitializeParrays();
   InitializeBoundaries();
