@@ -34,7 +34,7 @@ Includes
 
 - ``framework/math/linear_solver/linear_system_solver.h`` (:ref:`file_framework_math_linear_solver_linear_system_solver.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``petscksp.h``
 

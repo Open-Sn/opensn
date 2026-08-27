@@ -32,7 +32,7 @@ Includes
 
 - ``framework/math/nonlinear_solver/nonlinear_solver_context.h`` (:ref:`file_framework_math_nonlinear_solver_nonlinear_solver_context.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 

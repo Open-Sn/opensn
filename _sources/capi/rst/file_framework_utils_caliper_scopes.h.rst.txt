@@ -59,13 +59,27 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a9d1e938358c7182abec1cc40ebfaea18`
 
+- :ref:`exhale_function_namespaceopensn_1af18081729539b9579ad829f888028c05`
+
+- :ref:`exhale_function_namespaceopensn_1ae62596e9c1ed486e4206e26ad97587c0`
+
+- :ref:`exhale_function_namespaceopensn_1a322cb4bcee17895aa94536249ff11ecd`
+
+- :ref:`exhale_function_namespaceopensn_1a31aaf6cae5ec95be91f5a2fb9b2f3404`
+
 - :ref:`exhale_function_namespaceopensn_1a8654c7fbbae4b4f6b46d4570d0e6d8e0`
 
 - :ref:`exhale_function_namespaceopensn_1aa00518be594cd63dbc19403ffa410071`
 
+- :ref:`exhale_function_namespaceopensn_1ad62d7350640400cd8cb6a49ba741fa40`
+
+- :ref:`exhale_function_namespaceopensn_1a3b2b4819e6fa10781e3a200e6258ef02`
+
 - :ref:`exhale_function_namespaceopensn_1a84fba7378dcb007c24346c8ffb040afe`
 
 - :ref:`exhale_function_namespaceopensn_1a38de0828326079d914a3fbdb6c92d8c2`
+
+- :ref:`exhale_function_namespaceopensn_1a2b95addb34b162e9af34220369b048b2`
 
 - :ref:`exhale_function_namespaceopensn_1a50cac4e3db4cc149010f8b8cb98f74cb`
 
@@ -76,6 +90,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a2033aef1b9a5a33ff0285bc434b84372`
 
 - :ref:`exhale_function_namespaceopensn_1a77d7d4229aff1924a88e7fcb7f42a647`
+
+- :ref:`exhale_function_namespaceopensn_1ad0b6cbfa82ff57c83fc6143795fce094`
 
 - :ref:`exhale_function_namespaceopensn_1ab3e402558e7f774a5e14936c42dcbe4c`
 

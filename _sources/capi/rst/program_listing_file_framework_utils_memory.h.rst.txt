@@ -1,0 +1,30 @@
+
+.. _program_listing_file_framework_utils_memory.h:
+
+Program Listing for File memory.h
+=================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_utils_memory.h>` (``framework/utils/memory.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include <cstdint>
+   #include <optional>
+   
+   namespace opensn
+   {
+   
+   /// Returns this process's peak (high-water-mark) resident set size, in bytes.
+   std::optional<std::uint64_t> GetPeakMemoryUsageBytes();
+   
+   /// Returns the total physical memory usage over all MPI ranks.
+   std::optional<std::uint64_t> GetTotalPeakMemoryUsageBytes();
+   
+   } // namespace opensn

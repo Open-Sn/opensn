@@ -32,7 +32,7 @@ Includes
 
 - ``framework/math/linear_solver/linear_solver_context.h`` (:ref:`file_framework_math_linear_solver_linear_solver_context.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 
 

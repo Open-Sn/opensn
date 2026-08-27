@@ -34,7 +34,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_compute_discrete_ordinates_compute.h`)
 

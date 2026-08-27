@@ -34,7 +34,7 @@ Includes
 
 - ``filesystem``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``mpicpp-lite/mpicpp-lite.h``
 

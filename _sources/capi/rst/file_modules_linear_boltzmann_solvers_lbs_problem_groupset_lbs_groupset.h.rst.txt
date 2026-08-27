@@ -40,7 +40,7 @@ Includes
 
 - ``framework/utils/utils.h`` (:ref:`file_framework_utils_utils.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`)
 

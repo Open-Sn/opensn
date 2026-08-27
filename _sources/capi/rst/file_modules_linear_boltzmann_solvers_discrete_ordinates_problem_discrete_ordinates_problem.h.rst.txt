@@ -34,7 +34,7 @@ Includes
 
 - ``framework/parameters/parameter_block.h`` (:ref:`file_framework_parameters_parameter_block.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_bank.h`)
 

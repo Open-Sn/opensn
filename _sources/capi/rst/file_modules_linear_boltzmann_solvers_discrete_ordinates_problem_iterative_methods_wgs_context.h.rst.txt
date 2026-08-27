@@ -34,7 +34,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`)
 

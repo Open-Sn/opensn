@@ -156,4 +156,60 @@ Program Listing for File caliper_scopes.h
      return depth;
    }
    
+   inline int&
+   CaliperMeshGenerationScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperPartitioningScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperCrossSectionReadScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperRestartIOScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperOutputScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperGPUSetupScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperGPUTransferScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
+   inline int&
+   CaliperUncollidedScopeDepth()
+   {
+     static int depth = 0;
+     return depth;
+   }
+   
    } // namespace opensn

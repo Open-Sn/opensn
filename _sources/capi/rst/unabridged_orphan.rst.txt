@@ -3147,6 +3147,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_framework_utils_memory.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_mesh_mesh.h.rst
 
 .. toctree::

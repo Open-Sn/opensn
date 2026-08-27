@@ -38,7 +38,7 @@ Includes
 
 - ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
 

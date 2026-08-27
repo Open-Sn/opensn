@@ -38,7 +38,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 

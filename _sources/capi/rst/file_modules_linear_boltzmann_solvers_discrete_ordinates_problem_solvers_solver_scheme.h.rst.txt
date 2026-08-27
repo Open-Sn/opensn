@@ -34,7 +34,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_source_functions_source_flags.h`)
 

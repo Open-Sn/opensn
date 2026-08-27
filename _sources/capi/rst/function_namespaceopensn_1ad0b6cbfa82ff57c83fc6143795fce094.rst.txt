@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad0b6cbfa82ff57c83fc6143795fce094:
+
+Function opensn::CaliperUncollidedScopeDepth
+============================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperUncollidedScopeDepth()
+   :project: opensn

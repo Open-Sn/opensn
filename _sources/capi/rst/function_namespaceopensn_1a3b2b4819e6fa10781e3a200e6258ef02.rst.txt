@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3b2b4819e6fa10781e3a200e6258ef02:
+
+Function opensn::CaliperPartitioningScopeDepth
+==============================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperPartitioningScopeDepth()
+   :project: opensn

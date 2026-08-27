@@ -36,7 +36,7 @@ Includes
 
 - ``framework/math/nonlinear_solver/petsc_nonlinear_solver_options.h`` (:ref:`file_framework_math_nonlinear_solver_petsc_nonlinear_solver_options.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``petscsnes.h``
 

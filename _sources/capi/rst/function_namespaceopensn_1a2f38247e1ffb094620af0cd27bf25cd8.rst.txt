@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2f38247e1ffb094620af0cd27bf25cd8:
+
+Function opensn::GetTotalPeakMemoryUsageBytes
+=============================================
+
+- Defined in :ref:`file_framework_utils_memory.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetTotalPeakMemoryUsageBytes()
+   :project: opensn

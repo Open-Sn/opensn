@@ -1,0 +1,56 @@
+
+.. _file_framework_utils_memory.h:
+
+File memory.h
+=============
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/memory.h``)
+-----------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_memory.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``optional``
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ad9ecaf95ee2f313a9649943d831043bc`
+
+- :ref:`exhale_function_namespaceopensn_1a2f38247e1ffb094620af0cd27bf25cd8`
+

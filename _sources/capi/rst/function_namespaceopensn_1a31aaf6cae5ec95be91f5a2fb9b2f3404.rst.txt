@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a31aaf6cae5ec95be91f5a2fb9b2f3404:
+
+Function opensn::CaliperMeshGenerationScopeDepth
+================================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperMeshGenerationScopeDepth()
+   :project: opensn

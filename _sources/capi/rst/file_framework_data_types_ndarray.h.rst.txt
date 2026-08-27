@@ -40,7 +40,7 @@ Includes
 
 - ``initializer_list``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``numeric``
 

@@ -19,6 +19,7 @@ Files
 - :ref:`file_framework_utils_caliper_scopes.h`
 - :ref:`file_framework_utils_error.h`
 - :ref:`file_framework_utils_hdf_utils.h`
+- :ref:`file_framework_utils_memory.h`
 - :ref:`file_framework_utils_timer.h`
 - :ref:`file_framework_utils_utils.h`
 

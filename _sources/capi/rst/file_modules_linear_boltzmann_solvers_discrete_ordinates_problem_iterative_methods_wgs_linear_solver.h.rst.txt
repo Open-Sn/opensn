@@ -34,7 +34,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`)
 

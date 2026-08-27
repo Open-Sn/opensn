@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ae62596e9c1ed486e4206e26ad97587c0:
+
+Function opensn::CaliperGPUSetupScopeDepth
+==========================================
+
+- Defined in :ref:`file_framework_utils_caliper_scopes.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CaliperGPUSetupScopeDepth()
+   :project: opensn

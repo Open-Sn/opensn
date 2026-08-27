@@ -46,7 +46,7 @@ Includes
 
 - ``functional``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_compute_lbs_compute.h`)
 

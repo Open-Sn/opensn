@@ -34,7 +34,7 @@ Includes
 
 - ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``utility``
 

@@ -30,7 +30,7 @@ Includes
 --------
 
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/solver.h`` (:ref:`file_modules_solver.h`)
 

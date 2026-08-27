@@ -52,7 +52,7 @@ Includes
 
 - ``iostream``
 
-- ``memory``
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 
 
