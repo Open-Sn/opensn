@@ -183,6 +183,26 @@ FormatIterationSummary(const std::string& label, const IterationSummary& summary
 }
 
 inline std::string
+FormatEigenIteration(const std::string& phase_name,
+                     const unsigned int iteration,
+                     const IterationSummary& summary,
+                     const IterationSummary& ags_summary,
+                     const std::vector<IterationSummary>& wgs_summaries,
+                     const IterationStatus outer_status)
+{
+  std::ostringstream out;
+  out << phase_name << " iteration = " << iteration;
+  if (not summary.metric_name.empty())
+    AppendNumericField(out, summary.metric_name, summary.metric_value, Scientific(6));
+  if (outer_status != IterationStatus::NONE)
+    out << ", status = " << IterationStatusName(outer_status);
+  if (HasIterationStatus(ags_summary))
+    out << FormatNestedStatusSummary("AGS", ags_summary.status);
+  out << FormatNestedStatusCounts("WGS", wgs_summaries);
+  return out.str();
+}
+
+inline std::string
 FormatKEigenOuterIteration(const std::string& phase_name,
                            const unsigned int iteration,
                            const double k_eff,
