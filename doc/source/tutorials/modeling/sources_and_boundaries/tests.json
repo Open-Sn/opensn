@@ -1,0 +1,218 @@
+[
+  {
+    "file": "block_id_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Block-source production rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Block-source absorption rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Block-source balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "logical_volume_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Logical-volume production rate=",
+        "goldvalue": 2.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Logical-volume absorption rate=",
+        "goldvalue": 2.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Logical-volume balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Replacement-source production rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Replacement-source absorption rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Replacement-source balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "isotropic_boundary_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Transmitted current=",
+        "goldvalue": 5.903411e-2,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Lower leakage=",
+        "goldvalue": 8.067845e-2,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Upper leakage=",
+        "goldvalue": 8.067845e-2,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Side-leakage symmetry error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Balance residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "point_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Point-source production rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Point-source absorption rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Point-source balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "arbitrary_boundary_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cone direction count=",
+        "goldvalue": 8.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Arbitrary transmitted current=",
+        "goldvalue": 2.058937e-3,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Arbitrary lower leakage=",
+        "goldvalue": 5.301473e-4,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Arbitrary upper leakage=",
+        "goldvalue": 5.301474e-4,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Arbitrary side symmetry error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Arbitrary balance residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "adjoint_logical_volume_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint-source production rate=",
+        "goldvalue": 0.75,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint-source absorption rate=",
+        "goldvalue": 0.75,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint-source balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  }
+]
