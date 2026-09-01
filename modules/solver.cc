@@ -3,7 +3,6 @@
 
 #include "modules/solver.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
 
 namespace opensn
 {

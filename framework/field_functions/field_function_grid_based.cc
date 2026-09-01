@@ -8,7 +8,6 @@
 #include "framework/mesh/mesh.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
-#include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/runtime.h"

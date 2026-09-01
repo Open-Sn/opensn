@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
@@ -114,8 +114,6 @@ RelativeL2Difference(const std::vector<double>& lhs, const std::vector<double>& 
 }
 
 } // namespace
-
-OpenSnRegisterObjectInNamespace(lbs, CMFDAcceleration);
 
 InputParameters
 CMFDAcceleration::GetInputParameters()
@@ -281,8 +279,7 @@ CMFDAcceleration::GetInputParameters()
 std::shared_ptr<CMFDAcceleration>
 CMFDAcceleration::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<CMFDAcceleration>("lbs::CMFDAcceleration", params);
+  return CreateObject<CMFDAcceleration>("lbs::CMFDAcceleration", params);
 }
 
 CMFDAcceleration::CMFDAcceleration(const InputParameters& params)

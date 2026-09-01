@@ -8,7 +8,6 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/hdf_utils.h"
-#include "framework/object_factory.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/data_types/allowable_range.h"
@@ -45,8 +44,7 @@ LBSProblem::GetInputParameters()
 
   params.AddRequiredParameterArray("groupsets",
                                    "An array of blocks each specifying the input parameters for a "
-                                   "<TT>LBSGroupset</TT>.");
-  params.LinkParameterToBlock("groupsets", "LBSGroupset");
+                                   "\"LBSGroupset\".");
 
   params.AddRequiredParameterArray("xs_map",
                                    "Cross-section map from block IDs to cross-section objects.");
@@ -58,8 +56,7 @@ LBSProblem::GetInputParameters()
     "point_sources", {}, "An array of point sources.");
 
   params.AddOptionalParameterBlock(
-    "options", ParameterBlock(), "Block of options. See <TT>OptionsBlock</TT>.");
-  params.LinkParameterToBlock("options", "OptionsBlock");
+    "options", ParameterBlock(), "Block of options. See \"OptionsBlock\".");
 
   params.AddOptionalParameter("use_gpus", false, "Offload the sweep computation to GPUs.");
 
@@ -537,7 +534,6 @@ LBSProblem::GetOptionsBlock()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Set options from a large list of parameters");
   params.AddOptionalParameter("max_mpi_message_size",
                               32768,
                               "The maximum MPI message size used during sweep initialization.");
@@ -620,7 +616,6 @@ InputParameters
 LBSProblem::GetXSMapEntryBlock()
 {
   InputParameters params;
-  params.SetGeneralDescription("Set the cross-section map for the solver.");
   params.AddRequiredParameterArray("block_ids", "Mesh block IDs");
   params.AddRequiredParameter<std::shared_ptr<MultiGroupXS>>("xs", "Cross-section object");
   return params;

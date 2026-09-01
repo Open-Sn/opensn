@@ -8,7 +8,7 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/utils/error.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 
 namespace opensn
@@ -62,25 +62,17 @@ DistributedMeshGenerator::Execute()
   return grid_ptr;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, DistributedMeshGenerator);
-
 InputParameters
 DistributedMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
-
-  params.SetGeneralDescription(
-    "Generates and partitions the mesh on location 0. The partitioned mesh is "
-    "broadcast to all other locations.");
-
   return params;
 }
 
 std::shared_ptr<DistributedMeshGenerator>
 DistributedMeshGenerator::Create(const ParameterBlock& params)
 {
-  const auto& factory = ObjectFactory::GetInstance();
-  return factory.Create<DistributedMeshGenerator>("mesh::DistributedMeshGenerator", params);
+  return CreateObject<DistributedMeshGenerator>("mesh::DistributedMeshGenerator", params);
 }
 
 ByteArray

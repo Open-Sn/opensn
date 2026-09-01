@@ -7,7 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include <filesystem>
 
@@ -316,17 +316,10 @@ SplitFileMeshGenerator::ReadSplitMesh() const
   return info_block;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, SplitFileMeshGenerator);
-
 InputParameters
 SplitFileMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
-
-  params.SetGeneralDescription(
-    "Generates the mesh only on location 0, thereafter partitions the mesh"
-    " but instead of broadcasting the mesh to other locations it creates binary"
-    " mesh files for each location.");
 
   params.AddOptionalParameter("num_partitions",
                               0,
@@ -357,8 +350,7 @@ SplitFileMeshGenerator::GetInputParameters()
 std::shared_ptr<SplitFileMeshGenerator>
 SplitFileMeshGenerator::Create(const ParameterBlock& params)
 {
-  auto& factory = ObjectFactory::GetInstance();
-  return factory.Create<SplitFileMeshGenerator>("mesh::SplitFileMeshGenerator", params);
+  return CreateObject<SplitFileMeshGenerator>("mesh::SplitFileMeshGenerator", params);
 }
 
 std::shared_ptr<MeshContinuum>

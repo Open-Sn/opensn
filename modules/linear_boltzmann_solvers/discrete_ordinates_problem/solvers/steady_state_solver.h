@@ -11,6 +11,7 @@ namespace opensn
 
 class DiscreteOrdinatesProblem;
 
+/// Steady-state source solver that drives the across-groupset (AGS) solver.
 class SteadyStateSourceSolver : public Solver
 {
 public:

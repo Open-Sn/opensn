@@ -3,7 +3,7 @@
 
 #include "framework/graphs/linear_graph_partitioner.h"
 #include "framework/utils/utils.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <cmath>
@@ -11,18 +11,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(mesh, LinearGraphPartitioner);
-
 InputParameters
 LinearGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
-
-  params.SetGeneralDescription(
-    "Basic linear partitioning. This type of partitioner works basically only for testing. "
-    "Orthogonal meshes can produce decent partitioning but for unstructured grids it can be pretty "
-    "bad. It partitions cells based on their linear index \"global_id\" instead of actually "
-    "working with the graph.");
 
   params.AddOptionalParameter("all_to_rank",
                               -1,
@@ -36,8 +28,7 @@ LinearGraphPartitioner::GetInputParameters()
 std::shared_ptr<LinearGraphPartitioner>
 LinearGraphPartitioner::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<LinearGraphPartitioner>("mesh::LinearGraphPartitioner", params);
+  return CreateObject<LinearGraphPartitioner>("mesh::LinearGraphPartitioner", params);
 }
 
 LinearGraphPartitioner::LinearGraphPartitioner(const InputParameters& params)

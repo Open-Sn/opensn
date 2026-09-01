@@ -16,6 +16,15 @@ struct ExtrusionLayer
   const uint32_t num_sub_layers;
 };
 
+/**
+ * Mesh generator that extrudes 2D geometry into 3D by stacking layers.
+ *
+ * Extrusion layers are specified using an ExtrusionLayer specification which takes either pairs of
+ * parameters: Pair A = "n" and "z", or Pair B = "n" and "h". When pair A is used then the z-levels
+ * will be computed automatically. Vice versa, when pair B is used then the h-levels will be
+ * computed automatically. Layers can be specified with a mixture of Pair A and Pair B. For example:
+ * Two main layers, one specified using a height, and the other specified using a z-level.
+ */
 class ExtruderMeshGenerator : public MeshGenerator
 {
 public:

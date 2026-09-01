@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/utils/caliper_scopes.h"
@@ -18,14 +18,11 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, NonLinearKEigenSolver);
-
 InputParameters
 NonLinearKEigenSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
 
-  params.SetGeneralDescription("Implementation of a non-linear k-Eigenvalue solver");
   params.ChangeExistingParamToOptional("name", "NonLinearKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
@@ -55,8 +52,7 @@ NonLinearKEigenSolver::GetInputParameters()
 std::shared_ptr<NonLinearKEigenSolver>
 NonLinearKEigenSolver::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<NonLinearKEigenSolver>("lbs::NonLinearKEigenSolver", params);
+  return CreateObject<NonLinearKEigenSolver>("lbs::NonLinearKEigenSolver", params);
 }
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)

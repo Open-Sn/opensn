@@ -32,8 +32,6 @@ ParamNotPresentErrorStr(const std::string& function_name, const std::string& par
 
 } // namespace
 
-const std::vector<std::string> InputParameters::system_ignored_param_names_ = {"obj_type"};
-
 InputParameters&
 InputParameters::operator+=(InputParameters other)
 {
@@ -96,15 +94,6 @@ InputParameters::operator+=(InputParameters other)
     }
   }
   {
-    auto& other_map = other.parameter_link_;
-    auto& this_map = parameter_link_;
-    for (const auto& [param_name, tag] : other_map)
-    {
-      OpenSnLogicalErrorIf(this_map.count(param_name) != 0, "Duplicate tags detected.");
-      this_map[param_name] = tag;
-    }
-  }
-  {
     auto& other_map = other.constraint_tags_;
     auto& this_map = constraint_tags_;
     for (auto& [param_name, tag] : other_map)
@@ -129,42 +118,12 @@ InputParameters::GetObjectType() const
   return class_name_;
 }
 
-void
-InputParameters::LinkParameterToBlock(const std::string& param_name, const std::string& block_name)
-{
-  OpenSnInvalidArgumentIf(not this->Has(param_name),
-                          "Parameter \"" + param_name + "\" not present in block");
-  parameter_link_[param_name] = block_name;
-}
-
-std::string
-InputParameters::GetParameterDocumentationLink(const std::string& param_name) const
-{
-  if (parameter_link_.count(param_name) > 0)
-    return parameter_link_.at(param_name);
-  return {};
-}
-
 std::string
 InputParameters::GetParameterDocString(const std::string& param_name)
 {
   OpenSnInvalidArgumentIf(parameter_doc_string_.count(param_name) == 0,
                           "Invalid parameter \"" + param_name + "\".");
   return parameter_doc_string_.at(param_name);
-}
-
-bool
-InputParameters::IsParameterIgnored(const std::string& param_name)
-{
-  bool ignored = false;
-
-  {
-    const auto& list = system_ignored_param_names_;
-    if (std::find(list.begin(), list.end(), param_name) != list.end())
-      ignored = true;
-  }
-
-  return ignored;
 }
 
 void
@@ -257,8 +216,6 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     for (const auto& param : params.GetParameters())
     {
       const auto& param_name = param.GetName();
-      if (IsParameterIgnored(param_name))
-        continue;
       if (not this->Has(param_name))
         err_stream << "Invalid param \"" << param_name << "\" supplied.\n";
       else if (renamed_error_tags_.count(param_name) > 0)
@@ -283,9 +240,6 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     {
       const auto& param_name = param.GetName();
 
-      if (IsParameterIgnored(param_name))
-        continue;
-
       if (this->Has(param_name) and (dep_warns.count(param_name) > 0))
         log.Log0Warning() << "Parameter \"" << param_name << "\" has been deprecated "
                           << "and will be removed soon.\n"
@@ -302,9 +256,6 @@ InputParameters::AssignParameters(const ParameterBlock& params)
     {
       const auto& param_name = param.GetName();
 
-      if (IsParameterIgnored(param_name))
-        continue;
-
       if (this->Has(param_name) and (dep_errs.count(param_name) > 0))
       {
         std::ostringstream oss;
@@ -319,9 +270,6 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   for (const auto& param : params.GetParameters())
   {
     const auto& param_name = param.GetName();
-
-    if (IsParameterIgnored(param_name))
-      continue;
 
     auto& input_param = GetParam(param_name);
 
@@ -413,68 +361,6 @@ InputParameters::SetParameterTypeMismatchAllowed(const std::string& param_name)
 {
   OpenSnInvalidArgumentIf(not Has(param_name), "Parameter \"" + param_name + "\" not present.");
   type_mismatch_allowed_tags_[param_name] = true;
-}
-
-void
-InputParameters::DumpParameters() const
-{
-  log.Log() << "CLASS_NAME " << class_name_;
-
-  log.Log() << "DESCRIPTION_BEGIN";
-  std::cout << GetGeneralDescription() << "\n";
-  log.Log() << "DESCRIPTION_END\n";
-
-  log.Log() << "DOC_GROUP " << doc_group_;
-  const std::string sp2 = "  ";
-  const std::string sp4 = "    ";
-  const auto params = GetParameters();
-  for (const auto& param : params)
-  {
-    const auto& param_name = param.GetName();
-    log.Log() << sp2 << "PARAM_BEGIN " << param_name;
-
-    const auto type = param.GetType();
-
-    log.Log() << sp4 << "TYPE " << ParameterBlockTypeName(type);
-
-    if (parameter_class_tags_.at(param_name) == InputParameterTag::OPTIONAL)
-    {
-      log.Log() << sp4 << "TAG OPTIONAL";
-      if (type != ParameterBlockType::BLOCK and type != ParameterBlockType::ARRAY)
-        log.Log() << sp4 << "DEFAULT_VALUE " << param.GetValue().PrintStr();
-      else if (type == ParameterBlockType::ARRAY)
-      {
-        std::stringstream outstr;
-        outstr << sp4 << "DEFAULT_VALUE ";
-        for (size_t k = 0; k < param.GetNumParameters(); ++k)
-        {
-          const auto& sub_param = param.GetParam(k);
-          outstr << sub_param.GetValue().PrintStr() << ", ";
-        }
-        log.Log() << outstr.str();
-      }
-    }
-    else
-      log.Log() << sp4 << "TAG REQUIRED";
-
-    if (constraint_tags_.count(param_name) != 0)
-      log.Log() << sp4 << "CONSTRAINTS " << constraint_tags_.at(param_name)->PrintRange();
-
-    if (parameter_doc_string_.count(param_name) != 0)
-    {
-      log.Log() << sp4 << "DOC_STRING_BEGIN";
-      std::cout << parameter_doc_string_.at(param_name) << "\n";
-      log.Log() << sp4 << "DOC_STRING_END";
-    }
-
-    const auto& linkage = GetParameterDocumentationLink(param_name);
-    if (not linkage.empty())
-    {
-      log.Log() << sp4 << "LINKS " << linkage;
-    }
-
-    log.Log() << sp2 << "PARAM_END";
-  }
 }
 
 bool

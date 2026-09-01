@@ -2,13 +2,11 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/utils/error.h"
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(logvol, RPPLogicalVolume);
 
 InputParameters
 RPPLogicalVolume::GetInputParameters()
@@ -32,8 +30,7 @@ RPPLogicalVolume::GetInputParameters()
 std::shared_ptr<RPPLogicalVolume>
 RPPLogicalVolume::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<RPPLogicalVolume>("logvol::RPPLogicalVolume", params);
+  return CreateObject<RPPLogicalVolume>("logvol::RPPLogicalVolume", params);
 }
 
 RPPLogicalVolume::RPPLogicalVolume(const InputParameters& params)

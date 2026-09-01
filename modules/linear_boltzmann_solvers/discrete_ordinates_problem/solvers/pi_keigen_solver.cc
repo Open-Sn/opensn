@@ -12,7 +12,7 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/utils/error.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
@@ -23,14 +23,11 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, PowerIterationKEigenSolver);
-
 InputParameters
 PowerIterationKEigenSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
 
-  params.SetGeneralDescription("Implementation of a k-Eigenvalue solver using Power Iteration");
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
@@ -45,8 +42,7 @@ PowerIterationKEigenSolver::GetInputParameters()
 std::shared_ptr<PowerIterationKEigenSolver>
 PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PowerIterationKEigenSolver>("lbs::PowerIterationKEigenSolver", params);
+  return CreateObject<PowerIterationKEigenSolver>("lbs::PowerIterationKEigenSolver", params);
 }
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)

@@ -2,7 +2,6 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/functions/piecewise_linear_1d.h"
-#include "framework/object_factory.h"
 
 namespace opensn
 {
@@ -11,8 +10,6 @@ InputParameters
 PiecewiseLinear1D::GetInputParameters()
 {
   InputParameters params = FunctionDimAToDimB::GetInputParameters();
-
-  params.SetGeneralDescription("Piecewise linear function");
 
   params.AddRequiredParameterArray("x_values", "The x-values used in the interpolation function.");
   params.AddRequiredParameterArray("y_values", "The x-values used in the interpolation function.");

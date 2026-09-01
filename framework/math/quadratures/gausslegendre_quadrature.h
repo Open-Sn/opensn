@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/math/quadratures/gauss_quadrature.h"
-#include "framework/object_factory.h"
 
 namespace opensn
 {

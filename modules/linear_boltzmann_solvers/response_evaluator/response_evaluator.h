@@ -17,40 +17,21 @@ namespace opensn
  * The workflow for this utility is constructed to minimize the file reading necessary for
  * evaluations. To begin, one should add all adjoint solutions that are desired for response
  * computations into the buffer. Then, one should define the different forward source
- * configurations of interest in the input. With this, the user can now iterate over the source
- * configurations in the input and convolve them against all available adjoint solutions in the
- * buffer. For example, \code buffers = {
- *        {
- *            buffer1,
- *            buffer2,
- *            ...,
- *            bufferN
- *        }
- *    }
- *
- *    sources = {
- *        {
- *            source1,
- *            source2,
- *            ...,
- *            sourceM
- *        }
- *    }
- *
- *    evaluator = lbs.ResponseEvaluator.Create({ lbs_solver_handle = phys })
- *    evaluator:AddResponseBuffers(buffers)
+ * configurations of interest. With this, the user can now iterate over the source
+ * configurations and convolve them against all available adjoint solutions in the buffer. For
+ * example, \code{.py}
+ *    evaluator = ResponseEvaluator(problem=phys)
+ *    evaluator.SetOptions(buffers=[{"name": "buff1", "file_prefixes": {...}}, ...])
  *
  *    responses = {}
- *    for i = 1, M do
- *        evaluator:ClearForwardSources()
- *        evaluator:AddResponseSources(sources[i])
+ *    for source_config in source_configs:
+ *        evaluator.ClearForwardSources()
+ *        evaluator.SetOptions(sources=source_config)
  *
- *        responses[i] = {}
- *        for j = 1, N do
- *            responses[i][buffer_name[j]] =
- *                evaluator:EvaluateResponse(buffer_name[j])
- *        end
- *    end
+ *        responses[source_config] = {
+ *            buffer_name: evaluator.EvaluateResponse(buffer_name)
+ *            for buffer_name in buffer_names
+ *        }
  * \endcode
  */
 class ResponseEvaluator
@@ -126,6 +107,7 @@ public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<ResponseEvaluator> Create(const ParameterBlock& params);
 
+  /// Return the schema for the options block, covering adjoint buffers and forward sources.
   static InputParameters GetOptionsBlock();
   static InputParameters GetBufferOptionsBlock();
   static InputParameters GetSourceOptionsBlock();

@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/volume_postprocessor.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/runtime.h"
 #include <cstdint>
@@ -12,8 +12,6 @@
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(lbs, VolumePostprocessor);
 
 InputParameters
 VolumePostprocessor::GetInputParameters()
@@ -49,8 +47,7 @@ VolumePostprocessor::GetInputParameters()
 std::shared_ptr<VolumePostprocessor>
 VolumePostprocessor::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<VolumePostprocessor>("lbs::VolumePostprocessor", params);
+  return CreateObject<VolumePostprocessor>("lbs::VolumePostprocessor", params);
 }
 
 VolumePostprocessor::VolumePostprocessor(const InputParameters& params)

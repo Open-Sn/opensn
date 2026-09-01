@@ -12,15 +12,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(mesh, KBAGraphPartitioner);
-
 InputParameters
 KBAGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
-
-  params.SetGeneralDescription("Koch, Baker and Alcouffe based partitioning. "
-                               "This is an overlayed ortho-grid based partitioner");
 
   params.AddOptionalParameter("nx", 1, "The number of partitions in x");
   params.AddOptionalParameter("ny", 1, "The number of partitions in y");
@@ -39,8 +34,7 @@ KBAGraphPartitioner::GetInputParameters()
 std::shared_ptr<KBAGraphPartitioner>
 KBAGraphPartitioner::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<KBAGraphPartitioner>("mesh::KBAGraphPartitioner", params);
+  return CreateObject<KBAGraphPartitioner>("mesh::KBAGraphPartitioner", params);
 }
 
 KBAGraphPartitioner::KBAGraphPartitioner(const InputParameters& params)
