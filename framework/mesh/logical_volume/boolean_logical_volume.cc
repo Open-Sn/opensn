@@ -3,7 +3,7 @@
 
 #include "framework/mesh/logical_volume/boolean_logical_volume.h"
 #include "framework/mesh/mesh.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/utils/error.h"
 
 namespace opensn
@@ -28,8 +28,6 @@ BooleanLogicalVolumeArgumentPair()
 
 } // namespace
 
-OpenSnRegisterObjectInNamespace(logvol, BooleanLogicalVolume);
-
 InputParameters
 BooleanLogicalVolume::GetInputParameters()
 {
@@ -37,10 +35,8 @@ BooleanLogicalVolume::GetInputParameters()
 
   params.AddRequiredParameterArray(
     "parts",
-    "Array of combinatorial logic each entry has the following required params "
-    "<TT>mesh::BooleanLogicalVolumeArgumentPair</TT>");
-
-  params.LinkParameterToBlock("parts", "mesh::BooleanLogicalVolumeArgumentPair");
+    "Array of entries with required fields \"op\" (boolean: true for inside, false for "
+    "outside) and \"lv\" (logical volume).");
 
   return params;
 }
@@ -48,8 +44,7 @@ BooleanLogicalVolume::GetInputParameters()
 std::shared_ptr<BooleanLogicalVolume>
 BooleanLogicalVolume::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<BooleanLogicalVolume>("logvol::BooleanLogicalVolume", params);
+  return CreateObject<BooleanLogicalVolume>("logvol::BooleanLogicalVolume", params);
 }
 
 BooleanLogicalVolume::BooleanLogicalVolume(const InputParameters& params) : LogicalVolume(params)

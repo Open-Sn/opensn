@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/logical_volume/rcc_logical_volume.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(logvol, RCCLogicalVolume);
 
 InputParameters
 RCCLogicalVolume::GetInputParameters()
@@ -30,8 +28,7 @@ RCCLogicalVolume::GetInputParameters()
 std::shared_ptr<RCCLogicalVolume>
 RCCLogicalVolume::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<RCCLogicalVolume>("logvol::RCCLogicalVolume", params);
+  return CreateObject<RCCLogicalVolume>("logvol::RCCLogicalVolume", params);
 }
 
 RCCLogicalVolume::RCCLogicalVolume(const InputParameters& params)

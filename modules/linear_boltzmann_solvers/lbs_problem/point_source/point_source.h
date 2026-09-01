@@ -16,7 +16,8 @@ class LBSProblem;
 class GroupTimeFunction;
 
 /**
- * A class for point sources, which is defined by its location and a group-wise strength vector.
+ * A class for multi-group isotropic point sources, defined by location and a group-wise
+ * strength vector.
  *
  * A point source can belong to one or more cells based on whether it lies on the interior of a
  * cell, a face, or a vertex. When a point source lies on a face or vertex, it belongs to multiple

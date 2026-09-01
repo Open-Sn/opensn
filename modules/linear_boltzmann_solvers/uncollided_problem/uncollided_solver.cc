@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_solver.h"
 #include "modules/linear_boltzmann_solvers/uncollided_problem/uncollided_problem.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
@@ -14,14 +14,11 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, UncollidedSolver);
-
 InputParameters
 UncollidedSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
 
-  params.SetGeneralDescription("Generate uncollided flux moments for first-collision transport.");
   params.ChangeExistingParamToOptional("name", "UncollidedSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing uncollided problem.");
@@ -39,8 +36,7 @@ UncollidedSolver::GetInputParameters()
 std::shared_ptr<UncollidedSolver>
 UncollidedSolver::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<UncollidedSolver>("lbs::UncollidedSolver", params);
+  return CreateObject<UncollidedSolver>("lbs::UncollidedSolver", params);
 }
 
 UncollidedSolver::UncollidedSolver(const InputParameters& params)

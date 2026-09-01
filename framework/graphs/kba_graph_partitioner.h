@@ -4,13 +4,13 @@
 #pragma once
 
 #include "framework/graphs/graph_partitioner.h"
-#include "framework/object_factory.h"
 #include <array>
 #include <memory>
 
 namespace opensn
 {
 
+/// Koch, Baker, and Alcouffe (KBA) graph partitioner using an overlayed orthogonal grid.
 class KBAGraphPartitioner : public GraphPartitioner
 {
 public:

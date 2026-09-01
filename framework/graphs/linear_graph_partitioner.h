@@ -8,6 +8,12 @@
 namespace opensn
 {
 
+/**
+ * Basic linear partitioner intended for testing only.
+ *
+ * Partitions cells by their linear `global_id` index rather than by graph connectivity, so
+ * results are generally poor for unstructured grids.
+ */
 class LinearGraphPartitioner : public GraphPartitioner
 {
 public:

@@ -5,7 +5,7 @@
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mpi/mpi_utils.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <algorithm>
@@ -674,14 +674,10 @@ OrthogonalMeshGenerator::Execute()
   return grid_ptr;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, OrthogonalMeshGenerator);
-
 InputParameters
 OrthogonalMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
-
-  params.SetGeneralDescription("Creates orthogonal meshes.");
 
   params.AddRequiredParameterArray("node_sets",
                                    "Sets of nodes per dimension. Node values "
@@ -700,8 +696,7 @@ OrthogonalMeshGenerator::GetInputParameters()
 std::shared_ptr<OrthogonalMeshGenerator>
 OrthogonalMeshGenerator::Create(const ParameterBlock& params)
 {
-  const auto& factory = ObjectFactory::GetInstance();
-  return factory.Create<OrthogonalMeshGenerator>("mesh::OrthogonalMeshGenerator", params);
+  return CreateObject<OrthogonalMeshGenerator>("mesh::OrthogonalMeshGenerator", params);
 }
 
 std::shared_ptr<UnpartitionedMesh>

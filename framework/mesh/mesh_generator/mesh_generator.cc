@@ -5,7 +5,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/graphs/graph_partitioner.h"
 #include "framework/graphs/petsc_graph_partitioner.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/cell/cell.h"
@@ -28,12 +28,8 @@ MeshGenerator::MeshGenerator(const InputParameters& params)
   if (params.IsParameterValid("partitioner"))
     partitioner_ = params.GetSharedPtrParam<GraphPartitioner>("partitioner");
   else
-  {
-    const auto& factory = ObjectFactory::GetInstance();
-    auto valid_params = PETScGraphPartitioner::GetInputParameters();
     partitioner_ =
-      factory.Create<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", ParameterBlock());
-  }
+      CreateObject<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", ParameterBlock());
 }
 
 std::shared_ptr<UnpartitionedMesh>
@@ -230,14 +226,10 @@ MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
   return cell;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, MeshGenerator);
-
 InputParameters
 MeshGenerator::GetInputParameters()
 {
   InputParameters params;
-
-  params.SetGeneralDescription("The base class for all mesh generators");
 
   params.AddOptionalParameter("scale", 1.0, "Uniform scale to apply to the mesh after reading.");
 
@@ -262,8 +254,7 @@ MeshGenerator::GetInputParameters()
 std::shared_ptr<MeshGenerator>
 MeshGenerator::Create(const ParameterBlock& params)
 {
-  const auto& factory = ObjectFactory::GetInstance();
-  return factory.Create<MeshGenerator>("mesh::MeshGenerator", params);
+  return CreateObject<MeshGenerator>("mesh::MeshGenerator", params);
 }
 
 void

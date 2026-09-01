@@ -9,14 +9,12 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include <memory>
 #include <limits>
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(lbs, VolumetricSource);
 
 int VolumetricSource::next_id_ = 0;
 
@@ -24,11 +22,6 @@ InputParameters
 VolumetricSource::GetInputParameters()
 {
   InputParameters params;
-
-  params.SetGeneralDescription("General implementation of an arbitrary multi-group "
-                               "volumetric source. Currently, only isotropic volumetric "
-                               "sources are allowed.");
-  params.SetClassName("Volumetric Source");
 
   params.AddOptionalParameterArray(
     "block_ids",
@@ -62,8 +55,7 @@ VolumetricSource::GetInputParameters()
 std::shared_ptr<VolumetricSource>
 VolumetricSource::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<VolumetricSource>("lbs::VolumetricSource", params);
+  return CreateObject<VolumetricSource>("lbs::VolumetricSource", params);
 }
 
 VolumetricSource::VolumetricSource(const InputParameters& params)

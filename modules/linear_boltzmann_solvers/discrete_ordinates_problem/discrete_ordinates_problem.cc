@@ -34,20 +34,16 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesProblem);
-
 InputParameters
 DiscreteOrdinatesProblem::GetInputParameters()
 {
   InputParameters params = LBSProblem::GetInputParameters();
 
-  params.SetClassName("DiscreteOrdinatesProblem");
-
   params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesProblem");
 
   params.AddOptionalParameterArray(
     "boundary_conditions", {}, "An array containing tables for each boundary specification.");
-  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
+  // Each "boundary_conditions" entry follows the "BoundaryOptionsBlock" parameter-block schema.
 
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
@@ -70,7 +66,6 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Set options for boundary conditions.");
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
