@@ -2,11 +2,12 @@
 # -*- coding: utf-8 -*-
 
 """
-2D adjacent reflecting and time-dependent arbitrary boundary-condition test.
+3D opposing reflecting and time-dependent arbitrary boundary-condition test.
 
 Uses a small orthogonal mesh with:
-  xmin/ymin: reflecting
-  xmax/ymax: time-dependent arbitrary
+  xmin/xmax: reflecting
+  ymin/ymax: time-dependent arbitrary
+  zmin/zmax: vacuum
 """
 
 import os
@@ -30,7 +31,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.math import AngularFluxTimeFunction
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.solver import DiscreteOrdinatesProblem, TransientSolver
 
 
@@ -39,24 +40,23 @@ if __name__ == "__main__":
     if size != num_procs:
         sys.exit(f"Incorrect number of processors. Expected {num_procs} but got {size}.")
 
-    nodes_x = [i / 8 for i in range(9)]
-    nodes_y = [i / 8 for i in range(9)]
-    meshgen = OrthogonalMeshGenerator(node_sets=[nodes_x, nodes_y])
+    nodes = [i / 4 for i in range(5)]
+    meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(1.0, 0.0, 1.0)
 
-    quad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=0)
+    quad = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=4, scattering_order=0)
 
-    def xmax_inflow(group, angle, time):
+    def ymin_inflow(group, angle, time):
         omega = quad.omegas[angle]
-        return 0.20 if omega.x < 0.0 and time <= 0.1 else 0.0
+        return 0.30 if omega.y > 0.0 and time <= 0.1 else 0.0
 
     def ymax_inflow(group, angle, time):
         omega = quad.omegas[angle]
-        return 0.15 if omega.y < 0.0 and time <= 0.1 else 0.0
+        return 0.10 if omega.y < 0.0 and time <= 0.1 else 0.0
 
     problem = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -74,17 +74,19 @@ if __name__ == "__main__":
         xs_map=[{"block_ids": [0], "xs": xs}],
         boundary_conditions=[
             {"name": "xmin", "type": "reflecting"},
+            {"name": "xmax", "type": "reflecting"},
             {
-                "name": "xmax",
+                "name": "ymin",
                 "type": "arbitrary",
-                "time_function": AngularFluxTimeFunction(xmax_inflow),
+                "time_function": AngularFluxTimeFunction(ymin_inflow),
             },
-            {"name": "ymin", "type": "reflecting"},
             {
                 "name": "ymax",
                 "type": "arbitrary",
                 "time_function": AngularFluxTimeFunction(ymax_inflow),
             },
+            {"name": "zmin", "type": "vacuum"},
+            {"name": "zmax", "type": "vacuum"},
         ],
         options={
             "save_angular_flux": True,
@@ -92,6 +94,7 @@ if __name__ == "__main__":
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
         },
+        sweep_type="CBC",
     )
 
     solver = TransientSolver(problem=problem, dt=0.1, theta=1.0, initial_state="zero")
@@ -104,4 +107,4 @@ if __name__ == "__main__":
     max_phi = MPIAllReduce(max([abs(v) for v in phi] + [0.0]), "max")
 
     if rank == 0:
-        print(f"TD_ADJACENT_REFLECTING_ARBITRARY_MAX_PHI {max_phi:.12e}")
+        print(f"TD_OPPOSING_REFLECTING_ARBITRARY_3D_MAX_PHI {max_phi:.12e}")

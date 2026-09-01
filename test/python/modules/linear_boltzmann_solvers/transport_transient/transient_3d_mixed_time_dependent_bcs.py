@@ -106,4 +106,3 @@ if __name__ == "__main__":
 
     if rank == 0:
         print(f"TD_MIXED_3D_MAX_PHI {max_phi:.12e}")
-        print("TD_MIXED_3D_PASS 1")
