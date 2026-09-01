@@ -1,0 +1,154 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "title",
+   "metadata": {},
+   "source": [
+    "# Multiple Groupsets in an Infinite-Medium\n",
+    "\n",
+    "This tutorial divides a realistic 30-group concrete calculation into three groupsets and shows how OpenSn resolves scattering between energy ranges."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "groupsets",
+   "metadata": {},
+   "source": [
+    "## Define the groupsets\n",
+    "\n",
+    "The problem uses the LANL concrete mixture represented with the 30-group LANL energy structure (LANL30). Its cross sections, including the scattering transfer matrix, are imported from OpenMC.\n",
+    "\n",
+    "The groupsets cover groups 0–9, 10–19, and 20–29. Each groupset has its own inner solve, while across-groupset iteration (AGS) reconciles scattering contributions that cross groupset boundaries.\n",
+    "\n",
+    "A unit source is applied to group 0. Reflecting boundaries make the slab an infinite-medium model, keeping the example focused on energy coupling rather than spatial leakage.\n",
+    "\n",
+    "> **Data note:** When importing OpenMC data, OpenSn reconstructs the absorption cross section from the total cross section and transfer matrix. Small statistical differences in this concrete dataset produce a negative reconstructed absorption cross section for group 13, causing OpenSn to issue a warning. This tutorial uses the supplied data without modification."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from pathlib import Path\n",
+    "\n",
+    "from mpi4py import MPI\n",
+    "from pyopensn.aquad import GLProductQuadrature1DSlab\n",
+    "from pyopensn.context import Finalize\n",
+    "from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "from pyopensn.post import VolumePostprocessor\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "from pyopensn.source import VolumetricSource\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "rank = MPI.COMM_WORLD.rank\n",
+    "nodes = [i / 20.0 for i in range(21)]\n",
+    "mesh = OrthogonalMeshGenerator(node_sets=[nodes]).Execute()\n",
+    "mesh.SetUniformBlockID(0)\n",
+    "\n",
+    "xs = MultiGroupXS()\n",
+    "xs.LoadFromOpenMC(str(Path(\"LANL30/OpenMC/Concrete.h5\")), \"set1\", 294.0)\n",
+    "num_groups = xs.num_groups\n",
+    "\n",
+    "source_strength = [0.0] * num_groups\n",
+    "source_strength[0] = 1.0\n",
+    "source = VolumetricSource(block_ids=[0], group_strength=source_strength)\n",
+    "quadrature = GLProductQuadrature1DSlab(n_polar=16, scattering_order=3)\n",
+    "\n",
+    "groupset_ranges = [(0, 9), (10, 19), (20, 29)]\n",
+    "groupsets = [\n",
+    "    {\n",
+    "        \"groups_from_to\": group_range,\n",
+    "        \"angular_quadrature\": quadrature,\n",
+    "        \"inner_linear_method\": \"petsc_gmres\",\n",
+    "        \"l_abs_tol\": 1.0e-10,\n",
+    "        \"l_max_its\": 100,\n",
+    "    }\n",
+    "    for group_range in groupset_ranges\n",
+    "]\n",
+    "\n",
+    "problem = DiscreteOrdinatesProblem(\n",
+    "    mesh=mesh,\n",
+    "    num_groups=num_groups,\n",
+    "    groupsets=groupsets,\n",
+    "    xs_map=[{\"block_ids\": [0], \"xs\": xs}],\n",
+    "    volumetric_sources=[source],\n",
+    "    boundary_conditions=[\n",
+    "        {\"name\": \"zmin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"zmax\", \"type\": \"reflecting\"},\n",
+    "    ],\n",
+    "    options={\n",
+    "        \"max_ags_iterations\": 100,\n",
+    "        \"ags_tolerance\": 1.0e-8,\n",
+    "        \"verbose_inner_iterations\": False,\n",
+    "    },\n",
+    ")\n",
+    "solver = SteadyStateSourceSolver(problem=problem)\n",
+    "solver.Initialize()\n",
+    "solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "verify",
+   "metadata": {},
+   "source": [
+    "## Verify the coupled solution\n",
+    "\n",
+    "Scattering redistributes the group-0 source across the concrete spectrum. To summarize that spectrum, the code reports the flux integrated over each groupset. Because the boundaries are reflecting, no particles leak from the slab; at convergence, the absorption rate must therefore equal the unit source rate."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "check",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "group_averages = []\n",
+    "for group in range(num_groups):\n",
+    "    postprocessor = VolumePostprocessor(problem=problem, value_type=\"avg\", group=group)\n",
+    "    postprocessor.Execute()\n",
+    "    group_averages.append(float(postprocessor.GetValue()[0][0]))\n",
+    "\n",
+    "groupset_fluxes = [\n",
+    "    sum(group_averages[first : last + 1])\n",
+    "    for first, last in groupset_ranges\n",
+    "]\n",
+    "absorption_rate = sum(\n",
+    "    xs.sigma_a[group] * group_averages[group]\n",
+    "    for group in range(num_groups)\n",
+    ")\n",
+    "balance_error = abs(absorption_rate - 1.0)\n",
+    "if rank == 0:\n",
+    "    for (first, last), flux in zip(groupset_ranges, groupset_fluxes):\n",
+    "        print(f\"Groupset {first}-{last} integrated flux={flux:.8e}\")\n",
+    "    print(f\"Concrete absorption rate={absorption_rate:.6e}\")\n",
+    "    print(f\"Groupset balance error={balance_error:.6e}\")\n",
+    "assert min(group_averages) > -1.0e-10\n",
+    "assert balance_error < 1.0e-6\n",
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

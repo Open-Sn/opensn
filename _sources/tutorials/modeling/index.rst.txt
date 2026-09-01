@@ -14,3 +14,4 @@ workflow.
    angular_quadrature/index
    logvols/index
    groupsets/index
+   sources_and_boundaries/index

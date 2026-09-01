@@ -1,0 +1,205 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "title",
+   "metadata": {},
+   "source": [
+    "# Isotropic Boundary Source and Leakage\n",
+    "\n",
+    "This tutorial sends particles into a two-dimensional, purely absorbing square through an isotropic boundary condition and measures leakage through its three vacuum boundaries."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "model",
+   "metadata": {},
+   "source": [
+    "## Build the mesh\n",
+    "\n",
+    "The square has unit width and height and a unit total cross section with no scattering. A two-dimensional product quadrature resolves directions in the $x$-$y$ plane."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "setup",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from mpi4py import MPI\n",
+    "from pyopensn.aquad import GLCProductQuadrature2DXY\n",
+    "from pyopensn.context import Finalize\n",
+    "from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "rank = MPI.COMM_WORLD.rank\n",
+    "num_cells_x = 40\n",
+    "num_cells_y = 40\n",
+    "x_nodes = [i / num_cells_x for i in range(num_cells_x + 1)]\n",
+    "y_nodes = [i / num_cells_y for i in range(num_cells_y + 1)]\n",
+    "mesh = OrthogonalMeshGenerator(node_sets=[x_nodes, y_nodes]).Execute()\n",
+    "mesh.SetUniformBlockID(0)\n",
+    "\n",
+    "xs = MultiGroupXS()\n",
+    "xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)\n",
+    "quadrature = GLCProductQuadrature2DXY(\n",
+    "    n_polar=2, n_azimuthal=64, scattering_order=0\n",
+    ")\n",
+    "groupset = {\n",
+    "    \"groups_from_to\": (0, 0),\n",
+    "    \"angular_quadrature\": quadrature,\n",
+    "    \"inner_linear_method\": \"petsc_gmres\",\n",
+    "    \"l_abs_tol\": 1.0e-10,\n",
+    "    \"l_max_its\": 100,\n",
+    "}"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "source-heading",
+   "metadata": {},
+   "source": [
+    "## Define the boundary source\n",
+    "\n",
+    "The `xmin` boundary supplies an isotropic group strength of two. The opposite boundary and both horizontal boundaries are vacuum, so particles can be transmitted through `xmax` or leak through `ymin` and `ymax`. Unlike point and volumetric sources, a boundary source is specified directly in the boundary-condition list."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "source",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "incoming_group_strength = 2.0\n",
+    "boundary_conditions = [\n",
+    "    {\n",
+    "        \"name\": \"xmin\",\n",
+    "        \"type\": \"isotropic\",\n",
+    "        \"group_strength\": [incoming_group_strength],\n",
+    "    },\n",
+    "    {\"name\": \"xmax\", \"type\": \"vacuum\"},\n",
+    "    {\"name\": \"ymin\", \"type\": \"vacuum\"},\n",
+    "    {\"name\": \"ymax\", \"type\": \"vacuum\"},\n",
+    "]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "solve-heading",
+   "metadata": {},
+   "source": [
+    "## Configure and solve the problem\n",
+    "\n",
+    "Setting `save_angular_flux=True` retains the directional solution needed to compute leakage. Enabling balance accounting provides an independent check that boundary inflow equals absorption plus total outflow."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "problem = DiscreteOrdinatesProblem(\n",
+    "    mesh=mesh,\n",
+    "    num_groups=1,\n",
+    "    groupsets=[groupset],\n",
+    "    xs_map=[{\"block_ids\": [0], \"xs\": xs}],\n",
+    "    boundary_conditions=boundary_conditions,\n",
+    "    options={\"save_angular_flux\": True},\n",
+    ")\n",
+    "solver = SteadyStateSourceSolver(problem=problem, compute_balance=True)\n",
+    "solver.Initialize()\n",
+    "solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "verify",
+   "metadata": {},
+   "source": [
+    "## Check leakage symmetry and particle balance\n",
+    "\n",
+    "`ComputeLeakage` integrates the stored angular flux over each requested boundary. The square, material, source, mesh, and quadrature are symmetric about $y=0.5$, so leakage through `ymin` and `ymax` should agree. The balance residual verifies that inflow is accounted for by absorption and leakage through all three vacuum boundaries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "check",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "leakage = problem.ComputeLeakage([\"xmax\", \"ymin\", \"ymax\"])\n",
+    "transmitted_current = float(leakage[\"xmax\"][0])\n",
+    "lower_leakage = float(leakage[\"ymin\"][0])\n",
+    "upper_leakage = float(leakage[\"ymax\"][0])\n",
+    "symmetry_error = abs(lower_leakage - upper_leakage)\n",
+    "\n",
+    "balance = solver.ComputeBalanceTable()\n",
+    "source_rate = balance[\"production_rate\"] + balance[\"inflow_rate\"]\n",
+    "loss_rate = balance[\"absorption_rate\"] + balance[\"outflow_rate\"]\n",
+    "balance_residual = abs(source_rate - loss_rate) / max(abs(source_rate), 1.0e-16)\n",
+    "if rank == 0:\n",
+    "    print(f\"Transmitted current={transmitted_current:.6e}\")\n",
+    "    print(f\"Lower leakage={lower_leakage:.6e}\")\n",
+    "    print(f\"Upper leakage={upper_leakage:.6e}\")\n",
+    "    print(f\"Side-leakage symmetry error={symmetry_error:.6e}\")\n",
+    "    print(f\"Balance residual={balance_residual:.6e}\")\n",
+    "assert transmitted_current > 0.0\n",
+    "assert symmetry_error < 1.0e-10\n",
+    "assert balance_residual < 1.0e-8\n",
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "fa03d721",
+   "metadata": {},
+   "source": [
+    "## Visualize the scalar flux"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "f9ac5d0b",
+   "metadata": {},
+   "source": [
+    "The following optional snippet exports the scalar flux for visualization. It is shown rather than executed so regression tests do not create VTK files.\n",
+    "\n",
+    "```python\n",
+    "from pyopensn.fieldfunc import FieldFunctionGridBased\n",
+    "\n",
+    "fflist = problem.GetScalarFluxFieldFunction()\n",
+    "FieldFunctionGridBased.ExportMultipleToPVTU(\n",
+    "    [fflist[0]], \"Flux/Phi_p\"\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "The resulting scalar-flux distribution is shown below.\n",
+    "\n",
+    "![Scalar flux from the two-dimensional boundary source](images/Isotropic_Boundary.png)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
