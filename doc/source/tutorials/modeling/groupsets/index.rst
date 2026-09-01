@@ -9,3 +9,8 @@ also determines how OpenSn advances through the energy range during across-group
 See the :doc:`groupset user-guide reference </userguide/groupsets>` for the available input fields
 and configuration examples. The :doc:`iterative-methods reference </userguide/iterative_methods>`
 explains how groupset settings affect solver behavior and convergence.
+
+.. toctree::
+   :maxdepth: 1
+
+   multiple_groupsets

@@ -1,0 +1,42 @@
+[
+  {
+    "file": "multiple_groupsets.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Groupset 0-9 integrated flux=",
+        "goldvalue": 42.76726332,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Groupset 10-19 integrated flux=",
+        "goldvalue": 54.74491961,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Groupset 20-29 integrated flux=",
+        "goldvalue": 138.3416920,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Concrete absorption rate=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Groupset balance error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  }
+]
