@@ -1,0 +1,187 @@
+[
+  {
+    "file": "volume_postprocessors.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Whole-domain integral=",
+        "goldvalue": 4.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Regional integral=",
+        "goldvalue": 1.5,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Field-function regional integral=",
+        "goldvalue": 1.5,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "field_function_line.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Centerline sample count=",
+        "goldvalue": 121,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Diagonal sample count=",
+        "goldvalue": 121,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Centerline maximum flux=",
+        "goldvalue": 1.606982,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Diagonal maximum flux=",
+        "goldvalue": 1.606982,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Centerline boundary flux=",
+        "goldvalue": 0.01159719,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Diagonal boundary flux=",
+        "goldvalue": 0.001507133,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "cross_section_sensitivity.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Group-0 sigma-t sensitivity=",
+        "goldvalue": -0.6696428571428572,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Group-1 sigma-t sensitivity=",
+        "goldvalue": -0.7653061224489797,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Group-0-to-1 scatter sensitivity=",
+        "goldvalue": 1.7857142857142858,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cross-section sensitivity max error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "absorption_reaction_rate.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Absorption reaction rate=",
+        "goldvalue": 1.2,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "boundary_leakage.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XMAX leakage rate=",
+        "goldvalue": 0.199996599,
+        "abs_tol": 1.0e-7
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Particle balance residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "fuel_fission_rate.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Fuel fission rate=",
+        "goldvalue": 0.241259545,
+        "abs_tol": 1.0e-7
+      }
+    ]
+  },
+  {
+    "file": "cf252_flux_export.py",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cf-252 spectrum normalization=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cf-252 total leakage=",
+        "goldvalue": 1.06082944,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  }
+]

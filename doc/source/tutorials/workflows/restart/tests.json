@@ -1,0 +1,18 @@
+[
+  {
+    "file": "steady_state_restart.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Restart flux difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
+  }
+]

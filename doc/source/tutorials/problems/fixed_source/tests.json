@@ -138,6 +138,18 @@
         "key": "STRIPED_SOURCE_ABSORPTION_RATE=",
         "goldvalue": 12.5273506,
         "abs_tol": 1e-7
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STRIPED_SOURCE_LINE_MAX=",
+        "goldvalue": 3.607967,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STRIPED_SOURCE_LINE_RIGHT=",
+        "goldvalue": 0.3834882,
+        "abs_tol": 1.0e-7
       }
     ]
   },
