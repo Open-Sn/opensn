@@ -105,4 +105,3 @@ if __name__ == "__main__":
 
     if rank == 0:
         print(f"TD_OPPOSING_REFLECTING_ARBITRARY_MAX_PHI {max_phi:.12e}")
-        print("TD_OPPOSING_REFLECTING_ARBITRARY_PASS 1")

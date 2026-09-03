@@ -2,11 +2,13 @@
 # -*- coding: utf-8 -*-
 
 """
-2D adjacent reflecting and time-dependent arbitrary boundary-condition test.
+2D mixed time-dependent boundary-condition test.
 
-Uses a small orthogonal mesh with:
-  xmin/ymin: reflecting
-  xmax/ymax: time-dependent arbitrary
+Uses one boundary of each type on a small orthogonal mesh:
+  xmin: reflecting
+  xmax: time-dependent isotropic
+  ymin: time-dependent arbitrary
+  ymax: vacuum
 """
 
 import os
@@ -50,13 +52,11 @@ if __name__ == "__main__":
 
     quad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=0)
 
-    def xmax_inflow(group, angle, time):
+    def ymin_inflow(group, angle, time):
         omega = quad.omegas[angle]
-        return 0.20 if omega.x < 0.0 and time <= 0.1 else 0.0
+        return 0.25 if omega.y > 0.0 and time <= 0.1 else 0.0
 
-    def ymax_inflow(group, angle, time):
-        omega = quad.omegas[angle]
-        return 0.15 if omega.y < 0.0 and time <= 0.1 else 0.0
+    arbitrary_bc = AngularFluxTimeFunction(ymin_inflow)
 
     problem = DiscreteOrdinatesProblem(
         mesh=grid,
@@ -76,15 +76,13 @@ if __name__ == "__main__":
             {"name": "xmin", "type": "reflecting"},
             {
                 "name": "xmax",
-                "type": "arbitrary",
-                "time_function": AngularFluxTimeFunction(xmax_inflow),
+                "type": "isotropic",
+                "group_strength": [0.5],
+                "start_time": 0.0,
+                "end_time": 0.1,
             },
-            {"name": "ymin", "type": "reflecting"},
-            {
-                "name": "ymax",
-                "type": "arbitrary",
-                "time_function": AngularFluxTimeFunction(ymax_inflow),
-            },
+            {"name": "ymin", "type": "arbitrary", "time_function": arbitrary_bc},
+            {"name": "ymax", "type": "vacuum"},
         ],
         options={
             "save_angular_flux": True,
@@ -92,6 +90,7 @@ if __name__ == "__main__":
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
         },
+        sweep_type="CBC",
     )
 
     solver = TransientSolver(problem=problem, dt=0.1, theta=1.0, initial_state="zero")
@@ -104,4 +103,4 @@ if __name__ == "__main__":
     max_phi = MPIAllReduce(max([abs(v) for v in phi] + [0.0]), "max")
 
     if rank == 0:
-        print(f"TD_ADJACENT_REFLECTING_ARBITRARY_MAX_PHI {max_phi:.12e}")
+        print(f"TD_MIXED_2D_MAX_PHI {max_phi:.12e}")

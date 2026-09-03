@@ -92,6 +92,7 @@ if __name__ == "__main__":
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
         },
+        sweep_type="CBC",
     )
 
     solver = TransientSolver(problem=problem, dt=0.1, theta=1.0, initial_state="zero")
