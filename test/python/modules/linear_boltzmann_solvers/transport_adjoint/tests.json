@@ -124,6 +124,37 @@
     ]
   },
   {
+    "file": "response_2d_surf.py",
+    "comment": "2D transport response evaluation test writing surface data",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 4.94381e-04,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint QoI=",
+        "goldvalue": 4.94381e-04,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Forward Boundary Flux=",
+        "goldvalue": 6.02053e+01,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint Boundary Importance=",
+        "goldvalue": 1.23155e+01,
+        "abs_tol": 1e-8
+      }
+    ]
+  },
+  {
     "file": "mode_switch_forward_adjoint_forward.py",
     "comment": "Forward -> adjoint -> forward mode switching with source and boundary reset",
     "num_procs": 4,
