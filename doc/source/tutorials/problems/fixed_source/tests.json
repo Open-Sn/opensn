@@ -14,5 +14,147 @@
         "abs_tol": 1e-6
       }
     ]
+  },
+  {
+    "file": "reed_problem.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REED_MAX_FLUX=",
+        "goldvalue": 1.96717796,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "reed_problem_2d.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REED_2D_SOURCE_RATE=",
+        "goldvalue": 211.0,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REED_2D_MAX_FLUX=",
+        "goldvalue": 2.24407128,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "checkerboard.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CHECKERBOARD_SOURCE_REGION_FLUX=",
+        "goldvalue": 0.902852105,
+        "abs_tol": 1e-7
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CHECKERBOARD_BLACK_ABSORPTION_RATE=",
+        "goldvalue": 0.969008500,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "nested_square_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NESTED_SQUARE_SOURCE_AVG_FLUX=",
+        "goldvalue": 1.72739316,
+        "abs_tol": 1e-7
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NESTED_SQUARE_ABSORPTION_RATE=",
+        "goldvalue": 1.40684903,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "shielding_with_void.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHIELDING_SCATTERER_AVG_FLUX=",
+        "goldvalue": 4.66110837e-3,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHIELDING_ABSORPTION_RATE=",
+        "goldvalue": 0.650546990,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "striped_source.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STRIPED_SOURCE_AVG_FLUX=",
+        "goldvalue": 3.09317300,
+        "abs_tol": 1e-7
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STRIPED_SOURCE_ABSORPTION_RATE=",
+        "goldvalue": 12.5273506,
+        "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "volumetric_source_3d.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FIXED_SOURCE_3D_RESPONSE=",
+        "goldvalue": 1.27925767e-05,
+        "abs_tol": 1e-10
+      }
+    ]
   }
 ]
