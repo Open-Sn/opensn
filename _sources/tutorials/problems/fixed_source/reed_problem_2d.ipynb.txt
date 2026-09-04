@@ -1,0 +1,308 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "a90ad003",
+   "metadata": {},
+   "source": [
+    "# The Two-Dimensional Reed Problem\n",
+    "\n",
+    "This problem extends the one-dimensional Reed material sequence into a square. The innermost region is a source-bearing absorber, and each subsequent material forms an L-shaped shell around it. The cross sections and source strengths are unchanged from the [one-dimensional Reed problem](reed_problem.ipynb)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "7cff162f",
+   "metadata": {},
+   "source": [
+    "## Import the OpenSn objects"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "8fc34982",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "if \"opensn_console\" not in globals():\n",
+    "    from mpi4py import MPI\n",
+    "    from pyopensn.aquad import GLCProductQuadrature2DXY\n",
+    "    from pyopensn.context import Finalize, UseColor\n",
+    "    from pyopensn.fieldfunc import FieldFunctionInterpolationVolume\n",
+    "    from pyopensn.logvol import RPPLogicalVolume\n",
+    "    from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "    from pyopensn.source import VolumetricSource\n",
+    "    from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "    rank = MPI.COMM_WORLD.rank\n",
+    "    UseColor(False)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "737449cd",
+   "metadata": {},
+   "source": [
+    "## Create the two-dimensional mesh\n",
+    "\n",
+    "The domain is the square $[0,8]\\times[0,8]$ cm. A uniform spacing of 0.1 cm gives 80 cells along each axis, with nodes at every material interface: 2, 3, 5, and 6 cm."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "46d08565",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "domain_length = 8.0\n",
+    "cells_per_cm = 10\n",
+    "num_cells = int(domain_length * cells_per_cm)\n",
+    "nodes = [i / cells_per_cm for i in range(num_cells + 1)]\n",
+    "\n",
+    "mesh = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()\n",
+    "mesh.SetOrthogonalBoundaries()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "2fc3d9db",
+   "metadata": {},
+   "source": [
+    "## Construct the nested material zones\n",
+    "\n",
+    "The material at $(x,y)$ is determined by $\\max(x,y)$. Consequently, the first material occupies a square and each later material occupies the difference between two nested squares:\n",
+    "\n",
+    "![Reed problem 2D](images/reed_problem_2D.png)\n",
+    "\n",
+    "| Block ID | Coordinate range | Region | $\\sigma_t$ (cm$^{-1}$) | $\\sigma_s$ (cm$^{-1}$) | $Q$ |\n",
+    "|---:|:---:|:---|---:|---:|---:|\n",
+    "| 0 | $0\\leq\\max(x,y)\\leq2$ | absorber and source | 50 | 0 | 50 |\n",
+    "| 1 | $2<\\max(x,y)\\leq3$ | absorber | 5 | 0 | 0 |\n",
+    "| 2 | $3<\\max(x,y)\\leq5$ | void | 0 | 0 | 0 |\n",
+    "| 3 | $5<\\max(x,y)\\leq6$ | scatterer and source | 1 | 0.9 | 1 |\n",
+    "| 4 | $6<\\max(x,y)\\leq8$ | scatterer | 1 | 0.9 | 0 |\n",
+    "\n",
+    "The block IDs are assigned from the outside inward. Each smaller square overwrites the block ID of the cells it contains, leaving the preceding material as an L-shaped shell."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "c30411f2",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "zone_outer_edges = [2.0, 3.0, 5.0, 6.0, 8.0]\n",
+    "mesh.SetUniformBlockID(4)\n",
+    "\n",
+    "for block_id, upper_edge in reversed(\n",
+    "    list(enumerate(zone_outer_edges[:-1]))\n",
+    "):\n",
+    "    nested_square = RPPLogicalVolume(\n",
+    "        xmin=0.0, xmax=upper_edge,\n",
+    "        ymin=0.0, ymax=upper_edge,\n",
+    "        infz=True,\n",
+    "    )\n",
+    "    mesh.SetBlockIDFromLogicalVolume(nested_square, block_id, True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "99d66fba",
+   "metadata": {},
+   "source": [
+    "## Define the materials and sources\n",
+    "\n",
+    "As in the one-dimensional problem, `CreateSimpleOneGroup` receives the total cross section and scattering ratio $c=\\sigma_s/\\sigma_t$. The two volumetric sources select the source-bearing regions by block ID."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "610eab31",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "sigma_t = [50.0, 5.0, 0.0, 1.0, 1.0]\n",
+    "scattering_ratio = [0.0, 0.0, 0.0, 0.9, 0.9]\n",
+    "xs_map = []\n",
+    "\n",
+    "for block_id, (total, ratio) in enumerate(\n",
+    "    zip(sigma_t, scattering_ratio)\n",
+    "):\n",
+    "    xs = MultiGroupXS()\n",
+    "    xs.CreateSimpleOneGroup(sigma_t=total, c=ratio)\n",
+    "    xs_map.append({\"block_ids\": [block_id], \"xs\": xs})\n",
+    "\n",
+    "absorber_source = VolumetricSource(\n",
+    "    block_ids=[0], group_strength=[50.0]\n",
+    ")\n",
+    "scattering_source = VolumetricSource(\n",
+    "    block_ids=[3], group_strength=[1.0]\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "e1b20b04",
+   "metadata": {},
+   "source": [
+    "## Assemble and solve the transport problem\n",
+    "\n",
+    "A Gauss--Legendre--Chebyshev quadrature represents directions in the $xy$ plane. All four exterior faces are vacuum boundaries, preserving the leakage behavior of the one-dimensional problem while allowing particles to stream in two dimensions."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "5d012690",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "quadrature = GLCProductQuadrature2DXY(\n",
+    "    n_polar=2, n_azimuthal=32, scattering_order=0\n",
+    ")\n",
+    "\n",
+    "problem = DiscreteOrdinatesProblem(\n",
+    "    mesh=mesh,\n",
+    "    num_groups=1,\n",
+    "    groupsets=[\n",
+    "        {\n",
+    "            \"groups_from_to\": (0, 0),\n",
+    "            \"angular_quadrature\": quadrature,\n",
+    "            \"inner_linear_method\": \"petsc_gmres\",\n",
+    "            \"l_abs_tol\": 1.0e-9,\n",
+    "            \"l_max_its\": 300,\n",
+    "            \"gmres_restart_interval\": 30,\n",
+    "        }\n",
+    "    ],\n",
+    "    xs_map=xs_map,\n",
+    "    volumetric_sources=[absorber_source, scattering_source],\n",
+    "    boundary_conditions=[\n",
+    "        {\"name\": \"xmin\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"xmax\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"ymin\", \"type\": \"vacuum\"},\n",
+    "        {\"name\": \"ymax\", \"type\": \"vacuum\"},\n",
+    "    ],\n",
+    ")\n",
+    "\n",
+    "solver = SteadyStateSourceSolver(problem=problem, compute_balance=True)\n",
+    "solver.Initialize()\n",
+    "solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "8b80563c",
+   "metadata": {},
+   "source": [
+    "## Verify the solution and source geometry\n",
+    "\n",
+    "The source-bearing absorber has area $2^2=4$ cm$^2$, while the source-bearing scattering shell has area $6^2-5^2=11$ cm$^2$. Their strengths therefore give an integrated source rate of $50(4)+1(11)=211$. The transport balance and maximum scalar flux provide checks on the geometry and computed solution."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "80e846e5",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "balance = solver.ComputeBalanceTable()\n",
+    "source_rate = balance[\"production_rate\"] + balance[\"inflow_rate\"]\n",
+    "loss_rate = balance[\"absorption_rate\"] + balance[\"outflow_rate\"]\n",
+    "relative_balance_error = abs(source_rate - loss_rate) / source_rate\n",
+    "\n",
+    "scalar_flux = problem.GetScalarFluxFieldFunction()[0]\n",
+    "whole_domain = RPPLogicalVolume(\n",
+    "    xmin=0.0, xmax=domain_length,\n",
+    "    ymin=0.0, ymax=domain_length,\n",
+    "    infz=True,\n",
+    ")\n",
+    "maximum = FieldFunctionInterpolationVolume()\n",
+    "maximum.SetOperationType(\"max\")\n",
+    "maximum.SetLogicalVolume(whole_domain)\n",
+    "maximum.AddFieldFunction(scalar_flux)\n",
+    "maximum.Execute()\n",
+    "maximum_flux = maximum.GetValue()\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"REED_2D_SOURCE_RATE={source_rate:.8e}\")\n",
+    "    print(f\"REED_2D_MAX_FLUX={maximum_flux:.8e}\")\n",
+    "    print(f\"REED_2D_BALANCE_ERROR={relative_balance_error:.8e}\")\n",
+    "\n",
+    "assert abs(source_rate - 211.0) < 1.0e-8\n",
+    "assert relative_balance_error < 1.0e-8"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "6c505c87",
+   "metadata": {},
+   "source": [
+    "## Export and visualize the scalar flux\n",
+    "\n",
+    "After running the generated Python input, use the following code to export the scalar flux for visualization. It is kept in Markdown so the regression test does not create output files.\n",
+    "\n",
+    "```python\n",
+    "from pyopensn.fieldfunc import FieldFunctionGridBased\n",
+    "\n",
+    "FieldFunctionGridBased.ExportMultipleToPVTU(\n",
+    "    [scalar_flux], \"Flux/Reed2D_Phi\"\n",
+    ")\n",
+    "```\n",
+    "\n",
+    "![Scalar flux for the two-dimensional Reed problem](images/Reed_2D.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "66e87e95",
+   "metadata": {},
+   "source": [
+    "## Next steps\n",
+    "\n",
+    "Compare diagonal and axis-aligned slices of the two-dimensional solution with the one-dimensional Reed flux. You can also refine the mesh near the absorber and void interfaces or increase the azimuthal quadrature to study ray effects."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "037f880b",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.12.3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}

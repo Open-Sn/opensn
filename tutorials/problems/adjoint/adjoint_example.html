@@ -29,7 +29,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="3.4. Transient Problems" href="../transient/index.html" />
+    <link rel="next" title="3.3.2. Adjoint Checkerboard Absorption Response" href="adjoint_checkerboard.html" />
     <link rel="prev" title="3.3. Adjoint Problems" href="index.html" /> 
 </head>
 
@@ -63,7 +63,8 @@
 <li class="toctree-l3"><a class="reference internal" href="../fixed_source/index.html">3.1. Fixed-Source Problems</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../eigenvalue/index.html">3.2. Eigenvalue Problems</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">3.3. Adjoint Problems</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">3.3.1. A First Adjoint Example</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">3.3.1. Introductory Adjoint Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="adjoint_checkerboard.html">3.3.2. The Adjoint Two-Dimensional Checkerboard Problem</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="../transient/index.html">3.4. Transient Problems</a></li>
@@ -212,8 +213,8 @@ Running the first LBS adjoint example with 1 MPI processors.
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-OpenSn version 0.0.1
-2025-09-20 02:04:31 Running OpenSn with 1 processes.
+OpenSn version 1.0.1
+2026-08-31 16:39:14 Running OpenSn with 1 processes.
 
 </pre></div></div>
 </div>
@@ -254,20 +255,20 @@ OpenSn version 0.0.1
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 [0]  Done checking cell-center-to-face orientations
-[0]  00:00:00.2 Establishing cell connectivity.
-[0]  00:00:00.2 Vertex cell subscriptions complete.
-[0]  00:00:00.2 Surpassing cell 100 of 1000 (10%)
-[0]  00:00:00.2 Surpassing cell 200 of 1000 (20%)
-[0]  00:00:00.2 Surpassing cell 301 of 1000 (30%)
-[0]  00:00:00.2 Surpassing cell 400 of 1000 (40%)
-[0]  00:00:00.2 Surpassing cell 500 of 1000 (50%)
-[0]  00:00:00.2 Surpassing cell 601 of 1000 (60%)
-[0]  00:00:00.2 Surpassing cell 701 of 1000 (70%)
-[0]  00:00:00.2 Surpassing cell 800 of 1000 (80%)
-[0]  00:00:00.2 Surpassing cell 900 of 1000 (90%)
-[0]  00:00:00.2 Surpassing cell 1000 of 1000 (100%)
-[0]  00:00:00.2 Establishing cell boundary connectivity.
-[0]  00:00:00.2 Done establishing cell connectivity.
+[0]  00:00:00.1 Establishing cell connectivity.
+[0]  00:00:00.1 Vertex cell subscriptions complete.
+[0]  00:00:00.1 Surpassing cell 100 of 1000 (10%)
+[0]  00:00:00.1 Surpassing cell 200 of 1000 (20%)
+[0]  00:00:00.1 Surpassing cell 301 of 1000 (30%)
+[0]  00:00:00.1 Surpassing cell 400 of 1000 (40%)
+[0]  00:00:00.1 Surpassing cell 500 of 1000 (50%)
+[0]  00:00:00.1 Surpassing cell 601 of 1000 (60%)
+[0]  00:00:00.1 Surpassing cell 701 of 1000 (70%)
+[0]  00:00:00.1 Surpassing cell 800 of 1000 (80%)
+[0]  00:00:00.1 Surpassing cell 900 of 1000 (90%)
+[0]  00:00:00.1 Surpassing cell 1000 of 1000 (100%)
+[0]  00:00:00.1 Establishing cell boundary connectivity.
+[0]  00:00:00.1 Done establishing cell connectivity.
 [0]  Number of cells per partition (max,min,avg) = 1000,1000,1000
 [0]
 [0]  Mesh statistics:
@@ -285,7 +286,7 @@ OpenSn version 0.0.1
 <section id="Material-IDs">
 <h3><span class="section-number">3.3.1.3.1. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
 <p>In this example, we define a source-driven detector response problem consisting of two regions: a detector and a source in vacuum. The geometry of the model is shown below.</p>
-<p><img alt="2e6cb288413d4a8887d75684e90e36b6" src="../../../_images/adjoint_geom.png" /></p>
+<p><img alt="9ca1664e683f42d6ad26493903a424b3" src="../../../_images/adjoint_geom.png" /></p>
 <p>Firstly, when using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to assign material IDs to all cells. We will begin by assigning the background material ID with a value of 0.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -300,7 +301,7 @@ OpenSn version 0.0.1
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[0]  00:00:00.3 Done setting block id 0 to all cells
+[0]  00:00:00.2 Done setting block id 0 to all cells
 </pre></div></div>
 </div>
 <p>Next we will assign material IDs for the source and detector. When assigning material IDs via logical volumes the IDs for each cell is overriden by the most recent assignment. That is to say, assigning a material ID of 1 to any region in our domain will override the previously set ID to those cells.</p>
@@ -353,7 +354,8 @@ OpenSn version 0.0.1
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[0]  *** WARNING ***  Negative transport cross section found for group 0 in call to ComputeDiffusionParameters. sigma_t=0 sigma_1=0. Setting sigma_1=0, sigma_tr=sigma_t for this group.
+[0]  *** WARNING ***  Transport cross section near zero for group 0 (sigma_tr = 0, sigma_tr_min = 1e-12). Setting diffusion coefficient to 3.33333e+11
+[0]      for this group.
 </pre></div></div>
 </div>
 <hr class="docutils" />
@@ -421,7 +423,7 @@ OpenSn version 0.0.1
 <li><p>boundary_conditions : The boundary conditions</p></li>
 </ul>
 <p><strong>Note: The parameters for the ``DiscreteOrdinatesProblem`` are not required to be in this order.</strong></p>
-<div class="nbinput nblast docutils container">
+<div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[11]:
 </pre></div>
 </div>
@@ -438,6 +440,42 @@ OpenSn version 0.0.1
 <span class="p">)</span>
 </pre></div>
 </div>
+</div>
+<div class="nboutput nblast docutils container">
+<div class="prompt empty docutils container">
+</div>
+<div class="output_area docutils container">
+<div class="highlight"><pre>
+[0]
+[0]  Initializing DiscreteOrdinatesProblem
+[0]
+[0]  Scattering order    : 0
+[0]  Number of moments   : 1
+[0]  Number of groups    : 1
+[0]  Number of groupsets : 1
+[0]
+[0]  ***** Groupset 0 *****
+[0]  Quadrature type : 1D Slab Gauss-Legendre product
+[0]  Number of angles: 512
+[0]  Quadrature norm : 1.00
+[0]  Groups:
+[0]      0
+[0]
+[0]  00:00:00.4 Initializing spatial discretization metadata.
+[0]  00:00:00.4 Computing unit integrals.
+[0]  00:00:00.4 Ghost cell unit cell-matrix ratio: 0%
+[0]  00:00:00.4 Cell matrices computed.
+[0]  00:00:00.4 Initializing parallel arrays. G=1 M=1
+[0]  00:00:00.4 Done with parallel arrays.
+[0]  Volumetric source #0 has 200 total subscribing cells.
+[0]  00:00:00.4 SPDS construction: 2 angles (1 threads(s)).
+[0]  00:00:00.4 SPDS construction done.
+[0]  00:00:00.4 TDG build: 2 angles (1 threads(s)).
+[0]  00:00:00.4 TDG build done.
+[0]  00:00:00.4 FLUDS construction: 2 angles (1 threads(s)).
+[0]  00:00:00.4 FLUDS construction done.
+[0]  00:00:00.4 Initialized angle aggregation.
+</pre></div></div>
 </div>
 </section>
 <section id="Execute">
@@ -457,28 +495,7 @@ OpenSn version 0.0.1
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[0]
-[0]  00:00:00.0 Initializing solver SteadyStateSourceSolver.
-[0]
-[0]  Scattering order    : 0
-[0]  Number of Groups    : 1
-[0]  Number of Group sets: 1
-[0]
-[0]  ***** Groupset 0 *****
-[0]  Groups:
-[0]      0
-[0]
-[0]  Initializing spatial discretization.
-[0]  Computing unit integrals.
-[0]  Ghost cell unit cell-matrix ratio: 0%
-[0]  Cell matrices computed.
-[0]  Initializing parallel arrays. G=1 M=1
-[0]  Done with parallel arrays.
-[0]  Volumetric source #0 has 200 total subscribing cells.
-[0]  00:00:00.7 Initializing sweep datastructures.
-[0]  00:00:00.7 Done initializing sweep datastructures.
-[0]  00:00:00.7 Initialized angle aggregation.
-[0]  Initializing WGS and AGS solvers
+[0]  00:00:00.4 Initializing solver SteadyStateSourceSolver.
 </pre></div></div>
 </div>
 <p>Note: In this tutorial we have decided to execute the linear Boltzmann solver in addition to the adjoint solver to illustrate their duality. It is not necessary to execute the standard linear Boltzmann solver to use the adjoint solver.</p>
@@ -495,23 +512,17 @@ OpenSn version 0.0.1
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-[0]  Quadrature number of angles: 512
-[0]  Groups 0 0
-[0]
-[0]  00:00:00.7 Computing b
-[0]  00:00:00.8 WGS groups [0-0] Iteration     0 Residual         1
-[0]  00:00:00.8 WGS groups [0-0] Iteration     1 Residual   0.17567
-[0]  00:00:00.9 WGS groups [0-0] Iteration     2 Residual 0.0127995
-[0]  00:00:00.9 WGS groups [0-0] Iteration     3 Residual 0.000713653
-[0]  00:00:01.0 WGS groups [0-0] Iteration     4 Residual 3.29238e-05
-[0]  00:00:01.1 WGS groups [0-0] Iteration     5 Residual 1.29272e-06
-[0]  00:00:01.1 WGS groups [0-0] Iteration     6 Residual 4.406e-08 CONVERGED
-[0]
-[0]
-[0]         Average sweep time (s):        0.05656
-[0]         Sweep Time/Unknown (ns):       55.2343
-[0]         Number of unknowns per sweep:  1024000
-[0]
+[0]  00:00:00.4 Starting solver execution SteadyStateSourceSolver.
+[0]  00:00:00.5 WGS groups [0-0] iteration = 0, residual = 1.000000e+00
+[0]  00:00:00.5 WGS groups [0-0] iteration = 1, residual = 1.756703e-01
+[0]  00:00:00.5 WGS groups [0-0] iteration = 2, residual = 1.279954e-02
+[0]  00:00:00.5 WGS groups [0-0] iteration = 3, residual = 7.136534e-04
+[0]  00:00:00.6 WGS groups [0-0] iteration = 4, residual = 3.292384e-05
+[0]  00:00:00.6 WGS groups [0-0] iteration = 5, residual = 1.292724e-06
+[0]  00:00:00.6 WGS groups [0-0] iteration = 6, residual = 4.406001e-08, status = converged
+[0]  00:00:00.6 WGS groups [0-0] avg_sweep_time = 2.492905e-02 s, sweep_time_per_unknown = 2.434478e+01 ns
+[0]  00:00:00.6 WGS groups [0-0] unknowns = 1024000, lagged_unknowns = 0, lagged_pct = 0.00
+[0]  00:00:00.6 Finished solver execution SteadyStateSourceSolver.
 </pre></div></div>
 </div>
 </section>
@@ -642,25 +653,19 @@ Forward Total Response : 1.992929e-01
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 [0]  Volumetric source #1 has 50 total subscribing cells.
-[0]  Quadrature number of angles: 512
-[0]  Groups 0 0
-[0]
-[0]  00:00:01.3 Computing b
-[0]  00:00:01.4 WGS groups [0-0] Iteration     0 Residual         1
-[0]  00:00:01.4 WGS groups [0-0] Iteration     1 Residual  0.106629
-[0]  00:00:01.5 WGS groups [0-0] Iteration     2 Residual 0.0450525
-[0]  00:00:01.5 WGS groups [0-0] Iteration     3 Residual 0.0184022
-[0]  00:00:01.6 WGS groups [0-0] Iteration     4 Residual 0.00336001
-[0]  00:00:01.7 WGS groups [0-0] Iteration     5 Residual 0.000388187
-[0]  00:00:01.7 WGS groups [0-0] Iteration     6 Residual 3.50983e-05
-[0]  00:00:01.8 WGS groups [0-0] Iteration     7 Residual 2.65622e-06
-[0]  00:00:01.8 WGS groups [0-0] Iteration     8 Residual 1.73704e-07 CONVERGED
-[0]
-[0]
-[0]         Average sweep time (s):        0.0584055
-[0]         Sweep Time/Unknown (ns):       57.0367
-[0]         Number of unknowns per sweep:  1024000
-[0]
+[0]  00:00:00.7 Starting solver execution SteadyStateSourceSolver.
+[0]  00:00:00.7 WGS groups [0-0] iteration = 0, residual = 1.000000e+00
+[0]  00:00:00.8 WGS groups [0-0] iteration = 1, residual = 1.066292e-01
+[0]  00:00:00.8 WGS groups [0-0] iteration = 2, residual = 4.505253e-02
+[0]  00:00:00.8 WGS groups [0-0] iteration = 3, residual = 1.840217e-02
+[0]  00:00:00.8 WGS groups [0-0] iteration = 4, residual = 3.360009e-03
+[0]  00:00:00.9 WGS groups [0-0] iteration = 5, residual = 3.881869e-04
+[0]  00:00:00.9 WGS groups [0-0] iteration = 6, residual = 3.509828e-05
+[0]  00:00:00.9 WGS groups [0-0] iteration = 7, residual = 2.656225e-06
+[0]  00:00:00.9 WGS groups [0-0] iteration = 8, residual = 1.737043e-07, status = converged
+[0]  00:00:01.0 WGS groups [0-0] avg_sweep_time = 2.532488e-02 s, sweep_time_per_unknown = 2.473133e+01 ns
+[0]  00:00:01.0 WGS groups [0-0] unknowns = 1024000, lagged_unknowns = 0, lagged_pct = 0.00
+[0]  00:00:01.0 Finished solver execution SteadyStateSourceSolver.
 </pre></div></div>
 </div>
 </section>
@@ -831,8 +836,8 @@ Adjoint Total Response : 1.992929e-01
 <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">fwd</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Forward&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">adj</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Adjoint&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s2">&quot;Distance (cm)&quot;</span><span class="p">)</span>
-<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;$\phi(z)$&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Position, $z$ (cm)&quot;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Scalar Flux, $\phi(z)$&quot;</span><span class="p">)</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
@@ -885,8 +890,8 @@ Adjoint Total Response : 1.992929e-01
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 
-Elapsed execution time: 00:00:02.8
-2025-09-20 02:04:34 OpenSn finished execution.
+Elapsed execution time: 00:00:01.5
+2026-08-31 16:39:15 OpenSn finished execution.
 </pre></div></div>
 </div>
 </section>
@@ -897,7 +902,7 @@ Elapsed execution time: 00:00:02.8
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="3.3. Adjoint Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../transient/index.html" class="btn btn-neutral float-right" title="3.4. Transient Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="adjoint_checkerboard.html" class="btn btn-neutral float-right" title="3.3.2. Adjoint Checkerboard Absorption Response" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

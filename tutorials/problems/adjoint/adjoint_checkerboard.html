@@ -1,0 +1,370 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.3.2. Adjoint Checkerboard Absorption Response &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="3.4. Transient Problems" href="../transient/index.html" />
+    <link rel="prev" title="3.3.1. A First Adjoint Example" href="adjoint_example.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../foundations/index.html">1. Foundations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modeling/index.html">2. Modeling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">3. Problems</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../fixed_source/index.html">3.1. Fixed-Source Problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../eigenvalue/index.html">3.2. Eigenvalue Problems</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">3.3. Adjoint Problems</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="adjoint_example.html">3.3.1. Introductory Adjoint Example</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">3.3.2. The Adjoint Two-Dimensional Checkerboard Problem</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../transient/index.html">3.4. Transient Problems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../workflows/index.html">4. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../numerical_methods/index.html">5. Numerical Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">3. </span>Problems</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3.3. </span>Adjoint Problems</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.3.2. </span>Adjoint Checkerboard Absorption Response</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Adjoint-Checkerboard-Absorption-Response">
+<h1><span class="section-number">3.3.2. </span>Adjoint Checkerboard Absorption Response<a class="headerlink" href="#Adjoint-Checkerboard-Absorption-Response" title="Link to this heading"></a></h1>
+<p>This example reformulates the <a class="reference internal" href="../fixed_source/checkerboard.html"><span class="doc">two-dimensional fixed-source checkerboard problem</span></a> as an adjoint calculation. The response of interest is the total absorption reaction rate over all eleven absorbing (gray) squares. Instead of applying the physical source in the central square, the adjoint problem places the absorption response function in every absorbing square and evaluates the resulting adjoint importance function at the original source region.</p>
+<section id="Import-the-OpenSn-objects">
+<h2><span class="section-number">3.3.2.1. </span>Import the OpenSn objects<a class="headerlink" href="#Import-the-OpenSn-objects" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span><span class="p">,</span> <span class="n">UseColor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+    <span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Reproduce-the-checkerboard-geometry">
+<h2><span class="section-number">3.3.2.2. </span>Reproduce the checkerboard geometry<a class="headerlink" href="#Reproduce-the-checkerboard-geometry" title="Link to this heading"></a></h2>
+<p>The domain is a <span class="math notranslate nohighlight">\(7 \times 7\)</span> cm square discretized with ten cells per centimeter, ensuring that mesh nodes align with the edges of each one-centimeter material square. The eleven absorber squares share one block ID, while the scattering background uses another. The central black square has a separate block ID marking the original forward-source region.</p>
+<p><img alt="Checkerboard problem" src="../../../_images/Checkerboard.png" /></p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">domain_length</span> <span class="o">=</span> <span class="mf">7.0</span>
+<span class="n">cells_per_cm</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">num_cells</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">domain_length</span> <span class="o">*</span> <span class="n">cells_per_cm</span><span class="p">)</span>
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="n">cells_per_cm</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">])</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
+
+<span class="n">BACKGROUND</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">ABSORBER</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">FORWARD_SOURCE</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="n">BACKGROUND</span><span class="p">)</span>
+
+<span class="n">absorber_origins</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">2.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">2.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">4.0</span><span class="p">,</span> <span class="mf">4.0</span><span class="p">),</span>
+    <span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span> <span class="p">(</span><span class="mf">5.0</span><span class="p">,</span> <span class="mf">5.0</span><span class="p">),</span>
+<span class="p">]</span>
+
+<span class="k">for</span> <span class="n">x_min</span><span class="p">,</span> <span class="n">y_min</span> <span class="ow">in</span> <span class="n">absorber_origins</span><span class="p">:</span>
+    <span class="n">absorber_square</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+        <span class="n">xmin</span><span class="o">=</span><span class="n">x_min</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="n">x_min</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">ymin</span><span class="o">=</span><span class="n">y_min</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="n">y_min</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span>
+        <span class="n">absorber_square</span><span class="p">,</span> <span class="n">ABSORBER</span><span class="p">,</span> <span class="kc">True</span>
+    <span class="p">)</span>
+
+<span class="n">forward_source_region</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+    <span class="n">xmin</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">ymin</span><span class="o">=</span><span class="mf">3.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span>
+    <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span>
+    <span class="n">forward_source_region</span><span class="p">,</span> <span class="n">FORWARD_SOURCE</span><span class="p">,</span> <span class="kc">True</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Define-the-materials">
+<h2><span class="section-number">3.3.2.3. </span>Define the materials<a class="headerlink" href="#Define-the-materials" title="Link to this heading"></a></h2>
+<p>The graybackground and central source square are pure scatterers with <span class="math notranslate nohighlight">\(\sigma_t=\sigma_s=1\)</span> <span class="math notranslate nohighlight">\(\text{cm}^{-1}\)</span>.</p>
+<p>Each gray square is a pure absorber with <span class="math notranslate nohighlight">\(\sigma_t=\sigma_a=10\)</span> <span class="math notranslate nohighlight">\(\text{cm}^{-1}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">scattering_xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">scattering_xs</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+
+<span class="n">absorber_sigma_a</span> <span class="o">=</span> <span class="mf">10.0</span>
+<span class="n">absorber_xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">absorber_xs</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span>
+    <span class="n">sigma_t</span><span class="o">=</span><span class="n">absorber_sigma_a</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.0</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Convert-the-response-into-an-adjoint-source">
+<h2><span class="section-number">3.3.2.4. </span>Convert the response into an adjoint source<a class="headerlink" href="#Convert-the-response-into-an-adjoint-source" title="Link to this heading"></a></h2>
+<p>For the forward problem, the desired response is</p>
+<div class="math notranslate nohighlight">
+\[R_{a,\mathrm{abs}}=\int_{V_{\mathrm{abs}}}\sigma_a(\mathbf{r})\phi(\mathbf{r})\,dV.\]</div>
+<p>Therefore the adjoint source is <span class="math notranslate nohighlight">\(q^\dagger=\sigma_a=10\)</span> throughout the gray block ID and zero elsewhere. <code class="docutils literal notranslate"><span class="pre">VolumetricSource</span></code> uses the same interface for forward and adjoint sources; setting <code class="docutils literal notranslate"><span class="pre">adjoint=True</span></code> on the transport problem determines how OpenSn interprets it.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">adjoint_source</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="n">ABSORBER</span><span class="p">],</span>
+    <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="n">absorber_sigma_a</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Solve-the-adjoint-transport-problem">
+<h2><span class="section-number">3.3.2.5. </span>Solve the adjoint transport problem<a class="headerlink" href="#Solve-the-adjoint-transport-problem" title="Link to this heading"></a></h2>
+<p>The mesh, 64-angle quadrature, material map, and vacuum boundaries are identical to those in the corresponding forward calculation. The <code class="docutils literal notranslate"><span class="pre">adjoint</span></code> option transposes the transport operator while retaining the same physical cross sections.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span>
+<span class="p">)</span>
+
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-9</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">300</span><span class="p">,</span>
+            <span class="s2">&quot;gmres_restart_interval&quot;</span><span class="p">:</span> <span class="mi">30</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">BACKGROUND</span><span class="p">,</span> <span class="n">FORWARD_SOURCE</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">scattering_xs</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="n">ABSORBER</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">absorber_xs</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">adjoint_source</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;adjoint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">compute_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Evaluate-the-absorption-response">
+<h2><span class="section-number">3.3.2.6. </span>Evaluate the absorption response<a class="headerlink" href="#Evaluate-the-absorption-response" title="Link to this heading"></a></h2>
+<p>Forward-adjoint duality gives</p>
+<div class="math notranslate nohighlight">
+\[R=\bigl( q^\dagger,\phi\bigr)=\bigl(\phi^\dagger,q\bigr).\]</div>
+<p>The original forward source has unit strength. Consequently, its inner product with the adjoint flux is simply the volume-integrated adjoint scalar flux over block ID <code class="docutils literal notranslate"><span class="pre">FORWARD_SOURCE</span></code>. This value should reproduce the absorption rate from the forward checkerboard problem.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">response_postprocessor</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+    <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;integral&quot;</span><span class="p">,</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="n">FORWARD_SOURCE</span><span class="p">],</span>
+<span class="p">)</span>
+<span class="n">response_postprocessor</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">adjoint_response</span> <span class="o">=</span> <span class="n">response_postprocessor</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">forward_response_reference</span> <span class="o">=</span> <span class="mf">0.969008500</span>
+<span class="n">relative_difference</span> <span class="o">=</span> <span class="p">(</span>
+    <span class="nb">abs</span><span class="p">(</span><span class="n">adjoint_response</span> <span class="o">-</span> <span class="n">forward_response_reference</span><span class="p">)</span>
+    <span class="o">/</span> <span class="n">forward_response_reference</span>
+<span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;ADJOINT_CHECKERBOARD_RESPONSE=</span><span class="si">{</span><span class="n">adjoint_response</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="sa">f</span><span class="s2">&quot;ADJOINT_CHECKERBOARD_RELATIVE_DIFFERENCE=&quot;</span>
+        <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">relative_difference</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+    <span class="p">)</span>
+
+<span class="k">assert</span> <span class="n">relative_difference</span> <span class="o">&lt;</span> <span class="mf">1.0e-6</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Export-and-visualize-the-adjoint-flux">
+<h2><span class="section-number">3.3.2.7. </span>Export and visualize the adjoint flux<a class="headerlink" href="#Export-and-visualize-the-adjoint-flux" title="Link to this heading"></a></h2>
+<p>After running the generated Python input, use the following code to export the adjoint scalar flux. It is kept in Markdown so the regression test does not create output files.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">adjoint_flux</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">adjoint_flux</span><span class="p">],</span> <span class="s2">&quot;Flux/AdjointCheckerboard_Phi&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Scalar importance checkerboard problem" src="../../../_images/Checkerboard_importance.png" /></p>
+</section>
+<section id="Next-steps">
+<h2><span class="section-number">3.3.2.8. </span>Next steps<a class="headerlink" href="#Next-steps" title="Link to this heading"></a></h2>
+<p>Compare the adjoint importance map with the forward scalar-flux map. The forward flux shows where particles from the center travel, while the adjoint flux shows which locations and directions most strongly influence absorption in the black squares.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+    <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Finalize</span><span class="p">()</span>
+        <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="adjoint_example.html" class="btn btn-neutral float-left" title="3.3.1. A First Adjoint Example" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../transient/index.html" class="btn btn-neutral float-right" title="3.4. Transient Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

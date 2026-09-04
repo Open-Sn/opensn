@@ -115,6 +115,7 @@
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">h5py</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 </pre></div>
 </div>
@@ -175,7 +176,7 @@
 </section>
 <section id="Mesh">
 <h2><span class="section-number">3.2.1.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
-<p>We load a 3x3 reactor pin lattice (.obj file). The mesh and its block IDs are shown below:</p>
+<p>We load a reactor pin lattice (.obj file). The mesh and its block IDs are shown below:</p>
 <div style="display: flex; gap: 1rem; align-items: flex-start;"><p><img alt="Mesh and Material Layout for the pin cell problem" src="../../../_images/pincell_mesh.png" /></p>
 </div><p>div&gt;</p>
 <div class="nbinput nblast docutils container">
@@ -199,6 +200,13 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_filepath</span> <span class="o">=</span> <span class="s2">&quot;./mgxs_2B_one_eighth_SHEM-361.h5&quot;</span>
 
+<span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">xs_filepath</span><span class="p">,</span> <span class="s2">&quot;r&quot;</span><span class="p">)</span> <span class="k">as</span> <span class="n">h5_file</span><span class="p">:</span>
+    <span class="n">group_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">h5_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;group structure&quot;</span><span class="p">])</span>
+    <span class="n">num_groups</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">h5_file</span><span class="o">.</span><span class="n">attrs</span><span class="p">[</span><span class="s2">&quot;energy_groups&quot;</span><span class="p">])</span>
+
+<span class="k">if</span> <span class="n">group_edges</span><span class="o">.</span><span class="n">size</span> <span class="o">!=</span> <span class="n">num_groups</span> <span class="o">+</span> <span class="mi">1</span><span class="p">:</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The number of group edges is inconsistent with the number of energy groups.&quot;</span><span class="p">)</span>
+
 <span class="n">h5_mat_names</span> <span class="o">=</span> <span class="p">[</span>
     <span class="s2">&quot;fuel&quot;</span><span class="p">,</span>
     <span class="s2">&quot;fuel clad&quot;</span><span class="p">,</span>
@@ -217,7 +225,8 @@
 
 <span class="n">scat_order</span> <span class="o">=</span> <span class="mi">3</span>  <span class="c1"># xs_list[0].scattering_order</span>
 
-<span class="n">num_groups</span> <span class="o">=</span> <span class="n">xs_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">num_groups</span>
+<span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span> <span class="o">!=</span> <span class="n">num_groups</span> <span class="k">for</span> <span class="n">xs</span> <span class="ow">in</span> <span class="n">xs_list</span><span class="p">):</span>
+    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;The HDF5 energy-group metadata is inconsistent with the cross sections.&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -352,87 +361,11 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 361-group structure (copied from openmc/openmc/mgxs/__init__.py)</span>
-<span class="n">group_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-    <span class="mf">0.00000e+00</span><span class="p">,</span> <span class="mf">2.49990e-03</span><span class="p">,</span> <span class="mf">4.55602e-03</span><span class="p">,</span> <span class="mf">7.14526e-03</span><span class="p">,</span> <span class="mf">1.04505e-02</span><span class="p">,</span>
-    <span class="mf">1.48300e-02</span><span class="p">,</span> <span class="mf">2.00104e-02</span><span class="p">,</span> <span class="mf">2.49394e-02</span><span class="p">,</span> <span class="mf">2.92989e-02</span><span class="p">,</span> <span class="mf">3.43998e-02</span><span class="p">,</span>
-    <span class="mf">4.02999e-02</span><span class="p">,</span> <span class="mf">4.73019e-02</span><span class="p">,</span> <span class="mf">5.54982e-02</span><span class="p">,</span> <span class="mf">6.51999e-02</span><span class="p">,</span> <span class="mf">7.64969e-02</span><span class="p">,</span>
-    <span class="mf">8.97968e-02</span><span class="p">,</span> <span class="mf">1.04298e-01</span><span class="p">,</span> <span class="mf">1.19995e-01</span><span class="p">,</span> <span class="mf">1.37999e-01</span><span class="p">,</span> <span class="mf">1.61895e-01</span><span class="p">,</span>
-    <span class="mf">1.90005e-01</span><span class="p">,</span> <span class="mf">2.09610e-01</span><span class="p">,</span> <span class="mf">2.31192e-01</span><span class="p">,</span> <span class="mf">2.54997e-01</span><span class="p">,</span> <span class="mf">2.79989e-01</span><span class="p">,</span>
-    <span class="mf">3.05012e-01</span><span class="p">,</span> <span class="mf">3.25008e-01</span><span class="p">,</span> <span class="mf">3.52994e-01</span><span class="p">,</span> <span class="mf">3.90001e-01</span><span class="p">,</span> <span class="mf">4.31579e-01</span><span class="p">,</span>
-    <span class="mf">4.75017e-01</span><span class="p">,</span> <span class="mf">5.20011e-01</span><span class="p">,</span> <span class="mf">5.54990e-01</span><span class="p">,</span> <span class="mf">5.94993e-01</span><span class="p">,</span> <span class="mf">6.24999e-01</span><span class="p">,</span>
-    <span class="mf">7.19999e-01</span><span class="p">,</span> <span class="mf">8.00371e-01</span><span class="p">,</span> <span class="mf">8.80024e-01</span><span class="p">,</span> <span class="mf">9.19978e-01</span><span class="p">,</span> <span class="mf">9.44022e-01</span><span class="p">,</span>
-    <span class="mf">9.63960e-01</span><span class="p">,</span> <span class="mf">9.81959e-01</span><span class="p">,</span> <span class="mf">9.96501e-01</span><span class="p">,</span> <span class="mf">1.00904e+00</span><span class="p">,</span> <span class="mf">1.02101e+00</span><span class="p">,</span>
-    <span class="mf">1.03499e+00</span><span class="p">,</span> <span class="mf">1.07799e+00</span><span class="p">,</span> <span class="mf">1.09198e+00</span><span class="p">,</span> <span class="mf">1.10395e+00</span><span class="p">,</span> <span class="mf">1.11605e+00</span><span class="p">,</span>
-    <span class="mf">1.12997e+00</span><span class="p">,</span> <span class="mf">1.14797e+00</span><span class="p">,</span> <span class="mf">1.16999e+00</span><span class="p">,</span> <span class="mf">1.21397e+00</span><span class="p">,</span> <span class="mf">1.25094e+00</span><span class="p">,</span>
-    <span class="mf">1.29304e+00</span><span class="p">,</span> <span class="mf">1.33095e+00</span><span class="p">,</span> <span class="mf">1.38098e+00</span><span class="p">,</span> <span class="mf">1.41001e+00</span><span class="p">,</span> <span class="mf">1.44397e+00</span><span class="p">,</span>
-    <span class="mf">1.51998e+00</span><span class="p">,</span> <span class="mf">1.58803e+00</span><span class="p">,</span> <span class="mf">1.66895e+00</span><span class="p">,</span> <span class="mf">1.77997e+00</span><span class="p">,</span> <span class="mf">1.90008e+00</span><span class="p">,</span>
-    <span class="mf">1.98992e+00</span><span class="p">,</span> <span class="mf">2.07010e+00</span><span class="p">,</span> <span class="mf">2.15695e+00</span><span class="p">,</span> <span class="mf">2.21709e+00</span><span class="p">,</span> <span class="mf">2.27299e+00</span><span class="p">,</span>
-    <span class="mf">2.33006e+00</span><span class="p">,</span> <span class="mf">2.46994e+00</span><span class="p">,</span> <span class="mf">2.55000e+00</span><span class="p">,</span> <span class="mf">2.59009e+00</span><span class="p">,</span> <span class="mf">2.62005e+00</span><span class="p">,</span>
-    <span class="mf">2.64004e+00</span><span class="p">,</span> <span class="mf">2.70012e+00</span><span class="p">,</span> <span class="mf">2.71990e+00</span><span class="p">,</span> <span class="mf">2.74092e+00</span><span class="p">,</span> <span class="mf">2.77512e+00</span><span class="p">,</span>
-    <span class="mf">2.88405e+00</span><span class="p">,</span> <span class="mf">3.14211e+00</span><span class="p">,</span> <span class="mf">3.54307e+00</span><span class="p">,</span> <span class="mf">3.71209e+00</span><span class="p">,</span> <span class="mf">3.88217e+00</span><span class="p">,</span>
-    <span class="mf">4.00000e+00</span><span class="p">,</span> <span class="mf">4.21983e+00</span><span class="p">,</span> <span class="mf">4.30981e+00</span><span class="p">,</span> <span class="mf">4.41980e+00</span><span class="p">,</span> <span class="mf">4.76785e+00</span><span class="p">,</span>
-    <span class="mf">4.93323e+00</span><span class="p">,</span> <span class="mf">5.10997e+00</span><span class="p">,</span> <span class="mf">5.21008e+00</span><span class="p">,</span> <span class="mf">5.32011e+00</span><span class="p">,</span> <span class="mf">5.38003e+00</span><span class="p">,</span>
-    <span class="mf">5.41025e+00</span><span class="p">,</span> <span class="mf">5.48817e+00</span><span class="p">,</span> <span class="mf">5.53004e+00</span><span class="p">,</span> <span class="mf">5.61979e+00</span><span class="p">,</span> <span class="mf">5.72015e+00</span><span class="p">,</span>
-    <span class="mf">5.80021e+00</span><span class="p">,</span> <span class="mf">5.96014e+00</span><span class="p">,</span> <span class="mf">6.05991e+00</span><span class="p">,</span> <span class="mf">6.16011e+00</span><span class="p">,</span> <span class="mf">6.28016e+00</span><span class="p">,</span>
-    <span class="mf">6.35978e+00</span><span class="p">,</span> <span class="mf">6.43206e+00</span><span class="p">,</span> <span class="mf">6.48178e+00</span><span class="p">,</span> <span class="mf">6.51492e+00</span><span class="p">,</span> <span class="mf">6.53907e+00</span><span class="p">,</span>
-    <span class="mf">6.55609e+00</span><span class="p">,</span> <span class="mf">6.57184e+00</span><span class="p">,</span> <span class="mf">6.58829e+00</span><span class="p">,</span> <span class="mf">6.60611e+00</span><span class="p">,</span> <span class="mf">6.63126e+00</span><span class="p">,</span>
-    <span class="mf">6.71668e+00</span><span class="p">,</span> <span class="mf">6.74225e+00</span><span class="p">,</span> <span class="mf">6.75981e+00</span><span class="p">,</span> <span class="mf">6.77605e+00</span><span class="p">,</span> <span class="mf">6.79165e+00</span><span class="p">,</span>
-    <span class="mf">6.81070e+00</span><span class="p">,</span> <span class="mf">6.83526e+00</span><span class="p">,</span> <span class="mf">6.87021e+00</span><span class="p">,</span> <span class="mf">6.91778e+00</span><span class="p">,</span> <span class="mf">6.99429e+00</span><span class="p">,</span>
-    <span class="mf">7.13987e+00</span><span class="p">,</span> <span class="mf">7.38015e+00</span><span class="p">,</span> <span class="mf">7.60035e+00</span><span class="p">,</span> <span class="mf">7.73994e+00</span><span class="p">,</span> <span class="mf">7.83965e+00</span><span class="p">,</span>
-    <span class="mf">7.97008e+00</span><span class="p">,</span> <span class="mf">8.13027e+00</span><span class="p">,</span> <span class="mf">8.30032e+00</span><span class="p">,</span> <span class="mf">8.52407e+00</span><span class="p">,</span> <span class="mf">8.67369e+00</span><span class="p">,</span>
-    <span class="mf">8.80038e+00</span><span class="p">,</span> <span class="mf">8.97995e+00</span><span class="p">,</span> <span class="mf">9.14031e+00</span><span class="p">,</span> <span class="mf">9.50002e+00</span><span class="p">,</span> <span class="mf">1.05793e+01</span><span class="p">,</span>
-    <span class="mf">1.08038e+01</span><span class="p">,</span> <span class="mf">1.10529e+01</span><span class="p">,</span> <span class="mf">1.12694e+01</span><span class="p">,</span> <span class="mf">1.15894e+01</span><span class="p">,</span> <span class="mf">1.17094e+01</span><span class="p">,</span>
-    <span class="mf">1.18153e+01</span><span class="p">,</span> <span class="mf">1.19795e+01</span><span class="p">,</span> <span class="mf">1.21302e+01</span><span class="p">,</span> <span class="mf">1.23086e+01</span><span class="p">,</span> <span class="mf">1.24721e+01</span><span class="p">,</span>
-    <span class="mf">1.26000e+01</span><span class="p">,</span> <span class="mf">1.33297e+01</span><span class="p">,</span> <span class="mf">1.35460e+01</span><span class="p">,</span> <span class="mf">1.40496e+01</span><span class="p">,</span> <span class="mf">1.42505e+01</span><span class="p">,</span>
-    <span class="mf">1.44702e+01</span><span class="p">,</span> <span class="mf">1.45952e+01</span><span class="p">,</span> <span class="mf">1.47301e+01</span><span class="p">,</span> <span class="mf">1.48662e+01</span><span class="p">,</span> <span class="mf">1.57792e+01</span><span class="p">,</span>
-    <span class="mf">1.60498e+01</span><span class="p">,</span> <span class="mf">1.65501e+01</span><span class="p">,</span> <span class="mf">1.68305e+01</span><span class="p">,</span> <span class="mf">1.74457e+01</span><span class="p">,</span> <span class="mf">1.75648e+01</span><span class="p">,</span>
-    <span class="mf">1.77590e+01</span><span class="p">,</span> <span class="mf">1.79591e+01</span><span class="p">,</span> <span class="mf">1.90848e+01</span><span class="p">,</span> <span class="mf">1.91997e+01</span><span class="p">,</span> <span class="mf">1.93927e+01</span><span class="p">,</span>
-    <span class="mf">1.95974e+01</span><span class="p">,</span> <span class="mf">2.00734e+01</span><span class="p">,</span> <span class="mf">2.02751e+01</span><span class="p">,</span> <span class="mf">2.04175e+01</span><span class="p">,</span> <span class="mf">2.05199e+01</span><span class="p">,</span>
-    <span class="mf">2.06021e+01</span><span class="p">,</span> <span class="mf">2.06847e+01</span><span class="p">,</span> <span class="mf">2.07676e+01</span><span class="p">,</span> <span class="mf">2.09763e+01</span><span class="p">,</span> <span class="mf">2.10604e+01</span><span class="p">,</span>
-    <span class="mf">2.11448e+01</span><span class="p">,</span> <span class="mf">2.12296e+01</span><span class="p">,</span> <span class="mf">2.13360e+01</span><span class="p">,</span> <span class="mf">2.14859e+01</span><span class="p">,</span> <span class="mf">2.17018e+01</span><span class="p">,</span>
-    <span class="mf">2.20011e+01</span><span class="p">,</span> <span class="mf">2.21557e+01</span><span class="p">,</span> <span class="mf">2.23788e+01</span><span class="p">,</span> <span class="mf">2.25356e+01</span><span class="p">,</span> <span class="mf">2.46578e+01</span><span class="p">,</span>
-    <span class="mf">2.78852e+01</span><span class="p">,</span> <span class="mf">3.16930e+01</span><span class="p">,</span> <span class="mf">3.30855e+01</span><span class="p">,</span> <span class="mf">3.45392e+01</span><span class="p">,</span> <span class="mf">3.56980e+01</span><span class="p">,</span>
-    <span class="mf">3.60568e+01</span><span class="p">,</span> <span class="mf">3.64191e+01</span><span class="p">,</span> <span class="mf">3.68588e+01</span><span class="p">,</span> <span class="mf">3.73038e+01</span><span class="p">,</span> <span class="mf">3.77919e+01</span><span class="p">,</span>
-    <span class="mf">3.87874e+01</span><span class="p">,</span> <span class="mf">3.97295e+01</span><span class="p">,</span> <span class="mf">4.12270e+01</span><span class="p">,</span> <span class="mf">4.21441e+01</span><span class="p">,</span> <span class="mf">4.31246e+01</span><span class="p">,</span>
-    <span class="mf">4.41721e+01</span><span class="p">,</span> <span class="mf">4.52904e+01</span><span class="p">,</span> <span class="mf">4.62053e+01</span><span class="p">,</span> <span class="mf">4.75173e+01</span><span class="p">,</span> <span class="mf">4.92591e+01</span><span class="p">,</span>
-    <span class="mf">5.17847e+01</span><span class="p">,</span> <span class="mf">5.29895e+01</span><span class="p">,</span> <span class="mf">5.40600e+01</span><span class="p">,</span> <span class="mf">5.70595e+01</span><span class="p">,</span> <span class="mf">5.99250e+01</span><span class="p">,</span>
-    <span class="mf">6.23083e+01</span><span class="p">,</span> <span class="mf">6.36306e+01</span><span class="p">,</span> <span class="mf">6.45923e+01</span><span class="p">,</span> <span class="mf">6.50460e+01</span><span class="p">,</span> <span class="mf">6.55029e+01</span><span class="p">,</span>
-    <span class="mf">6.58312e+01</span><span class="p">,</span> <span class="mf">6.61612e+01</span><span class="p">,</span> <span class="mf">6.64929e+01</span><span class="p">,</span> <span class="mf">6.68261e+01</span><span class="p">,</span> <span class="mf">6.90682e+01</span><span class="p">,</span>
-    <span class="mf">7.18869e+01</span><span class="p">,</span> <span class="mf">7.35595e+01</span><span class="p">,</span> <span class="mf">7.63322e+01</span><span class="p">,</span> <span class="mf">7.93679e+01</span><span class="p">,</span> <span class="mf">8.39393e+01</span><span class="p">,</span>
-    <span class="mf">8.87741e+01</span><span class="p">,</span> <span class="mf">9.33256e+01</span><span class="p">,</span> <span class="mf">9.73287e+01</span><span class="p">,</span> <span class="mf">1.00594e+02</span><span class="p">,</span> <span class="mf">1.01098e+02</span><span class="p">,</span>
-    <span class="mf">1.01605e+02</span><span class="p">,</span> <span class="mf">1.02115e+02</span><span class="p">,</span> <span class="mf">1.03038e+02</span><span class="p">,</span> <span class="mf">1.05646e+02</span><span class="p">,</span> <span class="mf">1.10288e+02</span><span class="p">,</span>
-    <span class="mf">1.12854e+02</span><span class="p">,</span> <span class="mf">1.15480e+02</span><span class="p">,</span> <span class="mf">1.16524e+02</span><span class="p">,</span> <span class="mf">1.17577e+02</span><span class="p">,</span> <span class="mf">1.20554e+02</span><span class="p">,</span>
-    <span class="mf">1.26229e+02</span><span class="p">,</span> <span class="mf">1.32701e+02</span><span class="p">,</span> <span class="mf">1.39504e+02</span><span class="p">,</span> <span class="mf">1.46657e+02</span><span class="p">,</span> <span class="mf">1.54176e+02</span><span class="p">,</span>
-    <span class="mf">1.63056e+02</span><span class="p">,</span> <span class="mf">1.67519e+02</span><span class="p">,</span> <span class="mf">1.75229e+02</span><span class="p">,</span> <span class="mf">1.83295e+02</span><span class="p">,</span> <span class="mf">1.84952e+02</span><span class="p">,</span>
-    <span class="mf">1.86251e+02</span><span class="p">,</span> <span class="mf">1.87559e+02</span><span class="p">,</span> <span class="mf">1.88877e+02</span><span class="p">,</span> <span class="mf">1.90204e+02</span><span class="p">,</span> <span class="mf">1.93078e+02</span><span class="p">,</span>
-    <span class="mf">1.95996e+02</span><span class="p">,</span> <span class="mf">2.00958e+02</span><span class="p">,</span> <span class="mf">2.12108e+02</span><span class="p">,</span> <span class="mf">2.24325e+02</span><span class="p">,</span> <span class="mf">2.35590e+02</span><span class="p">,</span>
-    <span class="mf">2.41796e+02</span><span class="p">,</span> <span class="mf">2.56748e+02</span><span class="p">,</span> <span class="mf">2.68297e+02</span><span class="p">,</span> <span class="mf">2.76468e+02</span><span class="p">,</span> <span class="mf">2.84888e+02</span><span class="p">,</span>
-    <span class="mf">2.88327e+02</span><span class="p">,</span> <span class="mf">2.95922e+02</span><span class="p">,</span> <span class="mf">3.19928e+02</span><span class="p">,</span> <span class="mf">3.35323e+02</span><span class="p">,</span> <span class="mf">3.53575e+02</span><span class="p">,</span>
-    <span class="mf">3.71703e+02</span><span class="p">,</span> <span class="mf">3.90760e+02</span><span class="p">,</span> <span class="mf">4.19094e+02</span><span class="p">,</span> <span class="mf">4.53999e+02</span><span class="p">,</span> <span class="mf">5.01746e+02</span><span class="p">,</span>
-    <span class="mf">5.39204e+02</span><span class="p">,</span> <span class="mf">5.77146e+02</span><span class="p">,</span> <span class="mf">5.92941e+02</span><span class="p">,</span> <span class="mf">6.00099e+02</span><span class="p">,</span> <span class="mf">6.12834e+02</span><span class="p">,</span>
-    <span class="mf">6.46837e+02</span><span class="p">,</span> <span class="mf">6.77287e+02</span><span class="p">,</span> <span class="mf">7.48517e+02</span><span class="p">,</span> <span class="mf">8.32218e+02</span><span class="p">,</span> <span class="mf">9.09681e+02</span><span class="p">,</span>
-    <span class="mf">9.82494e+02</span><span class="p">,</span> <span class="mf">1.06432e+03</span><span class="p">,</span> <span class="mf">1.13467e+03</span><span class="p">,</span> <span class="mf">1.34358e+03</span><span class="p">,</span> <span class="mf">1.58620e+03</span><span class="p">,</span>
-    <span class="mf">1.81183e+03</span><span class="p">,</span> <span class="mf">2.08410e+03</span><span class="p">,</span> <span class="mf">2.39729e+03</span><span class="p">,</span> <span class="mf">2.70024e+03</span><span class="p">,</span> <span class="mf">2.99618e+03</span><span class="p">,</span>
-    <span class="mf">3.48107e+03</span><span class="p">,</span> <span class="mf">4.09735e+03</span><span class="p">,</span> <span class="mf">5.00451e+03</span><span class="p">,</span> <span class="mf">6.11252e+03</span><span class="p">,</span> <span class="mf">7.46585e+03</span><span class="p">,</span>
-    <span class="mf">9.11881e+03</span><span class="p">,</span> <span class="mf">1.11377e+04</span><span class="p">,</span> <span class="mf">1.36037e+04</span><span class="p">,</span> <span class="mf">1.48997e+04</span><span class="p">,</span> <span class="mf">1.62005e+04</span><span class="p">,</span>
-    <span class="mf">1.85847e+04</span><span class="p">,</span> <span class="mf">2.26994e+04</span><span class="p">,</span> <span class="mf">2.49991e+04</span><span class="p">,</span> <span class="mf">2.61001e+04</span><span class="p">,</span> <span class="mf">2.73944e+04</span><span class="p">,</span>
-    <span class="mf">2.92810e+04</span><span class="p">,</span> <span class="mf">3.34596e+04</span><span class="p">,</span> <span class="mf">3.69786e+04</span><span class="p">,</span> <span class="mf">4.08677e+04</span><span class="p">,</span> <span class="mf">4.99159e+04</span><span class="p">,</span>
-    <span class="mf">5.51656e+04</span><span class="p">,</span> <span class="mf">6.73794e+04</span><span class="p">,</span> <span class="mf">8.22974e+04</span><span class="p">,</span> <span class="mf">9.46645e+04</span><span class="p">,</span> <span class="mf">1.15624e+05</span><span class="p">,</span>
-    <span class="mf">1.22773e+05</span><span class="p">,</span> <span class="mf">1.40000e+05</span><span class="p">,</span> <span class="mf">1.64999e+05</span><span class="p">,</span> <span class="mf">1.95008e+05</span><span class="p">,</span> <span class="mf">2.30014e+05</span><span class="p">,</span>
-    <span class="mf">2.67826e+05</span><span class="p">,</span> <span class="mf">3.20646e+05</span><span class="p">,</span> <span class="mf">3.83884e+05</span><span class="p">,</span> <span class="mf">4.12501e+05</span><span class="p">,</span> <span class="mf">4.56021e+05</span><span class="p">,</span>
-    <span class="mf">4.94002e+05</span><span class="p">,</span> <span class="mf">5.78443e+05</span><span class="p">,</span> <span class="mf">7.06511e+05</span><span class="p">,</span> <span class="mf">8.60006e+05</span><span class="p">,</span> <span class="mf">9.51119e+05</span><span class="p">,</span>
-    <span class="mf">1.05115e+06</span><span class="p">,</span> <span class="mf">1.16205e+06</span><span class="p">,</span> <span class="mf">1.28696e+06</span><span class="p">,</span> <span class="mf">1.33694e+06</span><span class="p">,</span> <span class="mf">1.40577e+06</span><span class="p">,</span>
-    <span class="mf">1.63654e+06</span><span class="p">,</span> <span class="mf">1.90139e+06</span><span class="p">,</span> <span class="mf">2.23130e+06</span><span class="p">,</span> <span class="mf">2.72531e+06</span><span class="p">,</span> <span class="mf">3.32871e+06</span><span class="p">,</span>
-    <span class="mf">4.06569e+06</span><span class="p">,</span> <span class="mf">4.96585e+06</span><span class="p">,</span> <span class="mf">6.06530e+06</span><span class="p">,</span> <span class="mf">6.70319e+06</span><span class="p">,</span> <span class="mf">7.40817e+06</span><span class="p">,</span>
-    <span class="mf">8.18730e+06</span><span class="p">,</span> <span class="mf">9.04836e+06</span><span class="p">,</span> <span class="mf">9.99999e+06</span><span class="p">,</span> <span class="mf">1.16183e+07</span><span class="p">,</span> <span class="mf">1.38403e+07</span><span class="p">,</span>
-    <span class="mf">1.49182e+07</span><span class="p">,</span> <span class="mf">1.96403e+07</span><span class="p">])</span>
-
-<span class="c1"># flip group edges to have highest energies first, since fastest groups have the lowest index</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># OpenMC stores group boundaries in ascending energy order.</span>
 <span class="n">E</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">flip</span><span class="p">(</span><span class="n">group_edges</span><span class="p">)</span>
-<span class="c1"># compute the group widths</span>
+<span class="c1"># Compute the group widths.</span>
 <span class="n">dE</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">diff</span><span class="p">(</span><span class="n">E</span><span class="p">)</span>
-<span class="c1"># compute the group midpoints</span>
+<span class="c1"># Compute the group midpoints.</span>
 <span class="n">Emid</span> <span class="o">=</span> <span class="n">E</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">dE</span><span class="o">/</span><span class="mi">2</span>
 </pre></div>
 </div>
@@ -443,27 +376,33 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
 
-<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span><span class="mi">0</span><span class="p">:</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">Emid</span> <span class="o">*</span> <span class="n">flux</span> <span class="o">/</span> <span class="n">dE</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;flux&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Lethargy Flux&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-    <span class="c1"># plt.savefig(&quot;./images/pincell_lethargy_spectrum.png&quot;)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">semilogx</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Flux&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Lethargy Flux&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Normalized flux per unit lethargy&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="c1"># fig.savefig(&quot;./images/pincell_lethargy_spectrum.png&quot;)</span>
     <span class="c1"># plt.show()</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">()</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">()</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">flux</span> <span class="o">/</span> <span class="n">dE</span>
     <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">y</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s1">&#39;steps&#39;</span><span class="p">,</span><span class="n">label</span><span class="o">=</span><span class="s1">&#39;flux&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Flux&#39;</span><span class="p">)</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
-    <span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
-    <span class="c1"># plt.savefig(&quot;./images/pincell_spectrum.png&quot;)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">loglog</span><span class="p">(</span><span class="n">E</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">drawstyle</span><span class="o">=</span><span class="s2">&quot;steps&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Flux&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="s2">&quot;Flux&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Energy (eV)&quot;</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s2">&quot;center&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Normalized flux per unit energy (eV$^{-1}$)&quot;</span><span class="p">)</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="n">ax</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="c1"># fig.savefig(&quot;./images/pincell_spectrum.png&quot;)</span>
     <span class="c1"># plt.show()</span>
 </pre></div>
 </div>
