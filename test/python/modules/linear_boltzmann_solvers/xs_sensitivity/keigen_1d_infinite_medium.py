@@ -33,10 +33,11 @@ if __name__ == "__main__":
     test_dir = os.path.dirname(__file__)
     sigma_t = 1.0
     sigma_s = 0.2
-    sigma_f = 0.45
-    production = 0.9
-    nu = production / sigma_f
-    analytic_production_sens = nu / (sigma_t - sigma_s)
+    # k = nu_sigma_f / (sigma_t - sigma_s) for a 1-group, homogeneous, infinite (fully reflected)
+    # medium, so dk/d(nu_sigma_f) = 1 / (sigma_t - sigma_s) -- independent of the fissile XS
+    # values (sigma_f=0.45, production=nu_sigma_f=0.9 in xs_sensitivity_fissile_1g.xs) themselves,
+    # since k is linear in nu_sigma_f for a fixed medium.
+    analytic_production_sens = 1.0 / (sigma_t - sigma_s)
 
     n_cells = 20
     nodes = [i / n_cells for i in range(n_cells + 1)]

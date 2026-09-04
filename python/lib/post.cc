@@ -39,8 +39,22 @@ WrapPostprocessors(py::module& post)
     ----------
     problem : LBSProblem
         A handle to an existing LBS problem.
+    block_ids : List[int], optional
+        Block restriction for the postprocessor. Empty/unspecified means no block restriction.
+    logical_volumes : List[LogicalVolume], optional
+        Logical volumes to restrict the computation to.
     value_type : str, optional
         Type of value to compute: 'integral' (default), 'max', 'min', or 'avg'.
+    group : int, optional
+        Single group to compute (mutually exclusive with groupset).
+    groupset : int, optional
+        Single groupset to compute (mutually exclusive with group).
+    multiplier : float, optional
+        Constant multiplier. Default 1.0.
+    group_multipliers : List[float], optional
+        Group-wise multipliers, one per group.
+    xs_multiplier : str, optional
+        Name of a cross-section multiplier.
     )"
   );
   vp.def(
@@ -96,6 +110,40 @@ WrapPostprocessors(py::module& post)
 
     sigma_t sensitivities use angular fluxes. Scattering and production
     sensitivities use flux moments.
+
+    Parameters
+    ----------
+    problem : DiscreteOrdinatesProblem
+        A handle to an existing discrete ordinates problem.
+    block_ids : List[int], optional
+        Block restriction for the postprocessor. Empty/unspecified means no block restriction.
+    logical_volumes : List[LogicalVolume], optional
+        Logical volumes to restrict the computation to.
+    sensitivity_type : str, optional
+        Sensitivity type: 'sigma_t' (default), 'scatter', or 'production'.
+    group : int, optional
+        Group for sigma_t or production sensitivities.
+    moment : int, optional
+        Scattering moment/order for scatter sensitivities. Aliased by 'ell'; specify at
+        most one of the two.
+    ell : int, optional
+        Alias for 'moment'. Specify at most one of 'moment' and 'ell'.
+    from_group : int, optional
+        Source group for the scatter coefficient.
+    to_group : int, optional
+        Destination group for the scatter coefficient.
+    relative : bool, optional
+        Return relative sensitivities x*dR/dx instead of dR/dx. Default False.
+    forward_flux_moments : str, optional
+        Forward flux-moment file prefix. Empty (default) uses the current phi.
+    adjoint_flux_moments : str, optional
+        Adjoint flux-moment file prefix. Empty (default) uses the current phi.
+    forward_angular_fluxes : str, optional
+        Forward angular-flux file prefix. Empty (default) uses the current psi.
+    adjoint_angular_fluxes : str, optional
+        Adjoint angular-flux file prefix. Empty (default) uses the current psi.
+    flux_moments_single_file : bool, optional
+        Read flux moments from a single file instead of one file per rank. Default False.
     )"
   );
   xs_sens.def(

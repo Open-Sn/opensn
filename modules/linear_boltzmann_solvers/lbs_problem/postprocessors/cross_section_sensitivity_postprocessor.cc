@@ -34,6 +34,8 @@ CrossSectionSensitivityPostprocessor::GetInputParameters()
     "sensitivity_type", "sigma_t", "Sensitivity type: 'sigma_t', 'scatter', or 'production'.");
   params.AddOptionalParameter("group", 0, "Group for sigma_t or production sensitivities.");
   params.AddOptionalParameter("moment", 0, "Scattering moment/order for scatter sensitivities.");
+  params.AddOptionalParameter(
+    "ell", 0, "Alias for 'moment'. Specify either 'moment' or 'ell', not both.");
   params.AddOptionalParameter("from_group", 0, "Source group for scatter coefficient.");
   params.AddOptionalParameter("to_group", 0, "Destination group for scatter coefficient.");
   params.AddOptionalParameter("relative", false, "Return relative sensitivities x dR/dx.");
@@ -462,26 +464,20 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
       continue;
 
     const auto& chi = xs->GetChi();
-    const auto& sigma_f = xs->GetSigmaFission();
     const auto& nu_sigma_f = xs->GetNuSigmaF();
 
-    OpenSnLogicalErrorIf(group >= sigma_f.size() or group >= nu_sigma_f.size(),
+    OpenSnLogicalErrorIf(group >= nu_sigma_f.size(),
                          "Production sensitivity group is outside the fission XS data.");
     OpenSnLogicalErrorIf(chi.size() < do_problem_->GetNumGroups(),
                          "The fission spectrum does not contain all energy groups.");
 
-    double coefficient = 0.0;
-    if (relative_)
-      coefficient = nu_sigma_f[group];
-    else if (sigma_f[group] != 0.0)
-      coefficient = nu_sigma_f[group] / sigma_f[group];
-    else
-    {
-      OpenSnInvalidArgumentIf(nu_sigma_f[group] != 0.0,
-                              "Cannot compute nu from nu_sigma_f / sigma_f for a group with "
-                              "zero sigma_f and nonzero nu_sigma_f.");
-      coefficient = 0.0;
-    }
+    // Sensitivity is with respect to nu_sigma_f (see post_processors.rst: absolute =
+    // dR/d(nu_sigma_f), relative = nu_sigma_f * dR/d(nu_sigma_f)), not sigma_f - the
+    // loop below already accumulates dR/d(nu_sigma_f) directly, so the absolute case
+    // needs no extra factor. Scaling by nu_sigma_f/sigma_f (i.e. nu, holding nu fixed)
+    // would instead give dR/d(sigma_f), a different coefficient than the one this
+    // function is documented to report.
+    const double coefficient = relative_ ? nu_sigma_f[group] : 1.0;
 
     if (coefficient == 0.0)
       continue;
