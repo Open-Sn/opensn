@@ -319,6 +319,27 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
+  /**
+   * Flag indicating if OpenSn is compiled with GPU-aware MPI.
+   * This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks
+   * without copied back from the host. This acceleration significantly reduces sweep time for
+   * intra-node GPU data transfers.
+   * \note Memory error will be thrown when MPI library is not compiled with GPU support.
+   */
+  static constexpr bool use_gpu_aware_mpi =
+#ifdef __OPENSN_USE_GPU_AWARE_MPI__
+    true;
+#else
+    false;
+#endif
+  /**
+   * Flag indicating if GPU and CPU can directly access memory of each other.
+   * It returns ``true`` when device-allocated memory can be accessed directly by the host without
+   * having the driver performing implicit copies. It enables fast non-copy path for delayed flux
+   * in AAH sweep for both local and non-local.
+   */
+  static const bool has_integrated_memory;
+
 protected:
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);

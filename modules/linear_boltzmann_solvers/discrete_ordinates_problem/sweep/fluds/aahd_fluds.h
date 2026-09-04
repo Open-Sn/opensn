@@ -55,9 +55,24 @@ struct AAHD_DelayedLocalBank : public AAHD_Bank
 {
   AAHD_DelayedLocalBank() = default;
   /// Member constructor.
-  AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size) : AAHD_Bank(size * stride_size)
-  {
-  }
+  AAHD_DelayedLocalBank(std::size_t size, std::size_t stride_size);
+
+  /// Update views.
+  void UpdateViews(std::span<double>& view, std::span<double>& old_view);
+  /// Set new delayed values to old delayed values.
+  void SetOldToNew();
+  /// Set old delayed values to new delayed values.
+  void SetNewToOld();
+  /// Upload the old delayed values to the device asynchronously.
+  void UploadOldToDevice(crb::Stream& stream);
+
+  /// Get the device storage the sweep reads the old delayed values from.
+  double* GetOldDeviceStorage();
+
+  /// Host storage for old delayed bank.
+  crb::HostVector<double> host_old_storage;
+  /// Device storage for old delayed bank, only allocated for integrated memory.
+  crb::DeviceMemory<double> device_old_storage;
 };
 
 /// Non-local bank storage structure.
@@ -99,6 +114,8 @@ struct AAHD_NonLocalDelayedBank : public AAHD_NonLocalBank
 
   /// Host storage for current delayed bank.
   crb::HostVector<double> host_current_storage;
+  /// Device storage for current delayed bank.
+  crb::DeviceMemory<double> device_current_storage;
 };
 
 /// AAH FLUDS for device.
@@ -204,10 +221,8 @@ protected:
   /// Device storage of local angular fluxes.
   crb::DeviceMemory<double> local_psi_;
 
-  /// Delayed local bank for angular fluxes.
+  /// Delayed local bank for old and new angular fluxes.
   AAHD_DelayedLocalBank delayed_local_psi_bank_;
-  /// Delayed local bank for old angular fluxes.
-  AAHD_DelayedLocalBank delayed_local_psi_old_bank_;
 
   /// Non-local bank for incoming angular fluxes.
   AAHD_NonLocalBank nonlocal_incoming_psi_bank_;
