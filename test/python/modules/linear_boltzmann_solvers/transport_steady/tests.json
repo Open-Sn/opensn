@@ -273,8 +273,48 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_5_cycles_2_restart.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_5_cycles_2_restart_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD (CBC)",
     "num_procs": 4,
     "weight_class": "intermediate",
     "checks": [
@@ -313,8 +353,48 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_crichardson_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_5_cycles_2_bicgstab.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55396,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.02943,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_5_cycles_2_bicgstab_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD (CBC)",
     "num_procs": 4,
     "weight_class": "intermediate",
     "checks": [
@@ -928,6 +1008,25 @@
   {
     "file": "transport_3d_4_cycles_1.py",
     "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.555349,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000374343,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_4_cycles_1_cbc.py",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD (CBC)",
     "num_procs": 4,
     "checks": [
       {

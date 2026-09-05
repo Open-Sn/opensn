@@ -175,7 +175,7 @@ mesh, source, or groupset definitions.
 This selects the sweep type:
 
 * ``"AAH"``: the aggregated sweeper with cycle breaking
-* ``"CBC"``: the cell-by-cell sweeper
+* ``"CBC"``: the cell-by-cell sweeper with cycle breaking
 
 ``use_gpus``
 ------------
@@ -290,35 +290,25 @@ Example:
 
 If omitted, the default is ``"AAH"``.
 
-Operationally, the two sweep types are different:
+Operationally, the two sweep types differ in execution model:
 
-* ``"AAH"`` is the more general aggregated sweeper and should be treated as the
-  default production choice.
-* ``"CBC"`` is a cell-by-cell sweeper that preserves exact cell-to-cell
-  dependencies.
-
-The practical differences are:
-
-* ``AAH`` has explicit delayed-angular-flux machinery for cycle handling.
-* ``AAH`` can break both local and inter-partition sweep cycles by removing
-  feedback-arc-set edges and lagging the corresponding angular-flux
-  dependencies.
-* ``CBC`` does not support local sweep cycles.
+* ``"AAH"`` waits for its nonlocal dependencies and sweeps a levelized local
+  cell graph.
+* ``"CBC"`` sweeps locally ready cells eagerly and communicates face data as it
+  becomes available.
+* Both ``AAH`` and ``CBC`` can break cyclic sweep dependencies by storing and
+  lagging the corresponding angular fluxes.
+* GPU ``CBC``/``CBCD`` does not currently support CBC cycle breaking.
 
 .. note::
 
-   In the ``AAH`` implementation, the lagged data is tied specifically to
-   cycle-breaking dependencies. It is not a general statement that all angular
-   fluxes are always lagged.
+   Lagged data is tied specifically to cycle-breaking dependencies. It is not a
+   general statement that all angular fluxes are always lagged.
 
 Practical recommendation:
 
-* ``AAH`` remains the default production choice and is the safer option for
-  most users, particularly for problems with cyclic sweep dependencies.
+* ``AAH`` remains the default sweep type.
 * Both ``AAH`` and ``CBC`` support time-dependent (transient) mode.
-* Choose ``CBC`` only when the sweep graph is known to be acyclic or when
-  you have verified it meets the acyclicity requirement for your specific
-  problem.
 
 Problem Modes
 =============
@@ -356,10 +346,11 @@ later.
 
 Current restrictions:
 
-* only ``"AAH"`` is supported for GPU use,
+* both ``"AAH"`` and ``"CBC"`` are supported for GPU use,
 * curvilinear problems do not support GPU acceleration,
 * time-dependent problems do not support GPU acceleration,
-* adjoint problems do not support GPU acceleration.
+* adjoint problems do not support GPU acceleration,
+* ``"CBC"`` on GPUs does not currently support CBC cycle breaking.
 
 Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.
