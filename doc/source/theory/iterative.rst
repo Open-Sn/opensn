@@ -693,16 +693,15 @@ accelerated power iteration: the outer iteration is not allowed to
 declare convergence until this restricted transport-current balance is
 sufficiently small and the current CMFD correction has not been skipped.
 
-What counts as "sufficiently small" is user-selectable. If a fixed
-transport-current residual tolerance is supplied, the outer iteration is
-gated on that value directly. Because the achievable residual floor
-depends on the coarse-mesh construction and current closure, and is not
-known in advance, OpenSn instead uses a self-calibrating check by default
-when no fixed tolerance is supplied: the gate opens once the residual has
-stopped decreasing meaningfully and the accelerated eigenvalue has stopped
-moving, relative to the outer k-eigenvalue tolerance, for several
-consecutive power iterations. Both criteria still require the current
-correction to not have been skipped.
+What counts as "sufficiently small" is user-selectable via a fixed
+transport-current residual tolerance, against which the outer iteration is
+gated directly. Because the achievable residual floor depends on the
+coarse-mesh construction and current closure, and is not known in advance,
+a value that is too tight can force iterations well past the point where
+the eigenvalue has already reached the requested accuracy; a value that is
+too loose can let the outer iteration declare convergence before the
+low-order correction is actually consistent with transport. Either way,
+the gate also requires the current correction to not have been skipped.
 
 Matrix form and coarse solve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~

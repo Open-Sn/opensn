@@ -300,6 +300,14 @@ public:
   std::shared_ptr<FieldFunctionGridBased> CreateFieldFunction(
     const std::string& name, const std::string& xs_name, double power_normalization_target = -1.0);
 
+  /**
+   * Returns the scale factor (power_normalization_target / global total power) that
+   * CreateFieldFunction(..., "power", power_normalization_target) applies internally.
+   * Exposed directly so callers can apply consistent power normalization to their own
+   * derived quantities without needing a field function.
+   */
+  double ComputeFieldFunctionPowerScaleFactor(double power_normalization_target) const;
+
   bool ReadRestartData(const RestartDataHook& extra_reader = {},
                        const std::filesystem::path& read_path = {},
                        bool allow_transient_initialization_from_steady = false);
@@ -414,13 +422,22 @@ private:
   void InitializeParrays();
   std::string MakeScalarFluxFieldFunctionName(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeScalarFluxFieldFunctionData(unsigned int g, unsigned int m) const;
-  double ComputeFieldFunctionPowerScaleFactor(double power_normalization_target) const;
   std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name) const;
   std::vector<double> ComputePowerFieldFunctionData(double& local_total_power) const;
   /// Initializes data carriers to GPUs and memory pinner.
   void InitializeGPUExtras();
   /// Reset data carriers to null and unpin memory.
   void ResetGPUCarriers();
+  /**
+   * Rebuilds ONLY outflow_carrier_ and mesh_carrier_ (which bakes in outflow_carrier_'s device
+   * pointers, see MeshCarrier::Assemble) -- leaves total_xs_carrier_/source_pinner_/phi_pinner_
+   * untouched, since none of them depend on outflow storage. Use this instead of
+   * ResetGPUCarriers+InitializeGPUExtras whenever only the outflow storage mode changed; a full
+   * rebuild is unnecessary GPU churn (re-transfers cross sections and re-pins flux/source
+   * vectors for no reason) and, at scale, needless surface area for anything that can go wrong
+   * in carrier construction.
+   */
+  void RebuildOutflowDependentGPUCarriers();
 
   /// Initialize groupsets
   void InitializeGroupsets(const InputParameters& params);

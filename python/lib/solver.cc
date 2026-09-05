@@ -204,6 +204,30 @@ WrapLBS(py::module& slv)
     py::arg("power_normalization_target") = -1.0
   );
   lbs_problem.def(
+    "ComputeFieldFunctionPowerScaleFactor",
+    &LBSProblem::ComputeFieldFunctionPowerScaleFactor,
+    R"(
+    Compute the scale factor that would normalize the current scalar flux's total power to a
+    target value.
+
+    Parameters
+    ----------
+    power_normalization_target : float
+        Target total power (must be positive). The returned factor is
+        ``power_normalization_target / global_total_power``, where ``global_total_power`` is the
+        same MPI-reduced, kappa-weighted total power ``CreateFieldFunction(..., "power", ...)``
+        and the ``power`` field function use.
+
+    Notes
+    -----
+    This does not mutate any solver state. It is the same scale factor
+    ``CreateFieldFunction(..., "power", power_normalization_target)`` applies internally, exposed
+    directly so callers can apply it to their own derived quantities (e.g. postprocessor output)
+    without needing a field function.
+    )",
+    py::arg("power_normalization_target")
+  );
+  lbs_problem.def(
     "GetTime",
     &LBSProblem::GetTime,
     R"(

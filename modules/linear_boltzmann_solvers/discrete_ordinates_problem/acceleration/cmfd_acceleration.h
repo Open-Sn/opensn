@@ -70,14 +70,15 @@ private:
                               double applied_damping,
                               bool skipped_correction);
   bool EvaluateBalanceConvergence(const BalanceResidual& transport_current_balance_residual,
-                                  bool skipped_correction,
-                                  double accelerated_k_change);
+                                  bool skipped_correction) const;
   void ProbeAutomaticClosure(double k_eff,
                              const std::vector<double>& coarse_phi,
                              const std::vector<double>& coarse_source_phi);
   void InitializeLinearSystem();
   void ConfigureCoarseLinearSolver(bool direct);
   void ConfigureTransportSolve(unsigned int max_iterations, double residual_tolerance);
+  void SnapshotOriginalTransportSolve();
+  void RestoreOriginalTransportSolve();
   void BuildCoarseFluxCache();
   void BuildFaceCurrentCache();
   void AssembleOperator();
@@ -144,10 +145,9 @@ private:
   const unsigned int inactive_iterations_;
   const unsigned int update_wgs_max_its_;
   const double update_wgs_abs_tol_;
+  std::vector<unsigned int> original_wgs_max_its_;
+  std::vector<double> original_wgs_residual_tolerance_;
   const double balance_residual_tolerance_;
-  const bool balance_residual_tolerance_explicit_;
-  const unsigned int balance_residual_confirmation_iterations_;
-  const double balance_residual_plateau_fraction_;
   const std::string coarse_solver_policy_;
   const std::size_t coarse_direct_solve_threshold_;
   const unsigned int first_group_ = 0;
@@ -166,10 +166,7 @@ private:
   double last_restrict_old_time_ = 0.0;
   double transport_start_time_ = 0.0;
   double old_fission_production_ = 0.0;
-  unsigned int consecutive_skipped_corrections_ = 0;
   bool using_direct_coarse_solver_ = false;
-  double auto_previous_residual_ = -1.0;
-  unsigned int auto_confirmation_streak_ = 0;
   CMFDCoarseMesh coarse_mesh_;
   std::vector<double> coarse_phi_old_fine_;
   std::vector<double> coarse_phi_new_fine_;

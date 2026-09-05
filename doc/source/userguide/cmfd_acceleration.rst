@@ -17,10 +17,9 @@ With CMFD, each power iteration performs a configured number of high-order WGS
 transport update iterations, then applies a bounded low-order scalar-flux
 correction. The defaults use one WGS update iteration, automatic current
 closure, fixed correction relaxation, and a transport-current balance check
-before outer power iteration is allowed to converge. By default that balance
-check is self-calibrating and requires no hand-picked tolerance; supplying
-``balance_residual_tolerance`` explicitly switches to a fixed-threshold check
-instead. See the description of ``balance_residual_tolerance`` below.
+before outer power iteration is allowed to converge, against a fixed
+tolerance (``balance_residual_tolerance``). See the description of
+``balance_residual_tolerance`` below.
 
 CMFD owns the WGS update controls through ``update_wgs_max_its`` and
 ``update_wgs_abs_tol``. The default is a one-iteration transport update before
@@ -62,9 +61,8 @@ energy aggregation:
        relaxation=0.5,
        update_wgs_max_its=1,
        update_wgs_abs_tol=1.0e-12,
-       # balance_residual_tolerance intentionally left unset: CMFD self-calibrates
-       # instead of gating on a hand-picked number. Pass it explicitly only when a
-       # fixed, reproducible target is actually needed (e.g. a benchmark comparison).
+       # balance_residual_tolerance left at its default (1.0e-6); pass it explicitly only
+       # when a different fixed target is actually needed (e.g. a benchmark comparison).
    )
 
    solver = PowerIterationKEigenSolver(
@@ -190,36 +188,11 @@ These are the options most users should tune.
   k-eigenvalue error, and it has no single correct absolute value: the
   residual floor CMFD can actually reach depends on the coarse-mesh
   construction, aggregation, and current closure, none of which are known in
-  advance. **If this parameter is left unset (the default), CMFD instead uses
-  a self-calibrating false-convergence check** driven by
-  ``balance_residual_confirmation_iterations`` and
-  ``balance_residual_plateau_fraction`` below, and no tolerance needs to be
-  chosen. Supplying ``balance_residual_tolerance`` explicitly always selects
-  the fixed-threshold behavior instead, even if the supplied value equals the
-  previous default of ``1.0e-6``. Use an explicit value when a fixed,
-  reproducible target is actually needed, for example to match a benchmark
-  setting or a prior study. A fixed tolerance should not automatically be
-  made tighter than the requested outer ``k_tol``; for large 3D problems,
-  ``10*k_tol`` can be too strict and can force iterations well past the point
-  where the eigenvalue has already reached the requested accuracy. That is
-  exactly the situation the self-calibrating default is meant to avoid having
-  to tune by hand.
-
-``balance_residual_confirmation_iterations``
-  Number of consecutive power iterations, once the accelerated k-eigenvalue
-  has stopped changing (within the outer solver's own k-eigenvalue tolerance)
-  and the CMFD correction is being applied (not skipped), required for the
-  transport-current balance residual to be considered a stable plateau rather
-  than still meaningfully converging. The default is ``3``. Only used by the
-  self-calibrating check, i.e. when ``balance_residual_tolerance`` is left
-  unset.
-
-``balance_residual_plateau_fraction``
-  Relative iteration-to-iteration change below which the transport-current
-  balance residual is considered to have stopped decreasing (a plateau)
-  rather than still converging. The default is ``0.1`` (10%). Only used by
-  the self-calibrating check, i.e. when ``balance_residual_tolerance`` is
-  left unset.
+  advance. The default is ``1.0e-6``. A tighter value should not
+  automatically be assumed to be better: it should not be made
+  tighter than the requested outer ``k_tol`` without reason, since for large
+  3D problems an unnecessarily strict value can force iterations well past
+  the point where the eigenvalue has already reached the requested accuracy.
 
 Developer And Debug Options
 ===========================
@@ -299,15 +272,6 @@ separate line reports whether the CMFD-specific convergence gate is satisfied:
 
    PI iteration = 24, k_eff = 0.9293662, k_eff_change = 5.74378e-09; WGS = iteration_limit
    CMFD convergence check = not_satisfied, transport-current balance residual = 2.300000e-06 (balance_residual_tolerance = 1.000000e-06)
-
-That example is from a fixed ``balance_residual_tolerance``. With the default
-self-calibrating check (``balance_residual_tolerance`` left unset), the same
-line instead reports the confirmation-streak progress toward
-``balance_residual_confirmation_iterations``:
-
-.. code-block:: text
-
-   CMFD convergence check = not_satisfied, transport-current balance residual = 4.414573e-08 (auto false-convergence streak = 1/3)
 
 The PI solver declares convergence only when both the eigenvalue tolerance and
 the CMFD convergence check are satisfied. If a correction is rejected, the line
