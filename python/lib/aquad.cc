@@ -42,9 +42,21 @@ GetScatteringOrder(py::kwargs& params)
 void
 WrapHarmonicIndices(py::module& aquad)
 {
-  py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad, "HarmonicIndices");
-  harmonic_indices.def_readonly("ell", &AngularQuadrature::HarmonicIndices::ell);
-  harmonic_indices.def_readonly("m", &AngularQuadrature::HarmonicIndices::m);
+  py::class_<AngularQuadrature::HarmonicIndices> harmonic_indices(aquad,
+                                                                  "HarmonicIndices",
+                                                                  R"(
+    Spherical harmonic indices for a flux moment.
+
+    Returned by :py:meth:`pyopensn.aquad.AngularQuadrature.GetMomentToHarmonicsIndexMap`, one
+    entry per flux moment, giving the (degree, order) pair used to expand that moment.
+
+    Wrapper of :cpp:class:`opensn::AngularQuadrature::HarmonicIndices`.
+    )");
+  harmonic_indices.def_readonly("ell",
+                                &AngularQuadrature::HarmonicIndices::ell,
+                                "Degree (Legendre order) of the spherical harmonic.");
+  harmonic_indices.def_readonly(
+    "m", &AngularQuadrature::HarmonicIndices::m, "Order of the spherical harmonic.");
 }
 
 } // namespace

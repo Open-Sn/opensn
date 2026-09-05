@@ -535,6 +535,180 @@ With energy restriction:
    # result[0] is a vector with one element (the single group)
    print(result[0][0])
 
+Cross-Section Sensitivity Postprocessor
+========================================
+
+The :py:class:`pyopensn.post.CrossSectionSensitivityPostprocessor` computes
+adjoint-weighted sensitivities of a response to a total, scattering, or
+production (``nu_sigma_f``) cross-section coefficient, from forward and
+adjoint angular fluxes or flux moments. It is intended for discrete
+ordinates problems that have already been solved in a forward and in an
+adjoint configuration.
+
+Basic Usage
+-----------
+
+``"sigma_t"`` sensitivities use angular fluxes (``psi``); ``"scatter"`` and
+``"production"`` sensitivities use flux moments (``phi``). A single problem
+object only holds one state at a time, so a typical pattern solves forward,
+writes that state to disk, solves adjoint, then builds the postprocessor
+against the current (adjoint) state and the saved forward files:
+
+.. code-block:: python
+
+   from pyopensn.post import CrossSectionSensitivityPostprocessor
+
+   # ... solve forward, then phys.WriteAngularFluxes("forward_psi")
+   # ... solve adjoint (phys now holds the adjoint state)
+
+   sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="sigma_t",
+       forward_angular_fluxes="forward_psi",
+   )
+   sens.Execute()
+   result = sens.GetValue()
+
+Sensitivity Types
+------------------
+
+* ``"sigma_t"`` (default) — total cross-section sensitivity. One column per
+  selected group.
+* ``"scatter"`` — scattering-transfer coefficient sensitivity for a single
+  ``from_group -> to_group`` pair. One column per selected scattering
+  moment (Legendre order).
+* ``"production"`` — fission production (``nu_sigma_f``) sensitivity for a
+  single group. Always a single column.
+
+.. code-block:: python
+
+   # Scattering sensitivity for group 2 -> group 1, moment 0
+   scatter_sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="scatter",
+       from_group=2,
+       to_group=1,
+       moment=0,
+   )
+
+   # Production sensitivity for group 0
+   prod_sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="production",
+       group=0,
+   )
+
+``from_group`` and ``to_group`` are required for ``"scatter"``. ``group`` is
+required for ``"production"``. For ``"sigma_t"``, omitting ``group``
+computes sensitivities for every group; for ``"scatter"``, omitting
+``moment`` (equivalently ``ell``) computes sensitivities for every
+scattering moment up to the problem's scattering order. ``moment`` and
+``ell`` are aliases for the same input and cannot both be supplied.
+
+Spatial Restriction
+--------------------
+
+As with :py:class:`pyopensn.post.VolumePostprocessor`, ``block_ids`` and
+``logical_volumes`` restrict the cells included in the sensitivity
+integral, and can be combined:
+
+.. code-block:: python
+
+   from pyopensn.logvol import RPPLogicalVolume
+
+   lv = RPPLogicalVolume(xmin=0.0, xmax=1.0, ymin=0.0, ymax=0.5)
+   sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="sigma_t",
+       logical_volumes=[lv],
+       block_ids=[1],
+   )
+
+Each logical volume produces one row of results; with no logical volumes,
+there is a single row over the (optionally block-restricted) domain.
+
+Forward and Adjoint State
+--------------------------
+
+By default, both the forward and the adjoint terms are read from the
+problem's *current* state. To compare an explicit forward and adjoint
+solve, write one of them to disk and point the postprocessor at it:
+
+* ``forward_angular_fluxes`` / ``adjoint_angular_fluxes`` — file prefixes
+  written by ``WriteAngularFluxes``; used for ``"sigma_t"``.
+* ``forward_flux_moments`` / ``adjoint_flux_moments`` — file prefixes
+  written by ``WriteFluxMoments``; used for ``"scatter"`` and
+  ``"production"``, and by ``ApplyKEigenvalueScaling`` below.
+* ``flux_moments_single_file`` — set ``True`` if the flux moments were
+  written to a single file instead of one file per rank.
+
+Leaving a prefix empty (the default) uses the problem's current state for
+that term.
+
+Relative Sensitivities
+------------------------
+
+By default, results are absolute sensitivities ``dR/dx``. Set
+``relative=True`` to scale by the cross-section value itself, ``x * dR/dx``,
+which is dimensionless and easier to compare across coefficients:
+
+.. code-block:: python
+
+   sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="sigma_t",
+       relative=True,
+   )
+
+k-Eigenvalue Scaling
+-----------------------
+
+For k-eigenvalue problems, call
+:py:meth:`pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling`
+after ``Execute()`` to convert the computed sensitivities into first-order
+k-eigenvalue sensitivities, normalized by the fission-weighted inner product
+``<psi_adj, F psi>`` built from the same forward/adjoint flux-moment sources
+configured at construction. As above, this requires an actual forward and
+adjoint pair of states — leaving both prefixes empty would take the "forward"
+and "adjoint" terms from the same current state and would not produce a
+meaningful sensitivity:
+
+.. code-block:: python
+
+   # ... solve forward, then phys.WriteFluxMoments("forward_phi")
+   # ... solve adjoint (phys now holds the adjoint state)
+
+   sens = CrossSectionSensitivityPostprocessor(
+       problem=phys,
+       sensitivity_type="production",
+       group=0,
+       forward_flux_moments="forward_phi",
+   )
+   sens.Execute()
+   sens.ApplyKEigenvalueScaling(k_eff=1.00123)
+   result = sens.GetValue()
+
+``adjoint_flux_moments`` is left unset here because ``phys`` already holds
+the adjoint state at this point, so the default (current state) is correct
+for that term; only the forward term needs to be pointed at the saved file.
+
+Results
+-------
+
+After calling ``Execute()``, retrieve results with ``GetValue()``. The
+return value is a 2D array indexed as ``result[region][column]``, where
+``column`` runs over groups (``"sigma_t"``), scattering moments
+(``"scatter"``), or is a single entry (``"production"``):
+
+.. code-block:: python
+
+   sens.Execute()
+   result = sens.GetValue()
+
+   # Single region, sigma_t sensitivities for every group
+   for group_index, value in enumerate(result[0]):
+       print(f"Group {group_index}: {value}")
+
 Other Useful Post-Processing Paths
 ==================================
 

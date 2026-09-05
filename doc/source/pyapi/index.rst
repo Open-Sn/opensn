@@ -38,6 +38,8 @@ Function wrappers
    :template: function.rst
 
    math.VectorSpatialFunction
+   math.AngularFluxFunction
+   math.AngularFluxTimeFunction
 
 
 Angular quadrature
@@ -52,6 +54,13 @@ Quadrature points
    :template: python.rst
 
    aquad.QuadraturePointPhiTheta
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: noinit.rst
+
+   aquad.HarmonicIndices
 
 Base class
 ^^^^^^^^^^
@@ -292,6 +301,18 @@ Source
 
    source.PointSource
    source.VolumetricSource
+
+
+Post-processors
+----------------
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   post.VolumePostprocessor
+   post.CrossSectionSensitivityPostprocessor
 
 
 Cross section
