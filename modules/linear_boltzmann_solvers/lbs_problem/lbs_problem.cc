@@ -402,8 +402,9 @@ LBSProblem::ConfigureOutflowStorage(const bool include_internal_faces)
   cell_outflow_views_.clear();
   outflow_bank_ = OutflowBank(*grid_, num_groups_, store_internal_outflows_);
   cell_outflow_views_ = outflow_bank_.GetCellOutflowViews();
-  ResetGPUCarriers();
-  InitializeGPUExtras();
+  // Only the outflow storage mode changed here. Cross sections, mesh geometry, and the flux/
+  // source pinners are untouched, so a full GPU carrier rebuild is unnecessary.
+  RebuildOutflowDependentGPUCarriers();
 }
 
 const UnknownManager&
@@ -1235,6 +1236,11 @@ LBSProblem::InitializeGPUExtras()
 
 void
 LBSProblem::ResetGPUCarriers()
+{
+}
+
+void
+LBSProblem::RebuildOutflowDependentGPUCarriers()
 {
 }
 

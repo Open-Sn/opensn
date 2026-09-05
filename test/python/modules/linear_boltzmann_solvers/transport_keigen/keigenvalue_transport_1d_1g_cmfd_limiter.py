@@ -20,10 +20,14 @@ cmfd_limiter_stress = True
 cmfd_relaxation = 100.0
 cmfd_correction_max_attempts = 2
 cmfd_correction_min_damping = 1.0
-solver_max_iters = 2
+pi_solver_max_iters = 2
+cmfd_solver_max_iters = 3
 
-runpy.run_path(
+results = runpy.run_path(
     os.path.join(os.path.dirname(__file__), "keigenvalue_transport_1d_1g_cmfd.py"),
     init_globals=globals(),
     run_name="__main__",
 )
+
+assert results["pi_iterations"] == pi_solver_max_iters
+assert results["cmfd_iterations"] == cmfd_solver_max_iters

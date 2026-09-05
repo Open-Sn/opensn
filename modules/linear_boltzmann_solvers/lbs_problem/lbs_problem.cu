@@ -48,6 +48,25 @@ LBSProblem::ResetGPUCarriers()
 }
 
 void
+LBSProblem::RebuildOutflowDependentGPUCarriers()
+{
+  // exit if GPU acceleration is not enabled
+  if (not use_gpus_)
+    return;
+
+  if (not total_xs_carrier_)
+  {
+    ResetGPUCarriers();
+    InitializeGPUExtras();
+    return;
+  }
+  outflow_carrier_.reset();
+  mesh_carrier_.reset();
+  outflow_carrier_ = std::make_shared<OutflowCarrier>(*this);
+  mesh_carrier_ = std::make_shared<MeshCarrier>(*this, *total_xs_carrier_, *outflow_carrier_);
+}
+
+void
 LBSProblem::CheckCapableDevices()
 {
   std::uint32_t num_gpus = crb::get_num_gpus();

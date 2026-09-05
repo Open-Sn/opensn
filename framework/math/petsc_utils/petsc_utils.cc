@@ -369,6 +369,7 @@ CopyGlobalVecToSTLvector(Vec x,
   OpenSnPETScCall(VecRestoreArrayRead(local_vec, &x_ref));
 
   // Cleanup
+  OpenSnPETScCall(VecScatterDestroy(&scat));
   OpenSnPETScCall(ISDestroy(&global_set));
   OpenSnPETScCall(ISDestroy(&local_set));
 

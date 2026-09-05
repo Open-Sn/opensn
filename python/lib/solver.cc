@@ -204,6 +204,32 @@ WrapLBS(py::module& slv)
     py::arg("power_normalization_target") = -1.0
   );
   lbs_problem.def(
+    "ComputeFieldFunctionPowerScaleFactor",
+    &LBSProblem::ComputeFieldFunctionPowerScaleFactor,
+    R"(
+    Compute the scale factor that would normalize the current scalar flux's total power to a
+    target value.
+
+    This is a collective operation and must be called on all MPI ranks.
+
+    Parameters
+    ----------
+    power_normalization_target : float
+        Target total power (must be positive). The returned factor is
+        ``power_normalization_target / global_total_power``, where ``global_total_power`` is the
+        same MPI-reduced, kappa-weighted total power ``CreateFieldFunction(..., "power", ...)``
+        and the ``power`` field function use.
+
+    Notes
+    -----
+    This does not mutate any solver state. It is the same scale factor
+    ``CreateFieldFunction(..., "power", power_normalization_target)`` applies internally, exposed
+    directly so callers can apply it to their own derived quantities (e.g. postprocessor output)
+    without needing a field function.
+    )",
+    py::arg("power_normalization_target")
+  );
+  lbs_problem.def(
     "GetTime",
     &LBSProblem::GetTime,
     R"(
@@ -2241,7 +2267,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         structure in the low-order system. To target ``N`` total coarse groups, use
         ``(num_groups + N - 1) // N``.
     relaxation: float, default=0.5
-        Common option. Relaxation factor applied to the CMFD scalar-flux correction.
+        Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
         This is the requested correction strength. The correction limiter may damp or
         skip an individual correction if the requested update would produce an invalid
         k-eigenvalue, non-finite flux, or excessive negative scalar flux.
@@ -2279,7 +2305,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
         for solver experiments, especially with ``coarse_solver_policy="petsc_options"``.
     pi_max_its: int, default=50
-        Developer/debug. Maximum inner power iterations for the CMFD coarse k solve.
+        Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
         Increase only if the coarse k solve is not converging enough to give useful
         corrections.
     pi_k_tol: float, default=1.0e-8
@@ -2302,8 +2328,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         scalar-flux checks.
     inactive_iterations: int, default=0
         Developer/debug. Number of initial power iterations before applying CMFD
-        corrections. Transport update controls are still used during these
-        iterations.
+        corrections. These iterations retain the WGS settings configured on the problem.
+        CMFD applies its transport update controls starting with the first active iteration.
     coarse_solver_policy: str, default="auto"
         Developer/debug. Coarse solver policy. Valid choices are:
             - 'auto' : PETSc preonly+LU below ``coarse_direct_solve_threshold``
@@ -2313,8 +2339,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
         CMFD corrections from unconverged coarse linear solves are always skipped.
         The skipped correction uses the unaccelerated transport update for that power
-        iteration; after repeated skipped corrections, CMFD returns the raw transport
-        k update so that power iteration can continue to move.
+        iteration, including the raw transport k update so that power iteration can continue
+        to move.
     coarse_direct_solve_threshold: int, default=20000
         Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
         solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
