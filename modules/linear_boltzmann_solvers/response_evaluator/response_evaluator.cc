@@ -9,7 +9,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 
@@ -18,21 +18,16 @@ namespace mpi = mpicpp_lite;
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, ResponseEvaluator);
-
 InputParameters
 ResponseEvaluator::GetInputParameters()
 {
   InputParameters params;
-  params.SetGeneralDescription(
-    "A utility class for evaluating responses using precomputed adjoint solutions "
-    "and arbitrary forward sources.");
 
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "A handle to an existing LBS problem.");
   params.AddOptionalParameterBlock(
     "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
-  params.LinkParameterToBlock("options", "response::OptionsBlock");
+  // "options" follows the "response::OptionsBlock" parameter-block schema.
 
   return params;
 }
@@ -40,8 +35,7 @@ ResponseEvaluator::GetInputParameters()
 std::shared_ptr<ResponseEvaluator>
 ResponseEvaluator::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<ResponseEvaluator>("lbs::ResponseEvaluator", params);
+  return CreateObject<ResponseEvaluator>("lbs::ResponseEvaluator", params);
 }
 
 ResponseEvaluator::ResponseEvaluator(const InputParameters& params)
@@ -59,17 +53,15 @@ InputParameters
 ResponseEvaluator::GetOptionsBlock()
 {
   InputParameters params;
-  params.SetGeneralDescription("A block of options for the response evaluator for adding adjoint "
-                               "buffers and defining forward sources.");
 
   params.AddOptionalParameterArray(
     "buffers", {}, "An array of tables containing adjoint buffer specifications.");
-  params.LinkParameterToBlock("buffers", "response::BufferOptionsBlock");
+  // Each "buffers" entry follows the "response::BufferOptionsBlock" parameter-block schema.
 
   params.AddOptionalParameter("clear_sources", false, "A flag to clear existing sources.");
   params.AddOptionalParameterBlock(
     "sources", ParameterBlock(), "An array of tables containing source specification information.");
-  params.LinkParameterToBlock("sources", "response::SourceOptionsBlock");
+  // Each "sources" entry follows the "response::SourceOptionsBlock" parameter-block schema.
 
   return params;
 }
@@ -109,7 +101,6 @@ InputParameters
 ResponseEvaluator::GetBufferOptionsBlock()
 {
   InputParameters params;
-  params.SetGeneralDescription("Options for adding adjoint buffers to the response evaluator.");
 
   params.AddRequiredParameter<std::string>(
     "name",
@@ -152,11 +143,11 @@ InputParameters
 ResponseEvaluator::GetSourceOptionsBlock()
 {
   InputParameters params;
-  params.SetGeneralDescription("A table of various forward source specifications.");
 
   params.AddOptionalParameterArray(
     "material", {}, "An array of tables containing material source specifications.");
-  params.LinkParameterToBlock("material", "response::MaterialSourceOptionsBlock");
+  // Each "material" entry follows the "response::MaterialSourceOptionsBlock" parameter-block
+  // schema.
 
   params.AddOptionalParameterArray<std::shared_ptr<PointSource>>(
     "point", {}, "An array of tables containing point source handles.");
@@ -166,7 +157,8 @@ ResponseEvaluator::GetSourceOptionsBlock()
 
   params.AddOptionalParameterArray(
     "boundary", {}, "An array of tables containing boundary source specifications.");
-  params.LinkParameterToBlock("boundary", "response::BoundarySourceOptionsBlock");
+  // Each "boundary" entry follows the "response::BoundarySourceOptionsBlock" parameter-block
+  // schema.
 
   return params;
 }
@@ -176,8 +168,6 @@ ResponseEvaluator::GetBoundarySourceOptionsBlock()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Boundary source specification for response evaluations.");
-  params.SetClassName("Response Boundary Source");
   params.AddRequiredParameter<std::string>("name",
                                            "Boundary name that identifies the specific boundary");
   params.AddRequiredParameter<std::string>("type", "Boundary type specification.");
@@ -251,8 +241,6 @@ InputParameters
 ResponseEvaluator::GetMaterialSourceOptionsBlock()
 {
   InputParameters params;
-  params.SetGeneralDescription(
-    "Options for adding material-based forward sources to the response evaluator.");
 
   params.AddRequiredParameter<unsigned int>("block_id", "The block id the source belongs to.");
   params.AddRequiredParameterArray("strength", "The group-wise material source strength.");

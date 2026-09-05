@@ -13,7 +13,7 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/utils/hdf_utils.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <boost/graph/topological_sort.hpp>
@@ -102,14 +102,10 @@ ApplyConservativePositiveCorrection(Vector<double>& coefficients,
 
 } // namespace
 
-OpenSnRegisterObjectInNamespace(lbs, UncollidedProblem);
-
 InputParameters
 UncollidedProblem::GetInputParameters()
 {
   InputParameters params = LBSProblem::GetInputParameters();
-
-  params.SetClassName("UncollidedProblem");
 
   params.ChangeExistingParamToOptional("name", "UncollidedProblem");
 
@@ -118,7 +114,7 @@ UncollidedProblem::GetInputParameters()
     {},
     "Vacuum or reflecting boundary conditions. Reflecting boundaries must be planar, mutually "
     "orthogonal symmetry planes without an opposing reflecting plane.");
-  params.LinkParameterToBlock("boundary_conditions", "BoundaryOptionsBlock");
+  // Each "boundary_conditions" entry follows the "BoundaryOptionsBlock" parameter-block schema.
 
   params.AddOptionalParameterArray(
     "near_source", {}, "List of near-source logical volumes, one for each point source.");

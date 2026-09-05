@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/utils/error.h"
 #include "framework/utils/caliper_scopes.h"
 #include "framework/runtime.h"
@@ -16,15 +16,11 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, SteadyStateSourceSolver);
-
 InputParameters
 SteadyStateSourceSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
 
-  params.SetGeneralDescription("Implementation of a steady state solver. This solver calls the "
-                               "across-groupset (AGS) solver.");
   params.ChangeExistingParamToOptional("name", "SteadyStateSourceSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
@@ -35,8 +31,7 @@ SteadyStateSourceSolver::GetInputParameters()
 std::shared_ptr<SteadyStateSourceSolver>
 SteadyStateSourceSolver::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<SteadyStateSourceSolver>("lbs::SteadyStateSourceSolver", params);
+  return CreateObject<SteadyStateSourceSolver>("lbs::SteadyStateSourceSolver", params);
 }
 
 SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)

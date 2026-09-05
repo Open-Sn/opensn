@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/cross_section_sensitivity_postprocessor.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
@@ -13,8 +13,6 @@
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(lbs, CrossSectionSensitivityPostprocessor);
 
 InputParameters
 CrossSectionSensitivityPostprocessor::GetInputParameters()
@@ -59,8 +57,7 @@ CrossSectionSensitivityPostprocessor::GetInputParameters()
 std::shared_ptr<CrossSectionSensitivityPostprocessor>
 CrossSectionSensitivityPostprocessor::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<CrossSectionSensitivityPostprocessor>(
+  return CreateObject<CrossSectionSensitivityPostprocessor>(
     "lbs::CrossSectionSensitivityPostprocessor", params);
 }
 

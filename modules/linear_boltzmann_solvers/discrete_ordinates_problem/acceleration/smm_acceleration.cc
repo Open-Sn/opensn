@@ -1,6 +1,6 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
@@ -21,8 +21,6 @@
 
 namespace opensn
 {
-OpenSnRegisterObjectInNamespace(lbs, SMMAcceleration);
-
 InputParameters
 SMMAcceleration::GetInputParameters()
 {
@@ -41,8 +39,7 @@ std::shared_ptr<SMMAcceleration>
 SMMAcceleration::Create(const ParameterBlock& params)
 {
   log.Log0Warning() << "SMM acceleration is experimental. USE WITH CAUTION!" << std::endl;
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<SMMAcceleration>("lbs::SMMAcceleration", params);
+  return CreateObject<SMMAcceleration>("lbs::SMMAcceleration", params);
 }
 
 SMMAcceleration::SMMAcceleration(const InputParameters& params)

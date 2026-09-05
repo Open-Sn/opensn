@@ -6,13 +6,11 @@
 #include "framework/mesh/mesh_face.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "framework/mesh/raytrace/raytracer.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include <utility>
 
 namespace opensn
 {
-
-OpenSnRegisterObjectInNamespace(logvol, SurfaceMeshLogicalVolume);
 
 InputParameters
 SurfaceMeshLogicalVolume::GetInputParameters()
@@ -28,8 +26,7 @@ SurfaceMeshLogicalVolume::GetInputParameters()
 std::shared_ptr<SurfaceMeshLogicalVolume>
 SurfaceMeshLogicalVolume::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<SurfaceMeshLogicalVolume>("logvol::SurfaceMeshLogicalVolume", params);
+  return CreateObject<SurfaceMeshLogicalVolume>("logvol::SurfaceMeshLogicalVolume", params);
 }
 
 SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume(const InputParameters& params)

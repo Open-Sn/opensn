@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/functions/function.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/runtime.h"
@@ -15,15 +15,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(lbs, PointSource);
-
 InputParameters
 PointSource::GetInputParameters()
 {
   InputParameters params;
-
-  params.SetGeneralDescription("A multi-group isotropic point source.");
-  params.SetClassName("Point Source");
 
   params.AddRequiredParameterArray("location", "The (x, y, z) coordinate of the point source.");
   params.AddOptionalParameterArray(
@@ -45,8 +40,7 @@ PointSource::GetInputParameters()
 std::shared_ptr<PointSource>
 PointSource::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PointSource>("lbs::PointSource", params);
+  return CreateObject<PointSource>("lbs::PointSource", params);
 }
 
 PointSource::PointSource(const InputParameters& params)

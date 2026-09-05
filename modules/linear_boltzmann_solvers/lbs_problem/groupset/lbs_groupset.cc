@@ -5,26 +5,21 @@
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/logging/log.h"
-#include "framework/object_factory.h"
 #include "framework/runtime.h"
 #include <fstream>
 
 namespace opensn
 {
 
-OpenSnRegisterObjectParametersOnlyInNamespace(lbs, LBSGroupset);
-
 InputParameters
 LBSGroupset::GetInputParameters()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Input Parameters for groupsets.");
-
   // Groupsets
   params.AddRequiredParameterArray("groups_from_to",
                                    "The first and last group id this groupset operates on, e.g. A "
-                                   "4 group problem <TT>groups_from_to= {0, 3}</TT>");
+                                   "4 group problem has \"groups_from_to\" set to {0, 3}.");
   // Anglesets
   params.AddOptionalParameter<std::shared_ptr<AngularQuadrature>>(
     "angular_quadrature", nullptr, "A handle to an angular quadrature");

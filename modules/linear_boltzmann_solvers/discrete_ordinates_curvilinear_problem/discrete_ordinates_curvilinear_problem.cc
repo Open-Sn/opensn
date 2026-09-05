@@ -14,17 +14,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectParametersOnlyInNamespace(lbs, DiscreteOrdinatesCurvilinearProblem);
-
 InputParameters
 DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
 {
   InputParameters params = DiscreteOrdinatesProblem::GetInputParameters();
-
-  params.SetGeneralDescription(
-    "Solver for Discrete Ordinates in cylindrical and spherical coordinates");
-
-  params.SetClassName("DiscreteOrdinatesCurvilinearProblem");
 
   params.ChangeExistingParamToOptional("name", "DiscreteOrdinatesCurvilinearProblem");
 

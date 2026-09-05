@@ -11,8 +11,6 @@ PETScNonLinearSolverOptions::GetInputParameters()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Options available on NonLinearSolver");
-
   params.AddOptionalParameter("name", "NonLinearSolver", "A name to assign to the solver.");
 
   params.AddOptionalParameter("nl_method", "JFNK", "The non-linear method to use.");

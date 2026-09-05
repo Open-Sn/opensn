@@ -6,6 +6,7 @@
 #include "framework/parameters/parameter_block.h"
 #include "framework/data_types/allowable_range.h"
 #include <map>
+#include <memory>
 #include <cstdint>
 
 namespace opensn
@@ -30,24 +31,6 @@ public:
 
   /// Returns the object type string.
   std::string GetObjectType() const;
-
-  /// Sets the class name to be applied to this object. If not used a default will be generated.
-  void SetClassName(const std::string& class_name) { class_name_ = class_name; }
-
-  /**
-   * Sets a general description of the object that should be included with the object's
-   * documentation.
-   */
-  void SetGeneralDescription(const std::string& description) { general_description_ = description; }
-  std::string GetGeneralDescription() const { return general_description_; }
-
-  /// Space separated list of doxygen group names to which this documentation should belong.
-
-  /// Sets a link to the documentation of a different object.
-  void LinkParameterToBlock(const std::string& param_name, const std::string& block_name);
-
-  /// Gets any linkage information of a parameter.
-  std::string GetParameterDocumentationLink(const std::string& param_name) const;
 
   /// Returns the parameter's doc string.
   std::string GetParameterDocString(const std::string& param_name);
@@ -145,14 +128,9 @@ public:
   /// Sets a tag for the given parameter that will allow its type to be mismatched upon assignment.
   void SetParameterTypeMismatchAllowed(const std::string& param_name);
 
-  /// Dumps the input parameters to stdout.
-  void DumpParameters() const;
-
 private:
-  /// String to represent class name. If not provided a default will be generated.
+  /// Backing storage for the object type string set via SetObjectType().
   std::string class_name_;
-  /// Space separated list of group names.
-  std::string doc_group_;
   std::map<std::string, InputParameterTag> parameter_class_tags_;
   std::map<std::string, std::string> parameter_doc_string_;
   std::map<std::string, bool> parameter_valid_;
@@ -160,31 +138,28 @@ private:
   std::map<std::string, std::string> deprecation_error_tags_;
   std::map<std::string, std::string> renamed_error_tags_;
   std::map<std::string, bool> type_mismatch_allowed_tags_;
-  std::map<std::string, std::string> parameter_link_;
 
   std::map<std::string, std::shared_ptr<AllowableRange>> constraint_tags_;
 
-  std::string general_description_;
-
   ParameterBlock param_block_at_assignment_;
-
-public:
-  template <typename T>
-  static InputParameters MakeForObject(const ParameterBlock& params)
-  {
-    auto input_param = T::GetInputParameters();
-
-    input_param.AssignParameters(params);
-    return input_param;
-  }
 
 private:
   using ParameterBlock::AddParameter;
-
-  /// Determines if a parameter is ignored.
-  static bool IsParameterIgnored(const std::string& param_name);
-  /// Parameter names to ignore when trying to assign. For now this "obj_type"
-  static const std::vector<std::string> system_ignored_param_names_;
 };
+
+/**
+ * Constructs a `T` from user-supplied parameters, using `T::GetInputParameters()` as the
+ * parameter input. `obj_type` is used only to make error messages more descriptive.
+ */
+template <typename T>
+std::shared_ptr<T>
+CreateObject(const std::string& obj_type, const ParameterBlock& params)
+{
+  auto input_params = T::GetInputParameters();
+  input_params.SetObjectType(obj_type);
+  input_params.SetErrorOriginScope(obj_type);
+  input_params.AssignParameters(params);
+  return std::make_shared<T>(input_params);
+}
 
 } // namespace opensn
