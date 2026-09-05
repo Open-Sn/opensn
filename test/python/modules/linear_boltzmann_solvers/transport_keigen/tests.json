@@ -1,5 +1,11 @@
 [
   {
+    "file": "keigenvalue_transport_1d_1g_cmfd_state.py",
+    "comment": "CMFD inactive/rejected transport updates and WGS settings across reinitialization",
+    "num_procs": 1,
+    "checks": [{"type": "ErrorCode", "error_code": 0}]
+  },
+  {
     "file": "keigenvalue_transport_1d_1g.py",
     "comment": "1D keigenvalue test using power iteration",
     "num_procs": 4,

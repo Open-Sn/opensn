@@ -48,6 +48,37 @@ LBSProblem::ResetGPUCarriers()
 }
 
 void
+LBSProblem::RebuildOutflowDependentGPUCarriers()
+{
+  // exit if GPU acceleration is not enabled
+  if (not use_gpus_)
+    return;
+  // outflow_carrier_ gets a fresh device allocation (a different address) every time it's
+  // rebuilt, and mesh_carrier_'s own GPU buffer bakes in raw outflow_carrier_ device pointers
+  // (see MeshCarrier::Assemble) -- both must be rebuilt together, or mesh_carrier_ is left
+  // pointing at freed device memory. total_xs_carrier_'s device pointers are ALSO baked into
+  // mesh_carrier_ the same way, but total_xs_carrier_ itself is untouched here, so its address
+  // (and therefore what mesh_carrier_ re-reads from it) doesn't change -- safe to leave alone,
+  // along with source_pinner_/phi_pinner_, which have no outflow/XS dependency at all.
+  //
+  // Unlike ResetGPUCarriers+InitializeGPUExtras, this relies on total_xs_carrier_ already being
+  // built (it's read, not rebuilt, above) -- fall back to a full rebuild rather than
+  // dereferencing a null carrier if that precondition somehow doesn't hold, e.g. if this is ever
+  // called before the normal InitializeGPUExtras() call in LBSProblem::InitializeRuntimeCore has
+  // run.
+  if (not total_xs_carrier_)
+  {
+    ResetGPUCarriers();
+    InitializeGPUExtras();
+    return;
+  }
+  outflow_carrier_.reset();
+  mesh_carrier_.reset();
+  outflow_carrier_ = std::make_shared<OutflowCarrier>(*this);
+  mesh_carrier_ = std::make_shared<MeshCarrier>(*this, *total_xs_carrier_, *outflow_carrier_);
+}
+
+void
 LBSProblem::CheckCapableDevices()
 {
   std::uint32_t num_gpus = crb::get_num_gpus();
