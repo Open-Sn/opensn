@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/cell/cell.h"
+#include "framework/mesh/mesh_continuum/cell.h"
 #include "framework/data_types/matrix3x3.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/logging/log.h"
@@ -64,7 +64,7 @@ CellFace::IsNeighborLocal(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return true;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return (adj_cell.partition_id == opensn::mpi_comm.rank());
 }
@@ -77,7 +77,7 @@ CellFace::GetNeighborPartitionID(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return 0;
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   return adj_cell.partition_id;
 }
@@ -90,7 +90,7 @@ CellFace::GetNeighborLocalID(const MeshContinuum* grid) const
   if (grid->GetNumPartitions() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
-  const auto& adj_cell = grid->cells[neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
@@ -112,7 +112,7 @@ CellFace::GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const
     throw std::logic_error(outstr.str());
   }
 
-  const auto& adj_cell = grid->cells[cur_face.neighbor_id];
+  const auto& adj_cell = grid->GetGlobalCell(cur_face.neighbor_id);
 
   int adj_face_idx = -1;
   std::set<uint64_t> cfvids(cur_face.vertex_ids.begin(),
@@ -158,7 +158,7 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
   // Compute the centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->vertices[vid];
+    centroid += grid->GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute areas and normals
@@ -187,8 +187,8 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
   {
     // A polygon face is just a line. Normals and areas are
     // computed using the vertices.
-    const auto& v0 = grid->vertices[vertex_ids[0]];
-    const auto& v1 = grid->vertices[vertex_ids[1]];
+    const auto& v0 = grid->GlobalVertex(vertex_ids[0]);
+    const auto& v1 = grid->GlobalVertex(vertex_ids[1]);
 
     // The outward pointing normal is orthogonal to the vector
     // pointing from the first vertex to the second. This is
@@ -218,8 +218,8 @@ CellFace::ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell)
     {
       const auto vid0 = vertex_ids[v];
       const auto vid1 = v < num_verts - 1 ? vertex_ids[v + 1] : vertex_ids[0];
-      const auto& v0 = grid->vertices[vid0];
-      const auto& v1 = grid->vertices[vid1];
+      const auto& v0 = grid->GlobalVertex(vid0);
+      const auto& v1 = grid->GlobalVertex(vid1);
 
       const auto subnormal = (v0 - centroid).Cross(v1 - centroid);
 
@@ -336,7 +336,7 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
-    centroid += grid->vertices[vid];
+    centroid += grid->GlobalVertex(vid);
   centroid /= static_cast<double>(vertex_ids.size());
 
   // Compute face geometric data
@@ -350,8 +350,8 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
     // The volume of a slab is the distance between the two vertices.
     case CellType::SLAB:
     {
-      const auto& v0 = grid->vertices[vertex_ids[0]];
-      const auto& v1 = grid->vertices[vertex_ids[1]];
+      const auto& v0 = grid->GlobalVertex(vertex_ids[0]);
+      const auto& v1 = grid->GlobalVertex(vertex_ids[1]);
       volume = (v1 - v0).Norm();
       break;
     }
@@ -362,8 +362,8 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
     {
       for (const auto& face : faces)
       {
-        const auto& v0 = grid->vertices[face.vertex_ids[0]];
-        const auto& v1 = grid->vertices[face.vertex_ids[1]];
+        const auto& v0 = grid->GlobalVertex(face.vertex_ids[0]);
+        const auto& v1 = grid->GlobalVertex(face.vertex_ids[1]);
 
         const auto e0 = v1 - v0;
         const auto e1 = centroid - v0;
@@ -382,8 +382,8 @@ Cell::ComputeGeometricInfo(const MeshContinuum* grid)
         for (unsigned int v = 0; v < num_verts; ++v)
         {
           const auto vid1 = v < num_verts - 1 ? v + 1 : 0;
-          const auto& v0 = grid->vertices[face.vertex_ids[v]];
-          const auto& v1 = grid->vertices[face.vertex_ids[vid1]];
+          const auto& v0 = grid->GlobalVertex(face.vertex_ids[v]);
+          const auto& v1 = grid->GlobalVertex(face.vertex_ids[vid1]);
 
           Matrix3x3 J;
           J.SetColJVec(0, face.centroid - v0);

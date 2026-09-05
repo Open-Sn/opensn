@@ -365,21 +365,20 @@ std::shared_ptr<MeshContinuum>
 SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
 {
   auto grid_ptr = MeshContinuum::New();
-  grid_ptr->GetBoundaryIDMap() = mesh_info.boundary_id_map;
   for (auto& [id, name] : mesh_info.boundary_id_map)
-    grid_ptr->GetBoundaryNameMap()[name] = id;
+    grid_ptr->SetBoundaryName(id, name);
 
   auto& cells = mesh_info.cells;
   auto& vertices = mesh_info.vertices;
 
   for (const auto& [vid, vertex] : vertices)
-    grid_ptr->vertices.Insert(vid, vertex);
+    grid_ptr->AddGlobalVertex(vid, vertex);
 
   for (const auto& [pidgid, raw_cell] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
     auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
-    grid_ptr->cells.PushBack(std::move(cell));
+    grid_ptr->AddGlobalCell(std::move(cell));
   }
 
   grid_ptr->SetDimension(mesh_info.dimension);

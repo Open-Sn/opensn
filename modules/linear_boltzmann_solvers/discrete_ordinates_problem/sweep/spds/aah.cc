@@ -22,7 +22,7 @@ AAH_SPDS::AAH_SPDS(int id,
 {
 
   // Populate cell relationships
-  size_t num_loc_cells = grid->local_cells.size();
+  size_t num_loc_cells = grid->GetLocalCellCount();
   std::vector<std::vector<std::pair<std::uint32_t, double>>> cell_successors(num_loc_cells);
   std::vector<int> location_successors;
   std::vector<int> location_dependencies;
@@ -131,11 +131,11 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 
   constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& face_orientations = cell_face_orientations_[cell.local_id];
+    const auto& face_orientations = cell_face_orientations_[cell->local_id];
     std::size_t f = 0;
-    for (const auto& face : cell.faces)
+    for (const auto& face : cell->faces)
     {
       if (face.has_neighbor and not face.IsNeighborLocal(grid_.get()) and
           face_orientations[f] == FaceOrientation::OUTGOING)
@@ -143,7 +143,7 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
         const double mu = omega_.Dot(face.normal);
         if (mu > tolerance)
         {
-          const auto& adj_cell = grid_->cells[face.neighbor_id];
+          const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const int to_loc = adj_cell.partition_id;
           row[to_loc] += mu * mu * face.area;
         }

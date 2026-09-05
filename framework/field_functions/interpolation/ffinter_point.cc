@@ -28,13 +28,13 @@ FieldFunctionInterpolationPoint::RebuildPointLocationData()
 
   const auto& grid = field_function_->GetSpatialDiscretization().GetGrid();
   std::vector<uint64_t> cells_potentially_owning_point;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& vcc = cell.centroid;
+    const auto& vcc = cell->centroid;
     const auto& poi = point_of_interest_;
     const auto nudged_point = poi + 1.0e-6 * (vcc - poi);
-    if (grid->CheckPointInsideCell(cell, nudged_point))
-      cells_potentially_owning_point.push_back(cell.global_id);
+    if (grid->CheckPointInsideCell(*cell, nudged_point))
+      cells_potentially_owning_point.push_back(cell->global_id);
   }
 
   std::vector<uint64_t> recvbuf;
@@ -81,7 +81,7 @@ FieldFunctionInterpolationPoint::Execute()
 
   const auto field_data = ref_ff.GetGhostedFieldVector();
 
-  const auto& cell = grid->cells[owning_cell_gid_];
+  const auto& cell = grid->GetGlobalCell(owning_cell_gid_);
   const auto& cell_mapping = sdm.GetCellMapping(cell);
   const size_t num_nodes = cell_mapping.GetNumNodes();
 

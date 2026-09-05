@@ -28,21 +28,21 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
 {
   const auto& grid = *spds_.GetGrid();
   const auto num_angles_in_gs_quadrature = psi_uk_man_.GetNumberOfUnknowns();
-  cell_psi_start_.resize(grid.local_cells.size());
-  for (const auto& cell : grid.local_cells)
+  cell_psi_start_.resize(grid.GetLocalCellCount());
+  for (const auto& cell : grid.GetLocalCells())
   {
-    cell_psi_start_[cell.local_id] =
-      (sdm_.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0) / num_angles_in_gs_quadrature / num_groups_) *
+    cell_psi_start_[cell->local_id] =
+      (sdm_.MapDOFLocal(*cell, 0, psi_uk_man_, 0, 0) / num_angles_in_gs_quadrature / num_groups_) *
       num_groups_and_angles_;
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell->faces.size(); ++f)
     {
-      const auto slot = common_data_.IncomingFaceSlot(cell.local_id, static_cast<unsigned int>(f));
+      const auto slot = common_data_.IncomingFaceSlot(cell->local_id, static_cast<unsigned int>(f));
       if (slot == CBC_FLUDSCommonData::INVALID_FACE_SLOT)
         continue;
 
       incoming_nonlocal_psi_offsets_[slot + 1] =
-        sdm_.GetCellMapping(cell).GetNumFaceNodes(f) * num_groups_and_angles_;
+        sdm_.GetCellMapping(*cell).GetNumFaceNodes(f) * num_groups_and_angles_;
     }
   }
 

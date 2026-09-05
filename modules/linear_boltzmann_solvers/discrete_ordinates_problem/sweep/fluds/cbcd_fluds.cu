@@ -162,7 +162,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
   const auto& grid = *(GetSPDS().GetGrid());
   for (const auto& cell_local_id : cell_local_ids)
   {
-    const auto& cell = grid.local_cells[cell_local_id];
+    const auto& cell = grid.GetLocalCell(cell_local_id);
     auto outgoing_boundary_it = cell_to_outgoing_boundary_nodes_.find(cell_local_id);
     if (outgoing_boundary_it != cell_to_outgoing_boundary_nodes_.end())
       for (const auto& node : outgoing_boundary_it->second)
@@ -233,12 +233,12 @@ CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_Angle
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
   const auto& angle_indices = angle_set->GetAngleIndices();
   const auto& num_angles = angle_set->GetNumAngles();
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    double* dst_psi = &destination_psi[discretization.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0)];
+    double* dst_psi = &destination_psi[discretization.MapDOFLocal(*cell, 0, psi_uk_man_, 0, 0)];
     double* src_psi =
-      host_saved_psi_.data() + mesh->saved_psi_offset[cell.local_id] * GetStrideSize();
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+      host_saved_psi_.data() + mesh->saved_psi_offset[cell->local_id] * GetStrideSize();
+    std::uint32_t cell_num_nodes = discretization.GetCellMapping(*cell).GetNumNodes();
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {
       for (std::uint32_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)

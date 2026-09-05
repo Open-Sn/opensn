@@ -14,11 +14,13 @@ TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
   mesh_mapping.Build(fine_grid, coarse_grid);
 
   // Volumetric mapping; check all coarse cells against all fine cells
-  for (const auto& coarse_cell : coarse_grid->local_cells)
+  for (std::size_t clid = 0; clid < coarse_grid->GetLocalCellCount(); ++clid)
   {
+    const auto& coarse_cell = coarse_grid->GetLocalCell(clid);
     const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(coarse_cell);
-    for (const auto& fine_cell : fine_grid->local_cells)
+    for (std::size_t flid = 0; flid < fine_grid->GetLocalCellCount(); ++flid)
     {
+      const auto& fine_cell = fine_grid->GetLocalCell(flid);
       const auto in_coarse_mapping =
         std::find(coarse_mapping.fine_cells.begin(), coarse_mapping.fine_cells.end(), &fine_cell) !=
         coarse_mapping.fine_cells.end();
@@ -33,15 +35,17 @@ TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
   }
 
   // Surface mapping. Check all fine cell faces against all coarse cell faces
-  for (const auto& fine_cell : fine_grid->local_cells)
+  for (std::size_t flid = 0; flid < fine_grid->GetLocalCellCount(); ++flid)
   {
+    const auto& fine_cell = fine_grid->GetLocalCell(flid);
     const auto& fine_mapping = mesh_mapping.GetFineMapping(fine_cell);
     for (std::size_t fine_face_i = 0; fine_face_i < fine_cell.faces.size(); ++fine_face_i)
     {
       const auto& fine_face = fine_cell.faces[fine_face_i];
       bool found_mapping = false;
-      for (const auto& coarse_cell : coarse_grid->local_cells)
+      for (std::size_t clid = 0; clid < coarse_grid->GetLocalCellCount(); ++clid)
       {
+        const auto& coarse_cell = coarse_grid->GetLocalCell(clid);
         const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(coarse_cell);
         for (std::size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size();
              ++coarse_face_i)
@@ -124,8 +128,8 @@ TEST(MeshMappingTest, GetCoarseMappingMissing)
     {
       try
       {
-        for (const auto& cell : grid_ptr->local_cells)
-          mesh_mapping.GetCoarseMapping(cell);
+        for (const auto& cell : grid_ptr->GetLocalCells())
+          mesh_mapping.GetCoarseMapping(*cell);
       }
       catch (const std::logic_error& e)
       {
@@ -149,8 +153,8 @@ TEST(MeshMappingTest, GetFineMappingMissing)
     {
       try
       {
-        for (const auto& cell : grid_ptr->local_cells)
-          mesh_mapping.GetFineMapping(cell);
+        for (const auto& cell : grid_ptr->GetLocalCells())
+          mesh_mapping.GetFineMapping(*cell);
       }
       catch (const std::logic_error& e)
       {
