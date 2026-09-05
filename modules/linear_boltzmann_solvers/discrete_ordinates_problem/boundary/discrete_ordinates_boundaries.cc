@@ -49,12 +49,22 @@ GetGlobalUniqueBoundaryIDs(const std::shared_ptr<MeshContinuum>& grid, mpi::Comm
   return global_unique_bids_set;
 }
 
+// RecursiveAngleSort's traversal order determines, for each reflected pair of angle sets, which
+// set's angle indices get propagated to the other. With a single reflecting boundary this is
+// order-independent but with opposing reflecting boundaries, the final angle-to-angleset
+// assignment depends on visitation order. unsorted/sorted MUST order by a value stable across
+// MPI ranks and repeated runs. For this purpose, we use AngleSet::GetID().
+struct AngleSetIdLess
+{
+  bool operator()(const AngleSet* a, const AngleSet* b) const { return a->GetID() < b->GetID(); }
+};
+
 void
 RecursiveAngleSort(AngleSet* angleset,
                    AngleAggregation& angle_agg,
                    const std::vector<std::vector<std::uint32_t>>& reflected_maps,
-                   std::set<AngleSet*>& unsorted,
-                   std::set<AngleSet*>& sorted)
+                   std::set<AngleSet*, AngleSetIdLess>& unsorted,
+                   std::set<AngleSet*, AngleSetIdLess>& sorted)
 {
   sorted.insert(angleset);
   std::uint32_t angle_zero = angleset->GetAngleIndices()[0];
@@ -363,8 +373,9 @@ DiscreteOrdinatesProblem::SortAngleSetsAngleIndices()
     }
     angle_indices_list.clear();
 
-    // sort angle indices in anglesets
-    std::set<AngleSet*> sorted_anglesets, unsorted_anglesets;
+    // sort angle indices in anglesets. Ordering is by AngleSetIdLess (GetID()) so this
+    // recursion is deterministic and consistent across MPI ranks
+    std::set<AngleSet*, AngleSetIdLess> sorted_anglesets, unsorted_anglesets;
     std::transform(angle_agg.begin(),
                    angle_agg.end(),
                    std::inserter(unsorted_anglesets, unsorted_anglesets.end()),
