@@ -1,0 +1,9 @@
+﻿pyopensn.math.AngularFluxFunction
+=================================
+
+.. currentmodule:: pyopensn.math
+
+.. autoclass:: AngularFluxFunction
+   :special-members: __init__, __call__
+   :members:
+   :inherited-members:

@@ -106,9 +106,19 @@
 <li class="toctree-l4"><a class="reference internal" href="#results">25.8.5. Results</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">25.9. Other Useful Post-Processing Paths</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">25.10. Transient Workflows</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">25.11. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cross-section-sensitivity-postprocessor">25.9. Cross-Section Sensitivity Postprocessor</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#id1">25.9.1. Basic Usage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sensitivity-types">25.9.2. Sensitivity Types</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id2">25.9.3. Spatial Restriction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#forward-and-adjoint-state">25.9.4. Forward and Adjoint State</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#relative-sensitivities">25.9.5. Relative Sensitivities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#k-eigenvalue-scaling">25.9.6. k-Eigenvalue Scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">25.9.7. Results</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">25.10. Other Useful Post-Processing Paths</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#transient-workflows">25.11. Transient Workflows</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">25.12. Practical Guidance</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
@@ -454,7 +464,7 @@ averages, sums, maxima, and function-weighted variants over a logical volume.</p
 </section>
 <section id="volume-postprocessor">
 <h2><span class="section-number">25.8. </span>Volume Postprocessor<a class="headerlink" href="#volume-postprocessor" title="Link to this heading"></a></h2>
-<p>The <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.post.VolumePostprocessor</span></code> computes scalar-flux integrals,
+<p>The <a class="reference internal" href="../pyapi/generated/pyopensn.post.VolumePostprocessor.html#pyopensn.post.VolumePostprocessor" title="pyopensn.post.VolumePostprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.post.VolumePostprocessor</span></code></a> computes scalar-flux integrals,
 maxima, minima, or volume-weighted averages over spatial regions and energy
 groups. It produces a single result value per region and group, making it useful
 for reaction rates and monitoring quantities across geometry subsets or
@@ -615,8 +625,167 @@ value is a 2D array indexed as <code class="docutils literal notranslate"><span 
 </div>
 </section>
 </section>
+<section id="cross-section-sensitivity-postprocessor">
+<h2><span class="section-number">25.9. </span>Cross-Section Sensitivity Postprocessor<a class="headerlink" href="#cross-section-sensitivity-postprocessor" title="Link to this heading"></a></h2>
+<p>The <a class="reference internal" href="../pyapi/generated/pyopensn.post.CrossSectionSensitivityPostprocessor.html#pyopensn.post.CrossSectionSensitivityPostprocessor" title="pyopensn.post.CrossSectionSensitivityPostprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.post.CrossSectionSensitivityPostprocessor</span></code></a> computes
+adjoint-weighted sensitivities of a response to a total, scattering, or
+production (<code class="docutils literal notranslate"><span class="pre">nu_sigma_f</span></code>) cross-section coefficient, from forward and
+adjoint angular fluxes or flux moments. It is intended for discrete
+ordinates problems that have already been solved in a forward and in an
+adjoint configuration.</p>
+<section id="id1">
+<h3><span class="section-number">25.9.1. </span>Basic Usage<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code> sensitivities use angular fluxes (<code class="docutils literal notranslate"><span class="pre">psi</span></code>); <code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code> sensitivities use flux moments (<code class="docutils literal notranslate"><span class="pre">phi</span></code>). A single problem
+object only holds one state at a time, so a typical pattern solves forward,
+writes that state to disk, solves adjoint, then builds the postprocessor
+against the current (adjoint) state and the saved forward files:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">CrossSectionSensitivityPostprocessor</span>
+
+<span class="c1"># ... solve forward, then phys.WriteAngularFluxes(&quot;forward_psi&quot;)</span>
+<span class="c1"># ... solve adjoint (phys now holds the adjoint state)</span>
+
+<span class="n">sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span>
+    <span class="n">forward_angular_fluxes</span><span class="o">=</span><span class="s2">&quot;forward_psi&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">sens</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sens</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="sensitivity-types">
+<h3><span class="section-number">25.9.2. </span>Sensitivity Types<a class="headerlink" href="#sensitivity-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code> (default) — total cross-section sensitivity. One column per
+selected group.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code> — scattering-transfer coefficient sensitivity for a single
+<code class="docutils literal notranslate"><span class="pre">from_group</span> <span class="pre">-&gt;</span> <span class="pre">to_group</span></code> pair. One column per selected scattering
+moment (Legendre order).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code> — fission production (<code class="docutils literal notranslate"><span class="pre">nu_sigma_f</span></code>) sensitivity for a
+single group. Always a single column.</p></li>
+</ul>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Scattering sensitivity for group 2 -&gt; group 1, moment 0</span>
+<span class="n">scatter_sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;scatter&quot;</span><span class="p">,</span>
+    <span class="n">from_group</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+    <span class="n">to_group</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">moment</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="c1"># Production sensitivity for group 0</span>
+<span class="n">prod_sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">from_group</span></code> and <code class="docutils literal notranslate"><span class="pre">to_group</span></code> are required for <code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code>. <code class="docutils literal notranslate"><span class="pre">group</span></code> is
+required for <code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>. For <code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code>, omitting <code class="docutils literal notranslate"><span class="pre">group</span></code>
+computes sensitivities for every group; for <code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code>, omitting
+<code class="docutils literal notranslate"><span class="pre">moment</span></code> (equivalently <code class="docutils literal notranslate"><span class="pre">ell</span></code>) computes sensitivities for every
+scattering moment up to the problem’s scattering order. <code class="docutils literal notranslate"><span class="pre">moment</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ell</span></code> are aliases for the same input and cannot both be supplied.</p>
+</section>
+<section id="id2">
+<h3><span class="section-number">25.9.3. </span>Spatial Restriction<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>As with <a class="reference internal" href="../pyapi/generated/pyopensn.post.VolumePostprocessor.html#pyopensn.post.VolumePostprocessor" title="pyopensn.post.VolumePostprocessor"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.post.VolumePostprocessor</span></code></a>, <code class="docutils literal notranslate"><span class="pre">block_ids</span></code> and
+<code class="docutils literal notranslate"><span class="pre">logical_volumes</span></code> restrict the cells included in the sensitivity
+integral, and can be combined:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+
+<span class="n">lv</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">xmin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+<span class="n">sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span>
+    <span class="n">logical_volumes</span><span class="o">=</span><span class="p">[</span><span class="n">lv</span><span class="p">],</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Each logical volume produces one row of results; with no logical volumes,
+there is a single row over the (optionally block-restricted) domain.</p>
+</section>
+<section id="forward-and-adjoint-state">
+<h3><span class="section-number">25.9.4. </span>Forward and Adjoint State<a class="headerlink" href="#forward-and-adjoint-state" title="Link to this heading"></a></h3>
+<p>By default, both the forward and the adjoint terms are read from the
+problem’s <em>current</em> state. To compare an explicit forward and adjoint
+solve, write one of them to disk and point the postprocessor at it:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">forward_angular_fluxes</span></code> / <code class="docutils literal notranslate"><span class="pre">adjoint_angular_fluxes</span></code> — file prefixes
+written by <code class="docutils literal notranslate"><span class="pre">WriteAngularFluxes</span></code>; used for <code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">forward_flux_moments</span></code> / <code class="docutils literal notranslate"><span class="pre">adjoint_flux_moments</span></code> — file prefixes
+written by <code class="docutils literal notranslate"><span class="pre">WriteFluxMoments</span></code>; used for <code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>, and by <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code> below.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flux_moments_single_file</span></code> — set <code class="docutils literal notranslate"><span class="pre">True</span></code> if the flux moments were
+written to a single file instead of one file per rank.</p></li>
+</ul>
+<p>Leaving a prefix empty (the default) uses the problem’s current state for
+that term.</p>
+</section>
+<section id="relative-sensitivities">
+<h3><span class="section-number">25.9.5. </span>Relative Sensitivities<a class="headerlink" href="#relative-sensitivities" title="Link to this heading"></a></h3>
+<p>By default, results are absolute sensitivities <code class="docutils literal notranslate"><span class="pre">dR/dx</span></code>. Set
+<code class="docutils literal notranslate"><span class="pre">relative=True</span></code> to scale by the cross-section value itself, <code class="docutils literal notranslate"><span class="pre">x</span> <span class="pre">*</span> <span class="pre">dR/dx</span></code>,
+which is dimensionless and easier to compare across coefficients:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span>
+    <span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="k-eigenvalue-scaling">
+<h3><span class="section-number">25.9.6. </span>k-Eigenvalue Scaling<a class="headerlink" href="#k-eigenvalue-scaling" title="Link to this heading"></a></h3>
+<p>For k-eigenvalue problems, call
+<a class="reference internal" href="../pyapi/generated/pyopensn.post.CrossSectionSensitivityPostprocessor.html#pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling" title="pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling()</span></code></a>
+after <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> to convert the computed sensitivities into first-order
+k-eigenvalue sensitivities, normalized by the fission-weighted inner product
+<code class="docutils literal notranslate"><span class="pre">&lt;psi_adj,</span> <span class="pre">F</span> <span class="pre">psi&gt;</span></code> built from the same forward/adjoint flux-moment sources
+configured at construction. As above, this requires an actual forward and
+adjoint pair of states — leaving both prefixes empty would take the “forward”
+and “adjoint” terms from the same current state and would not produce a
+meaningful sensitivity:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># ... solve forward, then phys.WriteFluxMoments(&quot;forward_phi&quot;)</span>
+<span class="c1"># ... solve adjoint (phys now holds the adjoint state)</span>
+
+<span class="n">sens</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;production&quot;</span><span class="p">,</span>
+    <span class="n">group</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">forward_flux_moments</span><span class="o">=</span><span class="s2">&quot;forward_phi&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">sens</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">sens</span><span class="o">.</span><span class="n">ApplyKEigenvalueScaling</span><span class="p">(</span><span class="n">k_eff</span><span class="o">=</span><span class="mf">1.00123</span><span class="p">)</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sens</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">adjoint_flux_moments</span></code> is left unset here because <code class="docutils literal notranslate"><span class="pre">phys</span></code> already holds
+the adjoint state at this point, so the default (current state) is correct
+for that term; only the forward term needs to be pointed at the saved file.</p>
+</section>
+<section id="id3">
+<h3><span class="section-number">25.9.7. </span>Results<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>After calling <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>, retrieve results with <code class="docutils literal notranslate"><span class="pre">GetValue()</span></code>. The
+return value is a 2D array indexed as <code class="docutils literal notranslate"><span class="pre">result[region][column]</span></code>, where
+<code class="docutils literal notranslate"><span class="pre">column</span></code> runs over groups (<code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code>), scattering moments
+(<code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code>), or is a single entry (<code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sens</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">result</span> <span class="o">=</span> <span class="n">sens</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
+
+<span class="c1"># Single region, sigma_t sensitivities for every group</span>
+<span class="k">for</span> <span class="n">group_index</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group </span><span class="si">{</span><span class="n">group_index</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">value</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+</section>
 <section id="other-useful-post-processing-paths">
-<h2><span class="section-number">25.9. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.10. </span>Other Useful Post-Processing Paths<a class="headerlink" href="#other-useful-post-processing-paths" title="Link to this heading"></a></h2>
 <p>For discrete ordinates problems, other useful output paths include:</p>
 <ul class="simple">
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetPsi()</span></code> for direct access to stored angular-flux arrays</p></li>
@@ -628,7 +797,7 @@ flux storage and restart-style workflows</p></li>
 post-processing workflow.</p>
 </section>
 <section id="transient-workflows">
-<h2><span class="section-number">25.10. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.11. </span>Transient Workflows<a class="headerlink" href="#transient-workflows" title="Link to this heading"></a></h2>
 <p>For transient problems, the usual pattern is:</p>
 <ol class="arabic simple">
 <li><p>advance the timestep,</p></li>
@@ -652,7 +821,7 @@ timestep. Creating a new field function after each <code class="docutils literal
 but is usually unnecessary when the existing object supports <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">25.11. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">25.12. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>For most workflows:</p>
 <ul class="simple">
 <li><p>use <code class="xref py py-meth docutils literal notranslate"><span class="pre">GetScalarFluxFieldFunction()</span></code> for scalar flux,</p></li>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>pyopensn.mesh.KBAGraphPartitioner &mdash; OpenSn 1.0.1 documentation</title>
+  <title>pyopensn.aquad.HarmonicIndices &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="pyopensn.mesh.LinearGraphPartitioner" href="pyopensn.mesh.LinearGraphPartitioner.html" />
-    <link rel="prev" title="pyopensn.mesh.GraphPartitioner" href="pyopensn.mesh.GraphPartitioner.html" /> 
+    <link rel="next" title="pyopensn.aquad.AngularQuadrature" href="pyopensn.aquad.AngularQuadrature.html" />
+    <link rel="prev" title="pyopensn.aquad.QuadraturePointPhiTheta" href="pyopensn.aquad.QuadraturePointPhiTheta.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,21 +57,21 @@
 <li class="toctree-l1"><a class="reference internal" href="../../capi/rst/index.html">C++ API</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../index.html">Python API</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="../index.html#math">Math</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html#angular-quadrature">Angular quadrature</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="../index.html#quadrature-points">Quadrature points</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="pyopensn.aquad.QuadraturePointPhiTheta.html">pyopensn.aquad.QuadraturePointPhiTheta</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.aquad.HarmonicIndices</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#base-class">Base class</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#product-quadratures">Product quadratures</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#triangular-quadrature">Triangular quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#lebedev-quadrature">Lebedev quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../index.html#simplified-ldfes-quadrature">Simplified LDFES quadrature</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#field-functions">Field functions</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="../index.html#mesh">Mesh</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="../index.html#id2">Mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#surface-mesh">Surface mesh</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../index.html#mesh-generator">Mesh generator</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="../index.html#graph-partitioner">Graph partitioner</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.mesh.GraphPartitioner.html">pyopensn.mesh.GraphPartitioner</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">pyopensn.mesh.KBAGraphPartitioner</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.mesh.LinearGraphPartitioner.html">pyopensn.mesh.LinearGraphPartitioner</a></li>
-<li class="toctree-l4"><a class="reference internal" href="pyopensn.mesh.PETScGraphPartitioner.html">pyopensn.mesh.PETScGraphPartitioner</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#mesh">Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#logical-volume">Logical volume</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#response-evaluator">Response evaluator</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#source">Source</a></li>
@@ -103,7 +103,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../index.html">Python API</a></li>
-      <li class="breadcrumb-item active">pyopensn.mesh.KBAGraphPartitioner</li>
+      <li class="breadcrumb-item active">pyopensn.aquad.HarmonicIndices</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -112,30 +112,25 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="pyopensn-mesh-kbagraphpartitioner">
-<h1>pyopensn.mesh.KBAGraphPartitioner<a class="headerlink" href="#pyopensn-mesh-kbagraphpartitioner" title="Link to this heading"></a></h1>
+  <section id="pyopensn-aquad-harmonicindices">
+<h1>pyopensn.aquad.HarmonicIndices<a class="headerlink" href="#pyopensn-aquad-harmonicindices" title="Link to this heading"></a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="pyopensn.mesh.KBAGraphPartitioner">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.mesh.</span></span><span class="sig-name descname"><span class="pre">KBAGraphPartitioner</span></span><a class="headerlink" href="#pyopensn.mesh.KBAGraphPartitioner" title="Link to this definition"></a></dt>
-<dd><p>Koch, Baker and Alcouffe based partitioning.</p>
-<p>This is an overlayed ortho-grid based partitioner.</p>
-<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_k_b_a_graph_partitioner.html#_CPPv4N6opensn19KBAGraphPartitionerE" title="opensn::KBAGraphPartitioner"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::KBAGraphPartitioner</span></code></a>.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="pyopensn.mesh.KBAGraphPartitioner.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.mesh.KBAGraphPartitioner" title="pyopensn.mesh.KBAGraphPartitioner"><span class="pre">pyopensn.mesh.KBAGraphPartitioner</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.mesh.KBAGraphPartitioner.__init__" title="Link to this definition"></a></dt>
-<dd><p>Construct a KBA graph partitioner.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>nx</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of partitions in x.</p></li>
-<li><p><strong>ny</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of partitions in y.</p></li>
-<li><p><strong>nz</strong> (<em>int</em><em>, </em><em>default=1</em>) – Number of partitions in z.</p></li>
-<li><p><strong>xcuts</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Location of the internal x-cuts. Requires <code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">-</span> <span class="pre">1</span></code> entries.</p></li>
-<li><p><strong>ycuts</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Location of the internal y-cuts. Requires <code class="docutils literal notranslate"><span class="pre">ny</span> <span class="pre">-</span> <span class="pre">1</span></code> entries.</p></li>
-<li><p><strong>zcuts</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Location of the internal z-cuts. Requires <code class="docutils literal notranslate"><span class="pre">nz</span> <span class="pre">-</span> <span class="pre">1</span></code> entries.</p></li>
-</ul>
-</dd>
-</dl>
+<dt class="sig sig-object py" id="pyopensn.aquad.HarmonicIndices">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.aquad.</span></span><span class="sig-name descname"><span class="pre">HarmonicIndices</span></span><a class="headerlink" href="#pyopensn.aquad.HarmonicIndices" title="Link to this definition"></a></dt>
+<dd><p>Spherical harmonic indices for a flux moment.</p>
+<p>Returned by <a class="reference internal" href="pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature.GetMomentToHarmonicsIndexMap" title="pyopensn.aquad.AngularQuadrature.GetMomentToHarmonicsIndexMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.aquad.AngularQuadrature.GetMomentToHarmonicsIndexMap()</span></code></a>, one
+entry per flux moment, giving the (degree, order) pair used to expand that moment.</p>
+<p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_angular_quadrature.html#_CPPv4N6opensn17AngularQuadrature15HarmonicIndicesE" title="opensn::AngularQuadrature::HarmonicIndices"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::AngularQuadrature::HarmonicIndices</span></code></a>.</p>
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.aquad.HarmonicIndices.ell">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ell</span></span><a class="headerlink" href="#pyopensn.aquad.HarmonicIndices.ell" title="Link to this definition"></a></dt>
+<dd><p>Degree (Legendre order) of the spherical harmonic.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="pyopensn.aquad.HarmonicIndices.m">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">m</span></span><a class="headerlink" href="#pyopensn.aquad.HarmonicIndices.m" title="Link to this definition"></a></dt>
+<dd><p>Order of the spherical harmonic.</p>
 </dd></dl>
 
 </dd></dl>
@@ -146,8 +141,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="pyopensn.mesh.GraphPartitioner.html" class="btn btn-neutral float-left" title="pyopensn.mesh.GraphPartitioner" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="pyopensn.mesh.LinearGraphPartitioner.html" class="btn btn-neutral float-right" title="pyopensn.mesh.LinearGraphPartitioner" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="pyopensn.aquad.QuadraturePointPhiTheta.html" class="btn btn-neutral float-left" title="pyopensn.aquad.QuadraturePointPhiTheta" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="pyopensn.aquad.AngularQuadrature.html" class="btn btn-neutral float-right" title="pyopensn.aquad.AngularQuadrature" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

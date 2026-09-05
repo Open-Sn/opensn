@@ -69,6 +69,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#function-wrappers">Function wrappers</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.VectorSpatialFunction.html">pyopensn.math.VectorSpatialFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.AngularFluxFunction.html">pyopensn.math.AngularFluxFunction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.math.AngularFluxTimeFunction.html">pyopensn.math.AngularFluxTimeFunction</a></li>
 </ul>
 </li>
 </ul>
@@ -76,6 +78,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#angular-quadrature">Angular quadrature</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#quadrature-points">Quadrature points</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.QuadraturePointPhiTheta.html">pyopensn.aquad.QuadraturePointPhiTheta</a></li>
+<li class="toctree-l4"><a class="reference internal" href="generated/pyopensn.aquad.HarmonicIndices.html">pyopensn.aquad.HarmonicIndices</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#base-class">Base class</a><ul>
@@ -176,6 +179,11 @@
 <li class="toctree-l2"><a class="reference internal" href="#source">Source</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.source.PointSource.html">pyopensn.source.PointSource</a></li>
 <li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.source.VolumetricSource.html">pyopensn.source.VolumetricSource</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#post-processors">Post-processors</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.post.VolumePostprocessor.html">pyopensn.post.VolumePostprocessor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="generated/pyopensn.post.CrossSectionSensitivityPostprocessor.html">pyopensn.post.CrossSectionSensitivityPostprocessor</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#cross-section">Cross section</a><ul>
@@ -319,6 +327,12 @@
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.VectorSpatialFunction</span></code></a></p></td>
 <td><p>Vector spatial function.</p></td>
 </tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.math.AngularFluxFunction.html#pyopensn.math.AngularFluxFunction" title="pyopensn.math.AngularFluxFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.AngularFluxFunction</span></code></a></p></td>
+<td><p>Angular flux function.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.math.AngularFluxTimeFunction.html#pyopensn.math.AngularFluxTimeFunction" title="pyopensn.math.AngularFluxTimeFunction"><code class="xref py py-obj docutils literal notranslate"><span class="pre">math.AngularFluxTimeFunction</span></code></a></p></td>
+<td><p>Time-dependent angular flux function.</p></td>
+</tr>
 </tbody>
 </table>
 </section>
@@ -331,6 +345,13 @@
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.QuadraturePointPhiTheta.html#pyopensn.aquad.QuadraturePointPhiTheta" title="pyopensn.aquad.QuadraturePointPhiTheta"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.QuadraturePointPhiTheta</span></code></a></p></td>
 <td><p>Angular quadrature point.</p></td>
+</tr>
+</tbody>
+</table>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.aquad.HarmonicIndices.html#pyopensn.aquad.HarmonicIndices" title="pyopensn.aquad.HarmonicIndices"><code class="xref py py-obj docutils literal notranslate"><span class="pre">aquad.HarmonicIndices</span></code></a></p></td>
+<td><p>Spherical harmonic indices for a flux moment.</p></td>
 </tr>
 </tbody>
 </table>
@@ -605,6 +626,19 @@ called; no separate initialization step is required.</p>
 </tr>
 <tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><code class="xref py py-obj docutils literal notranslate"><span class="pre">source.VolumetricSource</span></code></a></p></td>
 <td><p>Multi-group isotropic volumetric sources.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="post-processors">
+<h2>Post-processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h2>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.post.VolumePostprocessor.html#pyopensn.post.VolumePostprocessor" title="pyopensn.post.VolumePostprocessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.VolumePostprocessor</span></code></a></p></td>
+<td><p>Volume post-processor.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="generated/pyopensn.post.CrossSectionSensitivityPostprocessor.html#pyopensn.post.CrossSectionSensitivityPostprocessor" title="pyopensn.post.CrossSectionSensitivityPostprocessor"><code class="xref py py-obj docutils literal notranslate"><span class="pre">post.CrossSectionSensitivityPostprocessor</span></code></a></p></td>
+<td><p>Cross-section sensitivity postprocessor.</p></td>
 </tr>
 </tbody>
 </table>

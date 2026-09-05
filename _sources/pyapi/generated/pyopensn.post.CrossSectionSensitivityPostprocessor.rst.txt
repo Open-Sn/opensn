@@ -1,0 +1,9 @@
+﻿pyopensn.post.CrossSectionSensitivityPostprocessor
+==================================================
+
+.. currentmodule:: pyopensn.post
+
+.. autoclass:: CrossSectionSensitivityPostprocessor
+   :special-members: __init__
+   :members:
+   :inherited-members:

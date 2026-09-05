@@ -1,0 +1,9 @@
+﻿pyopensn.post.VolumePostprocessor
+=================================
+
+.. currentmodule:: pyopensn.post
+
+.. autoclass:: VolumePostprocessor
+   :special-members: __init__
+   :members:
+   :inherited-members:

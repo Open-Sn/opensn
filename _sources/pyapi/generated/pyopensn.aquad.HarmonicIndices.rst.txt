@@ -1,0 +1,8 @@
+﻿pyopensn.aquad.HarmonicIndices
+==============================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: HarmonicIndices
+   :members:
+   :inherited-members:

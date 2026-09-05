@@ -195,7 +195,7 @@ available for specifying boundary conditions and sources:</p>
 <li><p>start with simple boundary conditions such as <code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code>,
 <code class="docutils literal notranslate"><span class="pre">&quot;reflecting&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code>,</p></li>
 <li><p>add point or volumetric sources if the problem is source driven,</p></li>
-<li><p>only use <code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code> or
+<li><p>only use <a class="reference internal" href="../pyapi/generated/pyopensn.math.AngularFluxFunction.html#pyopensn.math.AngularFluxFunction" title="pyopensn.math.AngularFluxFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code></a> or
 <a class="reference internal" href="../pyapi/generated/pyopensn.math.VectorSpatialFunction.html#pyopensn.math.VectorSpatialFunction" title="pyopensn.math.VectorSpatialFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.VectorSpatialFunction</span></code></a> when the boundary or source
 really needs callback-based custom behavior.</p></li>
 </ol>
@@ -338,7 +338,7 @@ or <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&
 <section id="arbitrary-boundaries">
 <h3><span class="section-number">11.2.5. </span>Arbitrary Boundaries<a class="headerlink" href="#arbitrary-boundaries" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> uses a Python callback wrapped in
-<code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code>.</p>
+<a class="reference internal" href="../pyapi/generated/pyopensn.math.AngularFluxFunction.html#pyopensn.math.AngularFluxFunction" title="pyopensn.math.AngularFluxFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxFunction</span></code></a>.</p>
 <p>The callback signature is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bc_func</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="n">direction_index</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
     <span class="o">...</span>
@@ -388,7 +388,7 @@ that group. Do not multiply by quadrature weights in the callback.</p>
 <section id="time-dependent-arbitrary-boundaries">
 <h3><span class="section-number">11.2.6. </span>Time-Dependent Arbitrary Boundaries<a class="headerlink" href="#time-dependent-arbitrary-boundaries" title="Link to this heading"></a></h3>
 <p>For transient problems, arbitrary boundary inflow can depend on time by using
-<code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxTimeFunction</span></code> and the <code class="docutils literal notranslate"><span class="pre">time_function</span></code>
+<a class="reference internal" href="../pyapi/generated/pyopensn.math.AngularFluxTimeFunction.html#pyopensn.math.AngularFluxTimeFunction" title="pyopensn.math.AngularFluxTimeFunction"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.math.AngularFluxTimeFunction</span></code></a> and the <code class="docutils literal notranslate"><span class="pre">time_function</span></code>
 boundary entry.</p>
 <p>The callback signature is:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">bc_func</span><span class="p">(</span><span class="n">group_index</span><span class="p">,</span> <span class="n">direction_index</span><span class="p">,</span> <span class="n">time</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
