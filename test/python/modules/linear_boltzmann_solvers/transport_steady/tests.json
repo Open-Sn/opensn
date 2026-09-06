@@ -1614,5 +1614,103 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "reed_test_rr_field_func.py",
+    "comment": "Reed 1D reaction-rate density field functions, incl. block restriction",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-total=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-abs=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-total-block3=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      }
+    ]
+  },
+  {
+    "file": "rr_2d_2g_field_func.py",
+    "comment": "2D 2-group reaction-rate density field functions, incl. per-group restriction",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-total=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-abs=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-total-g0=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-abs-g0=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-total-g1=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Relative-error-abs-g1=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Manual-total-rate-g0=",
+        "goldvalue": 7.274513316969501,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Manual-abs-rate-g0=",
+        "goldvalue": 2.8129895643430793,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Manual-total-rate-g1=",
+        "goldvalue": 3.199858312155642,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Manual-abs-rate-g1=",
+        "goldvalue": 2.0624279031595663,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RR2D2GFieldsExported=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
   }
 ]

@@ -296,9 +296,22 @@ public:
   std::shared_ptr<FieldFunctionGridBased> CreateScalarFluxFieldFunction(unsigned int g,
                                                                         unsigned int m = 0);
 
-  /// Creates a named field function from a 1D XS or the special case `power`.
-  std::shared_ptr<FieldFunctionGridBased> CreateFieldFunction(
-    const std::string& name, const std::string& xs_name, double power_normalization_target = -1.0);
+  /**
+   * Creates a named field function from a 1D XS or the special case `power`.
+   *
+   * For an ordinary XS name the field is the reaction-rate density `xs[g] * phi_g`. If \p group
+   * is non-negative only that group contributes, otherwise the field is summed over all groups.
+   * If \p block_ids is non-empty only cells whose block id appears in the list contribute; every
+   * other node is left at zero.
+   *
+   * \p group and \p block_ids are not supported for `power`.
+   */
+  std::shared_ptr<FieldFunctionGridBased>
+  CreateFieldFunction(const std::string& name,
+                      const std::string& xs_name,
+                      double power_normalization_target = -1.0,
+                      int group = -1,
+                      const std::vector<int>& block_ids = {});
 
   bool ReadRestartData(const RestartDataHook& extra_reader = {},
                        const std::filesystem::path& read_path = {},
@@ -344,7 +357,9 @@ protected:
   void UpdateScalarFluxFieldFunction(FieldFunctionGridBased& ff, unsigned int g, unsigned int m);
   void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                   const std::string& xs_name,
-                                  double power_normalization_target);
+                                  double power_normalization_target,
+                                  int group,
+                                  const std::vector<int>& block_ids);
   virtual bool ReadProblemRestartData(hid_t file_id,
                                       bool allow_transient_initialization_from_steady);
   virtual bool WriteProblemRestartData(hid_t file_id) const;
@@ -415,7 +430,9 @@ private:
   std::string MakeScalarFluxFieldFunctionName(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeScalarFluxFieldFunctionData(unsigned int g, unsigned int m) const;
   double ComputeFieldFunctionPowerScaleFactor(double power_normalization_target) const;
-  std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name) const;
+  std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name,
+                                                 int group,
+                                                 const std::vector<int>& block_ids) const;
   std::vector<double> ComputePowerFieldFunctionData(double& local_total_power) const;
   /// Initializes data carriers to GPUs and memory pinner.
   void InitializeGPUExtras();

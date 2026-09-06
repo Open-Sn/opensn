@@ -143,12 +143,41 @@ If a power-normalized view is needed:
        power_normalization_target=1.0,
    )
 
+Restricting by group and block
+------------------------------
+
+For an ordinary XS name the field above is a reaction-rate density, and it can be
+narrowed to a single energy group, to a set of blocks, or both:
+
+.. code-block:: python
+
+   # Group-0 total reaction rate over the whole domain
+   rr_g0_ff = phys.CreateFieldFunction("rr_total_g0", "sigma_t", group=0)
+
+   # Absorption rate summed over all groups, but only inside blocks 1 and 2
+   rr_fuel_ff = phys.CreateFieldFunction("rr_abs_fuel", "sigma_a", block_ids=[1, 2])
+
+``group`` defaults to ``-1``, meaning all groups are summed. ``block_ids``
+defaults to an empty list, meaning every cell contributes. Nodes that belong
+only to cells outside ``block_ids`` are left at zero, so a restricted field can
+be integrated over the whole domain and still give the per-block reaction rate.
+
+.. note::
+
+   ``group`` and ``block_ids`` are not supported for ``xs_name="power"`` and
+   passing them with it raises an error. Use
+   :py:class:`pyopensn.post.VolumePostprocessor` when a scalar reaction rate
+   over a volume is wanted rather than a spatially resolved field.
+
 Important points:
 
 * ``name`` is the field-function name assigned to the returned object
 * ``xs_name`` can be a built-in 1D XS name, a custom XS name, or ``"power"``
 * ``power_normalization_target`` is optional and affects only the returned
   field function
+* ``group`` selects a single energy group; ``-1`` (default) sums over all groups
+* ``block_ids`` restricts the field to the listed blocks; empty (default) means
+  all cells
 
 .. note::
 
