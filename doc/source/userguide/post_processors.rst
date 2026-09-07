@@ -343,7 +343,9 @@ Available operation types are:
 * ``"min_func"``
 
 The ``*_func`` variants use a scalar material function supplied with
-``SetOperationFunction``.
+``SetOperationFunction``. For ``min_func`` and ``max_func``, the function is
+applied at the sampled nodes and volume quadrature points before taking the
+global minimum or maximum.
 
 Volume Postprocessor
 ====================

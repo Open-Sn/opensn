@@ -74,16 +74,14 @@ FieldFunctionInterpolationVolume::Execute()
       node_dof_values[i] = field_data[imap];
     }
 
-    if (cell_local_id == cell_local_ids_inside_logvol_.front())
-    {
-      local_max = node_dof_values.front();
-      local_min = node_dof_values.front();
-    }
-
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      local_max = std::fmax(node_dof_values[i], local_max);
-      local_min = std::fmin(node_dof_values[i], local_min);
+      double value = node_dof_values[i];
+      if (op_type_ == FieldFunctionInterpolationOperation::OP_MAX_FUNC or
+          op_type_ == FieldFunctionInterpolationOperation::OP_MIN_FUNC)
+        value = oper_function_(value, cell.block_id);
+      local_max = std::fmax(value, local_max);
+      local_min = std::fmin(value, local_min);
     }
 
     for (const size_t qp : fe_vol_data.GetQuadraturePointIndices())
@@ -99,8 +97,8 @@ FieldFunctionInterpolationVolume::Execute()
 
       local_volume += fe_vol_data.JxW(qp);
       local_sum += function_value * fe_vol_data.JxW(qp);
-      local_max = std::fmax(ff_value, local_max);
-      local_min = std::fmin(ff_value, local_min);
+      local_max = std::fmax(function_value, local_max);
+      local_min = std::fmin(function_value, local_min);
     }
   }
 
