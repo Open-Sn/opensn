@@ -90,10 +90,15 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
+<span class="c1">/// Global relative L2 balance residual, scaled before squaring to avoid underflow/overflow.</span>
+<span class="c1">/// An absent source or nonfinite balance is not converged and returns infinity.</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">CMFDRelativeBalanceResidual</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">residual_rhs</span><span class="p">);</span>
+
 <span class="k">class</span><span class="w"> </span><span class="nc">CMFDCoarseMesh</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 

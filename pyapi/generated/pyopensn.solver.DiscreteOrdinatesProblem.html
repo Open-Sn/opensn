@@ -120,6 +120,27 @@ When paired with a solver base, the result is a solver instance configured for a
 (steady-state, transient, adjoint, k-eigenvalue, etc.).</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::DiscreteOrdinatesProblem</span></code></a>.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.ComputeFieldFunctionPowerScaleFactor">
+<span class="sig-name descname"><span class="pre">ComputeFieldFunctionPowerScaleFactor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">power_normalization_target</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.ComputeFieldFunctionPowerScaleFactor" title="Link to this definition"></a></dt>
+<dd><p>Compute the scale factor that would normalize the current scalar flux’s total power to a
+target value.</p>
+<p>This is a collective operation and must be called on all MPI ranks.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>power_normalization_target</strong> (<em>float</em>) – Target total power (must be positive). The returned factor is
+<code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">/</span> <span class="pre">global_total_power</span></code>, where <code class="docutils literal notranslate"><span class="pre">global_total_power</span></code> is the
+same MPI-reduced, kappa-weighted total power <code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...,</span> <span class="pre">&quot;power&quot;,</span> <span class="pre">...)</span></code>
+and the <code class="docutils literal notranslate"><span class="pre">power</span></code> field function use.</p>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>This does not mutate any solver state. It is the same scale factor
+<code class="docutils literal notranslate"><span class="pre">CreateFieldFunction(...,</span> <span class="pre">&quot;power&quot;,</span> <span class="pre">power_normalization_target)</span></code> applies internally, exposed
+directly so callers can apply it to their own derived quantities (e.g. postprocessor output)
+without needing a field function.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesProblem.ComputeFissionProduction">
 <span class="sig-name descname"><span class="pre">ComputeFissionProduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem" title="pyopensn.solver.LBSProblem"><span class="pre">pyopensn.solver.LBSProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">scalar_flux_iterate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.ComputeFissionProduction" title="Link to this definition"></a></dt>
 <dd><p>Computes the total fission production (nu*fission).</p>

@@ -142,10 +142,9 @@ back to the transport solution.</p>
 transport update iterations, then applies a bounded low-order scalar-flux
 correction. The defaults use one WGS update iteration, automatic current
 closure, fixed correction relaxation, and a transport-current balance check
-before outer power iteration is allowed to converge. By default that balance
-check is self-calibrating and requires no hand-picked tolerance; supplying
-<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> explicitly switches to a fixed-threshold check
-instead. See the description of <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> below.</p>
+before outer power iteration is allowed to converge, against a fixed
+tolerance (<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>). See the description of
+<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> below.</p>
 <p>CMFD owns the WGS update controls through <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> and
 <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>. The default is a one-iteration transport update before
 each CMFD correction. To make each transport update more tightly converged
@@ -179,9 +178,8 @@ energy aggregation:</p>
     <span class="n">relaxation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
     <span class="n">update_wgs_max_its</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">update_wgs_abs_tol</span><span class="o">=</span><span class="mf">1.0e-12</span><span class="p">,</span>
-    <span class="c1"># balance_residual_tolerance intentionally left unset: CMFD self-calibrates</span>
-    <span class="c1"># instead of gating on a hand-picked number. Pass it explicitly only when a</span>
-    <span class="c1"># fixed, reproducible target is actually needed (e.g. a benchmark comparison).</span>
+    <span class="c1"># balance_residual_tolerance left at its default (1.0e-6); pass it explicitly only</span>
+    <span class="c1"># when a different fixed target is actually needed (e.g. a benchmark comparison).</span>
 <span class="p">)</span>
 
 <span class="n">solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
@@ -266,7 +264,7 @@ specific number of coarse groups, use:</p>
 coarse group. By contrast, <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">15)</span> <span class="pre">//</span> <span class="pre">16</span></code> chooses an aggregation
 size that gives about 16 total CMFD coarse groups.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Requested relaxation factor for the scalar-flux correction. The default is
+<dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Strictly positive relaxation factor for the scalar-flux correction. The default is
 <code class="docutils literal notranslate"><span class="pre">0.5</span></code>. The correction limiter may reduce the damping for a single update or
 skip that update if the correction would produce non-finite values, an invalid
 k-eigenvalue, or an unacceptable scalar-flux undershoot. Smaller values are
@@ -294,34 +292,11 @@ inconsistent.</p>
 k-eigenvalue error, and it has no single correct absolute value: the
 residual floor CMFD can actually reach depends on the coarse-mesh
 construction, aggregation, and current closure, none of which are known in
-advance. <strong>If this parameter is left unset (the default), CMFD instead uses
-a self-calibrating false-convergence check</strong> driven by
-<code class="docutils literal notranslate"><span class="pre">balance_residual_confirmation_iterations</span></code> and
-<code class="docutils literal notranslate"><span class="pre">balance_residual_plateau_fraction</span></code> below, and no tolerance needs to be
-chosen. Supplying <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> explicitly always selects
-the fixed-threshold behavior instead, even if the supplied value equals the
-previous default of <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>. Use an explicit value when a fixed,
-reproducible target is actually needed, for example to match a benchmark
-setting or a prior study. A fixed tolerance should not automatically be
-made tighter than the requested outer <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>; for large 3D problems,
-<code class="docutils literal notranslate"><span class="pre">10*k_tol</span></code> can be too strict and can force iterations well past the point
-where the eigenvalue has already reached the requested accuracy. That is
-exactly the situation the self-calibrating default is meant to avoid having
-to tune by hand.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_confirmation_iterations</span></code></dt><dd><p>Number of consecutive power iterations, once the accelerated k-eigenvalue
-has stopped changing (within the outer solver’s own k-eigenvalue tolerance)
-and the CMFD correction is being applied (not skipped), required for the
-transport-current balance residual to be considered a stable plateau rather
-than still meaningfully converging. The default is <code class="docutils literal notranslate"><span class="pre">3</span></code>. Only used by the
-self-calibrating check, i.e. when <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> is left
-unset.</p>
-</dd>
-<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_plateau_fraction</span></code></dt><dd><p>Relative iteration-to-iteration change below which the transport-current
-balance residual is considered to have stopped decreasing (a plateau)
-rather than still converging. The default is <code class="docutils literal notranslate"><span class="pre">0.1</span></code> (10%). Only used by
-the self-calibrating check, i.e. when <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> is
-left unset.</p>
+advance. The default is <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>. A tighter value should not
+automatically be assumed to be better: it should not be made
+tighter than the requested outer <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> without reason, since for large
+3D problems an unnecessarily strict value can force iterations well past
+the point where the eigenvalue has already reached the requested accuracy.</p>
 </dd>
 </dl>
 </section>
@@ -332,8 +307,10 @@ method development. Production inputs should usually leave them at their
 defaults.</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code></dt><dd><p>Number of initial power iterations before applying CMFD corrections. The
-default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. Transport update controls are still active during
-inactive iterations. Increase this only when debugging startup behavior where
+default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. Inactive iterations retain the <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code>
+groupset WGS limits and tolerance. CMFD applies <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> and
+<code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code> starting with the first active iteration.
+Increase this only when debugging startup behavior where
 very early CMFD corrections are repeatedly rejected.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">correction_max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">correction_min_damping</span></code>, <code class="docutils literal notranslate"><span class="pre">negative_flux_tolerance</span></code></dt><dd><p>Internal correction-limiter controls. These determine how many damping
@@ -354,8 +331,8 @@ direct-solve threshold is intended to avoid automatic LU factorization of
 very large coarse systems; direct solves are limited by host memory and
 factorization cost.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> and <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code></dt><dd><p>Coarse k-eigenvalue power-iteration controls. Defaults are <code class="docutils literal notranslate"><span class="pre">50</span></code> and
-<code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>. These control the inner CMFD coarse k solve and are separate from
+<dt><code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> and <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code></dt><dd><p>Coarse k-eigenvalue power-iteration controls. <code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> must be at least 1.
+Defaults are <code class="docutils literal notranslate"><span class="pre">50</span></code> and <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>. These control the inner CMFD coarse k solve and are separate from
 <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver(k_tol=...)</span></code>. If the coarse k solve is too loose,
 CMFD corrections can be noisy; if it is too tight, coarse-solve work can
 dominate runtime.</p>
@@ -395,13 +372,6 @@ separate line reports whether the CMFD-specific convergence gate is satisfied:</
 CMFD convergence check = not_satisfied, transport-current balance residual = 2.300000e-06 (balance_residual_tolerance = 1.000000e-06)
 </pre></div>
 </div>
-<p>That example is from a fixed <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>. With the default
-self-calibrating check (<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> left unset), the same
-line instead reports the confirmation-streak progress toward
-<code class="docutils literal notranslate"><span class="pre">balance_residual_confirmation_iterations</span></code>:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMFD convergence check = not_satisfied, transport-current balance residual = 4.414573e-08 (auto false-convergence streak = 1/3)
-</pre></div>
-</div>
 <p>The PI solver declares convergence only when both the eigenvalue tolerance and
 the CMFD convergence check are satisfied. If a correction is rejected, the line
 also reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span></code> with a reason, for example:</p>
@@ -416,9 +386,9 @@ intended for regression tests and performance studies.</p>
 <h2><span class="section-number">10.6. </span>Correction Safeties And Warnings<a class="headerlink" href="#correction-safeties-and-warnings" title="Link to this heading"></a></h2>
 <p>CMFD never applies an untrusted coarse correction. If a safety check rejects a
 correction, the current power iteration uses the unaccelerated transport update
-instead. After repeated skipped corrections, CMFD returns the raw transport
-k-eigenvalue update so that power iteration can continue to move forward even if
-the low-order correction is temporarily unusable.</p>
+and its raw transport k-eigenvalue update. This applies to every skipped
+correction, so power iteration can continue even when the low-order correction
+is temporarily unusable.</p>
 <p>The most common skip reasons are:</p>
 <dl class="simple">
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_linear_solve_not_converged</span></code></dt><dd><p>One or more PETSc coarse linear solves did not converge within <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>.

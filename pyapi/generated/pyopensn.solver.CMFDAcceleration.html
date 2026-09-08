@@ -172,7 +172,7 @@ increase the coarse-system cost but may improve robustness.</p></li>
 final number of coarse groups. A value of 1 preserves the full transport group
 structure in the low-order system. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> total coarse groups, use
 <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">N</span></code>.</p></li>
-<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Common option. Relaxation factor applied to the CMFD scalar-flux correction.
+<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
 This is the requested correction strength. The correction limiter may damp or
 skip an individual correction if the requested update would produce an invalid
 k-eigenvalue, non-finite flux, or excessive negative scalar flux.</p></li>
@@ -202,7 +202,7 @@ iterative solves, or provide stronger <code class="docutils literal notranslate"
 useful for regression tests and performance studies but can be noisy in production.</p></li>
 <li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;&quot;</em>) – Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
 for solver experiments, especially with <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code>.</p></li>
-<li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Developer/debug. Maximum inner power iterations for the CMFD coarse k solve.
+<li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
 Increase only if the coarse k solve is not converging enough to give useful
 corrections.</p></li>
 <li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
@@ -220,8 +220,8 @@ Corrections producing scalar flux below this guard are damped or skipped. Raisin
 this value can hide unstable corrections and should be accompanied by final-k and
 scalar-flux checks.</p></li>
 <li><p><strong>inactive_iterations</strong> (<em>int</em><em>, </em><em>default=0</em>) – Developer/debug. Number of initial power iterations before applying CMFD
-corrections. Transport update controls are still used during these
-iterations.</p></li>
+corrections. These iterations retain the WGS settings configured on the problem.
+CMFD applies its transport update controls starting with the first active iteration.</p></li>
 <li><p><strong>coarse_solver_policy</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
 <dt>Developer/debug. Coarse solver policy. Valid choices are:</dt><dd><ul>
 <li><p>’auto’ : PETSc preonly+LU below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code>
@@ -234,8 +234,8 @@ global unknowns, GMRES+Jacobi otherwise</p></li>
 </dl>
 <p>CMFD corrections from unconverged coarse linear solves are always skipped.
 The skipped correction uses the unaccelerated transport update for that power
-iteration; after repeated skipped corrections, CMFD returns the raw transport
-k update so that power iteration can continue to move.</p>
+iteration, including the raw transport k update so that power iteration can continue
+to move.</p>
 </p></li>
 <li><p><strong>coarse_direct_solve_threshold</strong> (<em>int</em><em>, </em><em>default=20000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
 solves when <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;auto&quot;</span></code>. Larger values make <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> use
