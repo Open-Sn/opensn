@@ -11,6 +11,7 @@
 #include "framework/utils/error.h"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <map>
 #include <set>
 
@@ -40,6 +41,39 @@ CoarseGroupEnd(const unsigned int coarse_group,
 }
 
 } // namespace
+
+double
+CMFDRelativeBalanceResidual(const std::vector<std::pair<double, double>>& residual_rhs)
+{
+  double local_scale = 0.0;
+  for (const auto& [residual, rhs] : residual_rhs)
+  {
+    if (not std::isfinite(residual) or not std::isfinite(rhs))
+    {
+      local_scale = std::numeric_limits<double>::infinity();
+      break;
+    }
+    local_scale = std::max({local_scale, std::fabs(residual), std::fabs(rhs)});
+  }
+  double global_scale = 0.0;
+  mpi_comm.all_reduce(local_scale, global_scale, mpi::op::max<double>());
+  if (global_scale == 0.0 or not std::isfinite(global_scale))
+    return std::numeric_limits<double>::infinity();
+
+  double local_residual_l2 = 0.0;
+  double local_rhs_l2 = 0.0;
+  for (const auto& [residual, rhs] : residual_rhs)
+  {
+    local_residual_l2 += (residual / global_scale) * (residual / global_scale);
+    local_rhs_l2 += (rhs / global_scale) * (rhs / global_scale);
+  }
+  double global_residual_l2 = 0.0;
+  double global_rhs_l2 = 0.0;
+  mpi_comm.all_reduce(local_residual_l2, global_residual_l2, mpi::op::sum<double>());
+  mpi_comm.all_reduce(local_rhs_l2, global_rhs_l2, mpi::op::sum<double>());
+  return global_rhs_l2 > 0.0 ? std::sqrt(global_residual_l2) / std::sqrt(global_rhs_l2)
+                             : std::numeric_limits<double>::infinity();
+}
 
 std::vector<double>
 CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,

@@ -119,11 +119,8 @@ if __name__ == "__main__":
             verbose=get_option("cmfd_verbose", False),
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )
-        # balance_residual_tolerance is left unset by default so CMFD uses its self-calibrating
-        # false-convergence check instead of a fixed threshold (this problem's fixed default,
-        # 10*k_tolerance, was tight enough that CMFD never satisfied it and always ran to
-        # cmfd_solver_max_iters -- see cmfd_balance_residual_tolerance below to force the old
-        # fixed-tolerance behavior explicitly).
+        # balance_residual_tolerance is left unset by default, so CMFD uses its fixed default
+        # (1.0e-6) -- see cmfd_balance_residual_tolerance below to override it explicitly.
         if "cmfd_balance_residual_tolerance" in globals():
             cmfd_kwargs["balance_residual_tolerance"] = cmfd_balance_residual_tolerance
         cmfd = CMFDAcceleration(**cmfd_kwargs)

@@ -3,10 +3,15 @@
 
 #pragma once
 
+#include <utility>
 #include <vector>
 
 namespace opensn
 {
+/// Global relative L2 balance residual, scaled before squaring to avoid underflow/overflow.
+/// An absent source or nonfinite balance is not converged and returns infinity.
+double CMFDRelativeBalanceResidual(const std::vector<std::pair<double, double>>& residual_rhs);
+
 class CMFDCoarseMesh;
 class DiscreteOrdinatesProblem;
 

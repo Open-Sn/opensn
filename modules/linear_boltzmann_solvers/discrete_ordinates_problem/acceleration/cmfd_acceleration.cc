@@ -150,8 +150,9 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "relaxation",
     0.5,
-    "Requested relaxation factor for the CMFD scalar-flux correction. The correction limiter may "
-    "damp or skip an individual correction if the requested correction is not admissible.");
+    "Strictly positive relaxation factor for the CMFD scalar-flux correction. The correction "
+    "limiter may damp or skip an individual correction if the requested correction is not "
+    "admissible.");
   params.AddOptionalParameter(
     "correction_max_attempts",
     10,
@@ -172,8 +173,11 @@ CMFDAcceleration::GetInputParameters()
     "inactive_iterations",
     0,
     "[developer/debug] Number of initial power iterations before applying CMFD "
-    "corrections. Transport update controls are still active during "
-    "inactive iterations.");
+    "corrections. During these iterations, update_wgs_max_its/update_wgs_abs_tol are NOT "
+    "applied -- the groupset WGS solvers keep whatever settings were configured on the "
+    "DiscreteOrdinatesProblem directly, size them for genuinely-converged transport updates if "
+    "that's the intent of using inactive iterations. CMFD switches the groupsets to "
+    "update_wgs_max_its/update_wgs_abs_tol for good starting with the first active iteration.");
   params.AddOptionalParameter(
     "update_wgs_max_its",
     1,
@@ -192,29 +196,7 @@ CMFDAcceleration::GetInputParameters()
     "CMFD allows power-iteration convergence. This is a second convergence "
     "guard in addition to the outer k_eff tolerance, not an estimate of the "
     "k-eigenvalue error. Large 3D problems may need a looser value than the "
-    "outer k_eff tolerance. If this parameter is left unset, CMFD instead uses a "
-    "self-calibrating false-convergence check (see balance_residual_confirmation_iterations "
-    "and balance_residual_plateau_fraction) that requires no hand-picked tolerance: it "
-    "declares the balance residual acceptable once it has both plateaued and stopped "
-    "affecting the accelerated k-eigenvalue for several consecutive iterations, rather than "
-    "comparing against a fixed number. Supplying this parameter explicitly always selects the "
-    "fixed-tolerance behavior, even if the supplied value equals the default.");
-  params.AddOptionalParameter(
-    "balance_residual_confirmation_iterations",
-    3,
-    "Number of consecutive power iterations, once the accelerated k-eigenvalue has stopped "
-    "changing (within the outer solver's own k-eigenvalue tolerance) and the CMFD correction "
-    "is being applied (not skipped), required for the transport-current balance residual to be "
-    "considered a stable plateau rather than still meaningfully converging. Only used by the "
-    "self-calibrating balance-residual check, i.e. when balance_residual_tolerance is left "
-    "unset.");
-  params.AddOptionalParameter(
-    "balance_residual_plateau_fraction",
-    0.1,
-    "Relative iteration-to-iteration change below which the transport-current balance "
-    "residual is considered to have stopped decreasing (a plateau) rather than still "
-    "converging. Only used by the self-calibrating balance-residual check, i.e. when "
-    "balance_residual_tolerance is left unset.");
+    "outer k_eff tolerance.");
   params.AddOptionalParameter(
     "coarse_solver_policy",
     "auto",
@@ -239,7 +221,8 @@ CMFDAcceleration::GetInputParameters()
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
   params.ConstrainParameterRange("aggregation_size", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("group_aggregation_size", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("relaxation", AllowableRangeLowLimit::New(0.0));
+  params.ConstrainParameterRange("relaxation", AllowableRangeLowLimit::New(0.0, false));
+  params.ConstrainParameterRange("pi_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("correction_max_attempts", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("correction_min_damping", AllowableRangeLowLimit::New(0.0));
   params.ConstrainParameterRange("negative_flux_tolerance", AllowableRangeLowLimit::New(0.0));
@@ -247,10 +230,6 @@ CMFDAcceleration::GetInputParameters()
   params.ConstrainParameterRange("update_wgs_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("update_wgs_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("balance_residual_tolerance", AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("balance_residual_confirmation_iterations",
-                                 AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("balance_residual_plateau_fraction",
-                                 AllowableRangeLowLimit::New(0.0));
   params.ConstrainParameterRange("coarse_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ChangeExistingParamToOptional("name", "CMFDAcceleration");
   params.ChangeExistingParamToOptional(
@@ -301,12 +280,6 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     update_wgs_max_its_(params.GetParamValue<unsigned int>("update_wgs_max_its")),
     update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
     balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
-    balance_residual_tolerance_explicit_(
-      params.GetParametersAtAssignment().Has("balance_residual_tolerance")),
-    balance_residual_confirmation_iterations_(
-      params.GetParamValue<unsigned int>("balance_residual_confirmation_iterations")),
-    balance_residual_plateau_fraction_(
-      params.GetParamValue<double>("balance_residual_plateau_fraction")),
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
     coarse_direct_solve_threshold_(
       static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
@@ -330,6 +303,10 @@ CMFDAcceleration::~CMFDAcceleration()
 void
 CMFDAcceleration::Initialize()
 {
+  // Save the original groupset iteration parameters. This must run before anything else touches
+  // the groupsets.
+  SnapshotOriginalTransportSolve();
+
   do_problem_.ConfigureOutflowStorage(true);
   active_current_closure_ = automatic_closure_ ? "net" : current_closure_;
   current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
@@ -342,11 +319,9 @@ CMFDAcceleration::Initialize()
     coarse_mesh_ =
       CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetGrid(), aggregation_size_);
 
-  ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
-  log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD configured "
-            << do_problem_.GetNumGroupsets()
-            << " groupset WGS solvers with max iterations = " << update_wgs_max_its_
-            << ", absolute tolerance = " << update_wgs_abs_tol_ << ".";
+  // update_wgs_max_its_/update_wgs_abs_tol_ are NOT applied here. PrePowerIteration applies them
+  // for the first time exactly when outer_iteration_ reaches inactive_iterations_. Until then,
+  // the groupsets keep whatever WGS settings the caller configured.
   InitializeLinearSystem();
   AssembleOperator();
 
@@ -533,11 +508,6 @@ CMFDAcceleration::UpdateAutomaticClosure(const BalanceResidual operator_residual
   {
     active_current_closure_ = "partial";
 
-    // The coarse operator has changed significantly, so we need to reset the auto
-    // false-convergence check for the balance residual
-    auto_previous_residual_ = -1.0;
-    auto_confirmation_streak_ = 0;
-
     log.Log0() << no_wrap << program_timer.GetTimeString()
                << " CMFD auto closure switched from net to partial"
                << ": operator/current residual ratio = " << residual_ratio
@@ -548,39 +518,10 @@ CMFDAcceleration::UpdateAutomaticClosure(const BalanceResidual operator_residual
 
 bool
 CMFDAcceleration::EvaluateBalanceConvergence(
-  const BalanceResidual& transport_current_balance_residual,
-  const bool skipped_correction,
-  const double accelerated_k_change)
+  const BalanceResidual& transport_current_balance_residual, const bool skipped_correction) const
 {
-  if (balance_residual_tolerance_explicit_)
-    return transport_current_balance_residual.relative_l2 <= balance_residual_tolerance_ and
-           not skipped_correction;
-
-  // Auto false-convergence check used when balance_residual_tolerance is not provided. Rather
-  // than comparing the balance residual (that depends on partitioning, CMFD aggregation, and
-  // the current-closure choice) against a hard value, the auto option requires a specified
-  // number of k iterations where: (a) the CMFD correction was applied, (b) the value for k
-  // has stopped moving relative to its tolerance, and (c) the balance residual has stopped
-  // decreasing meaningfully iteration to iteration. (a)+(b) mean that the balance residual
-  // is no longer affecting the value of k, and (c) means the balance residual iteself has
-  // plateaued (not just merely stagnated for a single iteration).
-  const double r = transport_current_balance_residual.relative_l2;
-  const bool k_tight = accelerated_k_change < solver_->GetKTolerance();
-
-  bool residual_flat = false;
-  if (not skipped_correction and auto_previous_residual_ >= 0.0)
-  {
-    const double rel_change =
-      std::fabs(r - auto_previous_residual_) / std::max(auto_previous_residual_, 1.0e-300);
-    residual_flat = rel_change <= balance_residual_plateau_fraction_;
-  }
-  if (not skipped_correction)
-    auto_previous_residual_ = r;
-
-  const bool qualifies = not skipped_correction and k_tight and residual_flat;
-  auto_confirmation_streak_ = qualifies ? auto_confirmation_streak_ + 1 : 0;
-
-  return auto_confirmation_streak_ >= balance_residual_confirmation_iterations_;
+  return transport_current_balance_residual.relative_l2 <= balance_residual_tolerance_ and
+         not skipped_correction;
 }
 
 void
@@ -597,19 +538,36 @@ CMFDAcceleration::PreExecute()
   current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
   automatic_closure_probed_ = false;
   automatic_closure_probe_iterations_ = 0;
-  ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
+  // Every Execute() call's inactive phase (if any) must see the SAME original WGS settings, not
+  // whatever a previous Execute() call's active phase left the groupsets configured to -- restore
+  // the pristine snapshot Initialize() took before this class ever touched them. PrePowerIteration
+  // switches to update_wgs_max_its_/update_wgs_abs_tol_ again once outer_iteration_ reaches
+  // inactive_iterations_, same as every previous Execute() call.
+  RestoreOriginalTransportSolve();
   last_restrict_old_time_ = 0.0;
   transport_start_time_ = 0.0;
   old_fission_production_ = 0.0;
-  consecutive_skipped_corrections_ = 0;
-  auto_previous_residual_ = -1.0;
-  auto_confirmation_streak_ = 0;
 }
 
 void
 CMFDAcceleration::PrePowerIteration()
 {
+  // Executes exactly once, immediately before the sweep for the first active iteration
+  // (outer_iteration_ == inactive_iterations_ covers both inactive_iterations_ == 0, where this
+  // is the very first call, and inactive_iterations_ > 0). Before this point the groupsets are
+  // left exactly as the caller configured them.
+  if (outer_iteration_ == inactive_iterations_)
+  {
+    ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
+    log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD switching " << groupsets_.size()
+              << " groupset WGS solver(s) to max iterations = " << update_wgs_max_its_
+              << ", absolute tolerance = " << update_wgs_abs_tol_
+              << " (inactive_iterations = " << inactive_iterations_ << ").";
+  }
+
   const double t0 = NowSeconds();
+  // Fail fast if the pre-sweep flux is already degenerate, before paying for the sweep. This is
+  // also the reference for an unaccelerated power update: WGS overwrites phi_old_local_.
   old_fission_production_ = ComputeFissionProduction(do_problem_, phi_old_local_);
   OpenSnLogicalErrorIf(old_fission_production_ == 0.0,
                        "CMFDAcceleration cannot update k with zero old production.");
@@ -637,10 +595,10 @@ CMFDAcceleration::PostPowerIteration()
 
   t0 = NowSeconds();
   const double F_transport_new = ComputeFissionProduction(do_problem_, phi_new_local_);
-  OpenSnLogicalErrorIf(old_fission_production_ == 0.0,
-                       "CMFDAcceleration cannot update k with zero old production.");
   const double raw_transport_k_eff =
     F_transport_new / old_fission_production_ * solver_->GetEigenvalue();
+  // Active CMFD corrections use the post-WGS production for their normalization. Keep this
+  // separate from the pre-sweep production used by inactive and rejected transport updates.
   const double cmfd_reference_fission_production =
     ComputeFissionProduction(do_problem_, phi_old_local_);
   OpenSnLogicalErrorIf(cmfd_reference_fission_production == 0.0,
@@ -670,14 +628,14 @@ CMFDAcceleration::PostPowerIteration()
     {
       std::ostringstream iter_info;
       iter_info << program_timer.GetTimeString() << " CMFD iteration = " << outer_iteration_;
-      AppendNumericField(iter_info, "k_eff", transport_k_eff, Fixed(7));
+      AppendNumericField(iter_info, "k_eff", raw_transport_k_eff, Fixed(7));
       iter_info << ", status = inactive";
       AppendNumericField(iter_info, "inactive_iterations", inactive_iterations_);
       log.Log() << no_wrap << iter_info.str();
     }
 
     ++outer_iteration_;
-    return transport_k_eff;
+    return raw_transport_k_eff;
   }
 
   ProbeAutomaticClosure(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
@@ -748,7 +706,6 @@ CMFDAcceleration::PostPowerIteration()
     skipped_correction = true;
     correction_skip_reason = "coarse_linear_solve_not_converged";
     correction_diagnostics = AnalyzeFluxUpdate(phi_new_local_, transport_k_eff);
-    k_eff = transport_k_eff;
     const bool can_switch_to_direct = coarse_solver_policy_ == "auto" and
                                       not using_direct_coarse_solver_ and
                                       GlobalUnknownCount() <= coarse_direct_solve_threshold_;
@@ -778,18 +735,12 @@ CMFDAcceleration::PostPowerIteration()
                                            skipped_correction,
                                            correction_skip_reason);
   if (skipped_correction)
-  {
-    ++consecutive_skipped_corrections_;
-    if (consecutive_skipped_corrections_ >= 2)
-      k_eff = raw_transport_k_eff;
-  }
-  else
-    consecutive_skipped_corrections_ = 0;
+    k_eff = raw_transport_k_eff;
   last_correction_skipped_ = skipped_correction;
   last_correction_skip_reason_ = skipped_correction ? correction_skip_reason : std::string();
   const double accelerated_k_change = std::fabs(k_eff - solver_->GetEigenvalue()) / k_eff;
-  last_update_allows_convergence_ = EvaluateBalanceConvergence(
-    transport_current_balance_residual, skipped_correction, accelerated_k_change);
+  last_update_allows_convergence_ =
+    EvaluateBalanceConvergence(transport_current_balance_residual, skipped_correction);
   UpdateAutomaticClosure(transport_balance_residual,
                          transport_current_balance_residual,
                          transport_k_eff,
@@ -847,14 +798,7 @@ CMFDAcceleration::PostPowerIteration()
     LogMetric("coarse_linear_solves_converged", coarse_linear_solves_converged ? 1 : 0);
     LogMetric("operator_balance_residual", transport_balance_residual.relative_l2);
     LogMetric("transport_current_balance_residual", transport_current_balance_residual.relative_l2);
-    LogMetric("balance_residual_mode", balance_residual_tolerance_explicit_ ? "fixed" : "auto");
-    if (balance_residual_tolerance_explicit_)
-      LogMetric("balance_residual_tolerance", balance_residual_tolerance_);
-    else
-    {
-      LogMetric("auto_confirmation_streak", auto_confirmation_streak_);
-      LogMetric("auto_confirmation_target", balance_residual_confirmation_iterations_);
-    }
+    LogMetric("balance_residual_tolerance", balance_residual_tolerance_);
     LogMetric("balance_allows_convergence", last_update_allows_convergence_ ? 1 : 0);
     LogMetric("accelerated_k_change", accelerated_k_change);
   }
@@ -875,12 +819,8 @@ CMFDAcceleration::GetPowerIterationConvergenceInfo() const
       << ", transport-current balance residual = " << std::scientific << std::setprecision(6)
       << last_transport_current_balance_relative_l2_;
   out << std::defaultfloat;
-  if (balance_residual_tolerance_explicit_)
-    out << " (balance_residual_tolerance = " << std::scientific << std::setprecision(6)
-        << balance_residual_tolerance_ << std::defaultfloat << ")";
-  else
-    out << " (auto false-convergence streak = " << auto_confirmation_streak_ << "/"
-        << balance_residual_confirmation_iterations_ << ")";
+  out << " (balance_residual_tolerance = " << std::scientific << std::setprecision(6)
+      << balance_residual_tolerance_ << std::defaultfloat << ")";
   if (last_correction_skipped_)
   {
     out << ", correction = skipped";
@@ -1082,6 +1022,14 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
 void
 CMFDAcceleration::InitializeLinearSystem()
 {
+  // Guard against leaking these if Initialize is called multiple times.
+  if (ksp_)
+    OpenSnPETScCall(KSPDestroy(&ksp_));
+  if (rhs_)
+    OpenSnPETScCall(VecDestroy(&rhs_));
+  if (A_)
+    OpenSnPETScCall(MatDestroy(&A_));
+
   const auto local_unknowns = static_cast<PetscInt>(LocalUnknownCount());
   const auto global_unknowns = static_cast<PetscInt>(GlobalUnknownCount());
 
@@ -1137,6 +1085,52 @@ CMFDAcceleration::ConfigureTransportSolve(const unsigned int max_iterations,
   for (std::size_t gsid = 0; gsid < do_problem_.GetNumGroupsets(); ++gsid)
   {
     auto& groupset = do_problem_.GetGroupset(gsid);
+    groupset.max_iterations = max_iterations;
+    groupset.residual_tolerance = residual_tolerance;
+
+    auto wgs_solver = do_problem_.GetWGSSolver(groupset.id);
+    if (auto petsc_solver = std::dynamic_pointer_cast<PETScLinearSolver>(wgs_solver))
+    {
+      auto& tolerance_options = petsc_solver->GetToleranceOptions();
+      tolerance_options.maximum_iterations = static_cast<PetscInt>(max_iterations);
+      tolerance_options.residual_absolute = residual_tolerance;
+      petsc_solver->ApplyToleranceOptions();
+    }
+    else
+    {
+      OpenSnLogicalErrorIf(
+        not std::dynamic_pointer_cast<ClassicRichardson>(wgs_solver),
+        "CMFD transport updates require a PETSc or classic Richardson WGS solver.");
+    }
+  }
+}
+
+void
+CMFDAcceleration::SnapshotOriginalTransportSolve()
+{
+  // Reinitialization must not snapshot the settings left by an earlier active CMFD phase.
+  if (not original_wgs_max_its_.empty())
+    return;
+
+  const auto num_groupsets = do_problem_.GetNumGroupsets();
+  original_wgs_max_its_.resize(num_groupsets);
+  original_wgs_residual_tolerance_.resize(num_groupsets);
+  for (std::size_t gsid = 0; gsid < num_groupsets; ++gsid)
+  {
+    const auto& groupset = do_problem_.GetGroupset(gsid);
+    original_wgs_max_its_[gsid] = groupset.max_iterations;
+    original_wgs_residual_tolerance_[gsid] = groupset.residual_tolerance;
+  }
+}
+
+void
+CMFDAcceleration::RestoreOriginalTransportSolve()
+{
+  for (std::size_t gsid = 0; gsid < do_problem_.GetNumGroupsets(); ++gsid)
+  {
+    auto& groupset = do_problem_.GetGroupset(gsid);
+    const auto max_iterations = original_wgs_max_its_.at(gsid);
+    const auto residual_tolerance = original_wgs_residual_tolerance_.at(gsid);
     groupset.max_iterations = max_iterations;
     groupset.residual_tolerance = residual_tolerance;
 
@@ -1735,7 +1729,8 @@ CMFDAcceleration::ComputeBalanceResidual(const double k_eff,
   OpenSnPETScCall(VecDestroy(&x));
 
   return {static_cast<double>(max_abs),
-          static_cast<double>(residual_l2 / std::max<PetscReal>(rhs_l2, 1.0e-30))};
+          rhs_l2 > 0.0 ? static_cast<double>(residual_l2 / rhs_l2)
+                       : std::numeric_limits<double>::infinity()};
 }
 
 CMFDAcceleration::BalanceResidual
@@ -1752,8 +1747,8 @@ CMFDAcceleration::ComputeTransportCurrentBalanceResidual(
 
   const auto& xs_map = do_problem_.GetBlockID2XSMap();
   double local_max_abs = 0.0;
-  double local_residual_l2 = 0.0;
-  double local_rhs_l2 = 0.0;
+  std::vector<std::pair<double, double>> residual_rhs;
+  residual_rhs.reserve(LocalUnknownCount());
 
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
@@ -1797,19 +1792,13 @@ CMFDAcceleration::ComputeTransportCurrentBalanceResidual(
 
       const double residual = lhs - rhs;
       local_max_abs = std::max(local_max_abs, std::fabs(residual));
-      local_residual_l2 += residual * residual;
-      local_rhs_l2 += rhs * rhs;
+      residual_rhs.emplace_back(residual, rhs);
     }
   }
 
   double global_max_abs = 0.0;
-  double global_residual_l2 = 0.0;
-  double global_rhs_l2 = 0.0;
   mpi_comm.all_reduce(local_max_abs, global_max_abs, mpi::op::max<double>());
-  mpi_comm.all_reduce(local_residual_l2, global_residual_l2, mpi::op::sum<double>());
-  mpi_comm.all_reduce(local_rhs_l2, global_rhs_l2, mpi::op::sum<double>());
-
-  return {global_max_abs, std::sqrt(global_residual_l2 / std::max(global_rhs_l2, 1.0e-60))};
+  return {global_max_abs, CMFDRelativeBalanceResidual(residual_rhs)};
 }
 
 double

@@ -3,6 +3,9 @@
 #include "framework/runtime.h"
 #include "test/unit/common/mesh_builders.h"
 #include "gtest/gtest.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
+#include <cmath>
+#include <limits>
 
 using namespace opensn;
 
@@ -212,4 +215,27 @@ TEST(CMFDCoarseMesh, GlobalAggregationBuildsConnectedCoarseCells)
   opensn::mpi_comm.all_reduce(
     local_owned_fine_cells, global_owned_fine_cells, mpi::op::sum<std::size_t>());
   EXPECT_EQ(global_owned_fine_cells, grid->GetGlobalNumberOfCells());
+}
+
+TEST(CMFDBalance, RelativeResidualIsIndependentOfFluxScale)
+{
+  for (const double scale : {1.0, 1.0e-200, 1.0e200})
+  {
+    std::vector<std::pair<double, double>> values;
+    // Also exercise ranks with no coarse cells.
+    if (mpi_comm.rank() == 0)
+      values = {{3.0 * scale, 6.0 * scale}, {4.0 * scale, 8.0 * scale}};
+    EXPECT_DOUBLE_EQ(CMFDRelativeBalanceResidual(values), 0.5);
+  }
+}
+
+TEST(CMFDBalance, DegenerateAndNonfiniteBalancesCannotConverge)
+{
+  EXPECT_TRUE(std::isinf(CMFDRelativeBalanceResidual({{0.0, 0.0}})));
+  EXPECT_TRUE(std::isinf(CMFDRelativeBalanceResidual({{1.0, 0.0}})));
+  std::vector<std::pair<double, double>> values = {{0.0, 1.0}};
+  if (mpi_comm.rank() == 0)
+    values[0].first = std::numeric_limits<double>::quiet_NaN();
+  EXPECT_TRUE(std::isinf(CMFDRelativeBalanceResidual(values)));
+  EXPECT_DOUBLE_EQ(CMFDRelativeBalanceResidual({{0.0, 1.0e-200}}), 0.0);
 }
