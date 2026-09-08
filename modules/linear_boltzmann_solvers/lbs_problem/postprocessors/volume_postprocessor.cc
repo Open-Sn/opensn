@@ -271,7 +271,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   std::vector<double> local_integral(groups_.size(), 0.0);
@@ -317,7 +317,7 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_max(groups_.size(), -std::numeric_limits<double>::infinity());
   for (const auto cell_id : cell_local_ids)
@@ -350,7 +350,7 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_min(groups_.size(), std::numeric_limits<double>::infinity());
   for (const auto cell_id : cell_local_ids)
@@ -383,7 +383,7 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   double local_weighted_volume = 0.0;
