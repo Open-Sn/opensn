@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.1. Data Reuse &mdash; OpenSn 1.0.1 documentation</title>
+  <title>4.4. Data Reuse &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -28,8 +28,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="4.1.1. 3D Uncollided+Collided Calculation on an Unstructured Mesh" href="uncollided/uncollided.html" />
-    <link rel="prev" title="4. Workflows" href="../index.html" /> 
+    <link rel="next" title="4.4.1. Generate and Validate an Uncollided Flux" href="uncollided/uncollided.html" />
+    <link rel="prev" title="4.3.1. Writing and Reading a Steady-State Restart" href="../restart/steady_state_restart.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -60,10 +60,15 @@
 <li class="toctree-l2"><a class="reference internal" href="../../modeling/index.html">2. Modeling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../problems/index.html">3. Problems</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">4. Workflows</a><ul class="current">
-<li class="toctree-l3 current"><a class="current reference internal" href="#">4.1. Data Reuse</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="uncollided/uncollided.html">4.1.1. 3D Uncollided+Collided Calculation on an Unstructured Mesh</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../postprocessing/index.html">4.1. Postprocessing</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../verification/index.html">4.2. Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../restart/index.html">4.3. Restart</a></li>
+<li class="toctree-l3 current"><a class="current reference internal" href="#">4.4. Data Reuse</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="uncollided/uncollided.html">4.4.1. Generate and validate an uncollided flux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="uncollided/collided.html">4.4.2. Reuse an uncollided flux in a collided solve</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../parameter_studies/index.html">4.5. Parameter Studies</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../numerical_methods/index.html">5. Numerical Methods</a></li>
@@ -93,7 +98,7 @@
       <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Workflows</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.1. </span>Data Reuse</li>
+      <li class="breadcrumb-item active"><span class="section-number">4.4. </span>Data Reuse</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -103,12 +108,13 @@
            <div itemprop="articleBody">
              
   <section id="data-reuse">
-<h1><span class="section-number">4.1. </span>Data Reuse<a class="headerlink" href="#data-reuse" title="Link to this heading"></a></h1>
-<p>The uncollided-flux workflow writes angular-flux data in one calculation and
-consumes it in a second calculation.</p>
+<h1><span class="section-number">4.4. </span>Data Reuse<a class="headerlink" href="#data-reuse" title="Link to this heading"></a></h1>
+<p>These tutorials first generate and validate uncollided angular-flux moments,
+then reuse those moments in a collided calculation.</p>
 <div class="toctree-wrapper compound">
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="uncollided/uncollided.html">4.1.1. 3D Uncollided+Collided Calculation on an Unstructured Mesh</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uncollided/uncollided.html">4.4.1. Generate and validate an uncollided flux</a></li>
+<li class="toctree-l1"><a class="reference internal" href="uncollided/collided.html">4.4.2. Reuse an uncollided flux in a collided solve</a></li>
 </ul>
 </div>
 </section>
@@ -117,8 +123,8 @@ consumes it in a second calculation.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="../index.html" class="btn btn-neutral float-left" title="4. Workflows" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="uncollided/uncollided.html" class="btn btn-neutral float-right" title="4.1.1. 3D Uncollided+Collided Calculation on an Unstructured Mesh" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../restart/steady_state_restart.html" class="btn btn-neutral float-left" title="4.3.1. Writing and Reading a Steady-State Restart" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="uncollided/uncollided.html" class="btn btn-neutral float-right" title="4.4.1. Generate and Validate an Uncollided Flux" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

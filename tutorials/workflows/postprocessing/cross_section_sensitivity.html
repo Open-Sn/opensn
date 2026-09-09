@@ -1,0 +1,352 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4.1.3. Cross-Section Sensitivities &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="4.1.4. Absorption Reaction Rate" href="absorption_reaction_rate.html" />
+    <link rel="prev" title="4.1.2. Sampling Scalar Flux Along Lines" href="field_function_line.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../foundations/index.html">1. Foundations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modeling/index.html">2. Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../problems/index.html">3. Problems</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">4. Workflows</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">4.1. Postprocessing</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="volume_postprocessors.html">4.1.1. Volume-Averaged and Integrated Flux</a></li>
+<li class="toctree-l4"><a class="reference internal" href="field_function_line.html">4.1.2. Sampling Scalar Flux Along Lines</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">4.1.3. Cross-Section Sensitivities</a></li>
+<li class="toctree-l4"><a class="reference internal" href="absorption_reaction_rate.html">4.1.4. Absorption Reaction Rate</a></li>
+<li class="toctree-l4"><a class="reference internal" href="boundary_leakage.html">4.1.5. Leakage Rate Through a Boundary</a></li>
+<li class="toctree-l4"><a class="reference internal" href="fuel_fission_rate.html">4.1.6. Fission Rate in a Fuel Rod</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cf252_flux_export.html">4.1.7. Exporting Flux Moments and Angular Fluxes</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../verification/index.html">4.2. Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../restart/index.html">4.3. Restart</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../data_reuse/index.html">4.4. Data Reuse</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../parameter_studies/index.html">4.5. Parameter Studies</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../numerical_methods/index.html">5. Numerical Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Workflows</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">4.1. </span>Postprocessing</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">4.1.3. </span>Cross-Section Sensitivities</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="Cross-Section-Sensitivities">
+<h1><span class="section-number">4.1.3. </span>Cross-Section Sensitivities<a class="headerlink" href="#Cross-Section-Sensitivities" title="Link to this heading"></a></h1>
+<p>This tutorial uses <code class="docutils literal notranslate"><span class="pre">CrossSectionSensitivityPostprocessor</span></code> to compute first-order sensitivities of a two-group, volume-integrated scalar-flux response to total and isotropic-scattering cross sections. It demonstrates the complete forward/adjoint workflow, including saving the forward solution data needed after the problem is switched to adjoint mode.</p>
+<section id="Define-a-problem-with-analytic-sensitivities">
+<h2><span class="section-number">4.1.3.1. </span>Define a problem with analytic sensitivities<a class="headerlink" href="#Define-a-problem-with-analytic-sensitivities" title="Link to this heading"></a></h2>
+<p>Consider a homogeneous, two-group slab of length <span class="math notranslate nohighlight">\(L\)</span> with reflecting boundaries. A uniform source <span class="math notranslate nohighlight">\(q_0\)</span> is applied in group 0, which can scatter into group 1. There is no upscatter. The adjacent <code class="docutils literal notranslate"><span class="pre">cross_section_sensitivity_2g.xs</span></code> file supplies all material coefficients used by the transport solve:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Coefficient</p></th>
+<th class="head"><p>Value</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\Sigma_{t,0}\)</span></p></td>
+<td><p>1.0</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\Sigma_{t,1}\)</span></p></td>
+<td><p>0.8</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\Sigma_{s,0\rightarrow0}\)</span></p></td>
+<td><p>0.2</p></td>
+</tr>
+<tr class="row-odd"><td><p><span class="math notranslate nohighlight">\(\Sigma_{s,0\rightarrow1}\)</span></p></td>
+<td><p>0.3</p></td>
+</tr>
+<tr class="row-even"><td><p><span class="math notranslate nohighlight">\(\Sigma_{s,1\rightarrow1}\)</span></p></td>
+<td><p>0.1</p></td>
+</tr>
+</tbody>
+</table>
+<p>Using those cross sections, define the within-group removal coefficients</p>
+<div class="math notranslate nohighlight">
+\[a_0=\Sigma_{t,0}-\Sigma_{s,0\rightarrow0}, \qquad
+a_1=\Sigma_{t,1}-\Sigma_{s,1\rightarrow1}.\]</div>
+<p>The uniform group fluxes and the group-1 response are then</p>
+<div class="math notranslate nohighlight">
+\[\phi_0=\frac{q_0}{a_0}, \qquad
+\phi_1=\frac{\Sigma_{s,0\rightarrow1}\phi_0}{a_1}, \qquad
+R=\int_0^L\phi_1(z)\,dz
+=\frac{Lq_0\Sigma_{s,0\rightarrow1}}{a_0a_1}.\]</div>
+<p>Consequently, <span class="math notranslate nohighlight">\(\partial R/\partial\Sigma_{t,g}=-R/a_g\)</span>, while <span class="math notranslate nohighlight">\(\partial R/\partial\Sigma_{s,0\rightarrow1}=R/\Sigma_{s,0\rightarrow1}\)</span>. This retains a transparent analytic answer while making the group-selection arguments meaningful.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">CrossSectionSensitivityPostprocessor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+<span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;cross_section_sensitivity_2g.xs&quot;</span><span class="p">)</span>
+
+<span class="c1"># Mirror the loaded transfer coefficients only for the analytic check below.</span>
+<span class="c1"># The transport problem itself obtains them from the cross-section file.</span>
+<span class="n">sigma_t</span> <span class="o">=</span> <span class="n">xs</span><span class="o">.</span><span class="n">sigma_t</span>
+<span class="n">self_scatter</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.2</span><span class="p">,</span> <span class="mf">0.1</span><span class="p">]</span>
+<span class="n">downscatter</span> <span class="o">=</span> <span class="mf">0.3</span>
+<span class="n">removal</span> <span class="o">=</span> <span class="p">[</span><span class="n">sigma_t</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="o">-</span> <span class="n">self_scatter</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span><span class="p">)]</span>
+<span class="n">source_strength</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">length</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">num_cells</span> <span class="o">=</span> <span class="mi">24</span>
+
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">length</span> <span class="o">*</span> <span class="n">i</span> <span class="o">/</span> <span class="n">num_cells</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_cells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">])</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">forward_source</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span>
+    <span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="n">source_strength</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">]</span>
+<span class="p">)</span>
+<span class="n">boundaries</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
+<span class="p">]</span>
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-11</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">forward_source</span><span class="p">],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundaries</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span>
+        <span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="s2">&quot;verbose_outer_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">forward_flux_prefix</span> <span class="o">=</span> <span class="s2">&quot;xs_sensitivity_tutorial_forward_phi_&quot;</span>
+<span class="n">forward_angular_prefix</span> <span class="o">=</span> <span class="s2">&quot;xs_sensitivity_tutorial_forward_psi_&quot;</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">WriteFluxMoments</span><span class="p">(</span><span class="n">forward_flux_prefix</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">WriteAngularFluxes</span><span class="p">(</span><span class="n">forward_angular_prefix</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Solve-the-adjoint-response-problem">
+<h2><span class="section-number">4.1.3.2. </span>Solve the adjoint response problem<a class="headerlink" href="#Solve-the-adjoint-response-problem" title="Link to this heading"></a></h2>
+<p>The response is the group-1 scalar flux integrated over the entire slab, so the adjoint problem uses a uniform unit source in group 1 and zero source in group 0. <code class="docutils literal notranslate"><span class="pre">SetAdjoint(True)</span></code> clears the previous source, boundary, and flux state; the response source and reflecting boundaries must therefore be applied again before executing the solver.</p>
+<p>Only the forward state is written to files. When an adjoint prefix is omitted from a sensitivity postprocessor, it reads the current adjoint state from <code class="docutils literal notranslate"><span class="pre">problem</span></code>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response_source</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">SetAdjoint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">SetBoundaryOptions</span><span class="p">(</span><span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundaries</span><span class="p">)</span>
+<span class="n">problem</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">response_source</span><span class="p">])</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Evaluate-and-interpret-the-sensitivities">
+<h2><span class="section-number">4.1.3.3. </span>Evaluate and interpret the sensitivities<a class="headerlink" href="#Evaluate-and-interpret-the-sensitivities" title="Link to this heading"></a></h2>
+<p>A <code class="docutils literal notranslate"><span class="pre">sigma_t</span></code> sensitivity uses the forward and adjoint angular fluxes because total-cross-section perturbations act on the angular transport operator. Omitting <code class="docutils literal notranslate"><span class="pre">group</span></code> returns one column per energy group. A <code class="docutils literal notranslate"><span class="pre">scatter</span></code> sensitivity uses flux moments; <code class="docutils literal notranslate"><span class="pre">moment=0</span></code>, <code class="docutils literal notranslate"><span class="pre">from_group=0</span></code>, and <code class="docutils literal notranslate"><span class="pre">to_group=1</span></code> select the isotropic downscattering coefficient. Both postprocessors return a two-dimensional array indexed first by spatial region and then by the selected group or scattering moment.</p>
+<p>These calls compute absolute derivatives <span class="math notranslate nohighlight">\(\partial R/\partial x\)</span>. Set <code class="docutils literal notranslate"><span class="pre">relative=True</span></code> to obtain <span class="math notranslate nohighlight">\(x\,\partial R/\partial x\)</span> instead. The optional <code class="docutils literal notranslate"><span class="pre">block_ids</span></code> and <code class="docutils literal notranslate"><span class="pre">logical_volumes</span></code> arguments can restrict a result to the contribution from selected parts of a heterogeneous model. For a k-eigenvalue problem, <code class="docutils literal notranslate"><span class="pre">sensitivity_type=&quot;production&quot;</span></code> selects a fission-production coefficient; call <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling(k_eff)</span></code> after <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> to convert the raw bilinear form to a
+first-order eigenvalue sensitivity.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">total_sensitivity</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span>
+    <span class="n">forward_angular_fluxes</span><span class="o">=</span><span class="n">forward_angular_prefix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">total_sensitivity</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">d_response_d_sigma_t</span> <span class="o">=</span> <span class="p">[</span><span class="nb">float</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">total_sensitivity</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">]]</span>
+
+<span class="n">scatter_sensitivity</span> <span class="o">=</span> <span class="n">CrossSectionSensitivityPostprocessor</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span>
+    <span class="n">sensitivity_type</span><span class="o">=</span><span class="s2">&quot;scatter&quot;</span><span class="p">,</span>
+    <span class="n">moment</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">from_group</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">to_group</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">forward_flux_moments</span><span class="o">=</span><span class="n">forward_flux_prefix</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">scatter_sensitivity</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">d_response_d_downscatter</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">scatter_sensitivity</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+
+<span class="n">response</span> <span class="o">=</span> <span class="n">length</span> <span class="o">*</span> <span class="n">source_strength</span> <span class="o">*</span> <span class="n">downscatter</span> <span class="o">/</span> <span class="p">(</span><span class="n">removal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">*</span> <span class="n">removal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">expected_total_sensitivity</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="n">response</span> <span class="o">/</span> <span class="n">removal</span><span class="p">[</span><span class="n">g</span><span class="p">]</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">)]</span>
+<span class="n">expected_scatter_sensitivity</span> <span class="o">=</span> <span class="n">response</span> <span class="o">/</span> <span class="n">downscatter</span>
+<span class="n">sensitivity_errors</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="nb">abs</span><span class="p">(</span><span class="n">computed</span> <span class="o">-</span> <span class="n">expected</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">computed</span><span class="p">,</span> <span class="n">expected</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">d_response_d_sigma_t</span><span class="p">,</span> <span class="n">expected_total_sensitivity</span>
+    <span class="p">)</span>
+<span class="p">]</span>
+<span class="n">sensitivity_errors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span>
+    <span class="nb">abs</span><span class="p">(</span><span class="n">d_response_d_downscatter</span> <span class="o">-</span> <span class="n">expected_scatter_sensitivity</span><span class="p">)</span>
+<span class="p">)</span>
+<span class="n">max_sensitivity_error</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">sensitivity_errors</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group-0 sigma-t sensitivity=</span><span class="si">{</span><span class="n">d_response_d_sigma_t</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group-1 sigma-t sensitivity=</span><span class="si">{</span><span class="n">d_response_d_sigma_t</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Group-0-to-1 scatter sensitivity=</span><span class="si">{</span><span class="n">d_response_d_downscatter</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Cross-section sensitivity max error=</span><span class="si">{</span><span class="n">max_sensitivity_error</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+<span class="k">for</span> <span class="n">prefix</span> <span class="ow">in</span> <span class="p">(</span><span class="n">forward_flux_prefix</span><span class="p">,</span> <span class="n">forward_angular_prefix</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}{</span><span class="n">rank</span><span class="si">}</span><span class="s2">.h5&quot;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+<span class="k">assert</span> <span class="n">max_sensitivity_error</span> <span class="o">&lt;</span> <span class="mf">1.0e-8</span>
+</pre></div>
+</div>
+</div>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+    <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Finalize</span><span class="p">()</span>
+        <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="field_function_line.html" class="btn btn-neutral float-left" title="4.1.2. Sampling Scalar Flux Along Lines" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="absorption_reaction_rate.html" class="btn btn-neutral float-right" title="4.1.4. Absorption Reaction Rate" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

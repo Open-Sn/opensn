@@ -1,0 +1,155 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "title",
+   "metadata": {},
+   "source": [
+    "# Volume-Averaged and Integrated Flux\n",
+    "\n",
+    "This tutorial compares two ways to integrate the same scalar-flux field: `VolumePostprocessor`, which operates directly on the transport problem, and `FieldFunctionInterpolationVolume`, which operates on an explicit scalar-flux field function."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "solve",
+   "metadata": {},
+   "source": [
+    "## Create a uniform reference solution\n",
+    "\n",
+    "A uniform unit source in a purely absorbing material with reflecting boundaries produces a spatially uniform scalar flux of one. This makes the expected averages and integrals transparent."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "model-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from mpi4py import MPI\n",
+    "from pyopensn.aquad import GLProductQuadrature1DSlab\n",
+    "from pyopensn.context import Finalize\n",
+    "from pyopensn.fieldfunc import FieldFunctionInterpolationVolume\n",
+    "from pyopensn.logvol import RPPLogicalVolume\n",
+    "from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "from pyopensn.post import VolumePostprocessor\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "from pyopensn.source import VolumetricSource\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "rank = MPI.COMM_WORLD.rank\n",
+    "length = 4.0\n",
+    "nodes = [length * i / 40.0 for i in range(41)]\n",
+    "mesh = OrthogonalMeshGenerator(node_sets=[nodes]).Execute()\n",
+    "mesh.SetUniformBlockID(0)\n",
+    "\n",
+    "xs = MultiGroupXS()\n",
+    "xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)\n",
+    "source = VolumetricSource(block_ids=[0], group_strength=[1.0])\n",
+    "quadrature = GLProductQuadrature1DSlab(n_polar=16, scattering_order=0)\n",
+    "problem = DiscreteOrdinatesProblem(\n",
+    "    mesh=mesh,\n",
+    "    num_groups=1,\n",
+    "    groupsets=[{\"groups_from_to\": (0, 0), \"angular_quadrature\": quadrature}],\n",
+    "    xs_map=[{\"block_ids\": [0], \"xs\": xs}],\n",
+    "    volumetric_sources=[source],\n",
+    "    boundary_conditions=[\n",
+    "        {\"name\": \"zmin\", \"type\": \"reflecting\"},\n",
+    "        {\"name\": \"zmax\", \"type\": \"reflecting\"},\n",
+    "    ],\n",
+    ")\n",
+    "solver = SteadyStateSourceSolver(problem=problem)\n",
+    "solver.Initialize()\n",
+    "solver.Execute()"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "postprocess",
+   "metadata": {},
+   "source": [
+    "## Approach 1: use a volume postprocessor\n",
+    "\n",
+    "A `VolumePostprocessor` reads the scalar flux directly from `problem`. The whole-domain average should be one and its integral should equal the slab length. Restricting the integral to $1.0 \\le z \\le 2.5$ evaluates $\\int_{1.0}^{2.5} \\phi(z)\\,dz$, which should give 1.5."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "postprocess-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "whole_average = VolumePostprocessor(problem=problem, value_type=\"avg\")\n",
+    "whole_integral = VolumePostprocessor(problem=problem, value_type=\"integral\")\n",
+    "sample_region = RPPLogicalVolume(infx=True, infy=True, zmin=1.0, zmax=2.5)\n",
+    "regional_integral = VolumePostprocessor(\n",
+    "    problem=problem, value_type=\"integral\", logical_volumes=[sample_region]\n",
+    ")\n",
+    "for postprocessor in (whole_average, whole_integral, regional_integral):\n",
+    "    postprocessor.Execute()\n",
+    "\n",
+    "average = float(whole_average.GetValue()[0][0])\n",
+    "integral = float(whole_integral.GetValue()[0][0])\n",
+    "regional = float(regional_integral.GetValue()[0][0])\n",
+    "max_error = max(abs(average - 1.0), abs(integral - 4.0), abs(regional - 1.5))\n",
+    "if rank == 0:\n",
+    "    print(f\"Whole-domain average={average:.6e}\")\n",
+    "    print(f\"Whole-domain integral={integral:.6e}\")\n",
+    "    print(f\"Regional integral={regional:.6e}\")\n",
+    "    print(f\"Volume-postprocessor max error={max_error:.6e}\")\n",
+    "assert max_error < 1.0e-6"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "field-function",
+   "metadata": {},
+   "source": [
+    "## Approach 2: integrate a field function\n",
+    "\n",
+    "The same regional integral can be evaluated from an explicit scalar-flux field function. For `FieldFunctionInterpolationVolume`, the `\"sum\"` operation integrates the field over the selected logical volume. Reusing `sample_region` therefore evaluates the same $\\int_{1.0}^{2.5} \\phi(z)\\,dz$ as `regional_integral` above."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "field-function-code",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "scalar_flux = problem.GetScalarFluxFieldFunction()[0]\n",
+    "field_function_integral = FieldFunctionInterpolationVolume()\n",
+    "field_function_integral.SetOperationType(\"sum\")\n",
+    "field_function_integral.SetLogicalVolume(sample_region)\n",
+    "field_function_integral.AddFieldFunction(scalar_flux)\n",
+    "field_function_integral.Execute()\n",
+    "field_integral = float(field_function_integral.GetValue())\n",
+    "field_function_error = max(abs(field_integral - 1.5), abs(field_integral - regional))\n",
+    "if rank == 0:\n",
+    "    print(f\"Field-function regional integral={field_integral:.6e}\")\n",
+    "    print(f\"Field-function agreement error={field_function_error:.6e}\")\n",
+    "assert field_function_error < 1.0e-6\n",
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
