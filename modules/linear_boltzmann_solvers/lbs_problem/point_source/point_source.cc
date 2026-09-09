@@ -86,7 +86,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   }
 
   // Get info from solver
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& ghost_unit_cell_matrices = lbs_problem.GetUnitGhostCellMatrices();

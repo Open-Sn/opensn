@@ -74,7 +74,7 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
   std::map<int, std::vector<uint64_t>> pid_keys;
   std::map<int, std::vector<double>> pid_values;
 
-  const auto& mesh = do_problem.GetGrid();
+  const auto& mesh = do_problem.GetMesh();
   for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
   {
     std::vector<double> group_integrals(num_coarse_groups, 0.0);
@@ -221,7 +221,7 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                          "Missing CMFD prolongation ratios for local fine-cell membership.");
     const auto& ratios = ratios_it->second;
 
-    const auto& fine_cell = do_problem.GetGrid()->GetGlobalCell(membership.fine_cell_id);
+    const auto& fine_cell = do_problem.GetMesh()->GetGlobalCell(membership.fine_cell_id);
     OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
                             "CMFD prolongation fine-cell membership is not locally owned.");
 

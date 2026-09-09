@@ -71,14 +71,14 @@ SMMAcceleration::Initialize()
   const auto num_gs_groups = front_gs_.GetNumGroups();
 
   // Specialized SMM data
-  dimension_ = do_problem_.GetGrid()->GetDimension();
+  dimension_ = do_problem_.GetMesh()->GetDimension();
   ComputeAuxiliaryUnitCellMatrices();
   ComputeBoundaryFactors();
 
   // Create PWLC structure, if needed
   if (sdm_ == "pwlc")
   {
-    pwlc_ptr_ = PieceWiseLinearContinuous::New(do_problem_.GetGrid());
+    pwlc_ptr_ = PieceWiseLinearContinuous::New(do_problem_.GetMesh());
     ghost_info_ = MakePWLDGhostInfo(sdm, do_problem_.GetUnknownManager());
   }
 
@@ -282,7 +282,7 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
     swf = std::make_shared<CylindricalWeightFunction>();
 
   // Compute integrals
-  auto grid = do_problem_.GetGrid();
+  auto grid = do_problem_.GetMesh();
   const auto num_local_cells = grid->GetLocalCellCount();
   K_tensor_matrices_.resize(num_local_cells);
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
@@ -315,7 +315,7 @@ SMMAcceleration::ComputeAuxiliaryUnitCellMatrices()
 void
 SMMAcceleration::ComputeBoundaryFactors()
 {
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
   const auto num_groupsets = do_problem_.GetNumGroupsets();
 
@@ -365,7 +365,7 @@ SMMAcceleration::ComputeBoundaryFactors()
 void
 SMMAcceleration::AssembleDiffusionBCs() const
 {
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
   const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
@@ -438,7 +438,7 @@ SMMAcceleration::AssembleDiffusionBCs() const
 void
 SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 {
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
   const auto& transport_views = do_problem_.GetCellTransportViews();
 
@@ -550,7 +550,7 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 std::vector<double>
 SMMAcceleration::ComputeSourceCorrection() const
 {
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
   const auto& matid_to_xs_map = do_problem_.GetBlockID2XSMap();
   const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
@@ -834,7 +834,7 @@ SMMAcceleration::SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
 std::vector<double>
 SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
 {
-  const auto& grid = do_problem_.GetGrid();
+  const auto& grid = do_problem_.GetMesh();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
   const auto& uk_man = do_problem_.GetUnknownManager();
   const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();

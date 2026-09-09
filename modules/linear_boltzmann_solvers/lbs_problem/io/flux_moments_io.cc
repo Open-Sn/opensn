@@ -27,7 +27,7 @@ LBSSolverIO::WriteFluxMoments(
 
   log.Log() << "Writing flux moments to " << file_base;
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& uk_man = lbs_problem.GetUnknownManager();
 
@@ -122,7 +122,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
   // Check compatibility with system macro info
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto uk_man = lbs_problem.GetUnknownManager();
 

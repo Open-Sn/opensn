@@ -350,7 +350,7 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 }
 
 std::shared_ptr<Mesh>
-LBSProblem::GetGrid() const
+LBSProblem::GetMesh() const
 {
   return grid_;
 }
