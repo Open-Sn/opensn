@@ -411,6 +411,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
            ++cell_local_id)
       {
         const auto& cell = grid->GetLocalCell(cell_local_id);
+        auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
         const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
         const auto& fe_values = unit_cell_matrices[cell_local_id];
 
@@ -424,7 +425,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid->GlobalVertex(cell.vertex_ids[i]);
+              const auto& node = grid->GlobalVertex(cell_vertex_ids[i]);
               const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
               const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);

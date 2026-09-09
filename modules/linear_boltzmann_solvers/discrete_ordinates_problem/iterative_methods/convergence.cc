@@ -53,7 +53,8 @@ ComputePointwisePhiChange(
   {
     const auto& cell = grid_ptr->GetLocalCell(cell_local_id);
     const auto& transport_view = cell_transport_views[cell_local_id];
-    for (auto i = 0; i < cell.vertex_ids.size(); ++i)
+    auto cell_vertex_ids = grid_ptr->GetCellConnectivity(cell_local_id);
+    for (auto i = 0; i < cell_vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
       {

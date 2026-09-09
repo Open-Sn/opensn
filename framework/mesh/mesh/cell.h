@@ -186,7 +186,6 @@ public:
   Vector3 centroid;
   double volume = 0.;
 
-  std::vector<uint64_t> vertex_ids;
   std::vector<CellFace> faces;
 
 private:

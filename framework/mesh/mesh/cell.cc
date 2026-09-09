@@ -322,7 +322,6 @@ Cell::operator=(const Cell& other)
   partition_id = other.partition_id;
   centroid = other.centroid;
   block_id = other.block_id;
-  vertex_ids = other.vertex_ids;
   faces = other.faces;
 
   return *this;
@@ -331,6 +330,8 @@ Cell::operator=(const Cell& other)
 void
 Cell::ComputeGeometricInfo(const Mesh& grid)
 {
+  const auto cell_local_id = grid.MapCellGlobalID2LocalID(global_id);
+  auto vertex_ids = grid.GetCellConnectivity(cell_local_id);
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);
   for (const auto& vid : vertex_ids)
@@ -345,6 +346,9 @@ Cell::ComputeGeometricInfo(const Mesh& grid)
 void
 Cell::ComputeVolume(const Mesh& mesh)
 {
+  const auto cell_local_id = mesh.MapCellGlobalID2LocalID(global_id);
+  auto vertex_ids = mesh.GetCellConnectivity(cell_local_id);
+
   volume = 0.0;
   switch (cell_type_)
   {
@@ -415,10 +419,6 @@ Cell::Serialize() const
   raw.Write<CellType>(cell_type_);
   raw.Write<CellType>(cell_sub_type_);
 
-  raw.Write<size_t>(vertex_ids.size());
-  for (uint64_t vid : vertex_ids)
-    raw.Write<uint64_t>(vid);
-
   raw.Write<size_t>(faces.size());
   for (const auto& face : faces)
     raw.Append(face.Serialize());
@@ -447,11 +447,6 @@ Cell::DeSerialize(const ByteArray& raw, size_t& address)
   cell.centroid.z = cell_centroid_z;
   cell.block_id = cell_block_id;
 
-  auto num_vertex_ids = raw.Read<size_t>(address, &address);
-  cell.vertex_ids.reserve(num_vertex_ids);
-  for (size_t v = 0; v < num_vertex_ids; ++v)
-    cell.vertex_ids.push_back(raw.Read<uint64_t>(address, &address));
-
   auto num_faces = raw.Read<size_t>(address, &address);
   cell.faces.reserve(num_faces);
   for (size_t f = 0; f < num_faces; ++f)
@@ -471,13 +466,6 @@ Cell::ToString() const
   outstr << "partition_id: " << partition_id << "\n";
   outstr << "centroid: " << centroid.PrintStr() << "\n";
   outstr << "block_id: " << block_id << "\n";
-
-  outstr << "num_vertex_ids: " << vertex_ids.size() << "\n";
-  {
-    size_t counter = 0;
-    for (uint64_t vid : vertex_ids)
-      outstr << "vid" << counter++ << ": " << vid << "\n";
-  }
 
   {
     outstr << "num_faces: " << faces.size() << "\n";

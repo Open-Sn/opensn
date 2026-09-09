@@ -14,9 +14,10 @@ namespace
 {
 
 double
-EstimateCellSize(const Mesh& grid, const Cell& cell)
+EstimateCellSize(const Mesh& grid, std::uint32_t cell_local_id)
 {
-  const auto& v0 = grid.GlobalVertex(cell.vertex_ids.front());
+  auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
+  const auto& v0 = grid.GlobalVertex(cell_vertex_ids.front());
   double xmin = v0.x;
   double xmax = v0.x;
   double ymin = v0.y;
@@ -24,7 +25,7 @@ EstimateCellSize(const Mesh& grid, const Cell& cell)
   double zmin = v0.z;
   double zmax = v0.z;
 
-  for (const auto vertex_id : cell.vertex_ids)
+  for (const auto vertex_id : cell_vertex_ids)
   {
     const auto& vertex = grid.GlobalVertex(vertex_id);
     xmin = std::min(xmin, vertex.x);
@@ -40,7 +41,7 @@ EstimateCellSize(const Mesh& grid, const Cell& cell)
 
 bool
 CheckIntersectionAtVertex(const std::shared_ptr<Mesh>& grid,
-                          const std::vector<uint64_t>& vertex_ids,
+                          std::span<const uint64_t> vertex_ids,
                           const Vector3& line_point0,
                           const Vector3& line_point1,
                           const double tolerance,
@@ -60,12 +61,13 @@ CheckIntersectionAtVertex(const std::shared_ptr<Mesh>& grid,
       continue;
 
     const Vector3 nudged_point = vertex + nudge * (line_point1 - vertex).Normalized();
-    for (const auto& cell : grid->GetLocalCells())
-      if (grid->CheckPointInsideCell(cell, nudged_point))
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+      if (grid->CheckPointInsideCell(cell_local_id, nudged_point))
       {
         intersection_point = vertex;
         distance_to_intersection = point0_to_vertex;
-        neighbor_id = cell.global_id;
+        neighbor_id = grid->GetLocalCell(cell_local_id).global_id;
         return true;
       }
   }
@@ -87,9 +89,8 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
                     int function_depth)
 {
   const auto& grid = Grid();
-  const auto& cell = grid->GetLocalCell(cell_local_id);
   const double cell_size =
-    cell_sizes_ ? (*cell_sizes_)[cell_local_id] : EstimateCellSize(*grid, cell);
+    cell_sizes_ ? (*cell_sizes_)[cell_local_id] : EstimateCellSize(*grid, cell_local_id);
   SetTolerancesFromCellSize(cell_size);
 
   RayTracerOutputInformation oi;
@@ -97,12 +98,13 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
   bool intersection_found = false;
   bool backward_tolerance_hit = false;
 
+  const auto& cell = grid->GetLocalCell(cell_local_id);
   if (cell.GetType() == CellType::SLAB)
-    TraceSlab(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
+    TraceSlab(cell_local_id, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.GetType() == CellType::POLYGON)
-    TracePolygon(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
+    TracePolygon(cell_local_id, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else if (cell.GetType() == CellType::POLYHEDRON)
-    TracePolyhedron(cell, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
+    TracePolyhedron(cell_local_id, pos_i, omega_i, intersection_found, backward_tolerance_hit, oi);
   else
     throw std::logic_error("Unsupported cell type encountered in call to "
                            "RayTrace.");
@@ -139,7 +141,8 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
            << (pos_i + extension_distance_ * omega_i).PrintStr() << " " << extension_distance_
            << " in cell " << cell.global_id << " with vertices: \n";
 
-    for (auto vi : cell.vertex_ids)
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    for (auto vi : cell_vertex_ids)
       outstr << grid->GlobalVertex(vi).PrintStr() << "\n";
 
     for (const auto& face : cell.faces)
@@ -151,7 +154,7 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
     }
 
     outstr << "o Cell\n";
-    for (const auto& vid : cell.vertex_ids)
+    for (const auto& vid : cell_vertex_ids)
     {
       auto& v = grid->GlobalVertex(vid);
       outstr << "v " << v.x << " " << v.y << " " << v.z << "\n";
@@ -170,8 +173,8 @@ RayTracer::TraceRay(std::uint32_t cell_local_id,
       for (auto vid : face.vertex_ids)
       {
         size_t ref_cell_id = 0;
-        for (uint64_t cid = 0; cid < cell.vertex_ids.size(); ++cid)
-          if (cell.vertex_ids[cid] == vid)
+        for (uint64_t cid = 0; cid < cell_vertex_ids.size(); ++cid)
+          if (cell_vertex_ids[cid] == vid)
             ref_cell_id = cid + 1;
 
         outstr << ref_cell_id << "// ";
@@ -272,7 +275,7 @@ RayTracer::TraceIncidentRay(std::uint32_t cell_local_id,
 }
 
 void
-RayTracer::TraceSlab(const Cell& cell,
+RayTracer::TraceSlab(std::uint32_t cell_local_id,
                      Vector3& pos_i,
                      Vector3& omega_i,
                      bool& intersection_found,
@@ -280,6 +283,7 @@ RayTracer::TraceSlab(const Cell& cell,
                      RayTracerOutputInformation& oi)
 {
   const auto& grid = Grid();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
   Vector3 intersection_point;
   std::pair<double, double> weights;
 
@@ -289,10 +293,11 @@ RayTracer::TraceSlab(const Cell& cell,
 
   Vector3 pos_f_line = pos_i + omega_i * d_extend;
 
+  auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
   int num_faces = 2;
   for (int f = 0; f < num_faces; ++f)
   {
-    auto fpi = cell.vertex_ids[f]; // face point index
+    auto fpi = cell_vertex_ids[f]; // face point index
     Vector3 face_point = grid->GlobalVertex(fpi);
 
     bool intersects = CheckPlaneLineIntersect(
@@ -316,7 +321,7 @@ RayTracer::TraceSlab(const Cell& cell,
 }
 
 void
-RayTracer::TracePolygon(const Cell& cell,
+RayTracer::TracePolygon(std::uint32_t cell_local_id,
                         Vector3& pos_i,
                         Vector3& omega_i,
                         bool& intersection_found,
@@ -324,6 +329,7 @@ RayTracer::TracePolygon(const Cell& cell,
                         RayTracerOutputInformation& oi)
 {
   const auto& grid = Grid();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
   Vector3 ip; // intersection point
 
   const double fabs_mu = std::fabs(omega_i.Dot(cell.faces[0].normal));
@@ -383,8 +389,9 @@ RayTracer::TracePolygon(const Cell& cell,
   }
   else
   {
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
     bool intersect_at_vertex = CheckIntersectionAtVertex(grid,
-                                                         cell.vertex_ids,
+                                                         cell_vertex_ids,
                                                          pos_i,
                                                          pos_f_line,
                                                          backward_tolerance_,
@@ -404,7 +411,7 @@ RayTracer::TracePolygon(const Cell& cell,
 }
 
 void
-RayTracer::TracePolyhedron(const Cell& cell,
+RayTracer::TracePolyhedron(std::uint32_t cell_local_id,
                            Vector3& pos_i,
                            Vector3& omega_i,
                            bool& intersection_found,
@@ -412,6 +419,7 @@ RayTracer::TracePolyhedron(const Cell& cell,
                            RayTracerOutputInformation& oi)
 {
   const auto& grid = Grid();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
   const size_t num_faces = cell.faces.size();
 
   if (not perform_concavity_checks_)

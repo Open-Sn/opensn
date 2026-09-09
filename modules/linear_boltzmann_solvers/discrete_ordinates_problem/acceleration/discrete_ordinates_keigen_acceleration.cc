@@ -190,11 +190,12 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
     const auto& cell = grid->GetGlobalCell(global_id);
     const auto cell_local_id = grid->MapCellGlobalID2LocalID(global_id);
     const auto& cell_mapping = pwld_sdm.GetLocalCellMapping(cell_local_id);
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      if (vid_set.find(cell.vertex_ids[i]) == vid_set.end())
+      if (vid_set.find(cell_vertex_ids[i]) == vid_set.end())
         continue;
 
       for (size_t u = 0; u < num_unknowns; ++u)
