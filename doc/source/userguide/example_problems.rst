@@ -615,7 +615,8 @@ Post-solve diagnostics are often as important as the field export itself.
 
 .. code-block:: python
 
-   phys.ComputeBalance()
+   balance = solver.ComputeBalanceTable()
+   print(balance["balance"])
 
    leakage = phys.ComputeLeakage(["xmin", "xmax"])
    print(leakage["xmin"])

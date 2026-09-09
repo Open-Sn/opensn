@@ -149,7 +149,7 @@ Boundary Conditions
 
    -  :math:`\vec{\Omega}'\cdot \vec{n}(\vec{r}) >0` (outgoing
       direction) and the incoming direction is
-      :math:`\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})`.
+      :math:`\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}'\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})`.
 
 For :math:`k`-eigenvalue problems, the boundary conditions usually
 devolve to a zero-incoming flux (:math:`\psi_{\text{inc}}=0`) or a unity
@@ -204,18 +204,22 @@ where
 
    .. math::
 
-      Y_{\ell,m}(\vec{\Omega}) = 
+      Y_{\ell,m}(\vec{\Omega}) =
           \begin{cases}
-              (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+              (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
           & \text{if } m < 0 \\
           \\
-              \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) & \text{if } m = 0 \\ \\
-          (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+              P_{\ell}(\cos\theta) & \text{if } m = 0 \\ \\
+          (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
           & \text{if } m > 0 \\
           \end{cases}
 
    where :math:`P^m_\ell(\mu)` is the associated Legendre function of
-   degree :math:`\ell` and of order :math:`m`.
+   degree :math:`\ell` and of order :math:`m`. Note that this convention
+   is not orthonormal: :math:`\int_{4\pi} d\Omega \, Y_{\ell,m}(\vec{\Omega})^2
+   = \frac{4\pi}{2\ell+1}`, so the :math:`\frac{2\ell+1}{4\pi}` prefactor
+   above is required by the spherical-harmonics addition theorem and is
+   not already absorbed into :math:`Y_{\ell,m}`.
 
 In operator notation, the steady-state, source-driven problem
 :math:`L\Psi = H\Psi + Q_{\text{ext}}` can now be re-written as

@@ -1,51 +1,54 @@
 Legendre Order Consistency Checks
-=================================
+==================================
 
-In deterministic transport simulations, the Legendre expansion order may be independently specified in the following components:
+In deterministic transport simulations, the number of Legendre / spherical-
+harmonic scattering moments is set in two places:
 
-* ``scattering_order_aquad``: Angular quadrature - maximum supported Legendre moment (e.g., for spherical harmonics integration).
-* ``scattering_order_mgxs``: Cross-section library - highest Legendre moment for scattering data.
-* ``scattering_order_groupset``: Flux solver - number of Legendre flux moments to compute and store.
+* the angular quadrature's ``scattering_order``, a constructor argument common
+  to all angular quadrature classes (e.g.
+  ``GLCProductQuadrature3DXYZ(..., scattering_order=N)``). This determines the
+  number of flux moments the solver computes and stores.
+* the cross-section library's scattering order: the highest Legendre moment
+  present in the loaded multigroup cross-section data for a given material
+  block.
 
-To ensure consistency and provide helpful feedback, the following logic is applied.
+All groupsets in a ``DiscreteOrdinatesProblem`` must use quadratures with the
+same ``scattering_order``; otherwise construction fails with::
 
-.. tip:: Valid Configurations
+    "Number of scattering moments differs between groupsets"
 
-   * **``scattering_order_groupset <= scattering_order_mgxs``**
-     The solver computes fewer or equal scattering moments than the cross-section library provides.
-     Informational message::
+When the problem is constructed, the solver's scattering order is taken from
+the quadrature (the first groupset's ``quadrature.GetScatteringOrder()``) and
+is compared, per material block, against that block's cross-section
+scattering order. Only these two quantities are compared; there is no
+separate, independently specifiable groupset-level scattering order.
 
-         "Computing the flux with fewer scattering moments than are available in the cross-section library."
+.. tip:: Quadrature and cross-section scattering orders match
 
-   * **``scattering_order_groupset <= scattering_order_aquad``**
-     The solver uses fewer angular basis functions than the quadrature supports.
-     Informational message::
+   No message is produced. The computed flux moments and the cross-section
+   moments line up exactly.
 
-         "Using fewer rows/columns of angular matrices (M, D) than the quadrature supports."
+.. warning:: Quadrature scattering order exceeds the cross-section scattering order
 
-   * **``scattering_order_aquad > scattering_order_mgxs``**
-     The quadrature supports more moments than are available in the cross-section library.
-     Informational message::
+   Warning message (per block)::
 
-         "The quadrature supports more scattering moments than are present in the cross-section library. These additional moments will not affect the scattering source but may be useful if ``scattering_order_groupset > scattering_order_mgxs``."
+       "Computing the flux with more scattering moments than are present in the
+       cross-section data for block <ID>"
 
-.. warning::
+   The additional moments are still computed and stored (e.g., for plotting or
+   post-processing), but they are unaffected by scattering.
 
-   **``scattering_order_groupset > scattering_order_mgxs``**
-   The solver computes more flux moments than the scattering data supports. Higher-order moments are unaffected by scattering and are useful only for plotting/postprocessing.
+.. warning:: Quadrature scattering order is lower than the cross-section scattering order
 
-   Warning message::
+   Warning message (per block)::
 
-       "The solution will be the same as with ``scattering_order_groupset = scattering_order_mgxs``. Higher-order flux moments are unaffected by scattering."
+       "Computing the flux with fewer scattering moments than are present in the
+       cross-section data for block <ID>.
+       A truncated cross-section expansion will be used."
 
-.. error::
+   The cross-section expansion is truncated to the quadrature's scattering
+   order.
 
-   **``scattering_order_groupset > scattering_order_aquad``**
-   The solver requests more flux moments than the angular quadrature can represent. This is not allowed.
-
-   Error message::
-
-       "The solver requires more flux moments than the angular quadrature supports. Increase ``scattering_order_aquad`` or reduce ``scattering_order_groupset``."
-
-Only comparisons involving ``scattering_order_groupset`` are enforced. The comparison between ``scattering_order_aquad`` and ``scattering_order_mgxs`` is informational and may indicate over-resolution of the angular domain relative to the available scattering data.
-
+Both cases above are warnings only and do not prevent the run; there is no
+dedicated error condition tied to comparing the quadrature and cross-section
+scattering orders.

@@ -40,10 +40,10 @@ moments:
        \mathcal{L}_x \\ \mathcal{L}_y \\ \mathcal{L}_z 
    \end{bmatrix}
    =
-    \sum_{g \in \mathbb{G}} \int_\text{SoI} d^2r \, 
+    \sum_{g \in \mathbb{G}} \int_\text{SoI} d^2r \,
    \begin{bmatrix}
-       \phi^g_{1,-1}(\vec{r},t) \\
+       \phi^g_{1,1}(\vec{r},t) \\
+       \phi^g_{1,-1}(\vec{r},t)  \\
        \phi^g_{1,0}(\vec{r},t)  \\
-       \phi^g_{1,1}(\vec{r},t)  \\
    \end{bmatrix}
 

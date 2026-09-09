@@ -66,7 +66,7 @@ AGSLinearSolver::Solve()
     {
       double pw_change = ComputePointwisePhiChange(lbs_problem_, phi_old_);
       last_error = pw_change;
-      double rho = (iter == 0) ? 0.0 : sqrt(pw_change / pw_change_prev);
+      double rho = (iter == 0) ? 0.0 : (pw_change / pw_change_prev);
       pw_change_prev = pw_change;
 
       AppendNumericField(iter_stats, "pw_change", pw_change, Scientific(6));

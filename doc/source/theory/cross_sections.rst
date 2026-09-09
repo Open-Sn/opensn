@@ -88,15 +88,22 @@ Fission production:
      .. math:: S_f^g = \frac{\chi^g}{4\pi} \sum_{g'} \nu\sigma_f^{g'} \phi_{0,0}^{g'}
 
      The multigroup fission spectrum and production by fission cross
-     section cross section are vectors of length :math:`G` and are a
-     mandatory input of OpenSn when fissionable materials are present.
+     section are vectors of length :math:`G`. These are required for
+     the separable representation; the native format also accepts the
+     full production matrix described below.
    | Note that, for relatively high neutron energies, the spectrum of
      fission neutrons is dependent on initial energy. In such a
      situation, a fission production matrix should be employed
 
      .. math:: S_f^g = \frac{1}{4\pi} \sum_{g'} \nu\sigma_f^{g' \to g} \phi_{0,0}^{g'}
 
-     However, this is not yet employed in the current version of OpenSn
+     OpenSn supports this option: a full fission production matrix
+     :math:`\nu\sigma_f^{g' \to g}` may be supplied directly in the
+     multigroup cross-section data in lieu of a separable fission
+     spectrum and production cross section. This applies to
+     OpenSn's native cross-section format; cross sections imported
+     from OpenMC always construct the production matrix as the
+     separable product :math:`\chi^g \nu\sigma_f^{g'}`.
 
 Other cross sections:
    Other multigroup cross sections can be supplied in order to compute
@@ -113,7 +120,16 @@ In summary, the mandatory cross-section inputs are:
 
 #. when fissionable materials are present:
 
-   #. fission spectrum :math:`\chi^g`, and
+   either the fission spectrum :math:`\chi^g` and production cross-section
+   vector :math:`\nu\sigma_f^{g}`, or the full production matrix
+   :math:`\nu\sigma_f^{g' \to g}` supported by the native format.
 
-   #. production by fission cross section :math:`\nu\sigma_f^{g}`.
+.. note::
+
+   OpenSn does not distribute cross-section data of its own; users must
+   supply their own multigroup libraries. Third-party, open-source tools such
+   as `OpenMC <https://openmc.org>`_ and
+   `Generate_MGXS <https://github.com/ragusa/Generate_MGXS>`_ can generate
+   multigroup cross-section data suitable for use with OpenSn. See
+   :doc:`../userguide/materials_xs` for how to load that data into OpenSn.
 

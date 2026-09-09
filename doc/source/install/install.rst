@@ -244,4 +244,4 @@ Then, from your ``build`` directory, generate the documentation with:
    make html
 
 Once the build process is complete, you can view the generated documentation by
-opening ``doc/html/index.html`` in your preferred web browser.
+opening ``doc/build/html/index.html`` in your preferred web browser.
