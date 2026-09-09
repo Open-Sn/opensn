@@ -307,10 +307,16 @@ It uses the same general structure as
 :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`, but is intended for
 curvilinear geometry and currently requires:
 
-* ``coord_system=2`` for cylindrical coordinates
+* a mesh generated with ``coord_sys="cylindrical"``
+* ``GLCProductQuadrature2DRZ`` quadrature
 
 This problem type is experimental, and it should be treated that way in
 production workflows.
+
+CPU curvilinear solves support both ``sweep_type="AAH"`` and
+``sweep_type="CBC"``. Use ``AAH`` as the default, particularly when cyclic sweep
+dependencies are possible. Choose ``CBC`` only for problems whose sweep graph
+satisfies CBC's acyclicity requirements.
 
 .. note::
 
@@ -336,6 +342,7 @@ Constructor
 The constructor takes:
 
 * ``problem``: an existing :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
+  or :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`
 
 GPU support
 -----------
@@ -345,7 +352,7 @@ This solver can run with GPU acceleration when the associated
 sweeps. In practice, that means:
 
 * ``use_gpus=True`` on the problem,
-* ``sweep_type="AAH"``, and
+* ``sweep_type="AAH"`` or ``sweep_type="CBC"``, and
 * a non-curvilinear, non-time-dependent problem.
 
 Example:
@@ -688,7 +695,8 @@ Constructor
 The constructor takes:
 
 * ``problem``: an existing
-  :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
+  :py:class:`pyopensn.solver.DiscreteOrdinatesProblem` or
+  :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`
 * ``max_iters``: maximum power iterations
 * ``k_tol``: convergence tolerance on ``k_eff``
 * ``reset_phi0``: whether to reset scalar fluxes to 1.0 before solving
@@ -699,8 +707,8 @@ GPU support
 This solver can run with GPU acceleration when the associated
 :py:class:`pyopensn.solver.DiscreteOrdinatesProblem` is configured for GPU
 sweeps. The same problem-side restrictions apply as for steady-state source
-solves: GPU use requires ``use_gpus=True`` with ``sweep_type="AAH"`` on a
-supported non-curvilinear problem.
+solves: GPU use requires ``use_gpus=True`` with ``sweep_type="AAH"`` or
+``sweep_type="CBC"`` on a supported non-curvilinear problem.
 
 Example:
 
@@ -770,6 +778,7 @@ Constructor
 The constructor takes:
 
 * ``problem``: an existing :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
+  or :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`
 * nonlinear tolerances:
   ``nl_abs_tol``, ``nl_rel_tol``, ``nl_sol_tol``, ``nl_max_its``
 * linear tolerances:
