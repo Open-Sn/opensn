@@ -62,14 +62,14 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(Cell&& cell) { raw_cells_.emplace_back(std::move(cell)); }
-  size_t GetNumberOfCells() const { return raw_cells_.size(); }
+  void AddCell(Cell&& cell) { cells_.emplace_back(std::move(cell)); }
+  size_t GetNumberOfCells() const { return cells_.size(); }
 
-  std::vector<Cell>& GetRawCells() { return raw_cells_; }
-  const std::vector<Cell>& GetRawCells() const { return raw_cells_; }
+  std::vector<Cell>& GetCells() { return cells_; }
+  const std::vector<Cell>& GetCells() const { return cells_; }
 
-  std::vector<Cell>& GetRawBoundaryCells() { return raw_boundary_cells_; }
-  const std::vector<Cell>& GetRawBoundaryCells() const { return raw_boundary_cells_; }
+  std::vector<Cell>& GetBoundaryCells() { return boundary_cells_; }
+  const std::vector<Cell>& GetBoundaryCells() const { return boundary_cells_; }
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
@@ -101,8 +101,8 @@ protected:
   std::map<std::string, uint64_t> boundary_name_map_;
 
   std::vector<Vector3> vertices_;
-  std::vector<Cell> raw_cells_;
-  std::vector<Cell> raw_boundary_cells_;
+  std::vector<Cell> cells_;
+  std::vector<Cell> boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

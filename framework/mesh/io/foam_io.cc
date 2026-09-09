@@ -449,7 +449,7 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
                                      size_t n_faces,
                                      const std::string& fname)
 {
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
 
   uint64_t bid = 0;
   for (const auto& patch : patches)
@@ -813,7 +813,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     }
   }
 
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   raw_cells.reserve(ncells);
 
   std::vector<FaceLocation> owner_face_location(n_faces);
@@ -879,7 +879,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
   log.Log() << "OpenFOAM polyMesh processed.\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size() << "\n"
+            << "Number of cells read: " << mesh->GetCells().size() << "\n"
             << "Number of boundary patches read: " << patches.size() << "\n";
 
   return mesh;
