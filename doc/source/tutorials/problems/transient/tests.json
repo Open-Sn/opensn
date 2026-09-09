@@ -28,6 +28,12 @@
         "key": "SOURCE_STEP_WORKFLOW_OK",
         "goldvalue": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SOURCE_STEP_FINAL_NORMALIZED_POWER",
+        "goldvalue": 1.18958715,
+        "rel_tol": 1e-5
       }
     ]
   }

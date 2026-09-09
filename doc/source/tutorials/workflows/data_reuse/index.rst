@@ -2,10 +2,11 @@
 Data Reuse
 ==========
 
-The uncollided-flux workflow writes angular-flux data in one calculation and
-consumes it in a second calculation.
+These tutorials first generate and validate uncollided angular-flux moments,
+then reuse those moments in a collided calculation.
 
 .. toctree::
    :maxdepth: 1
 
-   uncollided/uncollided
+   Generate and validate an uncollided flux <uncollided/uncollided>
+   Reuse an uncollided flux in a collided solve <uncollided/collided>

@@ -1,0 +1,96 @@
+[
+  {
+    "file": "particle_balance.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Balance residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-8
+      }
+    ]
+  },
+  {
+    "file": "transient_particle_balance.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Transient scalar flux=",
+        "goldvalue": 0.627569376,
+        "abs_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Transient inventory residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
+  },
+  {
+    "file": "infinite_medium_eigenvalue.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Computed infinite-medium eigenvalue=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Eigenvalue balance residual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      }
+    ]
+  },
+  {
+    "file": "spatial_convergence.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Spatial-convergence leakage final order=",
+        "goldvalue": 2.969087,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Spatial-convergence leakage final difference=",
+        "goldvalue": 4.106585e-9,
+        "abs_tol": 1.0e-11
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Spatial-convergence scalar-flux final order=",
+        "goldvalue": 1.959127,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Spatial-convergence scalar-flux final difference=",
+        "goldvalue": 2.659511e-5,
+        "abs_tol": 1.0e-10
+      }
+    ]
+  }
+]
