@@ -3,6 +3,7 @@
 
 import re
 import glob
+import statistics
 import warnings
 import yaml
 import matplotlib.pyplot as plt
@@ -14,14 +15,21 @@ from generate_scaling_study import extra_data
 
 
 def extract_data(filename):
-    """Extract n, average sweep time, and number of unknowns from a file."""
+    """Extract n, average sweep time, and min/max offsets per unknown from a file.
+
+    Each outer repetition in the output file reports its own
+    ``avg_sweep_time``. The first repetition is always discarded (warm-up),
+    and the mean of the remaining sweep times is used for the metric, with
+    the distance from the mean to the min and max sweep times reported as
+    the (asymmetric) min/max offsets.
+    """
 
     match = re.search(r"_(\d+)\.out$", filename)
     if not match:
         return None
     n = int(match.group(1))
 
-    avg_time = None
+    sweep_times = []
     num_unknowns = None
 
     avg_time_re = re.compile(r"avg_sweep_time\s*=\s*([0-9.eE+-]+)\s*s")
@@ -31,17 +39,26 @@ def extract_data(filename):
         for line in f:
             avg_match = avg_time_re.search(line)
             if avg_match:
-                avg_time = float(avg_match.group(1))
+                sweep_times.append(float(avg_match.group(1)))
 
             unknowns_match = unknowns_re.search(line)
             if unknowns_match:
                 num_unknowns = float(unknowns_match.group(1))
 
-    if avg_time is None or num_unknowns is None:
+    # discard the first (warm-up) iteration
+    sweep_times = sweep_times[1:]
+
+    if not sweep_times or num_unknowns is None:
         return None
 
+    avg_time = statistics.mean(sweep_times)
+    min_offset_time = avg_time - min(sweep_times)
+    max_offset_time = max(sweep_times) - avg_time
+
     metric = avg_time / num_unknowns
-    return n, metric
+    min_offset = min_offset_time / num_unknowns
+    max_offset = max_offset_time / num_unknowns
+    return n, metric, min_offset, max_offset
 
 
 def plot_data(data, output_file, with_history):
@@ -49,6 +66,8 @@ def plot_data(data, output_file, with_history):
 
     n_nodes = [d[0] for d in data]
     sweep_time = [d[1] * 1e9 for d in data]
+    min_offset = [d[2] * 1e9 for d in data]
+    max_offset = [d[3] * 1e9 for d in data]
     ideal = [sweep_time[0] / n for n in n_nodes]
 
     history = {}
@@ -61,14 +80,23 @@ def plot_data(data, output_file, with_history):
             history_data = history_dict[history_label]
             history["nodes"] = history_data["nodes"]
             history["sweep_time"] = [t * 1e9 for t in history_data["sweep_time"]]
+            zeros = [0.0] * len(history["nodes"])
+            history["min_offset"] = [
+                o * 1e9 for o in history_data.get("min_offset", zeros)
+            ]
+            history["max_offset"] = [
+                o * 1e9 for o in history_data.get("max_offset", zeros)
+            ]
 
     fig, ax = plt.subplots()
     ax.plot(n_nodes, ideal, linestyle="--", color="xkcd:sky blue", label="ideal")
-    ax.plot(n_nodes, sweep_time, marker="o", color="xkcd:cerulean", label="sweep time")
+    ax.errorbar(n_nodes, sweep_time, yerr=[min_offset, max_offset], marker="o",
+                color="xkcd:cerulean", label="sweep time", capsize=3)
     xticks = n_nodes.copy()
     if history:
-        ax.plot(history["nodes"], history["sweep_time"], marker="o",
-                color="xkcd:coral", label="history")
+        ax.errorbar(history["nodes"], history["sweep_time"],
+                    yerr=[history["min_offset"], history["max_offset"]],
+                    marker="o", color="xkcd:coral", label="history", capsize=3)
         xticks = sorted(set(n_nodes) | set(history["nodes"]))
     elif with_history:
         warnings.warn(
@@ -104,7 +132,9 @@ def export_data(data, output_file):
         "description": extra_data["description"],
         "time": datetime.now().isoformat(),
         "nodes": [d[0] for d in data],
-        "sweep_time": [d[1] for d in data]
+        "sweep_time": [d[1] for d in data],
+        "min_offset": [d[2] for d in data],
+        "max_offset": [d[3] for d in data]
     }
     with open(output_file, "w") as f:
         yaml.dump(export_dict, f)
