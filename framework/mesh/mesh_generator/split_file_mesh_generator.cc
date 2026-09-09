@@ -87,7 +87,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
     throw std::runtime_error("Path " + dir_path.string() + " exists but is not a directory.");
 
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.GetRawCells();
+  const auto& raw_cells = umesh.GetCells();
   const auto& raw_vertices = umesh.GetVertices();
 
   uint64_t aux_counter = 0;
