@@ -180,8 +180,9 @@ the transfer matrix and is used in conservation (balance) statements.</p>
 <div><div class="math notranslate nohighlight">
 \[S_f^g = \frac{\chi^g}{4\pi} \sum_{g'} \nu\sigma_f^{g'} \phi_{0,0}^{g'}\]</div>
 <p>The multigroup fission spectrum and production by fission cross
-section cross section are vectors of length <span class="math notranslate nohighlight">\(G\)</span> and are a
-mandatory input of OpenSn when fissionable materials are present.</p>
+section are vectors of length <span class="math notranslate nohighlight">\(G\)</span>. These are required for
+the separable representation; the native format also accepts the
+full production matrix described below.</p>
 </div></blockquote>
 <div class="line-block">
 <div class="line">Note that, for relatively high neutron energies, the spectrum of
@@ -191,7 +192,13 @@ situation, a fission production matrix should be employed</div>
 <blockquote>
 <div><div class="math notranslate nohighlight">
 \[S_f^g = \frac{1}{4\pi} \sum_{g'} \nu\sigma_f^{g' \to g} \phi_{0,0}^{g'}\]</div>
-<p>However, this is not yet employed in the current version of OpenSn</p>
+<p>OpenSn supports this option: a full fission production matrix
+<span class="math notranslate nohighlight">\(\nu\sigma_f^{g' \to g}\)</span> may be supplied directly in the
+multigroup cross-section data in lieu of a separable fission
+spectrum and production cross section. This applies to
+OpenSn’s native cross-section format; cross sections imported
+from OpenMC always construct the production matrix as the
+separable product <span class="math notranslate nohighlight">\(\chi^g \nu\sigma_f^{g'}\)</span>.</p>
 </div></blockquote>
 </dd>
 <dt>Other cross sections:</dt><dd><p>Other multigroup cross sections can be supplied in order to compute
@@ -201,17 +208,25 @@ calculations).</p>
 </dd>
 </dl>
 <p>In summary, the mandatory cross-section inputs are:</p>
-<ol class="arabic simple">
+<ol class="arabic">
 <li><p>total cross section, <span class="math notranslate nohighlight">\(\sigma_t^g\)</span>, and</p></li>
 <li><p>transfer matrix (possibly with multiplicity)
 <span class="math notranslate nohighlight">\(\vartheta\sigma^{g \to g'}_\ell\)</span>,</p></li>
 <li><p>when fissionable materials are present:</p>
-<ol class="arabic simple">
-<li><p>fission spectrum <span class="math notranslate nohighlight">\(\chi^g\)</span>, and</p></li>
-<li><p>production by fission cross section <span class="math notranslate nohighlight">\(\nu\sigma_f^{g}\)</span>.</p></li>
-</ol>
+<p>either the fission spectrum <span class="math notranslate nohighlight">\(\chi^g\)</span> and production cross-section
+vector <span class="math notranslate nohighlight">\(\nu\sigma_f^{g}\)</span>, or the full production matrix
+<span class="math notranslate nohighlight">\(\nu\sigma_f^{g' \to g}\)</span> supported by the native format.</p>
 </li>
 </ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenSn does not distribute cross-section data of its own; users must
+supply their own multigroup libraries. Third-party, open-source tools such
+as <a class="reference external" href="https://openmc.org">OpenMC</a> and
+<a class="reference external" href="https://github.com/ragusa/Generate_MGXS">Generate_MGXS</a> can generate
+multigroup cross-section data suitable for use with OpenSn. See
+<a class="reference internal" href="../userguide/materials_xs.html"><span class="doc">Materials and Cross-Section Data</span></a> for how to load that data into OpenSn.</p>
+</div>
 </section>
 
 

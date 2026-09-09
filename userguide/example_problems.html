@@ -719,7 +719,8 @@ workflow after a successful solve.</p>
 <section id="example-11-balance-and-leakage-checks">
 <h2><span class="section-number">24.14. </span>Example 11: Balance and Leakage Checks<a class="headerlink" href="#example-11-balance-and-leakage-checks" title="Link to this heading"></a></h2>
 <p>Post-solve diagnostics are often as important as the field export itself.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">ComputeBalance</span><span class="p">()</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">balance</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">ComputeBalanceTable</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">balance</span><span class="p">[</span><span class="s2">&quot;balance&quot;</span><span class="p">])</span>
 
 <span class="n">leakage</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeLeakage</span><span class="p">([</span><span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">])</span>
 <span class="nb">print</span><span class="p">(</span><span class="n">leakage</span><span class="p">[</span><span class="s2">&quot;xmin&quot;</span><span class="p">])</span>

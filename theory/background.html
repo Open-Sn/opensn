@@ -235,7 +235,7 @@ at position <span class="math notranslate nohighlight">\(\vec{r}\)</span>.</p>
 the albedo operator, and</p></li>
 <li><p><span class="math notranslate nohighlight">\(\vec{\Omega}'\cdot \vec{n}(\vec{r}) &gt;0\)</span> (outgoing
 direction) and the incoming direction is
-<span class="math notranslate nohighlight">\(\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})\)</span>.</p></li>
+<span class="math notranslate nohighlight">\(\vec{\Omega}=\vec{\Omega}'-2\left(\vec{\Omega}'\cdot\vec{n}(\vec{r})\right) \vec{n}(\vec{r})\)</span>.</p></li>
 </ul>
 </li>
 </ul>
@@ -282,15 +282,19 @@ value)</p></li>
 <div class="math notranslate nohighlight">
 \[\begin{split}Y_{\ell,m}(\vec{\Omega}) =
     \begin{cases}
-        (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
+        (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-|m|)!}{(\ell+|m|)!}}P_{\ell}^{|m|}(\cos\theta)\sin{|m|\varphi}
     &amp; \text{if } m &lt; 0 \\
     \\
-        \sqrt{ \frac{(2\ell + 1)}{4\pi}} P_{\ell}^{m}(\cos\theta) &amp; \text{if } m = 0 \\ \\
-    (-1)^m \sqrt{2}\sqrt{ \frac{(2\ell + 1)}{4\pi}   \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
+        P_{\ell}(\cos\theta) &amp; \text{if } m = 0 \\ \\
+    (-1)^m \sqrt{2}\sqrt{ \frac{(\ell-m)!}{(\ell+m)!}}P_{\ell}^{m}(\cos\theta)\cos{m\varphi}
     &amp; \text{if } m &gt; 0 \\
     \end{cases}\end{split}\]</div>
 <p>where <span class="math notranslate nohighlight">\(P^m_\ell(\mu)\)</span> is the associated Legendre function of
-degree <span class="math notranslate nohighlight">\(\ell\)</span> and of order <span class="math notranslate nohighlight">\(m\)</span>.</p>
+degree <span class="math notranslate nohighlight">\(\ell\)</span> and of order <span class="math notranslate nohighlight">\(m\)</span>. Note that this convention
+is not orthonormal: <span class="math notranslate nohighlight">\(\int_{4\pi} d\Omega \, Y_{\ell,m}(\vec{\Omega})^2
+= \frac{4\pi}{2\ell+1}\)</span>, so the <span class="math notranslate nohighlight">\(\frac{2\ell+1}{4\pi}\)</span> prefactor
+above is required by the spherical-harmonics addition theorem and is
+not already absorbed into <span class="math notranslate nohighlight">\(Y_{\ell,m}\)</span>.</p>
 </li>
 </ul>
 <p>In operator notation, the steady-state, source-driven problem

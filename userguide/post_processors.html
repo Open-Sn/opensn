@@ -401,10 +401,11 @@ completed timestep whose state you want to visualize.</p>
 field function at a point.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationPoint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.math</span><span class="w"> </span><span class="kn">import</span> <span class="n">Vector3</span>
 
 <span class="n">ffi</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationPoint</span><span class="p">()</span>
+<span class="n">ffi</span><span class="o">.</span><span class="n">SetPointOfInterest</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
-<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 <span class="n">value</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetPointValue</span><span class="p">()</span>
 </pre></div>
@@ -425,7 +426,6 @@ field function along a line.</p>
 <span class="n">ffi</span><span class="o">.</span><span class="n">SetInitialPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">SetFinalPoint</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">10.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">))</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">SetNumberOfPoints</span><span class="p">(</span><span class="mi">101</span><span class="p">)</span>
-<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">ExportToCSV</span><span class="p">(</span><span class="s2">&quot;centerline&quot;</span><span class="p">)</span>
 </pre></div>
@@ -444,7 +444,6 @@ averages, sums, maxima, and function-weighted variants over a logical volume.</p
 <span class="n">ffi</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">my_lv</span><span class="p">)</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
-<span class="n">ffi</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">ffi</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 <span class="n">avg_value</span> <span class="o">=</span> <span class="n">ffi</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()</span>
 </pre></div>
@@ -454,12 +453,16 @@ averages, sums, maxima, and function-weighted variants over a logical volume.</p
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;max&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;min&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;sum_func&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;avg_func&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;max_func&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;min_func&quot;</span></code></p></li>
 </ul>
 <p>The <code class="docutils literal notranslate"><span class="pre">*_func</span></code> variants use a scalar material function supplied with
-<code class="docutils literal notranslate"><span class="pre">SetOperationFunction</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">SetOperationFunction</span></code>. For <code class="docutils literal notranslate"><span class="pre">min_func</span></code> and <code class="docutils literal notranslate"><span class="pre">max_func</span></code>, the function is
+applied at the sampled nodes and volume quadrature points before taking the
+global minimum or maximum.</p>
 </section>
 </section>
 <section id="volume-postprocessor">
@@ -808,16 +811,25 @@ post-processing workflow.</p>
 <p>If the transient workflow needs angular-flux output as well, the problem must
 have been created with <code class="docutils literal notranslate"><span class="pre">options={&quot;save_angular_flux&quot;:</span> <span class="pre">True}</span></code> from the start.</p>
 <p>For example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">scalar_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Match the stop_time configured on the initialized transient solver.</span>
+<span class="n">stop_time</span> <span class="o">=</span> <span class="mf">1.0e-1</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTimeStep</span><span class="p">()</span>
+<span class="n">scalar_ff</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
 
-<span class="k">while</span> <span class="ow">not</span> <span class="n">solver</span><span class="o">.</span><span class="n">Finished</span><span class="p">():</span>
+<span class="k">while</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">stop_time</span><span class="p">:</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">dt</span><span class="p">,</span> <span class="n">stop_time</span> <span class="o">-</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()))</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
     <span class="n">scalar_ff</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
     <span class="o">...</span>
+
+<span class="n">solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="n">dt</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>This keeps one field-function object and refreshes it from each completed
-timestep. Creating a new field function after each <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> is also valid,
+<p>This example keeps the normal timestep until the final step, which is shortened
+to the remaining time when necessary. A manual <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> loop must enforce
+<code class="docutils literal notranslate"><span class="pre">stop_time</span></code> itself; <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> handles this automatically. The example
+restores the normal timestep after the loop and refreshes the same field-function
+object after each completed timestep. Creating a new field function after each <code class="docutils literal notranslate"><span class="pre">Advance()</span></code> is also valid,
 but is usually unnecessary when the existing object supports <code class="docutils literal notranslate"><span class="pre">Update()</span></code>.</p>
 </section>
 <section id="practical-guidance">

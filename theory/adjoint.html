@@ -61,7 +61,11 @@
 <li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
 <li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
 <li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Adjoint Flux Formalism</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Adjoint Flux Formalism</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-adjoint-formulation">7.1. Discrete adjoint formulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#theory-adjoint-response-identity">7.2. Theory: adjoint response identity</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
@@ -98,27 +102,40 @@
              
   <section id="adjoint-flux-formalism">
 <h1><span class="section-number">7. </span>Adjoint Flux Formalism<a class="headerlink" href="#adjoint-flux-formalism" title="Link to this heading"></a></h1>
-<ol class="arabic simple">
-<li><p>duality and inner product</p></li>
-<li><p>adjoint in Sn</p></li>
-</ol>
-<p>The multigroup, adjoint transport equation is given by</p>
+<section id="discrete-adjoint-formulation">
+<h2><span class="section-number">7.1. </span>Discrete adjoint formulation<a class="headerlink" href="#discrete-adjoint-formulation" title="Link to this heading"></a></h2>
+<p>Using OpenSn’s standard discrete angular operators, the multigroup adjoint
+transport equation for quadrature direction <span class="math notranslate nohighlight">\(\vec{\Omega}_n\)</span> is</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{gathered}
--\frac{1}{v_g}\frac{\partial \psi^{\dagger,g}(\vec{r},\vec{\Omega},t) }{\partial t} - \vec{\Omega} \cdot \vec{\nabla} \psi^{\dagger,g}(\vec{r},\vec{\Omega},t)
-+ \sigma_t^g(\vec{r},t)\psi^{\dagger,g}(\vec{r},\vec{\Omega},t) \\=
-\sum_{g'=1}^{g'=G}
-%\sum_{\ell=0}^{L_{\text{max}}} \sum_{m=-\ell}^{m=\ell}
-\sum_{\ell,m} \, \frac{2\ell+1}{4\pi}\sigma^{g\to g'}_{s,\ell}(\vec{r}) Y_{\ell,m}(\vec{\Omega},t) \phi^{\dagger,g}_{\ell,m}(\vec{r},t)
-+
-Q^{\dagger,g}_{\text{ext}}(\vec{r},\vec{\Omega},t) \\ \qquad 1\le g \le G \,.
+-\frac{1}{v_g}\frac{\partial \psi^{\dagger,g}_n(\vec{r},t)}{\partial t}
+-\vec{\Omega}_n\cdot\vec{\nabla}\psi^{\dagger,g}_n(\vec{r},t)
++\sigma_t^g(\vec{r},t)\psi^{\dagger,g}_n(\vec{r},t) \\=
+\sum_{g'=1}^{G}\sum_{\ell,m}
+\frac{2\ell+1}{\mathcal{N}}\sigma^{g\to g'}_{s,\ell}(\vec{r})
+Y_{\ell,m}(\vec{\Omega}_n)\phi^{\dagger,g'}_{\ell,m}(\vec{r},t)
++Q^{\dagger,g}_{\mathrm{ext},n}(\vec{r},t),
+\qquad 1\le g\le G.
 \end{gathered}\end{split}\]</div>
+<p>Here <span class="math notranslate nohighlight">\(\psi^{\dagger,g}_n\)</span> and
+<span class="math notranslate nohighlight">\(Q^{\dagger,g}_{\mathrm{ext},n}\)</span> denote the angular flux and source
+in direction <span class="math notranslate nohighlight">\(\vec{\Omega}_n\)</span>. The discrete moments and quadrature
+normalization are</p>
+<div class="math notranslate nohighlight">
+\[\phi^{\dagger,g}_{\ell,m}(\vec{r},t)
+=\sum_{n=1}^{N_{\mathrm{dir}}}w_nY_{\ell,m}(\vec{\Omega}_n)
+\psi^{\dagger,g}_n(\vec{r},t),
+\qquad
+\mathcal{N}=\sum_{n=1}^{N_{\mathrm{dir}}}w_n=1.\]</div>
+<p>OpenSn normalizes the quadrature weights to one, so the reconstruction
+prefactor <span class="math notranslate nohighlight">\((2\ell+1)/\mathcal{N}\)</span> reduces to <span class="math notranslate nohighlight">\(2\ell+1\)</span>.
+See <a class="reference internal" href="discretization.html"><span class="doc">Phase-space Discretization</span></a> for the discrete angular operators.</p>
 <p>Note that:</p>
 <ol class="arabic simple">
 <li><p>streaming is reversed, the streaming term now has a <span class="math notranslate nohighlight">\(-\)</span> sign,</p></li>
 <li><p>time is reversed, the temporal derivative term now has a <span class="math notranslate nohighlight">\(-\)</span>
 sign,</p></li>
-<li><p>the energy transfer in the scattering term has been reserved (now
+<li><p>the energy transfer in the scattering term has been reversed (now
 they are from <span class="math notranslate nohighlight">\(g\)</span> to <span class="math notranslate nohighlight">\(g'\)</span>),</p></li>
 <li><p>a similar reversal of the energy transfer in the fission term is
 required when fission is included,</p></li>
@@ -166,61 +183,38 @@ averaged over group <span class="math notranslate nohighlight">\(g\)</span> rath
 <li><p>first-order sensitivity in quantities of interest,</p></li>
 <li><p>an importance map.</p></li>
 </ul>
-<div class="line-block">
-<div class="line"><strong>Duality statement:</strong></div>
-<div class="line">We introduce the following inner products in the volume
-<span class="math notranslate nohighlight">\(\mathcal{D}\)</span> and the boundary
-<span class="math notranslate nohighlight">\(\Gamma=\partial\mathcal{D}\)</span> of the spatial domain. <span class="math notranslate nohighlight">\(f\)</span>
-and <span class="math notranslate nohighlight">\(g\)</span> are multigroup-valued functions.</div>
-</div>
-<blockquote>
-<div><div class="math notranslate nohighlight">
-\[(f,h) = \sum_g \int_0^T dt \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
+</section>
+<section id="theory-adjoint-response-identity">
+<h2><span class="section-number">7.2. </span>Theory: adjoint response identity<a class="headerlink" href="#theory-adjoint-response-identity" title="Link to this heading"></a></h2>
+<p>The continuous formulation explains why an adjoint solution can be used to
+compute a detector response. For clarity, consider a steady-state problem
+with vacuum forward and adjoint boundary conditions. Define the inner product</p>
 <div class="math notranslate nohighlight">
-\[\langle f,h\rangle_\pm = \sum_g \int_0^T dt  \int_{\Gamma} d^2r \int_{\vec{\Omega}\cdot \vec{n}(\vec{r}) \gtrless 0} d\Omega  | \vec{\Omega} \cdot \vec{n}(\vec{r}) |  \, f^g(\vec{r},\vec{\Omega},t)  h^g(\vec{r},\vec{\Omega},t)\]</div>
+\[(f,h)=\sum_g\int_{\mathcal{D}}d^3r
+\int_{\mathcal{S}^2}d\Omega\,
+f^g(\vec{r},\vec{\Omega})h^g(\vec{r},\vec{\Omega}).\]</div>
+<p>Let <span class="math notranslate nohighlight">\(L\)</span> be the forward transport operator, including collision and
+scattering, and <span class="math notranslate nohighlight">\(L^\dagger\)</span> its adjoint. Integration by parts reverses
+the streaming direction; the vacuum boundary conditions eliminate the
+boundary term. Transposing the energy-transfer terms then gives
+<span class="math notranslate nohighlight">\((L\Psi,\Psi^\dagger)=(\Psi,L^\dagger\Psi^\dagger)\)</span>. With
+<span class="math notranslate nohighlight">\(L\Psi=Q_{\mathrm{ext}}\)</span> and
+<span class="math notranslate nohighlight">\(L^\dagger\Psi^\dagger=Q^\dagger_{\mathrm{ext}}\)</span>, this yields</p>
 <div class="math notranslate nohighlight">
-\[\left\{ f,h\right\}_\tau = \sum_g  \int_{\mathcal{D}} d^3r  \int_{\mathcal{S}^2} d\Omega \, f^g(\vec{r},\vec{\Omega},\tau)  h^g(\vec{r},\vec{\Omega},\tau)\]</div>
-<p>Note that in the notation <span class="math notranslate nohighlight">\((\Psi,\Psi^{\dagger})\)</span>, the entries
-in <span class="math notranslate nohighlight">\(\Psi\)</span> are the standard, multigroup forward fluxes
-(energy-dependent flux integrated over a group bin), while the entries
-in <span class="math notranslate nohighlight">\(\Psi^{\dagger}\)</span> are the standard multigroup adjoint fluxes
-that, as previously noted, are actually group-averaged values of the
-energy-dependent adjoint flux.</p>
-</div></blockquote>
-<div class="line-block">
-<div class="line">Given a forward transport problem with volumetric source
-<span class="math notranslate nohighlight">\(Q^{g}_{\text{ext}}\)</span>, a boundary source
-<span class="math notranslate nohighlight">\(\psi^{g}_{\text{inc}}\)</span>, and an initial condition <span class="math notranslate nohighlight">\(f_0\)</span>,
-there is an adjoint problem with volumetric source
-<span class="math notranslate nohighlight">\(Q^{\dagger,g}_{\text{ext}}\)</span>, boundary source
-<span class="math notranslate nohighlight">\(\psi^{\dagger,g}_{\text{out}}\)</span>, and final condition <span class="math notranslate nohighlight">\(h_T\)</span>
-such that the following duality principle or duality conservation
-statement holds</div>
-</div>
-<blockquote>
-<div><div class="math notranslate nohighlight">
-\[\left( \Psi, Q^{\dagger}_{\text{ext}} \right) + \langle \Psi, \Psi^{\dagger}_{\text{out}} \rangle + \left\{ \Psi, h \right\}_T
-=
-\left( \Psi^{\dagger}, Q_{\text{ext}} \right) + \langle \Psi^{\dagger}, \Psi_{\text{inc}} \rangle + \left\{ \Psi^{\dagger}, f \right\}_0\]</div>
-</div></blockquote>
-<div class="line-block">
-<div class="line"><em>Example of a quantity of interest (QoI).</em></div>
-<div class="line">Suppose one wants to compute the reaction rate in a detector (detector
-cross section <span class="math notranslate nohighlight">\(\sigma_{\text{det}}\)</span>) due to a source
-<span class="math notranslate nohighlight">\(Q_{\text{ext}}\)</span>. Suppose the boundary of the problem is
-vacuum and that the problem is steady state. The QoI is given by:</div>
-</div>
-<blockquote>
-<div><div class="math notranslate nohighlight">
-\[\text{QoI} = \left( \Psi, \sigma_{\text{det}} \right) \,.\]</div>
-<p>Using the duality principle, the QoI can also be computed as</p>
+\[(\Psi,Q^\dagger_{\mathrm{ext}})
+=(\Psi^\dagger,Q_{\mathrm{ext}}).\]</div>
+<p>For a detector reaction rate, choose
+<span class="math notranslate nohighlight">\(Q^{\dagger,g}_{\mathrm{ext}}=\sigma^g_{\mathrm{det}}\)</span>. The same
+response can then be evaluated using either solution:</p>
 <div class="math notranslate nohighlight">
-\[\text{QoI} = \left( \Psi^{\dagger}, Q_{\text{ext}} \right) \,.\]</div>
-<p>Hence, it is clear that the adjoint volumetric source should be
-<span class="math notranslate nohighlight">\(Q^{\dagger}_{\text{ext}}=\sigma_{\text{det}}\)</span> and the adjoint
-boundary source should be <span class="math notranslate nohighlight">\(\Psi^{\dagger}_{\text{out}} =0\)</span>
-(vacuum).</p>
-</div></blockquote>
+\[R=(\Psi,\sigma_{\mathrm{det}})
+ =(\Psi^\dagger,Q_{\mathrm{ext}}).\]</div>
+<p>These equations use continuous solid-angle integrals. In the discrete
+formulation, use quadrature-weighted sums and the corresponding discrete
+flux and source normalization defined above. Nonzero boundary data and
+time-dependent problems introduce additional boundary and initial/final
+terms in the response identity.</p>
+</section>
 </section>
 
 

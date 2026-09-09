@@ -108,7 +108,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#field-function-interface">12.9. Field-Function Interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#angular-flux-access">12.10. Angular-Flux Access</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#balance-and-leakage">12.11. Balance and Leakage</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#computebalance">12.11.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#computebalancetable">12.11.1. <code class="docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#computeleakage">12.11.2. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></a></li>
 </ul>
 </li>
@@ -361,8 +361,11 @@ methods such as:</p>
 </section>
 <section id="problem-options">
 <h2><span class="section-number">12.5. </span>Problem Options<a class="headerlink" href="#problem-options" title="Link to this heading"></a></h2>
-<p>The Python API exposes problem options through the constructor and
-<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetOptions()</span></code>.</p>
+<p>The Python API exposes problem options through the <code class="docutils literal notranslate"><span class="pre">options</span></code> constructor
+argument. There is currently no general-purpose setter for changing arbitrary
+problem options after construction; individual aspects of the problem (sources,
+boundary conditions, adjoint mode, and time-dependent mode) have their own
+dedicated update methods instead.</p>
 <p>The most important options for everyday use are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">adjoint</span></code></p></li>
@@ -412,16 +415,13 @@ groupset behaves, it usually belongs here.</p>
 </div>
 <section id="setting-options-after-construction">
 <h3><span class="section-number">12.5.1. </span>Setting options after construction<a class="headerlink" href="#setting-options-after-construction" title="Link to this heading"></a></h3>
-<p>Problem options can also be changed after construction:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
-    <span class="n">verbose_inner_iterations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-    <span class="n">max_ags_iterations</span><span class="o">=</span><span class="mi">200</span><span class="p">,</span>
-    <span class="n">ags_tolerance</span><span class="o">=</span><span class="mf">1.0e-8</span><span class="p">,</span>
-<span class="p">)</span>
-</pre></div>
-</div>
-<p>This is useful for parameter studies or staged workflows where the problem
-definition is reused.</p>
+<p>Problem-wide <code class="docutils literal notranslate"><span class="pre">options</span></code> values are fixed at construction time. For parameter
+studies or staged workflows, rebuild the problem object with a new <code class="docutils literal notranslate"><span class="pre">options</span></code>
+dictionary rather than mutating an existing one. Aspects of the problem that do
+have dedicated post-construction setters are covered elsewhere in this guide:
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetPointSources()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetVolumetricSources()</span></code>,
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetBoundaryOptions()</span></code>, <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetAdjoint()</span></code>, and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code> / <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetSteadyStateMode()</span></code>.</p>
 </section>
 </section>
 <section id="id1">
@@ -495,10 +495,9 @@ later.</p>
 <p><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code> requests GPU acceleration for supported sweep paths.</p>
 <p>Current restrictions:</p>
 <ul class="simple">
-<li><p>only <code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code> is supported for GPU use,</p></li>
+<li><p>both <code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;CBC&quot;</span></code> sweep types support GPU acceleration,</p></li>
 <li><p>curvilinear problems do not support GPU acceleration,</p></li>
-<li><p>time-dependent problems do not support GPU acceleration,</p></li>
-<li><p>adjoint problems do not support GPU acceleration.</p></li>
+<li><p>time-dependent problems do not support GPU acceleration.</p></li>
 </ul>
 <p>Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.</p>
@@ -795,15 +794,25 @@ Only enable and use it when the calculation actually requires it.</p>
 </section>
 <section id="balance-and-leakage">
 <h2><span class="section-number">12.11. </span>Balance and Leakage<a class="headerlink" href="#balance-and-leakage" title="Link to this heading"></a></h2>
-<p>The Cartesian discrete-ordinates problem exposes two important diagnostics:</p>
+<p>The Cartesian discrete-ordinates problem and its solvers expose two important
+diagnostics:</p>
 <ul class="simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalance()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code></p></li>
 </ul>
-<section id="computebalance">
-<h3><span class="section-number">12.11.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalance()</span></code><a class="headerlink" href="#computebalance" title="Link to this heading"></a></h3>
-<p>This computes the particle balance for the problem and returns a dictionary of
-balance terms.</p>
+<section id="computebalancetable">
+<h3><span class="section-number">12.11.1. </span><code class="docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code><a class="headerlink" href="#computebalancetable" title="Link to this heading"></a></h3>
+<p>This is a solver-level method, exposed on
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a>,
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>,
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>, and
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>. It computes the particle
+balance for the problem and returns a dictionary of balance terms.</p>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">balance</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">ComputeBalanceTable</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">balance</span><span class="p">[</span><span class="s2">&quot;balance&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 <p>It is useful for:</p>
 <ul class="simple">
 <li><p>checking whether the run is physically consistent,</p></li>
@@ -855,7 +864,6 @@ flux moments, time metadata, precursor state, and solver-specific restart data.<
 <p>Several parts of the problem can be updated after construction.</p>
 <p>The most important methods are:</p>
 <ul class="simple">
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetOptions()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetPointSources()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetVolumetricSources()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetBoundaryOptions()</span></code></p></li>

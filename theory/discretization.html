@@ -166,7 +166,9 @@ understood as a double summation. The summation on <span class="math notranslate
 from 0 to <span class="math notranslate nohighlight">\(L_\text{max}\)</span>. The summation in <span class="math notranslate nohighlight">\(m\)</span> depends on
 the dimensionality of the problem. In 1D, there is no summation on
 <span class="math notranslate nohighlight">\(m\)</span> (equivalent to setting <span class="math notranslate nohighlight">\(m=0\)</span>), in 2D, the summation on
-<span class="math notranslate nohighlight">\(m\)</span> is from 0 to <span class="math notranslate nohighlight">\(\ell\)</span> and in 3D, the summation on
+<span class="math notranslate nohighlight">\(m\)</span> is restricted to the values of the same parity as
+<span class="math notranslate nohighlight">\(\ell\)</span>, i.e., <span class="math notranslate nohighlight">\(m=-\ell,-\ell+2,\dots,\ell\)</span> (<span class="math notranslate nohighlight">\(\ell+1\)</span>
+terms), and in 3D, the summation on
 <span class="math notranslate nohighlight">\(m\)</span> is from <span class="math notranslate nohighlight">\(-\ell\)</span> to <span class="math notranslate nohighlight">\(\ell\)</span>.</p>
 </div></blockquote>
 <div class="line-block">
@@ -230,16 +232,19 @@ introduced earlier:</p>
 <ul>
 <li><p>the discrete-to-moment matrix:</p>
 <div class="math notranslate nohighlight">
-\[M_{k,d} = \omega_d Y_{\ell,m}(\vec{\Omega}_d)\]</div>
+\[D_{k,d} = \omega_d Y_{\ell,m}(\vec{\Omega}_d)\]</div>
 <p>where <span class="math notranslate nohighlight">\(k\)</span> is a single index encoding the pair <span class="math notranslate nohighlight">\((\ell,m)\)</span>.
-The dimensions of <span class="math notranslate nohighlight">\(M\)</span> are:
+The dimensions of <span class="math notranslate nohighlight">\(D\)</span> are:
 <span class="math notranslate nohighlight">\(N_{\text{mom}} \times N_{\text{dir}}\)</span>.</p>
 </li>
 <li><p>the moment-to-discrete matrix:</p>
 <div class="math notranslate nohighlight">
-\[D_{d,k} = \frac{2\ell+1}{4\pi} Y_{\ell,m}(\vec{\Omega}_d)\]</div>
-<p>The dimensions of <span class="math notranslate nohighlight">\(D\)</span> are:
-<span class="math notranslate nohighlight">\(N_{\text{dir}} \times N_{\text{mom}}\)</span>.</p>
+\[M_{d,k} = \frac{2\ell+1}{\sum_{d'=1}^{N_{\text{dir}}} \omega_{d'}} Y_{\ell,m}(\vec{\Omega}_d)\]</div>
+<p>The dimensions of <span class="math notranslate nohighlight">\(M\)</span> are:
+<span class="math notranslate nohighlight">\(N_{\text{dir}} \times N_{\text{mom}}\)</span>. In OpenSn, quadrature weights
+are normalized so that <span class="math notranslate nohighlight">\(\sum_{d'=1}^{N_{\text{dir}}} \omega_{d'}=1\)</span>
+(see the angular quadratures user guide), so the prefactor above reduces
+to <span class="math notranslate nohighlight">\(2\ell+1\)</span>.</p>
 </li>
 </ul>
 <p>Traditional quadrature rules include the Level-Symmetric quadrature, the
@@ -267,7 +272,7 @@ angles <strong>in one quadrant</strong>.</p>
 </figcaption>
 </figure>
 <figure class="align-center" id="id337">
-<a class="reference internal image-reference" href="../_images/T8GLC.png"><img alt="../_images/T8GLC.png" src="../_images/T8GLC.png" style="width: 392.0px; height: 294.0px;" />
+<a class="reference internal image-reference" href="../_images/P12GLC.png"><img alt="../_images/P12GLC.png" src="../_images/P12GLC.png" style="width: 392.0px; height: 294.0px;" />
 </a>
 <figcaption>
 <p><span class="caption-text">Product Gauss-Legendre-Chebyshev quadrature (<span class="math notranslate nohighlight">\(N_{\text{polar}}=N_{\text{azimuthal}}=6\)</span>)</span><a class="headerlink" href="#id337" title="Link to this image"></a></p>
@@ -315,7 +320,9 @@ hence yielding a locally refined angular quadrature.</p>
 </figcaption>
 </figure>
 </li>
-<li><p>The user has has the option of supplying their own quadrature rule.</p></li>
+<li><p>the Lebedev quadrature, which distributes points symmetrically over
+the unit sphere and provides high-order accuracy for spherical
+integration, available in both 2D and 3D geometries.</p></li>
 </ol>
 <div class="line-block">
 <div class="line">For charged-particle transport, not yet covered in OpenSn, Galerkin
@@ -465,7 +472,7 @@ polyhedron.</p>
 </div>
 <blockquote>
 <div><div class="math notranslate nohighlight">
-\[b_j(\vec{r}) = t_j(\vec{r}) + \frac{1}{N_f}\sum_{f &#64; j} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})\]</div>
+\[b_j(\vec{r}) = t_j(\vec{r}) + \sum_{f &#64; j} \frac{1}{N_f} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})\]</div>
 <p>where <span class="math notranslate nohighlight">\(f &#64; j\)</span> denotes a face containing vertex <span class="math notranslate nohighlight">\(j\)</span>. It is
 easy to check that <span class="math notranslate nohighlight">\(b_j(\vec{r})\)</span> is equal to one on vertex
 <span class="math notranslate nohighlight">\(j\)</span> of the polyhedron and zero on all its other vertices.</p>

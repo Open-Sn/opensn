@@ -582,8 +582,10 @@ the first places to check. The issue is often not the quadrature alone, but the
 quadrature together with the requested aggregation mode.</p>
 <section id="polar">
 <h3><span class="section-number">7.2.1. </span><code class="docutils literal notranslate"><span class="pre">polar</span></code><a class="headerlink" href="#polar" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">polar</span></code> aggregation is only supported for product quadratures on Cartesian
-orthogonal meshes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">polar</span></code> aggregation is only supported for product quadratures. On the mesh
+side, it is supported on Cartesian orthogonal meshes, on any 2D mesh
+(including 2D unstructured meshes), and on extruded meshes. It is not
+supported on a fully unstructured 3D (non-extruded) mesh.</p>
 <p>It is therefore appropriate for:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code></p></li>
@@ -595,17 +597,17 @@ orthogonal meshes.</p>
 <li><p>Lebedev quadratures</p></li>
 <li><p>triangular quadratures</p></li>
 <li><p>SLDFE quadratures</p></li>
-<li><p>unstructured meshes</p></li>
+<li><p>fully unstructured 3D (non-extruded) meshes</p></li>
 </ul>
-<p>For those quadratures, and for unstructured meshes in general, set
+<p>For those quadratures, and for fully unstructured 3D meshes, set
 <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p>
 </section>
 <section id="single">
 <h3><span class="section-number">7.2.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation treats each direction independently. It is the most
 generally compatible option and is the safe choice for non-product quadratures.
-Regardless of quadrature type, single angle aggregation is required on
-unstructured meshes.</p>
+Regardless of quadrature type, single angle aggregation is required on fully
+unstructured 3D (non-extruded) meshes.</p>
 <p>Use it with:</p>
 <ul class="simple">
 <li><p>Lebedev quadratures</p></li>
@@ -634,9 +636,8 @@ unstructured meshes.</p>
 </section>
 <section id="azimuthal">
 <h3><span class="section-number">7.2.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
-<p>For Cartesian problems, <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product
-quadratures on orthogonal meshes. The curvilinear implementation also uses
-<code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> where supported. It should not be used on unstructured meshes.</p>
+<p><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product quadratures on 2D RZ
+geometry; it is not available for Cartesian problems.</p>
 <p>For 2D RZ problems, the curvilinear solver accepts:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>

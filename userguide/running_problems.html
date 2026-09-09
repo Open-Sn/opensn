@@ -221,15 +221,17 @@ should usually be validated on CPU first.</p>
 <li><p>Create field functions or other outputs from the completed state.</p></li>
 </ol>
 <p>For steady-state and eigenvalue problems, a typical driver looks like:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
-    <span class="n">mesh</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># This groupset covers all energy groups, numbered from zero.</span>
+<span class="n">num_groups</span> <span class="o">=</span> <span class="n">groupset</span><span class="p">[</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span>
+<span class="n">phys</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
     <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span><span class="n">groupset</span><span class="p">],</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
-    <span class="n">angular_quadrature</span><span class="o">=</span><span class="n">quadrature</span><span class="p">,</span>
-    <span class="n">boundary_options</span><span class="o">=</span><span class="n">boundary_options</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
 <span class="p">)</span>
 
-<span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 </pre></div>
@@ -239,19 +241,25 @@ advance the state manually:</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
 <p>Transient problems require <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> in the problem
-options. Set that on the problem before constructing the
+options when constructing <code class="docutils literal notranslate"><span class="pre">phys</span></code>. After creating <code class="docutils literal notranslate"><span class="pre">phys</span></code>, call
+<code class="docutils literal notranslate"><span class="pre">phys.SetTimeDependentMode()</span></code> before constructing the
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a>.</p>
 </div>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">TransientSolver</span><span class="p">(</span>
-    <span class="n">phys</span><span class="p">,</span>
-    <span class="n">dt</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
-    <span class="n">time_end</span><span class="o">=</span><span class="mf">1.0e-1</span><span class="p">,</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetTimeDependentMode</span><span class="p">()</span>
+<span class="n">dt</span> <span class="o">=</span> <span class="mf">1.0e-3</span>
+<span class="n">stop_time</span> <span class="o">=</span> <span class="mf">1.0e-1</span>
+<span class="n">num_steps</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">stop_time</span> <span class="o">/</span> <span class="n">dt</span><span class="p">)</span>  <span class="c1"># Fixed steps starting at time zero.</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">opensn</span><span class="o">.</span><span class="n">TransientSolver</span><span class="p">(</span>
+    <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
+    <span class="n">dt</span><span class="o">=</span><span class="n">dt</span><span class="p">,</span>
+    <span class="n">stop_time</span><span class="o">=</span><span class="n">stop_time</span><span class="p">,</span>
     <span class="n">initial_state</span><span class="o">=</span><span class="s2">&quot;zero&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
 <span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 
-<span class="k">while</span> <span class="ow">not</span> <span class="n">solver</span><span class="o">.</span><span class="n">Finished</span><span class="p">():</span>
+<span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">num_steps</span><span class="p">):</span>
     <span class="n">solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
 </pre></div>
 </div>

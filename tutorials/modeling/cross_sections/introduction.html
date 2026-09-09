@@ -130,6 +130,24 @@ Once loaded, cross sections can be combined with
 <a class="reference internal" href="../../../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Scale()</span></code></a>.</p>
 <p>See the <a class="reference internal" href="../../../pyapi/index.html"><span class="doc">Python API reference</span></a> for constructor arguments, available data
 properties, and method behavior.</p>
+<section id="where-to-get-cross-section-data">
+<h2><span class="section-number">2.2.1.1. </span>Where to get cross-section data<a class="headerlink" href="#where-to-get-cross-section-data" title="Link to this heading"></a></h2>
+<p>OpenSn does not distribute cross-section data of its own, so generating a
+suitable multigroup library is left to the user. A couple of third-party,
+open-source tools are well suited to this:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://openmc.org">OpenMC</a>, a Monte Carlo particle transport code whose
+MGXS module can generate multigroup cross-section libraries that OpenSn
+imports directly (see <a class="reference internal" href="../../../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a>).</p></li>
+<li><p><a class="reference external" href="https://github.com/ragusa/Generate_MGXS">Generate_MGXS</a>, a small utility
+built on top of OpenMC for quickly generating multigroup cross sections for
+use with OpenSn. It produces MGXS data for representative neutronic
+environments (homogeneous problems, nested boxes, or nested cylinders) using
+fixed-source or eigenvalue OpenMC calculations, and it includes simple
+OpenSn/infinite-medium verification and plotting tools. The resulting OpenMC
+MGXS files can be loaded directly into OpenSn.</p></li>
+</ul>
+</section>
 </section>
 
 

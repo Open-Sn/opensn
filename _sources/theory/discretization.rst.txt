@@ -61,7 +61,9 @@ Energy Discretization
   from 0 to :math:`L_\text{max}`. The summation in :math:`m` depends on
   the dimensionality of the problem. In 1D, there is no summation on
   :math:`m` (equivalent to setting :math:`m=0`), in 2D, the summation on
-  :math:`m` is from 0 to :math:`\ell` and in 3D, the summation on
+  :math:`m` is restricted to the values of the same parity as
+  :math:`\ell`, i.e., :math:`m=-\ell,-\ell+2,\dots,\ell` (:math:`\ell+1`
+  terms), and in 3D, the summation on
   :math:`m` is from :math:`-\ell` to :math:`\ell`.
 | We will further consider a single one of the above :math:`G`
   equations, written without the group superscript :math:`g` for
@@ -121,18 +123,21 @@ introduced earlier:
 
 -  the discrete-to-moment matrix:
 
-   .. math:: M_{k,d} = \omega_d Y_{\ell,m}(\vec{\Omega}_d)
+   .. math:: D_{k,d} = \omega_d Y_{\ell,m}(\vec{\Omega}_d)
 
    where :math:`k` is a single index encoding the pair :math:`(\ell,m)`.
-   The dimensions of :math:`M` are:
+   The dimensions of :math:`D` are:
    :math:`N_{\text{mom}} \times N_{\text{dir}}`.
 
 -  the moment-to-discrete matrix:
 
-   .. math:: D_{d,k} = \frac{2\ell+1}{4\pi} Y_{\ell,m}(\vec{\Omega}_d)
+   .. math:: M_{d,k} = \frac{2\ell+1}{\sum_{d'=1}^{N_{\text{dir}}} \omega_{d'}} Y_{\ell,m}(\vec{\Omega}_d)
 
-   The dimensions of :math:`D` are:
-   :math:`N_{\text{dir}} \times N_{\text{mom}}`.
+   The dimensions of :math:`M` are:
+   :math:`N_{\text{dir}} \times N_{\text{mom}}`. In OpenSn, quadrature weights
+   are normalized so that :math:`\sum_{d'=1}^{N_{\text{dir}}} \omega_{d'}=1`
+   (see the angular quadratures user guide), so the prefactor above reduces
+   to :math:`2\ell+1`.
 
 Traditional quadrature rules include the Level-Symmetric quadrature, the
 Equal-Weight quadrature, and Gauss-Legendre-Chebyshev quadratures. In
@@ -159,7 +164,7 @@ OpenSn, we have:
 
       Product Gauss-Legendre-Chebyshev quadrature (:math:`N_{\text{polar}}=N_{\text{azimuthal}}=4`)
 
-   .. figure:: images/T8GLC.png
+   .. figure:: images/P12GLC.png
       :scale: 70%
       :align: center
 
@@ -205,7 +210,9 @@ OpenSn, we have:
 
       Example of locally refined LDFE angular quadrature
 
-#. The user has has the option of supplying their own quadrature rule.
+#. the Lebedev quadrature, which distributes points symmetrically over
+   the unit sphere and provides high-order accuracy for spherical
+   integration, available in both 2D and 3D geometries.
 
 | For charged-particle transport, not yet covered in OpenSn, Galerkin
   variants of the traditional quadrature rules must be employed
@@ -344,7 +351,7 @@ Spatial Discretization
   polyhedron.
 | Then, the PWL basis function associated with vertex :math:`j` is:
 
-  .. math:: b_j(\vec{r}) = t_j(\vec{r}) + \frac{1}{N_f}\sum_{f @ j} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})
+  .. math:: b_j(\vec{r}) = t_j(\vec{r}) + \sum_{f @ j} \frac{1}{N_f} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})
 
   where :math:`f @ j` denotes a face containing vertex :math:`j`. It is
   easy to check that :math:`b_j(\vec{r})` is equal to one on vertex

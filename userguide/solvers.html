@@ -478,8 +478,8 @@ boundary conditions rather than an eigenvalue solve</p></li>
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
 sweeps. In practice, that means:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> on the problem,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code>, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> on the problem (both <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;CBC&quot;</span></code> support GPU acceleration), and</p></li>
 <li><p>a non-curvilinear, non-time-dependent problem.</p></li>
 </ul>
 <p>Example:</p>
@@ -809,8 +809,9 @@ problem with outer power iteration.</p>
 <p>This solver can run with GPU acceleration when the associated
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
 sweeps. The same problem-side restrictions apply as for steady-state source
-solves: GPU use requires <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> on a
-supported non-curvilinear problem.</p>
+solves: GPU use requires <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code> on a supported non-curvilinear
+problem. Both <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;CBC&quot;</span></code> support GPU
+acceleration.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">PowerIterationKEigenSolver</span><span class="p">(</span>
     <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>

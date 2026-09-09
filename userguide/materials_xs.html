@@ -151,9 +151,19 @@ cross-section data, and</p></li>
 mapping works in transport inputs, how OpenMC and native OpenSn cross-section
 files are used, and how cross sections can be combined and inspected from
 Python.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>OpenSn does not distribute cross-section data. Users must supply their own
+multigroup cross-section libraries, either hand-written (see
+<a class="reference internal" href="#loading-opensn-cross-section-files"><span class="std std-ref">Loading OpenSn Cross-Section Files</span></a> below) or generated with a
+third-party tool such as <a class="reference external" href="https://openmc.org">OpenMC</a> or
+<a class="reference external" href="https://github.com/ragusa/Generate_MGXS">Generate_MGXS</a>, a small
+OpenMC-based utility for quickly generating multigroup cross sections for
+use with OpenSn. See <a class="reference internal" href="../tutorials/modeling/cross_sections/introduction.html"><span class="doc">Introduction to Cross Sections</span></a> for more detail.</p>
+</div>
 <section id="overview">
 <h2><span class="section-number">5.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
-<p>The Python <code class="docutils literal notranslate"><span class="pre">MuliGroupXS</span></code> API has the following methods:</p>
+<p>The Python <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> API has the following methods:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a></p></li>
@@ -166,8 +176,8 @@ Python.</p>
 <ol class="arabic simple">
 <li><p>Create or load one or more <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> objects.</p></li>
 <li><p>Assign them to mesh block ids with <code class="docutils literal notranslate"><span class="pre">xs_map</span></code>.</p></li>
-<li><p>Pass that mapping directly to a transport problem, or update the problem</p></li>
-<li><p>later using <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetXSMap" title="pyopensn.solver.LBSProblem.SetXSMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetXSMap()</span></code></a>.</p></li>
+<li><p>Pass that mapping directly to a transport problem, or update the problem
+later using <a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetXSMap" title="pyopensn.solver.LBSProblem.SetXSMap"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetXSMap()</span></code></a>.</p></li>
 </ol>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -295,7 +305,7 @@ results of operations such as <a class="reference internal" href="../pyapi/gener
 </div>
 </section>
 <section id="loading-opensn-cross-section-files">
-<h2><span class="section-number">5.5. </span>Loading OpenSn Cross-Section Files<a class="headerlink" href="#loading-opensn-cross-section-files" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2><span class="section-number">5.5. </span>Loading OpenSn Cross-Section Files<a class="headerlink" href="#loading-opensn-cross-section-files" title="Link to this heading"></a></h2>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="pyopensn.xs.MultiGroupXS.LoadFromOpenSn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenSn()</span></code></a> to load OpenSn’s native
 text cross-section format:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
