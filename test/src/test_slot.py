@@ -1,13 +1,12 @@
 """Module providing regression test execution and completion checking."""
 
 import os
-import subprocess
-import shutil
 import re
 import shlex
+import shutil
+import subprocess
 import sys
 import time
-
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
@@ -158,9 +157,15 @@ class TestSlot:
         # Append stderr and stdout to unified file
         with open(unified_filename, "a", encoding="utf-8") as unified_file:
             unified_file.write(self.command + "\n")
-            with open(stdout_filename, "r", encoding="utf-8") as self.stdout_file:
+            with open(stdout_filename,
+                      "r",
+                      encoding="utf-8",
+                      errors="backslashreplace") as self.stdout_file:
                 shutil.copyfileobj(self.stdout_file, unified_file)
-            with open(stderr_filename, "r", encoding="utf-8") as self.stderr_file:
+            with open(stderr_filename,
+                      "r",
+                      encoding="utf-8",
+                      errors="backslashreplace") as self.stderr_file:
                 shutil.copyfileobj(self.stderr_file, unified_file)
         os.remove(stdout_filename)
         os.remove(stderr_filename)

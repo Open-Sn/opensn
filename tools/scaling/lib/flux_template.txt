@@ -3,7 +3,7 @@
 #flux: --nodes={{n_nodes}}
 #flux: --queue={{partition}}
 #flux: --exclusive
-#flux: --time=60m
+#flux: --time-limit=60m
 #flux: --output={{outdir}}/{{base_name}}_{{n_nodes}}.out
 #flux: --error={{outdir}}/{{base_name}}_{{n_nodes}}.err
 {% if processor == "gpu" and gpu_options -%}

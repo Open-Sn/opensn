@@ -1224,6 +1224,8 @@ LBSProblem::InitializeParrays()
 }
 
 #ifndef __OPENSN_WITH_GPU__
+const bool LBSProblem::has_integrated_memory = false;
+
 void
 LBSProblem::InitializeGPUExtras()
 {
