@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include <boost/graph/topological_sort.hpp>
 #include <algorithm>
+#include <map>
 
 namespace opensn
 {
@@ -36,12 +37,12 @@ AAH_SPDS::AAH_SPDS(int id,
   // Create local cell graph
   Graph local_cell_graph(num_loc_cells);
 
-  for (size_t c = 0; c < num_loc_cells; ++c)
+  for (size_t c = 0; c < num_loc_cells; ++c) // NOLINT
     for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_cell_graph);
 
   // Remove cycles
-  if (allow_cycles)
+  if (allow_cycles) // NOLINT
   {
     auto edges_to_remove = RemoveCyclicDependencies(local_cell_graph);
     for (auto& edge_to_remove : edges_to_remove)
@@ -88,7 +89,10 @@ AAH_SPDS::AAH_SPDS(int id,
 void
 AAH_SPDS::BuildGlobalSweepFAS()
 {
+  if (global_sweep_tdg_built_)
+    throw std::logic_error("AAH_SPDS: Cannot rebuild the global sweep FAS after the TDG.");
   assert(not global_dependencies_.empty());
+  global_sweep_fas_.clear();
 
   // Create global sweep graph
   const int comm_size = opensn::mpi_comm.size();
@@ -99,12 +103,10 @@ AAH_SPDS::BuildGlobalSweepFAS()
     for (auto dep : global_dependencies_[loc])
     {
       double weight = 1.0;
-      if (not global_edge_weights_.empty())
-      {
-        const int idx = dep * comm_size + loc;
-        if (idx < global_edge_weights_.size() and global_edge_weights_[idx] > 0.0)
-          weight = global_edge_weights_[idx];
-      }
+      const auto key = static_cast<std::int64_t>(dep) * comm_size + loc;
+      const auto it = global_edge_weights_.find(key);
+      if (it != global_edge_weights_.end() and it->second > 0.0)
+        weight = it->second;
       boost::add_edge(dep, loc, weight, global_tdg);
     }
   }
@@ -122,12 +124,11 @@ AAH_SPDS::BuildGlobalSweepFAS()
   }
 }
 
-std::vector<double>
+std::vector<std::pair<int, double>>
 AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 {
-
-  const int comm_size = opensn::mpi_comm.size();
-  std::vector<double> row(comm_size, 0.0);
+  // Accumulate weights only for neighboring partitions.
+  std::map<int, double> row;
 
   constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
@@ -152,17 +153,24 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
     }
   }
 
-  return row;
+  return {row.begin(), row.end()};
 }
 
 void
 AAH_SPDS::BuildGlobalSweepTDG()
 {
-
   // Create graph
-  Graph global_tdg(opensn::mpi_comm.size());
+  const int comm_size = opensn::mpi_comm.size();
+  if (global_sweep_tdg_built_)
+    throw std::logic_error("AAH_SPDS: The global sweep TDG has already been built.");
+  if (comm_size <= 0)
+    throw std::logic_error("AAH_SPDS: Cannot build a sweep graph for an empty communicator.");
+  if (global_dependencies_.size() != static_cast<std::size_t>(comm_size))
+    throw std::logic_error("AAH_SPDS: Global sweep dependencies are not initialized.");
 
-  for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc) // NOLINT
+  Graph global_tdg(comm_size);
+
+  for (int loc = 0; loc < comm_size; ++loc)
     for (auto dep : global_dependencies_[loc])
       boost::add_edge(dep, loc, 1.0, global_tdg);
 
@@ -207,46 +215,38 @@ AAH_SPDS::BuildGlobalSweepTDG()
   }
 
   // Rank to global_tdg id mapping
-  std::vector<int> global_order_mapping(opensn::mpi_comm.size(), -1);
-  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
+  std::vector<int> global_order_mapping(comm_size, -1);
+  for (int k = 0; k < comm_size; ++k)
   {
     auto loc = global_linear_sweep_order[k];
     global_order_mapping[loc] = k;
   }
 
-  // Determine sweep order ranks
-  int abs_max_rank = 0;
-  std::vector<int> global_sweep_order_rank(opensn::mpi_comm.size(), -1);
-  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
+  // Compute levels without the delayed FAS edges.
+  int max_level = 0;
+  std::vector<int> global_sweep_order_level(comm_size, -1);
+  for (int k = 0; k < comm_size; ++k)
   {
-    auto loc = global_linear_sweep_order[k];
-    if (global_dependencies_[loc].empty())
-      global_sweep_order_rank[k] = 0;
-    else
+    const auto loc = global_linear_sweep_order[k];
+    int predecessor_max_level = -1;
+    for (auto [edge, edge_end] = boost::in_edges(loc, global_tdg); edge != edge_end; ++edge)
     {
-      int max_rank = -1;
-      for (auto dep_loc : global_dependencies_[loc])
-      {
-        if (dep_loc < 0)
-          continue;
-
-        int dep_mapped_index = global_order_mapping[dep_loc];
-        max_rank = std::max(global_sweep_order_rank[dep_mapped_index], max_rank);
-      }
-      global_sweep_order_rank[k] = max_rank + 1;
-      abs_max_rank = std::max(max_rank + 1, abs_max_rank);
+      const auto predecessor = boost::source(*edge, global_tdg);
+      const int predecessor_index = global_order_mapping[predecessor];
+      predecessor_max_level =
+        std::max(predecessor_max_level, global_sweep_order_level[predecessor_index]);
     }
+    global_sweep_order_level[k] = predecessor_max_level + 1;
+    max_level = std::max(max_level, global_sweep_order_level[k]);
   }
 
-  // Generate TDG
-  for (int rank = 0; rank <= abs_max_rank; ++rank)
-  {
-    STDG stdg;
-    for (int k = 0; k < opensn::mpi_comm.size(); ++k)
-      if (global_sweep_order_rank[k] == rank)
-        stdg.item_id.push_back(global_linear_sweep_order[k]);
-    global_sweep_planes_.push_back(stdg);
-  }
+  const int local_order_index = global_order_mapping[opensn::mpi_comm.rank()];
+  location_depth_ = max_level - global_sweep_order_level[local_order_index] + 1;
+
+  // Release setup-only global graph data.
+  std::vector<std::vector<int>>().swap(global_dependencies_);
+  std::unordered_map<std::int64_t, double>().swap(global_edge_weights_);
+  global_sweep_tdg_built_ = true;
 }
 
 #ifndef __OPENSN_WITH_GPU__

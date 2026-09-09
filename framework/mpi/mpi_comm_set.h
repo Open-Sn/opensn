@@ -28,6 +28,25 @@ public:
   {
   }
 
+  MPICommunicatorSet(const MPICommunicatorSet&) = delete;
+  MPICommunicatorSet& operator=(const MPICommunicatorSet&) = delete;
+  MPICommunicatorSet(MPICommunicatorSet&&) = delete;
+  MPICommunicatorSet& operator=(MPICommunicatorSet&&) = delete;
+
+  ~MPICommunicatorSet()
+  {
+    // Python may finalize MPI before destroying this object.
+    if (not mpi::Environment::is_initialized() or mpi::Environment::is_finalized())
+      return;
+
+    for (auto& communicator : communicators_)
+      if (communicator.is_valid())
+        communicator.free();
+    for (auto& group : location_groups_)
+      group.free();
+    world_group_.free();
+  }
+
   const mpi::Communicator& LocICommunicator(int locI) const { return communicators_[locI]; }
 
   int MapIonJ(int locI, int locJ) const
