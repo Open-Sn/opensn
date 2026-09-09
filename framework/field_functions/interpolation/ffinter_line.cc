@@ -66,7 +66,8 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
     for (int p = 0; p < number_of_points_; ++p)
     {
       auto& point = tmp_points[p];
-      if (grid->CheckPointInsideCell(cell, point) and cell.global_id < local_owner_cell_gids[p])
+      if (grid->CheckPointInsideCell(cell_local_id, point) and
+          cell.global_id < local_owner_cell_gids[p])
       {
         local_owner_cell_gids[p] = cell.global_id;
         local_owner_cell_lids[p] = cell_local_id;

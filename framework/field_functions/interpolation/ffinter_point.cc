@@ -28,12 +28,13 @@ FieldFunctionInterpolationPoint::RebuildPointLocationData()
 
   const auto& grid = field_function_->GetSpatialDiscretization().GetMesh();
   std::vector<uint64_t> cells_potentially_owning_point;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& vcc = cell.centroid;
     const auto& poi = point_of_interest_;
     const auto nudged_point = poi + 1.0e-6 * (vcc - poi);
-    if (grid->CheckPointInsideCell(cell, nudged_point))
+    if (grid->CheckPointInsideCell(cell_local_id, nudged_point))
       cells_potentially_owning_point.push_back(cell.global_id);
   }
 

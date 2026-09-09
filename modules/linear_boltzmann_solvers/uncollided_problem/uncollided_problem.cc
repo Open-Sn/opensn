@@ -127,11 +127,12 @@ UncollidedProblem::InitializeSpatialDiscretization()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const auto& v0 = grid_->GlobalVertex(cell.vertex_ids.front());
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    const auto& v0 = grid_->GlobalVertex(cell_vertex_ids.front());
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& v = grid_->GlobalVertex(vid);
       xmin = std::min(xmin, v.x);
@@ -154,12 +155,13 @@ UncollidedProblem::InitializeSpatialDiscretization()
          ++cell_local_id)
     {
       const auto& cell = grid_->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
       const double tol = cell_sizes_[cell_local_id] * 1.0e-8;
       for (const auto& face : cell.faces)
       {
         const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());
         const auto& n = face.normal;
-        for (const auto vid : cell.vertex_ids)
+        for (const auto vid : cell_vertex_ids)
         {
           bool on_face = false;
           for (const auto fvid : face.vertex_ids)
@@ -627,9 +629,10 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
     global_ids[cell_local_id] = cell.global_id;
     cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell_local_id);
-    for (const auto vertex_id : cell.vertex_ids)
+    for (const auto vertex_id : cell_vertex_ids)
     {
       const auto& vertex = grid_->GlobalVertex(vertex_id);
       nodes_x.push_back(vertex.x);
@@ -1175,6 +1178,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   for (size_t cell_local_id : near_spls_)
   {
     const Cell& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
     bool cell_current_mismatched = false;
 
     // Cell mapping
@@ -1235,6 +1239,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
             // Neighbor data
             const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
+            auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
             const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
 
             size_t f_ = face.GetNeighborAdjacentFaceIndex(grid_.get());
@@ -1255,7 +1260,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
               for (size_t fj = 0; fj < neighbor_num_face_nodes; ++fj)
               {
                 const int neighbor_node = neighbor_mapping.MapFaceNode(f_, fj);
-                if (neighbor.vertex_ids[neighbor_node] == cell.vertex_ids[i])
+                if (neighbor_vertex_ids[neighbor_node] == cell_vertex_ids[i])
                 {
                   j = neighbor_node;
                   break;
@@ -1553,6 +1558,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
     for (size_t cell_local_id : bulk_spls_)
     {
       const Cell& cell = grid_->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
 
       // Cell data
       const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
@@ -1616,6 +1622,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
               size_t f_ = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
 
               const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
+              auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
               const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
               const size_t neighbor_num_face_nodes = neighbor_mapping.GetNumFaceNodes(f_);
 
@@ -1639,7 +1646,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
                   for (size_t fk = 0; fk < neighbor_num_face_nodes; ++fk)
                   {
                     const int kn = neighbor_mapping.MapFaceNode(f_, fk);
-                    if (neighbor.vertex_ids[kn] == cell.vertex_ids[j])
+                    if (neighbor_vertex_ids[kn] == cell_vertex_ids[j])
                     {
                       k = kn;
                       break;

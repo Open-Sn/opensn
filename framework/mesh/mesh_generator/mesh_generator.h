@@ -62,7 +62,7 @@ protected:
 
   /// Determines if a cells needs to be included as a ghost or as a local cell.
   bool CellHasLocalScope(int location_id,
-                         const Cell& lwcell,
+                         std::shared_ptr<UnpartitionedMesh> mesh,
                          uint64_t cell_global_id,
                          const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                          const std::vector<int>& cell_partition_ids) const;

@@ -1201,7 +1201,7 @@ DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
   double hp = 0.0;
 
   const auto num_faces = cell.faces.size();
-  const auto num_vertices = cell.vertex_ids.size();
+  const auto num_vertices = mesh->GetCellConnectivity(cell_local_id).size();
 
   const auto volume = cell.volume;
   const auto face_area = cell.faces.at(f).area;
