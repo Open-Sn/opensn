@@ -105,7 +105,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
                                                     args.boundary,
                                                     args.boundary_offset,
                                                     args.is_surface_source_active);
-          else
+          else if constexpr (k == SweepKind::CBC)
             upwind_psi = args.flud_data.GetIncomingFluxPointer(
               cell_edge_data[face_node_counter + fj], angle_group_idx);
           psi[i] += *upwind_psi * mu_Nij;
@@ -216,7 +216,7 @@ WritePsiToFludsAndOutflow(const double* psi,
           if constexpr (k == SweepKind::AAH)
             downwind_psi = args.flud_data.GetOutgoingFluxPointer(
               node_index, angle_group_idx, args.boundary, args.boundary_offset);
-          else
+          else if constexpr (k == SweepKind::CBC)
             downwind_psi = args.flud_data.GetOutgoingFluxPointer(node_index, angle_group_idx);
           *downwind_psi = psi[i];
         }
