@@ -284,8 +284,11 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   std::array<double, 3> local_max{};
   local_min.fill(std::numeric_limits<double>::max());
   local_max.fill(std::numeric_limits<double>::lowest());
-  for (const auto& cell : grid->GetLocalCells())
-    for (const auto vid : cell.vertex_ids)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& vertex = grid->GlobalVertex(vid);
       for (size_t d = 0; d < 3; ++d)
@@ -294,6 +297,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         local_max[d] = std::max(local_max[d], vertex[d]);
       }
     }
+  }
   std::array<double, 3> global_min{};
   std::array<double, 3> global_max{};
   mpi_comm.all_reduce(local_min.data(), 3, global_min.data(), mpi::op::min<double>());
@@ -360,11 +364,14 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
           std::abs(other->second.second - slice) <= surface_tolerance)
         local_surface_errors[DUPLICATE_PLANE] = 1;
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
       double cell_min = std::numeric_limits<double>::max();
       double cell_max = std::numeric_limits<double>::lowest();
-      for (const auto vid : cell.vertex_ids)
+      for (const auto vid : cell_vertex_ids)
       {
         const auto coordinate = grid->GlobalVertex(vid)[a];
         cell_min = std::min(cell_min, coordinate);

@@ -175,9 +175,10 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
                                 std::to_string(cell.global_id) + ".");
       const auto& transport_view = transport_views[cell_local_id];
       const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
+      auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto& vertex = grid->GlobalVertex(cell.vertex_ids[i]);
+        const auto& vertex = grid->GlobalVertex(cell_vertex_ids[i]);
         constexpr double coordinate_tolerance = 1.0e-12;
         OpenSnInvalidArgumentIf(
           std::abs(file_nodes_x[file_cell_offset + i] - vertex.x) > coordinate_tolerance or

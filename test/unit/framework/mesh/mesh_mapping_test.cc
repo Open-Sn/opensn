@@ -27,8 +27,7 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
       const auto in_fine_mapping = fine_mapping.coarse_cell_local_id == clid;
       EXPECT_EQ(in_coarse_mapping, in_fine_mapping);
 
-      const auto fine_within_coarse =
-        coarse_grid->CheckPointInsideCell(coarse_cell, fine_cell.centroid);
+      const auto fine_within_coarse = coarse_grid->CheckPointInsideCell(clid, fine_cell.centroid);
       EXPECT_EQ(in_coarse_mapping, fine_within_coarse);
     }
   }
@@ -66,7 +65,7 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
           const auto fine_face_within_coarse =
             coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid);
           const auto fine_within_coarse =
-            coarse_grid->CheckPointInsideCell(coarse_cell, fine_cell.centroid);
+            coarse_grid->CheckPointInsideCell(clid, fine_cell.centroid);
           EXPECT_EQ(in_fine_mapping, fine_face_within_coarse && fine_within_coarse);
         }
       }

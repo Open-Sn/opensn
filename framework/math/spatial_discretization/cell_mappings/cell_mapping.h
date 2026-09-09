@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <cassert>
 #include <memory>
 #include <utility>
@@ -28,7 +29,7 @@ class CellMapping
 {
 public:
   /// Returns the cell this mapping is based on.
-  const Cell& GetCell() const { return cell_; }
+  const Cell& GetCell() const { return grid_->GetLocalCell(cell_local_id_); }
 
   /// Returns the grid on which the cell for this mapping lives.
   std::shared_ptr<Mesh> GetMesh() const { return grid_; }
@@ -88,13 +89,13 @@ public:
 
 protected:
   CellMapping(std::shared_ptr<Mesh> grid,
-              const Cell& cell,
+              std::uint32_t cell_local_id,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
               std::vector<std::vector<int>> face_node_mappings);
 
   const std::shared_ptr<Mesh> grid_;
-  const Cell& cell_;
+  const std::uint32_t cell_local_id_;
 
   const size_t num_nodes_;
   const std::vector<Vector3> node_locations_;

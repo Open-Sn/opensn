@@ -11,12 +11,12 @@ namespace opensn
 {
 
 CellMapping::CellMapping(const std::shared_ptr<Mesh> grid,
-                         const Cell& cell,
+                         std::uint32_t cell_local_id,
                          size_t num_nodes,
                          std::vector<Vector3> node_locations,
                          std::vector<std::vector<int>> face_node_mappings)
   : grid_(grid),
-    cell_(cell),
+    cell_local_id_(cell_local_id),
     num_nodes_(num_nodes),
     node_locations_(std::move(node_locations)),
     face_node_mappings_(std::move(face_node_mappings))
