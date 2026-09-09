@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::CopyVecToSTLvector &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Template Function opensn::CreateObject &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::CopyVecToSTLvectorWithGhosts" href="function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5.html" />
-    <link rel="prev" title="Function opensn::CopySTLvectorToVec" href="function_namespaceopensn_1ab32d603f7c5294257889a6a95f28e9ce.html" /> 
+    <link rel="next" title="Function opensn::CreateSquareMatrix(PetscInt, PetscInt)" href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html" />
+    <link rel="prev" title="Function opensn::CreateCommonKrylovSolverSetup" href="function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -130,10 +130,10 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad1c669ad7d69fbac4153c492250290b2.html">Function opensn::CopyGlobalVecToSTLvector</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1adae1000bdcc434a96309aca679ae7269.html">Function opensn::CopyParallelVectorToVec</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab32d603f7c5294257889a6a95f28e9ce.html">Function opensn::CopySTLvectorToVec</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::CopyVecToSTLvector</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a02bf745eaa54424c59c3c552a90f192e.html">Function opensn::CopyVecToSTLvector</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5.html">Function opensn::CopyVecToSTLvectorWithGhosts</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be.html">Function opensn::CreateCommonKrylovSolverSetup</a></li>
-<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd.html">Template Function opensn::CreateObject</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Template Function opensn::CreateObject</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html">Function opensn::CreateSquareMatrix(PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2bdc26e2893394e99294a66ae0d46af5.html">Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b.html">Function opensn::CreateVector(PetscInt, PetscInt)</a></li>
@@ -364,7 +364,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::CopyVecToSTLvector</li>
+      <li class="breadcrumb-item active">Template Function opensn::CreateObject</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -373,17 +373,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-copyvectostlvector">
-<span id="exhale-function-namespaceopensn-1a02bf745eaa54424c59c3c552a90f192e"></span><h1>Function opensn::CopyVecToSTLvector<a class="headerlink" href="#function-opensn-copyvectostlvector" title="Link to this heading"></a></h1>
+  <section id="template-function-opensn-createobject">
+<span id="exhale-function-namespaceopensn-1a4aeab78f422da7c681a978e79d5070bd"></span><h1>Template Function opensn::CreateObject<a class="headerlink" href="#template-function-opensn-createobject" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_framework_math_petsc_utils_petsc_utils.h.html#file-framework-math-petsc-utils-petsc-utils-h"><span class="std std-ref">File petsc_utils.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_framework_parameters_input_parameters.h.html#file-framework-parameters-input-parameters-h"><span class="std std-ref">File input_parameters.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn18CopyVecToSTLvectorE3VecRNSt6vectorIdEE6size_tb">
-<span class="target" id="namespaceopensn_1a02bf745eaa54424c59c3c552a90f192e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CopyVecToSTLvector</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">Vec</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">data</span></span>, <span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">N</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">resize_STL</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn18CopyVecToSTLvectorE3VecRNSt6vectorIdEE6size_tb" title="Link to this definition"></a><br /></dt>
-<dd><p>Copies a PETSc vector to a STL vector. Only the local portion is copied. </p>
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn12CreateObjectENSt10shared_ptrI1TEERKNSt6stringERK14ParameterBlock">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6opensn12CreateObjectENSt10shared_ptrI1TEERKNSt6stringERK14ParameterBlock" title="opensn::CreateObject::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">CreateObject</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">obj_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn12CreateObjectENSt10shared_ptrI1TEERKNSt6stringERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
+<dd><p>Constructs a <code class="docutils literal notranslate"><span class="pre">T</span></code> from user-supplied parameters, using <code class="docutils literal notranslate"><span class="pre">T::GetInputParameters()</span></code> as the parameter input. </p>
+<p><code class="docutils literal notranslate"><span class="pre">obj_type</span></code> is used only to make error messages more descriptive. </p>
 </dd></dl>
 
 </section>
@@ -393,8 +394,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1ab32d603f7c5294257889a6a95f28e9ce.html" class="btn btn-neutral float-left" title="Function opensn::CopySTLvectorToVec" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5.html" class="btn btn-neutral float-right" title="Function opensn::CopyVecToSTLvectorWithGhosts" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be.html" class="btn btn-neutral float-left" title="Function opensn::CreateCommonKrylovSolverSetup" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html" class="btn btn-neutral float-right" title="Function opensn::CreateSquareMatrix(PetscInt, PetscInt)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -34,8 +34,6 @@ Includes
 
 - ``framework/graphs/graph_partitioner.h`` (:ref:`file_framework_graphs_graph_partitioner.h`)
 
-- ``framework/object_factory.h`` (:ref:`file_framework_object_factory.h`)
-
 - ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 

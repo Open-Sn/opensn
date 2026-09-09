@@ -104,40 +104,21 @@
 <span class="cm"> * The workflow for this utility is constructed to minimize the file reading necessary for</span>
 <span class="cm"> * evaluations. To begin, one should add all adjoint solutions that are desired for response</span>
 <span class="cm"> * computations into the buffer. Then, one should define the different forward source</span>
-<span class="cm"> * configurations of interest in the input. With this, the user can now iterate over the source</span>
-<span class="cm"> * configurations in the input and convolve them against all available adjoint solutions in the</span>
-<span class="cm"> * buffer. For example, \code buffers = {</span>
-<span class="cm"> *        {</span>
-<span class="cm"> *            buffer1,</span>
-<span class="cm"> *            buffer2,</span>
-<span class="cm"> *            ...,</span>
-<span class="cm"> *            bufferN</span>
-<span class="cm"> *        }</span>
-<span class="cm"> *    }</span>
-<span class="cm"> *</span>
-<span class="cm"> *    sources = {</span>
-<span class="cm"> *        {</span>
-<span class="cm"> *            source1,</span>
-<span class="cm"> *            source2,</span>
-<span class="cm"> *            ...,</span>
-<span class="cm"> *            sourceM</span>
-<span class="cm"> *        }</span>
-<span class="cm"> *    }</span>
-<span class="cm"> *</span>
-<span class="cm"> *    evaluator = lbs.ResponseEvaluator.Create({ lbs_solver_handle = phys })</span>
-<span class="cm"> *    evaluator:AddResponseBuffers(buffers)</span>
+<span class="cm"> * configurations of interest. With this, the user can now iterate over the source</span>
+<span class="cm"> * configurations and convolve them against all available adjoint solutions in the buffer. For</span>
+<span class="cm"> * example, \code{.py}</span>
+<span class="cm"> *    evaluator = ResponseEvaluator(problem=phys)</span>
+<span class="cm"> *    evaluator.SetOptions(buffers=[{&quot;name&quot;: &quot;buff1&quot;, &quot;file_prefixes&quot;: {...}}, ...])</span>
 <span class="cm"> *</span>
 <span class="cm"> *    responses = {}</span>
-<span class="cm"> *    for i = 1, M do</span>
-<span class="cm"> *        evaluator:ClearForwardSources()</span>
-<span class="cm"> *        evaluator:AddResponseSources(sources[i])</span>
+<span class="cm"> *    for config_index, source_config in enumerate(source_configs):</span>
+<span class="cm"> *        evaluator.ClearForwardSources()</span>
+<span class="cm"> *        evaluator.SetOptions(sources=source_config)</span>
 <span class="cm"> *</span>
-<span class="cm"> *        responses[i] = {}</span>
-<span class="cm"> *        for j = 1, N do</span>
-<span class="cm"> *            responses[i][buffer_name[j]] =</span>
-<span class="cm"> *                evaluator:EvaluateResponse(buffer_name[j])</span>
-<span class="cm"> *        end</span>
-<span class="cm"> *    end</span>
+<span class="cm"> *        responses[config_index] = {</span>
+<span class="cm"> *            buffer_name: evaluator.EvaluateResponse(buffer_name)</span>
+<span class="cm"> *            for buffer_name in buffer_names</span>
+<span class="cm"> *        }</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResponseEvaluator</span>
@@ -213,6 +194,7 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ResponseEvaluator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Return the schema for the options block, covering adjoint buffers and forward sources.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBufferOptionsBlock</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetSourceOptionsBlock</span><span class="p">();</span>

@@ -95,6 +95,12 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Basic linear partitioner intended for testing only.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Partitions cells by their linear `global_id` index rather than by graph connectivity, so</span>
+<span class="cm"> * results are generally poor for unstructured grids.</span>
+<span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinearGraphPartitioner</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">GraphPartitioner</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>

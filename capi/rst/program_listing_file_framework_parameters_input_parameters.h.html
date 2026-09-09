@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/allowable_range.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -117,24 +118,6 @@
 
 <span class="w">  </span><span class="c1">/// Returns the object type string.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetObjectType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Sets the class name to be applied to this object. If not used a default will be generated.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetClassName</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">class_name</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">class_name_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">class_name</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Sets a general description of the object that should be included with the object&#39;s</span>
-<span class="cm">   * documentation.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGeneralDescription</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">description</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">general_description_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">description</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetGeneralDescription</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">general_description_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="c1">/// Space separated list of doxygen group names to which this documentation should belong.</span>
-
-<span class="w">  </span><span class="c1">/// Sets a link to the documentation of a different object.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">LinkParameterToBlock</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">block_name</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Gets any linkage information of a parameter.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetParameterDocumentationLink</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns the parameter&#39;s doc string.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">GetParameterDocString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">);</span>
@@ -232,14 +215,9 @@
 <span class="w">  </span><span class="c1">/// Sets a tag for the given parameter that will allow its type to be mismatched upon assignment.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetParameterTypeMismatchAllowed</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Dumps the input parameters to stdout.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">DumpParameters</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// String to represent class name. If not provided a default will be generated.</span>
+<span class="w">  </span><span class="c1">/// Backing storage for the object type string set via SetObjectType().</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">class_name_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Space separated list of group names.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">doc_group_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">InputParameterTag</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameter_class_tags_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameter_doc_string_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameter_valid_</span><span class="p">;</span>
@@ -247,32 +225,29 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deprecation_error_tags_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">renamed_error_tags_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">type_mismatch_allowed_tags_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parameter_link_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AllowableRange</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">constraint_tags_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">general_description_</span><span class="p">;</span>
-
 <span class="w">  </span><span class="n">ParameterBlock</span><span class="w"> </span><span class="n">param_block_at_assignment_</span><span class="p">;</span>
-
-<span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">MakeForObject</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">input_param</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="o">::</span><span class="n">GetInputParameters</span><span class="p">();</span>
-
-<span class="w">    </span><span class="n">input_param</span><span class="p">.</span><span class="n">AssignParameters</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
-<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">input_param</span><span class="p">;</span>
-<span class="w">  </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">::</span><span class="n">AddParameter</span><span class="p">;</span>
-
-<span class="w">  </span><span class="c1">/// Determines if a parameter is ignored.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsParameterIgnored</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">param_name</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// Parameter names to ignore when trying to assign. For now this &quot;obj_type&quot;</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">system_ignored_param_names_</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Constructs a `T` from user-supplied parameters, using `T::GetInputParameters()` as the</span>
+<span class="cm"> * parameter input. `obj_type` is used only to make error messages more descriptive.</span>
+<span class="cm"> */</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span>
+<span class="n">CreateObject</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">obj_type</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">input_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="o">::</span><span class="n">GetInputParameters</span><span class="p">();</span>
+<span class="w">  </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetObjectType</span><span class="p">(</span><span class="n">obj_type</span><span class="p">);</span>
+<span class="w">  </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetErrorOriginScope</span><span class="p">(</span><span class="n">obj_type</span><span class="p">);</span>
+<span class="w">  </span><span class="n">input_params</span><span class="p">.</span><span class="n">AssignParameters</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">make_shared</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="p">(</span><span class="n">input_params</span><span class="p">);</span>
+<span class="p">}</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

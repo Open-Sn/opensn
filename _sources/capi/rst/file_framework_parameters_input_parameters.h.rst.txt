@@ -38,6 +38,8 @@ Includes
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
+
 
 
 Included By
@@ -67,8 +69,6 @@ Included By
 - :ref:`file_framework_mesh_mesh_generator_mesh_generator.h`
 
 - :ref:`file_framework_mesh_surface_mesh_surface_mesh.h`
-
-- :ref:`file_framework_object_factory.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_discrete_ordinates_keigen_acceleration.h`
 
@@ -110,4 +110,11 @@ Enums
 
 
 - :ref:`exhale_enum_namespaceopensn_1a594f3c575814d9061da1e7e41c14686b`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd`
 

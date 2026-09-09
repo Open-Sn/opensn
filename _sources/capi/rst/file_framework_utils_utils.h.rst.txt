@@ -52,8 +52,6 @@ Included By
 -----------
 
 
-- :ref:`file_framework_object_factory.h`
-
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`
 
 

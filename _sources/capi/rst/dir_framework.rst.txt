@@ -26,7 +26,6 @@ Subdirectories
 Files
 -----
 
-- :ref:`file_framework_object_factory.h`
 - :ref:`file_framework_runtime.h`
 
 

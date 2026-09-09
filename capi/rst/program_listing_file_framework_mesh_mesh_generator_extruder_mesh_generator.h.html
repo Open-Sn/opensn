@@ -103,6 +103,15 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_sub_layers</span><span class="p">;</span>
 <span class="p">};</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Mesh generator that extrudes 2D geometry into 3D by stacking layers.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Extrusion layers are specified using an ExtrusionLayer specification which takes either pairs of</span>
+<span class="cm"> * parameters: Pair A = &quot;n&quot; and &quot;z&quot;, or Pair B = &quot;n&quot; and &quot;h&quot;. When pair A is used then the layer</span>
+<span class="cm"> * heights h will be computed automatically. Vice versa, when pair B is used then the z-levels will</span>
+<span class="cm"> * be computed automatically. Layers can be specified with a mixture of Pair A and Pair B. For</span>
+<span class="cm"> * example: Two main layers, one specified using a height, and the other specified using a z-level.</span>
+<span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ExtruderMeshGenerator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">MeshGenerator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>

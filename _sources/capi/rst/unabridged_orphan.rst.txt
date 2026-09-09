@@ -430,11 +430,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_object_factory_1_1_object_registry_entry.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_ortho_mesh_attributes.rst
 
 .. toctree::
@@ -1466,11 +1461,6 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_non_linear_solver.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1_object_factory.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3273,11 +3263,6 @@ Files
    :maxdepth: 1
 
    file_framework_math_nonlinear_solver_nonlinear_solver_context.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_object_factory.h.rst
 
 .. toctree::
    :maxdepth: 1

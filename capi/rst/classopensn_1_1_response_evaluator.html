@@ -102,38 +102,18 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ResponseEvaluatorE">
 <span class="target" id="classopensn_1_1_response_evaluator"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResponseEvaluator</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17ResponseEvaluatorE" title="Link to this definition"></a><br /></dt>
 <dd><p>A class used for evaluating responses by folding sources against adjoint solutions. </p>
-<p>The workflow for this utility is constructed to minimize the file reading necessary for evaluations. To begin, one should add all adjoint solutions that are desired for response computations into the buffer. Then, one should define the different forward source configurations of interest in the input. With this, the user can now iterate over the source configurations in the input and convolve them against all available adjoint solutions in the buffer. For example, <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">buffers</span> <span class="o">=</span> <span class="p">{</span>
-      <span class="p">{</span>
-          <span class="n">buffer1</span><span class="p">,</span>
-          <span class="n">buffer2</span><span class="p">,</span>
-          <span class="o">...</span><span class="p">,</span>
-          <span class="n">bufferN</span>
-      <span class="p">}</span>
-  <span class="p">}</span>
+<p>The workflow for this utility is constructed to minimize the file reading necessary for evaluations. To begin, one should add all adjoint solutions that are desired for response computations into the buffer. Then, one should define the different forward source configurations of interest. With this, the user can now iterate over the source configurations and convolve them against all available adjoint solutions in the buffer. For example, <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">ResponseEvaluator</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span><span class="n">buffers</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;buff1&quot;</span><span class="p">,</span> <span class="s2">&quot;file_prefixes&quot;</span><span class="p">:</span> <span class="p">{</span><span class="o">...</span><span class="p">}},</span> <span class="o">...</span><span class="p">])</span>
 
-  <span class="n">sources</span> <span class="o">=</span> <span class="p">{</span>
-      <span class="p">{</span>
-          <span class="n">source1</span><span class="p">,</span>
-          <span class="n">source2</span><span class="p">,</span>
-          <span class="o">...</span><span class="p">,</span>
-          <span class="n">sourceM</span>
-      <span class="p">}</span>
-  <span class="p">}</span>
+<span class="n">responses</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="k">for</span> <span class="n">config_index</span><span class="p">,</span> <span class="n">source_config</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">source_configs</span><span class="p">):</span>
+    <span class="n">evaluator</span><span class="o">.</span><span class="n">ClearForwardSources</span><span class="p">()</span>
+    <span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">source_config</span><span class="p">)</span>
 
-  <span class="n">evaluator</span> <span class="o">=</span> <span class="n">lbs</span><span class="o">.</span><span class="n">ResponseEvaluator</span><span class="o">.</span><span class="n">Create</span><span class="p">({</span> <span class="n">lbs_solver_handle</span> <span class="o">=</span> <span class="n">phys</span> <span class="p">})</span>
-  <span class="n">evaluator</span><span class="p">:</span><span class="n">AddResponseBuffers</span><span class="p">(</span><span class="n">buffers</span><span class="p">)</span>
-
-  <span class="n">responses</span> <span class="o">=</span> <span class="p">{}</span>
-  <span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">M</span> <span class="n">do</span>
-      <span class="n">evaluator</span><span class="p">:</span><span class="n">ClearForwardSources</span><span class="p">()</span>
-      <span class="n">evaluator</span><span class="p">:</span><span class="n">AddResponseSources</span><span class="p">(</span><span class="n">sources</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
-
-      <span class="n">responses</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
-      <span class="k">for</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">N</span> <span class="n">do</span>
-          <span class="n">responses</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">buffer_name</span><span class="p">[</span><span class="n">j</span><span class="p">]]</span> <span class="o">=</span>
-              <span class="n">evaluator</span><span class="p">:</span><span class="n">EvaluateResponse</span><span class="p">(</span><span class="n">buffer_name</span><span class="p">[</span><span class="n">j</span><span class="p">])</span>
-      <span class="n">end</span>
-  <span class="n">end</span>
+    <span class="n">responses</span><span class="p">[</span><span class="n">config_index</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">buffer_name</span><span class="p">:</span> <span class="n">evaluator</span><span class="o">.</span><span class="n">EvaluateResponse</span><span class="p">(</span><span class="n">buffer_name</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">buffer_name</span> <span class="ow">in</span> <span class="n">buffer_names</span>
+    <span class="p">}</span>
 </pre></div>
 </div>
 </p>
@@ -213,7 +193,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ResponseEvaluator15GetOptionsBlockEv">
 <span class="target" id="classopensn_1_1_response_evaluator_1a2c2a879eed0cfc917aebb0667cd4b21d"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetOptionsBlock</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17ResponseEvaluator15GetOptionsBlockEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Return the schema for the options block, covering adjoint buffers and forward sources. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17ResponseEvaluator21GetBufferOptionsBlockEv">

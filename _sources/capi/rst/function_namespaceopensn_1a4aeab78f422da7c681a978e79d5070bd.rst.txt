@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd:
+
+Template Function opensn::CreateObject
+======================================
+
+- Defined in :ref:`file_framework_parameters_input_parameters.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CreateObject(const std::string&, const ParameterBlock&)
+   :project: opensn

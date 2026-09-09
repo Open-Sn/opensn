@@ -193,8 +193,6 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_numeric_format`
 
-- :ref:`exhale_struct_structopensn_1_1_object_factory_1_1_object_registry_entry`
-
 - :ref:`exhale_struct_structopensn_1_1_ortho_mesh_attributes`
 
 - :ref:`exhale_struct_structopensn_1_1_outgoing_face_psi`
@@ -605,8 +603,6 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_non_linear_solver`
 
-- :ref:`exhale_class_classopensn_1_1_object_factory`
-
 - :ref:`exhale_class_classopensn_1_1_orthogonal_mesh_generator`
 
 - :ref:`exhale_class_classopensn_1_1_outflow_bank`
@@ -863,9 +859,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a911885d7f796205c4c7581a5d8ae68a6`
 
-- :ref:`exhale_function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003`
-
 - :ref:`exhale_function_namespaceopensn_1af306a78772d819be3c1ee3fd5cab48ed`
+
+- :ref:`exhale_function_namespaceopensn_1a9affbff5b51b7bfaa644f85f5053b003`
 
 - :ref:`exhale_function_namespaceopensn_1ad6c141021758d85d7b0ab620c671c65c`
 
@@ -1002,6 +998,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1acca242ff67669370bc7d8cfa1d797de5`
 
 - :ref:`exhale_function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be`
+
+- :ref:`exhale_function_namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd`
 
 - :ref:`exhale_function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868`
 
@@ -1313,11 +1311,11 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b`
 
+- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
+
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
 
 - :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
-
-- :ref:`exhale_function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837`
 
 - :ref:`exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572`
 

@@ -32,8 +32,6 @@ Includes
 
 - ``framework/math/quadratures/gauss_quadrature.h`` (:ref:`file_framework_math_quadratures_gauss_quadrature.h`)
 
-- ``framework/object_factory.h`` (:ref:`file_framework_object_factory.h`)
-
 
 
 
