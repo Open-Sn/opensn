@@ -61,10 +61,12 @@
 <li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Doxygen guidelines</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#purpose">Purpose</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#making-and-reviewing-documentation-changes">Making and reviewing documentation changes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#coverage-requirements">Coverage Requirements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#generic-guidelines">Generic guidelines</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#classes-structs">Classes/structs</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#unions">Unions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#enums">Enums</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#functions-methods">Functions/methods</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#variables-class-members">Variables/class members</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#template-parameters">Template parameters</a></li>
@@ -117,17 +119,45 @@
 <li><p>Focus is on public and developer-relevant internal APIs, not just end-user manuals.</p></li>
 </ul>
 </section>
+<section id="making-and-reviewing-documentation-changes">
+<h2>Making and reviewing documentation changes<a class="headerlink" href="#making-and-reviewing-documentation-changes" title="Link to this heading"></a></h2>
+<p>Use this section before adding or correcting documentation. It is deliberately written as a common
+workflow so that documentation is consistent regardless of who makes the change.</p>
+<ol class="arabic simple">
+<li><p>Identify the declaration and classify it using the coverage requirements below. The exclusions
+override the mandatory and optional rules. Otherwise, mandatory rules override optional rules.
+In particular, document a static class member or method regardless of its access level.</p></li>
+<li><p>Establish the declaration’s intent from its declaration, corresponding definition, call sites,
+tests, and related class documentation as needed. Do not make claims that are unsupported by the
+source. Do not invent units, ownership, thread-safety, exception behavior, valid ranges,
+performance guarantees, or algorithmic details. Request review when the required meaning cannot
+be established safely.</p></li>
+<li><p>Attach one documentation block using the placement and content rules below. Document overloads
+independently unless their semantics are identical.</p></li>
+<li><p>When correcting existing documentation, retain correct meaning and replace only inaccurate,
+incomplete, stale, or nonconforming text. Remove stale parameter, template-parameter, return,
+and exception entries, and do not attach duplicate documentation to a declaration.</p></li>
+<li><p>Review the result: every <code class="docutils literal notranslate"><span class="pre">\param</span></code> must name a declared parameter, every <code class="docutils literal notranslate"><span class="pre">\tparam</span></code> must name a
+declared template parameter, and every documentation block must remain attached to its intended
+declaration. Keep the change limited to documentation; do not modify declarations,
+implementations, preprocessor conditions, include directives, or unrelated formatting.</p></li>
+</ol>
+</section>
 <section id="coverage-requirements">
 <h2>Coverage Requirements<a class="headerlink" href="#coverage-requirements" title="Link to this heading"></a></h2>
 <p>Mandatory documentation:</p>
 <ul>
-<li><p>All classes, structs, and unions.</p></li>
+<li><p>All class, struct, union, and enum definitions.</p></li>
 <li><p>All public methods except for trivial getters/setters, such as:
 - Reference or constant/volatile reference to a member variable.
 - Methods that get or set the value of a class member.</p></li>
+<li><p>All non-default public constructors.</p></li>
 <li><p>All member variables (private, protected, public).</p></li>
 <li><p>All <code class="docutils literal notranslate"><span class="pre">static</span></code> members and methods.</p></li>
-<li><p>All functions except for translation-unit local functions. Exceptions include:</p>
+<li><p>All namespace-scope functions declared in a header, including inline functions. Do not add a second
+block to an out-of-class definition in the same header when its declaration is already documented.
+Do document an inline definition when it is the only declaration in the header. Exclude
+translation-unit-local functions, including:</p>
 <ul>
 <li><p><code class="docutils literal notranslate"><span class="pre">static</span></code> functions (C++98 approach):</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">helpFunction</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">}</span>
@@ -143,17 +173,21 @@
 </li>
 </ul>
 </li>
-<li><p>All <code class="docutils literal notranslate"><span class="pre">extern</span></code> and <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> variables declared in headers.</p></li>
+<li><p>All <code class="docutils literal notranslate"><span class="pre">extern</span></code> and <code class="docutils literal notranslate"><span class="pre">constexpr</span></code> variables declared in headers, including namespace-scope
+<code class="docutils literal notranslate"><span class="pre">inline</span> <span class="pre">constexpr</span></code> variables.</p></li>
 <li><p>All C++20 concepts.</p></li>
 </ul>
 <p>Optional documentation:</p>
 <ul class="simple">
 <li><p>Protected methods: document if they are non-trivial.</p></li>
 <li><p>Private methods: document only if logic is complex or non-obvious.</p></li>
+<li><p>Protected and private non-default constructors: follow the corresponding protected or private method
+rule.</p></li>
 <li><p>Deprecated APIs: only leave a brief note or no documentation at all.</p></li>
-<li><p>Enums: give a brief description of the enum purpose and a description for each enum value. Skip if
-the name is too obvious.</p></li>
-<li><p>Operator overloading: document if its intended usage is not self-explanatory.</p></li>
+<li><p>Enum values: document each value whose behavior, value, or distinction from the other values is not
+clear from its identifier. When uncertain, document the value.</p></li>
+<li><p>Operator overloads and conversion operators: document them when their intended usage, operand
+meaning, result, or side effect is not self-explanatory.</p></li>
 </ul>
 <p>Do not document:</p>
 <ul class="simple">
@@ -165,17 +199,40 @@ the name is too obvious.</p></li>
 <li><p>Default constructors.</p></li>
 <li><p>Copy/move constructors and copy/move assignments.</p></li>
 <li><p>Destructors.</p></li>
+<li><p>Lambdas and local classes or local variables inside a function body.</p></li>
+<li><p>A friend declaration when the same free function has a documented namespace-scope declaration. In
+that case, document the namespace-scope declaration only.</p></li>
 </ul>
 </section>
 <section id="generic-guidelines">
 <h2>Generic guidelines<a class="headerlink" href="#generic-guidelines" title="Link to this heading"></a></h2>
 <ul>
 <li><p>Use backslash-style commands (<code class="docutils literal notranslate"><span class="pre">\return</span></code>, <code class="docutils literal notranslate"><span class="pre">\param</span></code>) instead of &#64;-style commands.</p></li>
-<li><p>For single-line comments, use <code class="docutils literal notranslate"><span class="pre">///</span></code>. For multi-line comments, use <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">*/</span></code>.</p></li>
-<li><p>The Doxygen commands <code class="docutils literal notranslate"><span class="pre">\brief</span></code> and <code class="docutils literal notranslate"><span class="pre">\details</span></code> should not be used. Doxygen is configured with
-<code class="docutils literal notranslate"><span class="pre">JAVADOC_AUTOBRIEF=ON</span></code>, so the text up to the first full stop is automatically interpreted as
-the brief description. Any optional detailed description should begin on a new line following the
-brief description. For example:</p>
+<li><p>Place a documentation block immediately before the declaration it describes. Use <code class="docutils literal notranslate"><span class="pre">///</span></code> for a
+single-line block and <code class="docutils literal notranslate"><span class="pre">/**</span> <span class="pre">*/</span></code> for a multi-line block. The only permitted trailing documentation
+form is <code class="docutils literal notranslate"><span class="pre">///&lt;</span></code> on an enum value.</p></li>
+<li><p>For a templated, attributed, or constrained declaration, place the documentation before the
+<code class="docutils literal notranslate"><span class="pre">template</span></code> declaration or the first attribute, not between declaration specifiers and the name.
+For a declaration that is also its only definition in a header, place the documentation immediately
+before that definition. Do not document a source-file definition separately.</p></li>
+<li><p>Use a multi-line block when the documentation contains a detailed description or Doxygen command.
+Put the brief on the first text line. Put detailed text on subsequent lines, separate prose from a
+command block with a blank line, and put each command on its own line. For example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
+<span class="cm"> * Compute a cell-average source value.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param cell Cell for which to evaluate the source.</span>
+<span class="cm"> * \param time Evaluation time in seconds.</span>
+<span class="cm"> * \return Source value in particles per cubic centimeter per second.</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">ComputeSource</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+</pre></div>
+</div>
+</li>
+<li><p>The Doxygen commands <code class="docutils literal notranslate"><span class="pre">\brief</span></code> and <code class="docutils literal notranslate"><span class="pre">\details</span></code> should not be used. End every brief description
+with a full stop. The documentation build must enable <code class="docutils literal notranslate"><span class="pre">JAVADOC_AUTOBRIEF=YES</span></code> so that the text up
+to the first full stop is interpreted as the brief description. Any optional detailed description
+should begin on a new line following the brief description. For example:</p>
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="cm">/**</span>
 <span class="cm"> * Brief description.</span>
 <span class="cm"> * Long and more descriptive comments.</span>
@@ -188,6 +245,10 @@ brief description. For example:</p>
 <li><p>Potential pitfalls (such as manual resource deallocation, possible segmentation faults, or
 infinite loops) caused by misuse must be documented using the <code class="docutils literal notranslate"><span class="pre">\note</span></code> (what the user should
 notice) or <code class="docutils literal notranslate"><span class="pre">\warning</span></code> (what to avoid) command.</p></li>
+<li><p>Use the canonical forms <code class="docutils literal notranslate"><span class="pre">\param</span></code>, <code class="docutils literal notranslate"><span class="pre">\tparam</span></code>, <code class="docutils literal notranslate"><span class="pre">\return</span></code>, and <code class="docutils literal notranslate"><span class="pre">\throw</span></code> for parameter,
+template-parameter, return-value, and exception documentation. Do not use <code class="docutils literal notranslate"><span class="pre">&#64;</span></code>-style commands,
+<code class="docutils literal notranslate"><span class="pre">\retval</span></code>, <code class="docutils literal notranslate"><span class="pre">\exception</span></code>, <code class="docutils literal notranslate"><span class="pre">\brief</span></code>, or <code class="docutils literal notranslate"><span class="pre">\details</span></code>. Other valid Doxygen commands and
+supported mathematical markup may be used when needed to communicate the API accurately.</p></li>
 </ul>
 <section id="classes-structs">
 <h3>Classes/structs<a class="headerlink" href="#classes-structs" title="Link to this heading"></a></h3>
@@ -257,11 +318,45 @@ union body.</p></li>
 <li><p>Do not document methods outside the union body.</p></li>
 </ul>
 </section>
+<section id="enums">
+<h3>Enums<a class="headerlink" href="#enums" title="Link to this heading"></a></h3>
+<ul>
+<li><p>Document an enum only at its definition, not at a forward declaration.</p></li>
+<li><p>Use a one-line noun phrase for the enum’s purpose. Place the documentation immediately before the
+<code class="docutils literal notranslate"><span class="pre">enum</span></code> declaration.</p></li>
+<li><p>Describe every enum value whose meaning is not clear from its name. Use <code class="docutils literal notranslate"><span class="pre">///&lt;</span></code> after a value on
+the same line, or place a <code class="docutils literal notranslate"><span class="pre">///</span></code> comment immediately before the value. Keep each description as a
+one-line noun phrase.</p>
+<p>Example:</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">/// Angular quadrature type identifier.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AngularQuadratureType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">INVALID</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">PRODUCT_QUADRATURE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">SLDFE_SQ</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w">          </span><span class="c1">///&lt; Self-lumped discrete finite-element quadrature.</span>
+<span class="w">  </span><span class="n">LEBEDEV_QUADRATURE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="w"> </span><span class="c1">///&lt; Lebedev spherical quadrature.</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+</li>
+</ul>
+</section>
 <section id="functions-methods">
 <h3>Functions/methods<a class="headerlink" href="#functions-methods" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p>Function or class method documentation must include a <strong>one-line</strong> summary describing what the
 function does, using the <strong>verb in its base form</strong> (without “s” or “es”).</p></li>
+<li><p>For a non-default constructor, use a one-line noun phrase that identifies the construction source
+or initialization performed. Do not use <code class="docutils literal notranslate"><span class="pre">\return</span></code> for constructors.</p></li>
+<li><p>Treat a friend function as a namespace-scope function. If its friend declaration is the only
+declaration in the header, document that declaration; otherwise document its namespace-scope
+declaration only.</p></li>
+<li><p>Treat <code class="docutils literal notranslate"><span class="pre">operator()</span></code> as a method. Treat other operators and conversion operators as optional as
+specified above. For a documented operator, state the operation and the meaning of its operands and
+result when those are not evident from the operator itself.</p></li>
+<li><p>Do not document a defaulted, deleted, copy, move, or destructor declaration. This exclusion also
+applies when the declaration is written explicitly in a header. A delegating constructor follows
+the rule for the constructor it declares, not the delegated-to constructor.</p></li>
 <li><p>Document functions/methods <strong>only at their declaration</strong> in the header file, not at their
 definition in the source file.</p></li>
 <li><p>The optional detailed description should explain:</p>
@@ -277,8 +372,20 @@ definition in the source file.</p></li>
 </ul>
 </li>
 <li><p>Use full sentences when possible.</p></li>
-<li><p>Include <code class="docutils literal notranslate"><span class="pre">\param</span></code>, <code class="docutils literal notranslate"><span class="pre">\return</span></code> (if not <code class="docutils literal notranslate"><span class="pre">void</span></code> and the returned value is not trivial from the
-function name), and <code class="docutils literal notranslate"><span class="pre">\throw</span></code> / <code class="docutils literal notranslate"><span class="pre">\exception</span></code> (if applicable).</p></li>
+<li><p>Use one <code class="docutils literal notranslate"><span class="pre">\param</span> <span class="pre">&lt;name&gt;</span></code> entry for every named parameter of a documented function or constructor.
+Describe its meaning and, when relevant, direction, ownership, units, valid range, and relationship
+to other parameters. Do not document unnamed parameters. State a default argument only when it
+changes observable behavior; do not merely repeat its literal value.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">\return</span></code> for every documented non-<code class="docutils literal notranslate"><span class="pre">void</span></code> function that is not an exempt trivial getter.
+Describe the meaning of the returned value and, when relevant, its units, ownership, lifetime, or
+sentinel/error meaning. Do not use <code class="docutils literal notranslate"><span class="pre">\return</span></code> for constructors, destructors, or <code class="docutils literal notranslate"><span class="pre">void</span></code>
+functions.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">\throw</span> <span class="pre">&lt;exception-type&gt;</span></code> only for exceptions that are part of the documented interface.
+State the condition that throws each exception. Do not infer exception guarantees from an
+implementation detail.</p></li>
+<li><p>A public override whose behavior is unchanged from its documented base declaration needs no
+separate block; it inherits the base documentation. Document the override when it changes
+semantics, preconditions, side effects, complexity, or exception behavior.</p></li>
 </ul>
 </section>
 <section id="variables-class-members">
@@ -299,6 +406,9 @@ formulation or algorithm provided in the class documentation.</p>
 </li>
 <li><p>Documentation should describe <strong>what the variable represents or how it is used</strong>, not just restate
 its symbolic name.</p></li>
+<li><p>Apply the same placement and noun-phrase rules to required namespace-scope <code class="docutils literal notranslate"><span class="pre">extern</span></code> and
+<code class="docutils literal notranslate"><span class="pre">constexpr</span></code> variables, including <code class="docutils literal notranslate"><span class="pre">inline</span> <span class="pre">constexpr</span></code> variables. For a constant, document the
+physical meaning, units, or contract rather than its literal value alone.</p></li>
 </ul>
 </section>
 <section id="template-parameters">
@@ -320,8 +430,11 @@ behavior.</p></li>
 <li><p>No additional assumptions or constraints apply.</p></li>
 </ul>
 </li>
-<li><p>Describe what the type represents and state all parameter constraints (e.g., arithmetic, movable,
-comparable) in a <strong>noun phrase</strong>.</p></li>
+<li><p>Describe what the template parameter represents and state applicable type, value, template, or pack
+constraints (e.g., arithmetic, movable, comparable) in a <strong>noun phrase</strong>.</p></li>
+<li><p>Use the declared parameter name in each <code class="docutils literal notranslate"><span class="pre">\tparam</span></code> entry, including non-type parameters, template
+template parameters, and parameter packs. Add the entry to the documentation block for the
+declaration that introduces the template parameter.</p></li>
 </ul>
 </section>
 <section id="c-20-concept">
@@ -329,13 +442,15 @@ comparable) in a <strong>noun phrase</strong>.</p></li>
 <ul class="simple">
 <li><p>All concepts must be documented.</p></li>
 <li><p>Use a <strong>noun phrase</strong> describing the requirements and focus on what the concept guarantees.</p></li>
-<li><p>If the concept’s behavior is complex, provide additional explanation in the detailed description.</p></li>
+<li><p>State material <code class="docutils literal notranslate"><span class="pre">requires</span></code> constraints and guarantees in the detailed description when they are not
+evident from the concept name.</p></li>
 </ul>
 </section>
 <section id="macro-dependent-implementation">
 <h3>Macro-dependent implementation<a class="headerlink" href="#macro-dependent-implementation" title="Link to this heading"></a></h3>
 <ul>
-<li><p>For any class, function, or variable affected by macros, the documentation must state:</p>
+<li><p>For any class, struct, union, enum, function, or variable affected by macros, the documentation
+must state:</p>
 <ul class="simple">
 <li><p>Macro dependency.</p></li>
 <li><p>Behavioral difference.</p></li>
