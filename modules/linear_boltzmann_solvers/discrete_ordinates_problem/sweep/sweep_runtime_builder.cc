@@ -16,7 +16,9 @@
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
 #include <cmath>
+#include <cstdint>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -355,25 +357,48 @@ void
 AccumulateAAHGlobalEdgeWeights(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list)
 {
   const int comm_size = opensn::mpi_comm.size();
-  const int matrix_size = comm_size * comm_size;
-  std::vector<int> recv_counts(comm_size, comm_size);
-  std::vector<int> recv_displacements(comm_size, 0);
-  for (int loc = 0; loc < comm_size; ++loc)
-    recv_displacements[loc] = loc * comm_size;
 
   for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
   {
     const auto& spds = spds_list[spds_ordinal];
     const int owner = GetSweepGraphOwner(spds_ordinal);
+    const bool is_owner = (opensn::mpi_comm.rank() == owner);
 
-    const auto local_row = spds->ComputeLocalLocationEdgeWeights();
-    std::vector<double> recv;
-    if (opensn::mpi_comm.rank() == owner)
-      recv.assign(matrix_size, 0.0);
-    opensn::mpi_comm.gather(local_row, recv, recv_counts, recv_displacements, owner);
+    // Store only edges to neighboring partitions.
+    const auto local_edges = spds->ComputeLocalLocationEdgeWeights();
+    std::vector<int> local_to_locs(local_edges.size());
+    std::vector<double> local_weights(local_edges.size());
+    for (size_t i = 0; i < local_edges.size(); ++i)
+    {
+      local_to_locs[i] = local_edges[i].first;
+      local_weights[i] = local_edges[i].second;
+    }
 
-    if (opensn::mpi_comm.rank() == owner)
-      spds->SetGlobalEdgeWeights(std::move(recv));
+    // Counts remain zero on non-owners, keeping their gather receive buffers empty.
+    std::vector<int> counts(comm_size, 0);
+    opensn::mpi_comm.gather(static_cast<int>(local_edges.size()), counts, owner);
+
+    // Gatherv counts and offsets are significant only on the owner.
+    std::vector<int> offsets(comm_size, 0);
+    if (is_owner)
+      for (int r = 1; r < comm_size; ++r)
+        offsets[r] = offsets[r - 1] + counts[r - 1];
+
+    std::vector<int> recv_to_locs;
+    std::vector<double> recv_weights;
+    opensn::mpi_comm.gather(local_to_locs, recv_to_locs, counts, offsets, owner);
+    opensn::mpi_comm.gather(local_weights, recv_weights, counts, offsets, owner);
+
+    if (is_owner)
+    {
+      std::unordered_map<std::int64_t, double> global_weights;
+      global_weights.reserve(recv_to_locs.size());
+      for (int r = 0; r < comm_size; ++r)
+        for (int i = offsets[r]; i < offsets[r] + counts[r]; ++i)
+          global_weights[static_cast<std::int64_t>(r) * comm_size + recv_to_locs[i]] =
+            recv_weights[i];
+      spds->SetGlobalEdgeWeights(std::move(global_weights));
+    }
   }
 }
 
