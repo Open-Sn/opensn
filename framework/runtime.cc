@@ -4,7 +4,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/math/math.h"
-#include "framework/object_factory.h"
 #include "framework/utils/memory.h"
 #include "framework/utils/timer.h"
 #include "config.h"

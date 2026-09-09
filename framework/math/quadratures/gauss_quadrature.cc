@@ -12,8 +12,6 @@ GaussQuadrature::GetInputParameters()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Base class for Gauss quadratures");
-
   params.AddRequiredParameter<int>("order", "Quadrature order.");
 
   params.AddOptionalParameter("verbose", false, "Enables verbose operations");

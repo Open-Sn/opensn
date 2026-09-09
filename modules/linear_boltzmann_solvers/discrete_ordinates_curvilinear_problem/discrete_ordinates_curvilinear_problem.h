@@ -12,7 +12,7 @@ namespace opensn
 
 /**
  * A neutral particle transport solver in point-symmetric and axial-symmetric curvilinear
- * coordinates.
+ * coordinates (i.e., spherical and cylindrical coordinates, respectively).
  */
 class DiscreteOrdinatesCurvilinearProblem : public DiscreteOrdinatesProblem
 {

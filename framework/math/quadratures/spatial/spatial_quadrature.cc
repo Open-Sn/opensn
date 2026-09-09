@@ -11,8 +11,6 @@ SpatialQuadrature::GetInputParameters()
 {
   InputParameters params;
 
-  params.SetGeneralDescription("Base class for spatial quadratures");
-
   params.AddRequiredParameter<int>("order", "Quadrature order.");
 
   params.AddOptionalParameter("verbose", false, "Enables verbose operations");

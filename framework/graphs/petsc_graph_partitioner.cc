@@ -3,7 +3,7 @@
 
 #include "framework/graphs/petsc_graph_partitioner.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "petsc.h"
@@ -11,14 +11,10 @@
 namespace opensn
 {
 
-OpenSnRegisterObjectInNamespace(mesh, PETScGraphPartitioner);
-
 InputParameters
 PETScGraphPartitioner::GetInputParameters()
 {
   InputParameters params = GraphPartitioner::GetInputParameters();
-
-  params.SetGeneralDescription("PETSc based partitioning");
 
   params.AddOptionalParameter("type", "parmetis", "The type of PETSc partitioner");
 
@@ -28,8 +24,7 @@ PETScGraphPartitioner::GetInputParameters()
 std::shared_ptr<PETScGraphPartitioner>
 PETScGraphPartitioner::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", params);
+  return CreateObject<PETScGraphPartitioner>("mesh::PETScGraphPartitioner", params);
 }
 
 PETScGraphPartitioner::PETScGraphPartitioner(const InputParameters& params)

@@ -3,7 +3,7 @@
 
 #include "framework/mesh/mesh_generator/from_file_mesh_generator.h"
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/mesh/io/mesh_io.h"
@@ -74,14 +74,10 @@ FromFileMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   return umesh;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, FromFileMeshGenerator);
-
 InputParameters
 FromFileMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
-
-  params.SetGeneralDescription("Generator for loading an unpartitioned mesh from a file.");
 
   params.AddRequiredParameter<std::string>("filename", "Path to the file.");
   params.AddOptionalParameter("block_id_fieldname",
@@ -101,9 +97,7 @@ FromFileMeshGenerator::GetInputParameters()
 std::shared_ptr<FromFileMeshGenerator>
 FromFileMeshGenerator::Create(const ParameterBlock& params)
 {
-  const auto& factory = ObjectFactory::GetInstance();
-  auto ptr = factory.Create<FromFileMeshGenerator>("mesh::FromFileMeshGenerator", params);
-  return ptr;
+  return CreateObject<FromFileMeshGenerator>("mesh::FromFileMeshGenerator", params);
 }
 
 } // namespace opensn

@@ -12,6 +12,7 @@ namespace opensn
 
 class UncollidedProblem;
 
+/// Solver that generates uncollided flux moments for first-collision transport.
 class UncollidedSolver : public Solver
 {
 public:

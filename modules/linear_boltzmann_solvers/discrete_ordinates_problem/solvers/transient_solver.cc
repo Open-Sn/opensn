@@ -19,8 +19,6 @@
 
 namespace opensn
 {
-OpenSnRegisterObjectInNamespace(lbs, TransientSolver);
-
 namespace
 {
 
@@ -50,7 +48,6 @@ InputParameters
 TransientSolver::GetInputParameters()
 {
   InputParameters params = Solver::GetInputParameters();
-  params.SetGeneralDescription("Generalized implementation of a transient solver");
   params.ChangeExistingParamToOptional("name", "TransientSolver");
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
@@ -90,8 +87,7 @@ TransientSolver::ComputeBalanceTable() const
 std::shared_ptr<TransientSolver>
 TransientSolver::Create(const ParameterBlock& params)
 {
-  auto& factory = opensn::ObjectFactory::GetInstance();
-  return factory.Create<TransientSolver>("lbs::TransientSolver", params);
+  return CreateObject<TransientSolver>("lbs::TransientSolver", params);
 }
 
 TransientSolver::TransientSolver(const InputParameters& params)

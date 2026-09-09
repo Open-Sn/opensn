@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/mesh/mesh_generator/extruder_mesh_generator.h"
-#include "framework/object_factory.h"
+#include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
@@ -264,14 +264,10 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   return umesh;
 }
 
-OpenSnRegisterObjectParametersOnlyInNamespace(mesh, ExtrusionLayer);
-
 InputParameters
 ExtrusionLayer::GetInputParameters()
 {
   InputParameters params;
-
-  params.SetGeneralDescription("A collection of parameters defining an extrusion layer.");
 
   params.AddOptionalParameter("h", 1.0, "Layer height. Cannot be specified if \"z\" is specified.");
   params.AddOptionalParameter("n", 1, "Number of sub-layers");
@@ -285,23 +281,12 @@ ExtrusionLayer::GetInputParameters()
   return params;
 }
 
-OpenSnRegisterObjectInNamespace(mesh, ExtruderMeshGenerator);
-
 InputParameters
 ExtruderMeshGenerator::GetInputParameters()
 {
   InputParameters params = MeshGenerator::GetInputParameters();
 
-  params.SetGeneralDescription(
-    "Extrudes 2D geometry. Extrusion layers are specified using an \\ref mesh__ExtrusionLayer "
-    "specification which takes either pairs of parameters: Pair A = \"n\" and \"z\", or Pair B = "
-    "\"n\" and \"h\". When pair A is used then the z-levels will be computed automatically. Vice "
-    "versa, when pair B is used then the h-levels will be computed automatically. Layers can be "
-    "specified with a mixture of Pair A and Pair B. For example: Two main layers, one specified "
-    "using a height, and the other specified using a z-level.");
-
   params.AddRequiredParameterArray("layers", "A list of layers");
-  params.LinkParameterToBlock("layers", "mesh::ExtrusionLayer");
 
   params.AddOptionalParameter(
     "top_boundary_name", "ZMAX", "The name to associate with the top boundary.");
@@ -314,8 +299,7 @@ ExtruderMeshGenerator::GetInputParameters()
 std::shared_ptr<ExtruderMeshGenerator>
 ExtruderMeshGenerator::Create(const ParameterBlock& params)
 {
-  const auto& factory = ObjectFactory::GetInstance();
-  return factory.Create<ExtruderMeshGenerator>("mesh::ExtruderMeshGenerator", params);
+  return CreateObject<ExtruderMeshGenerator>("mesh::ExtruderMeshGenerator", params);
 }
 
 } // namespace opensn
