@@ -143,9 +143,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
 
-- :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
-
 - :ref:`exhale_function_namespaceopensn_1a453c952935eb4bd4e5b4f15e048758b9`
+
+- :ref:`exhale_function_namespaceopensn_1a3f3074c6aeadd445ee556459fdc31564`
 
 
 Typedefs
