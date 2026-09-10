@@ -13,6 +13,7 @@
 #include <memory>
 #include <sstream>
 #include <stdexcept>
+#include <string>
 #include <utility>
 
 namespace opensn
@@ -45,9 +46,20 @@ std::shared_ptr<FieldFunctionGridBased>
 LBSProblem::CreateFieldFunction(const std::string& name,
                                 const std::string& xs_name,
                                 const double power_normalization_target,
-                                const int group,
+                                const std::optional<unsigned int> group,
                                 const std::vector<int>& block_ids)
 {
+  // Validate the energy/spatial restriction up front instead of later in the compute routines.
+  // The parameters are captured by the update callback below, so a single check at creation 
+  // covers every later update as well.
+  const bool is_power = (xs_name == "power");
+  OpenSnInvalidArgumentIf(is_power and (group.has_value() or not block_ids.empty()),
+                          GetName() + ": 'group' and 'block_ids' are not supported for the "
+                                      "\"power\" field function.");
+  OpenSnInvalidArgumentIf(group.has_value() and group.value() >= num_groups_,
+                          GetName() + ": 'group' must be less than " + std::to_string(num_groups_) +
+                            ".");
+
   const std::string ff_name = MakeFieldFunctionName(name);
   auto ff_ptr = CreateEmptyFieldFunction(ff_name);
 
@@ -118,15 +130,12 @@ void
 LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                        const std::string& xs_name,
                                        const double power_normalization_target,
-                                       const int group,
+                                       const std::optional<unsigned int> group,
                                        const std::vector<int>& block_ids)
 {
   std::vector<double> data_vector_local;
   if (xs_name == "power")
   {
-    OpenSnInvalidArgumentIf(group >= 0 or not block_ids.empty(),
-                            GetName() + ": group and block_ids are not supported for the "
-                                        "\"power\" field function.");
     double local_total_power = 0.0;
     data_vector_local = ComputePowerFieldFunctionData(local_total_power);
   }
@@ -188,22 +197,17 @@ LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalizatio
 
 std::vector<double>
 LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name,
-                                       const int group,
+                                       const std::optional<unsigned int> group,
                                        const std::vector<int>& block_ids) const
 {
-  OpenSnInvalidArgumentIf(group < -1,
-                          GetName() + ": group must be -1 (all groups) or a valid group index.");
-  OpenSnInvalidArgumentIf(std::cmp_greater_equal(group, num_groups_),
-                          GetName() + ": Group index out of range.");
-
   const auto& sdm = *discretization_;
   const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
   // Half-open group range so that a single-group request and the all-groups default share one
   // loop without underflowing when num_groups_ is zero.
-  const unsigned int first_group = group < 0 ? 0 : static_cast<unsigned int>(group);
-  const unsigned int end_group = group < 0 ? num_groups_ : static_cast<unsigned int>(group) + 1;
+  const unsigned int first_group = group.has_value() ? group.value() : 0;
+  const unsigned int end_group = group.has_value() ? group.value() + 1 : num_groups_;
 
   for (const auto& cell : grid_->local_cells)
   {

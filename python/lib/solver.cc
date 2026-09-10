@@ -177,9 +177,9 @@ WrapLBS(py::module& slv)
     power_normalization_target : float, default=-1.0
         If positive, scale the derived field function so that the raw power field would
         integrate to this total power.
-    group : int, default=-1
-        Energy group to restrict the reaction-rate density to. ``-1`` sums over all groups.
-        Not supported when ``xs_name == "power"``.
+    group : int, optional
+        Energy group to restrict the reaction-rate density to. If unspecified, the field is
+        summed over all groups. Not supported when ``xs_name == "power"``.
     block_ids : List[int], default=[]
         Restrict the field to these block ids. Empty means every cell contributes.
         Not supported when ``xs_name == "power"``.
@@ -209,7 +209,7 @@ WrapLBS(py::module& slv)
     py::arg("name"),
     py::arg("xs_name"),
     py::arg("power_normalization_target") = -1.0,
-    py::arg("group") = -1,
+    py::arg("group") = py::none(),
     py::arg("block_ids") = std::vector<int>{}
   );
   lbs_problem.def(
