@@ -52,6 +52,7 @@ PyApp::PyApp(const mpi::Communicator& comm)
   Console::BindModule(WrapVolumetricSource);
 
   Console::BindModule(WrapMultiGroupXS);
+  Console::BindModule(WrapInterpolator);
 
   Console::BindModule(WrapFieldFunction);
   Console::BindModule(WrapFieldFunctionGridBased);
