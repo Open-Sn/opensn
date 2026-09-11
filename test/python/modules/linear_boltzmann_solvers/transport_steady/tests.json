@@ -42,6 +42,9 @@
     "comment": "1D LinearBSolver Test - PWLD",
     "num_procs": 3,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -139,6 +142,9 @@
     "comment": "2D LinearBSolver Test Unstructured grid - PWLD",
     "num_procs": 4,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -217,6 +223,9 @@
     "comment": "3D LinearBSolver Test Extruded Unstructured - PWLD",
     "num_procs": 4,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -653,6 +662,9 @@
     "comment": "3D LinearBSolver Test - PWLD",
     "num_procs": 4,
     "requires_gpu": "True",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -731,6 +743,9 @@
     "comment": "3D LinearBSolver Test - PWLD Reflecting BC",
     "requires_gpu": "True",
     "num_procs": 4,
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -949,6 +964,9 @@
     "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
     "requires_gpu": "True",
     "num_procs": 4,
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1162,6 +1180,9 @@
     "requires_gpu": "True",
     "num_procs": 1,
     "weight_class": "intermediate",
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1568,6 +1589,9 @@
     "comment": "Runtime boundary-condition mutation rebuild regression",
     "requires_gpu": "True",
     "num_procs": 4,
+    "env": {
+      "OPENSN_NUM_THREADS": 16
+    },
     "checks": [
       {
         "type": "KeyValuePair",
