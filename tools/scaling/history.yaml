@@ -1,5 +1,27 @@
 dane_strong_scaling:
   description: LLNL Dane (64 rpn)
+  max_offset:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  min_offset:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
   nodes:
   - 1
   - 2
@@ -25,6 +47,17 @@ dane_strong_scaling:
   time: '2024-10-29T02:25:31.928145'
 dane_weak_scaling:
   description: LLNL Dane (64 rpn)
+  error:
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
+  - 0.0
   efficiency:
   - 100.0
   - 94.58483754512636

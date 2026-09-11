@@ -47,30 +47,31 @@ pquad = GLCProductQuadrature3DXYZ(n_polar=n_polar,
                                   scattering_order=scattering_order)
 
 # Solver
-phys = DiscreteOrdinatesProblem(
-    mesh=grid,
-    num_groups=n_g,
-    groupsets=[
-        {
-            "groups_from_to": (0, n_g - 1),
-            "angular_quadrature": pquad,
-            "angle_aggregation_type": "single",
-            "inner_linear_method": "petsc_richardson",
-            "l_abs_tol": 1.0e-12,
-            "l_max_its": 64,
+for i in range({{outer_repetition}}):
+    phys = DiscreteOrdinatesProblem(
+        mesh=grid,
+        num_groups=n_g,
+        groupsets=[
+            {
+                "groups_from_to": (0, n_g - 1),
+                "angular_quadrature": pquad,
+                "angle_aggregation_type": "single",
+                "inner_linear_method": "petsc_richardson",
+                "l_abs_tol": 1.0e-18,
+                "l_max_its": {{wgs_iteration}},
+            },
+        ],
+        xs_map=[
+            {"block_ids": [1], "xs": xs_diag},
+        ],
+        boundary_conditions=[
+            {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
+        ],
+        options={
+            "max_mpi_message_size": 256 * 1024
         },
-    ],
-    xs_map=[
-        {"block_ids": [1], "xs": xs_diag},
-    ],
-    boundary_conditions=[
-        {"name": "xmin", "type": "isotropic", "group_strength": bsrc},
-    ],
-    options={
-        "max_mpi_message_size": 256 * 1024
-    },
-    use_gpus={{use_gpus}}
-)
-ss_solver = SteadyStateSourceSolver(problem=phys)
-ss_solver.Initialize()
-ss_solver.Execute()
+        use_gpus={{use_gpus}}
+    )
+    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver.Initialize()
+    ss_solver.Execute()

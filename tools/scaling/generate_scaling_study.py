@@ -32,20 +32,25 @@ weak_divisors = [15, 19, 24, 31, 39, 49, 62, 78, 98, 124]
 # 64 tasks per node with 2048 cells per task
 # weak_divisors = [30, 39, 48, 62, 78, 98, 124]
 
+outer_repetition = 17
+"""Number of repetition sweep."""
+
+wgs_iteration = 16
+
 nodes = [1, 2, 4, 8, 16, 32, 64, 128, 256, 512]
 """List of node counts to generate job files for."""
 
-ncores = 0
+ncores = 96
 """
 Number of CPU cores available per node.
 
 If this value is not evenly divisible by the number of GPUs, round it down.
 """
 
-partition = ""
+partition = "pbatch"
 """Name of the partition/queue to submit jobs to."""
 
-ngpus = 0
+ngpus = 4
 """Number of GPUs per node (default: 0 for CPU-only)."""
 
 gpu_config = {
@@ -96,6 +101,11 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
+    if wgs_iteration < 1:
+        raise ValueError("At least 1 WGS iteration is required.")
+    if outer_repetition <= 1:
+        raise ValueError("At least 2 outer repetition is required (the first one is discarded).")
+
     if ncores == 0:
         raise ValueError("Please specify the number of CPU cores per node.")
     if args.processor == "gpu" and ngpus == 0:
@@ -111,6 +121,8 @@ if __name__ == "__main__":
         "suffix": suffix,
         "gmsh_binary": gmsh_binary,
         "geo_filename": geo_filename,
+        "outer_repetition": outer_repetition,
+        "wgs_iteration": wgs_iteration,
         "ncores": ncores,
         "partition": partition,
         "processor": args.processor,
