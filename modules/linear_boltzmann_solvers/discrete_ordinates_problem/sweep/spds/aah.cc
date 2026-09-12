@@ -51,9 +51,19 @@ AAH_SPDS::AAH_SPDS(int id,
 
   // Generate topological ordering
   spls_.clear();
-  boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
+  try
+  {
+    boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
+  }
+  catch (const boost::not_a_dag&)
+  {
+    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
+                           "Cycles need to be allowed by the calling application.");
+  }
   std::reverse(spls_.begin(), spls_.end());
-  if (spls_.empty())
+  if (num_loc_cells == 0)
+    throw std::logic_error("AAH_SPDS: Cannot build a sweep ordering without local cells.");
+  if (spls_.size() != num_loc_cells)
   {
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
                            "Cycles need to be allowed by the calling application.");
@@ -111,7 +121,15 @@ AAH_SPDS::BuildGlobalSweepMetadata()
     edges_to_remove = RemoveCyclicDependencies(global_tdg);
 
   std::vector<int> global_linear_sweep_order;
-  boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
+  try
+  {
+    boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
+  }
+  catch (const boost::not_a_dag&)
+  {
+    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
+                           "Cycles need to be allowed by the calling application.");
+  }
   std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
   if (global_linear_sweep_order.size() != static_cast<std::size_t>(comm_size))
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
