@@ -53,13 +53,14 @@ if __name__ == "__main__":
     xss["1"].LoadFromOpenSn("../../../../assets/xs/xs_fuel_g2.xs")
     num_groups = xss["0"].num_groups
 
-    quad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
     groupsets = []
     for group in range(num_groups):
         groupsets.append(
             {
                 "groups_from_to": [group, group],
-                "angular_quadrature": quad,
+                "angular_quadrature": GLCProductQuadrature3DXYZ(
+                    n_polar=4, n_azimuthal=8, scattering_order=1
+                ),
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-8,

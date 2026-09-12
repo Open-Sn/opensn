@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/mpi/mpi_comm_set.h"
+#include "framework/mpi/sweep_communicator.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
@@ -40,26 +40,21 @@ ReadMessageValue(char*& buffer)
 
 } // namespace
 
-CBC_AsynchronousCommunicator::CBC_AsynchronousCommunicator(std::size_t angle_set_id,
-                                                           FLUDS& fluds,
-                                                           const MPICommunicatorSet& comm_set)
-  : AsynchronousCommunicator(fluds, comm_set),
-    angle_set_id_(angle_set_id),
-    receive_comm_(comm_set.LocICommunicator(opensn::mpi_comm.rank())),
+CBC_AsynchronousCommunicator::CBC_AsynchronousCommunicator(
+  std::size_t angle_set_id, FLUDS& fluds, const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, sweep_communicator),
+    message_tag_(sweep_communicator.BuildMessageTag(angle_set_id)),
+    receive_comm_(sweep_communicator.GetCommunicator()),
     cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
 {
   const auto& location_dependencies = fluds_.GetSPDS().GetLocationDependencies();
   num_receive_sources_ = location_dependencies.size();
 
   const auto& location_successors = fluds_.GetSPDS().GetLocationSuccessors();
-  send_peers_.reserve(location_successors.size());
+  send_peer_ranks_.reserve(location_successors.size());
   for (const int successor : location_successors)
-  {
-    auto& peer = send_peers_.emplace_back();
-    peer.comm = &comm_set_.LocICommunicator(successor);
-    peer.rank = comm_set_.MapIonJ(successor, successor);
-  }
-  open_send_buffer_indices_.assign(send_peers_.size(), INVALID_BUFFER_INDEX);
+    send_peer_ranks_.push_back(sweep_communicator_.GetPeerRank(successor));
+  open_send_buffer_indices_.assign(send_peer_ranks_.size(), INVALID_BUFFER_INDEX);
 }
 
 CBC_AsynchronousCommunicator::BufferItem&
@@ -83,10 +78,7 @@ CBC_AsynchronousCommunicator::GetOpenSendBuffer(std::size_t peer_index)
 
   const auto buffer_index = send_buffer_.size() - 1;
   auto& buffer = send_buffer_.back();
-  const auto& peer = send_peers_[peer_index];
-  buffer.peer_index = peer_index;
-  buffer.comm = peer.comm;
-  buffer.rank = peer.rank;
+  buffer.rank = send_peer_ranks_[peer_index];
   buffer.send_initiated = false;
   buffer.data.clear();
   open_buffer_index = buffer_index;
@@ -128,8 +120,8 @@ CBC_AsynchronousCommunicator::SendData()
     auto& buffer_item = send_buffer_[i];
     if (not buffer_item.send_initiated)
     {
-      const auto tag = static_cast<int>(angle_set_id_);
-      send_requests_[i] = buffer_item.comm->isend(buffer_item.rank, tag, buffer_item.data);
+      send_requests_[i] = sweep_communicator_.GetCommunicator().isend(
+        buffer_item.rank, message_tag_, buffer_item.data);
       buffer_item.send_initiated = true;
     }
 
@@ -174,9 +166,8 @@ CBC_AsynchronousCommunicator::ReceiveData(std::vector<std::uint32_t>& cells_who_
   if (cells_who_received_data.capacity() < num_receive_sources_)
     cells_who_received_data.reserve(num_receive_sources_);
 
-  const auto tag = static_cast<int>(angle_set_id_);
   mpi::Status status;
-  while (receive_comm_.iprobe(mpi::ANY_SOURCE, tag, status))
+  while (receive_comm_.iprobe(mpi::ANY_SOURCE, message_tag_, status))
   {
     const auto num_items = status.count<char>();
     receive_buffer_.resize(num_items);

@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mpi/mpi_comm_set.h"
+#include "framework/mpi/sweep_communicator.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <cstring>
@@ -15,11 +15,10 @@
 namespace opensn
 {
 
-CBCD_AsynchronousCommunicator::CBCD_AsynchronousCommunicator(std::size_t angle_set_id,
-                                                             FLUDS& fluds,
-                                                             const MPICommunicatorSet& comm_set)
-  : AsynchronousCommunicator(fluds, comm_set),
-    angle_set_id_(angle_set_id),
+CBCD_AsynchronousCommunicator::CBCD_AsynchronousCommunicator(
+  std::size_t angle_set_id, FLUDS& fluds, const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, sweep_communicator),
+    message_tag_(sweep_communicator.BuildMessageTag(angle_set_id)),
     cbcd_fluds_(dynamic_cast<CBCD_FLUDS&>(fluds))
 {
 }
@@ -83,10 +82,9 @@ CBCD_AsynchronousCommunicator::SendData()
     if (not buffer_item.send_initiated)
     {
       const int locJ = buffer_item.destination;
-      const auto& comm = comm_set_.LocICommunicator(locJ);
-      auto dest = comm_set_.MapIonJ(locJ, locJ);
-      auto tag = static_cast<int>(angle_set_id_);
-      buffer_item.mpi_request = comm.isend(dest, tag, buffer_item.data_array.Data());
+      const auto& comm = sweep_communicator_.GetCommunicator();
+      auto dest = sweep_communicator_.GetPeerRank(locJ);
+      buffer_item.mpi_request = comm.isend(dest, message_tag_, buffer_item.data_array.Data());
       buffer_item.send_initiated = true;
     }
 
@@ -112,11 +110,10 @@ CBCD_AsynchronousCommunicator::ReceiveData()
   auto& deplocs_outgoing_messages = cbcd_fluds_.GetDeplocsOutgoingMessages();
   for (int locJ : location_dependencies)
   {
-    const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
-    auto source_rank = comm_set_.MapIonJ(locJ, opensn::mpi_comm.rank());
-    auto tag = static_cast<int>(angle_set_id_);
+    const auto& comm = sweep_communicator_.GetCommunicator();
+    auto source_rank = sweep_communicator_.GetPeerRank(locJ);
     mpi::Status status;
-    if (comm.iprobe(source_rank, tag, status))
+    if (comm.iprobe(source_rank, message_tag_, status))
     {
       int num_items = status.count<std::byte>();
       std::vector<std::byte> recv_buffer(num_items);

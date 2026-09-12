@@ -28,7 +28,7 @@ public:
                 std::vector<size_t>& angle_indices,
                 std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                 int maximum_message_size,
-                const MPICommunicatorSet& in_comm_set);
+                const SweepCommunicator& sweep_communicator);
 
   crb::Stream& GetStream() { return stream_; }
 
@@ -38,7 +38,7 @@ public:
 
   int GetMaxBufferMessages() const override { return async_comm_.GetMaxNumMessages(); }
 
-  void SetMaxBufferMessages(int count) override { async_comm_.SetMaxNumMessages(count); }
+  void SetMaxBufferMessages(int count) override { async_comm_.SetMaxNumMessages(GetID(), count); }
 
   void PrepostReceives();
 

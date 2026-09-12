@@ -23,6 +23,8 @@ using SweepOrderGroupingInfo = std::pair<UniqueSOGroupings, DirIDToSOMap>;
 
 struct SweepRuntime
 {
+  /// Quadratures in groupset first-use order. Each SPDS list follows the later angle-set ID order.
+  std::vector<std::shared_ptr<AngularQuadrature>> quadrature_order;
   std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
     quadrature_unq_so_grouping_map;
   std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>

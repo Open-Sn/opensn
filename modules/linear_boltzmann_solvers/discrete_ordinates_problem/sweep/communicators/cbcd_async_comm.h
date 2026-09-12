@@ -16,7 +16,7 @@ namespace opensn
 
 namespace mpi = mpicpp_lite;
 
-class MPICommunicatorSet;
+class SweepCommunicator;
 class ByteArray;
 class FLUDS;
 class CBCD_FLUDS;
@@ -27,7 +27,7 @@ class CBCD_AsynchronousCommunicator : public AsynchronousCommunicator
 public:
   explicit CBCD_AsynchronousCommunicator(std::size_t angle_set_id,
                                          FLUDS& fluds,
-                                         const MPICommunicatorSet& comm_set);
+                                         const SweepCommunicator& sweep_communicator);
 
   /**
    * Return writable outgoing face-psi storage for a downwind face.
@@ -59,8 +59,8 @@ public:
   }
 
 protected:
-  /// Angle-set MPI message tag.
-  const std::size_t angle_set_id_;
+  /// Validated angle-set MPI message tag.
+  const int message_tag_;
   /// CBCD FLUDS receiving nonlocal face psi.
   CBCD_FLUDS& cbcd_fluds_;
 

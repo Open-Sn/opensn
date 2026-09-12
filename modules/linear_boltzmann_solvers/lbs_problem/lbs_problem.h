@@ -26,7 +26,7 @@
 namespace opensn
 {
 
-class MPICommunicatorSet;
+class SweepCommunicator;
 class GridFaceHistogram;
 class FieldFunctionGridBased;
 class TotalXSCarrier;
@@ -368,6 +368,8 @@ protected:
   unsigned int num_precursors_ = 0;
   unsigned int max_precursors_per_material_ = 0;
 
+  // Must outlive groupset angle sets that reference it.
+  std::shared_ptr<SweepCommunicator> sweep_communicator_ = nullptr;
   std::vector<LBSGroupset> groupsets_;
 
   BlockID2XSMap block_id_to_xs_map_;
@@ -379,7 +381,6 @@ protected:
   std::shared_ptr<SpatialDiscretization> discretization_ = nullptr;
 
   std::vector<CellFaceNodalMapping> grid_nodal_mappings_;
-  std::shared_ptr<MPICommunicatorSet> grid_local_comm_set_ = nullptr;
 
   std::vector<UnitCellMatrices> unit_cell_matrices_;
   std::map<uint64_t, UnitCellMatrices> unit_ghost_cell_matrices_;

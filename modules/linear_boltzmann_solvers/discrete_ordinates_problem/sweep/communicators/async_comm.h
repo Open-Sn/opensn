@@ -11,14 +11,14 @@
 namespace opensn
 {
 
-class MPICommunicatorSet;
+class SweepCommunicator;
 class FLUDS;
 
 class AsynchronousCommunicator
 {
 public:
-  explicit AsynchronousCommunicator(FLUDS& fluds, const MPICommunicatorSet& comm_set)
-    : fluds_(fluds), comm_set_(comm_set)
+  explicit AsynchronousCommunicator(FLUDS& fluds, const SweepCommunicator& sweep_communicator)
+    : fluds_(fluds), sweep_communicator_(sweep_communicator)
   {
   }
 
@@ -26,7 +26,7 @@ public:
 
 protected:
   FLUDS& fluds_;
-  const MPICommunicatorSet& comm_set_;
+  const SweepCommunicator& sweep_communicator_;
 };
 
 } // namespace opensn

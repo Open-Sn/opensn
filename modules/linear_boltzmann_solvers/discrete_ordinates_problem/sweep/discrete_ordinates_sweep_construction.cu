@@ -30,10 +30,10 @@ DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
   std::vector<size_t>& angle_indices,
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
   int maximum_message_size,
-  const MPICommunicatorSet& in_comm_set)
+  const SweepCommunicator& sweep_communicator)
 {
   return std::make_shared<AAHD_AngleSet>(
-    id, groupset, spds, fluds, angle_indices, boundaries, maximum_message_size, in_comm_set);
+    id, groupset, spds, fluds, angle_indices, boundaries, maximum_message_size, sweep_communicator);
 }
 
 std::shared_ptr<SweepChunk>
@@ -68,10 +68,10 @@ DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
   std::shared_ptr<FLUDS>& fluds,
   std::vector<size_t>& angle_indices,
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-  const MPICommunicatorSet& in_comm_set)
+  const SweepCommunicator& sweep_communicator)
 {
   return std::make_shared<CBCD_AngleSet>(
-    id, groupset, spds, fluds, angle_indices, boundaries, in_comm_set);
+    id, groupset, spds, fluds, angle_indices, boundaries, sweep_communicator);
 }
 
 std::shared_ptr<SweepChunk>
