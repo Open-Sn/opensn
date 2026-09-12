@@ -14,7 +14,6 @@
 
 namespace opensn
 {
-class MPICommunicatorSet;
 class GridFaceHistogram;
 class MeshGenerator;
 class LogicalVolume;
@@ -150,12 +149,6 @@ public:
    */
   std::array<std::array<Vector3, 3>, 4>
   GetTetrahedralFaceVertices(const Cell& cell, const CellFace& face, size_t side) const;
-
-  /**
-   * Gets the communicator-set for interprocess communication, associated with this mesh.
-   * If not created yet, it will create it.
-   */
-  std::shared_ptr<MPICommunicatorSet> MakeMPILocalCommunicatorSet() const;
 
   /// Compute volume per block IDs
   std::map<unsigned int, double> ComputeVolumePerBlockID() const;

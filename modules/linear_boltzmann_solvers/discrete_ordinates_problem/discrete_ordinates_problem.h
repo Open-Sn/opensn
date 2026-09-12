@@ -358,7 +358,7 @@ private:
                       std::vector<size_t>& angle_indices,
                       std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                       int maximum_message_size,
-                      const MPICommunicatorSet& in_comm_set);
+                      const SweepCommunicator& sweep_communicator);
   std::shared_ptr<SweepChunk> CreateAAHD_SweepChunk(LBSGroupset& groupset);
 
   std::shared_ptr<FLUDS> CreateCBCD_FLUDS(std::size_t num_groups,
@@ -376,7 +376,7 @@ private:
                       std::shared_ptr<FLUDS>& fluds,
                       std::vector<size_t>& angle_indices,
                       std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                      const MPICommunicatorSet& in_comm_set);
+                      const SweepCommunicator& sweep_communicator);
   std::shared_ptr<SweepChunk> CreateCBCDSweepChunk(LBSGroupset& groupset);
 
   void UpdateAngularFluxStorage();

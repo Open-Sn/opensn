@@ -67,7 +67,7 @@ DiscreteOrdinatesProblem::CreateAAHD_AngleSet(
   std::vector<size_t>& angle_indices,
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
   int maximum_message_size,
-  const MPICommunicatorSet& in_comm_set)
+  const SweepCommunicator& sweep_communicator)
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateAAHD_AngleSet : OPENSN_WITH_CUDA not enabled.");
@@ -104,7 +104,7 @@ DiscreteOrdinatesProblem::CreateCBCD_AngleSet(
   std::shared_ptr<FLUDS>& fluds,
   std::vector<size_t>& angle_indices,
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-  const MPICommunicatorSet& in_comm_set)
+  const SweepCommunicator& sweep_communicator)
 {
   throw std::runtime_error(
     "DiscreteOrdinatesProblem::CreateCBCD_AngleSet : OPENSN_WITH_CUDA not enabled.");
@@ -174,7 +174,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                           angle_indices,
                                           sweep_boundaries_,
                                           options_.max_mpi_message_size,
-                                          *grid_local_comm_set_);
+                                          *sweep_communicator_);
         }
         else
         {
@@ -185,7 +185,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      angle_indices,
                                                      sweep_boundaries_,
                                                      options_.max_mpi_message_size,
-                                                     *grid_local_comm_set_);
+                                                     *sweep_communicator_);
         }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
         break;
@@ -222,7 +222,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                           fluds,
                                           angle_indices,
                                           sweep_boundaries_,
-                                          *grid_local_comm_set_);
+                                          *sweep_communicator_);
         }
         else
         {
@@ -232,7 +232,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      fluds,
                                                      angle_indices,
                                                      sweep_boundaries_,
-                                                     *grid_local_comm_set_);
+                                                     *sweep_communicator_);
         }
 
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);

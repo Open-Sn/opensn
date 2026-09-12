@@ -25,7 +25,7 @@ public:
                 std::shared_ptr<FLUDS>& fluds,
                 const std::vector<std::size_t>& angle_indices,
                 std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                const MPICommunicatorSet& comm_set);
+                const SweepCommunicator& sweep_communicator);
 
   ~CBCD_AngleSet() override;
 

@@ -15,10 +15,10 @@ CBC_AngleSet::CBC_AngleSet(std::size_t id,
                            std::shared_ptr<FLUDS>& fluds,
                            const std::vector<std::size_t>& angle_indices,
                            std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
-                           const MPICommunicatorSet& comm_set)
+                           const SweepCommunicator& sweep_communicator)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
-    async_comm_(id, *fluds, comm_set)
+    async_comm_(id, *fluds, sweep_communicator)
 {
 }
 

@@ -16,7 +16,7 @@ namespace opensn
 
 namespace mpi = mpicpp_lite;
 
-class MPICommunicatorSet;
+class SweepCommunicator;
 class CBC_FLUDS;
 
 /// Host CBC asynchronous communicator.
@@ -25,7 +25,7 @@ class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 public:
   explicit CBC_AsynchronousCommunicator(std::size_t angle_set_id,
                                         FLUDS& fluds,
-                                        const MPICommunicatorSet& comm_set);
+                                        const SweepCommunicator& sweep_communicator);
 
   /**
    * Queue downwind nonlocal face psi for asynchronous send.
@@ -56,8 +56,8 @@ public:
   void Reset();
 
 protected:
-  /// Angle-set MPI message tag.
-  const std::size_t angle_set_id_;
+  /// Validated angle-set MPI message tag.
+  const int message_tag_;
   /// Communicator used for incoming face psi.
   const mpi::Communicator& receive_comm_;
   /// CBC FLUDS receiving nonlocal face psi.
@@ -68,25 +68,12 @@ protected:
   /// Destination-batched send buffer.
   struct BufferItem
   {
-    /// SPDS successor index.
-    std::size_t peer_index = 0;
-    /// MPI communicator for the successor.
-    const mpi::Communicator* comm = nullptr;
-    /// Rank within the successor communicator.
+    /// Global destination rank.
     int rank = 0;
     /// Nonblocking-send state.
     bool send_initiated = false;
     /// Serialized face-psi data.
     std::vector<char> data;
-  };
-
-  /// Destination location for nonlocal face psi.
-  struct SendPeer
-  {
-    /// MPI communicator for the destination.
-    const mpi::Communicator* comm = nullptr;
-    /// Rank within the destination communicator.
-    int rank = 0;
   };
 
   /// Return the open send buffer for a destination peer.
@@ -100,8 +87,8 @@ protected:
   std::vector<BufferItem> reusable_send_buffers_;
   /// Receive buffer for one packed MPI message.
   std::vector<char> receive_buffer_;
-  /// SPDS successor communication endpoints.
-  std::vector<SendPeer> send_peers_;
+  /// Global ranks of SPDS successors.
+  std::vector<int> send_peer_ranks_;
   /// Open send-buffer index by successor peer.
   std::vector<std::size_t> open_send_buffer_indices_;
   /// Sentinel for no open send buffer.

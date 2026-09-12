@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/mpi/mpi_comm_set.h"
+#include "framework/mpi/sweep_communicator.h"
 #include "framework/utils/error.h"
 #include <concepts>
 #include <cstddef>
@@ -34,9 +34,8 @@ struct AAH_MessageDetails
  * \param get_unknown_count Function getting the number of unknowns for a given location.
  * \param msg_data List of vector of message data per location.
  * \param msg_received Pointer to the vector of message received flag.
- * \param is_outgoing Flag indicating if the messages are for non-local downstream or upstream.
  * \param max_num_messages Reference to max number of message.
- * \param comm_set Communicator set.
+ * \param sweep_communicator Sweep communication context.
  * \param max_mpi_message_size Max size (in bytes) of MPI messages.
  */
 template <typename GetUnknownCountFunc>
@@ -48,9 +47,8 @@ SetupMessageData(const std::vector<int>& locations,
                  const GetUnknownCountFunc& get_unknown_count,
                  std::vector<std::vector<AAH_MessageDetails>>& msg_data,
                  std::vector<std::vector<bool>>* msg_received,
-                 bool is_outgoing,
                  int& max_num_messages,
-                 const MPICommunicatorSet& comm_set,
+                 const SweepCommunicator& sweep_communicator,
                  int max_mpi_message_size)
 {
   // allocate memory for message data message reveived status
@@ -90,11 +88,7 @@ SetupMessageData(const std::vector<int>& locations,
       continue;
     }
     // get MPI rank of peer partition
-    int peer = std::numeric_limits<int>::max();
-    if (!is_outgoing)
-      peer = comm_set.MapIonJ(locations[i], opensn::mpi_comm.rank());
-    else
-      peer = comm_set.MapIonJ(locations[i], locations[i]);
+    const int peer = sweep_communicator.GetPeerRank(locations[i]);
     // initialize message blocks for each message
     msg_data[i].reserve(message_count);
     int block_pos = 0;
