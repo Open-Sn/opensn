@@ -1,5 +1,205 @@
 [
   {
+    "file": "transport_2d_cyl_ags_upscatter_single_one.py",
+    "comment": "RZ AAH upscattering: single angle-aggregation with one groupset - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_single_split.py",
+    "comment": "RZ AAH upscattering: single angle-aggregation with two groupsets - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_azimuthal_one.py",
+    "comment": "RZ AAH upscattering: azimuthal angle-aggregation with one groupset - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_azimuthal_split.py",
+    "comment": "RZ AAH upscattering: azimuthal angle-aggregation with two groupsets - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_single_one_cbc.py",
+    "comment": "RZ CBC upscattering: single angle-aggregation with one groupset - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_single_split_cbc.py",
+    "comment": "RZ CBC upscattering: single angle-aggregation with two groupsets - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_azimuthal_one_cbc.py",
+    "comment": "RZ CBC upscattering: azimuthal angle-aggregation with one groupset - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_ags_upscatter_azimuthal_split_cbc.py",
+    "comment": "RZ CBC upscattering: azimuthal angle-aggregation with two groupsets - PWLD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.9385239054904,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.5689313072327,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value3=",
+        "goldvalue": 0.4633334220163,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cyl_1g.py",
     "comment": "2D LinearBSolver Cylindrical Test mono-energetic - PWLD",
     "num_procs": 4,
