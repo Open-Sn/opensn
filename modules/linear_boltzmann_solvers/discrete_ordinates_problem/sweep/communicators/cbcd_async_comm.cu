@@ -16,9 +16,12 @@ namespace opensn
 {
 
 CBCD_AsynchronousCommunicator::CBCD_AsynchronousCommunicator(
-  std::size_t angle_set_id, FLUDS& fluds, const SweepCommunicator& sweep_communicator)
-  : AsynchronousCommunicator(fluds, sweep_communicator),
-    message_tag_(sweep_communicator.BuildMessageTag(angle_set_id)),
+  std::size_t groupset_id,
+  std::size_t angle_set_id,
+  FLUDS& fluds,
+  const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
+    message_tag_(BuildMessageTag()),
     cbcd_fluds_(dynamic_cast<CBCD_FLUDS&>(fluds))
 {
 }

@@ -41,9 +41,12 @@ ReadMessageValue(char*& buffer)
 } // namespace
 
 CBC_AsynchronousCommunicator::CBC_AsynchronousCommunicator(
-  std::size_t angle_set_id, FLUDS& fluds, const SweepCommunicator& sweep_communicator)
-  : AsynchronousCommunicator(fluds, sweep_communicator),
-    message_tag_(sweep_communicator.BuildMessageTag(angle_set_id)),
+  std::size_t groupset_id,
+  std::size_t angle_set_id,
+  FLUDS& fluds,
+  const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
+    message_tag_(BuildMessageTag()),
     receive_comm_(sweep_communicator.GetCommunicator()),
     cbc_fluds_(dynamic_cast<CBC_FLUDS&>(fluds))
 {

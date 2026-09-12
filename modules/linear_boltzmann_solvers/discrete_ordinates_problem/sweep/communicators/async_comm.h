@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "framework/logging/log.h"
+#include "framework/mpi/sweep_communicator.h"
 #include <vector>
 #include <cstddef>
 #include <cstdint>
@@ -11,22 +11,62 @@
 namespace opensn
 {
 
-class SweepCommunicator;
 class FLUDS;
 
 class AsynchronousCommunicator
 {
 public:
-  explicit AsynchronousCommunicator(FLUDS& fluds, const SweepCommunicator& sweep_communicator)
-    : fluds_(fluds), sweep_communicator_(sweep_communicator)
+  AsynchronousCommunicator(FLUDS& fluds,
+                           std::size_t groupset_id,
+                           std::size_t angle_set_id,
+                           const SweepCommunicator& sweep_communicator)
+    : fluds_(fluds),
+      groupset_id_(groupset_id),
+      angle_set_id_(angle_set_id),
+      sweep_communicator_(sweep_communicator)
   {
   }
 
   virtual ~AsynchronousCommunicator() = default;
 
 protected:
+  int GetMaxNumMessages() const { return max_num_messages_; }
+
+  void SetMaxNumMessages(int count)
+  {
+    if (count < 0)
+      throw std::invalid_argument("AsynchronousCommunicator: Negative message count.");
+
+    if (count == 0)
+    {
+      max_num_messages_ = 0;
+      message_tag_base_ = 0;
+      return;
+    }
+
+    const int last_tag = BuildMessageTag(count, count - 1);
+    max_num_messages_ = count;
+    message_tag_base_ = last_tag - count + 1;
+  }
+
+  int GetMessageTag(int offset = 0) const
+  {
+    if (offset < 0 or offset >= max_num_messages_)
+      throw std::out_of_range("AsynchronousCommunicator: Message offset is out of range.");
+    return message_tag_base_ + offset;
+  }
+
+  int BuildMessageTag(std::size_t stride = 1, std::size_t offset = 0) const
+  {
+    return sweep_communicator_.BuildMessageTag(groupset_id_, angle_set_id_, stride, offset);
+  }
+
   FLUDS& fluds_;
+  std::size_t groupset_id_;
+  std::size_t angle_set_id_;
   const SweepCommunicator& sweep_communicator_;
+  int max_num_messages_ = 0;
+  int message_tag_base_ = 0;
 };
 
 } // namespace opensn

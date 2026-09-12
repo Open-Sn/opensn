@@ -18,7 +18,7 @@ CBC_AngleSet::CBC_AngleSet(std::size_t id,
                            const SweepCommunicator& sweep_communicator)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     cbc_spds_(dynamic_cast<const CBC_SPDS&>(spds_)),
-    async_comm_(id, *fluds, sweep_communicator)
+    async_comm_(groupset.id, id, *fluds, sweep_communicator)
 {
 }
 

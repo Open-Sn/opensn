@@ -17,24 +17,18 @@ class AAHD_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
   AAHD_ASynchronousCommunicator(FLUDS& fluds,
+                                std::size_t groupset_id,
+                                std::size_t angle_set_id,
                                 unsigned int num_groups,
                                 std::size_t num_angles,
                                 int max_mpi_message_size,
                                 const SweepCommunicator& sweep_communicator);
 
-  int GetMaxNumMessages() const { return max_num_messages_; }
-
-  void SetMaxNumMessages(std::size_t angle_set_id, int count)
-  {
-    if (count < 0)
-      throw std::invalid_argument("AAHD communicator: Negative message count.");
-    if (count > 0)
-      sweep_communicator_.BuildMessageTag(angle_set_id, count, count - 1);
-    max_num_messages_ = count;
-  }
+  using AsynchronousCommunicator::GetMaxNumMessages;
+  using AsynchronousCommunicator::SetMaxNumMessages;
 
   /// Pre-post receiving upstream dependencies have been met.
-  void PrepostReceiveUpstreamPsi(int angle_set_num);
+  void PrepostReceiveUpstreamPsi();
 
   bool TestReceiveUpstreamPsi();
 
@@ -42,13 +36,13 @@ public:
   void WaitForUpstreamPsi();
 
   /// Pre-post receive delayed data from successor locations.
-  void PrepostReceiveDelayedData(int angle_set_num);
+  void PrepostReceiveDelayedData();
 
   /// Wait until all delayed incoming messages have been received.
   void WaitForDelayedIncomingPsi();
 
   /// Send non-local outgoing psi.
-  void SendDownstreamPsi(int angle_set_num);
+  void SendDownstreamPsi();
 
   /// Wait until all downstream messages have been sent.
   void WaitForDownstreamPsi();
@@ -61,7 +55,6 @@ protected:
   void BuildMessageStructure();
 
 private:
-  int max_num_messages_;
   int max_mpi_message_size_;
 
   std::vector<mpi::Request> preloc_msg_request_;

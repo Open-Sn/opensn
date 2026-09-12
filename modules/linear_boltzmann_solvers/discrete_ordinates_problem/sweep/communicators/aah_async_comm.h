@@ -21,21 +21,15 @@ class AAH_ASynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
   AAH_ASynchronousCommunicator(FLUDS& fluds,
+                               std::size_t groupset_id,
+                               std::size_t angle_set_id,
                                unsigned int num_groups,
                                std::size_t num_angles,
                                int max_mpi_message_size,
                                const SweepCommunicator& sweep_communicator);
 
-  int GetMaxNumMessages() const { return max_num_messages_; }
-
-  void SetMaxNumMessages(std::size_t angle_set_id, int count)
-  {
-    if (count < 0)
-      throw std::invalid_argument("AAH communicator: Negative message count.");
-    if (count > 0)
-      sweep_communicator_.BuildMessageTag(angle_set_id, count, count - 1);
-    max_num_messages_ = count;
-  }
+  using AsynchronousCommunicator::GetMaxNumMessages;
+  using AsynchronousCommunicator::SetMaxNumMessages;
 
   bool DoneSending() const;
 
@@ -56,16 +50,16 @@ public:
   void InitializeLocalAndDownstreamBuffers();
 
   /// Sends downstream psi. This method gets called after a sweep chunk has executed
-  void SendDownstreamPsi(int angle_set_num);
+  void SendDownstreamPsi();
 
   /// Receives delayed data from successor locations.
-  bool ReceiveDelayedData(int angle_set_num);
+  bool ReceiveDelayedData();
 
   /// Sends downstream psi.
   void ClearDownstreamBuffers();
 
   /// Check if all upstream dependencies have been met and receives it as it becomes available.
-  AngleSetStatus ReceiveUpstreamPsi(int angle_set_num);
+  AngleSetStatus ReceiveUpstreamPsi();
 
   /**
    * Receive all upstream Psi. This method is called from within  an advancement of an angleset,
@@ -92,7 +86,6 @@ protected:
 private:
   unsigned int num_groups_;
   std::size_t num_angles_;
-  int max_num_messages_;
   int max_mpi_message_size_;
   bool done_sending_;
   bool data_initialized_;

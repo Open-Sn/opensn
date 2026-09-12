@@ -23,7 +23,8 @@ class CBC_FLUDS;
 class CBC_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBC_AsynchronousCommunicator(std::size_t angle_set_id,
+  explicit CBC_AsynchronousCommunicator(std::size_t groupset_id,
+                                        std::size_t angle_set_id,
                                         FLUDS& fluds,
                                         const SweepCommunicator& sweep_communicator);
 

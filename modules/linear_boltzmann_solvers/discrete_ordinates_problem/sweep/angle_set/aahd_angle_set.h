@@ -38,7 +38,7 @@ public:
 
   int GetMaxBufferMessages() const override { return async_comm_.GetMaxNumMessages(); }
 
-  void SetMaxBufferMessages(int count) override { async_comm_.SetMaxNumMessages(GetID(), count); }
+  void SetMaxBufferMessages(int count) override { async_comm_.SetMaxNumMessages(count); }
 
   void PrepostReceives();
 

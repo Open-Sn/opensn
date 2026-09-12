@@ -1217,8 +1217,7 @@ LBSProblem::InitializeParrays()
     grid_nodal_mappings_.push_back(cell_nodal_mapping);
   }
 
-  // Get grid localized communicator set
-  sweep_communicator_ = std::make_shared<SweepCommunicator>(mpi_comm);
+  sweep_communicator_ = std::make_shared<SweepCommunicator>(mpi_comm, groupsets_.size());
 
   opensn::mpi_comm.barrier();
   log.Log() << program_timer.GetTimeString() << " Done with parallel arrays." << std::endl;

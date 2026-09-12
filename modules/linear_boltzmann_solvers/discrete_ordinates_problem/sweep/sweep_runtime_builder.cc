@@ -15,11 +15,15 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_parallel_for.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
+#include <algorithm>
+#include <array>
 #include <cmath>
 #include <cstdint>
 #include <limits>
 #include <optional>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 
 namespace opensn
 {
@@ -55,6 +59,69 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
 
 namespace
 {
+
+// Pass any exception message to `on_failure` from within its catch block.
+template <typename Function, typename OnFailure>
+void
+RunAAHSetupStep(const Function& function, const OnFailure& on_failure)
+{
+  try
+  {
+    function();
+  }
+  catch (const std::exception& error)
+  {
+    std::string_view message = error.what();
+    on_failure(message.empty() ? std::string_view("Unknown exception during AAH setup.") : message);
+  }
+  catch (...)
+  {
+    on_failure(std::string_view("Unknown exception during AAH setup."));
+  }
+}
+
+// Propagate failures collectively from work that does not call MPI.
+template <typename Function>
+void
+RunAAHSetupCollectively(const Function& function)
+{
+  bool local_failed = false;
+  std::array<char, 2048> error_buffer{};
+  RunAAHSetupStep(function,
+                  [&](std::string_view message)
+                  {
+                    local_failed = true;
+                    std::copy_n(message.begin(),
+                                std::min(message.size(), error_buffer.size() - 1),
+                                error_buffer.begin());
+                  });
+
+  const int comm_size = opensn::mpi_comm.size();
+  const int local_failure_rank = local_failed ? opensn::mpi_comm.rank() : comm_size;
+  int failure_rank = comm_size;
+  opensn::mpi_comm.all_reduce(local_failure_rank, failure_rank, mpi::op::min<int>());
+  if (failure_rank == comm_size)
+    return;
+
+  opensn::mpi_comm.broadcast(
+    error_buffer.data(), static_cast<int>(error_buffer.size()), failure_rank);
+  throw std::logic_error("AAH sweep setup failed on rank " + std::to_string(failure_rank) + ": " +
+                         error_buffer.data());
+}
+
+// Abort if work containing collectives fails because peers may already be blocked.
+template <typename Function>
+void
+RunAAHCollectiveSequence(const Function& function)
+{
+  RunAAHSetupStep(function,
+                  [](std::string_view message)
+                  {
+                    log.LogAllError() << "AAH setup failed during MPI exchange: " << message;
+                    opensn::mpi_comm.abort(1);
+                    throw;
+                  });
+}
 
 // Developer-only diagnostic for tiny sweep graphs. Populate with AAH_SPDS ids when debugging.
 const std::vector<int> SWEEP_ORDER_DIRECTIONS_TO_PRINT = {};
@@ -368,53 +435,143 @@ GetSweepGraphOwner(size_t spds_ordinal, size_t num_spds)
   return static_cast<int>(spds_ordinal % comm_size);
 }
 
+std::vector<int>
+BuildOffsets(const std::vector<int>& counts, const char* error_message)
+{
+  std::vector<int> offsets(counts.size(), 0);
+  for (size_t i = 1; i < counts.size(); ++i)
+  {
+    OpenSnLogicalErrorIf(counts[i - 1] > std::numeric_limits<int>::max() - offsets[i - 1],
+                         error_message);
+    offsets[i] = offsets[i - 1] + counts[i - 1];
+  }
+  OpenSnLogicalErrorIf(counts.back() > std::numeric_limits<int>::max() - offsets.back(),
+                       error_message);
+  return offsets;
+}
+
 void
-GatherAAHGlobalEdgeWeights(const std::shared_ptr<AAH_SPDS>& spds, int owner)
+GatherAAHGlobalEdgeWeights(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list,
+                           size_t batch_begin,
+                           size_t batch_end)
 {
   const int comm_size = opensn::mpi_comm.size();
-  const bool is_owner = opensn::mpi_comm.rank() == owner;
+  const int rank = opensn::mpi_comm.rank();
+  const size_t batch_size = batch_end - batch_begin;
+  const char* const error_message = "AAH sweep graph edge count exceeds the MPI count limit.";
 
-  const auto local_edges = spds->ComputeLocalLocationEdgeWeights();
-  OpenSnLogicalErrorIf(local_edges.size() > static_cast<size_t>(std::numeric_limits<int>::max()),
-                       "Too many local AAH sweep graph edges.");
-  std::vector<int> local_to_locs(local_edges.size());
-  std::vector<double> local_weights(local_edges.size());
-  for (size_t i = 0; i < local_edges.size(); ++i)
+  // The deterministic owner map also gives every rank its batch ownership count.
+  std::vector<int> owner(batch_size);
+  int owned_count = 0;
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
   {
-    local_to_locs[i] = local_edges[i].first;
-    local_weights[i] = local_edges[i].second;
+    owner[local_i] = GetSweepGraphOwner(batch_begin + local_i, spds_list.size());
+    if (owner[local_i] == rank)
+      ++owned_count;
   }
 
-  std::vector<int> counts(comm_size, 0);
-  opensn::mpi_comm.gather(static_cast<int>(local_edges.size()), counts, owner);
-
-  std::vector<int> offsets(comm_size, 0);
-  if (is_owner)
+  // Compute each sparse local edge list once and use it to size the packed buffers.
+  std::vector<std::vector<std::pair<int, double>>> local_edges(batch_size);
+  std::vector<int> send_int_counts(comm_size, 0);
+  std::vector<int> send_double_counts(comm_size, 0);
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
   {
-    for (int r = 1; r < comm_size; ++r)
+    auto& edges = local_edges[local_i];
+    edges = spds_list[batch_begin + local_i]->ComputeLocalLocationEdgeWeights();
+    const auto num_edges = edges.size();
+    OpenSnLogicalErrorIf(num_edges > static_cast<size_t>(std::numeric_limits<int>::max()),
+                         "Too many local AAH sweep graph edges.");
+    auto& int_count = send_int_counts[owner[local_i]];
+    OpenSnLogicalErrorIf(static_cast<size_t>(int_count) >
+                           static_cast<size_t>(std::numeric_limits<int>::max()) - (2 + num_edges),
+                         error_message);
+    int_count += static_cast<int>(2 + num_edges);
+    send_double_counts[owner[local_i]] += static_cast<int>(num_edges);
+  }
+
+  const auto send_int_offsets = BuildOffsets(send_int_counts, error_message);
+  const auto send_double_offsets = BuildOffsets(send_double_counts, error_message);
+
+  // Pack each edge list as an integer header and parallel destination/weight arrays.
+  std::vector<int> send_int_buffer(static_cast<size_t>(send_int_offsets.back()) +
+                                   static_cast<size_t>(send_int_counts.back()));
+  std::vector<double> send_double_buffer(static_cast<size_t>(send_double_offsets.back()) +
+                                         static_cast<size_t>(send_double_counts.back()));
+  auto int_cursor = send_int_offsets;
+  auto double_cursor = send_double_offsets;
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+  {
+    auto& edges = local_edges[local_i];
+    auto& ic = int_cursor[owner[local_i]];
+    auto& dc = double_cursor[owner[local_i]];
+    send_int_buffer[ic++] = static_cast<int>(local_i);
+    send_int_buffer[ic++] = static_cast<int>(edges.size());
+    for (const auto& [to_loc, weight] : edges)
     {
-      OpenSnLogicalErrorIf(counts[r - 1] > std::numeric_limits<int>::max() - offsets[r - 1],
-                           "AAH sweep graph edge count exceeds the MPI count limit.");
-      offsets[r] = offsets[r - 1] + counts[r - 1];
+      send_int_buffer[ic++] = to_loc;
+      send_double_buffer[dc++] = weight;
     }
-    OpenSnLogicalErrorIf(counts.back() > std::numeric_limits<int>::max() - offsets.back(),
-                         "AAH sweep graph edge count exceeds the MPI count limit.");
+    std::vector<std::pair<int, double>>().swap(edges);
   }
 
-  std::vector<int> recv_to_locs;
-  std::vector<double> recv_weights;
-  opensn::mpi_comm.gather(local_to_locs, recv_to_locs, counts, offsets, owner);
-  opensn::mpi_comm.gather(local_weights, recv_weights, counts, offsets, owner);
+  // Derive integer receive counts from the exchanged edge counts and known record count.
+  std::vector<int> receive_double_counts(comm_size, 0);
+  opensn::mpi_comm.all_to_all(send_double_counts, receive_double_counts);
+  const auto receive_double_offsets = BuildOffsets(receive_double_counts, error_message);
 
-  if (is_owner)
+  std::vector<int> receive_int_counts(comm_size);
+  for (int source = 0; source < comm_size; ++source)
+    receive_int_counts[source] = 2 * owned_count + receive_double_counts[source];
+  const auto receive_int_offsets = BuildOffsets(receive_int_counts, error_message);
+
+  std::vector<int> receive_int_buffer;
+  opensn::mpi_comm.all_to_all(send_int_buffer,
+                              send_int_counts,
+                              send_int_offsets,
+                              receive_int_buffer,
+                              receive_int_counts,
+                              receive_int_offsets);
+  std::vector<int>().swap(send_int_buffer);
+
+  std::vector<double> receive_double_buffer;
+  opensn::mpi_comm.all_to_all(send_double_buffer,
+                              send_double_counts,
+                              send_double_offsets,
+                              receive_double_buffer,
+                              receive_double_counts,
+                              receive_double_offsets);
+  std::vector<double>().swap(send_double_buffer);
+
+  // Unpack, per source rank, into per-SPDS edge lists.
+  std::vector<std::vector<AAH_SPDS::GlobalSweepEdge>> global_edges(batch_size);
+  for (int source = 0; source < comm_size; ++source)
   {
-    std::vector<AAH_SPDS::GlobalSweepEdge> global_edges;
-    global_edges.reserve(recv_to_locs.size());
-    for (int r = 0; r < comm_size; ++r)
-      for (int i = offsets[r]; i < offsets[r] + counts[r]; ++i)
-        global_edges.push_back({r, recv_to_locs[i], recv_weights[i]});
-    spds->SetGlobalEdges(std::move(global_edges));
+    auto int_offset = static_cast<size_t>(receive_int_offsets[source]);
+    const size_t int_end = int_offset + static_cast<size_t>(receive_int_counts[source]);
+    auto double_offset = static_cast<size_t>(receive_double_offsets[source]);
+    const size_t double_end = double_offset + static_cast<size_t>(receive_double_counts[source]);
+    while (int_offset < int_end)
+    {
+      OpenSnLogicalErrorIf(int_end - int_offset < 2, "Malformed AAH sweep graph edge record.");
+      const int local_i = receive_int_buffer[int_offset++];
+      const int num_edges = receive_int_buffer[int_offset++];
+      OpenSnLogicalErrorIf(
+        local_i < 0 or std::cmp_greater_equal(local_i, batch_size) or num_edges < 0 or
+          static_cast<size_t>(num_edges) > int_end - int_offset or double_offset > double_end or
+          static_cast<size_t>(num_edges) > double_end - double_offset,
+        "Malformed AAH sweep graph edge record.");
+      auto& edges = global_edges[static_cast<size_t>(local_i)];
+      edges.reserve(edges.size() + static_cast<size_t>(num_edges));
+      for (int k = 0; k < num_edges; ++k)
+        edges.push_back(
+          {source, receive_int_buffer[int_offset++], receive_double_buffer[double_offset++]});
+    }
+    OpenSnLogicalErrorIf(double_offset != double_end, "Malformed AAH sweep graph edge record.");
   }
+
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+    if (owner[local_i] == rank)
+      spds_list[batch_begin + local_i]->SetGlobalEdges(std::move(global_edges[local_i]));
 }
 
 void
@@ -426,7 +583,6 @@ DistributeAAHGlobalSweepMetadata(
 {
   const int comm_size = opensn::mpi_comm.size();
   std::vector<int> send_counts(comm_size, 0);
-  std::vector<int> send_offsets(comm_size, 0);
   std::vector<int> send_buffer;
 
   for (size_t i = batch_begin; i < batch_end; ++i)
@@ -453,64 +609,43 @@ DistributeAAHGlobalSweepMetadata(
     }
   }
 
-  for (int r = 1; r < comm_size; ++r)
-  {
-    OpenSnLogicalErrorIf(send_counts[r - 1] > std::numeric_limits<int>::max() - send_offsets[r - 1],
-                         "AAH sweep metadata exceeds the MPI count limit.");
-    send_offsets[r] = send_offsets[r - 1] + send_counts[r - 1];
-  }
-  OpenSnLogicalErrorIf(send_counts.back() > std::numeric_limits<int>::max() - send_offsets.back(),
-                       "AAH sweep metadata exceeds the MPI count limit.");
-  send_buffer.reserve(static_cast<size_t>(send_offsets.back()) + send_counts.back());
+  const auto send_offsets =
+    BuildOffsets(send_counts, "AAH sweep metadata exceeds the MPI count limit.");
+  send_buffer.resize(static_cast<size_t>(send_offsets.back()) +
+                     static_cast<size_t>(send_counts.back()));
 
-  for (int r = 0; r < comm_size; ++r)
-    for (size_t i = batch_begin; i < batch_end; ++i)
+  // Pack only locally owned metadata, preserving one contiguous region per destination.
+  auto cursor = send_offsets;
+  for (size_t i = batch_begin; i < batch_end; ++i)
+  {
+    const auto& entry = metadata[i - batch_begin];
+    if (not entry.has_value())
+      continue;
+    const auto& graph_metadata = *entry;
+    for (int r = 0; r < comm_size; ++r)
     {
-      const auto& entry = metadata[i - batch_begin];
-      if (not entry.has_value())
-        continue;
-      const auto& graph_metadata = *entry;
       const auto& dependencies = graph_metadata.delayed_dependencies[r];
       const auto& successors = graph_metadata.delayed_successors[r];
-      send_buffer.push_back(static_cast<int>(i - batch_begin));
-      send_buffer.push_back(graph_metadata.location_depths[r]);
-      send_buffer.push_back(static_cast<int>(dependencies.size()));
-      send_buffer.push_back(static_cast<int>(successors.size()));
-      send_buffer.insert(send_buffer.end(), dependencies.begin(), dependencies.end());
-      send_buffer.insert(send_buffer.end(), successors.begin(), successors.end());
+      auto& c = cursor[r];
+      send_buffer[c++] = static_cast<int>(i - batch_begin);
+      send_buffer[c++] = graph_metadata.location_depths[r];
+      send_buffer[c++] = static_cast<int>(dependencies.size());
+      send_buffer[c++] = static_cast<int>(successors.size());
+      for (const int dep : dependencies)
+        send_buffer[c++] = dep;
+      for (const int succ : successors)
+        send_buffer[c++] = succ;
     }
+  }
 
   std::vector<int> receive_counts(comm_size, 0);
-  MPI_CHECK(MPI_Alltoall(send_counts.data(),
-                         1,
-                         MPI_INT,
-                         receive_counts.data(),
-                         1,
-                         MPI_INT,
-                         static_cast<MPI_Comm>(mpi_comm)));
+  opensn::mpi_comm.all_to_all(send_counts, receive_counts);
 
-  std::vector<int> receive_offsets(comm_size, 0);
-  for (int r = 1; r < comm_size; ++r)
-  {
-    OpenSnLogicalErrorIf(receive_counts[r - 1] >
-                           std::numeric_limits<int>::max() - receive_offsets[r - 1],
-                         "AAH sweep metadata exceeds the MPI count limit.");
-    receive_offsets[r] = receive_offsets[r - 1] + receive_counts[r - 1];
-  }
-  OpenSnLogicalErrorIf(receive_counts.back() >
-                         std::numeric_limits<int>::max() - receive_offsets.back(),
-                       "AAH sweep metadata exceeds the MPI count limit.");
-  std::vector<int> receive_buffer(static_cast<size_t>(receive_offsets.back()) +
-                                  receive_counts.back());
-  MPI_CHECK(MPI_Alltoallv(send_buffer.data(),
-                          send_counts.data(),
-                          send_offsets.data(),
-                          MPI_INT,
-                          receive_buffer.data(),
-                          receive_counts.data(),
-                          receive_offsets.data(),
-                          MPI_INT,
-                          static_cast<MPI_Comm>(mpi_comm)));
+  const auto receive_offsets =
+    BuildOffsets(receive_counts, "AAH sweep metadata exceeds the MPI count limit.");
+  std::vector<int> receive_buffer;
+  opensn::mpi_comm.all_to_all(
+    send_buffer, send_counts, send_offsets, receive_buffer, receive_counts, receive_offsets);
 
   std::vector<bool> received(batch_end - batch_begin, false);
   for (int source = 0; source < comm_size; ++source)
@@ -559,19 +694,36 @@ void
 BuildAAHGlobalSweepGraph(SweepRuntime& runtime)
 {
   const auto spds_list = GetAAHSPDSList(runtime);
+  const auto local_count = spds_list.size();
+  const auto size_max = std::numeric_limits<size_t>::max();
+  const std::array<size_t, 2> local_bounds = {local_count, size_max - local_count};
+  std::array<size_t, 2> global_bounds{};
+  opensn::mpi_comm.all_reduce(local_bounds.data(),
+                              static_cast<int>(local_bounds.size()),
+                              global_bounds.data(),
+                              mpi::op::max<size_t>());
+  OpenSnLogicalErrorIf(global_bounds[0] != size_max - global_bounds[1],
+                       "AAH SPDS count differs across MPI ranks.");
+
   const auto batch_size = static_cast<size_t>(opensn::mpi_comm.size());
   for (size_t batch_begin = 0; batch_begin < spds_list.size(); batch_begin += batch_size)
   {
     const size_t batch_end = std::min(batch_begin + batch_size, spds_list.size());
-    for (size_t i = batch_begin; i < batch_end; ++i)
-      GatherAAHGlobalEdgeWeights(spds_list[i], GetSweepGraphOwner(i, spds_list.size()));
+    RunAAHCollectiveSequence([&]
+                             { GatherAAHGlobalEdgeWeights(spds_list, batch_begin, batch_end); });
 
-    std::vector<std::optional<AAH_SPDS::GlobalSweepMetadata>> metadata(batch_end - batch_begin);
-    for (size_t i = batch_begin; i < batch_end; ++i)
-      if (opensn::mpi_comm.rank() == GetSweepGraphOwner(i, spds_list.size()))
-        metadata[i - batch_begin] = spds_list[i]->BuildGlobalSweepMetadata();
+    std::vector<std::optional<AAH_SPDS::GlobalSweepMetadata>> metadata;
+    RunAAHSetupCollectively(
+      [&]
+      {
+        metadata.resize(batch_end - batch_begin);
+        for (size_t i = batch_begin; i < batch_end; ++i)
+          if (opensn::mpi_comm.rank() == GetSweepGraphOwner(i, spds_list.size()))
+            metadata[i - batch_begin] = spds_list[i]->BuildGlobalSweepMetadata();
+      });
 
-    DistributeAAHGlobalSweepMetadata(spds_list, batch_begin, batch_end, metadata);
+    RunAAHCollectiveSequence(
+      [&] { DistributeAAHGlobalSweepMetadata(spds_list, batch_begin, batch_end, metadata); });
   }
   PrintRequestedSweepGraphs(spds_list);
 }
@@ -678,7 +830,9 @@ BuildSweepRuntime(const std::string& problem_name,
 
   if (sweep_type == "AAH")
   {
-    BuildAAHSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus);
+    RunAAHSetupCollectively(
+      [&]
+      { BuildAAHSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus); });
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")

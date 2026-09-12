@@ -13,6 +13,29 @@
 namespace opensn
 {
 
+namespace
+{
+
+// Compute vertex levels from a forward topological ordering.
+template <typename VertexRange>
+std::pair<std::vector<int>, int>
+LevelizeTopologicalOrder(const Graph& graph,
+                         const VertexRange& topological_order,
+                         size_t num_vertices)
+{
+  int max_level = 0;
+  std::vector<int> levels(num_vertices, 0);
+  for (const auto v : topological_order)
+  {
+    for (auto [edge, edge_end] = boost::in_edges(v, graph); edge != edge_end; ++edge)
+      levels[v] = std::max(levels[v], levels[boost::source(*edge, graph)] + 1);
+    max_level = std::max(max_level, levels[v]);
+  }
+  return {std::move(levels), max_level};
+}
+
+} // namespace
+
 AAH_SPDS::AAH_SPDS(int id,
                    const Vector3& omega,
                    const std::shared_ptr<MeshContinuum> grid,
@@ -51,26 +74,22 @@ AAH_SPDS::AAH_SPDS(int id,
 
   // Generate topological ordering
   spls_.clear();
-  boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
-  std::reverse(spls_.begin(), spls_.end());
-  if (spls_.empty())
+  try
+  {
+    boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
+  }
+  catch (const boost::not_a_dag&)
   {
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
                            "Cycles need to be allowed by the calling application.");
   }
+  std::reverse(spls_.begin(), spls_.end());
+  if (spls_.empty())
+    throw std::logic_error("AAH_SPDS: Cannot build a sweep ordering without local cells.");
 
   // Generate levelized spls
-  int max_level = 0;
-  std::vector<int> levels(num_vertices(local_cell_graph), 0);
-  for (auto& v : spls_)
-  {
-    for (auto ei = out_edges(v, local_cell_graph); ei.first != ei.second; ++ei.first)
-    {
-      auto successor = target(*ei.first, local_cell_graph);
-      levels[successor] = std::max(levels[successor], levels[v] + 1);
-      max_level = std::max(max_level, levels[successor]);
-    }
-  }
+  const auto [levels, max_level] =
+    LevelizeTopologicalOrder(local_cell_graph, spls_, num_vertices(local_cell_graph));
   levelized_spls_.resize(max_level + 1);
   for (auto v = 0; v < num_vertices(local_cell_graph); ++v)
     levelized_spls_[levels[v]].push_back(v);
@@ -111,20 +130,19 @@ AAH_SPDS::BuildGlobalSweepMetadata()
     edges_to_remove = RemoveCyclicDependencies(global_tdg);
 
   std::vector<int> global_linear_sweep_order;
-  boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
-  std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
-  if (global_linear_sweep_order.size() != static_cast<std::size_t>(comm_size))
+  try
+  {
+    boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
+  }
+  catch (const boost::not_a_dag&)
+  {
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
                            "Cycles need to be allowed by the calling application.");
-
-  int max_level = 0;
-  std::vector<int> levels(comm_size, 0);
-  for (const int loc : global_linear_sweep_order)
-  {
-    for (auto [edge, edge_end] = boost::in_edges(loc, global_tdg); edge != edge_end; ++edge)
-      levels[loc] = std::max(levels[loc], levels[boost::source(*edge, global_tdg)] + 1);
-    max_level = std::max(max_level, levels[loc]);
   }
+  std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
+
+  const auto [levels, max_level] =
+    LevelizeTopologicalOrder(global_tdg, global_linear_sweep_order, static_cast<size_t>(comm_size));
 
   GlobalSweepMetadata metadata;
   metadata.location_depths.resize(comm_size);

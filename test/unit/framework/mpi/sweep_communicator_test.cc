@@ -10,17 +10,21 @@ using namespace opensn;
 
 TEST(SweepCommunicatorTest, RankAndTagValidation)
 {
-  SweepCommunicator communicator(mpi_comm);
+  SweepCommunicator communicator(mpi_comm, 2);
 
   EXPECT_EQ(communicator.GetPeerRank(mpi_comm.rank()), mpi_comm.rank());
   EXPECT_THROW(communicator.GetPeerRank(-1), std::out_of_range);
   EXPECT_THROW(communicator.GetPeerRank(mpi_comm.size()), std::out_of_range);
 
-  EXPECT_EQ(communicator.BuildMessageTag(3, 8, 7), 31);
-  EXPECT_THROW(communicator.BuildMessageTag(0, 0, 0), std::invalid_argument);
-  EXPECT_THROW(communicator.BuildMessageTag(0, 2, 2), std::invalid_argument);
-  EXPECT_THROW(communicator.BuildMessageTag(std::numeric_limits<std::size_t>::max(), 2, 1),
+  EXPECT_EQ(communicator.BuildMessageTag(0, 3, 8, 7), 31);
+  EXPECT_EQ(communicator.BuildMessageTag(0, 3, 8, 7), 31);
+  EXPECT_GT(communicator.BuildMessageTag(1, 0), communicator.BuildMessageTag(0, 3, 8, 7));
+  EXPECT_THROW(communicator.BuildMessageTag(2, 0), std::out_of_range);
+  EXPECT_THROW(communicator.BuildMessageTag(0, 0, 0, 0), std::invalid_argument);
+  EXPECT_THROW(communicator.BuildMessageTag(0, 0, 2, 2), std::invalid_argument);
+  EXPECT_THROW(communicator.BuildMessageTag(0, std::numeric_limits<std::size_t>::max(), 2, 1),
                std::out_of_range);
+  EXPECT_THROW(SweepCommunicator(mpi_comm, 0), std::invalid_argument);
 }
 
 TEST(SweepCommunicatorTest, HasPrivateMessageContext)
@@ -28,7 +32,7 @@ TEST(SweepCommunicatorTest, HasPrivateMessageContext)
   if (mpi_comm.size() < 2)
     return;
 
-  SweepCommunicator sweep_communicator(mpi_comm);
+  SweepCommunicator sweep_communicator(mpi_comm, 1);
   constexpr int tag = 7;
 
   mpi_comm.barrier();

@@ -19,14 +19,15 @@ namespace opensn
 
 AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
   FLUDS& fluds,
+  std::size_t groupset_id,
+  std::size_t angle_set_id,
   unsigned int num_groups,
   std::size_t num_angles,
   int max_mpi_message_size,
   const SweepCommunicator& sweep_communicator)
-  : AsynchronousCommunicator(fluds, sweep_communicator),
+  : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
     num_groups_(num_groups),
     num_angles_(num_angles),
-    max_num_messages_(0),
     max_mpi_message_size_(max_mpi_message_size),
     done_sending_(false),
     data_initialized_(false),
@@ -128,7 +129,7 @@ AAH_ASynchronousCommunicator::InitializeDelayedUpstreamData()
 }
 
 bool
-AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
+AAH_ASynchronousCommunicator::ReceiveDelayedData()
 {
 
   const auto& spds = fluds_.GetSPDS();
@@ -143,7 +144,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
+      const int tag = GetMessageTag(m);
       if (not delayed_preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -161,7 +162,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 }
 
 AngleSetStatus
-AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
+AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
 {
 
   const auto& spds = fluds_.GetSPDS();
@@ -183,7 +184,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
+      const int tag = GetMessageTag(m);
       if (not preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -204,22 +205,22 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 }
 
 void
-AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
+AAH_ASynchronousCommunicator::SendDownstreamPsi()
 {
 
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();
   const std::size_t num_successors = location_successors.size();
+  const auto& comm = sweep_communicator_.GetCommunicator();
 
   for (std::size_t i = 0, req = 0; i < num_successors; ++i)
   {
-    const auto& comm = sweep_communicator_.GetCommunicator();
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
 
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
+      const int tag = GetMessageTag(m);
       deploc_msg_request_[req] = comm.isend(dest, tag, &outgoing_psi[block_pos], size);
     }
   }

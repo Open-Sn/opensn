@@ -8,7 +8,21 @@
 
 namespace opensn
 {
+[[noreturn]] void ThrowMPIError(int ierr, const char* expr, const char* file, int line);
 [[noreturn]] void ThrowPETScError(int ierr, const char* expr, const char* file, int line);
+
+inline void
+CheckMPICall(int ierr, const char* expr, const char* file, int line)
+{
+  const bool failed =
+#if defined(__GNUC__) || defined(__clang__)
+    __builtin_expect(ierr != 0, 0);
+#else
+    ierr != 0;
+#endif
+  if (failed)
+    ThrowMPIError(ierr, expr, file, line);
+}
 
 inline void
 CheckPETScCall(int ierr, const char* expr, const char* file, int line)
@@ -38,4 +52,5 @@ CheckPETScCall(int ierr, const char* expr, const char* file, int line)
 #define OpenSnLogicalError(message)                                                                \
   throw std::logic_error(std::string(__PRETTY_FUNCTION__) + ": " + (message))
 
+#define OpenSnMPICall(expr) ::opensn::CheckMPICall((expr), #expr, __FILE__, __LINE__)
 #define OpenSnPETScCall(expr) ::opensn::CheckPETScCall((expr), #expr, __FILE__, __LINE__)

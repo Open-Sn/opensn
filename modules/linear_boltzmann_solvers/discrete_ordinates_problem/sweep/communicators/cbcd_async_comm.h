@@ -25,7 +25,8 @@ class CBCD_FLUDS;
 class CBCD_AsynchronousCommunicator : public AsynchronousCommunicator
 {
 public:
-  explicit CBCD_AsynchronousCommunicator(std::size_t angle_set_id,
+  explicit CBCD_AsynchronousCommunicator(std::size_t groupset_id,
+                                         std::size_t angle_set_id,
                                          FLUDS& fluds,
                                          const SweepCommunicator& sweep_communicator);
 
