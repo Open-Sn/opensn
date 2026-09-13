@@ -61,13 +61,8 @@ AAH_SPDS::AAH_SPDS(int id,
                            "Cycles need to be allowed by the calling application.");
   }
   std::reverse(spls_.begin(), spls_.end());
-  if (num_loc_cells == 0)
+  if (spls_.empty())
     throw std::logic_error("AAH_SPDS: Cannot build a sweep ordering without local cells.");
-  if (spls_.size() != num_loc_cells)
-  {
-    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
-                           "Cycles need to be allowed by the calling application.");
-  }
 
   // Generate levelized spls
   int max_level = 0;
