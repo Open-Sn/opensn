@@ -23,6 +23,8 @@ def _get_preloaded_symbol(name):
 
 
 preloaded_names = [
+    "rank",
+    "size",
     "GLCProductQuadrature3DXYZ",
     "FieldFunctionInterpolationPoint",
     "RPPLogicalVolume",
@@ -38,6 +40,8 @@ preloaded_names = [
 preloaded_symbols = {name: _get_preloaded_symbol(name) for name in preloaded_names}
 
 if all(value is not None for value in preloaded_symbols.values()):
+    rank = preloaded_symbols["rank"]
+    size = preloaded_symbols["size"]
     GLCProductQuadrature3DXYZ = preloaded_symbols["GLCProductQuadrature3DXYZ"]
     FieldFunctionInterpolationPoint = preloaded_symbols["FieldFunctionInterpolationPoint"]
     RPPLogicalVolume = preloaded_symbols["RPPLogicalVolume"]
@@ -238,7 +242,8 @@ def run_kobayashi_case(
 ):
     uncollided_path = Path(__file__).resolve().parent / uncollided_filename
     results_path = Path(__file__).resolve().parent / results_filename
-    remove_if_exists(results_path)
+    if rank == 0:
+        remove_if_exists(results_path)
 
     if require_existing_uncollided:
         if not uncollided_path.exists():

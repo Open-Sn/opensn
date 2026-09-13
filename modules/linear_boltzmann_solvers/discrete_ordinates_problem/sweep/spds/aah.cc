@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include <boost/graph/topological_sort.hpp>
 #include <algorithm>
+#include <map>
 
 namespace opensn
 {
@@ -36,12 +37,12 @@ AAH_SPDS::AAH_SPDS(int id,
   // Create local cell graph
   Graph local_cell_graph(num_loc_cells);
 
-  for (size_t c = 0; c < num_loc_cells; ++c)
+  for (size_t c = 0; c < num_loc_cells; ++c) // NOLINT
     for (const auto& successor : cell_successors[c])
       boost::add_edge(c, successor.first, successor.second, local_cell_graph);
 
   // Remove cycles
-  if (allow_cycles)
+  if (allow_cycles) // NOLINT
   {
     auto edges_to_remove = RemoveCyclicDependencies(local_cell_graph);
     for (auto& edge_to_remove : edges_to_remove)
@@ -50,13 +51,18 @@ AAH_SPDS::AAH_SPDS(int id,
 
   // Generate topological ordering
   spls_.clear();
-  boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
-  std::reverse(spls_.begin(), spls_.end());
-  if (spls_.empty())
+  try
+  {
+    boost::topological_sort(local_cell_graph, std::back_inserter(spls_)); // NOLINT
+  }
+  catch (const boost::not_a_dag&)
   {
     throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the local cell graph.\n"
                            "Cycles need to be allowed by the calling application.");
   }
+  std::reverse(spls_.begin(), spls_.end());
+  if (spls_.empty())
+    throw std::logic_error("AAH_SPDS: Cannot build a sweep ordering without local cells.");
 
   // Generate levelized spls
   int max_level = 0;
@@ -85,50 +91,107 @@ AAH_SPDS::AAH_SPDS(int id,
     CopySPLSDataOnDevice();
 }
 
-void
-AAH_SPDS::BuildGlobalSweepFAS()
+AAH_SPDS::GlobalSweepMetadata
+AAH_SPDS::BuildGlobalSweepMetadata()
 {
-  assert(not global_dependencies_.empty());
+  if (global_sweep_metadata_built_)
+    throw std::logic_error("AAH_SPDS: Global sweep metadata has already been built.");
+  if (not global_edges_initialized_)
+    throw std::logic_error("AAH_SPDS: Global sweep edges are not initialized.");
 
-  // Create global sweep graph
   const int comm_size = opensn::mpi_comm.size();
   Graph global_tdg(comm_size);
-
-  for (int loc = 0; loc < comm_size; ++loc)
+  for (const auto& edge : global_edges_)
   {
-    for (auto dep : global_dependencies_[loc])
-    {
-      double weight = 1.0;
-      if (not global_edge_weights_.empty())
-      {
-        const int idx = dep * comm_size + loc;
-        if (idx < global_edge_weights_.size() and global_edge_weights_[idx] > 0.0)
-          weight = global_edge_weights_[idx];
-      }
-      boost::add_edge(dep, loc, weight, global_tdg);
-    }
+    const auto dep = edge.dependency;
+    const auto loc = edge.location;
+    if (dep < 0 or dep >= comm_size or loc < 0 or loc >= comm_size)
+      throw std::logic_error("AAH_SPDS: Invalid edge in the global sweep graph.");
+    boost::add_edge(dep, loc, edge.weight, global_tdg);
   }
+  std::vector<GlobalSweepEdge>().swap(global_edges_);
 
-  // Remove cycles and generate the feedback arc set (FAS). The FAS is the list of edges that must
-  // be removed from the graph to make it acyclic.
+  std::vector<std::pair<Vertex, Vertex>> edges_to_remove;
   if (allow_cycles_)
+    edges_to_remove = RemoveCyclicDependencies(global_tdg);
+
+  std::vector<int> global_linear_sweep_order;
+  try
   {
-    auto edges_to_remove = RemoveCyclicDependencies(global_tdg);
-    for (const auto& [e0, e1] : edges_to_remove)
-    {
-      global_sweep_fas_.emplace_back(e0);
-      global_sweep_fas_.emplace_back(e1);
-    }
+    boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
   }
+  catch (const boost::not_a_dag&)
+  {
+    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
+                           "Cycles need to be allowed by the calling application.");
+  }
+  std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
+  if (global_linear_sweep_order.size() != static_cast<std::size_t>(comm_size))
+    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
+                           "Cycles need to be allowed by the calling application.");
+
+  int max_level = 0;
+  std::vector<int> levels(comm_size, 0);
+  for (const int loc : global_linear_sweep_order)
+  {
+    for (auto [edge, edge_end] = boost::in_edges(loc, global_tdg); edge != edge_end; ++edge)
+      levels[loc] = std::max(levels[loc], levels[boost::source(*edge, global_tdg)] + 1);
+    max_level = std::max(max_level, levels[loc]);
+  }
+
+  GlobalSweepMetadata metadata;
+  metadata.location_depths.resize(comm_size);
+  metadata.delayed_dependencies.resize(comm_size);
+  metadata.delayed_successors.resize(comm_size);
+  for (int loc = 0; loc < comm_size; ++loc)
+    metadata.location_depths[loc] = max_level - levels[loc] + 1;
+  for (const auto& [dep_vertex, loc_vertex] : edges_to_remove)
+  {
+    if (std::cmp_greater_equal(dep_vertex, comm_size) or
+        std::cmp_greater_equal(loc_vertex, comm_size))
+      throw std::logic_error("AAH_SPDS: Invalid feedback edge in the global sweep graph.");
+    const auto dep = static_cast<int>(dep_vertex);
+    const auto loc = static_cast<int>(loc_vertex);
+    metadata.delayed_dependencies[loc].push_back(dep);
+    metadata.delayed_successors[dep].push_back(loc);
+  }
+
+  global_sweep_metadata_built_ = true;
+  return metadata;
 }
 
-std::vector<double>
+void
+AAH_SPDS::SetGlobalSweepMetadata(int location_depth,
+                                 std::vector<int> delayed_dependencies,
+                                 std::vector<int> delayed_successors)
+{
+  if (global_sweep_metadata_set_)
+    throw std::logic_error("AAH_SPDS: Global sweep metadata has already been set.");
+  if (location_depth < 1)
+    throw std::logic_error("AAH_SPDS: Invalid location depth.");
+
+  for (const int dep : delayed_dependencies)
+  {
+    const auto it = std::find(location_dependencies_.begin(), location_dependencies_.end(), dep);
+    if (it == location_dependencies_.end())
+      throw std::logic_error("AAH_SPDS: Feedback edge is not a local dependency.");
+    location_dependencies_.erase(it);
+  }
+  for (const int successor : delayed_successors)
+    if (std::find(location_successors_.begin(), location_successors_.end(), successor) ==
+        location_successors_.end())
+      throw std::logic_error("AAH_SPDS: Feedback edge is not a local successor.");
+
+  location_depth_ = location_depth;
+  delayed_location_dependencies_ = std::move(delayed_dependencies);
+  delayed_location_successors_ = std::move(delayed_successors);
+  global_sweep_metadata_set_ = true;
+}
+
+std::vector<std::pair<int, double>>
 AAH_SPDS::ComputeLocalLocationEdgeWeights() const
 {
-
-  const int comm_size = opensn::mpi_comm.size();
-  std::vector<double> row(comm_size, 0.0);
-
+  std::map<int, double> row;
   constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
   for (const auto& cell : grid_->local_cells)
@@ -144,109 +207,14 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
         if (mu > tolerance)
         {
           const auto& adj_cell = grid_->cells[face.neighbor_id];
-          const int to_loc = adj_cell.partition_id;
-          row[to_loc] += mu * mu * face.area;
+          row[adj_cell.partition_id] += mu * mu * face.area;
         }
       }
       ++f;
     }
   }
 
-  return row;
-}
-
-void
-AAH_SPDS::BuildGlobalSweepTDG()
-{
-
-  // Create graph
-  Graph global_tdg(opensn::mpi_comm.size());
-
-  for (int loc = 0; loc < opensn::mpi_comm.size(); ++loc) // NOLINT
-    for (auto dep : global_dependencies_[loc])
-      boost::add_edge(dep, loc, 1.0, global_tdg);
-
-  // De-serialize edges
-  std::vector<std::pair<int, int>> edges_to_remove;
-  edges_to_remove.resize(global_sweep_fas_.size() / 2, std::make_pair(0, 0));
-  int i = 0;
-  for (auto& edge : edges_to_remove)
-  {
-    edge.first = global_sweep_fas_[i++];
-    edge.second = global_sweep_fas_[i++];
-  }
-
-  // Remove edges
-  for (auto& edge_to_remove : edges_to_remove)
-  {
-    auto rlocI = edge_to_remove.first;
-    auto locI = edge_to_remove.second;
-
-    boost::remove_edge(rlocI, locI, global_tdg);
-
-    if (locI == opensn::mpi_comm.rank())
-    {
-      auto dependent_location =
-        std::find(location_dependencies_.begin(), location_dependencies_.end(), rlocI);
-      location_dependencies_.erase(dependent_location);
-      delayed_location_dependencies_.push_back(rlocI);
-    }
-
-    if (rlocI == opensn::mpi_comm.rank())
-      delayed_location_successors_.push_back(locI);
-  }
-
-  // Generate topological ordering
-  std::vector<int> global_linear_sweep_order;
-  boost::topological_sort(global_tdg, std::back_inserter(global_linear_sweep_order)); // NOLINT
-  std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
-  if (global_linear_sweep_order.empty())
-  {
-    throw std::logic_error("AAH_SPDS: Cyclic dependencies found in the global sweep graph.\n"
-                           "Cycles need to be allowed by the calling application.");
-  }
-
-  // Rank to global_tdg id mapping
-  std::vector<int> global_order_mapping(opensn::mpi_comm.size(), -1);
-  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
-  {
-    auto loc = global_linear_sweep_order[k];
-    global_order_mapping[loc] = k;
-  }
-
-  // Determine sweep order ranks
-  int abs_max_rank = 0;
-  std::vector<int> global_sweep_order_rank(opensn::mpi_comm.size(), -1);
-  for (int k = 0; k < opensn::mpi_comm.size(); ++k)
-  {
-    auto loc = global_linear_sweep_order[k];
-    if (global_dependencies_[loc].empty())
-      global_sweep_order_rank[k] = 0;
-    else
-    {
-      int max_rank = -1;
-      for (auto dep_loc : global_dependencies_[loc])
-      {
-        if (dep_loc < 0)
-          continue;
-
-        int dep_mapped_index = global_order_mapping[dep_loc];
-        max_rank = std::max(global_sweep_order_rank[dep_mapped_index], max_rank);
-      }
-      global_sweep_order_rank[k] = max_rank + 1;
-      abs_max_rank = std::max(max_rank + 1, abs_max_rank);
-    }
-  }
-
-  // Generate TDG
-  for (int rank = 0; rank <= abs_max_rank; ++rank)
-  {
-    STDG stdg;
-    for (int k = 0; k < opensn::mpi_comm.size(); ++k)
-      if (global_sweep_order_rank[k] == rank)
-        stdg.item_id.push_back(global_linear_sweep_order[k]);
-    global_sweep_planes_.push_back(stdg);
-  }
+  return {row.begin(), row.end()};
 }
 
 #ifndef __OPENSN_WITH_GPU__

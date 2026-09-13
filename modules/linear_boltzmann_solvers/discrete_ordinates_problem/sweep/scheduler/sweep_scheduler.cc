@@ -119,21 +119,7 @@ SweepScheduler::InitializeAlgoDOG()
     auto angleset = angle_agg_[as];
     const auto& spds = dynamic_cast<const AAH_SPDS&>(angleset->GetSPDS());
 
-    const std::vector<STDG>& leveled_graph = spds.GetGlobalSweepPlanes();
-
-    // Find location depth
-    int loc_depth = -1;
-    for (size_t level = 0; level < leveled_graph.size(); ++level)
-    {
-      for (size_t index = 0; index < leveled_graph[level].item_id.size(); ++index)
-      {
-        if (leveled_graph[level].item_id[index] == opensn::mpi_comm.rank())
-        {
-          loc_depth = static_cast<int>(leveled_graph.size() - level);
-          break;
-        }
-      } // for locations in plane
-    } // for sweep planes
+    const int loc_depth = spds.GetLocationDepth();
 
     // Set up rule values
     if (loc_depth >= 0)

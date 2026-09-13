@@ -9,7 +9,6 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/cell/cell.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mpi/mpi_comm_set.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -744,76 +743,6 @@ MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
   const auto& v2 = vertices[face.vertex_ids[sp1]];
   const auto& v3 = cell.centroid;
   return {{{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
-}
-
-std::shared_ptr<MPICommunicatorSet>
-MeshContinuum::MakeMPILocalCommunicatorSet() const
-{
-  // Build the communicator
-  log.Log0Verbose1() << "Building communicator.";
-  std::set<int> local_graph_edges;
-
-  // Loop over local cells
-  // Populate local_graph_edges
-  local_graph_edges.insert(mpi_comm.rank()); // add current location
-  for (const auto& cell : local_cells)
-  {
-    for (const auto& face : cell.faces)
-    {
-      if (face.has_neighbor)
-        if (not face.IsNeighborLocal(this))
-          local_graph_edges.insert(face.GetNeighborPartitionID(this));
-    } // for f
-  } // for local cells
-
-  // Convert set to vector
-  // This is just done for convenience because MPI
-  // needs a contiguous array
-  std::vector<int> local_connections(local_graph_edges.begin(), local_graph_edges.end());
-
-  // Broadcast local connection size
-  log.Log0Verbose1() << "Communicating local connections.";
-
-  std::vector<std::vector<int>> global_graph(mpi_comm.size(), std::vector<int>());
-  for (int locI = 0; locI < mpi_comm.size(); ++locI)
-  {
-    int locI_num_connections = static_cast<int>(local_connections.size());
-    mpi_comm.broadcast(locI_num_connections, locI);
-
-    if (mpi_comm.rank() != locI)
-      global_graph[locI].resize(locI_num_connections, -1);
-    else
-      std::copy(
-        local_connections.begin(), local_connections.end(), std::back_inserter(global_graph[locI]));
-  }
-
-  // Broadcast local connections
-  for (int locI = 0; locI < mpi_comm.size(); ++locI)
-    mpi_comm.broadcast(
-      global_graph[locI].data(), static_cast<int>(global_graph[locI].size()), locI);
-
-  log.Log0Verbose1() << "Done communicating local connections.";
-
-  // Build groups
-  mpi::Group world_group = mpi_comm.group();
-
-  std::vector<mpi::Group> location_groups;
-  location_groups.resize(mpi_comm.size());
-
-  for (int locI = 0; locI < mpi_comm.size(); ++locI)
-    location_groups[locI] = world_group.include(global_graph[locI]);
-
-  // Build communicators
-  std::vector<mpi::Communicator> communicators;
-  log.Log0Verbose1() << "Building communicators.";
-  communicators.resize(mpi_comm.size());
-
-  for (int locI = 0; locI < mpi_comm.size(); ++locI)
-    communicators[locI] = mpi_comm.create(location_groups[locI], 0);
-
-  log.Log0Verbose1() << "Done building communicators.";
-
-  return std::make_shared<MPICommunicatorSet>(communicators, location_groups, world_group);
 }
 
 int

@@ -24,9 +24,12 @@ BuildAAHGPUFludsCommonData(SweepRuntime& runtime,
     std::shared_ptr<SPDS> spds;
   };
   std::vector<WorkItem> work;
-  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
       work.push_back({quadrature, spds});
+  }
   if (work.empty())
     return;
 
@@ -57,9 +60,12 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
     std::shared_ptr<SPDS> spds;
   };
   std::vector<WorkItem> work;
-  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
       work.push_back({quadrature, spds});
+  }
   if (work.empty())
     return;
 

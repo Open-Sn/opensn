@@ -17,12 +17,13 @@
 namespace opensn
 {
 
-AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(FLUDS& fluds,
-                                                           unsigned int num_groups,
-                                                           std::size_t num_angles,
-                                                           int max_mpi_message_size,
-                                                           const MPICommunicatorSet& comm_set)
-  : AsynchronousCommunicator(fluds, comm_set),
+AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
+  FLUDS& fluds,
+  unsigned int num_groups,
+  std::size_t num_angles,
+  int max_mpi_message_size,
+  const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, sweep_communicator),
     num_groups_(num_groups),
     num_angles_(num_angles),
     max_num_messages_(0),
@@ -88,9 +89,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     { return aah_fluds->GetPrelocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     preloc_msg_data_,
     &preloc_msg_received_,
-    false,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   // Delayed predecessor locations
   SetupMessageData(
@@ -99,9 +99,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     { return aah_fluds->GetDelayedPrelocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     delayed_preloc_msg_data_,
     &delayed_preloc_msg_received_,
-    false,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   // Successor locations
   SetupMessageData(
@@ -110,9 +109,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     { return aah_fluds->GetDeplocIFaceDOFCount(i) * num_groups_ * num_angles_; },
     deploc_msg_data_,
     nullptr,
-    true,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   std::size_t total_deploc_messages = std::transform_reduce(deploc_msg_data_.begin(),
                                                             deploc_msg_data_.end(),
@@ -134,7 +132,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
 {
 
   const auto& spds = fluds_.GetSPDS();
-  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const auto& comm = sweep_communicator_.GetCommunicator();
   const std::size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
 
   bool all_messages_received = true;
@@ -145,8 +143,7 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData(int angle_set_num)
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
-      assert(tag <= std::numeric_limits<int>::max());
+      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
       if (not delayed_preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -168,7 +165,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
 {
 
   const auto& spds = fluds_.GetSPDS();
-  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const auto& comm = sweep_communicator_.GetCommunicator();
   const std::size_t num_dependencies = spds.GetLocationDependencies().size();
 
   // Resize FLUDS non-local incoming data
@@ -186,8 +183,7 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi(int angle_set_num)
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
-      assert(tag <= std::numeric_limits<int>::max());
+      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
       if (not preloc_msg_received_[i][m])
       {
         if (not comm.iprobe(source, tag))
@@ -217,14 +213,13 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
 
   for (std::size_t i = 0, req = 0; i < num_successors; ++i)
   {
-    const auto& comm = comm_set_.LocICommunicator(location_successors[i]);
+    const auto& comm = sweep_communicator_.GetCommunicator();
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
 
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
-      assert(tag <= std::numeric_limits<int>::max());
+      const int tag = sweep_communicator_.BuildMessageTag(angle_set_num, max_num_messages_, m);
       deploc_msg_request_[req] = comm.isend(dest, tag, &outgoing_psi[block_pos], size);
     }
   }

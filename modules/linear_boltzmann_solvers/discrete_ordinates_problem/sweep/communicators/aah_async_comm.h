@@ -24,11 +24,18 @@ public:
                                unsigned int num_groups,
                                std::size_t num_angles,
                                int max_mpi_message_size,
-                               const MPICommunicatorSet& comm_set);
+                               const SweepCommunicator& sweep_communicator);
 
   int GetMaxNumMessages() const { return max_num_messages_; }
 
-  void SetMaxNumMessages(int count) { max_num_messages_ = count; }
+  void SetMaxNumMessages(std::size_t angle_set_id, int count)
+  {
+    if (count < 0)
+      throw std::invalid_argument("AAH communicator: Negative message count.");
+    if (count > 0)
+      sweep_communicator_.BuildMessageTag(angle_set_id, count, count - 1);
+    max_num_messages_ = count;
+  }
 
   bool DoneSending() const;
 
