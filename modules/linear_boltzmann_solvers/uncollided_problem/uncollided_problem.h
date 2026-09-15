@@ -185,7 +185,8 @@ protected:
   std::vector<std::vector<double>> accumulated_moments_;
 
   double production_ = 0.;
-  double removal_ = 0.;
+  double physical_removal_ = 0.;
+  double reflected_removal_ = 0.;
   double out_flow_ = 0.;
 
 public:

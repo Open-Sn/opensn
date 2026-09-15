@@ -13,7 +13,7 @@ namespace
 {
 
 const Cell&
-FindCellByCentroid(const std::shared_ptr<MeshContinuum>& grid, const Vector3& centroid)
+FindCellByCentroid(const std::shared_ptr<MeshContinuum>& grid, Vector3 centroid)
 {
   for (const auto& cell : grid->local_cells)
     if (cell.centroid.AbsoluteEquals(centroid, 1.0e-12))

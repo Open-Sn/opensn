@@ -54,12 +54,7 @@ if __name__ == "__main__":
         (0.51, -0.34, 0.0),
     ]
 
-    # A small region around the point source, not the whole domain: the
-    # near-source ray-traced treatment trades pointwise accuracy for exact
-    # per-cell conservation (Woodsford et al., 2026, Eqs. 24-25), so it should
-    # only cover a small fraction of the domain, matching the paper's own
-    # validation (a near-source region 0.1% of the total domain), with the
-    # rest handled by the bulk-region sweep.
+    # Small region around the source (~0.1% of the domain)
     near_source_region = RPPLogicalVolume(
         xmin=source[0] - 0.08,
         xmax=source[0] + 0.08,
@@ -99,12 +94,5 @@ if __name__ == "__main__":
         print(f"Uncollided2DMultigroupMaxError={max_group_error:.8e}")
         sys.stdout.flush()
 
-    # Threshold set with ~1.5x margin over the error actually observed after
-    # the conservation-scaling fix (Woodsford et al. (2026), Eqs. 24-25): the
-    # near-source ray-traced treatment trades pointwise accuracy for exact
-    # per-cell conservation, and that error is not localized -- it
-    # propagates essentially unchanged through the (linear) bulk sweep to
-    # every sample point, rather than decaying with distance from the
-    # source.
     if max_group_error > 0.065:
         raise RuntimeError(f"2D multigroup scalar-flux error is too large: {max_group_error}")

@@ -40,9 +40,7 @@ if __name__ == "__main__":
 
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    # Centered on the containing mesh cell (rather than an arbitrary
-    # coordinate) so the source doesn't sit flush against one of that cell's
-    # faces; see UncollidedProblem's runtime warning for this.
+    # Centered on its containing cell so it isn't flush against a face
     source = PointSource(location=[0.0441723, -0.0330477, 0.0], strength=[1.0])
     near_source = RPPLogicalVolume(
         xmin=-0.22,

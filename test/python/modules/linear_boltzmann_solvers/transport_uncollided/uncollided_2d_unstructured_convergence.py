@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Homogeneous 2D unstructured-mesh convergence test."""
+"""Homogeneous 2D accuracy test on several independent unstructured meshes."""
 
 import importlib
 import os
@@ -35,19 +35,9 @@ def compute_error(mesh_name, file_name):
     sigma_t = 0.7
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=sigma_t, c=0.0)
-    # Held fixed across all three mesh resolutions (see comment below), and
-    # chosen -- by search over a small neighborhood of the originally
-    # intended coordinate -- so it doesn't sit flush against a face of its
-    # containing cell on any of the three meshes; see UncollidedProblem's
-    # runtime warning for this.
+    # Chosen so it isn't flush against a cell face on any of the three
+    # meshes
     source = (0.04735, -0.033933, 0.0)
-    # A small, fixed-size region around the point source, not the whole
-    # domain: see the comment in uncollided_2d_multigroup_analytic.py. Kept
-    # the same physical size across all three mesh resolutions (matching the
-    # paper's own convergence study, which held its near-source region fixed
-    # while refining the overall mesh) -- on the coarsest mesh this may still
-    # end up covering most/all cells, which is expected and not itself an
-    # accuracy problem, since only the finest mesh's error is gold-checked.
     near_source_region = RPPLogicalVolume(
         xmin=source[0] - 0.08,
         xmax=source[0] + 0.08,
@@ -106,20 +96,7 @@ if __name__ == "__main__":
         print(f"Uncollided2DMediumError={errors[1]:.8e}")
         print(f"Uncollided2DFineError={errors[2]:.8e}")
 
-    # Per-resolution bounds (~1.5x margin over the error actually observed
-    # after the conservation-scaling fix, Woodsford et al. (2026), Eqs.
-    # 24-25) rather than a strict monotonic coarse-to-fine ratio check. With
-    # the near-source region held to a fixed *physical* size across
-    # resolutions (matching the paper's own convergence study) rather than a
-    # fixed *fraction* of the mesh, the near-source region's own aggregate
-    # conservation-scale correction -- and thus the pointwise error it
-    # propagates essentially unchanged through the whole (linear) bulk sweep
-    # -- depends on the local shape of each independently-generated mesh's
-    # cells near the source, not just its overall refinement level, so it
-    # need not decrease monotonically with resolution.
-    if errors[0] > 0.06:
-        raise RuntimeError(f"2D coarse-mesh error is too large: {errors}")
-    if errors[1] > 0.20:
-        raise RuntimeError(f"2D medium-mesh error is too large: {errors}")
-    if errors[2] > 0.15:
-        raise RuntimeError(f"2D fine-mesh error is too large: {errors}")
+    # These independently generated meshes do not form a nested refinement
+    # sequence, so each result is checked against the analytic solution.
+    if errors[0] > 0.06 or errors[1] > 0.20 or errors[2] > 0.15:
+        raise RuntimeError(f"2D unstructured-mesh error is too large: {errors}")

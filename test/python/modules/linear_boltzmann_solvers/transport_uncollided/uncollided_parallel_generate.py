@@ -31,11 +31,7 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    # A small region around the point source, not the whole domain: see the
-    # comment in uncollided_2d_multigroup_analytic.py. The source itself is
-    # centered on its containing mesh cell (rather than an arbitrary
-    # coordinate) so it doesn't sit flush against one of that cell's faces;
-    # see UncollidedProblem's runtime warning for this.
+    # Small region around the source
     near_source_region = RPPLogicalVolume(
         xmin=0.0441723 - 0.08,
         xmax=0.0441723 + 0.08,

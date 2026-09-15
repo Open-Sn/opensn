@@ -44,16 +44,12 @@ if __name__ == "__main__":
     xs_right = MultiGroupXS()
     xs_right.CreateSimpleOneGroup(sigma_t=sigma_right, c=0.0)
 
-    # Centered on the containing mesh cell (rather than an arbitrary
-    # coordinate) so the source doesn't sit flush against one of that cell's
-    # faces; see UncollidedProblem's runtime warning for this. Still
-    # comfortably left of the x=0 material interface.
+    # Centered on its containing cell and left of the x=0 material interface
     source = (-0.589726, 0.133007, 0.0)
     point = (0.61, 0.13, 0.0)
     point_source = PointSource(location=list(source), strength=[1.0])
-    # A small region around the point source, not the whole domain: see the
-    # comment in uncollided_2d_multigroup_analytic.py. Kept entirely within
-    # the left (source-side) material so it doesn't cross the x=0 interface.
+    # Small region around the source kept within the left material so it doesn't
+    # cross the x=0 interface
     near_source_region = RPPLogicalVolume(
         xmin=source[0] - 0.08,
         xmax=source[0] + 0.08,

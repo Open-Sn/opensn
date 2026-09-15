@@ -52,9 +52,7 @@ if __name__ == "__main__":
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=sigma_t, c=0.0)
 
-    # Centered on the containing mesh cell (rather than an arbitrary
-    # coordinate) so the source doesn't sit flush against one of that cell's
-    # faces; see UncollidedProblem's runtime warning for this.
+    # Centered on the containing cell so it isn't flush against a face
     source = (0.0441723, -0.0330477, 0.0)
     strength = 1.0
     point_source = PointSource(location=list(source), strength=[strength])
@@ -65,10 +63,7 @@ if __name__ == "__main__":
         ymax=1.01,
         infz=True,
     )
-    # A small region around the point source, not the whole domain: see the
-    # comment in uncollided_2d_multigroup_analytic.py. whole_domain above is
-    # kept as-is since it is also used for the volume_minimum/volume_integral
-    # checks below, which are meant to cover the full mesh.
+    # Small region around the source
     near_source_region = RPPLogicalVolume(
         xmin=source[0] - 0.08,
         xmax=source[0] + 0.08,
@@ -170,14 +165,6 @@ if __name__ == "__main__":
         sys.stdout.flush()
 
     remove_file(file_name)
-    # Thresholds set with ~1.5x margin over the error actually observed after
-    # the conservation-scaling fix (Woodsford et al. (2026), Eqs. 24-25): the
-    # near-source ray-traced treatment trades pointwise accuracy for exact
-    # per-cell conservation, and that error is not localized -- it
-    # propagates essentially unchanged through the (linear) bulk sweep to
-    # every sample point, rather than decaying with distance from the
-    # source. The outflow check stays much tighter since it compares an
-    # integrated (not pointwise) quantity, which conservation keeps accurate.
     if max_scalar_error > 0.17:
         raise RuntimeError(f"2D scalar-flux error is too large: {max_scalar_error}")
     if max_p1_error > 0.16:

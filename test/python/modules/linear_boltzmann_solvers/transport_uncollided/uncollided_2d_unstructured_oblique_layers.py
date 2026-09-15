@@ -57,15 +57,9 @@ if __name__ == "__main__":
         xs.CreateSimpleOneGroup(sigma_t=value, c=0.0)
         cross_sections.append(xs)
 
-    # Centered on the containing mesh cell (rather than an arbitrary
-    # coordinate) so the source doesn't sit flush against one of that cell's
-    # faces; see UncollidedProblem's runtime warning for this. Still
-    # comfortably within the first (u < -0.25) material layer.
+    # Centered on its containing cell within the first (u < -0.25) material layer
     source = (-0.778517, -0.390592, 0.0)
-    # A small region around the point source, not the whole domain: see the
-    # comment in uncollided_2d_multigroup_analytic.py. The source sits near a
-    # domain corner here, so the region is kept smaller to stay inside the
-    # domain with margin.
+    # Small region around the source
     near_source_region = RPPLogicalVolume(
         xmin=source[0] - 0.08,
         xmax=source[0] + 0.08,

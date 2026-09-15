@@ -11,14 +11,38 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedSampleOpenSn=",
-        "goldvalue": 1.663665090990e+02,
-        "rel_tol": 1.0e-8
+        "goldvalue": 155.605048137,
+        "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedLineMeanRelativeError=",
-        "goldvalue": 7.509048340914e-03,
-        "rel_tol": 1.0e-8
+        "goldvalue": 0.02207941784982,
+        "rel_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedFineLineMeanRelativeError=",
+        "goldvalue": 0.009871387451248,
+        "rel_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedFineLineMaxRelativeError=",
+        "goldvalue": 0.02377214881434,
+        "rel_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedNearSourceLineCoarseMeanRelativeError=",
+        "goldvalue": 0.02665865946522,
+        "rel_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedNearSourceLineFineMeanRelativeError=",
+        "goldvalue": 0.02475006956659,
+        "rel_tol": 1e-08
       }
     ]
   },
@@ -35,26 +59,26 @@
       {
         "type": "KeyValuePair",
         "key": "Total scalar flux at (0.024, 0.016, 0.008):",
-        "goldvalue": 4.117904369731e+02,
-        "rel_tol": 1.0e-8
+        "goldvalue": 399.2665520868,
+        "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Total scalar-flux integral:",
-        "goldvalue": 2.096499026319e-02,
-        "rel_tol": 1.0e-8
+        "goldvalue": 0.02176869131032,
+        "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Balance residual:",
         "goldvalue": 0.0,
-        "abs_tol": 1.0e-10
+        "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "Collided fraction of line-integrated flux:",
-        "goldvalue": 5.675993245977e-01,
-        "rel_tol": 1.0e-8
+        "goldvalue": 0.5819877383826,
+        "rel_tol": 1e-08
       }
     ]
   }
