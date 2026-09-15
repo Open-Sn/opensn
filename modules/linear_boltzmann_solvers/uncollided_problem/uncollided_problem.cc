@@ -23,6 +23,7 @@
 #include <unordered_map>
 #include <cmath>
 #include <algorithm>
+#include <limits>
 
 namespace opensn
 {
@@ -383,6 +384,50 @@ UncollidedProblem::BuildSourcePoints()
     for (const auto& subscriber : point_source->GetSubscribers())
       source_point.subscribers.push_back({subscriber.cell_local_id, subscriber.volume_weight});
     source_points_.push_back(std::move(source_point));
+
+    // Warn when the source sits close to a face of its own containing cell, relative
+    // to that cell's size. The near-source treatment (Woodsford et al. (2026), Sec.
+    // 4) evaluates the ray-traced flux right up to that face; if the source is nearly
+    // flush against it, the field varies enormously across the cell and the resulting
+    // face-leakage/volume-removal mismatch can be large even at the current
+    // quadrature order. The conservation-scale factor (Eq. 24) keeps the cell
+    // balanced regardless, but a large factor means the nodal flux shape it is
+    // applied to was already a poor local fit, not just its integral -- so this is
+    // best caught here, before it shows up as pointwise error.
+    const auto& subscribers = source_points_.back().subscribers;
+    if (subscribers.size() == 1)
+    {
+      const Cell& source_cell = grid_->local_cells[subscribers.front().cell_local_id];
+      const Vector3& loc = source_points_.back().location;
+
+      double min_face_dist = std::numeric_limits<double>::max();
+      for (const auto& face : source_cell.faces)
+        min_face_dist = std::min(min_face_dist, std::abs(face.normal.Dot(loc - face.centroid)));
+
+      Vector3 bbox_min = grid_->vertices[source_cell.vertex_ids.front()];
+      Vector3 bbox_max = bbox_min;
+      for (const auto vid : source_cell.vertex_ids)
+      {
+        const auto& v = grid_->vertices[vid];
+        bbox_min = Vector3(
+          std::min(bbox_min.x, v.x), std::min(bbox_min.y, v.y), std::min(bbox_min.z, v.z));
+        bbox_max = Vector3(
+          std::max(bbox_max.x, v.x), std::max(bbox_max.y, v.y), std::max(bbox_max.z, v.z));
+      }
+      const double cell_length_scale = (bbox_max - bbox_min).Norm();
+
+      constexpr double min_relative_face_distance = 0.1;
+      if (cell_length_scale > 0.0 and
+          min_face_dist < min_relative_face_distance * cell_length_scale)
+        log.Log0Warning()
+          << GetName() << ": point source " << source_index << " at " << loc.PrintStr()
+          << " lies only " << min_face_dist << " from a face of its containing cell (global id "
+          << source_cell.global_id << ", centroid " << source_cell.centroid.PrintStr()
+          << ", characteristic size " << cell_length_scale
+          << "). The near-source ray-traced flux evaluation is likely to be poorly resolved "
+             "there; consider refining the mesh near this source, or moving it closer to its "
+             "containing cell's centroid, so it sits more centrally within its cell.";
+    }
   }
 }
 
@@ -1220,7 +1265,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
           const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
-          const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
+          const double mu_qp = omega.Dot(normal);
+          const double integrand = (*swf)(qp_xyz)*mu_qp * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
             face_leakage[g] += phi_qp[g] * integrand;
@@ -1369,49 +1415,94 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         for (size_t g = 0; g < num_groups_; ++g)
           source[g] += leakages[c][f][g];
 
-    // Preserve the independently ray-traced volume projection and face
-    // currents. Their quadrature mismatch is useful as a diagnostic, but
-    // rescaling either quantity to enforce cell balance recursively injects
-    // that mismatch into downstream cells and produces strong mesh dependence.
+    // Enforce conservation using the paper's own scheme (Woodsford et al.
+    // (2026), Eqs. (24)-(25)): reconcile the ray-traced face leakage L+
+    // against the ray-traced volume-removal quadrature (absorption) with a
+    // single shared scale factor, alpha, trusting neither term over the
+    // other. This is always used, including with reflecting boundaries --
+    // reflected image sources are always treated as pure bulk (never
+    // near-source ray-traced, since their singularity lies outside the
+    // domain) and always use the plain, unrefined ray trace, so global
+    // conservation relies on an implicit cancellation between the real
+    // source's own near-source treatment and the images'
+    // independently-computed contribution; this symmetric scheme keeps both
+    // sides equally (if imperfectly) accurate, so that cancellation holds.
+    // A more accurate near-source treatment on the real source's side alone
+    // (e.g. trusting L+ over the volume fit) breaks it -- confirmed
+    // directly on the reflecting-boundary Kobayashi problem. Closing this
+    // properly needs bringing the images' treatment in line with whatever
+    // the real source does, not another local workaround.
     for (size_t g = 0; g < num_groups_; ++g)
     {
-      double outgoing_leakage = 0.0;
+      double outgoing_leakage = 0.0; // L+
       for (size_t f = 0; f < cell_num_faces; ++f)
         if (cell_face_orientations_[c][f] == FOOUTGOING)
           outgoing_leakage += leakages[c][f][g];
 
-      double projected_integral = 0.0;
+      double projected_integral = 0.0; // <phi> V_K, from the ray-traced least-squares fit
       for (size_t i = 0; i < cell_num_nodes; ++i)
         projected_integral += IntV_shapeI(i) * phi[g](i);
       projected_integral = std::max(0.0, projected_integral);
 
+      const double clamped_source = std::max(0.0, source[g]);
+      const double raw_absorption = sigma_t[g] * projected_integral; // diagnostic only
+      const double raw_removal = outgoing_leakage + raw_absorption;  // diagnostic only
       const double current_tolerance = 1.0e-12 * std::max(1.0, std::abs(source[g]));
-      if (sigma_t[g] > 0.0)
-      {
-        const double maximum_integral = source[g] / sigma_t[g];
-        if (projected_integral > maximum_integral and projected_integral > 0.0)
-        {
-          const double volume_scale = maximum_integral / projected_integral;
-          phi[g].Scale(volume_scale);
-          projected_integral = maximum_integral;
-        }
-      }
+
+      // Eq. (24)-(25): enforce non-negativity while preserving the raw
+      // integral exactly, then separately scale both Phi and L+ by the
+      // same shared factor.
       ApplyConservativePositiveCorrection(
         phi[g], IntV_shapeI, projected_integral, projected_integral);
-      const double balanced_outgoing = std::max(0.0, source[g] - sigma_t[g] * projected_integral);
+      double leak_scale = 1.0;
+      if (raw_removal > current_tolerance)
+        leak_scale = clamped_source / raw_removal;
+      phi[g].Scale(leak_scale);
 
-      const double outgoing_change = std::abs(balanced_outgoing - outgoing_leakage);
-      const double relative_outgoing_change =
-        outgoing_leakage > current_tolerance ? outgoing_change / outgoing_leakage : 0.0;
+      // Diagnostic-only "effective alpha", matching the near-source
+      // consistency reporting below (equal to leak_scale here, since the
+      // whole correction is one shared factor).
+      double alpha = 1.0;
+      if (raw_removal > current_tolerance)
+        alpha = clamped_source / raw_removal;
+      const double relative_change = std::abs(alpha - 1.0);
       constexpr double significant_relative_change = 0.01;
-      if (relative_outgoing_change > significant_relative_change)
+      if (relative_change > significant_relative_change)
       {
         cell_current_mismatched = true;
         ++mismatched_cell_group_count;
-        original_outgoing_sum += outgoing_leakage;
-        outgoing_change_sum += outgoing_change;
-        max_relative_outgoing_change =
-          std::max(max_relative_outgoing_change, relative_outgoing_change);
+        original_outgoing_sum += raw_removal;
+        outgoing_change_sum += relative_change * raw_removal;
+        max_relative_outgoing_change = std::max(max_relative_outgoing_change, relative_change);
+      }
+
+      // Apply the shared Eq. (24)-(25) factor to L+ (and the matching
+      // cell_bulk_rhs entries fed to bulk-region neighbors); Phi already hit
+      // its target via the correction above.
+      for (size_t f = 0; f < cell_num_faces; ++f)
+        if (cell_face_orientations_[c][f] == FOOUTGOING)
+          leakages[c][f][g] *= leak_scale;
+      for (auto& [jr, rhs_g] : cell_bulk_rhs)
+        if (not rhs_g.empty())
+          rhs_g[g] *= leak_scale;
+
+      // Degenerate case: both the ray-traced outflow and the ray-traced
+      // absorption are essentially zero for this group, yet conservation
+      // still implies source[g] must leave through some outgoing face, since
+      // essentially nothing is being absorbed either. There is no ray-traced
+      // shape to distribute it by, so split it evenly across the outgoing
+      // faces instead of silently dropping it. cell_bulk_rhs entries stay at
+      // their near-zero ray-traced value in this rare case.
+      if (raw_removal <= current_tolerance and source[g] > current_tolerance)
+      {
+        size_t outgoing_face_count = 0;
+        for (size_t f = 0; f < cell_num_faces; ++f)
+          if (cell_face_orientations_[c][f] == FOOUTGOING)
+            ++outgoing_face_count;
+        if (outgoing_face_count > 0)
+          for (size_t f = 0; f < cell_num_faces; ++f)
+            if (cell_face_orientations_[c][f] == FOOUTGOING)
+              leakages[c][f][g] = source[g] / static_cast<double>(outgoing_face_count);
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -1447,8 +1538,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     original_outgoing_sum > 0.0 ? outgoing_change_sum / original_outgoing_sum : 0.0;
   log.Log() << std::setprecision(6) << std::scientific
             << "Near-source consistency: " << mismatched_cell_count << " / " << near_spls_.size()
-            << " cells exceeded the current-mismatch tolerance"
-            << " (aggregate mismatch " << aggregate_relative_change << ").";
+            << " cells required a conservation-scale factor beyond the current-mismatch tolerance"
+            << " (aggregate correction " << aggregate_relative_change << ").";
   log.Log0Verbose1() << " Near-source current consistency diagnostic:\n"
                      << "  Mismatched cells            = " << mismatched_cell_count << " / "
                      << near_spls_.size() << "\n"
@@ -1471,7 +1562,10 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       << std::fixed << std::setprecision(1) << 100.0 * mismatched_cell_fraction
       << "% of near-source cells exceed the mismatch threshold, with "
       << 100.0 * aggregate_relative_change
-      << "% aggregate relative mismatch. The independently ray-traced quantities are preserved.";
+      << "% aggregate relative mismatch. The ray-traced outgoing leakage and the ray-traced "
+      << "volume-removal quadrature are reconciled with a single shared scale factor "
+      << "(Woodsford et al. (2026), Eqs. (24)-(25)); large values here mean that correction is "
+      << "significant and the mesh may need refinement near the source.";
 }
 
 std::vector<double>

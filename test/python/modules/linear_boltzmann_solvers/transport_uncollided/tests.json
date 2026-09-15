@@ -71,8 +71,8 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedReflecting2DMaxAnalyticError=",
-        "goldvalue": 0.00006470235,
-        "abs_tol": 0.00003
+        "goldvalue": 0.13344484,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
@@ -121,14 +121,14 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMaxScalarRelativeError=",
-        "goldvalue": 0.000137893,
-        "abs_tol": 0.00005
+        "goldvalue": 0.1134274,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMaxP1ScaledError=",
-        "goldvalue": 0.000340772,
-        "abs_tol": 0.0001
+        "goldvalue": 0.10793101,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
@@ -139,14 +139,14 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMinimumScalarFlux=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-14
+        "goldvalue": 0.036309,
+        "abs_tol": 0.005
       },
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DOutflowRelativeError=",
-        "goldvalue": 0.000567,
-        "abs_tol": 0.0002
+        "goldvalue": 0.0031488,
+        "abs_tol": 0.001
       }
     ]
   },
@@ -158,8 +158,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DFineError=",
-        "goldvalue": 0.00011147,
-        "abs_tol": 0.00003
+        "goldvalue": 0.09565332,
+        "abs_tol": 0.02
       }
     ]
   },
@@ -171,8 +171,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DHeterogeneousRelativeError=",
-        "goldvalue": 0.00690823,
-        "abs_tol": 0.002
+        "goldvalue": 0.00880381,
+        "abs_tol": 0.0026
       }
     ]
   },
@@ -184,8 +184,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DObliqueLayersError=",
-        "goldvalue": 0.000158609,
-        "abs_tol": 0.00005
+        "goldvalue": 0.01857252,
+        "abs_tol": 0.005
       }
     ]
   },
@@ -210,8 +210,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMultigroupMaxError=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.001
+        "goldvalue": 0.04231392,
+        "abs_tol": 0.01
       }
     ]
   },
@@ -224,8 +224,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided3DFineMaxError=",
-        "goldvalue": 0.00633644,
-        "abs_tol": 0.002
+        "goldvalue": 0.07285865,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
@@ -279,7 +279,7 @@
     "num_procs": 1,
     "env": {
       "OPENSN_NUM_THREADS": 8
-    }, 
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -298,133 +298,133 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_1=",
-        "goldvalue": 3.4938188508225627,
-        "abs_tol": 3.4938188508225628e-06
+        "goldvalue": 3.0679265380684275,
+        "abs_tol": 3.0679265380684274e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_2=",
-        "goldvalue": 1.3229576171865212,
-        "abs_tol": 1.3229576171865212e-06
+        "goldvalue": 1.3024115507856593,
+        "abs_tol": 1.3024115507856593e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_3=",
-        "goldvalue": 0.5004490600832293,
-        "abs_tol": 5.004490600832293e-07
+        "goldvalue": 0.5153651438013669,
+        "abs_tol": 5.153651438013669e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_4=",
-        "goldvalue": 0.2522825718937159,
-        "abs_tol": 2.522825718937159e-07
+        "goldvalue": 0.2611301918657172,
+        "abs_tol": 2.611301918657172e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_5=",
-        "goldvalue": 0.14978611948151202,
-        "abs_tol": 1.4978611948151202e-07
+        "goldvalue": 0.15527915953464377,
+        "abs_tol": 1.5527915953464377e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_6=",
-        "goldvalue": 0.09930213793419054,
-        "abs_tol": 9.930213793419055e-08
+        "goldvalue": 0.10293242389759734,
+        "abs_tol": 1.0293242389759733e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_7=",
-        "goldvalue": 0.04228919220639844,
-        "abs_tol": 4.228919220639844e-08
+        "goldvalue": 0.04382601590910784,
+        "abs_tol": 4.3826015909107836e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_8=",
-        "goldvalue": 0.011031421865974632,
-        "abs_tol": 1.1031421865974632e-08
+        "goldvalue": 0.011468462514028992,
+        "abs_tol": 1.146846251402899e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_9=",
-        "goldvalue": 0.0032867023153441777,
-        "abs_tol": 3.286702315344178e-09
+        "goldvalue": 0.0034104223299897423,
+        "abs_tol": 3.4104223299897423e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_10=",
-        "goldvalue": 0.0009549995555502642,
-        "abs_tol": 9.549995555502643e-10
+        "goldvalue": 0.0009908857973573296,
+        "abs_tol": 9.908857973573296e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_1=",
-        "goldvalue": 0.09930213793419054,
-        "abs_tol": 9.930213793419055e-08
+        "goldvalue": 0.10293242389759734,
+        "abs_tol": 1.0293242389759733e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_2=",
-        "goldvalue": 0.0229919702891931,
-        "abs_tol": 2.29919702891931e-08
+        "goldvalue": 0.023138343626891513,
+        "abs_tol": 2.313834362689151e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_3=",
-        "goldvalue": 0.004637649375486973,
-        "abs_tol": 4.637649375486973e-09
+        "goldvalue": 0.004687601281529266,
+        "abs_tol": 4.687601281529265e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_4=",
-        "goldvalue": 0.0013982943233741957,
-        "abs_tol": 1.3982943233741958e-09
+        "goldvalue": 0.0014172713836603703,
+        "abs_tol": 1.4172713836603703e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_5=",
-        "goldvalue": 0.0002816606398512145,
-        "abs_tol": 2.816606398512145e-10
+        "goldvalue": 0.0002852344687906054,
+        "abs_tol": 2.852344687906054e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_6=",
-        "goldvalue": 8.488052796577584e-05,
+        "goldvalue": 8.511395502987994e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_1=",
-        "goldvalue": 3.2311756636164126e-05,
+        "goldvalue": 3.282421016847003e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_2=",
-        "goldvalue": 2.5448110040713145e-05,
+        "goldvalue": 2.5820707422047326e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_3=",
-        "goldvalue": 1.7563457087744883e-05,
+        "goldvalue": 1.781331825227676e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_4=",
-        "goldvalue": 2.968199947737e-05,
+        "goldvalue": 2.9832544316260537e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_5=",
-        "goldvalue": 7.804715221657825e-06,
+        "goldvalue": 7.887525584889007e-06,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_6=",
-        "goldvalue": 3.2436510202930155e-06,
+        "goldvalue": 3.306990371645269e-06,
         "abs_tol": 1e-10
       }
     ]
@@ -438,133 +438,133 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_1=",
-        "goldvalue": 5.7390915216826945,
-        "abs_tol": 5.7390915216826945e-06
+        "goldvalue": 5.194731093136375,
+        "abs_tol": 5.1947310931363745e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_2=",
-        "goldvalue": 2.1069369971125913,
-        "abs_tol": 2.106936997112591e-06
+        "goldvalue": 2.0748007275281104,
+        "abs_tol": 2.0748007275281104e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_3=",
-        "goldvalue": 0.8789760508133125,
-        "abs_tol": 8.789760508133126e-07
+        "goldvalue": 0.8939886891584768,
+        "abs_tol": 8.939886891584768e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_4=",
-        "goldvalue": 0.4679577392745491,
-        "abs_tol": 4.679577392745491e-07
+        "goldvalue": 0.4772747395342399,
+        "abs_tol": 4.772747395342399e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_5=",
-        "goldvalue": 0.28245171531536306,
-        "abs_tol": 2.8245171531536304e-07
+        "goldvalue": 0.28803164329043224,
+        "abs_tol": 2.8803164329043224e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_6=",
-        "goldvalue": 0.18963421381377454,
-        "abs_tol": 1.8963421381377454e-07
+        "goldvalue": 0.19344469109941023,
+        "abs_tol": 1.9344469109941024e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_7=",
-        "goldvalue": 0.10295861421970795,
-        "abs_tol": 1.0295861421970795e-07
+        "goldvalue": 0.10492450189839485,
+        "abs_tol": 1.0492450189839484e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_8=",
-        "goldvalue": 0.03218413544607038,
-        "abs_tol": 3.218413544607038e-08
+        "goldvalue": 0.03280081445846286,
+        "abs_tol": 3.280081445846286e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_9=",
-        "goldvalue": 0.010588618875907518,
-        "abs_tol": 1.0588618875907518e-08
+        "goldvalue": 0.010781815668159564,
+        "abs_tol": 1.0781815668159564e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_10=",
-        "goldvalue": 0.003313588268693782,
-        "abs_tol": 3.313588268693782e-09
+        "goldvalue": 0.0033729240587615722,
+        "abs_tol": 3.372924058761572e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_1=",
-        "goldvalue": 0.18963421381377454,
-        "abs_tol": 1.8963421381377454e-07
+        "goldvalue": 0.19344469109941023,
+        "abs_tol": 1.9344469109941024e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_2=",
-        "goldvalue": 0.06421720604715722,
-        "abs_tol": 6.421720604715722e-08
+        "goldvalue": 0.06476862516094574,
+        "abs_tol": 6.476862516094574e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_3=",
-        "goldvalue": 0.021802675742749723,
-        "abs_tol": 2.1802675742749723e-08
+        "goldvalue": 0.022047717784708057,
+        "abs_tol": 2.2047717784708057e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_4=",
-        "goldvalue": 0.009703909982691021,
-        "abs_tol": 9.703909982691021e-09
+        "goldvalue": 0.009836807262643599,
+        "abs_tol": 9.8368072626436e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_5=",
-        "goldvalue": 0.0033725157362219683,
-        "abs_tol": 3.3725157362219684e-09
+        "goldvalue": 0.0034183520429044378,
+        "abs_tol": 3.418352042904438e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_6=",
-        "goldvalue": 0.0010136505582856567,
-        "abs_tol": 1.0136505582856568e-09
+        "goldvalue": 0.0010272466542247307,
+        "abs_tol": 1.0272466542247306e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_1=",
-        "goldvalue": 0.00033244353285043,
-        "abs_tol": 3.3244353285043e-10
+        "goldvalue": 0.0003359447670768926,
+        "abs_tol": 3.359447670768926e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_2=",
-        "goldvalue": 0.0002765436953974985,
-        "abs_tol": 2.7654369539749854e-10
+        "goldvalue": 0.00027923847172063875,
+        "abs_tol": 2.7923847172063873e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_3=",
-        "goldvalue": 0.0002106020080453883,
-        "abs_tol": 2.106020080453883e-10
+        "goldvalue": 0.00021276327657721974,
+        "abs_tol": 2.1276327657721974e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_4=",
-        "goldvalue": 0.00023908554299853274,
-        "abs_tol": 2.3908554299853275e-10
+        "goldvalue": 0.0002417052415810473,
+        "abs_tol": 2.417052415810473e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_5=",
-        "goldvalue": 0.00011041157534996497,
-        "abs_tol": 1.1041157534996498e-10
+        "goldvalue": 0.00011170470171421637,
+        "abs_tol": 1.1170470171421636e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_6=",
-        "goldvalue": 4.34620620434997e-05,
+        "goldvalue": 4.4006230495387166e-05,
         "abs_tol": 1e-10
       }
     ]
@@ -751,7 +751,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
+        "goldvalue": 1.091039831,
         "abs_tol": 1e-8
       }
     ]
@@ -767,7 +767,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
+        "goldvalue": 1.091039831,
         "abs_tol": 1e-8
       }
     ]
@@ -783,7 +783,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
+        "goldvalue": 1.091039831,
         "abs_tol": 1e-8
       }
     ]

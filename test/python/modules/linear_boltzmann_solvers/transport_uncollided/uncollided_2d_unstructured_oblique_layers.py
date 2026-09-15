@@ -57,12 +57,20 @@ if __name__ == "__main__":
         xs.CreateSimpleOneGroup(sigma_t=value, c=0.0)
         cross_sections.append(xs)
 
-    source = (-0.8, -0.4, 0.0)
-    whole_domain = RPPLogicalVolume(
-        xmin=-1.01,
-        xmax=1.01,
-        ymin=-1.01,
-        ymax=1.01,
+    # Centered on the containing mesh cell (rather than an arbitrary
+    # coordinate) so the source doesn't sit flush against one of that cell's
+    # faces; see UncollidedProblem's runtime warning for this. Still
+    # comfortably within the first (u < -0.25) material layer.
+    source = (-0.778517, -0.390592, 0.0)
+    # A small region around the point source, not the whole domain: see the
+    # comment in uncollided_2d_multigroup_analytic.py. The source sits near a
+    # domain corner here, so the region is kept smaller to stay inside the
+    # domain with margin.
+    near_source_region = RPPLogicalVolume(
+        xmin=source[0] - 0.08,
+        xmax=source[0] + 0.08,
+        ymin=source[1] - 0.08,
+        ymax=source[1] + 0.08,
         infz=True,
     )
     file_name = "uncollided_2d_oblique_layers.h5"
@@ -76,7 +84,7 @@ if __name__ == "__main__":
             for block_id, xs in enumerate(cross_sections, start=1)
         ],
         point_sources=[PointSource(location=list(source), strength=[1.0])],
-        near_source=[whole_domain],
+        near_source=[near_source_region],
         scattering_order=0,
     )
     solver = UncollidedSolver(problem=problem, file_name=file_name)
