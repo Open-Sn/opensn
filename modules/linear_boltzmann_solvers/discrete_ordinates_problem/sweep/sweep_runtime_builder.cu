@@ -63,13 +63,17 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
   if (work.empty())
     return;
 
-  constexpr size_t nthreads = 1;
+  const auto nthreads = std::min<std::size_t>(work.size(), std::max(1U, opensn_num_threads));
   log.Log() << program_timer.GetTimeString() << " FLUDS construction: " << work.size()
-            << " angles (" << nthreads << " threads(s)).";
+            << " angles (" << nthreads << " thread(s)).";
   std::vector<std::unique_ptr<CBCD_FLUDSCommonData>> result(work.size());
-  for (size_t i = 0; i < work.size(); ++i)
-    result[i] =
-      std::make_unique<CBCD_FLUDSCommonData>(*work[i].spds, grid_nodal_mappings, discretization);
+  ParallelFor(work.size(),
+              nthreads,
+              [&](size_t i)
+              {
+                result[i] = std::make_unique<CBCD_FLUDSCommonData>(
+                  *work[i].spds, grid_nodal_mappings, discretization);
+              });
   for (size_t i = 0; i < work.size(); ++i)
     runtime.quadrature_fluds_commondata_map[work[i].quadrature].push_back(std::move(result[i]));
   log.Log() << program_timer.GetTimeString() << " FLUDS construction done.";

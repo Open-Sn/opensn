@@ -205,12 +205,10 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
         }
         else
         {
-          fluds =
-            std::make_shared<CBC_FLUDS>(gs_num_grps,
-                                        angle_indices.size(),
-                                        dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data),
-                                        groupset.psi_uk_man_,
-                                        *discretization_);
+          fluds = std::make_shared<CBC_FLUDS>(
+            gs_num_grps,
+            angle_indices.size(),
+            dynamic_cast<const CBC_FLUDSCommonData&>(fluds_common_data));
         }
 
         std::shared_ptr<AngleSet> angle_set;
@@ -232,6 +230,7 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      fluds,
                                                      angle_indices,
                                                      sweep_boundaries_,
+                                                     options_.max_mpi_message_size,
                                                      *grid_local_comm_set_);
         }
 
