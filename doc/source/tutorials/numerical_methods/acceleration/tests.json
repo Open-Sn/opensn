@@ -1,0 +1,153 @@
+[
+  {
+    "file": "wgdsa.py",
+    "comment": "12-group source-detector comparison with and without WGDSA",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Unaccelerated total average flux=",
+        "goldvalue": 1.624157638081e-01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "WGDSA total flux relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Unaccelerated sweeps=",
+        "wordnum": 2,
+                "gold": 5394
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "WGDSA sweeps=",
+        "wordnum": 2,
+                "gold": 1929
+      }
+    ]
+  },
+  {
+    "file": "tgdsa.py",
+    "comment": "168-group graphite source iteration with and without TGDSA",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Unaccelerated total average flux=",
+        "goldvalue": 4.231957467380e+01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TGDSA total flux relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TGDSA group 120 relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "scdsa.py",
+    "comment": "Two-group fuel-water eigenvalue comparison with and without SCDSA",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Unaccelerated k-effective=",
+        "goldvalue": 5.963819047666e-01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SCDSA k-effective=",
+        "goldvalue": 5.963819423725e-01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SCDSA k-effective difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "cmfd.py",
+    "comment": "Two-group fuel-water eigenvalue comparison with and without CMFD",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Unaccelerated CMFD comparison k-effective=",
+        "goldvalue": 5.963818195332e-01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD k-effective=",
+        "goldvalue": 5.963819432789e-01,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD k-effective difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  },
+  {
+    "file": "smm.py",
+    "comment": "84-group U-235 eigenvalue comparison with and without SMM",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Unaccelerated SMM comparison k-effective=",
+        "goldvalue": 2.280431676568,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMM k-effective=",
+        "goldvalue": 2.280431778603,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMM k-effective difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-6
+      }
+    ]
+  }
+]

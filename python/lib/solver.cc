@@ -1578,6 +1578,18 @@ WrapSteadyState(py::module& slv)
     )"
   );
   steady_state_solver.def(
+    "GetNumSweeps",
+    &SteadyStateSourceSolver::GetNumSweeps,
+    R"(
+    Return the cumulative number of transport sweeps performed by all groupsets.
+
+    Returns
+    -------
+    int
+        Total number of transport sweeps.
+    )"
+  );
+  steady_state_solver.def(
     "ComputeBalanceTable",
     [BalanceTableToDict](const SteadyStateSourceSolver& self)
     {

@@ -1,0 +1,143 @@
+[
+  {
+    "file": "inner_solver_comparison.py",
+    "comment": "Comparison of all four inner transport methods",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Classic Richardson total average flux=",
+                "goldvalue": 4.999999963924,
+        "rel_tol": 1.0e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Maximum inner-solver flux difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-5
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "Classic Richardson sweeps=",
+        "wordnum": 3,
+                "gold": 107
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "PETSc Richardson sweeps=",
+        "wordnum": 3,
+        "gold": 108
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "PETSc GMRES sweeps=",
+        "wordnum": 3,
+        "gold": 10
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "PETSc BiCGStab sweeps=",
+        "wordnum": 3,
+        "gold": 14
+      }
+    ]
+  },
+  {
+    "file": "gmres_convergence.py",
+    "comment": "GMRES tolerance and restart convergence controls",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES reference total average flux=",
+        "goldvalue": 25.87632583109,
+        "rel_tol": 0.0000010
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "GMRES reference sweeps=",
+        "wordnum": 3,
+        "gold": 17
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "GMRES Tolerance 1e-4 sweeps=",
+        "wordnum": 4,
+        "gold": 11
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "GMRES Tolerance 1e-8 sweeps=",
+        "wordnum": 4,
+        "gold": 15
+      },
+      {
+        "type": "IntCompareCheck",
+        "key": "GMRES Restart 5 sweeps=",
+        "wordnum": 4,
+        "gold": 41
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES Restart 5 relative flux difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0000010
+      }
+    ]
+  },
+  {
+    "file": "scattering_convergence.py",
+    "comment": "Inner-solver convergence as scattering increases",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PETSc GMRES c=0.95 total average flux=",
+        "goldvalue": 20.0,
+        "rel_tol": 0.0000010
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Maximum scattering-study relative flux error=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0000010
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Classic Richardson c=0.95 sweeps=",
+        "goldvalue": 453,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PETSc Richardson c=0.95 sweeps=",
+        "goldvalue": 454,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PETSc GMRES c=0.95 sweeps=",
+        "goldvalue": 11,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PETSc BiCGStab c=0.95 sweeps=",
+        "goldvalue": 14,
+        "abs_tol": 0
+      }
+    ]
+  }
+]
