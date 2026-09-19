@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "framework/logging/log.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/utils/error.h"
@@ -98,6 +99,21 @@ SteadyStateSourceSolver::Execute()
     ComputeBalance(*do_problem_);
 
   log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
+}
+
+std::size_t
+SteadyStateSourceSolver::GetNumSweeps() const
+{
+  std::size_t total_num_sweeps = 0;
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+  return total_num_sweeps;
 }
 
 BalanceTable

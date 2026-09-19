@@ -6,6 +6,166 @@
       {
         "type": "ErrorCode",
         "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_STANDARD_MAX_OFF_DIAGONAL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_STANDARD_MAX_DIAG_DEVIATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_GALERKIN_ONE_MAX_OFF_DIAGONAL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_GALERKIN_ONE_MAX_DIAG_DEVIATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_GALERKIN_THREE_MAX_OFF_DIAGONAL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PQUAD_GALERKIN_THREE_MAX_DIAG_DEVIATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_STANDARD_MAX_OFF_DIAGONAL=",
+        "goldvalue": 5.216122041703e-1,
+        "rel_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_STANDARD_MAX_DIAG_DEVIATION=",
+        "goldvalue": 3.048494203283e-1,
+        "rel_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_GALERKIN_ONE_MAX_OFF_DIAGONAL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_GALERKIN_ONE_MAX_DIAG_DEVIATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_GALERKIN_THREE_MAX_OFF_DIAGONAL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SLDFESQ_GALERKIN_THREE_MAX_DIAG_DEVIATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-12
+      }
+    ]
+  },
+  {
+    "file": "anisotropic_boundary_delta_forward.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BOUNDARY_DIRECTION_COUNT=",
+        "goldvalue": 2,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BOUNDARY_SOURCE_RATE=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PURE_ABSORBER_TOTAL_FLUX=",
+        "goldvalue": 1.964011214270,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_P4_TOTAL_FLUX=",
+        "goldvalue": 1.955917056047,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_P5_TOTAL_FLUX=",
+        "goldvalue": 1.683260656610,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_TOTAL_FLUX=",
+        "goldvalue": 1.135792999080,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GALERKIN_ONE_TOTAL_FLUX=",
+        "goldvalue": 1.964011214178,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GALERKIN_THREE_TOTAL_FLUX=",
+        "goldvalue": 1.964011214178,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_P4_RELATIVE_ERROR=",
+        "goldvalue": 4.121238292272e-3,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_P5_RELATIVE_ERROR=",
+        "goldvalue": 1.429475328961e-1,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STANDARD_RELATIVE_ERROR=",
+        "goldvalue": 4.216972943803e-1,
+        "rel_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GALERKIN_ONE_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GALERKIN_THREE_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
       }
     ]
   },
@@ -22,11 +182,35 @@
         "key": "number of scattering orders tested =",
         "goldvalue": 5,
         "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P0_RELATIVE_L2_DIFFERENCE=",
+        "goldvalue": 4.303043220134e-1,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P0_NORMALIZED_MAX_DIFFERENCE=",
+        "goldvalue": 4.282444141921e-1,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P7_RELATIVE_L2_DIFFERENCE=",
+        "goldvalue": 2.887704821409e-3,
+        "rel_tol": 1.0e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P7_NORMALIZED_MAX_DIFFERENCE=",
+        "goldvalue": 5.626427606921e-3,
+        "rel_tol": 1.0e-8
       }
     ]
   },
   {
-    "file": "delta_forward.py",
+    "file": "isotropic_scattering_p4.py",
     "num_procs": 1,
     "checks": [
       {
@@ -35,9 +219,33 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "number of operator methods tested =",
-        "goldvalue": 3,
-        "abs_tol": 1e-8
+        "key": "BOUNDARY_SOURCE_RATE=",
+        "goldvalue": 1.0,
+        "abs_tol": 1.0e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SIMPLE_STANDARD_TOTAL_FLUX=",
+        "goldvalue": 8.376632320818e-1,
+        "rel_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P4_STANDARD_TOTAL_FLUX=",
+        "goldvalue": 8.376632320818e-1,
+        "rel_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "P4_GALERKIN_ONE_TOTAL_FLUX=",
+        "goldvalue": 8.376632320818e-1,
+        "rel_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MAX_RELATIVE_DIFFERENCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-11
       }
     ]
   }
