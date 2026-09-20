@@ -49,6 +49,7 @@ def ParseVerbosity(value):
             "--verbose expects an optional integer or boolean value"
         ) from exc
 
+
 # Process commandline arguments
 arguments_help = textwrap.dedent('''\
 Run the test suite or, optionally, a series of individual tests or a range of tests.
@@ -76,6 +77,12 @@ parser.add_argument(
     "--exe",
     type=str, required=False,
     help="The executable to use for testing"
+)
+
+parser.add_argument(
+    "--exe-prefix",
+    type=str, required=False, default="",
+    help="Command placed before the OpenSn executable, such as a memory-analysis tool"
 )
 
 parser.add_argument(
@@ -123,6 +130,12 @@ parser.add_argument(
 )
 
 parser.add_argument(
+    "--fail-on-nonzero-exit",
+    action="store_true",
+    help="Fail a test when its process exits nonzero, in addition to its configured checks."
+)
+
+parser.add_argument(
     "-w", "--weights",
     type=int, required=False, default=3,
     help="Test weight. Single numeric value < 7. This number, when converted to binary, specifies "
@@ -155,6 +168,7 @@ parser.add_argument(
 )
 
 argv = parser.parse_args()
+
 
 def PrepareTestSelection(argv):
     """Resolve -t/--test paths and wildcards into selectors relative to argv.directory."""
@@ -243,6 +257,7 @@ def WriteAggregatedRunLog(tests, run_log_path: str, base_directory: str):
                 log_file.write(f"[No output file found at {test_out}]\n")
 
             log_file.write("\n")
+
 
 # Check the exe exists
 if argv.exe is None:

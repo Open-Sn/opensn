@@ -75,7 +75,8 @@ class TestSlot:
         if self.argv.engine in ["module", "jupyter"]:
             cmd_exe = sys.executable
         else:
-            cmd_exe = f"{self.argv.exe} -i"
+            prefix = f"{self.argv.exe_prefix} " if self.argv.exe_prefix else ""
+            cmd_exe = f"{prefix}{shlex.quote(self.argv.exe)} -i"
 
         process_env = os.environ.copy()
         process_env.update(test.env)
@@ -174,6 +175,15 @@ class TestSlot:
 
         if test.skip == "":
             error_code = self.process.returncode
+            if self.argv.fail_on_nonzero_exit and error_code != 0:
+                passed = False
+                test.annotations.append(f"Exit code {error_code}")
+                test.check_results.append(
+                    {
+                        "passed": False,
+                        "summary": f"Process exit code expected=0 actual={error_code}",
+                    }
+                )
             for check in test.checks:
                 verbose = self.argv.verbose
                 check_passed = check.PerformCheck(output_filename, error_code, verbose)
