@@ -65,8 +65,10 @@ if __name__ == "__main__":
         infz=True,
     )
 
-    source_a = ((-0.31, 0.18, 0.0), 1.0)
-    source_b = ((0.29, -0.27, 0.0), 0.7)
+    # Centered on each source's containing cell so neither sits flush
+    # against a face
+    source_a = ((-0.322228, 0.183878, 0.0), 1.0)
+    source_b = ((0.267895, -0.268373, 0.0), 0.7)
     sample_points = [
         (-0.52, -0.41, 0.0),
         (-0.18, 0.49, 0.0),
@@ -76,6 +78,14 @@ if __name__ == "__main__":
 
     scalar_a = solve_scalar_flux(
         grid, xs, whole_domain, [source_a], "uncollided_superposition_a.h5"
+    )
+    source_scale = 1.0e-14
+    scalar_a_scaled = solve_scalar_flux(
+        grid,
+        xs,
+        whole_domain,
+        [(source_a[0], source_a[1] * source_scale)],
+        "uncollided_superposition_a_scaled.h5",
     )
     scalar_b = solve_scalar_flux(
         grid, xs, whole_domain, [source_b], "uncollided_superposition_b.h5"
@@ -89,8 +99,12 @@ if __name__ == "__main__":
     )
 
     max_relative_difference = 0.0
+    max_scale_difference = 0.0
     for point in sample_points:
         value_a = point_value(scalar_a, point, FieldFunctionInterpolationPoint, Vector3)
+        value_a_scaled = point_value(
+            scalar_a_scaled, point, FieldFunctionInterpolationPoint, Vector3
+        )
         value_b = point_value(scalar_b, point, FieldFunctionInterpolationPoint, Vector3)
         value_ab = point_value(scalar_ab, point, FieldFunctionInterpolationPoint, Vector3)
         reference = max(abs(value_a + value_b), 1.0e-14)
@@ -98,16 +112,26 @@ if __name__ == "__main__":
             max_relative_difference,
             abs(value_ab - (value_a + value_b)) / reference,
         )
+        max_scale_difference = max(
+            max_scale_difference,
+            abs(value_a_scaled / source_scale - value_a) / max(abs(value_a), 1.0e-14),
+        )
 
     remove_file("uncollided_superposition_a.h5")
+    remove_file("uncollided_superposition_a_scaled.h5")
     remove_file("uncollided_superposition_b.h5")
     remove_file("uncollided_superposition_ab.h5")
 
     if rank == 0:
         print(f"Uncollided2DSuperpositionRelativeDifference={max_relative_difference:.8e}")
+        print(f"Uncollided2DSourceScaleRelativeDifference={max_scale_difference:.8e}")
         sys.stdout.flush()
 
     if max_relative_difference > 1.0e-12:
         raise RuntimeError(
             f"Multiple point-source solution broke linear superposition: {max_relative_difference}"
+        )
+    if max_scale_difference > 1.0e-12:
+        raise RuntimeError(
+            f"Point-source scaling changed the normalized solution: {max_scale_difference}"
         )

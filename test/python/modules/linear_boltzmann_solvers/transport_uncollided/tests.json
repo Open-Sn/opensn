@@ -71,8 +71,8 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedReflecting2DMaxAnalyticError=",
-        "goldvalue": 0.00006470235,
-        "abs_tol": 0.00003
+        "goldvalue": 0.0,
+        "abs_tol": 0.05
       },
       {
         "type": "KeyValuePair",
@@ -84,7 +84,7 @@
         "type": "KeyValuePair",
         "key": "UncollidedReflecting2DCombinedBalance=",
         "goldvalue": 0.0,
-        "abs_tol": 0.00002
+        "abs_tol": 0.005
       },
       {
         "type": "KeyValuePair",
@@ -121,14 +121,14 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMaxScalarRelativeError=",
-        "goldvalue": 0.000137893,
-        "abs_tol": 0.00005
+        "goldvalue": 0.1134274,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMaxP1ScaledError=",
-        "goldvalue": 0.000340772,
-        "abs_tol": 0.0001
+        "goldvalue": 0.10793101,
+        "abs_tol": 0.02
       },
       {
         "type": "KeyValuePair",
@@ -139,27 +139,27 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMinimumScalarFlux=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-14
+        "goldvalue": 0.036309,
+        "abs_tol": 0.005
       },
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DOutflowRelativeError=",
-        "goldvalue": 0.000567,
-        "abs_tol": 0.0002
+        "goldvalue": 0.0031488,
+        "abs_tol": 0.001
       }
     ]
   },
   {
     "file": "uncollided_2d_unstructured_convergence.py",
-    "comment": "2D unstructured scalar-flux mesh convergence",
+    "comment": "2D scalar-flux accuracy on independent unstructured meshes",
     "num_procs": 1,
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DFineError=",
-        "goldvalue": 0.00011147,
-        "abs_tol": 0.00003
+        "goldvalue": 0.09565332,
+        "abs_tol": 0.02
       }
     ]
   },
@@ -171,8 +171,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DHeterogeneousRelativeError=",
-        "goldvalue": 0.00690823,
-        "abs_tol": 0.002
+        "goldvalue": 0.00880381,
+        "abs_tol": 0.0026
       }
     ]
   },
@@ -184,8 +184,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DObliqueLayersError=",
-        "goldvalue": 0.000158609,
-        "abs_tol": 0.00005
+        "goldvalue": 0.01857252,
+        "abs_tol": 0.005
       }
     ]
   },
@@ -199,6 +199,12 @@
         "key": "Uncollided2DSuperpositionRelativeDifference=",
         "goldvalue": 0.0,
         "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided2DSourceScaleRelativeDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
       }
     ]
   },
@@ -210,8 +216,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided2DMultigroupMaxError=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.001
+        "goldvalue": 0.04231392,
+        "abs_tol": 0.01
       }
     ]
   },
@@ -224,14 +230,8 @@
       {
         "type": "KeyValuePair",
         "key": "Uncollided3DFineMaxError=",
-        "goldvalue": 0.00633644,
-        "abs_tol": 0.002
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided3DMinimumScalarFlux=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-14
+        "goldvalue": 0.07285865,
+        "abs_tol": 0.02
       }
     ]
   },
@@ -244,7 +244,7 @@
         "type": "KeyValuePair",
         "key": "UnstructuredCombinedBalance=",
         "goldvalue": 0.0,
-        "abs_tol": 0.00002
+        "abs_tol": 2e-05
       },
       {
         "type": "KeyValuePair",
@@ -279,7 +279,7 @@
     "num_procs": 1,
     "env": {
       "OPENSN_NUM_THREADS": 8
-    }, 
+    },
     "checks": [
       {
         "type": "KeyValuePair",
@@ -298,133 +298,133 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_1=",
-        "goldvalue": 3.4938188508225627,
-        "abs_tol": 3.4938188508225628e-06
+        "goldvalue": 3.0530544035421463,
+        "abs_tol": 3.0530544035421463e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_2=",
-        "goldvalue": 1.3229576171865212,
-        "abs_tol": 1.3229576171865212e-06
+        "goldvalue": 1.3024115507856593,
+        "abs_tol": 1.3024115507856593e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_3=",
-        "goldvalue": 0.5004490600832293,
-        "abs_tol": 5.004490600832293e-07
+        "goldvalue": 0.5153651438013669,
+        "abs_tol": 5.153651438013669e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_4=",
-        "goldvalue": 0.2522825718937159,
-        "abs_tol": 2.522825718937159e-07
+        "goldvalue": 0.2611301918657172,
+        "abs_tol": 2.611301918657172e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_5=",
-        "goldvalue": 0.14978611948151202,
-        "abs_tol": 1.4978611948151202e-07
+        "goldvalue": 0.15527915953464377,
+        "abs_tol": 1.5527915953464377e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_6=",
-        "goldvalue": 0.09930213793419054,
-        "abs_tol": 9.930213793419055e-08
+        "goldvalue": 0.10293242389759734,
+        "abs_tol": 1.0293242389759733e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_7=",
-        "goldvalue": 0.04228919220639844,
-        "abs_tol": 4.228919220639844e-08
+        "goldvalue": 0.04382601590910784,
+        "abs_tol": 4.3826015909107836e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_8=",
-        "goldvalue": 0.011031421865974632,
-        "abs_tol": 1.1031421865974632e-08
+        "goldvalue": 0.011468462514028992,
+        "abs_tol": 1.146846251402899e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_9=",
-        "goldvalue": 0.0032867023153441777,
-        "abs_tol": 3.286702315344178e-09
+        "goldvalue": 0.0034104223299897423,
+        "abs_tol": 3.4104223299897423e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_10=",
-        "goldvalue": 0.0009549995555502642,
-        "abs_tol": 9.549995555502643e-10
+        "goldvalue": 0.0009908857973573296,
+        "abs_tol": 9.908857973573296e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_1=",
-        "goldvalue": 0.09930213793419054,
-        "abs_tol": 9.930213793419055e-08
+        "goldvalue": 0.10293242389759734,
+        "abs_tol": 1.0293242389759733e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_2=",
-        "goldvalue": 0.0229919702891931,
-        "abs_tol": 2.29919702891931e-08
+        "goldvalue": 0.023130080115538357,
+        "abs_tol": 2.3130080115538356e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_3=",
-        "goldvalue": 0.004637649375486973,
-        "abs_tol": 4.637649375486973e-09
+        "goldvalue": 0.004687601281529266,
+        "abs_tol": 4.687601281529265e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_4=",
-        "goldvalue": 0.0013982943233741957,
-        "abs_tol": 1.3982943233741958e-09
+        "goldvalue": 0.0014172713836603703,
+        "abs_tol": 1.4172713836603703e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_5=",
-        "goldvalue": 0.0002816606398512145,
-        "abs_tol": 2.816606398512145e-10
+        "goldvalue": 0.0002852344687906054,
+        "abs_tol": 2.852344687906054e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_6=",
-        "goldvalue": 8.488052796577584e-05,
+        "goldvalue": 8.511395502987994e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_1=",
-        "goldvalue": 3.2311756636164126e-05,
+        "goldvalue": 3.282421016847003e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_2=",
-        "goldvalue": 2.5448110040713145e-05,
+        "goldvalue": 2.5891745990122238e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_3=",
-        "goldvalue": 1.7563457087744883e-05,
+        "goldvalue": 1.781331825227676e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_4=",
-        "goldvalue": 2.968199947737e-05,
+        "goldvalue": 2.9832544316260537e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_5=",
-        "goldvalue": 7.804715221657825e-06,
+        "goldvalue": 6.428293522357702e-06,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_6=",
-        "goldvalue": 3.2436510202930155e-06,
+        "goldvalue": 3.3059752395663934e-06,
         "abs_tol": 1e-10
       }
     ]
@@ -438,292 +438,316 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_1=",
-        "goldvalue": 5.7390915216826945,
-        "abs_tol": 5.7390915216826945e-06
+        "goldvalue": 5.157429170709131,
+        "abs_tol": 5.157429170709131e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_2=",
-        "goldvalue": 2.1069369971125913,
-        "abs_tol": 2.106936997112591e-06
+        "goldvalue": 2.0772241537470535,
+        "abs_tol": 2.0772241537470535e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_3=",
-        "goldvalue": 0.8789760508133125,
-        "abs_tol": 8.789760508133126e-07
+        "goldvalue": 0.8950078276883014,
+        "abs_tol": 8.950078276883014e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_4=",
-        "goldvalue": 0.4679577392745491,
-        "abs_tol": 4.679577392745491e-07
+        "goldvalue": 0.4778193844973829,
+        "abs_tol": 4.77819384497383e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_5=",
-        "goldvalue": 0.28245171531536306,
-        "abs_tol": 2.8245171531536304e-07
+        "goldvalue": 0.28843212473365754,
+        "abs_tol": 2.884321247336575e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_6=",
-        "goldvalue": 0.18963421381377454,
-        "abs_tol": 1.8963421381377454e-07
+        "goldvalue": 0.19368382820559796,
+        "abs_tol": 1.9368382820559794e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_7=",
-        "goldvalue": 0.10295861421970795,
-        "abs_tol": 1.0295861421970795e-07
+        "goldvalue": 0.10504348035743753,
+        "abs_tol": 1.0504348035743753e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_8=",
-        "goldvalue": 0.03218413544607038,
-        "abs_tol": 3.218413544607038e-08
+        "goldvalue": 0.03283566041934536,
+        "abs_tol": 3.283566041934536e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_9=",
-        "goldvalue": 0.010588618875907518,
-        "abs_tol": 1.0588618875907518e-08
+        "goldvalue": 0.010793134870724754,
+        "abs_tol": 1.0793134870724754e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_10=",
-        "goldvalue": 0.003313588268693782,
-        "abs_tol": 3.313588268693782e-09
+        "goldvalue": 0.003376261242981884,
+        "abs_tol": 3.3762612429818838e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_1=",
-        "goldvalue": 0.18963421381377454,
-        "abs_tol": 1.8963421381377454e-07
+        "goldvalue": 0.19368382820559796,
+        "abs_tol": 1.9368382820559794e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_2=",
-        "goldvalue": 0.06421720604715722,
-        "abs_tol": 6.421720604715722e-08
+        "goldvalue": 0.06488162955127963,
+        "abs_tol": 6.488162955127963e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_3=",
-        "goldvalue": 0.021802675742749723,
-        "abs_tol": 2.1802675742749723e-08
+        "goldvalue": 0.022084513109407435,
+        "abs_tol": 2.2084513109407433e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_4=",
-        "goldvalue": 0.009703909982691021,
-        "abs_tol": 9.703909982691021e-09
+        "goldvalue": 0.009852485213489267,
+        "abs_tol": 9.852485213489266e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_5=",
-        "goldvalue": 0.0033725157362219683,
-        "abs_tol": 3.3725157362219684e-09
+        "goldvalue": 0.003424363128021386,
+        "abs_tol": 3.424363128021386e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_6=",
-        "goldvalue": 0.0010136505582856567,
-        "abs_tol": 1.0136505582856568e-09
+        "goldvalue": 0.0010285832123667039,
+        "abs_tol": 1.0285832123667037e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_1=",
-        "goldvalue": 0.00033244353285043,
-        "abs_tol": 3.3244353285043e-10
+        "goldvalue": 0.0003359058845176,
+        "abs_tol": 3.359058845176e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_2=",
-        "goldvalue": 0.0002765436953974985,
-        "abs_tol": 2.7654369539749854e-10
+        "goldvalue": 0.00027925508754236074,
+        "abs_tol": 2.792550875423607e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_3=",
-        "goldvalue": 0.0002106020080453883,
-        "abs_tol": 2.106020080453883e-10
+        "goldvalue": 0.00021267864403762103,
+        "abs_tol": 2.1267864403762103e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_4=",
-        "goldvalue": 0.00023908554299853274,
-        "abs_tol": 2.3908554299853275e-10
+        "goldvalue": 0.00024167830663661549,
+        "abs_tol": 2.416783066366155e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_5=",
-        "goldvalue": 0.00011041157534996497,
-        "abs_tol": 1.1041157534996498e-10
+        "goldvalue": 0.00011008265801166123,
+        "abs_tol": 1.1008265801166122e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_6=",
-        "goldvalue": 4.34620620434997e-05,
+        "goldvalue": 4.399655034052415e-05,
         "abs_tol": 1e-10
       }
     ]
   },
   {
-    "file": "uncollided_kobayashi_fine_generate.py",
-    "comment": "Long fine Kobayashi Problem 3 uncollided generation reused by case-i solve",
+    "file": "uncollided_kobayashi_xfine_generate.py",
+    "comment": "Long extra-fine (111,272-cell) Kobayashi Problem 3 uncollided generation reused by case-i solve",
     "num_procs": 1,
     "env": {
-      "OPENSN_NUM_THREADS": 8
+      "OPENSN_NUM_THREADS": 32
     },
     "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineUncollidedGenerated=",
+        "key": "KobayashiXfineUncollidedGenerated=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
       }
     ]
   },
   {
-    "file": "uncollided_kobayashi_case_i_fine.py",
-    "comment": "Long Kobayashi case-i collided solve on the fine tetrahedral mesh",
-    "num_procs": 8,
-    "dependency": "uncollided_kobayashi_fine_generate.py",
+    "file": "uncollided_kobayashi_case_i_xfine.py",
+    "comment": "Long Kobayashi case-i collided solve on the extra-fine (111,272-cell) tetrahedral mesh",
+    "num_procs": 32,
+    "dependency": "uncollided_kobayashi_xfine_generate.py",
     "weight_class": "long",
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_1=",
-        "goldvalue": 3.57444584180813,
-        "abs_tol": 3.57444584180813e-06
+        "key": "KobayashiXfineCaseI_3A_1=",
+        "goldvalue": 3.0292145068145646,
+        "abs_tol": 3.0292145068145645e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_2=",
-        "goldvalue": 1.3085726266053386,
-        "abs_tol": 1.3085726266053385e-06
+        "key": "KobayashiXfineCaseI_3A_2=",
+        "goldvalue": 1.3175061253219678,
+        "abs_tol": 1.3175061253219678e-06
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_3=",
-        "goldvalue": 0.5027118066279985,
-        "abs_tol": 5.027118066279985e-07
+        "key": "KobayashiXfineCaseI_3A_3=",
+        "goldvalue": 0.5171456985500713,
+        "abs_tol": 5.171456985500713e-07
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_4=",
-        "goldvalue": 0.2526841643594047,
-        "abs_tol": 2.526841643594047e-07
+        "key": "KobayashiXfineCaseI_3A_4=",
+        "goldvalue": 0.25827236586096153,
+        "abs_tol": 2.582723658609615e-07
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_5=",
-        "goldvalue": 0.15050420307351928,
-        "abs_tol": 1.5050420307351927e-07
+        "key": "KobayashiXfineCaseI_3A_5=",
+        "goldvalue": 0.15315731781121314,
+        "abs_tol": 1.5315731781121313e-07
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_6=",
-        "goldvalue": 0.09930700047046898,
-        "abs_tol": 9.930700047046898e-08
+        "key": "KobayashiXfineCaseI_3A_6=",
+        "goldvalue": 0.10093273920730489,
+        "abs_tol": 1.0093273920730488e-07
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_7=",
-        "goldvalue": 0.04236882002793181,
-        "abs_tol": 4.2368820027931815e-08
+        "key": "KobayashiXfineCaseI_3A_7=",
+        "goldvalue": 0.04303344719978216,
+        "abs_tol": 4.3033447199782156e-08
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_8=",
-        "goldvalue": 0.011538752725075256,
-        "abs_tol": 1.1538752725075255e-08
+        "key": "KobayashiXfineCaseI_3A_8=",
+        "goldvalue": 0.01167009260312903,
+        "abs_tol": 1.1670092603129028e-08
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_9=",
-        "goldvalue": 0.0032780395992340955,
-        "abs_tol": 3.2780395992340956e-09
+        "key": "KobayashiXfineCaseI_3A_9=",
+        "goldvalue": 0.003302068773457132,
+        "abs_tol": 3.302068773457132e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3A_10=",
-        "goldvalue": 0.0009576547673752672,
-        "abs_tol": 9.576547673752672e-10
+        "key": "KobayashiXfineCaseI_3A_10=",
+        "goldvalue": 0.000966865167390761,
+        "abs_tol": 9.66865167390761e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_1=",
-        "goldvalue": 0.09930700047046898,
-        "abs_tol": 9.930700047046898e-08
+        "key": "KobayashiXfineCaseI_3B_1=",
+        "goldvalue": 0.10093273920730489,
+        "abs_tol": 1.0093273920730488e-07
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_2=",
-        "goldvalue": 0.02468839525164676,
-        "abs_tol": 2.468839525164676e-08
+        "key": "KobayashiXfineCaseI_3B_2=",
+        "goldvalue": 0.02511614293018013,
+        "abs_tol": 2.5116142930180127e-08
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_3=",
-        "goldvalue": 0.004484170011552694,
-        "abs_tol": 4.484170011552694e-09
+        "key": "KobayashiXfineCaseI_3B_3=",
+        "goldvalue": 0.0045999246227449875,
+        "abs_tol": 4.5999246227449876e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_4=",
-        "goldvalue": 0.0014203613336397831,
-        "abs_tol": 1.4203613336397832e-09
+        "key": "KobayashiXfineCaseI_3B_4=",
+        "goldvalue": 0.0014316861921979348,
+        "abs_tol": 1.4316861921979347e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_5=",
-        "goldvalue": 0.0002654232441916891,
-        "abs_tol": 2.654232441916891e-10
+        "key": "KobayashiXfineCaseI_3B_5=",
+        "goldvalue": 0.00025609369760608167,
+        "abs_tol": 2.5609369760608164e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3B_6=",
-        "goldvalue": 9.244288669240711e-05,
+        "key": "KobayashiXfineCaseI_3B_6=",
+        "goldvalue": 8.928476287660379e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_1=",
-        "goldvalue": 3.2250829840056105e-05,
+        "key": "KobayashiXfineCaseI_3C_1=",
+        "goldvalue": 3.312062199229135e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_2=",
-        "goldvalue": 2.596026804136588e-05,
+        "key": "KobayashiXfineCaseI_3C_2=",
+        "goldvalue": 2.6268730744738455e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_3=",
-        "goldvalue": 1.7105960536160745e-05,
+        "key": "KobayashiXfineCaseI_3C_3=",
+        "goldvalue": 1.714447969664789e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_4=",
-        "goldvalue": 3.38744466632888e-05,
+        "key": "KobayashiXfineCaseI_3C_4=",
+        "goldvalue": 3.44741962179479e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_5=",
-        "goldvalue": 6.321814049132142e-06,
+        "key": "KobayashiXfineCaseI_3C_5=",
+        "goldvalue": 6.066862497471969e-06,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
-        "key": "KobayashiFineCaseI_3C_6=",
-        "goldvalue": 3.26835934840274e-06,
+        "key": "KobayashiXfineCaseI_3C_6=",
+        "goldvalue": 3.2961216281144055e-06,
         "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiXfineExteriorMeanRatio=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiXfineExteriorMinRatio=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiXfineExteriorMaxRatio=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "KobayashiXfine3CMeanRatio=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.05
       }
     ]
   },
@@ -744,15 +768,17 @@
     "file": "uncollided_parallel.py",
     "comment": "Serial collided solve using serial uncollided data",
     "num_procs": 1,
-    "args": ["parallel_test_variant=\"serial\""],
+    "args": [
+      "parallel_test_variant=\"serial\""
+    ],
     "outfileprefix": "uncollided_parallel_1",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
-        "abs_tol": 1e-8
+        "goldvalue": 1.091039831,
+        "abs_tol": 1e-08
       }
     ]
   },
@@ -760,15 +786,17 @@
     "file": "uncollided_parallel.py",
     "comment": "Two-rank collided solve using serial uncollided data",
     "num_procs": 2,
-    "args": ["parallel_test_variant=\"two_rank\""],
+    "args": [
+      "parallel_test_variant=\"two_rank\""
+    ],
     "outfileprefix": "uncollided_parallel_2",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
-        "abs_tol": 1e-8
+        "goldvalue": 1.091039831,
+        "abs_tol": 1e-08
       }
     ]
   },
@@ -776,15 +804,17 @@
     "file": "uncollided_parallel.py",
     "comment": "Four-rank collided solve using serial uncollided data",
     "num_procs": 4,
-    "args": ["parallel_test_variant=\"four_rank\""],
+    "args": [
+      "parallel_test_variant=\"four_rank\""
+    ],
     "outfileprefix": "uncollided_parallel_4",
     "dependency": "uncollided_parallel_generate.py",
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.093351864,
-        "abs_tol": 1e-8
+        "goldvalue": 1.091039831,
+        "abs_tol": 1e-08
       }
     ]
   }

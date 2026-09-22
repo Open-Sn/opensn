@@ -701,7 +701,11 @@ WrapLBS(py::module& slv)
     Define an uncollided transport problem for a first-collision calculation.
 
     The problem stores the mesh, materials, point sources, boundaries, and
-    near-source regions used by :class:`UncollidedSolver`.
+    near-source regions used by :class:`UncollidedSolver`. Its near-source
+    ray-tracing and conservation treatment follow C. Woodsford, J. C. Ragusa,
+    and J. E. Morel, "Sweep-based uncollided-flux treatment on unstructured
+    grids," Progress in Nuclear Energy, vol. 200, 106524, 2026,
+    https://doi.org/10.1016/j.pnucene.2026.106524.
 
     Wrapper of :cpp:class:`opensn::UncollidedProblem`.
     )");
@@ -752,8 +756,18 @@ WrapLBS(py::module& slv)
     Each point source must lie strictly inside a single cell. Uncollided
     generation must run on a Cartesian two- or three-dimensional mesh with
     exactly one MPI rank.
+
+    Point-source placement strongly affects spatial accuracy. Construct or
+    locally refine the mesh so that each source lies well inside its containing
+    cell and near the cell centroid whenever the physical model permits. Exact
+    balance after the near-source correction does not guarantee that the local
+    flux shape is resolved; monitor the reported correction and verify mesh
+    convergence.
+
     A volumetric source may be approximated externally by multiple weighted
-    point sources, as in the Kobayashi benchmark example.
+    point sources, as in the Kobayashi benchmark example. Choose the source
+    quadrature and mesh together so that those points lie well inside their
+    cells, and verify convergence with respect to both discretizations.
 
     The ``options`` and ``use_gpus`` parameters are inherited from the base
     class interface but have no effect on uncollided generation and should be

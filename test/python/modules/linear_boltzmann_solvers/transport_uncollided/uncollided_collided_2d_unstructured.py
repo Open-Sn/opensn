@@ -40,7 +40,8 @@ if __name__ == "__main__":
 
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    source = PointSource(location=[0.037, -0.041, 0.0], strength=[1.0])
+    # Centered on its containing cell so it isn't flush against a face
+    source = PointSource(location=[0.0441723, -0.0330477, 0.0], strength=[1.0])
     near_source = RPPLogicalVolume(
         xmin=-0.22,
         xmax=0.22,

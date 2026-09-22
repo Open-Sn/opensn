@@ -10,8 +10,8 @@ from itertools import product
 from math import sqrt
 from pathlib import Path
 
-rank = 0
-size = 1
+rank = getattr(__main__, "rank", 0)
+size = getattr(__main__, "size", 1)
 
 
 def _get_preloaded_symbol(name):
@@ -158,11 +158,21 @@ def make_boundary_conditions():
 def compute_ratio_metrics(rows):
     ratios = [row["opensn_over_reference"] for row in rows]
     ratios_3c = [row["opensn_over_reference"] for row in rows if row["line"] == "3C"]
+    # Point-source quadrature does not resolve reference points inside the
+    # benchmark's original volumetric source.
+    exterior_ratios = [
+        row["opensn_over_reference"]
+        for row in rows
+        if not all(0.0 <= row[axis] <= 10.0 for axis in ("x", "y", "z"))
+    ]
     return {
         "mean": sum(ratios) / len(ratios),
         "min": min(ratios),
         "max": max(ratios),
         "mean_3c": sum(ratios_3c) / len(ratios_3c),
+        "exterior_mean": sum(exterior_ratios) / len(exterior_ratios),
+        "exterior_min": min(exterior_ratios),
+        "exterior_max": max(exterior_ratios),
     }
 
 

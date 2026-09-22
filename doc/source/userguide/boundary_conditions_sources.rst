@@ -382,7 +382,11 @@ Example:
    )
 
 This defines an isotropic point source at the given coordinates with one value
-per energy group.
+per energy group. Each value is the total angle-integrated emission rate for
+that group. ``PointSource`` does not currently accept an angular distribution.
+For direction-dependent incident flux on a surface, use an ``"arbitrary"``
+boundary condition; its callback specifies the flux at the discrete directions
+of the groupset angular quadrature.
 
 .. note::
 

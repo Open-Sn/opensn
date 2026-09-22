@@ -44,14 +44,17 @@ if __name__ == "__main__":
     xs_right = MultiGroupXS()
     xs_right.CreateSimpleOneGroup(sigma_t=sigma_right, c=0.0)
 
-    source = (-0.62, 0.13, 0.0)
+    # Centered on its containing cell and left of the x=0 material interface
+    source = (-0.589726, 0.133007, 0.0)
     point = (0.61, 0.13, 0.0)
     point_source = PointSource(location=list(source), strength=[1.0])
-    whole_domain = RPPLogicalVolume(
-        xmin=-1.01,
-        xmax=1.01,
-        ymin=-1.01,
-        ymax=1.01,
+    # Small region around the source kept within the left material so it doesn't
+    # cross the x=0 interface
+    near_source_region = RPPLogicalVolume(
+        xmin=source[0] - 0.08,
+        xmax=source[0] + 0.08,
+        ymin=source[1] - 0.08,
+        ymax=source[1] + 0.08,
         infz=True,
     )
 
@@ -66,7 +69,7 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_right},
         ],
         point_sources=[point_source],
-        near_source=[whole_domain],
+        near_source=[near_source_region],
         scattering_order=0,
     )
     solver = UncollidedSolver(problem=problem, file_name=file_name)

@@ -31,11 +31,12 @@ if __name__ == "__main__":
     grid.SetUniformBlockID(0)
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    whole_domain = RPPLogicalVolume(
-        xmin=-1.01,
-        xmax=1.01,
-        ymin=-1.01,
-        ymax=1.01,
+    # Small region around the source
+    near_source_region = RPPLogicalVolume(
+        xmin=0.0441723 - 0.08,
+        xmax=0.0441723 + 0.08,
+        ymin=-0.0330477 - 0.08,
+        ymax=-0.0330477 + 0.08,
         infz=True,
     )
     file_name = "uncollided_parallel_equivalence.h5"
@@ -45,8 +46,8 @@ if __name__ == "__main__":
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
-        point_sources=[PointSource(location=[0.037, -0.041, 0.0], strength=[1.0])],
-        near_source=[whole_domain],
+        point_sources=[PointSource(location=[0.0441723, -0.0330477, 0.0], strength=[1.0])],
+        near_source=[near_source_region],
         scattering_order=1,
     )
     solver = UncollidedSolver(problem=problem, file_name=file_name)

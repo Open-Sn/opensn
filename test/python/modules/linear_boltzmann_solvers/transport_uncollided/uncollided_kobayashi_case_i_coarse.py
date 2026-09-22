@@ -20,3 +20,13 @@ if __name__ == "__main__":
         print(f"KobayashiCoarseMinRatio={metrics['min']:.8e}")
         print(f"KobayashiCoarseMaxRatio={metrics['max']:.8e}")
         print(f"KobayashiCoarse3CMeanRatio={metrics['mean_3c']:.8e}")
+
+        if abs(metrics["exterior_mean"] - 1.0) > 0.08:
+            raise RuntimeError(
+                "Kobayashi case-I exterior mean reference ratio failed: "
+                f"{metrics['exterior_mean']}"
+            )
+        if abs(metrics["mean_3c"] - 1.0) > 0.08:
+            raise RuntimeError(
+                f"Kobayashi case-I line-3C mean reference ratio failed: {metrics['mean_3c']}"
+            )
