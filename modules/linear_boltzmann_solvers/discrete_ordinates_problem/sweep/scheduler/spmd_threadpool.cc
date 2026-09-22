@@ -2,10 +2,30 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
+#include "framework/runtime.h"
 #include <cassert>
 
 namespace opensn
 {
+namespace
+{
+
+std::size_t
+ResolveWorkerCount(std::size_t requested_workers)
+{
+  if (requested_workers == 0)
+    return 0;
+
+  // Only cap when OPENSN_NUM_THREADS is explicitly set; otherwise use the
+  // requested count so callers that size the pool to their work item count
+  // are not silently throttled to one thread.
+  if (std::getenv("OPENSN_NUM_THREADS") == nullptr) // NOLINT(concurrency-mt-unsafe)
+    return requested_workers;
+
+  return std::min<std::size_t>(requested_workers, std::max(1U, opensn_num_threads));
+}
+
+} // namespace
 
 SPMD_ThreadPool::SPMD_ThreadPool(std::size_t n)
 {
@@ -20,6 +40,7 @@ SPMD_ThreadPool::~SPMD_ThreadPool()
 void
 SPMD_ThreadPool::Resize(std::size_t n)
 {
+  n = ResolveWorkerCount(n);
   if (worker_threads_.size() == n)
     return;
   Stop();

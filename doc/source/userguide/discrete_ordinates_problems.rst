@@ -303,6 +303,13 @@ The practical differences are:
   dependencies.
 * ``CBC`` does not support local sweep cycles.
 
+When the ``AAH`` GPU all-at-once scheduler is used, its internal thread pool
+is sized to the number of angle sets by default. If the environment variable
+``OPENSN_NUM_THREADS`` is left unset, that full worker count is preserved and
+no cap is applied. If it is present but invalid or ``0``, OpenSn caps the
+pool at ``1`` thread instead; if it is present and a valid positive integer,
+the pool is capped at that value.
+
 .. note::
 
    In the ``AAH`` implementation, the lagged data is tied specifically to
@@ -414,7 +421,7 @@ to disable progress reporting.
 Internal threading used by the uncollided solver is capped by the environment
 variable ``OPENSN_NUM_THREADS``. If the variable is unset or invalid, OpenSn
 uses ``1`` thread. The current uncollided implementation applies this cap to
-reflected-image projection and to the bulk-sweep group solve.
+reflected-image projection and to the threaded bulk-sweep group solve.
 
 .. code-block:: python
 
