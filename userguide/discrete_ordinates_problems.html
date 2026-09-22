@@ -614,14 +614,34 @@ uncollided file may still be attached normally.</p>
 <h3><span class="section-number">12.8.2. </span>Source support<a class="headerlink" href="#source-support" title="Link to this heading"></a></h3>
 <p>The uncollided generator supports:</p>
 <ul class="simple">
-<li><p>explicit <a class="reference internal" href="../pyapi/generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.PointSource</span></code></a> objects.</p></li>
+<li><p>explicit isotropic <a class="reference internal" href="../pyapi/generated/pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.PointSource</span></code></a> objects.</p></li>
 </ul>
+<p>The group-wise point-source strengths are total angle-integrated emission
+rates. Angular distributions are not currently supported by the uncollided
+problem.</p>
 <p>Every point source requires a corresponding entry in <code class="docutils literal notranslate"><span class="pre">near_source</span></code>. The two
 lists are matched by position, so <code class="docutils literal notranslate"><span class="pre">near_source</span></code> is required whenever
 <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> is nonempty.</p>
 <p>For now, uncollided generation requires each point source to lie strictly
 inside a single cell. A source located exactly on a face, edge, or vertex is
 rejected as unsupported.</p>
+<div class="admonition important">
+<p class="admonition-title">Important</p>
+<p>Point-source placement strongly affects spatial accuracy. Whenever the
+physical model permits, construct the mesh so that each source lies well
+inside its containing cell and near the cell centroid. A source near a
+face, edge, or vertex produces highly uneven local basis weights and makes
+the near-singular flux and outgoing currents difficult to integrate
+accurately. The conservation correction restores cell balance, but it
+cannot recover an unresolved local flux shape.</p>
+<p>Do not move a physically fixed source merely to improve the discretization.
+Instead, align or locally refine the mesh around it. Check mesh convergence
+of the physical quantities of interest and monitor the reported
+near-source correction. OpenSn uses fixed fourth-order finite-element volume
+and face quadratures for this calculation; their order is not currently
+user-configurable. A large correction indicates that these spatial
+integrations do not adequately resolve the source on the current mesh.</p>
+</div>
 <p>In two-dimensional problems, a point source represents the two-dimensional
 transport Green’s function, equivalently a line source per unit
 out-of-plane depth. Its free-space uncollided scalar flux scales as
@@ -632,17 +652,20 @@ point sources. For example, a quadrature approximation uses</p>
 \[Q_{g,q} = q_g(\mathbf{x}_q) J_q w_q\]</div>
 <p>and passes the resulting weighted points through <code class="docutils literal notranslate"><span class="pre">point_sources</span></code>. The
 uncollided generator does not consume <a class="reference internal" href="../pyapi/generated/pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.source.VolumetricSource</span></code></a>
-objects directly.</p>
+objects directly. Choose the source quadrature and mesh together so that the
+weighted points lie well inside their cells. Verify convergence with respect
+to both the source quadrature and the mesh.</p>
 </section>
 <section id="reflecting-boundaries">
 <h3><span class="section-number">12.8.3. </span>Reflecting boundaries<a class="headerlink" href="#reflecting-boundaries" title="Link to this heading"></a></h3>
 <p>The uncollided and collided stages must specify the same reflecting boundary
 conditions. The uncollided generator represents each reflection with image
-sources and folds attenuation paths back through the physical mesh. Each image
-source is ray traced to every finite-element volume quadrature point and
-projected directly into the spatial discretization. With <span class="math notranslate nohighlight">\(N\)</span> reflecting
-symmetry planes, each physical source point produces <span class="math notranslate nohighlight">\(2^N-1\)</span> image
-contributions.</p>
+sources. To compute attenuation, OpenSn reflects any portion of each
+image-source ray outside the physical domain back into the domain, then
+evaluates attenuation along the resulting physical path. Each image source is
+ray traced to every finite-element volume quadrature point and projected
+directly into the spatial discretization. With <span class="math notranslate nohighlight">\(N\)</span> reflecting symmetry
+planes, each physical source point produces <span class="math notranslate nohighlight">\(2^N-1\)</span> image contributions.</p>
 <p>This construction supports up to three planar, mutually orthogonal symmetry
 planes, such as <code class="docutils literal notranslate"><span class="pre">xmin</span></code>, <code class="docutils literal notranslate"><span class="pre">ymin</span></code>, and <code class="docutils literal notranslate"><span class="pre">zmin</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">boundary_conditions</span> <span class="o">=</span> <span class="p">[</span>
@@ -671,14 +694,27 @@ planes, such as <code class="docutils literal notranslate"><span class="pre">xmi
 </div>
 <p>The HDF5 file records the reflecting boundary IDs, and the collided problem
 rejects files generated with a different reflector set.</p>
-<p>The near-source calculation independently projects the ray-traced volume flux
-and integrates ray-traced face currents. These two quadratures generally do
-not satisfy exact cell balance at finite resolution. OpenSn reports their
-relative mismatch but preserves both projections; rescaling outgoing currents
-cell by cell can recursively amplify quadrature error along long streaming
-paths. The HDF5 balance metadata uses the projected removal and the
-conservative global outflow remainder. The directly integrated vacuum outflow
-is also printed as a consistency diagnostic.</p>
+<p>Physical source points use the cell-wise near-source conservation correction
+of Woodsford, Ragusa, and Morel (2026) <a class="footnote-reference brackets" href="#woodsford2026" id="id4" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>. A shared scale factor
+is applied to their projected flux and outgoing currents. Its reported
+magnitude indicates how well the raw volume and face integrations agree; see
+the derivation in <a class="reference internal" href="../theory/iterative.html"><span class="doc">Iterative Solution Algorithms</span></a>. The correction does not enforce
+nonnegative individual PWLD coefficients.</p>
+<p>Reflected image sources are an OpenSn extension to the published algorithm
+and are projected without the near-source correction. The HDF5 balance
+metadata stores absorption computed using the volume quadrature and outflow
+computed using a separate face quadrature. Because these integrations have no
+conservation correction, their finite-quadrature errors appear in the reported
+balance residual.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="woodsford2026" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">1</a><span class="fn-bracket">]</span></span>
+<p>C. Woodsford, J. C. Ragusa, and J. E. Morel,
+“Sweep-based uncollided-flux treatment on unstructured grids,”
+Progress in Nuclear Energy, vol. 200, 106524, 2026,
+<a class="reference external" href="https://doi.org/10.1016/j.pnucene.2026.106524">https://doi.org/10.1016/j.pnucene.2026.106524</a>.</p>
+</aside>
+</aside>
 </section>
 <section id="moment-order">
 <h3><span class="section-number">12.8.4. </span>Moment order<a class="headerlink" href="#moment-order" title="Link to this heading"></a></h3>
@@ -687,7 +723,13 @@ maximum spherical-harmonic order written to the HDF5 file. It must be at least
 the scattering order used by the collided problem.</p>
 <p>The scalar moment is stored as <code class="docutils literal notranslate"><span class="pre">0,0</span></code>. Higher moments are stored by
 <code class="docutils literal notranslate"><span class="pre">ell,m</span></code> name and are accumulated over all explicit and generated source
-points.</p>
+points. The published sweep-based method considered isotropic scattering and
+did not require these higher moments. OpenSn extends the method by evaluating
+<span class="math notranslate nohighlight">\(Y_{\ell,m}(\vec{\Omega}_s)\phi^u_g\)</span> at the finite-element volume
+quadrature points, where <span class="math notranslate nohighlight">\(\vec{\Omega}_s\)</span> points from the physical or
+image source to the evaluation point, and projecting that product onto the
+PWLD basis. This uses the analytic ray direction rather than the collided
+problem’s <span class="math notranslate nohighlight">\(S_n\)</span> angular quadrature.</p>
 </section>
 <section id="serial-generation-and-parallel-reuse">
 <h3><span class="section-number">12.8.5. </span>Serial generation and parallel reuse<a class="headerlink" href="#serial-generation-and-parallel-reuse" title="Link to this heading"></a></h3>
@@ -745,9 +787,10 @@ recombined total:</p>
 rates. The steady-state solver incorporates the uncollided production and
 outflow when reporting the combined problem balance. Reflected image sources
 are projected directly from ray traces evaluated at every finite-element
-volume quadrature point. The generator reports the integrated and conservative
-effective outflows and stores the conservative value used for combined balance
-accounting; this correction does not rescale the uncollided flux moments.</p>
+volume quadrature point and are not near-source corrected. The generator
+stores the integrated vacuum outflow for combined balance accounting. The
+near-source correction rescales the physical source’s uncollided flux moments
+and outgoing currents together, as specified by the published algorithm.</p>
 </section>
 </section>
 <section id="field-function-interface">

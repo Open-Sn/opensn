@@ -170,7 +170,7 @@
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh_file</span> <span class="o">=</span> <span class="n">repo_root</span> <span class="o">/</span> <span class="s2">&quot;test/assets/mesh/cube3.2.msh&quot;</span>
 <span class="n">uncollided_file</span> <span class="o">=</span> <span class="n">tutorial_dir</span> <span class="o">/</span> <span class="s2">&quot;uncollided.h5&quot;</span>
-<span class="n">source_location</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.010</span><span class="p">,</span> <span class="mf">0.012</span><span class="p">,</span> <span class="mf">0.014</span><span class="p">)</span>
+<span class="n">source_location</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.0102586</span><span class="p">,</span> <span class="mf">0.0114131</span><span class="p">,</span> <span class="mf">0.0146416</span><span class="p">)</span>
 <span class="n">sample_point</span> <span class="o">=</span> <span class="p">(</span><span class="mf">0.024</span><span class="p">,</span> <span class="mf">0.016</span><span class="p">,</span> <span class="mf">0.008</span><span class="p">)</span>
 <span class="n">sigma_t</span> <span class="o">=</span> <span class="mf">40.0</span>
 <span class="n">scattering_ratio</span> <span class="o">=</span> <span class="mf">0.9</span>
@@ -327,7 +327,7 @@
 </section>
 <section id="Compare-the-Total-and-Uncollided-Fluxes">
 <h2><span class="section-number">4.4.2.6. </span>Compare the Total and Uncollided Fluxes<a class="headerlink" href="#Compare-the-Total-and-Uncollided-Fluxes" title="Link to this heading"></a></h2>
-<p>Subtracting the saved uncollided line values from the total isolates the collided contribution. For this moderately thick, strongly scattering material, the collided flux supplies about 57% of the line-integrated total and visibly separates the total curve from the uncollided curve.</p>
+<p>Subtracting the saved uncollided line values from the total isolates the collided contribution. For this moderately thick, strongly scattering material, the collided flux supplies about 60% of the line-integrated total and visibly separates the total curve from the uncollided curve. The curves retain the cell-boundary jumps of the sweep-based PWLD spatial solution; these are discretization effects on the 5,880-cell mesh and should decrease under mesh refinement.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

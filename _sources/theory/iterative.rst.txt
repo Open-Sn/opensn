@@ -904,30 +904,105 @@ Notes:
 #. The inversion of the :math:`L` operator in the uncollided problem can
    be done using ray tracing, thus mitigating ray effects.
 
-#. OpenSn projects the ray-traced scalar flux onto the local PWLD basis.
-   A constrained lumped-mass correction keeps every nodal scalar-flux
-   coefficient nonnegative while preserving the projected cell integral.
-   Cell removal is computed from this projected analytic field, while
-   outgoing face currents are taken directly from the independently
-   ray-traced face quadratures rather than rescaled to match the cell
-   balance implied by the volume-projected removal. The mismatch between
-   these independently computed quantities is tracked only as a
-   diagnostic (with a warning issued if it becomes large), since rescaling
-   either quantity to enforce cell balance would recursively inject that
-   mismatch into downstream cells and produce strong mesh dependence.
+#. Within the near-source region, OpenSn ray-traces both a volumetric
+   least-squares projection of the scalar flux onto the local PWLD basis
+   (from which cell removal is computed) and the outgoing face currents,
+   using the point source's exact analytic attenuation, following the
+   near-source treatment of :cite:t:`woodsford2026sweep`. For the true field,
+   away from the source itself, :math:`\vec{\nabla}\cdot(\phi\vec{\Omega}_s)
+   + \sigma_t\phi = 0`, so by the divergence theorem the incoming current
+   plus the cell source equals the outgoing current plus absorption
+   exactly; a mismatch between the two independently ray-traced quadratures
+   is therefore purely a numerical artifact of finite quadrature resolution
+   near the source's own near-singular field, not missing physics. OpenSn
+   reconciles the two quadratures with the single shared scale factor from
+   Eqs. (24)--(25) of :cite:t:`woodsford2026sweep`. It scales the raw
+   least-squares projection (and thus removal) and outgoing currents by that
+   factor, so that the cell's source, removal, and leakage balance exactly.
+   Because no nonlinear positivity correction is applied, individual PWLD
+   coefficients may be negative near the point-source singularity.
+   The magnitude of that scale factor is reported as a diagnostic, with a
+   warning if it becomes large. A large factor indicates that the local spatial
+   flux shape is poorly resolved. The correction restores cell balance, but the
+   mesh or source placement may still need refinement.
+
+   This treatment also applies in the cell containing the point source. OpenSn
+   evaluates the analytic flux at the finite-element volume and face quadrature
+   points. The accuracy of these spatial integrals depends strongly on the
+   source's position within its containing cell. A source near the cell
+   centroid generally gives better-distributed samples. Near a face, edge, or
+   vertex, the singular field is concentrated into a smaller part of the cell
+   and the discrete integrals can have much larger error. Exact cell balance
+   after correction does not by itself establish spatial accuracy; source
+   placement and local mesh refinement must be checked through a convergence
+   study.
 
 #. Finite-volume sources can be approximated externally by weighted point
-   sources, for example at volume-quadrature points. The uncollided generation
-   itself consumes explicit point sources, remains serial in MPI, and produces
-   HDF5 data that can drive either a serial or parallel collided calculation.
+   sources, for example at volume-quadrature points. Those quadrature points
+   and the spatial mesh should be selected together so the point sources do
+   not lie close to cell boundaries. Convergence must be checked with respect
+   to both discretizations. The uncollided problem uses explicit point sources
+   and must run with exactly one MPI rank. On that rank, physical sources are
+   processed sequentially. ``OPENSN_NUM_THREADS`` parallelizes the bulk sweep
+   over energy groups and reflected-image projection over cells; near-source
+   ray tracing and moment accumulation remain single-threaded. The resulting
+   HDF5 file can be used by a subsequent collided calculation on the same mesh
+   with one or more MPI ranks.
 
 #. Planar, mutually orthogonal reflecting symmetry boundaries are represented
-   by image sources. Attenuation paths to an image source are folded through
-   the physical mesh so heterogeneous material crossings remain consistent
-   with the reflected geometry.
+   by image sources. To compute attenuation from an image source, OpenSn
+   reflects any portion of the ray outside the physical domain back into the
+   domain, then performs the standard attenuation calculation along the
+   resulting physical path. Each image copies the group-dependent strength of
+   its physical source point. Thus an image of a point used in a weighted
+   approximation of a finite-volume source retains that point's source weight.
+   Image-source flux is projected with the standard finite-element volume
+   quadrature and receives no near-source conservation correction. This
+   image-source construction is an OpenSn extension to the published algorithm.
+   For image sources, absorption is computed using the volume quadrature, while
+   outflow is computed using a separate face quadrature. Because these
+   integrations have no conservation correction, their finite-quadrature errors
+   are not forced to satisfy particle balance, and the resulting discrepancy
+   appears in the reported balance residual.
 
-#. If ``scattering_order`` is greater than zero, OpenSn also writes the
-   corresponding uncollided flux moments needed by the collided solve.
+#. The published method considered isotropic scattering and therefore needed
+   only the scalar uncollided flux. OpenSn extends it to anisotropic scattering
+   by constructing higher angular moments without an :math:`S_n` angular
+   quadrature. For a point source at :math:`\vec{r}_s`, the uncollided angular
+   flux at :math:`\vec{r}` is concentrated in the ray direction
+
+   .. math::
+
+      \vec{\Omega}_s(\vec{r}) =
+      \frac{\vec{r}-\vec{r}_s}{\lVert\vec{r}-\vec{r}_s\rVert},
+
+   so its moments are
+
+   .. math::
+
+      \phi^u_{\ell,m,g}(\vec{r}) =
+      Y_{\ell,m}\!\left(\vec{\Omega}_s(\vec{r})\right)
+      \phi^u_g(\vec{r}).
+
+   OpenSn evaluates this product at each finite-element volume quadrature point
+   and projects it onto the local PWLD basis. In cell :math:`K`, the nodal
+   coefficients satisfy
+
+   .. math::
+
+      \sum_j M^K_{ij}\Phi^{u,K}_{\ell,m,g,j}
+      \simeq
+      \sum_q b_i(\vec{r}_q)
+      Y_{\ell,m}\!\left(\vec{\Omega}_s(\vec{r}_q)\right)
+      \phi^u_g(\vec{r}_q) J_q w_q,
+
+   where :math:`M^K_{ij}=\int_K b_i b_j\,dV`. This projection is performed
+   separately for every physical and reflected source and the resulting
+   coefficients are summed. The real spherical-harmonic convention is the
+   one defined in :doc:`background`; in particular, :math:`Y_{0,0}=1`, so the
+   zeroth moment is the scalar flux. ``scattering_order`` selects the maximum
+   :math:`\ell` written to the HDF5 file and must be at least the scattering
+   order of the collided calculation.
 
 #. The collided problem is quite similar to a standard :math:`S_n` so
    the solution techniques described early apply straightforwardly. The
@@ -952,6 +1027,7 @@ References
    larsen_DSA_1984
    morel1982synthetic_anisotropic
    morel_smm_2024
+   woodsford2026sweep
    openmoc_cmfd
    oliveira1998preconditioned
    pattonapplication

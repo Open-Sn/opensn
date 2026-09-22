@@ -117,7 +117,11 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">UncollidedProblem</span></span><a class="headerlink" href="#pyopensn.solver.UncollidedProblem" title="Link to this definition"></a></dt>
 <dd><p>Define an uncollided transport problem for a first-collision calculation.</p>
 <p>The problem stores the mesh, materials, point sources, boundaries, and
-near-source regions used by <a class="reference internal" href="pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedSolver</span></code></a>.</p>
+near-source regions used by <a class="reference internal" href="pyopensn.solver.UncollidedSolver.html#pyopensn.solver.UncollidedSolver" title="pyopensn.solver.UncollidedSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedSolver</span></code></a>. Its near-source
+ray-tracing and conservation treatment follow C. Woodsford, J. C. Ragusa,
+and J. E. Morel, “Sweep-based uncollided-flux treatment on unstructured
+grids,” Progress in Nuclear Energy, vol. 200, 106524, 2026,
+<a class="reference external" href="https://doi.org/10.1016/j.pnucene.2026.106524">https://doi.org/10.1016/j.pnucene.2026.106524</a>.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_uncollided_problem.html#_CPPv4N6opensn17UncollidedProblemE" title="opensn::UncollidedProblem"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::UncollidedProblem</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.UncollidedProblem.ComputeFieldFunctionPowerScaleFactor">
@@ -559,9 +563,17 @@ the file.</p></li>
 <p>Only explicit point sources are supported by the uncollided generator.
 Each point source must lie strictly inside a single cell. Uncollided
 generation must run on a Cartesian two- or three-dimensional mesh with
-exactly one MPI rank.
-A volumetric source may be approximated externally by multiple weighted
-point sources, as in the Kobayashi benchmark example.</p>
+exactly one MPI rank.</p>
+<p>Point-source placement strongly affects spatial accuracy. Construct or
+locally refine the mesh so that each source lies well inside its containing
+cell and near the cell centroid whenever the physical model permits. Exact
+balance after the near-source correction does not guarantee that the local
+flux shape is resolved; monitor the reported correction and verify mesh
+convergence.</p>
+<p>A volumetric source may be approximated externally by multiple weighted
+point sources, as in the Kobayashi benchmark example. Choose the source
+quadrature and mesh together so that those points lie well inside their
+cells, and verify convergence with respect to both discretizations.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">options</span></code> and <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code> parameters are inherited from the base
 class interface but have no effect on uncollided generation and should be
 omitted.</p>

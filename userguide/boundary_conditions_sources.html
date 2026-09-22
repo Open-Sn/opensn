@@ -491,7 +491,11 @@ source.</p>
 </pre></div>
 </div>
 <p>This defines an isotropic point source at the given coordinates with one value
-per energy group.</p>
+per energy group. Each value is the total angle-integrated emission rate for
+that group. <code class="docutils literal notranslate"><span class="pre">PointSource</span></code> does not currently accept an angular distribution.
+For direction-dependent incident flux on a surface, use an <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code>
+boundary condition; its callback specifies the flux at the discrete directions
+of the groupset angular quadrature.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Point sources are best used when the physical source is truly localized. If
