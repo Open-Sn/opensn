@@ -130,6 +130,7 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
+  uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
   ValidateOptions();
 
   if (params.Has("boundary_conditions"))
@@ -139,17 +140,11 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     boundary_conditions_block_ = bcs;
   }
 
-  uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
-  if (not uncollided_flux_file_.empty())
+  if (HasUncollidedFlux())
   {
-    OpenSnInvalidArgumentIf(options_.csda_enabled,
-                            GetName() + ": CSDA is not supported with an uncollided flux file.");
     OpenSnInvalidArgumentIf(params.GetParamValue<bool>("time_dependent"),
                             GetName() + ": uncollided flux is only supported for steady-state "
                                         "fixed-source calculations.");
-    OpenSnInvalidArgumentIf(options_.adjoint,
-                            GetName() + ": uncollided flux is not supported for adjoint "
-                                        "calculations.");
   }
 
   // Check for consistency between quadrature sets
@@ -396,6 +391,11 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
 void
 DiscreteOrdinatesProblem::ValidateOptions(std::optional<SweepChunkMode> mode) const
 {
+  // Call this class's implementation directly. ValidateOptions() is called from
+  // the constructor, where virtual dispatch cannot reach a derived-class override.
+  if (options_.adjoint)
+    DiscreteOrdinatesProblem::ValidateAdjointModeAllowed();
+
   if (not options_.csda_enabled)
     return;
 
@@ -404,72 +404,63 @@ DiscreteOrdinatesProblem::ValidateOptions(std::optional<SweepChunkMode> mode) co
                           GetName() + ": CSDA is only supported for steady-state source "
                                       "problems and cannot be used in time-dependent mode.");
   OpenSnInvalidArgumentIf(use_gpus_, GetName() + ": CSDA is not supported on GPUs.");
-  OpenSnInvalidArgumentIf(options_.adjoint,
-                          GetName() + ": CSDA is not supported for adjoint problems.");
   OpenSnInvalidArgumentIf(sweep_type_ == "CBC",
                           GetName() + ": CSDA is not supported with CBC sweeps.");
   OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::TWOD_CYLINDRICAL,
                           GetName() + ": CSDA is not supported for RZ problems.");
+  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
+                          GetName() + ": CSDA is not supported with an uncollided flux file.");
 }
 
 void
-DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration() const
+DiscreteOrdinatesProblem::ValidateAdjointModeAllowed() const
+{
+  OpenSnInvalidArgumentIf(options_.csda_enabled,
+                          GetName() + ": CSDA is not supported for adjoint problems.");
+  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
+                          GetName() + ": uncollided flux is not supported for adjoint "
+                                      "calculations.");
+}
+
+void
+DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const
 {
   if (not options_.csda_enabled)
     return;
 
-  std::vector<bool> csda_active_by_group(num_groups_, false);
-  for (const auto& [_, xs] : block_id_to_xs_map_)
+  MultiGroupXS::ResolveEnergyGroupStructure(xs_map, num_groups_);
+
+  for (const auto& [_, xs] : xs_map)
   {
     const auto& stopping_power = xs->GetStoppingPower();
     if (stopping_power.empty())
       continue;
 
-    OpenSnLogicalErrorIf(stopping_power.size() != num_groups_,
-                         GetName() +
-                           ": CSDA stopping power data is incompatible with the configured "
-                           "number of groups.");
-    OpenSnLogicalErrorIf(xs->GetEnergyBounds().size() != num_groups_ + 1,
-                         GetName() + ": CSDA requires energy-bin boundaries for each material with "
-                                     "stopping power data.");
-    const auto delta_e = xs->GetDeltaE();
-    OpenSnLogicalErrorIf(delta_e.size() != num_groups_,
-                         GetName() +
-                           ": CSDA energy-bin widths are incompatible with the configured "
-                           "number of groups.");
+    OpenSnInvalidArgumentIf(stopping_power.size() != num_groups_,
+                            GetName() +
+                              ": CSDA stopping power data is incompatible with the configured "
+                              "number of groups.");
     OpenSnInvalidArgumentIf(
       std::any_of(stopping_power.begin(),
                   stopping_power.end(),
                   [](const double value) { return not std::isfinite(value) or value < 0.0; }),
       GetName() + ": CSDA stopping power must contain finite, nonnegative values.");
     OpenSnInvalidArgumentIf(
-      std::any_of(delta_e.begin(),
-                  delta_e.end(),
-                  [](const double value) { return not std::isfinite(value) or value <= 0.0; }),
-      GetName() + ": CSDA energy-bin widths must contain finite, positive values.");
-    OpenSnInvalidArgumentIf(
-      FindCSDAChargedGroupRanges(stopping_power).size() > 2,
+      xs->GetStoppingPowerGroupRanges().size() > 2,
       GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron).");
-
-    for (size_t g = 0; g < num_groups_; ++g)
-      csda_active_by_group[g] =
-        csda_active_by_group[g] or std::abs(stopping_power[g]) > kCSDATolerance;
   }
 
-  std::vector<std::pair<size_t, size_t>> charged_ranges;
-  size_t g = 0;
-  while (g < csda_active_by_group.size())
-  {
-    while (g < csda_active_by_group.size() and not csda_active_by_group[g])
-      ++g;
-    if (g >= csda_active_by_group.size())
-      break;
-
-    const size_t g_begin = g;
-    while (g < csda_active_by_group.size() and csda_active_by_group[g])
-      ++g;
-    charged_ranges.emplace_back(g_begin, g);
-  }
+  // Blocks are defined across all materials; the charge sign of deposition depends on it.
+  const auto charged_ranges = FindCSDAProblemChargedGroupRanges(xs_map, num_groups_);
+  OpenSnInvalidArgumentIf(
+    charged_ranges.empty(),
+    GetName() + ": CSDA requires at least one charged-particle group with nonzero stopping "
+                "power. Load CSDA-format cross sections with LoadFromCEPXS(..., "
+                "csda_format=True).");
+  OpenSnInvalidArgumentIf(
+    charged_ranges.size() > 2,
+    GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron) "
+                "across all materials.");
 
   for (const auto& [g_begin, g_end] : charged_ranges)
   {
@@ -513,13 +504,13 @@ DiscreteOrdinatesProblem::BuildRuntime()
 
   LBSProblem::BuildRuntime();
   if (options_.csda_enabled)
-    phi_e_new_local_.assign(grid_->local_cells.size() * static_cast<size_t>(num_groups_), 0.0);
+    phi_e_new_local_.assign(grid_->GetLocalCellCount() * static_cast<size_t>(num_groups_), 0.0);
   else
     phi_e_new_local_.clear();
   InitializeFCS();
 
   ValidateOptions();
-  ValidateCSDAGroupConfiguration();
+  ValidateCSDAGroupConfiguration(block_id_to_xs_map_);
 
   UpdateAngularFluxStorage();
 
@@ -940,6 +931,8 @@ DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   OpenSnInvalidArgumentIf(
     HasUncollidedFlux(),
     GetName() + ": cross sections cannot be replaced after loading an uncollided flux file.");
+  // Validate before installing so a rejected map leaves the problem unchanged.
+  ValidateCSDAGroupConfiguration(xs_map);
   LBSProblem::SetBlockID2XSMap(xs_map);
 
   for (auto& groupset : groupsets_)

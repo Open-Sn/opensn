@@ -3,55 +3,57 @@
 
 #pragma once
 
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include <algorithm>
 #include <cstddef>
-#include <cmath>
 #include <utility>
 #include <vector>
 
 namespace opensn
 {
 
-inline constexpr double kCSDATolerance = 1.0e-12;
-
-struct CSDATerminalDepositionRates
-{
-  double particle;
-  double charge;
-};
-
-inline CSDATerminalDepositionRates
-ComputeCSDATerminalDepositionRates(const double terminal_rate,
-                                   const std::size_t charged_block_index)
-{
-  return {terminal_rate, charged_block_index == 0 ? terminal_rate : -terminal_rate};
-}
-
+/**
+ * Returns the problem's charged-particle blocks: contiguous ranges of groups whose
+ * stopping power is nonzero in at least one material, as half-open [begin, end) ranges
+ * ordered from high to low energy.
+ */
 inline std::vector<std::pair<unsigned int, unsigned int>>
-FindCSDAChargedGroupRanges(const std::vector<double>& stopping_power)
+FindCSDAProblemChargedGroupRanges(const BlockID2XSMap& xs_map, const unsigned int num_groups)
 {
-  std::vector<std::pair<unsigned int, unsigned int>> ranges;
+  std::vector<bool> active(num_groups, false);
+  for (const auto& [_, xs] : xs_map)
+    for (const auto& [begin, end] : xs->GetStoppingPowerGroupRanges())
+      for (auto g = begin; g < std::min(end, num_groups); ++g)
+        active[g] = true;
 
+  std::vector<std::pair<unsigned int, unsigned int>> ranges;
   unsigned int g = 0;
-  while (g < stopping_power.size())
+  while (g < active.size())
   {
-    while (g < stopping_power.size() and std::abs(stopping_power[g]) <= kCSDATolerance)
+    while (g < active.size() and not active[g])
       ++g;
-    if (g >= stopping_power.size())
+    if (g >= active.size())
       break;
 
-    const unsigned int g_begin = g;
-    while (g < stopping_power.size() and std::abs(stopping_power[g]) > kCSDATolerance)
+    const unsigned int begin = g;
+    while (g < active.size() and active[g])
       ++g;
-    ranges.emplace_back(g_begin, g);
+    ranges.emplace_back(begin, g);
   }
-
   return ranges;
 }
 
+/**
+ * Returns the charge sign of particles in group g: +1 in the first problem-level
+ * charged-particle block (electrons) and -1 in the second (positrons). Validation
+ * limits a problem to at most two blocks.
+ */
 inline double
-CSDAGroupCenterEnergy(const std::vector<double>& energy_bounds, const unsigned int g)
+CSDAChargeSign(const std::vector<std::pair<unsigned int, unsigned int>>& problem_ranges,
+               const unsigned int g)
 {
-  return 0.5 * (energy_bounds.at(g) + energy_bounds.at(g + 1));
+  return (problem_ranges.empty() or g < problem_ranges.front().second) ? 1.0 : -1.0;
 }
 
 } // namespace opensn

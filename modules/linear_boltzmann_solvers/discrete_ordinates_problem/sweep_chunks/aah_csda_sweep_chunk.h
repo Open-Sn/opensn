@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h"
 
 namespace opensn
 {
@@ -21,6 +22,8 @@ public:
 private:
   DiscreteOrdinatesProblem& problem_;
   std::vector<double>& destination_phi_e_;
+  EnergyGroupStructure energy_;
+  std::vector<bool> charged_groups_;
 };
 
 } // namespace opensn

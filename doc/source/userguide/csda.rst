@@ -11,6 +11,9 @@ The CSDA implementation augments the angular sweep with a groupwise energy-loss
 term. It also carries enough terminal charged-particle information to report
 particle balance and CSDA-adjusted deposition field functions.
 
+See :ref:`theory_csda` for the continuous model, implemented energy
+discretization, augmented local sweep system, and conservation derivations.
+
 Basic Workflow
 ==============
 
@@ -40,7 +43,7 @@ Example:
            {
                "groups_from_to": (0, xs.num_groups - 1),
                "angular_quadrature": quadrature,
-               "inner_linear_method": "gmres",
+               "inner_linear_method": "petsc_gmres",
                "l_abs_tol": 1.0e-10,
            },
        ],
@@ -69,6 +72,15 @@ libraries:
 
    xs.LoadFromCEPXS("material.bxslib", material_id=0, csda_format=True)
 
+.. note::
+
+   CSDA cross sections are not the same as standard CEPXS cross sections. They
+   include the stopping power and row layout that OpenSn's CSDA solver needs,
+   and generating them requires a modified version of CEPXS. If you're
+   interested in running CSDA problems, contact the OpenSn developers on the
+   `OpenSn Discussions page <https://github.com/Open-Sn/openSn/discussions>`_
+   for more information.
+
 The ``csda_format`` flag selects the CEPXS row convention used by OpenSn's CSDA
 import path. With ``csda_format=True``, OpenSn imports:
 
@@ -78,8 +90,33 @@ import path. With ``csda_format=True``, OpenSn imports:
 * stopping power data used by the CSDA sweep.
 
 Materials without stopping power remain ordinary transport materials. Materials
-with stopping power must provide one stopping-power value per energy group and
-energy bounds for every group.
+with stopping power must provide one stopping-power value per energy group.
+
+Every material must supply the same energy-group structure or omit it entirely.
+At least one material must supply a complete structure. OpenSn validates that
+all supplied per-group upper and lower bounds match exactly, including particle
+species resets in coupled CEPXS data. The resulting problem-level energies and
+widths are used by all materials for CSDA transport, balances, and derived fields.
+Thus an ordinary void or absorber may omit bounds without preventing energy
+balance evaluation. Conflicting structures are rejected during setup and before
+a replacement cross-section map is installed.
+
+In a coupled CEPXS library, each particle species restarts at the common
+maximum energy. OpenSn uses that upper bound for the first group of each
+species when computing group widths and midpoint energies; the preceding
+species' low-energy cutoff is not the new group's upper bound.
+
+``Scale`` and ``Combine`` support CEPXS data, including stopping power, energy
+deposition, charge deposition, and scattering transfer matrices. ``Scale(f)``
+always multiplies the original data by ``f``; repeated calls do not compound.
+``Combine`` forms weighted sums of the current data and requires identical
+energy structures. Its weights must be consistent with the input data's
+normalization: already macroscopic material data should not be multiplied by
+number density a second time. Group energies are preserved by both operations.
+
+The legacy custom responses ``cepxs_charge_deposition`` and
+``cepxs_secondary_production`` remain available. ``charge_deposition`` is an
+additional name for the imported charge response.
 
 Problem Requirements
 ====================
@@ -129,10 +166,25 @@ weighted by scalar flux. When ``csda_enabled=True``, this name is an alias for
 ``csda_energy_deposition``
 --------------------------
 
-This field includes the raw imported energy-deposition response plus the CSDA
-stopping-power energy-loss contribution from charged groups. It also includes
-the terminal cutoff-energy contribution associated with the terminal
-charged-particle current.
+This is the conservative deposited-energy field. Its collision contribution uses
+the group-midpoint coefficient
+
+.. math::
+
+   c_g = E_g\sigma_{t,g} - \sum_{g'} E_{g'}\sigma_{s,g\rightarrow g'},
+
+weighted by scalar flux. The field also includes the CSDA stopping-power
+energy-loss contribution from charged groups and the terminal cutoff-energy
+contribution associated with the terminal charged-particle current.
+
+``cepxs_energy_deposition``
+---------------------------
+
+This field preserves the previous CSDA deposition quantity: the imported CEPXS
+energy-deposition response weighted by scalar flux, plus the same CSDA
+stopping-power and terminal cutoff contributions used by
+``csda_energy_deposition``. Use it when comparing with CEPXS response-based
+deposition benchmarks.
 
 ``charge_deposition``
 ---------------------
@@ -161,57 +213,57 @@ piecewise cell-average field.
 Balance Table Entries
 =====================
 
-:py:meth:`ComputeBalanceTable` returns the ordinary balance entries:
+With CSDA enabled, :py:meth:`ComputeBalanceTable` returns:
 
-* ``absorption_rate``
-* ``production_rate``
-* ``inflow_rate``
-* ``outflow_rate``
-* ``balance``
+* ``absorption_rate``, ``production_rate``, ``inflow_rate``, and
+  ``outflow_rate``: the standard particle rates. ``production_rate`` is the
+  volumetric particle source rate integrated over the problem volume.
+* ``csda_particle_deposition_rate``: the rate at which particles slow down out
+  of the lowest-energy group of each charged-particle block. Those particles are
+  deposited, so this is the CSDA loss term the standard rates don't include.
+  Electrons and positrons both count as positive.
+* ``csda_particle_balance``: the signed relative particle residual,
 
-For CSDA charged-particle solves it also returns:
+  .. code-block:: text
 
-* ``csda_charge_deposition_rate``: the signed terminal charge-deposition rate,
-  with electron deposition positive and positron deposition negative,
-* ``csda_particle_deposition_rate``: the terminal particle-deposition rate,
-  with both electron and positron deposition positive,
-* ``csda_particle_balance``: the signed particle residual divided by particle
-  gain, where the residual is ``production_rate + inflow_rate`` minus
-  ``absorption_rate + outflow_rate + csda_particle_deposition_rate`` and the gain
-  is ``production_rate + inflow_rate``,
-* ``csda_particle_relative_balance``: ``abs(csda_particle_balance)``,
-* ``csda_energy_deposition_rate``: the sum of
-  ``csda_energy_collision_loss_rate`` and ``csda_energy_continuous_loss_rate``.
-  The latter includes terminal cutoff loss.
+     (production_rate + inflow_rate
+      - absorption_rate - outflow_rate - csda_particle_deposition_rate)
+     / (production_rate + inflow_rate)
 
-The collision loss uses the group-midpoint coefficient
+  so you can reproduce it from the other entries.
+* ``csda_energy_production_rate``, ``csda_energy_inflow_rate``, and
+  ``csda_energy_outflow_rate``: the volumetric source, boundary inflow, and
+  boundary outflow rates, each weighted by the group's midpoint energy. These
+  are the energy coming in and going out through the problem's sources and
+  boundaries.
+* ``csda_energy_balance``: the signed relative energy residual. It weights each
+  group's rates by the group's midpoint energy, then compares the energy coming
+  in (volumetric source plus boundary inflow) with the energy going out (boundary
+  outflow, collision loss, and continuous slowing-down loss). The continuous
+  loss includes the energy left behind when particles slow down out of the
+  bottom of a charged-particle block. See :ref:`theory_csda` for the exact
+  definitions.
 
-.. math::
+The standard ``balance`` entry is not returned for CSDA runs. It leaves out
+CSDA particle deposition, so it would show a large imbalance even for a fully
+converged solve. Use ``csda_particle_balance`` instead.
 
-   c_g = E_g\sigma_{t,g} - \sum_{g'} E_{g'}\sigma_{s,g\rightarrow g'}.
+Both balances should be close to zero for a converged solve. A positive value
+means more particles or energy came in than went out, and a negative value
+means the opposite. If the gain (the denominator) is zero, the balance is zero
+when the residual is also zero and signed infinity otherwise. Rates are summed
+across all MPI ranks before normalizing.
 
-The energy residual is energy production plus inflow minus outflow and
-``csda_energy_deposition_rate``. ``csda_energy_balance`` is this signed residual
-divided by ``csda_energy_production_rate + csda_energy_inflow_rate``.
-``csda_energy_relative_balance`` is ``abs(csda_energy_balance)``.
-For either particle or energy balance, zero gain gives zero when the residual is
-zero and signed infinity otherwise; the magnitude entry is then positive infinity.
-These entries are global MPI reductions, normalized after summing the rates.
+The console balance summary prints only ``csda_particle_balance`` and
+``csda_energy_balance``. The other entries are available only from
+``ComputeBalanceTable``.
 
-The balance-table deposition rate uses discrete collision loss rather than the
-imported CEPXS energy-deposition response. Consequently it need not equal the
-integral of the ``csda_energy_deposition`` field function, which uses that imported
-response plus the same CSDA energy-space correction.
-
-.. note::
-
-   Previously, ``csda_particle_balance`` and ``csda_energy_balance`` returned
-   unnormalized rate residuals. For nonzero gain, recover a rate residual by
-   multiplying the signed relative balance by its gain. The
-   ``*_relative_balance`` entries retain their nonnegative relative-residual
-   meaning. Previously,
-   ``csda_energy_deposition_rate`` used the imported CEPXS response; use the
-   integral of the ``csda_energy_deposition`` field function for that quantity.
+To get the total deposited energy or charge, integrate the
+``csda_energy_deposition`` or ``csda_charge_deposition`` field function.
+``csda_energy_deposition`` uses the same definitions as the energy balance, so
+for a converged solve its integral equals
+``csda_energy_production_rate + csda_energy_inflow_rate -
+csda_energy_outflow_rate``.
 
 Convergence and Verification
 ============================

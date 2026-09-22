@@ -150,9 +150,11 @@ Important points:
 * ``power_normalization_target`` is optional and affects only the returned
   field function
 * CSDA charged-particle steady-state source solves add ``csda_energy_deposition``,
-  ``csda_charge_deposition``, ``csda_charge_deposition_term``, and
-  ``csda_charge_deposition_term_cellavg``; with ``csda_enabled=True``,
-  ``energy_deposition`` is an alias for ``csda_energy_deposition``
+  ``cepxs_energy_deposition``, ``csda_charge_deposition``,
+  ``csda_charge_deposition_term``, and ``csda_charge_deposition_term_cellavg``;
+  with ``csda_enabled=True``, ``energy_deposition`` is an alias for the
+  conservative ``csda_energy_deposition``. ``cepxs_energy_deposition`` retains
+  the imported response-based quantity
 
 .. note::
 

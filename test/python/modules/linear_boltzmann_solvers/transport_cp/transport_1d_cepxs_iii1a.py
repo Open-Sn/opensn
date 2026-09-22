@@ -24,6 +24,9 @@ import csv
 import os
 import sys
 
+# Keep routine regressions free of optional plotting dependencies and plot artifacts.
+GENERATE_PLOTS = False
+
 if "opensn_console" not in globals():
     from mpi4py import MPI
 
@@ -38,7 +41,7 @@ if "opensn_console" not in globals():
         FieldFunctionInterpolationPoint,
         FieldFunctionInterpolationVolume,
     )
-    from pyopensn.logical_volume import RPPLogicalVolume
+    from pyopensn.logvol import RPPLogicalVolume
 
 
 def make_beam_bc(quadrature):
@@ -150,7 +153,7 @@ def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm
                 "groups_from_to": (0, xs.num_groups - 1),
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
-                "inner_linear_method": "petsc_gmres", 
+                "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-12,
                 "l_max_its": 5000,
             },
@@ -177,7 +180,7 @@ def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm
             problem,
             label,
             "energy_deposition",
-            "energy_deposition",
+            "cepxs_energy_deposition" if csda_enabled else "energy_deposition",
             slab_thickness_cm,
             rho_g_cm3,
             num_cells,
@@ -194,6 +197,15 @@ def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm
     }
 
     if csda_enabled:
+        fields["conservative_energy_deposition"] = sample_field(
+            problem,
+            label,
+            "conservative_energy_deposition",
+            "csda_energy_deposition",
+            slab_thickness_cm,
+            rho_g_cm3,
+            num_cells,
+        )
         fields["charge_csda"] = sample_field(
             problem,
             label,
@@ -229,6 +241,15 @@ def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm
         "dose": [value / rho_g_cm3 for value in fields["energy_deposition"]["raw"]],
         "total": fields["energy_deposition"]["total"],
     }
+    if csda_enabled:
+        fields["conservative_energy_deposition"] = {
+            "depth_g_cm2": fields["conservative_energy_deposition"]["depth_g_cm2"],
+            "dose": [
+                value / rho_g_cm3
+                for value in fields["conservative_energy_deposition"]["raw"]
+            ],
+            "total": fields["conservative_energy_deposition"]["total"],
+        }
     fields["charge_raw"] = normalize_profile(fields["charge_raw"], deposited_electrons, rho_g_cm3)
 
     if csda_enabled:
@@ -257,6 +278,8 @@ def interpolate(xs_vals, ys_vals, x):
 
 
 def write_csv(path, columns):
+    if not GENERATE_PLOTS:
+        return
     with open(path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([name for name, _ in columns])
@@ -297,7 +320,8 @@ if __name__ == "__main__":
     if rank == 0:
         case_colors = {
             "standard": "tab:blue",
-            "csda": "tab:orange",
+            "cepxs_csda": "tab:orange",
+            "conservative": "tab:green",
         }
 
         write_csv(
@@ -305,7 +329,8 @@ if __name__ == "__main__":
             [
                 ("depth_g_cm2", standard_case["energy_deposition"]["depth_g_cm2"]),
                 ("standard_dose", standard_case["energy_deposition"]["dose"]),
-                ("csda_dose", csda_case["energy_deposition"]["dose"]),
+                ("csda_cepxs_dose", csda_case["energy_deposition"]["dose"]),
+                ("csda_conservative_dose", csda_case["conservative_energy_deposition"]["dose"]),
             ],
         )
         write_csv(
@@ -327,135 +352,173 @@ if __name__ == "__main__":
             f"III1A_CSDA_BALANCE_PARTICLE={csda_case['balance']['csda_particle_balance']:.12e}"
         )
         print(
-            "III1A_CSDA_RELATIVE_BALANCE_PARTICLE="
-            f"{csda_case['balance']['csda_particle_relative_balance']:.12e}"
-        )
-        print(
-            f"III1A_CSDA_BALANCE_CHARGE_DEP={csda_case['balance']['csda_charge_deposition_rate']:.12e}"
-        )
-        print(
             "III1A_CSDA_BALANCE_PARTICLE_DEP="
             f"{csda_case['balance']['csda_particle_deposition_rate']:.12e}"
         )
-        print(
-            f"III1A_CSDA_BALANCE_ENERGY_DEP={csda_case['balance']['csda_energy_deposition_rate']:.12e}"
-        )
-        # Preserve the imported-response field reference separately from the
-        # conservative balance tally. Energy conservation independently requires
-        # deposition = incident midpoint energy minus escaping energy.
-        print(f"III1A_CSDA_FIELD_ENERGY_DEP={csda_case['energy_deposition']['total']:.12e}")
+        print(f"III1A_CEPXS_ENERGY_DEP={csda_case['energy_deposition']['total']:.12e}")
+        # The conservative deposition field must close against the reported energy
+        # flows. This problem leaks through both boundaries, so the closure tests
+        # the leakage terms as well as production.
         energy_balance = csda_case["balance"]
         deposition_closure = (
-            energy_balance["csda_energy_deposition_rate"]
+            csda_case["conservative_energy_deposition"]["total"]
             - energy_balance["csda_energy_production_rate"]
             - energy_balance["csda_energy_inflow_rate"]
             + energy_balance["csda_energy_outflow_rate"]
         )
         print(f"III1A_CSDA_ENERGY_DEPOSITION_CLOSURE={deposition_closure:.12e}")
         print(
-            "III1A_CSDA_RELATIVE_BALANCE_ENERGY="
-            f"{csda_case['balance']['csda_energy_relative_balance']:.12e}"
+            f"III1A_CSDA_BALANCE_ENERGY={csda_case['balance']['csda_energy_balance']:.12e}"
         )
 
         for depth in sample_depths:
             depth_key = str(depth).replace(".", "p")
+            sample_value = interpolate(
+                csda_case["charge_csda"]["depth_g_cm2"],
+                csda_case["charge_csda"]["norm"],
+                depth,
+            )
             print(
                 f"III1A_CSDA_AUG_NORM_AT_{depth_key}_GCM2="
-                f"{interpolate(csda_case['charge_csda']['depth_g_cm2'], csda_case['charge_csda']['norm'], depth):.12e}"
+                f"{sample_value:.12e}"
             )
 
-        try:
-            import matplotlib.pyplot as plt
+        # Plotting is optional; the regression keys above are the test output.
+        if GENERATE_PLOTS:
+            try:
+                import matplotlib.pyplot as plt
 
-            plt.figure(figsize=(7.2, 4.8))
-            plt.plot(
-                standard_case["charge_raw"]["depth_g_cm2"],
-                standard_case["charge_raw"]["norm"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS charge deposition",
-            )
-            #plt.plot(
-            #    csda_case["charge_raw"]["depth_g_cm2"],
-            #    csda_case["charge_raw"]["norm"],
-            #    "-",
-            #    color="tab:orange",
-            #    lw=2.0,
-            #    label="CSDA CEPXS charge deposition",
-            #)
-            plt.plot(
-                csda_case["charge_csda"]["depth_g_cm2"],
-                csda_case["charge_csda"]["norm"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA augmented charge deposition",
-            )
-            #plt.plot(
-            #    csda_case["charge_csda_term"]["depth_g_cm2"],
-            #    csda_case["charge_csda_term"]["norm"],
-            #    "-",
-            #    color="tab:red",
-            #    lw=2.0,
-            #    label="CSDA derived terminal term only",
-            #)
-            plt.xlabel("Depth (g/cm$^2$)")
-            plt.ylabel("Deposited electrons / (deposited electron · g/cm$^2$)")
-            plt.title("Case III.1.A Plastic Charge Deposition")
-            plt.grid(True, alpha=0.3)
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig("transport_1d_cepxs_iii1a_cdep.png", dpi=180)
-            plt.close()
+                plt.figure(figsize=(7.2, 4.8))
+                plt.plot(
+                    standard_case["energy_deposition"]["depth_g_cm2"],
+                    standard_case["energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS",
+                )
+                plt.plot(
+                    csda_case["energy_deposition"]["depth_g_cm2"],
+                    csda_case["energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS response",
+                )
+                plt.plot(
+                    csda_case["conservative_energy_deposition"]["depth_g_cm2"],
+                    csda_case["conservative_energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["conservative"],
+                    lw=2.0,
+                    label="CSDA conservative",
+                )
+                plt.xlabel("Depth (g/cm$^2$)")
+                plt.ylabel("Dose [MeV cm$^2$/g]")
+                plt.title("Case III.1.A Plastic Energy Deposition")
+                plt.grid(True, alpha=0.3)
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig("transport_1d_cepxs_iii1a_edep.png", dpi=180)
+                plt.close()
 
-            fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6))
-            axes[0].plot(
-                standard_case["energy_deposition"]["depth_g_cm2"],
-                standard_case["energy_deposition"]["dose"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS",
-            )
-            axes[0].plot(
-                csda_case["energy_deposition"]["depth_g_cm2"],
-                csda_case["energy_deposition"]["dose"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA CEPXS",
-            )
-            axes[0].set_xlabel("Depth (g/cm$^2$)")
-            axes[0].set_ylabel("Dose [MeV cm$^2$/g]")
-            axes[0].set_title("Energy Deposition")
-            axes[0].grid(True, alpha=0.3)
-            axes[0].legend()
+                plt.figure(figsize=(7.2, 4.8))
+                plt.plot(
+                    standard_case["charge_raw"]["depth_g_cm2"],
+                    standard_case["charge_raw"]["norm"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS charge deposition",
+                )
+                # plt.plot(
+                #    csda_case["charge_raw"]["depth_g_cm2"],
+                #    csda_case["charge_raw"]["norm"],
+                #    "-",
+                #    color="tab:orange",
+                #    lw=2.0,
+                #    label="CSDA CEPXS charge deposition",
+                # )
+                plt.plot(
+                    csda_case["charge_csda"]["depth_g_cm2"],
+                    csda_case["charge_csda"]["norm"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA augmented charge deposition",
+                )
+                # plt.plot(
+                #    csda_case["charge_csda_term"]["depth_g_cm2"],
+                #    csda_case["charge_csda_term"]["norm"],
+                #    "-",
+                #    color="tab:red",
+                #    lw=2.0,
+                #    label="CSDA derived terminal term only",
+                # )
+                plt.xlabel("Depth (g/cm$^2$)")
+                plt.ylabel("Deposited electrons / (deposited electron · g/cm$^2$)")
+                plt.title("Case III.1.A Plastic Charge Deposition")
+                plt.grid(True, alpha=0.3)
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig("transport_1d_cepxs_iii1a_cdep.png", dpi=180)
+                plt.close()
 
-            axes[1].plot(
-                standard_case["charge_raw"]["depth_g_cm2"],
-                standard_case["charge_raw"]["norm"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS",
-            )
-            axes[1].plot(
-                csda_case["charge_csda"]["depth_g_cm2"],
-                csda_case["charge_csda"]["norm"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA CEPXS",
-            )
-            axes[1].set_xlabel("Depth (g/cm$^2$)")
-            axes[1].set_ylabel("Deposited electrons / (deposited electron · g/cm$^2$)")
-            axes[1].set_title("Charge Deposition")
-            axes[1].grid(True, alpha=0.3)
-            axes[1].legend()
-            fig.suptitle("III.1.A Plastic")
-            fig.tight_layout()
-            fig.savefig("transport_1d_cepxs_iii1a_compare.png", dpi=180)
-            plt.close(fig)
-        except Exception as exc:
-            raise RuntimeError(f"Failed to create plot: {exc}") from exc
+                fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6))
+                axes[0].plot(
+                    standard_case["energy_deposition"]["depth_g_cm2"],
+                    standard_case["energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS",
+                )
+                axes[0].plot(
+                    csda_case["energy_deposition"]["depth_g_cm2"],
+                    csda_case["energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS response",
+                )
+                axes[0].plot(
+                    csda_case["conservative_energy_deposition"]["depth_g_cm2"],
+                    csda_case["conservative_energy_deposition"]["dose"],
+                    "-",
+                    color=case_colors["conservative"],
+                    lw=2.0,
+                    label="CSDA conservative",
+                )
+                axes[0].set_xlabel("Depth (g/cm$^2$)")
+                axes[0].set_ylabel("Dose [MeV cm$^2$/g]")
+                axes[0].set_title("Energy Deposition")
+                axes[0].grid(True, alpha=0.3)
+                axes[0].legend()
+
+                axes[1].plot(
+                    standard_case["charge_raw"]["depth_g_cm2"],
+                    standard_case["charge_raw"]["norm"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS",
+                )
+                axes[1].plot(
+                    csda_case["charge_csda"]["depth_g_cm2"],
+                    csda_case["charge_csda"]["norm"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS",
+                )
+                axes[1].set_xlabel("Depth (g/cm$^2$)")
+                axes[1].set_ylabel("Deposited electrons / (deposited electron · g/cm$^2$)")
+                axes[1].set_title("Charge Deposition")
+                axes[1].grid(True, alpha=0.3)
+                axes[1].legend()
+                fig.suptitle("III.1.A Plastic")
+                fig.tight_layout()
+                fig.savefig("transport_1d_cepxs_iii1a_compare.png", dpi=180)
+                plt.close(fig)
+            except Exception as exc:
+                raise RuntimeError(f"Failed to create plot: {exc}") from exc

@@ -81,6 +81,12 @@ public:
   /// Returns true if the problem is currently in time-dependent mode.
   virtual bool IsTimeDependent() const;
 
+  /**
+   * Throws if the problem cannot be switched to adjoint mode. The base class adds no
+   * restrictions; derived problems override this to reject unsupported features.
+   */
+  virtual void ValidateAdjointModeAllowed() const {}
+
   /// Set the problem to time-dependent mode.
   virtual void SetTimeDependentMode();
 

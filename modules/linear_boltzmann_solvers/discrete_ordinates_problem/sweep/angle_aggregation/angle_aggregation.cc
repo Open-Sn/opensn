@@ -29,7 +29,6 @@ AngleAggregation::AngleAggregation(const LBSGroupset& groupset,
 {
   for (const auto& bndry_id_cond : boundaries)
   {
-    bndry_id_cond.second->SetDelayedAngularSlopeEnabled(csda_enabled_);
     bndry_id_cond.second->Setup(grid, *quadrature);
   }
 }

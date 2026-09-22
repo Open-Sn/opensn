@@ -368,21 +368,29 @@ For ordinary CEPXS transport data, leave ``csda_format`` at its default value of
 
    xs.LoadFromCEPXS("plastic_csda.bxslib", material_id=0, csda_format=True)
 
-With ``csda_format=True``, OpenSn imports stopping power, energy deposition, and
-the named custom cross section ``charge_deposition`` used by the CSDA field
-functions and balance table.
+With ``csda_format=True``, OpenSn also imports stopping power. Both formats import
+energy deposition and the named custom cross section ``charge_deposition``, which
+the ``csda_charge_deposition`` field function uses.
 
 See :doc:`csda` for the full CSDA workflow and solver restrictions.
 
 Custom Cross Sections
 =====================
 
-OpenSn's Python API supports named custom one-dimensional cross sections through
-OpenMC import. These are useful when a dataset should be carried alongside the
-standard transport data for later inspection, combination, scaling, or use in
-derived field functions.
+OpenSn supports named custom one-dimensional cross sections. These are useful
+when a dataset should be carried alongside the standard transport data for later
+inspection, combination, scaling, or use in derived field functions.
 
-Load them by name with ``extra_xs_names``:
+They enter a cross-section object in one of two ways:
+
+* **OpenMC import** loads only the datasets you name in ``extra_xs_names``.
+* **CEPXS import** always adds a fixed set of responses taken from the library:
+  ``charge_deposition``, ``cepxs_charge_deposition``, and
+  ``cepxs_secondary_production``. You do not select these by name. The
+  ``csda_charge_deposition`` field function uses ``charge_deposition`` (see
+  `Loading CEPXS-BFP Files`_).
+
+To load OpenMC datasets by name, use ``extra_xs_names``:
 
 .. code-block:: python
 

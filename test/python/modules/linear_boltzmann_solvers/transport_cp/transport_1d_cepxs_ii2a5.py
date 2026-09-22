@@ -25,6 +25,9 @@ import glob
 import os
 import sys
 
+# Keep routine regressions free of optional plotting dependencies and plot artifacts.
+GENERATE_PLOTS = False
+
 if "opensn_console" not in globals():
     from mpi4py import MPI
 
@@ -166,17 +169,37 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_c
     balance = solver.ComputeBalanceTable() if csda_enabled else None
 
     sample = sample_field(
-        problem, label, "energy_deposition", "energy_deposition", length_cm, num_cells
+        problem,
+        label,
+        "energy_deposition",
+        "cepxs_energy_deposition" if csda_enabled else "energy_deposition",
+        length_cm,
+        num_cells,
     )
+    conservative_sample = None
+    if csda_enabled:
+        conservative_sample = sample_field(
+            problem,
+            label,
+            "conservative_energy_deposition",
+            "csda_energy_deposition",
+            length_cm,
+            num_cells,
+        )
 
     if rank != 0:
         return None
 
-    return {
+    result = {
         "x_cm": sample["x_cm"],
         "dose": [v / rho_g_cm3 for v in sample["values"]],
         "balance": balance,
     }
+    if conservative_sample is not None:
+        result["conservative_dose"] = [
+            value / rho_g_cm3 for value in conservative_sample["values"]
+        ]
+    return result
 
 
 def interpolate(xs, ys, x):
@@ -194,6 +217,8 @@ def interpolate(xs, ys, x):
 
 
 def write_csv(path, columns):
+    if not GENERATE_PLOTS:
+        return
     with open(path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([name for name, _ in columns])
@@ -237,7 +262,8 @@ if __name__ == "__main__":
             [
                 ("x_cm", rcsd_case["x_cm"]),
                 ("rcsd_dose", rcsd_case["dose"]),
-                ("csd_dose", csd_case["dose"]),
+                ("csda_cepxs_dose", csd_case["dose"]),
+                ("csda_conservative_dose", csd_case["conservative_dose"]),
             ],
         )
 
@@ -251,45 +277,54 @@ if __name__ == "__main__":
                 f"II2A5_CSD_XCM_{x_key}="
                 f"{interpolate(csd_case['x_cm'], csd_case['dose'], x_cm):.12e}"
             )
-        print(f"II2A5_CSD_BALANCE_STANDARD={csd_case['balance']['balance']:.12e}")
         print(
-            f"II2A5_CSD_BALANCE_CHARGE_DEP={csd_case['balance']['csda_charge_deposition_rate']:.12e}"
+            f"II2A5_CSD_BALANCE_PARTICLE_DEP="
+            f"{csd_case['balance']['csda_particle_deposition_rate']:.12e}"
         )
         print(
             f"II2A5_CSD_BALANCE_PARTICLE={csd_case['balance']['csda_particle_balance']:.12e}"
         )
         print(
-            f"II2A5_CSD_BALANCE_ENERGY_DEP={csd_case['balance']['csda_energy_deposition_rate']:.12e}"
+            f"II2A5_CSD_BALANCE_ENERGY={csd_case['balance']['csda_energy_balance']:.12e}"
         )
+        # Plotting is optional; the regression keys above are the test output.
+        if GENERATE_PLOTS:
+            try:
+                import matplotlib.pyplot as plt
 
-        try:
-            import matplotlib.pyplot as plt
-
-            plt.figure(figsize=(7.2, 4.8))
-            plt.plot(
-                rcsd_case["x_cm"],
-                rcsd_case["dose"],
-                "-",
-                color="tab:blue",
-                lw=2.0,
-                label="CEPXS Standard Energy Deposition",
-            )
-            plt.plot(
-                csd_case["x_cm"],
-                csd_case["dose"],
-                "-",
-                color="tab:orange",
-                lw=2.0,
-                label="CSDA Energy Deposition",
-            )
-            plt.xlabel("Depth (cm)")
-            plt.ylabel("Dose [MeV cm$^2$/g]")
-            plt.yscale("log")
-            plt.title("II.2.A5 Aluminum Slab")
-            plt.grid(True, alpha=0.3)
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig("transport_1d_cepxs_ii2a5_edep.png", dpi=180)
-            plt.close()
-        except Exception as exc:
-            raise RuntimeError(f"Failed to create plot: {exc}") from exc
+                plt.figure(figsize=(7.2, 4.8))
+                plt.plot(
+                    rcsd_case["x_cm"],
+                    rcsd_case["dose"],
+                    "-",
+                    color="tab:blue",
+                    lw=2.0,
+                    label="CEPXS Standard Energy Deposition",
+                )
+                plt.plot(
+                    csd_case["x_cm"],
+                    csd_case["dose"],
+                    "-",
+                    color="tab:orange",
+                    lw=2.0,
+                    label="CSDA CEPXS response",
+                )
+                plt.plot(
+                    csd_case["x_cm"],
+                    csd_case["conservative_dose"],
+                    "-",
+                    color="tab:green",
+                    lw=2.0,
+                    label="CSDA conservative",
+                )
+                plt.xlabel("Depth (cm)")
+                plt.ylabel("Dose [MeV cm$^2$/g]")
+                plt.yscale("log")
+                plt.title("II.2.A5 Aluminum Slab")
+                plt.grid(True, alpha=0.3)
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig("transport_1d_cepxs_ii2a5_edep.png", dpi=180)
+                plt.close()
+            except Exception as exc:
+                raise RuntimeError(f"Failed to create plot: {exc}") from exc

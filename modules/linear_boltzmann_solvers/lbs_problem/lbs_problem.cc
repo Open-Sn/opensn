@@ -1378,8 +1378,11 @@ void
 LBSProblem::SetAdjoint(bool adjoint)
 {
   if (adjoint)
+  {
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+    ValidateAdjointModeAllowed();
+  }
 
   const bool mode_changed = (adjoint != options_.adjoint);
   if (not mode_changed)
