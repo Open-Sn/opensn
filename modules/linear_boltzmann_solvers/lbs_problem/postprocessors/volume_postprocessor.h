@@ -7,6 +7,7 @@
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include <memory>
+#include <span>
 
 namespace opensn
 {
@@ -62,11 +63,14 @@ private:
   /// Multiplier applied group-wise
   std::vector<double> multipliers_;
 
-  // Helper functions for different computation types
-  std::vector<double> ComputeIntegral(const std::vector<uint32_t>& cell_local_ids);
-  std::vector<double> ComputeMax(const std::vector<uint32_t>& cell_local_ids);
-  std::vector<double> ComputeMin(const std::vector<uint32_t>& cell_local_ids);
-  std::vector<double> ComputeVolumeWeightedAverage(const std::vector<uint32_t>& cell_local_ids);
+  template <auto ComputeLocal, typename Combine, typename Op>
+  void ExecuteReduction(double identity, Combine combine, Op op);
+  void ExecuteWeightedAverage();
+
+  void ComputeIntegral(std::span<double> row, const Cell& cell);
+  void ComputeMax(std::span<double> row, const Cell& cell);
+  void ComputeMin(std::span<double> row, const Cell& cell);
+  double ComputeWeightedVolume(const Cell& cell);
 
 public:
   /// Returns the input parameters for this object.

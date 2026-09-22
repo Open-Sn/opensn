@@ -9,6 +9,7 @@
 #include <string>
 #include <Python.h>
 #include <pybind11/embed.h>
+#include <pybind11/stl.h>
 
 namespace mpi = mpicpp_lite;
 namespace py = pybind11;
