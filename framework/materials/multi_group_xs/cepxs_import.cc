@@ -23,7 +23,6 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/utils.h"
-
 #include <fstream>
 #include <array>
 #include <algorithm>
@@ -31,12 +30,15 @@
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
+#include <limits>
 #include <vector>
 
 namespace opensn
 {
 namespace
 {
+
+constexpr std::size_t MAX_CEPXS_RECORD_BYTES = std::size_t{256} * 1024U * 1024U;
 
 class FortranRecordReader
 {
@@ -45,19 +47,22 @@ public:
 
   bool IsOpen() const { return in_.is_open(); }
 
-  bool ReadRecord(std::vector<char>& payload)
+  bool ReadRecord(std::vector<char>& payload,
+                  const std::size_t max_payload_bytes = MAX_CEPXS_RECORD_BYTES)
   {
     std::uint32_t len = 0;
-    if (not ReadU32(in_, len))
+    if (not ReadU32(in_, len, true))
       return false;
+
+    if (static_cast<std::size_t>(len) > max_payload_bytes)
+      throw std::runtime_error("CEPXS Fortran record exceeds the permitted size.");
 
     payload.resize(len);
     if (len > 0 and not in_.read(payload.data(), static_cast<std::streamsize>(len)))
       throw std::runtime_error("Failed reading Fortran record payload.");
 
     std::uint32_t tail = 0;
-    if (not ReadU32(in_, tail))
-      throw std::runtime_error("Failed reading Fortran record trailer.");
+    ReadU32(in_, tail, false);
     if (tail != len)
       throw std::runtime_error("Fortran record marker mismatch.");
 
@@ -65,11 +70,16 @@ public:
   }
 
 private:
-  static bool ReadU32(std::istream& in, std::uint32_t& value)
+  static bool ReadU32(std::istream& in, std::uint32_t& value, const bool allow_clean_eof)
   {
     std::array<char, sizeof(std::uint32_t)> bytes{};
     if (not in.read(bytes.data(), static_cast<std::streamsize>(bytes.size())))
-      return false;
+    {
+      if (allow_clean_eof and in.eof() and in.gcount() == 0)
+        return false;
+      throw std::runtime_error(allow_clean_eof ? "Failed reading Fortran record header."
+                                               : "Failed reading Fortran record trailer.");
+    }
     std::memcpy(&value, bytes.data(), sizeof(value));
     return true;
   }
@@ -114,18 +124,18 @@ BytesToDouble(const std::vector<char>& bytes)
 }
 
 std::vector<double>
-ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary,
-                                 const int n_groups,
-                                 const bool require_energy_bounds)
+ExtractEnergyGroupStructure(const std::vector<char>& group_structure_record,
+                            const int n_groups,
+                            const bool require_energy_bounds)
 {
-  OpenSnLogicalErrorIf(n_groups <= 0, "Invalid group count for CEPXS ancillary parsing.");
-  OpenSnLogicalErrorIf(ancillary.size() % sizeof(double) != 0,
-                       "CEPXS ancillary record is not an integer multiple of 8 bytes.");
+  OpenSnLogicalErrorIf(n_groups <= 0, "Invalid group count for CEPXS group-structure parsing.");
+  OpenSnLogicalErrorIf(group_structure_record.size() % sizeof(double) != 0,
+                       "CEPXS group-structure record is not an integer multiple of 8 bytes.");
 
-  const auto vals = BytesToDouble(ancillary);
+  const auto vals = BytesToDouble(group_structure_record);
   const auto n_bounds = static_cast<size_t>(n_groups) + 1U;
   OpenSnLogicalErrorIf(vals.size() < n_bounds,
-                       "CEPXS ancillary record is too short to contain group boundaries.");
+                       "CEPXS group-structure record is too short to contain group boundaries.");
 
   const auto is_valid_bounds = [&](const size_t start_idx)
   {
@@ -160,13 +170,13 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary,
     return any_change;
   };
 
-  // CEPXS BFP ancillary records commonly place group boundaries near index 96.
+  // CEPXS BFP group-structure records commonly place group boundaries near index 96.
   const size_t canonical_start = 96;
   if (canonical_start + n_bounds <= vals.size() and is_valid_bounds(canonical_start))
     return {vals.begin() + static_cast<std::ptrdiff_t>(canonical_start),
             vals.begin() + static_cast<std::ptrdiff_t>(canonical_start + n_bounds)};
 
-  // Fallback: search the entire ancillary vector for a strictly decreasing positive window.
+  // Fallback: search the entire group-structure record for a strictly decreasing positive window.
   for (size_t start = 0; start + n_bounds <= vals.size(); ++start)
     if (is_valid_bounds(start))
       return {vals.begin() + static_cast<std::ptrdiff_t>(start),
@@ -184,15 +194,16 @@ ExtractEnergyBoundsFromAncillary(const std::vector<char>& ancillary,
               vals.begin() + static_cast<std::ptrdiff_t>(start + n_bounds)};
 
   OpenSnLogicalErrorIf(require_energy_bounds,
-                       "CEPXS ancillary group-boundary window not found. CSDA requires the "
-                       "physical energy-group boundaries.");
+                       "CEPXS energy group structure was not found in the group-structure record. "
+                       "CSDA requires physical energy group bounds.");
 
   // Last resort
   std::vector<double> synthetic(n_bounds, 0.0);
   for (size_t i = 0; i < n_bounds; ++i)
     synthetic[i] = static_cast<double>(n_groups - static_cast<int>(i));
   log.Log()
-    << "Warning: CEPXS ancillary group-boundary window not found; using synthetic bounds.\n";
+    << "Warning: CEPXS energy group structure was not found in the group-structure record; using "
+       "synthetic bounds.\n";
   return synthetic;
 }
 
@@ -249,42 +260,63 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
   OpenSnLogicalErrorIf(n_entries <= 8, "CEPXS binary has invalid number of entries.");
   if (row_format == CEPXSRowFormat::LEGACY)
   {
-    OpenSnLogicalErrorIf(total_xs_row < 0 || total_xs_row >= n_entries,
+    OpenSnLogicalErrorIf(total_xs_row < 0 or total_xs_row >= n_entries,
                          "CEPXS binary has invalid total-xs row index.");
-    OpenSnLogicalErrorIf(self_scatter_row < 0 || self_scatter_row >= n_entries,
+    OpenSnLogicalErrorIf(self_scatter_row < 0 or self_scatter_row >= n_entries,
                          "CEPXS binary has invalid self-scatter row index.");
   }
   OpenSnLogicalErrorIf(n_moments <= 0, "CEPXS binary has invalid number of moments.");
   OpenSnLogicalErrorIf(material_id < 0 || material_id >= n_materials,
                        "CEPXS binary material_id out of range.");
 
-  OpenSnLogicalErrorIf(not rdr.ReadRecord(rec), "Failed reading CEPXS binary ancillary record.");
+  const auto num_groups_size = static_cast<std::size_t>(n_groups);
+  const auto num_entries_size = static_cast<std::size_t>(n_entries);
+  OpenSnLogicalErrorIf(num_groups_size > std::numeric_limits<std::size_t>::max() /
+                                           num_entries_size / sizeof(double),
+                       "CEPXS binary moment-record size overflows size_t.");
+  const auto expected_record_size = num_groups_size * num_entries_size * sizeof(double);
+  OpenSnLogicalErrorIf(expected_record_size > MAX_CEPXS_RECORD_BYTES,
+                       "CEPXS binary moment record exceeds the supported size limit.");
+
+  const auto num_materials_size = static_cast<std::size_t>(n_materials);
+  const auto num_moments_size = static_cast<std::size_t>(n_moments);
+  OpenSnLogicalErrorIf(num_materials_size >
+                         std::numeric_limits<std::size_t>::max() / num_moments_size,
+                       "CEPXS binary table count overflows size_t.");
+  const auto expected_num_tables = num_materials_size * num_moments_size;
+
+  OpenSnLogicalErrorIf(not rdr.ReadRecord(rec),
+                       "Failed reading CEPXS binary group-structure record.");
 
   xs.num_groups = static_cast<unsigned int>(n_groups);
-  xs.e_bounds = ExtractEnergyBoundsFromAncillary(rec, n_groups, row_format == CEPXSRowFormat::CSDA);
+  xs.e_bounds = ExtractEnergyGroupStructure(rec, n_groups, row_format == CEPXSRowFormat::CSDA);
 
   xs.sigma_t.assign(xs.num_groups, 0.0);
   xs.charge_deposition.assign(xs.num_groups, 0.0);
   xs.secondary_production.assign(xs.num_groups, 0.0);
   xs.energy_deposition.assign(xs.num_groups, 0.0);
-  xs.stopping_power.assign(xs.num_groups, 0.0);
+  // Legacy libraries have no stopping-power row; leave it empty rather than all zeros.
+  if (row_format == CEPXSRowFormat::CSDA)
+    xs.stopping_power.assign(xs.num_groups, 0.0);
 
   std::vector<std::vector<double>> moment_tables;
-  while (rdr.ReadRecord(rec))
+  for (std::size_t table = 0; table < expected_num_tables; ++table)
   {
-    const auto expected_record_size =
-      static_cast<size_t>(n_groups) * static_cast<size_t>(n_entries) * sizeof(double);
+    OpenSnLogicalErrorIf(not rdr.ReadRecord(rec, expected_record_size),
+                         "CEPXS binary contains fewer moment records than declared.");
     OpenSnLogicalErrorIf(rec.size() != expected_record_size,
                          "Unexpected CEPXS binary moment-record size.");
     moment_tables.push_back(BytesToDouble(rec));
   }
+  OpenSnLogicalErrorIf(rdr.ReadRecord(rec),
+                       "CEPXS binary contains more moment records than declared.");
 
   OpenSnLogicalErrorIf(moment_tables.empty(), "CEPXS binary contains no moment records.");
   if (n_tables_from_header > 0)
     OpenSnLogicalErrorIf(moment_tables.size() != static_cast<size_t>(n_tables_from_header),
                          "CEPXS binary table count mismatch with header.");
 
-  OpenSnLogicalErrorIf(static_cast<int>(moment_tables.size()) != n_materials * n_moments,
+  OpenSnLogicalErrorIf(moment_tables.size() != expected_num_tables,
                        "CEPXS binary table count does not match materials*moments.");
 
   xs.scattering_order = static_cast<unsigned int>(n_moments - 1);
@@ -302,9 +334,9 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
     stopping_power_row = 4;       // row 5
   }
 
-  OpenSnLogicalErrorIf(total_xs_row < 0 || total_xs_row >= n_entries,
+  OpenSnLogicalErrorIf(total_xs_row < 0 or total_xs_row >= n_entries,
                        "CEPXS binary has invalid total-xs row index.");
-  OpenSnLogicalErrorIf(self_scatter_row < 0 || self_scatter_row >= n_entries,
+  OpenSnLogicalErrorIf(self_scatter_row < 0 or self_scatter_row >= n_entries,
                        "CEPXS binary has invalid self-scatter row index.");
   if (stopping_power_row >= 0)
   {
@@ -400,16 +432,19 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
       OpenSnLogicalErrorIf(g_end >= xs.e_bounds.size(),
                            "CEPXS charged-particle group range exceeds energy-bound storage.");
 
-      for (size_t gg = g_begin + 1; gg <= g_end; ++gg)
+      for (size_t gg = g_begin; gg < g_end; ++gg)
       {
-        const double prev = xs.e_bounds[gg - 1];
-        const double curr = xs.e_bounds[gg];
-        const double pair_tol = 1.0e-12 * std::max(1.0, std::abs(prev));
-        OpenSnLogicalErrorIf(prev <= curr + pair_tol,
+        const double lower = xs.e_bounds[gg + 1];
+        // BXSLIB stores the common upper energy implicitly when a new species starts.
+        // A reset is valid only for the first group in this charged block.
+        const bool species_reset = gg == g_begin and xs.e_bounds[gg] <= lower;
+        const double upper = species_reset ? xs.e_bounds.front() : xs.e_bounds[gg];
+        const double pair_tol = 1.0e-12 * std::max(1.0, std::abs(upper));
+        OpenSnLogicalErrorIf(upper <= lower + pair_tol,
                              "CEPXS charged-particle groups must be strictly decreasing in energy. "
                              "First non-decreasing pair in charged block at global index " +
-                               std::to_string(gg - 1) + " -> " + std::to_string(gg) + " : " +
-                               std::to_string(prev) + " <= " + std::to_string(curr) + ".");
+                               std::to_string(gg) + " -> " + std::to_string(gg + 1) + " : " +
+                               std::to_string(upper) + " <= " + std::to_string(lower) + ".");
       }
     }
   }
@@ -435,11 +470,20 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id, bool c
   mgxs.num_precursors_ = mgxs.is_fissionable_ ? parsed.num_precursors : 0;
 
   mgxs.e_bounds_ = parsed.e_bounds;
+  // BXSLIB stores one common upper energy followed by each group's lower energy.
+  // At a species transition the preceding entry is the previous species' cutoff,
+  // not the upper bound of the new species' first group.
+  mgxs.e_upper_bounds_.reserve(mgxs.num_groups_);
+  for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
+    mgxs.e_upper_bounds_.push_back(
+      parsed.e_bounds[g] <= parsed.e_bounds[g + 1] ? parsed.e_bounds.front() : parsed.e_bounds[g]);
   mgxs.sigma_t_ = parsed.sigma_t;
   // Derive absorption from total and transfer matrices
   mgxs.sigma_a_.clear();
   mgxs.energy_deposition_ = parsed.energy_deposition;
   mgxs.custom_xs_["charge_deposition"] = parsed.charge_deposition;
+  mgxs.custom_xs_["cepxs_charge_deposition"] = parsed.charge_deposition;
+  mgxs.custom_xs_["cepxs_secondary_production"] = parsed.secondary_production;
   mgxs.stopping_power_ = parsed.stopping_power;
   mgxs.transfer_matrices_ = parsed.transfer_matrices;
 

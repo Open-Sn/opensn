@@ -96,8 +96,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   InitializeGroupsets(params);
 
+  // Call this class's implementation directly. Virtual dispatch cannot reach a derived-class
+  // override during construction; derived classes validate their own adjoint restrictions.
   if (options_.adjoint)
-    ValidateAdjointModeAllowed();
+    LBSProblem::ValidateAdjointModeAllowed();
 
   InitializeSources(params);
   InitializeXSMap(params);

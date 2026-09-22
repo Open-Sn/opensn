@@ -380,11 +380,12 @@ def ParseTestConfiguration(file_path: str):
                                          env=env)
             test_key = (
                 new_test.filename,
+                new_test.num_procs,
                 tuple(map(str, new_test.args)),
                 tuple(sorted(new_test.env.items())),
             )
             if test_key in test_objects:
-                warnings.warn(message_prefix + "duplicates an existing file/args test entry")
+                warnings.warn(message_prefix + "duplicates an existing file/ranks/args test entry")
                 continue
             test_objects[test_key] = new_test
         except ValueError:

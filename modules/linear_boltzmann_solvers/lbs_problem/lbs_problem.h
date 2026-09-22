@@ -81,6 +81,13 @@ public:
   /// Returns true if the problem is currently in time-dependent mode.
   virtual bool IsTimeDependent() const;
 
+  /**
+   * Throws if the problem cannot be switched to adjoint mode. The base class requires Cartesian
+   * geometry and standard quadrature operators; derived problems extend this to reject
+   * unsupported features and must call the base implementation.
+   */
+  virtual void ValidateAdjointModeAllowed() const;
+
   /// Set the problem to time-dependent mode.
   virtual void SetTimeDependentMode();
 
@@ -421,7 +428,6 @@ protected:
 
 private:
   void InitializeRuntimeCore();
-  void ValidateAdjointModeAllowed() const;
   void ValidateRuntimeModeConfiguration() const;
   void InitializeSources();
   /// Initializes parallel arrays.

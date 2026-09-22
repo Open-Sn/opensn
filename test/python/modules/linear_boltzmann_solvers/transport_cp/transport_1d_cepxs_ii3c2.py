@@ -16,6 +16,9 @@ import glob
 import os
 import sys
 
+# Keep routine regressions free of optional plotting dependencies and plot artifacts.
+GENERATE_PLOTS = False
+
 if "opensn_console" not in globals():
     from mpi4py import MPI
 
@@ -165,7 +168,12 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_c
 
     sampled_fields = {
         "energy_deposition": sample_field_function(
-            problem, label, "energy_deposition", "energy_deposition", length_cm, num_cells
+            problem,
+            label,
+            "energy_deposition",
+            "cepxs_energy_deposition" if csda_enabled else "energy_deposition",
+            length_cm,
+            num_cells,
         ),
         "charge_raw": sample_field_function(
             problem, label, "charge_deposition", "charge_deposition", length_cm, num_cells
@@ -173,6 +181,14 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_c
     }
 
     if csda_enabled:
+        sampled_fields["conservative_energy_deposition"] = sample_field_function(
+            problem,
+            label,
+            "conservative_energy_deposition",
+            "csda_energy_deposition",
+            length_cm,
+            num_cells,
+        )
         sampled_fields["charge_csda"] = sample_field_function(
             problem, label, "csda_charge_deposition", "csda_charge_deposition", length_cm, num_cells
         )
@@ -199,7 +215,10 @@ def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_c
         charge_raw = result["fields"]["charge_raw"]["dose"]
         result["fields"]["charge_csda_term"] = {
             "fmr": result["fields"]["charge_csda"]["fmr"],
-            "dose": [aug - raw for aug, raw in zip(result["fields"]["charge_csda"]["dose"], charge_raw)],
+            "dose": [
+                aug - raw
+                for aug, raw in zip(result["fields"]["charge_csda"]["dose"], charge_raw)
+            ],
         }
         field = result["fields"]["charge_csda_term"]
         field["plot"] = make_plot_profile(field["fmr"], field["dose"], num_cells)
@@ -231,6 +250,8 @@ def make_plot_profile(fmr, values, num_cells):
 
 
 def write_csv(path, columns):
+    if not GENERATE_PLOTS:
+        return
     with open(path, "w", encoding="utf-8", newline="") as f:
         writer = csv.writer(f)
         writer.writerow([name for name, _ in columns])
@@ -282,7 +303,8 @@ if __name__ == "__main__":
     if rank == 0:
         case_colors = {
             "standard": "tab:blue",
-            "csda": "tab:orange",
+            "cepxs_csda": "tab:orange",
+            "conservative": "tab:green",
             "lockwood": "tab:gray",
         }
 
@@ -291,7 +313,11 @@ if __name__ == "__main__":
             [
                 ("fmr", std_case["fields"]["energy_deposition"]["fmr"]),
                 ("standard_dose", std_case["fields"]["energy_deposition"]["dose"]),
-                ("csda_dose", csda_case["fields"]["energy_deposition"]["dose"]),
+                ("csda_cepxs_dose", csda_case["fields"]["energy_deposition"]["dose"]),
+                (
+                    "csda_conservative_dose",
+                    csda_case["fields"]["conservative_energy_deposition"]["dose"],
+                ),
             ],
         )
         write_csv(
@@ -307,135 +333,166 @@ if __name__ == "__main__":
 
         for fmr in sample_fmrs:
             fmr_key = str(fmr).replace(".", "p")
+            sample_value = interpolate(
+                std_case["fields"]["energy_deposition"]["fmr"],
+                std_case["fields"]["energy_deposition"]["dose"],
+                fmr,
+            )
             print(
                 f"II3C2_STANDARD_ENERGY_RAW_FMR_{fmr_key}="
-                f"{interpolate(std_case['fields']['energy_deposition']['fmr'], std_case['fields']['energy_deposition']['dose'], fmr):.12e}"
+                f"{sample_value:.12e}"
+            )
+            sample_value = interpolate(
+                csda_case["fields"]["energy_deposition"]["fmr"],
+                csda_case["fields"]["energy_deposition"]["dose"],
+                fmr,
             )
             print(
                 f"II3C2_CSDA_ENERGY_RAW_FMR_{fmr_key}="
-                f"{interpolate(csda_case['fields']['energy_deposition']['fmr'], csda_case['fields']['energy_deposition']['dose'], fmr):.12e}"
+                f"{sample_value:.12e}"
             )
-        print(f"II3C2_CSDA_BALANCE_STANDARD={csda_case['balance']['balance']:.12e}")
         print(
-            f"II3C2_CSDA_BALANCE_CHARGE_DEP={csda_case['balance']['csda_charge_deposition_rate']:.12e}"
+            f"II3C2_CSDA_BALANCE_PARTICLE_DEP="
+            f"{csda_case['balance']['csda_particle_deposition_rate']:.12e}"
         )
         print(
             f"II3C2_CSDA_BALANCE_PARTICLE={csda_case['balance']['csda_particle_balance']:.12e}"
         )
         print(
-            f"II3C2_CSDA_BALANCE_ENERGY_DEP={csda_case['balance']['csda_energy_deposition_rate']:.12e}"
+            f"II3C2_CSDA_BALANCE_ENERGY={csda_case['balance']['csda_energy_balance']:.12e}"
         )
-        try:
-            import matplotlib.pyplot as plt
+        # Plotting is optional; the regression keys above are the test output.
+        if GENERATE_PLOTS:
+            try:
+                import matplotlib.pyplot as plt
 
-            plt.figure(figsize=(7.2, 4.8))
-            plt.plot(
-                std_case["fields"]["energy_deposition"]["plot"]["fmr"],
-                std_case["fields"]["energy_deposition"]["plot"]["values"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard energy deposition",
-            )
-            plt.plot(
-                csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
-                csda_case["fields"]["energy_deposition"]["plot"]["values"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA energy deposition",
-            )
-            plt.plot(
-                lockwood_fmr,
-                lockwood_dose,
-                "o",
-                color=case_colors["lockwood"],
-                ms=4.0,
-                label="Lockwood points",
-            )
-            plt.xlabel("Fraction of Mean Range (FMR)")
-            plt.ylabel("Dose [MeV cm$^2$/g]")
-            plt.title("II.3.C2 Aluminum Slab Energy Deposition")
-            plt.grid(True, alpha=0.3)
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig("transport_1d_cepxs_ii3c2_edep.png", dpi=180)
-            plt.close()
+                plt.figure(figsize=(7.2, 4.8))
+                plt.plot(
+                    std_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                    std_case["fields"]["energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard energy deposition",
+                )
+                plt.plot(
+                    csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                    csda_case["fields"]["energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS response",
+                )
+                plt.plot(
+                    csda_case["fields"]["conservative_energy_deposition"]["plot"]["fmr"],
+                    csda_case["fields"]["conservative_energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["conservative"],
+                    lw=2.0,
+                    label="CSDA conservative",
+                )
+                plt.plot(
+                    lockwood_fmr,
+                    lockwood_dose,
+                    "o",
+                    color=case_colors["lockwood"],
+                    ms=4.0,
+                    label="Lockwood points",
+                )
+                plt.xlabel("Fraction of Mean Range (FMR)")
+                plt.ylabel("Dose [MeV cm$^2$/g]")
+                plt.title("II.3.C2 Aluminum Slab Energy Deposition")
+                plt.grid(True, alpha=0.3)
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig("transport_1d_cepxs_ii3c2_edep.png", dpi=180)
+                plt.close()
 
-            plt.figure(figsize=(7.2, 4.8))
-            plt.plot(
-                std_case["fields"]["charge_raw"]["plot"]["fmr"],
-                std_case["fields"]["charge_raw"]["plot"]["values"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS charge deposition",
-            )
-            plt.plot(
-                csda_case["fields"]["charge_csda"]["plot"]["fmr"],
-                csda_case["fields"]["charge_csda"]["plot"]["values"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA charge deposition",
-            )
-            plt.xlabel("Fraction of Mean Range (FMR)")
-            plt.ylabel("Charge deposition [1 cm$^2$/g]")
-            plt.title("II.3.C2 Aluminum Slab Charge Deposition")
-            plt.grid(True, alpha=0.3)
-            plt.legend()
-            plt.tight_layout()
-            plt.savefig("transport_1d_cepxs_ii3c2_cdep.png", dpi=180)
-            plt.close()
+                plt.figure(figsize=(7.2, 4.8))
+                plt.plot(
+                    std_case["fields"]["charge_raw"]["plot"]["fmr"],
+                    std_case["fields"]["charge_raw"]["plot"]["values"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS charge deposition",
+                )
+                plt.plot(
+                    csda_case["fields"]["charge_csda"]["plot"]["fmr"],
+                    csda_case["fields"]["charge_csda"]["plot"]["values"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA charge deposition",
+                )
+                plt.xlabel("Fraction of Mean Range (FMR)")
+                plt.ylabel("Charge deposition [1 cm$^2$/g]")
+                plt.title("II.3.C2 Aluminum Slab Charge Deposition")
+                plt.grid(True, alpha=0.3)
+                plt.legend()
+                plt.tight_layout()
+                plt.savefig("transport_1d_cepxs_ii3c2_cdep.png", dpi=180)
+                plt.close()
 
-            fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6))
-            axes[0].plot(
-                std_case["fields"]["energy_deposition"]["plot"]["fmr"],
-                std_case["fields"]["energy_deposition"]["plot"]["values"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS",
-            )
-            axes[0].plot(
-                csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
-                csda_case["fields"]["energy_deposition"]["plot"]["values"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA CEPXS",
-            )
-            axes[0].plot(lockwood_fmr, lockwood_dose, "o", color=case_colors["lockwood"], ms=4.0, label="Lockwood")
-            axes[0].set_xlabel("Fraction of Mean Range (FMR)")
-            axes[0].set_ylabel("Dose [MeV cm$^2$/g]")
-            axes[0].set_title("Energy Deposition")
-            axes[0].grid(True, alpha=0.3)
-            axes[0].legend()
+                fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.6))
+                axes[0].plot(
+                    std_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                    std_case["fields"]["energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS",
+                )
+                axes[0].plot(
+                    csda_case["fields"]["energy_deposition"]["plot"]["fmr"],
+                    csda_case["fields"]["energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS response",
+                )
+                axes[0].plot(
+                    csda_case["fields"]["conservative_energy_deposition"]["plot"]["fmr"],
+                    csda_case["fields"]["conservative_energy_deposition"]["plot"]["values"],
+                    "-",
+                    color=case_colors["conservative"],
+                    lw=2.0,
+                    label="CSDA conservative",
+                )
+                axes[0].plot(
+                    lockwood_fmr, lockwood_dose, "o",
+                    color=case_colors["lockwood"], ms=4.0, label="Lockwood",
+                )
+                axes[0].set_xlabel("Fraction of Mean Range (FMR)")
+                axes[0].set_ylabel("Dose [MeV cm$^2$/g]")
+                axes[0].set_title("Energy Deposition")
+                axes[0].grid(True, alpha=0.3)
+                axes[0].legend()
 
-            axes[1].plot(
-                std_case["fields"]["charge_raw"]["plot"]["fmr"],
-                std_case["fields"]["charge_raw"]["plot"]["values"],
-                "-",
-                color=case_colors["standard"],
-                lw=2.0,
-                label="Standard CEPXS",
-            )
-            axes[1].plot(
-                csda_case["fields"]["charge_csda"]["plot"]["fmr"],
-                csda_case["fields"]["charge_csda"]["plot"]["values"],
-                "-",
-                color=case_colors["csda"],
-                lw=2.0,
-                label="CSDA CEPXS",
-            )
-            axes[1].set_xlabel("Fraction of Mean Range (FMR)")
-            axes[1].set_ylabel("Charge deposition [1 cm$^2$/g]")
-            axes[1].set_title("Charge Deposition")
-            axes[1].grid(True, alpha=0.3)
-            axes[1].legend()
-            fig.suptitle("II.3.C2 Aluminum Slab")
-            fig.tight_layout()
-            fig.savefig("transport_1d_cepxs_ii3c2_compare.png", dpi=180)
-            plt.close(fig)
-        except Exception as exc:
-            raise RuntimeError(f"Failed to create plot: {exc}") from exc
+                axes[1].plot(
+                    std_case["fields"]["charge_raw"]["plot"]["fmr"],
+                    std_case["fields"]["charge_raw"]["plot"]["values"],
+                    "-",
+                    color=case_colors["standard"],
+                    lw=2.0,
+                    label="Standard CEPXS",
+                )
+                axes[1].plot(
+                    csda_case["fields"]["charge_csda"]["plot"]["fmr"],
+                    csda_case["fields"]["charge_csda"]["plot"]["values"],
+                    "-",
+                    color=case_colors["cepxs_csda"],
+                    lw=2.0,
+                    label="CSDA CEPXS",
+                )
+                axes[1].set_xlabel("Fraction of Mean Range (FMR)")
+                axes[1].set_ylabel("Charge deposition [1 cm$^2$/g]")
+                axes[1].set_title("Charge Deposition")
+                axes[1].grid(True, alpha=0.3)
+                axes[1].legend()
+                fig.suptitle("II.3.C2 Aluminum Slab")
+                fig.tight_layout()
+                fig.savefig("transport_1d_cepxs_ii3c2_compare.png", dpi=180)
+                plt.close(fig)
+            except Exception as exc:
+                raise RuntimeError(f"Failed to create plot: {exc}") from exc
