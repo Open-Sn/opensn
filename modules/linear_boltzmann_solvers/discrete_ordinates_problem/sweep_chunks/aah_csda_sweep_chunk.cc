@@ -10,6 +10,7 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/error.h"
 #include "caliper/cali.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -29,8 +30,13 @@ AAHCSDASweepChunk::AAHCSDASweepChunk(DiscreteOrdinatesProblem& problem, LBSGroup
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
     problem_(problem),
-    destination_phi_e_(problem.GetPhiENewLocal())
+    destination_phi_e_(problem.GetPhiENewLocal()),
+    energy_(MultiGroupXS::ResolveEnergyGroupStructure(xs_, problem.GetNumGroups())),
+    charged_groups_(problem.GetNumGroups(), false)
 {
+  for (const auto& [begin, end] : FindCSDAProblemChargedGroupRanges(xs_, problem.GetNumGroups()))
+    for (auto g = begin; g < end; ++g)
+      charged_groups_[g] = true;
 }
 
 void
@@ -42,9 +48,9 @@ AAHCSDASweepChunk::ZeroDestinationPhi()
   const auto gss = groupset_.GetNumGroups();
   const auto total_num_groups = problem_.GetNumGroups();
 
-  for (const auto& cell : grid_->local_cells)
+  for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto mapping = cell.local_id * static_cast<size_t>(total_num_groups) + gsi;
+    const auto mapping = cell->local_id * static_cast<size_t>(total_num_groups) + gsi;
     for (unsigned int g = 0; g < gss; ++g)
       destination_phi_e_[mapping + g] = 0.0;
   }
@@ -71,6 +77,8 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
   std::vector<Vector<double>> b(gs_size, Vector<double>(max_num_cell_dofs_, 0.0));
   Vector<double> b_ext(max_num_cell_dofs_ + 1, 0.0);
   std::vector<double> source(max_num_cell_dofs_);
+  std::vector<double> face_mu_values;
+  std::vector<double> psiE_gsg(gs_size, 0.0);
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
@@ -79,7 +87,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const auto cell_local_id = spls[spls_index];
-    auto& cell = grid_->local_cells[cell_local_id];
+    auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto& cell_outflow_view = cell_outflow_views_[cell_local_id];
     const auto& cell_mapping = discretization_.GetCellMapping(cell);
@@ -87,11 +95,11 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
-    std::vector<double> face_mu_values(cell_num_faces);
+    face_mu_values.resize(cell_num_faces);
 
     const auto& xs = xs_.at(cell.block_id);
     const auto& sigma_t = xs->GetSigmaTotal();
-    const auto csda_data = MakeCSDAMaterialData(*xs);
+    const auto csda_data = MakeCSDAMaterialData(*xs, energy_);
 
     const auto& unit_mats = unit_cell_matrices_[cell_local_id];
     const auto& G = unit_mats.intV_shapeI_gradshapeJ;
@@ -117,7 +125,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
       deploc_face_counter = ni_deploc_face_counter;
       preloc_face_counter = ni_preloc_face_counter;
 
-      std::vector<double> psiE_gsg(gs_size, 0.0);
+      std::fill(psiE_gsg.begin(), psiE_gsg.end(), 0.0);
 
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
         for (size_t i = 0; i < cell_num_nodes; ++i)
@@ -196,7 +204,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
           source[i] = temp_src;
         }
 
-        if (IsCSDAActive(csda_data, gs_gi + gsg))
+        if (charged_groups_[gs_gi + gsg])
         {
           const CSDALocalSolveContext csda_ctx{gsg,
                                                gs_gi,

@@ -331,6 +331,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 
   for (auto& [bid, bndry] : sweep_boundaries_)
   {
+    bndry->SetDelayedAngularSlopeEnabled(options_.csda_enabled);
     bndry->SetOpposingReflected(bid, sweep_boundaries_);
   }
 }

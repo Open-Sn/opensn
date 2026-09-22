@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
 #pragma once
@@ -11,7 +11,6 @@
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
-
 #include <vector>
 
 namespace opensn
@@ -21,7 +20,7 @@ struct CSDAMaterialData
 {
   bool enabled = false;
   const std::vector<double>* stopping_power = nullptr;
-  std::vector<double> delta_e;
+  const std::vector<double>* delta_e = nullptr;
 };
 
 /// Context for one coupled local CSDA solve:
@@ -50,7 +49,7 @@ struct CSDALocalSolveContext
 };
 
 inline CSDAMaterialData
-MakeCSDAMaterialData(const MultiGroupXS& xs)
+MakeCSDAMaterialData(const MultiGroupXS& xs, const EnergyGroupStructure& energy)
 {
   CSDAMaterialData data;
   const auto& stopping_power = xs.GetStoppingPower();
@@ -59,16 +58,16 @@ MakeCSDAMaterialData(const MultiGroupXS& xs)
 
   data.enabled = true;
   data.stopping_power = &stopping_power;
-  data.delta_e = xs.GetDeltaE();
+  data.delta_e = &energy.widths;
   return data;
 }
 
 inline bool
 IsCSDAActive(const CSDAMaterialData& data, const size_t global_g)
 {
-  return data.enabled and data.stopping_power and global_g < data.stopping_power->size() and
-         global_g < data.delta_e.size() and
-         std::abs((*data.stopping_power)[global_g]) > kCSDATolerance;
+  return data.enabled and data.stopping_power and data.delta_e and
+         global_g < data.stopping_power->size() and global_g < data.delta_e->size() and
+         std::abs((*data.stopping_power)[global_g]) > MultiGroupXS::STOPPING_POWER_TOLERANCE;
 }
 
 template <class PsiEPtrAt>
@@ -115,8 +114,12 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
   const double cell_volume = ctx.cell_volume;
   const int ni_preloc_face_counter = ctx.ni_preloc_face_counter;
 
-  const double Sg = (*csda_data.stopping_power)[gs_gi + gsg];
-  const double dEg = csda_data.delta_e[gs_gi + gsg];
+  // Even in a void, charged groups must advect their incoming energy slope.
+  // With zero stopping power the slope equation is pure spatial transport and
+  // its arbitrary energy-width placeholder cancels out of every coefficient.
+  const bool csda_active = IsCSDAActive(csda_data, gs_gi + gsg);
+  const double Sg = csda_active ? (*csda_data.stopping_power)[gs_gi + gsg] : 0.0;
+  const double dEg = csda_active ? csda_data.delta_e->at(gs_gi + gsg) : 1.0;
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const size_t cell_num_faces = cell.faces.size();
 
@@ -131,10 +134,10 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
     }
 
     double csda_gm1 = 0.0;
-    if (gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
+    if (csda_active and gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
     {
       const double Sgm1 = (*csda_data.stopping_power)[gs_gi + gsg - 1];
-      const double dEgm1 = csda_data.delta_e[gs_gi + gsg - 1];
+      const double dEgm1 = csda_data.delta_e->at(gs_gi + gsg - 1);
       double sumM = 0.0;
       for (size_t j = 0; j < cell_num_nodes; ++j)
         sumM += M(i, j) * flux_at(gsg - 1, j);
@@ -210,10 +213,10 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
     Aext(cell_num_nodes, j) = v(j) * coeff_row;
 
   double rhs_csda_gm1 = 0.0;
-  if (gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
+  if (csda_active and gsg > 0 and IsCSDAActive(csda_data, gs_gi + gsg - 1))
   {
     const double Sgm1 = (*csda_data.stopping_power)[gs_gi + gsg - 1];
-    const double dEgm1 = csda_data.delta_e[gs_gi + gsg - 1];
+    const double dEgm1 = csda_data.delta_e->at(gs_gi + gsg - 1);
     double sum_v_psi = 0.0;
     for (size_t j = 0; j < cell_num_nodes; ++j)
       sum_v_psi += v(j) * flux_at(gsg - 1, j);

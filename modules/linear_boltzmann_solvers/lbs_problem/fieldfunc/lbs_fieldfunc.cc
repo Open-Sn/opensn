@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
-
 #include <iomanip>
 #include <memory>
 #include <sstream>

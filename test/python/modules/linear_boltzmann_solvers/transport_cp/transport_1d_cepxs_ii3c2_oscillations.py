@@ -6,18 +6,17 @@ Demonstration input for standard CEPXS diamond-difference oscillations in the
 group spectrum relative to the CSDA implementation. It uses the 1D aluminum
 II.3.C2 benchmark data because the group-summed depth-dose and charge profiles
 are usually too smooth to make the energy-discretization artifact obvious.
-
-Set OPENSN_CEPXS_OSC_CELLS to a comma-separated mesh list to shorten or extend
-the sweep. The default is "20,40,80,100".
-
-Set OPENSN_CEPXS_OSC_SAMPLE_DEPTH and OPENSN_CEPXS_OSC_SAMPLE_DEPTH_2 to
-override the two spectrum sample depths in cm. The defaults are 35% and 20%
-of the slab thickness.
 """
 
 import csv
 import os
 import sys
+
+# Keep routine regressions free of optional plotting dependencies and plot artifacts.
+GENERATE_PLOTS = False
+MESH_SIZES = (20, 40, 80, 100)
+SAMPLE_DEPTH_FRACTION = 0.35
+SAMPLE_DEPTH_2_FRACTION = 0.20
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -30,7 +29,7 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.math import AngularFluxFunction, Vector3
     from pyopensn.fieldfunc import FieldFunctionInterpolationPoint, FieldFunctionInterpolationVolume
-    from pyopensn.logical_volume import RPPLogicalVolume
+    from pyopensn.logvol import RPPLogicalVolume
 
 
 def make_beam_bc(quadrature):
@@ -182,7 +181,12 @@ def run_case(
     solver.Execute()
 
     field = sample_field(
-        problem, "energy_deposition", "energy_deposition", slab_thickness_cm, rho_g_cm3, num_cells
+        problem,
+        "energy_deposition",
+        "cepxs_energy_deposition" if csda_enabled else "energy_deposition",
+        slab_thickness_cm,
+        rho_g_cm3,
+        num_cells,
     )
     spectrum = sample_scalar_flux_spectrum(problem, slab_thickness_cm, sample_depth_cm)
     spectrum_2 = sample_scalar_flux_spectrum(problem, slab_thickness_cm, sample_depth_2_cm)
@@ -232,21 +236,6 @@ def group_odd_even(values):
         residual.append((values[i] - smooth) / scale)
     residual.append(0.0)
     return residual
-
-
-def parse_mesh_sizes():
-    raw_value = os.environ.get("OPENSN_CEPXS_OSC_CELLS", "20,40,80,100")
-    sizes = [int(token.strip()) for token in raw_value.split(",") if token.strip()]
-    if not sizes:
-        raise RuntimeError("OPENSN_CEPXS_OSC_CELLS did not contain any mesh sizes")
-    return sizes
-
-
-def parse_sample_depth(env_name, default_depth_cm):
-    raw_value = os.environ.get(env_name)
-    if raw_value is None or raw_value.strip() == "":
-        return default_depth_cm
-    return float(raw_value)
 
 
 def make_rows(num_cells, standard_case, csda_case):
@@ -300,6 +289,8 @@ def make_rows(num_cells, standard_case, csda_case):
 
 
 def write_csv(path, rows):
+    if not GENERATE_PLOTS:
+        return
     fieldnames = [
         "num_cells",
         "depth_cm",
@@ -443,11 +434,9 @@ if __name__ == "__main__":
     length_cm = 0.2107
     areal_thickness_g_cm2 = rho_g_cm3 * length_cm
     slab_thickness_cm = areal_thickness_g_cm2 / rho_g_cm3
-    mesh_sizes = parse_mesh_sizes()
-    sample_depth_cm = parse_sample_depth("OPENSN_CEPXS_OSC_SAMPLE_DEPTH", 0.35 * slab_thickness_cm)
-    sample_depth_2_cm = parse_sample_depth(
-        "OPENSN_CEPXS_OSC_SAMPLE_DEPTH_2", 0.20 * slab_thickness_cm
-    )
+    mesh_sizes = MESH_SIZES
+    sample_depth_cm = SAMPLE_DEPTH_FRACTION * slab_thickness_cm
+    sample_depth_2_cm = SAMPLE_DEPTH_2_FRACTION * slab_thickness_cm
 
     all_results = []
     all_rows = []
@@ -486,4 +475,5 @@ if __name__ == "__main__":
 
     if rank == 0:
         write_csv("transport_1d_cepxs_oscillations.csv", all_rows)
-        make_plot(all_results, "transport_1d_cepxs_oscillations.png")
+        if GENERATE_PLOTS:
+            make_plot(all_results, "transport_1d_cepxs_oscillations.png")

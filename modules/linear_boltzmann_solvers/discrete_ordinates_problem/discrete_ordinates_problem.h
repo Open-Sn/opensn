@@ -67,6 +67,8 @@ public:
   const std::string& GetSweepType() const { return sweep_type_; }
 
   void ValidateOptions(std::optional<SweepChunkMode> mode = std::nullopt) const;
+  /// Rejects adjoint mode for CSDA problems and problems with an uncollided flux file.
+  void ValidateAdjointModeAllowed() const override;
 
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
@@ -396,7 +398,9 @@ private:
                                       size_t groupset_id,
                                       unsigned int group,
                                       size_t angle);
-  void ValidateCSDAGroupConfiguration() const;
+  /// Validate common energy bounds and charged blocks before installing an XS map.
+  /// Materials may omit bounds; at least one complete structure must be supplied.
+  void ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const;
   /** @} */
 
 public:

@@ -1,9 +1,46 @@
 [
   {
+    "file": "csda_void.py",
+    "num_procs": 1,
+    "outfileprefix": "csda_void_np1",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VOID_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VOID_LIMIT_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "csda_void.py",
+    "num_procs": 4,
+    "outfileprefix": "csda_void_np4",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VOID_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VOID_LIMIT_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
     "file": "csda_balance.py",
     "num_procs": 1,
     "outfileprefix": "csda_balance_np1",
-    "env": {"CSDA_TEST_RANKS": "1"},
     "checks": [
       {
         "type": "KeyValuePair",
@@ -17,13 +54,80 @@
     "file": "csda_balance.py",
     "num_procs": 4,
     "outfileprefix": "csda_balance_np4",
-    "env": {"CSDA_TEST_RANKS": "4"},
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "CSDA_BALANCE_MAX_ERROR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "csda_validation.py",
+    "comment": "CSDA rejects uncollided flux, later adjoint switches, and split charged blocks",
+    "num_procs": 1,
+    "outfileprefix": "csda_validation_np1",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VALIDATION_MAX_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "csda_validation.py",
+    "comment": "CSDA rejects uncollided flux, later adjoint switches, and split charged blocks",
+    "num_procs": 2,
+    "outfileprefix": "csda_validation_np2",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_VALIDATION_MAX_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "csda_charge_sign.py",
+    "comment": "CSDA charge-deposition sign follows problem-level charged blocks",
+    "num_procs": 1,
+    "outfileprefix": "csda_charge_sign_np1",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CHARGE_SIGN_OK=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CHARGE_SIGN_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-9
+      }
+    ]
+  },
+  {
+    "file": "csda_charge_sign.py",
+    "comment": "CSDA charge-deposition sign follows problem-level charged blocks",
+    "num_procs": 2,
+    "outfileprefix": "csda_charge_sign_np2",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CHARGE_SIGN_OK=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CHARGE_SIGN_RELATIVE_ERROR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-9
       }
     ]
   },
@@ -53,19 +157,19 @@
       {
         "type": "KeyValuePair",
         "key": "EDEP_AVG=",
-        "goldvalue": 9.836112125560e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MIN=",
-        "goldvalue": 9.836112125559e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MAX=",
-        "goldvalue": 9.836112125561e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
@@ -77,6 +181,12 @@
       {
         "type": "KeyValuePair",
         "key": "CSDA_EDEP_AVG=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CEPXS_EDEP_AVG=",
         "goldvalue": 9.836112125560e-01,
         "abs_tol": 1e-10
       },
@@ -114,19 +224,19 @@
       {
         "type": "KeyValuePair",
         "key": "EDEP_AVG=",
-        "goldvalue": 9.836112125561e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MIN=",
-        "goldvalue": 9.836112125560e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "EDEP_MAX=",
-        "goldvalue": 9.836112125561e-01,
+        "goldvalue": 2.5,
         "abs_tol": 1e-10
       },
       {
@@ -138,6 +248,12 @@
       {
         "type": "KeyValuePair",
         "key": "CSDA_EDEP_AVG=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CEPXS_EDEP_AVG=",
         "goldvalue": 9.836112125561e-01,
         "abs_tol": 1e-10
       },
@@ -326,13 +442,7 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "III1A_CSDA_RELATIVE_BALANCE_PARTICLE=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-7
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "III1A_CSDA_FIELD_ENERGY_DEP=",
+        "key": "III1A_CEPXS_ENERGY_DEP=",
         "goldvalue": 9.901467441745e-01,
         "abs_tol": 1e-9
       },
@@ -344,7 +454,7 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "III1A_CSDA_RELATIVE_BALANCE_ENERGY=",
+        "key": "III1A_CSDA_BALANCE_ENERGY=",
         "goldvalue": 0.0,
         "abs_tol": 1e-7
       },

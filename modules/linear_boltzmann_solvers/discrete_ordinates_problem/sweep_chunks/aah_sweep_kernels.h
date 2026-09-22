@@ -307,7 +307,6 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
             for (size_t gsg = 0; gsg < gs_size; ++gsg)
               psi[gsg] = b[gsg](i);
           }
-
         }
       }
     }

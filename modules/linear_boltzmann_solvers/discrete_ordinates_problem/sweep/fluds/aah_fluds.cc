@@ -105,7 +105,7 @@ AAH_FLUDS::OutgoingPsiE(std::size_t cell_so_index,
 double*
 AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_t n)
 {
-  if (outb_face_counter < 0 ||
+  if (outb_face_counter < 0 or
       std::cmp_greater_equal(outb_face_counter,
                              common_data_.nonlocal_outb_face_deplocI_slot_.size()))
   {
@@ -137,7 +137,7 @@ AAH_FLUDS::NLOutgoingPsi(int outb_face_counter, std::size_t face_dof, std::size_
 double*
 AAH_FLUDS::NLOutgoingPsiE(int outb_face_counter, std::size_t face_dof, std::size_t n)
 {
-  if (outb_face_counter < 0 ||
+  if (outb_face_counter < 0 or
       std::cmp_greater_equal(outb_face_counter,
                              common_data_.nonlocal_outb_face_deplocI_slot_.size()))
   {
