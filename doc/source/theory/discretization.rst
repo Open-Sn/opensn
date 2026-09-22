@@ -29,6 +29,7 @@ Energy Discretization
   be thought of as a finite-volume discretization in energy. When
   fission is present, the above equation is amended to account for the
   additional fission production term.
+
 | The multigroup fluxes are the energy-dependent fluxes integrated over
   the energy group. For example,
 
@@ -41,6 +42,7 @@ Energy Discretization
   Adequately energy-averaged multigroup cross sections must be supplied
   to OpenSn. See the Theory section on multigroup cross sections for
   additional details.
+
 | In the remainder of this theory manual, we focus on the steady-state
   linear Boltzmann equation, for brevity:
 
@@ -65,6 +67,7 @@ Energy Discretization
   :math:`\ell`, i.e., :math:`m=-\ell,-\ell+2,\dots,\ell` (:math:`\ell+1`
   terms), and in 3D, the summation on
   :math:`m` is from :math:`-\ell` to :math:`\ell`.
+
 | We will further consider a single one of the above :math:`G`
   equations, written without the group superscript :math:`g` for
   conciseness:
@@ -114,6 +117,7 @@ Angle Discretization (the Sn method)
 
   with :math:`\psi_d(\vec{r})  \equiv \psi(\vec{r},\vec{\Omega}_d)` and
   :math:`Q_d(\vec{r})  \equiv Q(\vec{r},\vec{\Omega}_d)`.
+
 | In order to evaluate flux moments, we use the quadrature rule:
 
   .. math:: \phi_{\ell,m}(\vec{r}) \simeq \sum_{d=1}^{N_{\text{dir}}} \omega_d Y_{\ell,m}(\vec{\Omega}_d) \psi_d(\vec{r}) \,.
@@ -249,6 +253,7 @@ Spatial Discretization
   where the total source term :math:`q_d` includes all source terms
   (within-group scattering, external, and inscattering from other
   groups).
+
 | A mesh :math:`T_{h}` is used to discretize the domain
   :math:`\mathcal{D}` into arbitrary elements :math:`K`, such that the
   union of the all elements fully covers :math:`\mathcal{D}`, i.e.,
@@ -267,6 +272,7 @@ Spatial Discretization
 
   In the case of 3D geometries, these products are to be understood as
   volume and surface integrals.
+
 | The DGFEM applied to the transport equation is obtained by multiplying
   it by a (discontinuous) test function :math:`b_{i}` and integrating
   the result over each element, i.e.,
@@ -289,6 +295,7 @@ Spatial Discretization
   restriction of any function :math:`f` taken from within element
   :math:`K` and :math:`f^{-}` represents the restriction of :math:`f`
   taken from the neighboring element of :math:`K`.
+
 | The left-hand-side integrals contain the angular flux unknowns for
   each element :math:`K`, whereas the right-hand-side integrals contain
   the radiation contribution to cell :math:`K`, from both (i) the
@@ -349,6 +356,7 @@ Spatial Discretization
 
   with :math:`N_f` the number of face vertices for face :math:`f` of the
   polyhedron.
+
 | Then, the PWL basis function associated with vertex :math:`j` is:
 
   .. math:: b_j(\vec{r}) = t_j(\vec{r}) + \sum_{f @ j} \frac{1}{N_f} t_f(\vec{r}) + \frac{1}{N_v}t_c(\vec{r})
@@ -401,6 +409,7 @@ References
 .. bibliography::
    :style: unsrtalpha
    :filter: False
+   :labelprefix: D
 
    PWLD_stone_adams
    adams2001dfem

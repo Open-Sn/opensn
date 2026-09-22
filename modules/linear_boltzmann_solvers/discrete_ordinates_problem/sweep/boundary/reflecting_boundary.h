@@ -31,6 +31,7 @@ public:
    * Get the list of anglesets that depend on a given angleset.
    * If the boundary is not opposing reflecting, this method extracts all anglesets in the angle
    * aggregation that can only begin sweeping after the given angle set has completed its sweep.
+   * \param groupset_id Groupset whose per-groupset reflected-angle mapping is used.
    * \param following_angle_sets Output set to which the dependent anglesets will be added.
    * \param angle_agg Angle aggregation containing all anglesets.
    * \param angleset Angleset for which dependent anglesets are sought.
