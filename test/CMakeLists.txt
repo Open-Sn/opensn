@@ -19,7 +19,7 @@ target_link_libraries(opensn-unit
     ${PETSC_LIBRARY}
     ${HDF5_LIBRARIES}
     caliper
-    MPI::MPI_CXX
+    MPI::MPI_C
     GTest::gmock_main
     GTest::gtest_main
 )

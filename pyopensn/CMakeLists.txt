@@ -39,6 +39,6 @@ target_link_libraries(__init__
     libopensn
     libopensnpy
     ${PETSC_LIBRARY}
-    MPI::MPI_CXX
+    MPI::MPI_C
     caliper
 )
