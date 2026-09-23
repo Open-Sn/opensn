@@ -2,6 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
+   "id": "c3c77d46",
    "metadata": {},
    "source": [
     "# Transient Particle Balance\n",
@@ -11,6 +12,7 @@
   },
   {
    "cell_type": "markdown",
+   "id": "1bad1de3",
    "metadata": {},
    "source": [
     "## Define an infinite-medium reference problem\n",
@@ -25,6 +27,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
+   "id": "9e31a1fb",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -69,6 +72,7 @@
   },
   {
    "cell_type": "markdown",
+   "id": "ea43a9f2",
    "metadata": {},
    "source": [
     "## Compare the final state and inventory change\n",
@@ -83,6 +87,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
+   "id": "f73f4a75",
    "metadata": {},
    "outputs": [],
    "source": [

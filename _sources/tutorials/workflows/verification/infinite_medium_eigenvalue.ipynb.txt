@@ -2,6 +2,7 @@
  "cells": [
   {
    "cell_type": "markdown",
+   "id": "c527bf88",
    "metadata": {},
    "source": [
     "# An Infinite-Medium Eigenvalue\n",
@@ -11,6 +12,7 @@
   },
   {
    "cell_type": "markdown",
+   "id": "a148b9f3",
    "metadata": {},
    "source": [
     "## Define an exactly critical material\n",
@@ -25,6 +27,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
+   "id": "bc95d82d",
    "metadata": {},
    "outputs": [],
    "source": [
@@ -63,6 +66,7 @@
   },
   {
    "cell_type": "markdown",
+   "id": "96dac48e",
    "metadata": {},
    "source": [
     "## Verify the eigenvalue and balance\n",
@@ -73,6 +77,7 @@
   {
    "cell_type": "code",
    "execution_count": null,
+   "id": "a48304f2",
    "metadata": {},
    "outputs": [],
    "source": [

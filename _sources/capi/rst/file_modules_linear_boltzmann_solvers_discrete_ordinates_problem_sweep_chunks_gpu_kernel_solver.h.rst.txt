@@ -57,24 +57,3 @@ Namespaces
 
 - :ref:`namespace_opensn`
 
-- :ref:`namespace_opensn__gpu_kernel`
-
-
-Functions
----------
-
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a89f1d28899c3902e1e5c35acbb61fc76`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a8e0164ee46c7df83da4a00e18d11a120`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1afa2ed9e7daedd81ab28258ca80fa4b81`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a037be16d0adaf37b53a8914357dbe8ad`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a1f229b9f10c978930f19b068fd02e05e`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a25693e314075db210ec55b6f61a39fe3`
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1a4e4102e103498481fc779bc8c0416d55`
-

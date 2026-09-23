@@ -36,6 +36,7 @@ Transfer matrix:
      Of course, when (n,xn) reactions with x\ :math:`\, \ge 2` are ignored,
      we have :math:`\vartheta^{g'\to g}=1` and
      :math:`\sigma_{\ell}^{g'\to g} = \sigma_{s,\ell}^{g'\to g}.`
+
    | The multigroup transfer matrix is a mandatory input of OpenSn. The
      transfer matrix a sparse array of dimension
      :math:`G \times G \times L_{\text{max}}`, whose sparsity pattern
@@ -91,6 +92,7 @@ Fission production:
      section are vectors of length :math:`G`. These are required for
      the separable representation; the native format also accepts the
      full production matrix described below.
+
    | Note that, for relatively high neutron energies, the spectrum of
      fission neutrons is dependent on initial energy. In such a
      situation, a fission production matrix should be employed

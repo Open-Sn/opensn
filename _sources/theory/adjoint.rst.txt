@@ -64,6 +64,7 @@ where
 | Adjoint final conditions are supplied in time:
 
   .. math:: \psi^{\dagger,g}(\vec{r},\vec{\Omega},t=T) = h^g_T(\vec{r},\vec{\Omega},g) \qquad \forall \vec{r}\in \mathcal{D},\ \forall g \in [1,G], \ \forall\vec{\Omega}\in \mathcal{S}^2
+
 | Multigroup :math:`S_n` codes can be used to perform adjoint
   calculations. One only needs to adjust the calculation as follows:
 

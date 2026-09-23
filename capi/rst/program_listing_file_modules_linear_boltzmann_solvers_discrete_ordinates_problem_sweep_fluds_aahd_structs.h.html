@@ -118,15 +118,14 @@
 <span class="w">  </span><span class="k">constexpr</span><span class="w"> </span><span class="n">AAHD_NodeIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">NodeIndex</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Construct a non-boundary node index.</span>
+<span class="cm">   * Construct a node index.</span>
 <span class="cm">   * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.</span>
 <span class="cm">   * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.</span>
+<span class="cm">   * \param is_boundary Flag indicating if the node corresponds to a boundary face.</span>
 <span class="cm">   * \param is_local_or_reflecting Flag indicating if the index is in a local bank or</span>
 <span class="cm">   * reflecting boundary.</span>
 <span class="cm">   * \param is_delayed_or_angle_dependent Flag indicating if the index is in a delayed bank or an</span>
 <span class="cm">   * angle dependent boundary.</span>
-<span class="cm">   * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for</span>
-<span class="cm">   * non-local nodes. Cannot exceed 2^21 - 1.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">AAHD_NodeIndex</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">index</span><span class="p">,</span>
 <span class="w">                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">is_outgoing</span><span class="p">,</span>

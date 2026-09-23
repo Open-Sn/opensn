@@ -26,7 +26,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="8. Groupsets" href="groupsets.html" />
+    <link rel="next" title="7. Groupsets" href="groupsets.html" />
     <link rel="prev" title="5. Materials and Cross-Section Data" href="materials_xs.html" /> 
 </head>
 
@@ -60,53 +60,60 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">6. Angular Quadratures</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#overview">6.1. Overview</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#how-to-choose-a-quadrature">6.2. How to Choose a Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#product-quadratures">6.3. Product Quadratures</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#glproductquadrature1dslab">6.3.1. <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glcproductquadrature2dxy">6.3.2. <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#glcproductquadrature3dxyz">6.3.3. <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#curvilinear-product-quadratures">6.3.4. Curvilinear product quadratures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#triangular-quadratures">6.3.5. Triangular quadratures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#lebedev-quadratures">6.3.6. Lebedev quadratures</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sldfe-square-quadratures">6.3.7. SLDFE square quadratures</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#product-quadratures">7. Product Quadratures</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#selecting-enough-angular-resolution">7.1. Selecting Enough Angular Resolution</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#operator-construction-methods">7.1.1. Operator construction methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#selecting-enough-angular-resolution">6.4. Selecting Enough Angular Resolution</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#operator-construction-methods">6.4.1. Operator construction methods</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#angle-aggregation-compatibility">7.2. Angle Aggregation Compatibility</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#polar">7.2.1. <code class="docutils literal notranslate"><span class="pre">polar</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#single">7.2.2. <code class="docutils literal notranslate"><span class="pre">single</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#azimuthal">7.2.3. <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#angle-aggregation-compatibility">6.5. Angle Aggregation Compatibility</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#polar">6.5.1. <code class="docutils literal notranslate"><span class="pre">polar</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single">6.5.2. <code class="docutils literal notranslate"><span class="pre">single</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azimuthal">6.5.3. <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#examples">7.3. Examples</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#d-slab">7.3.1. 1D slab</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d-cartesian">7.3.2. 2D Cartesian</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d-cartesian-with-lebedev">7.3.3. 3D Cartesian with Lebedev</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#d-rz">7.3.4. 2D RZ</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#examples">6.6. Examples</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#d-slab">6.6.1. 1D slab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-cartesian">6.6.2. 2D Cartesian</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-cartesian-with-lebedev">6.6.3. 3D Cartesian with Lebedev</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#d-rz">6.6.4. 2D RZ</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#inspecting-a-quadrature">7.4. Inspecting a Quadrature</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#recommendations">7.5. Recommendations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#inspecting-a-quadrature">6.7. Inspecting a Quadrature</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#recommendations">6.8. Recommendations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">10. CMFD Acceleration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">11. Boundary Conditions and Sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">12. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">7. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">8. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">9. CMFD Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -218,9 +225,8 @@ consider a Lebedev quadrature.</p></li>
 consider an SLDFE square quadrature.</p></li>
 </ul>
 </section>
-</section>
 <section id="product-quadratures">
-<h1><span class="section-number">7. </span>Product Quadratures<a class="headerlink" href="#product-quadratures" title="Link to this heading"></a></h1>
+<h2><span class="section-number">6.3. </span>Product Quadratures<a class="headerlink" href="#product-quadratures" title="Link to this heading"></a></h2>
 <p>These are the standard tensor-product style quadratures used in most OpenSn
 transport examples.</p>
 <p>If there is no strong reason to do otherwise, this is the family to choose
@@ -237,6 +243,8 @@ resolution.</p>
 </ul>
 <p>If a user wants a reliable baseline quadrature, product quadratures are usually
 the right answer.</p>
+<section id="glproductquadrature1dslab">
+<h3><span class="section-number">6.3.1. </span><code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code><a class="headerlink" href="#glproductquadrature1dslab" title="Link to this heading"></a></h3>
 <p>For 1D slab geometry.</p>
 <p>This is the standard choice for 1D slab transport. The main user decision is
 simply how many polar directions are needed.</p>
@@ -257,6 +265,9 @@ simply how many polar directions are needed.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="glcproductquadrature2dxy">
+<h3><span class="section-number">6.3.2. </span><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code><a class="headerlink" href="#glcproductquadrature2dxy" title="Link to this heading"></a></h3>
 <p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
 <p>This is the standard 2D Cartesian choice. It is usually the first quadrature to
 try for ordinary <code class="docutils literal notranslate"><span class="pre">x-y</span></code> transport problems.</p>
@@ -278,6 +289,9 @@ try for ordinary <code class="docutils literal notranslate"><span class="pre">x-
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="glcproductquadrature3dxyz">
+<h3><span class="section-number">6.3.3. </span><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code><a class="headerlink" href="#glcproductquadrature3dxyz" title="Link to this heading"></a></h3>
 <p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
 <p>This is the standard 3D Cartesian choice. Most users solving a conventional 3D
 Cartesian problem should begin here unless they already know they want a
@@ -300,6 +314,11 @@ different quadrature family.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="curvilinear-product-quadratures">
+<h3><span class="section-number">6.3.4. </span>Curvilinear product quadratures<a class="headerlink" href="#curvilinear-product-quadratures" title="Link to this heading"></a></h3>
+<section id="glcproductquadrature2drz">
+<h4><span class="section-number">6.3.4.1. </span><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DRZ</span></code><a class="headerlink" href="#glcproductquadrature2drz" title="Link to this heading"></a></h4>
 <p>For 2D cylindrical <code class="docutils literal notranslate"><span class="pre">RZ</span></code> problems in
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p>
 <p>This is the product-quadrature path for axisymmetric <code class="docutils literal notranslate"><span class="pre">r-z</span></code> problems. If the
@@ -323,6 +342,10 @@ normal starting point.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="triangular-quadratures">
+<h3><span class="section-number">6.3.5. </span>Triangular quadratures<a class="headerlink" href="#triangular-quadratures" title="Link to this heading"></a></h3>
 <p>Triangular quadratures reduce the number of azimuthal angles away from the
 equator. They are available only for Cartesian problems.</p>
 <p>One main reason to choose a triangular quadrature is efficiency. It can reduce
@@ -337,6 +360,8 @@ near the axis.</p></li>
 </ul>
 <p>They are not usually the first quadrature to try, but they can be a good
 second choice when a product quadrature works but is more expensive than needed.</p>
+<section id="glctriangularquadrature2dxy">
+<h4><span class="section-number">6.3.5.1. </span><code class="docutils literal notranslate"><span class="pre">GLCTriangularQuadrature2DXY</span></code><a class="headerlink" href="#glctriangularquadrature2dxy" title="Link to this heading"></a></h4>
 <p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
 <p>Parameters:</p>
 <ul class="simple">
@@ -356,6 +381,9 @@ second choice when a product quadrature works but is more expensive than needed.
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+<section id="glctriangularquadrature3dxyz">
+<h4><span class="section-number">6.3.5.2. </span><code class="docutils literal notranslate"><span class="pre">GLCTriangularQuadrature3DXYZ</span></code><a class="headerlink" href="#glctriangularquadrature3dxyz" title="Link to this heading"></a></h4>
 <p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
 <p>Parameters:</p>
 <ul class="simple">
@@ -375,6 +403,10 @@ second choice when a product quadrature works but is more expensive than needed.
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="lebedev-quadratures">
+<h3><span class="section-number">6.3.6. </span>Lebedev quadratures<a class="headerlink" href="#lebedev-quadratures" title="Link to this heading"></a></h3>
 <p>Lebedev quadratures provide symmetric point sets on the sphere. They are
 available only for Cartesian problems.</p>
 <p>The main reason to choose a Lebedev quadrature is the symmetry and quality of
@@ -389,8 +421,13 @@ layout naturally provides.</p></li>
 </ul>
 <p>Lebedev sets are often appealing for problems where the user wants a “balanced”
 spherical direction set rather than a polar/azimuthal construction.</p>
+<section id="lebedevquadrature2dxy">
+<h4><span class="section-number">6.3.6.1. </span><code class="docutils literal notranslate"><span class="pre">LebedevQuadrature2DXY</span></code><a class="headerlink" href="#lebedevquadrature2dxy" title="Link to this heading"></a></h4>
 <p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry. Only upper-hemisphere points are retained.</p>
 <p>This is the 2D Cartesian reduction of the Lebedev family.</p>
+</section>
+<section id="lebedevquadrature3dxyz">
+<h4><span class="section-number">6.3.6.2. </span><code class="docutils literal notranslate"><span class="pre">LebedevQuadrature3DXYZ</span></code><a class="headerlink" href="#lebedevquadrature3dxyz" title="Link to this heading"></a></h4>
 <p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
 <p>Parameters:</p>
 <ul class="simple">
@@ -410,6 +447,10 @@ spherical direction set rather than a polar/azimuthal construction.</p>
 <span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+<section id="sldfe-square-quadratures">
+<h3><span class="section-number">6.3.7. </span>SLDFE square quadratures<a class="headerlink" href="#sldfe-square-quadratures" title="Link to this heading"></a></h3>
 <p>These are non-product quadratures built from spherical quadrilateral
 subdivisions.</p>
 <p>The main reason to choose an SLDFE quadrature is directional adaptivity.
@@ -424,7 +465,12 @@ supports targeted local refinement in angle space.</p>
 <p>This is a more specialized choice than product or Lebedev quadratures, but it
 is the most flexible built-in family when local angular refinement is the main
 goal.</p>
+<section id="sldfesqquadrature2dxy">
+<h4><span class="section-number">6.3.7.1. </span><code class="docutils literal notranslate"><span class="pre">SLDFEsqQuadrature2DXY</span></code><a class="headerlink" href="#sldfesqquadrature2dxy" title="Link to this heading"></a></h4>
 <p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry.</p>
+</section>
+<section id="sldfesqquadrature3dxyz">
+<h4><span class="section-number">6.3.7.2. </span><code class="docutils literal notranslate"><span class="pre">SLDFEsqQuadrature3DXYZ</span></code><a class="headerlink" href="#sldfesqquadrature3dxyz" title="Link to this heading"></a></h4>
 <p>For 3D Cartesian <code class="docutils literal notranslate"><span class="pre">XYZ</span></code> geometry.</p>
 <p>Parameters:</p>
 <ul class="simple">
@@ -451,8 +497,11 @@ goal.</p>
 <span class="n">quad</span><span class="o">.</span><span class="n">LocallyRefine</span><span class="p">(</span><span class="n">Vector3</span><span class="p">(</span><span class="mf">0.25</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.85</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">),</span> <span class="mf">30.0</span> <span class="o">*</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span> <span class="o">/</span> <span class="mf">180.0</span><span class="p">)</span>
 </pre></div>
 </div>
+</section>
+</section>
+</section>
 <section id="selecting-enough-angular-resolution">
-<h2><span class="section-number">7.1. </span>Selecting Enough Angular Resolution<a class="headerlink" href="#selecting-enough-angular-resolution" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.4. </span>Selecting Enough Angular Resolution<a class="headerlink" href="#selecting-enough-angular-resolution" title="Link to this heading"></a></h2>
 <p>This is the part that matters most in actual problem setup.</p>
 <p>The quadrature must be fine enough for the number of angular moments that the
 solver is expected to represent. In OpenSn, that means the quadrature must be
@@ -488,7 +537,7 @@ not enough. Both angular resolutions should generally be increased together.</p>
 same principle applies: increasing the supported moment order should be paired
 with a richer directional set.</p>
 <section id="operator-construction-methods">
-<h3><span class="section-number">7.1.1. </span>Operator construction methods<a class="headerlink" href="#operator-construction-methods" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.4.1. </span>Operator construction methods<a class="headerlink" href="#operator-construction-methods" title="Link to this heading"></a></h3>
 <p>Each quadrature constructor accepts <code class="docutils literal notranslate"><span class="pre">operator_method</span></code>:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'standard'</span></code></p></li>
@@ -522,7 +571,7 @@ or be removed during construction</p></li>
 and most predictable choice. The Galerkin options are most useful when the user
 specifically wants a quadrature-adapted angular/moment representation.</p>
 <section id="standard">
-<h4><span class="section-number">7.1.1.1. </span><code class="docutils literal notranslate"><span class="pre">standard</span></code><a class="headerlink" href="#standard" title="Link to this heading"></a></h4>
+<h4><span class="section-number">6.4.1.1. </span><code class="docutils literal notranslate"><span class="pre">standard</span></code><a class="headerlink" href="#standard" title="Link to this heading"></a></h4>
 <p>This is the default and the simplest choice. The user supplies
 <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>, and the quadrature builds the corresponding
 moment-to-discrete and discrete-to-moment operators directly from the selected
@@ -530,7 +579,7 @@ spherical harmonics.</p>
 <p>For most users, this is the right starting point.</p>
 </section>
 <section id="galerkin-one">
-<h4><span class="section-number">7.1.1.2. </span><code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code><a class="headerlink" href="#galerkin-one" title="Link to this heading"></a></h4>
+<h4><span class="section-number">6.4.1.2. </span><code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code><a class="headerlink" href="#galerkin-one" title="Link to this heading"></a></h4>
 <p>In this mode, <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> is optional. The implementation selects a
 harmonic set so that the number of moments equals the number of directions and
 then constructs <code class="docutils literal notranslate"><span class="pre">D2M</span></code> as the inverse of <code class="docutils literal notranslate"><span class="pre">M2D</span></code>.</p>
@@ -543,7 +592,7 @@ in the quadrature, not by an explicitly supplied <code class="docutils literal n
 the chosen quadrature.</p>
 </section>
 <section id="galerkin-three">
-<h4><span class="section-number">7.1.1.3. </span><code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code><a class="headerlink" href="#galerkin-three" title="Link to this heading"></a></h4>
+<h4><span class="section-number">6.4.1.3. </span><code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code><a class="headerlink" href="#galerkin-three" title="Link to this heading"></a></h4>
 <p>This mode orthogonalizes the harmonic set on the chosen quadrature. If some
 harmonics are linearly dependent or unresolved on that directional set, they may
 be removed during construction.</p>
@@ -561,7 +610,7 @@ direction set behave like a fine one.</p>
 </section>
 </section>
 <section id="angle-aggregation-compatibility">
-<h2><span class="section-number">7.2. </span>Angle Aggregation Compatibility<a class="headerlink" href="#angle-aggregation-compatibility" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.5. </span>Angle Aggregation Compatibility<a class="headerlink" href="#angle-aggregation-compatibility" title="Link to this heading"></a></h2>
 <p>The quadrature choice is not independent of <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code>.
 Aggregation compatibility depends on both:</p>
 <ul class="simple">
@@ -581,7 +630,7 @@ mode, and not every mesh type supports every aggregation mode.</p>
 the first places to check. The issue is often not the quadrature alone, but the
 quadrature together with the requested aggregation mode.</p>
 <section id="polar">
-<h3><span class="section-number">7.2.1. </span><code class="docutils literal notranslate"><span class="pre">polar</span></code><a class="headerlink" href="#polar" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.5.1. </span><code class="docutils literal notranslate"><span class="pre">polar</span></code><a class="headerlink" href="#polar" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">polar</span></code> aggregation is only supported for product quadratures. On the mesh
 side, it is supported on Cartesian orthogonal meshes, on any 2D mesh
 (including 2D unstructured meshes), and on extruded meshes. It is not
@@ -603,7 +652,7 @@ supported on a fully unstructured 3D (non-extruded) mesh.</p>
 <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p>
 </section>
 <section id="single">
-<h3><span class="section-number">7.2.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.5.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation treats each direction independently. It is the most
 generally compatible option and is the safe choice for non-product quadratures.
 Regardless of quadrature type, single angle aggregation is required on fully
@@ -635,7 +684,7 @@ unstructured 3D (non-extruded) meshes.</p>
 </div>
 </section>
 <section id="azimuthal">
-<h3><span class="section-number">7.2.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.5.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product quadratures on 2D RZ
 geometry; it is not available for Cartesian problems.</p>
 <p>For 2D RZ problems, the curvilinear solver accepts:</p>
@@ -648,9 +697,9 @@ if another aggregation mode was requested.</p>
 </section>
 </section>
 <section id="examples">
-<h2><span class="section-number">7.3. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.6. </span>Examples<a class="headerlink" href="#examples" title="Link to this heading"></a></h2>
 <section id="d-slab">
-<h3><span class="section-number">7.3.1. </span>1D slab<a class="headerlink" href="#d-slab" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.6.1. </span>1D slab<a class="headerlink" href="#d-slab" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
 
 <span class="n">quad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span>
@@ -661,7 +710,7 @@ if another aggregation mode was requested.</p>
 </div>
 </section>
 <section id="d-cartesian">
-<h3><span class="section-number">7.3.2. </span>2D Cartesian<a class="headerlink" href="#d-cartesian" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.6.2. </span>2D Cartesian<a class="headerlink" href="#d-cartesian" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
 
 <span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
@@ -673,7 +722,7 @@ if another aggregation mode was requested.</p>
 </div>
 </section>
 <section id="d-cartesian-with-lebedev">
-<h3><span class="section-number">7.3.3. </span>3D Cartesian with Lebedev<a class="headerlink" href="#d-cartesian-with-lebedev" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.6.3. </span>3D Cartesian with Lebedev<a class="headerlink" href="#d-cartesian-with-lebedev" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">LebedevQuadrature3DXYZ</span>
 
 <span class="n">quad</span> <span class="o">=</span> <span class="n">LebedevQuadrature3DXYZ</span><span class="p">(</span>
@@ -690,7 +739,7 @@ if another aggregation mode was requested.</p>
 </div>
 </section>
 <section id="d-rz">
-<h3><span class="section-number">7.3.4. </span>2D RZ<a class="headerlink" href="#d-rz" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.6.4. </span>2D RZ<a class="headerlink" href="#d-rz" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DRZ</span>
 
 <span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
@@ -716,7 +765,7 @@ if another aggregation mode was requested.</p>
 </section>
 </section>
 <section id="inspecting-a-quadrature">
-<h2><span class="section-number">7.4. </span>Inspecting a Quadrature<a class="headerlink" href="#inspecting-a-quadrature" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.7. </span>Inspecting a Quadrature<a class="headerlink" href="#inspecting-a-quadrature" title="Link to this heading"></a></h2>
 <p>All angular quadrature objects expose:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">abscissae</span></code></p></li>
@@ -742,7 +791,7 @@ angles, the first few weights, and the operator sizes after changing
 </div>
 </section>
 <section id="recommendations">
-<h2><span class="section-number">7.5. </span>Recommendations<a class="headerlink" href="#recommendations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.8. </span>Recommendations<a class="headerlink" href="#recommendations" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>For standard 1D slab problems, start with <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code>.</p></li>
 <li><p>For standard Cartesian 2D and 3D problems, start with
@@ -765,7 +814,7 @@ the quantities of interest.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="materials_xs.html" class="btn btn-neutral float-left" title="5. Materials and Cross-Section Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="groupsets.html" class="btn btn-neutral float-right" title="8. Groupsets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="groupsets.html" class="btn btn-neutral float-right" title="7. Groupsets" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

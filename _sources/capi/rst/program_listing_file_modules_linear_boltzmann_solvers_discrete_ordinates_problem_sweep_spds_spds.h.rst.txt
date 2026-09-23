@@ -140,6 +140,8 @@ Program Listing for File spds.h
       * Populates cell relationships and face orientations.
       *
       * \param omega The angular direction vector.
+      * \param face_info Per-cell, per-face neighbor ownership and locality information, indexed as
+      * returned by BuildSPDSFaceNeighborInfo().
       * \param location_dependencies Location dependencies.
       * \param location_successors Location successors.
       * \param cell_successors Cell successors.

@@ -30,11 +30,7 @@ Namespaces
 ----------
 
 
-- :ref:`namespace_opensn__detail`
-
 - :ref:`namespace_opensn__EmpiricalHarmonicRules`
-
-- :ref:`namespace_opensn__gpu_kernel`
 
 
 Classes

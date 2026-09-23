@@ -199,8 +199,13 @@ estimate the timestep inventory change.</p>
 <li><p>SetPostAdvanceCallback(self: pyopensn.solver.TransientSolver, arg0: Callable[[], None]) -&gt; None</p>
 <blockquote>
 <div><p>Register a callback that runs after each advance within <a class="reference internal" href="#pyopensn.solver.TransientSolver.Execute" title="pyopensn.solver.TransientSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a>.</p>
-<dl class="simple">
-<dt>callback<span class="classifier">Optional[Callable[[], None]]</span></dt><dd><p>Function invoked after the solver advances a timestep. Pass None to clear.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param callback<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Function invoked after the solver advances a timestep. Pass None
+to clear.</p>
+</dd>
+<dt class="field-even">type callback<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[Callable[[], None]]</p>
 </dd>
 </dl>
 </div></blockquote>
@@ -218,10 +223,14 @@ estimate the timestep inventory change.</p>
 <li><p>SetPreAdvanceCallback(self: pyopensn.solver.TransientSolver, arg0: Callable[[], None]) -&gt; None</p>
 <blockquote>
 <div><p>Register a callback that runs before each advance within <a class="reference internal" href="#pyopensn.solver.TransientSolver.Execute" title="pyopensn.solver.TransientSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a>.</p>
-<dl class="simple">
-<dt>callback<span class="classifier">Optional[Callable[[], None]]</span></dt><dd><p>Function invoked before the solver advances a timestep. Pass None to clear.
-If the callback modifies the timestep, the new value is used for the
+<dl class="field-list simple">
+<dt class="field-odd">param callback<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Function invoked before the solver advances a timestep. Pass None
+to clear. If the callback modifies the timestep, the new value is used for the
 upcoming step.</p>
+</dd>
+<dt class="field-even">type callback<span class="colon">:</span></dt>
+<dd class="field-even"><p>Optional[Callable[[], None]]</p>
 </dd>
 </dl>
 </div></blockquote>

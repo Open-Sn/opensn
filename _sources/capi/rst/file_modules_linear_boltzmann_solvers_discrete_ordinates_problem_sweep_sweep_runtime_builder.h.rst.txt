@@ -53,8 +53,6 @@ Namespaces
 
 - :ref:`namespace_opensn`
 
-- :ref:`namespace_opensn__detail`
-
 
 Classes
 -------
@@ -68,10 +66,6 @@ Functions
 
 
 - :ref:`exhale_function_namespaceopensn_1ab0fc39f7df9f8b9120eb172421c12882`
-
-- :ref:`exhale_function_namespaceopensn_1_1detail_1af92a8b17fda4546bfd3f759eb28f988a`
-
-- :ref:`exhale_function_namespaceopensn_1_1detail_1a7816fcfa405217f20d43f08f3f9aedac`
 
 
 Typedefs

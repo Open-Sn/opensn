@@ -54,9 +54,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1aaff48373fd5011d4e3dfcc0c1cbe4345`
 
-- :ref:`exhale_function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366`
-
 - :ref:`exhale_function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687`
 
 - :ref:`exhale_function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e`
+
+- :ref:`exhale_function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366`
 

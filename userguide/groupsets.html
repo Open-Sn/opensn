@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>8. Groupsets &mdash; OpenSn 1.0.1 documentation</title>
+  <title>7. Groupsets &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,7 +26,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="9. Iterative Methods" href="iterative_methods.html" />
+    <link rel="next" title="8. Iterative Methods" href="iterative_methods.html" />
     <link rel="prev" title="6. Angular Quadratures" href="angular_quadratures.html" /> 
 </head>
 
@@ -58,60 +58,59 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">8. Groupsets</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#overview">8.1. Overview</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#what-a-groupset-does">8.2. What a Groupset Does</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#required-core-fields">8.3. Required Core Fields</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#groups-from-to">8.3.1. <code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">8.3.2. <code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code></a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Groupsets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#overview">7.1. Overview</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#what-a-groupset-does">7.2. What a Groupset Does</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#required-core-fields">7.3. Required Core Fields</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#groups-from-to">7.3.1. <code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#angular-quadrature">7.3.2. <code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code></a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#writing-a-minimal-groupset">8.4. Writing a Minimal Groupset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-optional-groupset-controls">8.5. Common Optional Groupset Controls</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#angle-aggregation">8.5.1. Angle aggregation</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#inner-linear-method">8.5.2. Inner linear method</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#allowing-cycles">8.5.3. Allowing cycles</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#wgdsa-and-tgdsa">8.5.4. WGDSA and TGDSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#writing-a-minimal-groupset">7.4. Writing a Minimal Groupset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-optional-groupset-controls">7.5. Common Optional Groupset Controls</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#angle-aggregation">7.5.1. Angle aggregation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#inner-linear-method">7.5.2. Inner linear method</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#allowing-cycles">7.5.3. Allowing cycles</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#wgdsa-and-tgdsa">7.5.4. WGDSA and TGDSA</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#single-groupset-vs-multiple-groupsets">8.6. Single Groupset vs Multiple Groupsets</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#single-groupset">8.6.1. Single groupset</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#multiple-groupsets">8.6.2. Multiple groupsets</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#single-groupset-vs-multiple-groupsets">7.6. Single Groupset vs Multiple Groupsets</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#single-groupset">7.6.1. Single groupset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#multiple-groupsets">7.6.2. Multiple groupsets</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#groupsets-and-ags">8.7. Groupsets and AGS</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#example-patterns">8.8. Example Patterns</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#single-groupset-for-all-groups">8.8.1. Single groupset for all groups</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#two-groupsets-split-by-energy">8.8.2. Two groupsets split by energy</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#unstructured-mesh-groupset">8.8.3. Unstructured-mesh groupset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#groupsets-and-ags">7.7. Groupsets and AGS</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-patterns">7.8. Example Patterns</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#single-groupset-for-all-groups">7.8.1. Single groupset for all groups</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#two-groupsets-split-by-energy">7.8.2. Two groupsets split by energy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#unstructured-mesh-groupset">7.8.3. Unstructured-mesh groupset</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">8.9. Practical Guidance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-guidance">7.9. Practical Guidance</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">10. CMFD Acceleration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">11. Boundary Conditions and Sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">12. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">8. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">9. CMFD Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -138,7 +137,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">8. </span>Groupsets</li>
+      <li class="breadcrumb-item active"><span class="section-number">7. </span>Groupsets</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -148,7 +147,7 @@
            <div itemprop="articleBody">
              
   <section id="groupsets">
-<h1><span class="section-number">8. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h1>
+<h1><span class="section-number">7. </span>Groupsets<a class="headerlink" href="#groupsets" title="Link to this heading"></a></h1>
 <p>Groupsets are the bridge between the energy-group structure and the transport
 iteration strategy. Each groupset:</p>
 <ul class="simple">
@@ -161,7 +160,7 @@ iteration strategy. Each groupset:</p>
 <p>This section explains what groupsets are, how to write them, when one groupset
 is enough, and when a multi-groupset split makes sense.</p>
 <section id="overview">
-<h2><span class="section-number">8.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
 <p>A groupset answers the question:</p>
 <p>“How should OpenSn sweep and iterate this subset of energy groups?”</p>
 <p>The main groupset fields exposed in the Python API are:</p>
@@ -205,7 +204,7 @@ still the safest first configuration for most problems.</p>
 </div>
 </section>
 <section id="what-a-groupset-does">
-<h2><span class="section-number">8.2. </span>What a Groupset Does<a class="headerlink" href="#what-a-groupset-does" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.2. </span>What a Groupset Does<a class="headerlink" href="#what-a-groupset-does" title="Link to this heading"></a></h2>
 <p>A groupset defines the local transport-iteration behavior for a contiguous
 energy-group range.</p>
 <p>Conceptually, it bundles together:</p>
@@ -230,9 +229,9 @@ and how each energy range is swept and iterated.</p>
 </div>
 </section>
 <section id="required-core-fields">
-<h2><span class="section-number">8.3. </span>Required Core Fields<a class="headerlink" href="#required-core-fields" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.3. </span>Required Core Fields<a class="headerlink" href="#required-core-fields" title="Link to this heading"></a></h2>
 <section id="groups-from-to">
-<h3><span class="section-number">8.3.1. </span><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code><a class="headerlink" href="#groups-from-to" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.3.1. </span><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code><a class="headerlink" href="#groups-from-to" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">groups_from_to</span></code> is required. It defines the first and last global group
 index in the groupset:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">19</span><span class="p">)</span>
@@ -248,7 +247,7 @@ index in the groupset:</p>
 </ul>
 </section>
 <section id="angular-quadrature">
-<h3><span class="section-number">8.3.2. </span><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code><a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.3.2. </span><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code><a class="headerlink" href="#angular-quadrature" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">angular_quadrature</span></code> is also required. It defines the angular quadrature used
 for the groupset.</p>
 <p>Example:</p>
@@ -269,7 +268,7 @@ for the groupset.</p>
 </section>
 </section>
 <section id="writing-a-minimal-groupset">
-<h2><span class="section-number">8.4. </span>Writing a Minimal Groupset<a class="headerlink" href="#writing-a-minimal-groupset" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.4. </span>Writing a Minimal Groupset<a class="headerlink" href="#writing-a-minimal-groupset" title="Link to this heading"></a></h2>
 <p>A minimal practical groupset often looks like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
@@ -290,9 +289,9 @@ for the groupset.</p>
 </ul>
 </section>
 <section id="common-optional-groupset-controls">
-<h2><span class="section-number">8.5. </span>Common Optional Groupset Controls<a class="headerlink" href="#common-optional-groupset-controls" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.5. </span>Common Optional Groupset Controls<a class="headerlink" href="#common-optional-groupset-controls" title="Link to this heading"></a></h2>
 <section id="angle-aggregation">
-<h3><span class="section-number">8.5.1. </span>Angle aggregation<a class="headerlink" href="#angle-aggregation" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.5.1. </span>Angle aggregation<a class="headerlink" href="#angle-aggregation" title="Link to this heading"></a></h3>
 <p>The angle-aggregation keyword is:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code></p></li>
@@ -329,7 +328,7 @@ quadrature family, mesh type, and aggregation type.</p>
 </div>
 </section>
 <section id="inner-linear-method">
-<h3><span class="section-number">8.5.2. </span>Inner linear method<a class="headerlink" href="#inner-linear-method" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.5.2. </span>Inner linear method<a class="headerlink" href="#inner-linear-method" title="Link to this heading"></a></h3>
 <p>The groupset field <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> selects the transport inner solver
 for that groupset.</p>
 <p>Supported values are:</p>
@@ -353,7 +352,7 @@ for that groupset.</p>
 <p>These methods are described in detail in <a class="reference internal" href="iterative_methods.html"><span class="doc">Iterative Methods</span></a>. The main
 point here is that the choice is made per groupset.</p>
 <section id="core-inner-solver-controls">
-<h4><span class="section-number">8.5.2.1. </span>Core inner-solver controls<a class="headerlink" href="#core-inner-solver-controls" title="Link to this heading"></a></h4>
+<h4><span class="section-number">7.5.2.1. </span>Core inner-solver controls<a class="headerlink" href="#core-inner-solver-controls" title="Link to this heading"></a></h4>
 <p>The main groupset-level inner controls are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>: inner linear absolute tolerance</p></li>
@@ -379,7 +378,7 @@ memory.</p>
 </section>
 </section>
 <section id="allowing-cycles">
-<h3><span class="section-number">8.5.3. </span>Allowing cycles<a class="headerlink" href="#allowing-cycles" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.5.3. </span>Allowing cycles<a class="headerlink" href="#allowing-cycles" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code> controls whether the sweep construction is allowed to break
 cyclic dependencies where the chosen sweep path supports that behavior.</p>
 <p>Most users will not need to set this field explicitly, but it belongs to the
@@ -392,7 +391,7 @@ with sweep-cycle behavior explicitly, leave it at the default.</p>
 </div>
 </section>
 <section id="wgdsa-and-tgdsa">
-<h3><span class="section-number">8.5.4. </span>WGDSA and TGDSA<a class="headerlink" href="#wgdsa-and-tgdsa" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.5.4. </span>WGDSA and TGDSA<a class="headerlink" href="#wgdsa-and-tgdsa" title="Link to this heading"></a></h3>
 <p>Within-Groupset Diffusion Synthetic Acceleration (WGDSA) and Two-Grid Diffusion
 Synthetic Acceleration (TGDSA) are auxiliary solves added to the groupset
 transport iteration. Their purpose is to reduce the number of transport
@@ -431,7 +430,7 @@ of the flux, not on the full angular flux.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
 </ul>
 <section id="apply-wgdsa">
-<h4><span class="section-number">8.5.4.1. </span><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code><a class="headerlink" href="#apply-wgdsa" title="Link to this heading"></a></h4>
+<h4><span class="section-number">7.5.4.1. </span><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code><a class="headerlink" href="#apply-wgdsa" title="Link to this heading"></a></h4>
 <p>For WGSA, the idea is:</p>
 <ul class="simple">
 <li><p>perform the transport iteration for the groupset,</p></li>
@@ -460,7 +459,7 @@ and <code class="docutils literal notranslate"><span class="pre">&quot;petsc_opt
 The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
 </section>
 <section id="apply-tgdsa">
-<h4><span class="section-number">8.5.4.2. </span><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code><a class="headerlink" href="#apply-tgdsa" title="Link to this heading"></a></h4>
+<h4><span class="section-number">7.5.4.2. </span><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code><a class="headerlink" href="#apply-tgdsa" title="Link to this heading"></a></h4>
 <p>For TGDSA, the idea is similar, but the correction is built from a two-grid
 style thermal or low-energy collapse rather than from the full multigroup
 structure directly. This is intended to accelerate the slow low-energy diffusive
@@ -483,7 +482,7 @@ meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
 options have for WGDSA. The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
 </section>
 <section id="when-to-think-about-dsa">
-<h4><span class="section-number">8.5.4.3. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>
+<h4><span class="section-number">7.5.4.3. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>
 <p>DSA is most worth considering when:</p>
 <ul class="simple">
 <li><p>the problem is optically thick,</p></li>
@@ -507,9 +506,9 @@ Then decide whether DSA is needed.</p>
 </section>
 </section>
 <section id="single-groupset-vs-multiple-groupsets">
-<h2><span class="section-number">8.6. </span>Single Groupset vs Multiple Groupsets<a class="headerlink" href="#single-groupset-vs-multiple-groupsets" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.6. </span>Single Groupset vs Multiple Groupsets<a class="headerlink" href="#single-groupset-vs-multiple-groupsets" title="Link to this heading"></a></h2>
 <section id="single-groupset">
-<h3><span class="section-number">8.6.1. </span>Single groupset<a class="headerlink" href="#single-groupset" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.6.1. </span>Single groupset<a class="headerlink" href="#single-groupset" title="Link to this heading"></a></h3>
 <p>Use a single groupset when:</p>
 <ul class="simple">
 <li><p>the problem is still being developed,</p></li>
@@ -520,7 +519,7 @@ Then decide whether DSA is needed.</p>
 <p>This is the recommended default starting point.</p>
 </section>
 <section id="multiple-groupsets">
-<h3><span class="section-number">8.6.2. </span>Multiple groupsets<a class="headerlink" href="#multiple-groupsets" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.6.2. </span>Multiple groupsets<a class="headerlink" href="#multiple-groupsets" title="Link to this heading"></a></h3>
 <p>Multiple groupsets are useful when:</p>
 <ul class="simple">
 <li><p>the energy structure is large enough to justify a split,</p></li>
@@ -554,7 +553,7 @@ introduces another iteration level.</p>
 </section>
 </section>
 <section id="groupsets-and-ags">
-<h2><span class="section-number">8.7. </span>Groupsets and AGS<a class="headerlink" href="#groupsets-and-ags" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.7. </span>Groupsets and AGS<a class="headerlink" href="#groupsets-and-ags" title="Link to this heading"></a></h2>
 <p>When there are multiple groupsets, the problem may need across-groupset
 iteration to converge the coupling between them.</p>
 <p>This is where AGS becomes important.</p>
@@ -578,9 +577,9 @@ not recommended.</p>
 </div>
 </section>
 <section id="example-patterns">
-<h2><span class="section-number">8.8. </span>Example Patterns<a class="headerlink" href="#example-patterns" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.8. </span>Example Patterns<a class="headerlink" href="#example-patterns" title="Link to this heading"></a></h2>
 <section id="single-groupset-for-all-groups">
-<h3><span class="section-number">8.8.1. </span>Single groupset for all groups<a class="headerlink" href="#single-groupset-for-all-groups" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.8.1. </span>Single groupset for all groups<a class="headerlink" href="#single-groupset-for-all-groups" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
         <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
@@ -595,7 +594,7 @@ not recommended.</p>
 </div>
 </section>
 <section id="two-groupsets-split-by-energy">
-<h3><span class="section-number">8.8.2. </span>Two groupsets split by energy<a class="headerlink" href="#two-groupsets-split-by-energy" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.8.2. </span>Two groupsets split by energy<a class="headerlink" href="#two-groupsets-split-by-energy" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
         <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">fast_last</span><span class="p">),</span>
@@ -619,7 +618,7 @@ not recommended.</p>
 </div>
 </section>
 <section id="unstructured-mesh-groupset">
-<h3><span class="section-number">8.8.3. </span>Unstructured-mesh groupset<a class="headerlink" href="#unstructured-mesh-groupset" title="Link to this heading"></a></h3>
+<h3><span class="section-number">7.8.3. </span>Unstructured-mesh groupset<a class="headerlink" href="#unstructured-mesh-groupset" title="Link to this heading"></a></h3>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">{</span>
         <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
@@ -635,7 +634,7 @@ not recommended.</p>
 </section>
 </section>
 <section id="practical-guidance">
-<h2><span class="section-number">8.9. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">7.9. </span>Practical Guidance<a class="headerlink" href="#practical-guidance" title="Link to this heading"></a></h2>
 <p>For most users:</p>
 <ul class="simple">
 <li><p>start with one groupset for all groups,</p></li>
@@ -670,7 +669,7 @@ design can make even a correct problem look unstable or slow.</p>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="angular_quadratures.html" class="btn btn-neutral float-left" title="6. Angular Quadratures" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="iterative_methods.html" class="btn btn-neutral float-right" title="9. Iterative Methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="iterative_methods.html" class="btn btn-neutral float-right" title="8. Iterative Methods" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

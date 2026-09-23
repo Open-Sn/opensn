@@ -43,15 +43,14 @@ Program Listing for File aahd_structs.h
      constexpr AAHD_NodeIndex(const std::uint64_t& value) : NodeIndex(value) {}
    
      /**
-      * Construct a non-boundary node index.
+      * Construct a node index.
       * \param index Index into the corresponding bank. Cannot exceed 2^60 - 1.
       * \param is_outgoing Flag indicating if the node corresponds to an outgoing face.
+      * \param is_boundary Flag indicating if the node corresponds to a boundary face.
       * \param is_local_or_reflecting Flag indicating if the index is in a local bank or
       * reflecting boundary.
       * \param is_delayed_or_angle_dependent Flag indicating if the index is in a delayed bank or an
       * angle dependent boundary.
-      * \param loc_index Index into delayed/non-delayed location dependencies/successors vector for
-      * non-local nodes. Cannot exceed 2^21 - 1.
       */
      AAHD_NodeIndex(std::uint64_t index,
                     bool is_outgoing,

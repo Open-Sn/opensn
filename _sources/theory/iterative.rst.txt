@@ -24,6 +24,7 @@ The transport equation needs to be solved for each group :math:`g`
 
   is already known from downscattering from higher groups and from the
   external source definition.
+
 | For thermal groups, upscattering can become significant and thermal
   iterations (iteration index th) are required
 
@@ -247,6 +248,7 @@ Acceleration of Power Iterations
   an inhomogeneous source term needs to be solved. Then, the flux update
   would be given by
   :math:`\Phi^{\text{(o+1)}} = \Phi^{\text{(o+1/2)}} + \delta\Phi`.
+
 | Rather than solving the low-order equations for the corrective term
   :math:`\delta\Phi`, one can recast the low-order equations directly in
   terms of the flux update :math:`\Phi^{\text{(o+1)}}`. When the

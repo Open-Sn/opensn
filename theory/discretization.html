@@ -193,7 +193,7 @@ contributions to the current group <span class="math notranslate nohighlight">\(
 <h2><span class="section-number">2.2. </span>Angle Discretization (the Sn method)<a class="headerlink" href="#angle-discretization-the-sn-method" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line">The <span class="math notranslate nohighlight">\(S_n\)</span> discrete-ordinate method
-<span id="id1">Carlson and Bell [<a class="reference internal" href="#id47" title="BG Carlson and GI Bell. Solution of the transport equation by the sn method. Technical Report, Los Alamos Scientific Lab., N. Mex., 1958.">CB58</a>]</span>, <span id="id2">Carlson and Lee [<a class="reference internal" href="#id48" title="Bengt G Carlson and Clarence E Lee. Mechanical quadrature and the transport equation. Volume 2573. Los Alamos Scientific Laboratory of the University of California, 1961.">CL61</a>]</span>, <span id="id3">Lee [<a class="reference internal" href="#id49" title="Clarence E Lee. The discrete $s_n$ approximation to transport theory. Technical Report, Los Alamos Scientific Lab., N. Mex., 1961.">Lee61</a>]</span>, <span id="id4">Lathrop and Carlson [<a class="reference internal" href="#id50" title="Kaye D Lathrop and Bengt G Carlson. Discrete ordinates angular quadrature of the neutron transport equation. Technical Report, Los Alamos Scientific Lab., N. Mex., 1964.">LC64</a>]</span>, <span id="id5">Carlson and Lathrop [<a class="reference internal" href="#id53" title="Bengt G Carlson and Kaye D Lathrop. Transport theory: the method of discrete ordinates. Los Alamos Scientific Laboratory of the University of California, 1965.">CL65</a>]</span>, <span id="id6">Carlson [<a class="reference internal" href="#id81" title="BG Carlson. On a more precise definition of discrete ordinates methods. In Proceedings of the Second Conference on Transport Theory, 348-390. U.S. Atomic Energy Commission, 1971.">Car71</a>]</span>, <span id="id7">Gelbard <em>et al.</em> [<a class="reference internal" href="#id96" title="EM Gelbard, James A Davis, and LA Hageman. Solution of the discrete ordinate equations in one and two dimensions. Transport Theory, 1:129–158, 1969.">GDH69</a>]</span>
+<span id="id1">Carlson and Bell [<a class="reference internal" href="#id47" title="BG Carlson and GI Bell. Solution of the transport equation by the sn method. Technical Report, Los Alamos Scientific Lab., N. Mex., 1958.">DCB58</a>]</span>, <span id="id2">Carlson and Lee [<a class="reference internal" href="#id48" title="Bengt G Carlson and Clarence E Lee. Mechanical quadrature and the transport equation. Volume 2573. Los Alamos Scientific Laboratory of the University of California, 1961.">DCL61</a>]</span>, <span id="id3">Lee [<a class="reference internal" href="#id49" title="Clarence E Lee. The discrete $s_n$ approximation to transport theory. Technical Report, Los Alamos Scientific Lab., N. Mex., 1961.">DLee61</a>]</span>, <span id="id4">Lathrop and Carlson [<a class="reference internal" href="#id50" title="Kaye D Lathrop and Bengt G Carlson. Discrete ordinates angular quadrature of the neutron transport equation. Technical Report, Los Alamos Scientific Lab., N. Mex., 1964.">DLC64</a>]</span>, <span id="id5">Carlson and Lathrop [<a class="reference internal" href="#id53" title="Bengt G Carlson and Kaye D Lathrop. Transport theory: the method of discrete ordinates. Los Alamos Scientific Laboratory of the University of California, 1965.">DCL65</a>]</span>, <span id="id6">Carlson [<a class="reference internal" href="#id81" title="BG Carlson. On a more precise definition of discrete ordinates methods. In Proceedings of the Second Conference on Transport Theory, 348-390. U.S. Atomic Energy Commission, 1971.">DCar71</a>]</span>, <span id="id7">Gelbard <em>et al.</em> [<a class="reference internal" href="#id96" title="EM Gelbard, James A Davis, and LA Hageman. Solution of the discrete ordinate equations in one and two dimensions. Transport Theory, 1:129–158, 1969.">DGDH69</a>]</span>
 is a collocation in angle approach, where a set of fixed (<em>discrete</em>)
 directions <span class="math notranslate nohighlight">\(\vec{\Omega}_d\)</span> are chosen. In order to evaluate
 angular integrals to compute the flux moments <span class="math notranslate nohighlight">\(\phi_{\ell,m}\)</span>,
@@ -298,7 +298,7 @@ pole. The number of directions in one octant of the unit sphere is</p>
 </figure>
 </li>
 <li><p>the LDFE (linear discontinuous finite-element in angle
-<span id="id8">Lau and Adams [<a class="reference internal" href="#id60" title="Cheuk Y. Lau and Marvin L. Adams. Discrete ordinates quadratures based on linear and quadratic discontinuous finite elements over spherical quadrilaterals. Nuclear Science and Engineering, 185(1):36–52, 2017. URL: https://doi.org/10.13182/NSE16-28, doi:10.13182/NSE16-28.">LA17</a>]</span>) quadrature, using spherical
+<span id="id8">Lau and Adams [<a class="reference internal" href="#id60" title="Cheuk Y. Lau and Marvin L. Adams. Discrete ordinates quadratures based on linear and quadratic discontinuous finite elements over spherical quadrilaterals. Nuclear Science and Engineering, 185(1):36–52, 2017. URL: https://doi.org/10.13182/NSE16-28, doi:10.13182/NSE16-28.">DLA17</a>]</span>) quadrature, using spherical
 quadrilaterals. The LDFE quadrature divides one octant of the unit
 sphere into spherical quadrilaterals. The quadrature directions are
 then the 4 Gauss-Legendre points per quadrilateral and the weights
@@ -327,10 +327,10 @@ integration, available in both 2D and 3D geometries.</p></li>
 <div class="line-block">
 <div class="line">For charged-particle transport, not yet covered in OpenSn, Galerkin
 variants of the traditional quadrature rules must be employed
-<span id="id9">Morel [<a class="reference internal" href="#id59" title="Jim E Morel. A hybrid collocation-galerkin-sn method for solving the boltzmann transport equation. Nuclear Science and Engineering, 101(1):72–87, 1989.">Mor89</a>]</span>, <span id="id10">Sanchez and Ragusa [<a class="reference internal" href="#id58" title="Richard Sanchez and Jean Ragusa. On the construction of galerkin angular quadratures. Nuclear Science and Engineering, 169(2):133–154, 2011. URL: https://doi.org/10.13182/NSE10-31, doi:10.13182/NSE10-31.">SR11</a>]</span>.</div>
+<span id="id9">Morel [<a class="reference internal" href="#id59" title="Jim E Morel. A hybrid collocation-galerkin-sn method for solving the boltzmann transport equation. Nuclear Science and Engineering, 101(1):72–87, 1989.">DMor89</a>]</span>, <span id="id10">Sanchez and Ragusa [<a class="reference internal" href="#id58" title="Richard Sanchez and Jean Ragusa. On the construction of galerkin angular quadratures. Nuclear Science and Engineering, 169(2):133–154, 2011. URL: https://doi.org/10.13182/NSE10-31, doi:10.13182/NSE10-31.">DSR11</a>]</span>.</div>
 <div class="line">Note that any discrete-ordinate <span class="math notranslate nohighlight">\(S_n\)</span> method can produce “<strong>ray
 effects</strong>” due to angular discretization errors
-<span id="id11">Lathrop [<a class="reference internal" href="#id54" title="K D Lathrop. Ray effects in discrete ordinates equations. Nuclear Science and Engineering, 32(3):357-369, 1968.">Lat68</a>]</span>, <span id="id12">Lathrop [<a class="reference internal" href="#id55" title="KD Lathrop. Remedies for ray effects. Nuclear Science and Engineering, 45(3):255–268, 1971.">Lat71</a>]</span>, <span id="id13">Morel <em>et al.</em> [<a class="reference internal" href="#id56" title="J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons. Analysis of ray-effect mitigation techniques. Nuclear Science and Engineering, 144:1-22, 2003.">MWLP03</a>]</span>, <span id="id14">Miller Jr and Reed [<a class="reference internal" href="#id57" title="WF Miller Jr and Wm H Reed. Ray-effect mitigation methods for two-dimensional neutron transport theory. Nuclear Science and Engineering, 62(3):391–411, 1977.">MJR77</a>]</span>.
+<span id="id11">Lathrop [<a class="reference internal" href="#id54" title="K D Lathrop. Ray effects in discrete ordinates equations. Nuclear Science and Engineering, 32(3):357-369, 1968.">DLat68</a>]</span>, <span id="id12">Lathrop [<a class="reference internal" href="#id55" title="KD Lathrop. Remedies for ray effects. Nuclear Science and Engineering, 45(3):255–268, 1971.">DLat71</a>]</span>, <span id="id13">Morel <em>et al.</em> [<a class="reference internal" href="#id56" title="J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons. Analysis of ray-effect mitigation techniques. Nuclear Science and Engineering, 144:1-22, 2003.">DMWLP03</a>]</span>, <span id="id14">Miller Jr and Reed [<a class="reference internal" href="#id57" title="WF Miller Jr and Wm H Reed. Ray-effect mitigation methods for two-dimensional neutron transport theory. Nuclear Science and Engineering, 62(3):391–411, 1977.">DMJR77</a>]</span>.
 These errors are most pronounced in situations with low scattering
 materials, low density materials, and in presence of small localized
 sources, … An uncollided-flux approach is often employed to mitigate
@@ -345,7 +345,7 @@ additional details.</div>
 Method (DGFEM) applied to the linear Boltzmann equation on meshes made
 of arbitrary polyhedra in 3D and arbitrary polygons in 2D. For
 references on DGFEM applied to transport, please consult
-<span id="id15">Reed and Hill [<a class="reference internal" href="#id61" title="Wm H Reed and TR Hill. Triangular mesh methods for the neutron transport equation. Los Alamos Report LA-UR-73-479, 1973.">RH73</a>]</span>, <span id="id16">Lesaint and Raviart [<a class="reference internal" href="#id62" title="P Lesaint and PA Raviart. On a finite element method for solving the neutron transport equation. Mathematical Aspects of Finite Elements in Partial Differential Equations, pages 89–123, 1974.">LR74</a>]</span>, <span id="id17">Hill [<a class="reference internal" href="#id103" title="TR Hill. Onetran: a discrete ordinates finite element code for the solution of the one-dimensional multigroup transport equation (la-5990-ms). Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.">Hil75</a>]</span>, <span id="id18">Reed <em>et al.</em> [<a class="reference internal" href="#id104" title="Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop. Triplet: a two-dimensional, multigroup, triangular mesh, planar geometry, explicit transport code. Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.">RHBL73</a>]</span>, <span id="id19">Seed <em>et al.</em> [<a class="reference internal" href="#id105" title="TJ Seed, WF Miller Jr, and FW Brinkley Jr. Trident: a two-dimensional, multigroup, triangular mesh discrete ordinates, explicit neutron transport code. Technical Report, Los Alamos Scientific Lab., NM (USA), 1977.">SMJBJ77</a>]</span>, <span id="id20">Seed <em>et al.</em> [<a class="reference internal" href="#id106" title="TJ Seed, WF Miller, and GE Bosler. Trident: a new triangular mesh discrete ordinates code. In ANS Meeting, 157–167. 1978.">SMB78</a>]</span>, <span id="id21">Adams [<a class="reference internal" href="#id65" title="Marvin L Adams. Discontinuous finite element transport solutions in thick diffusive problems. Nuclear Science and Engineering, 137(3):298–333, 2001.">Ada01</a>]</span>, <span id="id22">Wareing <em>et al.</em> [<a class="reference internal" href="#id126" title="Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz. Discontinuous finite element $s_n$ methods on three-dimensional unstructured grids. Nuclear Science and Engineering, 138(3):256–268, 2001.">WMMP01</a>]</span>, <span id="id23">Morel and Warsa [<a class="reference internal" href="#id127" title="Jim E Morel and James S Warsa. An $s_n$ spatial discretization scheme for tetrahedral meshes. Nuclear Science and Engineering, 151(2):157–166, 2005.">MW05</a>]</span>, <span id="id24">Wang and Ragusa [<a class="reference internal" href="#id72" title="Yaqi Wang and Jean C Ragusa. On the convergence of dgfem applied to the discrete ordinates transport equation for structured and unstructured triangular meshes. Nuclear Science and Engineering, 163(1):56–72, 2009.">WR09a</a>]</span>, <span id="id25">Wang and Ragusa [<a class="reference internal" href="#id73" title="Yaqi Wang and Jean C Ragusa. A high-order discontinuous galerkin method for the $s_n$ transport equations on 2d unstructured triangular meshes. Annals of Nuclear Energy, 36(7):931–939, 2009.">WR09b</a>]</span>, <span id="id26">Wang [<a class="reference internal" href="#id171" title="Yaqi Wang. Adaptive mesh refinement solution techniques for the multigroup $S_N$ transport equation using a higher-order discontinuous finite element method. PhD thesis, Texas A&amp;M University, 2009.">Wan09</a>]</span>, <span id="id27">Wang and Ragusa [<a class="reference internal" href="#id312" title="Yaqi Wang and Jean C Ragusa. Standard and goal-oriented adaptive mesh refinement applied to radiation transport on 2d unstructured triangular meshes. Journal of Computational Physics, 230(3):763–788, 2011.">WR11</a>]</span>, <span id="id28">Wang and Ragusa [<a class="reference internal" href="#id313" title="Yaqi Wang and Jean C Ragusa. A two-mesh adaptive mesh refinement technique for $s_n$ neutral-particle transport using a higher-order dgfem. Journal of Computational and Applied Mathematics, 233(12):3178–3188, 2010.">WR10</a>]</span>.</div>
+<span id="id15">Reed and Hill [<a class="reference internal" href="#id61" title="Wm H Reed and TR Hill. Triangular mesh methods for the neutron transport equation. Los Alamos Report LA-UR-73-479, 1973.">DRH73</a>]</span>, <span id="id16">Lesaint and Raviart [<a class="reference internal" href="#id62" title="P Lesaint and PA Raviart. On a finite element method for solving the neutron transport equation. Mathematical Aspects of Finite Elements in Partial Differential Equations, pages 89–123, 1974.">DLR74</a>]</span>, <span id="id17">Hill [<a class="reference internal" href="#id103" title="TR Hill. Onetran: a discrete ordinates finite element code for the solution of the one-dimensional multigroup transport equation (la-5990-ms). Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.">DHil75</a>]</span>, <span id="id18">Reed <em>et al.</em> [<a class="reference internal" href="#id104" title="Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop. Triplet: a two-dimensional, multigroup, triangular mesh, planar geometry, explicit transport code. Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.">DRHBL73</a>]</span>, <span id="id19">Seed <em>et al.</em> [<a class="reference internal" href="#id105" title="TJ Seed, WF Miller Jr, and FW Brinkley Jr. Trident: a two-dimensional, multigroup, triangular mesh discrete ordinates, explicit neutron transport code. Technical Report, Los Alamos Scientific Lab., NM (USA), 1977.">DSMJBJ77</a>]</span>, <span id="id20">Seed <em>et al.</em> [<a class="reference internal" href="#id106" title="TJ Seed, WF Miller, and GE Bosler. Trident: a new triangular mesh discrete ordinates code. In ANS Meeting, 157–167. 1978.">DSMB78</a>]</span>, <span id="id21">Adams [<a class="reference internal" href="#id65" title="Marvin L Adams. Discontinuous finite element transport solutions in thick diffusive problems. Nuclear Science and Engineering, 137(3):298–333, 2001.">DAda01</a>]</span>, <span id="id22">Wareing <em>et al.</em> [<a class="reference internal" href="#id126" title="Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz. Discontinuous finite element $s_n$ methods on three-dimensional unstructured grids. Nuclear Science and Engineering, 138(3):256–268, 2001.">DWMMP01</a>]</span>, <span id="id23">Morel and Warsa [<a class="reference internal" href="#id127" title="Jim E Morel and James S Warsa. An $s_n$ spatial discretization scheme for tetrahedral meshes. Nuclear Science and Engineering, 151(2):157–166, 2005.">DMW05</a>]</span>, <span id="id24">Wang and Ragusa [<a class="reference internal" href="#id72" title="Yaqi Wang and Jean C Ragusa. On the convergence of dgfem applied to the discrete ordinates transport equation for structured and unstructured triangular meshes. Nuclear Science and Engineering, 163(1):56–72, 2009.">DWR09a</a>]</span>, <span id="id25">Wang and Ragusa [<a class="reference internal" href="#id73" title="Yaqi Wang and Jean C Ragusa. A high-order discontinuous galerkin method for the $s_n$ transport equations on 2d unstructured triangular meshes. Annals of Nuclear Energy, 36(7):931–939, 2009.">DWR09b</a>]</span>, <span id="id26">Wang [<a class="reference internal" href="#id171" title="Yaqi Wang. Adaptive mesh refinement solution techniques for the multigroup $S_N$ transport equation using a higher-order discontinuous finite element method. PhD thesis, Texas A&amp;M University, 2009.">DWan09</a>]</span>, <span id="id27">Wang and Ragusa [<a class="reference internal" href="#id312" title="Yaqi Wang and Jean C Ragusa. Standard and goal-oriented adaptive mesh refinement applied to radiation transport on 2d unstructured triangular meshes. Journal of Computational Physics, 230(3):763–788, 2011.">DWR11</a>]</span>, <span id="id28">Wang and Ragusa [<a class="reference internal" href="#id313" title="Yaqi Wang and Jean C Ragusa. A two-mesh adaptive mesh refinement technique for $s_n$ neutral-particle transport using a higher-order dgfem. Journal of Computational and Applied Mathematics, 233(12):3178–3188, 2010.">DWR10</a>]</span>.</div>
 <div class="line">For a given energy group (<span class="math notranslate nohighlight">\(g\)</span> index omitted for brevity) and for
 a given angular direction <span class="math notranslate nohighlight">\(d\)</span>, the transport equation is</div>
 </div>
@@ -434,7 +434,7 @@ grids. In this case, cycles are broken based on the smallest values of
 causing the cycle. The angular flux contributions to those faces are
 lagged and iterated upon until convergence.</div>
 <div class="line">Piece-Wise Linear (PWL) basis functions on arbitrary polyhedra
-<span id="id29">Stone and Adams [<a class="reference internal" href="#id194" title="Hiromi G Stone and Marvin L Adams. A piecewise linear finite element basis with application to particle transport. In Proc. ANS Topical Meeting Nuclear Mathematical and Computational Sciences Meeting. 2003.">SA03</a>]</span>, <span id="id30">Bailey [<a class="reference internal" href="#id196" title="Teresa S Bailey. The piecewise linear discontinuous finite element method applied to the RZ and XYZ transport equations. PhD thesis, Texas A&amp;M University, 2008.">Bai08</a>]</span>, <span id="id31">Bailey <em>et al.</em> [<a class="reference internal" href="#id197" title="Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa. A piecewise linear discontinuous finite element spatial discretization of the transport equation in 2d cylindrical geometry. In Proc. International Conference on Mathematics and Computational Methods &amp; Reactor Physics, 3–7. 2008.">BACW08</a>]</span>, <span id="id32">Warsa [<a class="reference internal" href="#id64" title="James Warsa. A continuous finite element-base, discontinuous finite element method for $s_n$ transport. Nuclear Science and Engineering, 160:385-400, 2008.">War08</a>]</span>, <span id="id33">Ragusa [<a class="reference internal" href="#id102" title="Jean C. Ragusa. Discontinuous finite element solution of the radiation diffusion equation on arbitrary polygonal meshes and locally adapted quadrilateral grids. Journal of Computational Physics, 280:195-213, 2015. URL: https://www.sciencedirect.com/science/article/pii/S0021999114006494, doi:https://doi.org/10.1016/j.jcp.2014.09.013.">Rag15</a>]</span>:
+<span id="id29">Stone and Adams [<a class="reference internal" href="#id194" title="Hiromi G Stone and Marvin L Adams. A piecewise linear finite element basis with application to particle transport. In Proc. ANS Topical Meeting Nuclear Mathematical and Computational Sciences Meeting. 2003.">DSA03</a>]</span>, <span id="id30">Bailey [<a class="reference internal" href="#id196" title="Teresa S Bailey. The piecewise linear discontinuous finite element method applied to the RZ and XYZ transport equations. PhD thesis, Texas A&amp;M University, 2008.">DBai08</a>]</span>, <span id="id31">Bailey <em>et al.</em> [<a class="reference internal" href="#id197" title="Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa. A piecewise linear discontinuous finite element spatial discretization of the transport equation in 2d cylindrical geometry. In Proc. International Conference on Mathematics and Computational Methods &amp; Reactor Physics, 3–7. 2008.">DBACW08</a>]</span>, <span id="id32">Warsa [<a class="reference internal" href="#id64" title="James Warsa. A continuous finite element-base, discontinuous finite element method for $s_n$ transport. Nuclear Science and Engineering, 160:385-400, 2008.">DWar08</a>]</span>, <span id="id33">Ragusa [<a class="reference internal" href="#id102" title="Jean C. Ragusa. Discontinuous finite element solution of the radiation diffusion equation on arbitrary polygonal meshes and locally adapted quadrilateral grids. Journal of Computational Physics, 280:195-213, 2015. URL: https://www.sciencedirect.com/science/article/pii/S0021999114006494, doi:https://doi.org/10.1016/j.jcp.2014.09.013.">DRag15</a>]</span>:
 PWL basis functions are defined such that they are equal to one on a
 single vertex and zero on all other vertices. Their construction is
 achieved by splitting each polyhedron into several tetrahedra.
@@ -522,135 +522,135 @@ employed.</p>
 <div class="docutils container" id="id34">
 <div role="list" class="citation-list">
 <div class="citation" id="id47" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">CB58</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">DCB58</a><span class="fn-bracket">]</span></span>
 <p>BG Carlson and GI Bell. Solution of the transport equation by the sn method. Technical Report, Los Alamos Scientific Lab., N. Mex., 1958.</p>
 </div>
 <div class="citation" id="id48" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">CL61</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">DCL61</a><span class="fn-bracket">]</span></span>
 <p>Bengt G Carlson and Clarence E Lee. <em>Mechanical quadrature and the transport equation</em>. Volume 2573. Los Alamos Scientific Laboratory of the University of California, 1961.</p>
 </div>
 <div class="citation" id="id49" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">Lee61</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">DLee61</a><span class="fn-bracket">]</span></span>
 <p>Clarence E Lee. The discrete $s_n$ approximation to transport theory. Technical Report, Los Alamos Scientific Lab., N. Mex., 1961.</p>
 </div>
 <div class="citation" id="id50" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">LC64</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">DLC64</a><span class="fn-bracket">]</span></span>
 <p>Kaye D Lathrop and Bengt G Carlson. Discrete ordinates angular quadrature of the neutron transport equation. Technical Report, Los Alamos Scientific Lab., N. Mex., 1964.</p>
 </div>
 <div class="citation" id="id53" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">CL65</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">DCL65</a><span class="fn-bracket">]</span></span>
 <p>Bengt G Carlson and Kaye D Lathrop. <em>Transport theory: the method of discrete ordinates</em>. Los Alamos Scientific Laboratory of the University of California, 1965.</p>
 </div>
 <div class="citation" id="id81" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">Car71</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">DCar71</a><span class="fn-bracket">]</span></span>
 <p>BG Carlson. On a more precise definition of discrete ordinates methods. In <em>Proceedings of the Second Conference on Transport Theory</em>, 348–390. U.S. Atomic Energy Commission, 1971.</p>
 </div>
 <div class="citation" id="id96" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">GDH69</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">DGDH69</a><span class="fn-bracket">]</span></span>
 <p>EM Gelbard, James A Davis, and LA Hageman. Solution of the discrete ordinate equations in one and two dimensions. <em>Transport Theory</em>, 1:129–158, 1969.</p>
 </div>
 <div class="citation" id="id60" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">LA17</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">DLA17</a><span class="fn-bracket">]</span></span>
 <p>Cheuk Y. Lau and Marvin L. Adams. Discrete ordinates quadratures based on linear and quadratic discontinuous finite elements over spherical quadrilaterals. <em>Nuclear Science and Engineering</em>, 185(1):36–52, 2017. URL: <a class="reference external" href="https://doi.org/10.13182/NSE16-28">https://doi.org/10.13182/NSE16-28</a>, <a class="reference external" href="https://doi.org/10.13182/NSE16-28">doi:10.13182/NSE16-28</a>.</p>
 </div>
 <div class="citation" id="id59" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">Mor89</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">DMor89</a><span class="fn-bracket">]</span></span>
 <p>Jim E Morel. A hybrid collocation-galerkin-sn method for solving the boltzmann transport equation. <em>Nuclear Science and Engineering</em>, 101(1):72–87, 1989.</p>
 </div>
 <div class="citation" id="id58" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">SR11</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">DSR11</a><span class="fn-bracket">]</span></span>
 <p>Richard Sanchez and Jean Ragusa. On the construction of galerkin angular quadratures. <em>Nuclear Science and Engineering</em>, 169(2):133–154, 2011. URL: <a class="reference external" href="https://doi.org/10.13182/NSE10-31">https://doi.org/10.13182/NSE10-31</a>, <a class="reference external" href="https://doi.org/10.13182/NSE10-31">doi:10.13182/NSE10-31</a>.</p>
 </div>
 <div class="citation" id="id54" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Lat68</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">DLat68</a><span class="fn-bracket">]</span></span>
 <p>K D Lathrop. Ray effects in discrete ordinates equations. <em>Nuclear Science and Engineering</em>, 32(3):357–369, 1968.</p>
 </div>
 <div class="citation" id="id55" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">Lat71</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">DLat71</a><span class="fn-bracket">]</span></span>
 <p>KD Lathrop. Remedies for ray effects. <em>Nuclear Science and Engineering</em>, 45(3):255–268, 1971.</p>
 </div>
 <div class="citation" id="id56" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">MWLP03</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">DMWLP03</a><span class="fn-bracket">]</span></span>
 <p>J.E. Morel, T.A. Wareing, R.B. Lowrie, and D.K. Parsons. Analysis of ray-effect mitigation techniques. <em>Nuclear Science and Engineering</em>, 144:1–22, 2003.</p>
 </div>
 <div class="citation" id="id57" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">MJR77</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">DMJR77</a><span class="fn-bracket">]</span></span>
 <p>WF Miller Jr and Wm H Reed. Ray-effect mitigation methods for two-dimensional neutron transport theory. <em>Nuclear Science and Engineering</em>, 62(3):391–411, 1977.</p>
 </div>
 <div class="citation" id="id61" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">RH73</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">DRH73</a><span class="fn-bracket">]</span></span>
 <p>Wm H Reed and TR Hill. Triangular mesh methods for the neutron transport equation. <em>Los Alamos Report LA-UR-73-479</em>, 1973.</p>
 </div>
 <div class="citation" id="id62" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">LR74</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">DLR74</a><span class="fn-bracket">]</span></span>
 <p>P Lesaint and PA Raviart. On a finite element method for solving the neutron transport equation. <em>Mathematical Aspects of Finite Elements in Partial Differential Equations</em>, pages 89–123, 1974.</p>
 </div>
 <div class="citation" id="id103" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">Hil75</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">DHil75</a><span class="fn-bracket">]</span></span>
 <p>TR Hill. Onetran: a discrete ordinates finite element code for the solution of the one-dimensional multigroup transport equation (la-5990-ms). Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1975.</p>
 </div>
 <div class="citation" id="id104" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">RHBL73</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">DRHBL73</a><span class="fn-bracket">]</span></span>
 <p>Wm H Reed, TR Hill, FW Brinkley, and KD Lathrop. Triplet: a two-dimensional, multigroup, triangular mesh, planar geometry, explicit transport code. Technical Report, Los Alamos Scientific Lab., N. Mex.(USA), 1973.</p>
 </div>
 <div class="citation" id="id105" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">SMJBJ77</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">DSMJBJ77</a><span class="fn-bracket">]</span></span>
 <p>TJ Seed, WF Miller Jr, and FW Brinkley Jr. Trident: a two-dimensional, multigroup, triangular mesh discrete ordinates, explicit neutron transport code. Technical Report, Los Alamos Scientific Lab., NM (USA), 1977.</p>
 </div>
 <div class="citation" id="id106" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">SMB78</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">DSMB78</a><span class="fn-bracket">]</span></span>
 <p>TJ Seed, WF Miller, and GE Bosler. Trident: a new triangular mesh discrete ordinates code. In <em>ANS Meeting</em>, 157–167. 1978.</p>
 </div>
 <div class="citation" id="id65" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">Ada01</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">DAda01</a><span class="fn-bracket">]</span></span>
 <p>Marvin L Adams. Discontinuous finite element transport solutions in thick diffusive problems. <em>Nuclear Science and Engineering</em>, 137(3):298–333, 2001.</p>
 </div>
 <div class="citation" id="id126" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">WMMP01</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">DWMMP01</a><span class="fn-bracket">]</span></span>
 <p>Todd A Wareing, John M McGhee, Jim E Morel, and Shawn D Pautz. Discontinuous finite element $s_n$ methods on three-dimensional unstructured grids. <em>Nuclear Science and Engineering</em>, 138(3):256–268, 2001.</p>
 </div>
 <div class="citation" id="id127" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">MW05</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">DMW05</a><span class="fn-bracket">]</span></span>
 <p>Jim E Morel and James S Warsa. An $s_n$ spatial discretization scheme for tetrahedral meshes. <em>Nuclear Science and Engineering</em>, 151(2):157–166, 2005.</p>
 </div>
 <div class="citation" id="id72" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id24">WR09a</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id24">DWR09a</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C Ragusa. On the convergence of dgfem applied to the discrete ordinates transport equation for structured and unstructured triangular meshes. <em>Nuclear Science and Engineering</em>, 163(1):56–72, 2009.</p>
 </div>
 <div class="citation" id="id73" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id25">WR09b</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id25">DWR09b</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C Ragusa. A high-order discontinuous galerkin method for the $s_n$ transport equations on 2d unstructured triangular meshes. <em>Annals of Nuclear Energy</em>, 36(7):931–939, 2009.</p>
 </div>
 <div class="citation" id="id171" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id26">Wan09</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id26">DWan09</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang. <em>Adaptive mesh refinement solution techniques for the multigroup $S_N$ transport equation using a higher-order discontinuous finite element method</em>. PhD thesis, Texas A&amp;M University, 2009.</p>
 </div>
 <div class="citation" id="id312" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id27">WR11</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id27">DWR11</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C Ragusa. Standard and goal-oriented adaptive mesh refinement applied to radiation transport on 2d unstructured triangular meshes. <em>Journal of Computational Physics</em>, 230(3):763–788, 2011.</p>
 </div>
 <div class="citation" id="id313" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id28">WR10</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id28">DWR10</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C Ragusa. A two-mesh adaptive mesh refinement technique for $s_n$ neutral-particle transport using a higher-order dgfem. <em>Journal of Computational and Applied Mathematics</em>, 233(12):3178–3188, 2010.</p>
 </div>
 <div class="citation" id="id194" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id29">SA03</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id29">DSA03</a><span class="fn-bracket">]</span></span>
 <p>Hiromi G Stone and Marvin L Adams. A piecewise linear finite element basis with application to particle transport. In <em>Proc. ANS Topical Meeting Nuclear Mathematical and Computational Sciences Meeting</em>. 2003.</p>
 </div>
 <div class="citation" id="id196" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id30">Bai08</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id30">DBai08</a><span class="fn-bracket">]</span></span>
 <p>Teresa S Bailey. <em>The piecewise linear discontinuous finite element method applied to the RZ and XYZ transport equations</em>. PhD thesis, Texas A&amp;M University, 2008.</p>
 </div>
 <div class="citation" id="id197" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id31">BACW08</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id31">DBACW08</a><span class="fn-bracket">]</span></span>
 <p>Teresa S Bailey, Marvin L Adams, Jae H Chang, and James S Warsa. A piecewise linear discontinuous finite element spatial discretization of the transport equation in 2d cylindrical geometry. In <em>Proc. International Conference on Mathematics and Computational Methods &amp; Reactor Physics</em>, 3–7. 2008.</p>
 </div>
 <div class="citation" id="id64" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id32">War08</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id32">DWar08</a><span class="fn-bracket">]</span></span>
 <p>James Warsa. A continuous finite element-base, discontinuous finite element method for $s_n$ transport. <em>Nuclear Science and Engineering</em>, 160:385–400, 2008.</p>
 </div>
 <div class="citation" id="id102" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id33">Rag15</a><span class="fn-bracket">]</span></span>
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id33">DRag15</a><span class="fn-bracket">]</span></span>
 <p>Jean C. Ragusa. Discontinuous finite element solution of the radiation diffusion equation on arbitrary polygonal meshes and locally adapted quadrilateral grids. <em>Journal of Computational Physics</em>, 280:195–213, 2015. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999114006494">https://www.sciencedirect.com/science/article/pii/S0021999114006494</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.jcp.2014.09.013">doi:https://doi.org/10.1016/j.jcp.2014.09.013</a>.</p>
 </div>
 </div>

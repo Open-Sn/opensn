@@ -18,6 +18,7 @@ Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rate
   The reaction type can be one of the types used during the simulation
   (e.g., total) or a type present in the multigroup cross-section
   library and used only at the post processing stage (e.g., heating).
+
 | On the boundary of the domain, OpenSn also computes the half-range
   angular currents
 

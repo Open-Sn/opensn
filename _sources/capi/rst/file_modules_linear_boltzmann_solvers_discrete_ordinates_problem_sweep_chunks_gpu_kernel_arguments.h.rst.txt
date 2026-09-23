@@ -85,26 +85,3 @@ Namespaces
 
 - :ref:`namespace_opensn`
 
-- :ref:`namespace_opensn__gpu_kernel`
-
-
-Classes
--------
-
-
-- :ref:`exhale_struct_structopensn_1_1gpu__kernel_1_1_arguments`
-
-
-Functions
----------
-
-
-- :ref:`exhale_function_namespaceopensn_1_1gpu__kernel_1aebb6419c2f1719eb13be50df3f224ea5`
-
-
-Typedefs
---------
-
-
-- :ref:`exhale_typedef_namespaceopensn_1_1gpu__kernel_1aa8359577616908405dd4dc00681e5d08`
-

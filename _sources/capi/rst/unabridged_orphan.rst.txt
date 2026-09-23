@@ -16,17 +16,7 @@ Namespaces
 .. toctree::
    :maxdepth: 1
 
-   namespace_opensn__detail.rst
-
-.. toctree::
-   :maxdepth: 1
-
    namespace_opensn__EmpiricalHarmonicRules.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   namespace_opensn__gpu_kernel.rst
 
 .. toctree::
    :maxdepth: 1
@@ -296,11 +286,6 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_ghost_vec_local_raw.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   structopensn_1_1gpu__kernel_1_1_arguments.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1251,11 +1236,6 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_g_l_product_quadrature1_d_spherical.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1gpu__kernel_1_1_buffer.rst
 
 .. toctree::
    :maxdepth: 1

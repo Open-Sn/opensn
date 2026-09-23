@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>10. CMFD Acceleration &mdash; OpenSn 1.0.1 documentation</title>
+  <title>9. CMFD Acceleration &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="11. Boundary Conditions and Sources" href="boundary_conditions_sources.html" />
-    <link rel="prev" title="9. Iterative Methods" href="iterative_methods.html" /> 
+    <link rel="next" title="10. Boundary Conditions and Sources" href="boundary_conditions_sources.html" />
+    <link rel="prev" title="8. Iterative Methods" href="iterative_methods.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -58,40 +58,39 @@
 <li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
 <li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html#product-quadratures">7. Product Quadratures</a></li>
-<li class="toctree-l2"><a class="reference internal" href="groupsets.html">8. Groupsets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">9. Iterative Methods</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">10. CMFD Acceleration</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#basic-usage">10.1. Basic Usage</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#common-user-options">10.2. Common User Options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#developer-and-debug-options">10.3. Developer And Debug Options</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#multi-groupset-behavior">10.4. Multi-Groupset Behavior</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#diagnostics">10.5. Diagnostics</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#correction-safeties-and-warnings">10.6. Correction Safeties And Warnings</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#supported-scope">10.7. Supported Scope</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#limitations">10.8. Limitations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">7. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">8. Iterative Methods</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">9. CMFD Acceleration</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-usage">9.1. Basic Usage</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#common-user-options">9.2. Common User Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#developer-and-debug-options">9.3. Developer And Debug Options</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#multi-groupset-behavior">9.4. Multi-Groupset Behavior</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#diagnostics">9.5. Diagnostics</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#correction-safeties-and-warnings">9.6. Correction Safeties And Warnings</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-scope">9.7. Supported Scope</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#limitations">9.8. Limitations</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">11. Boundary Conditions and Sources</a></li>
-<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">12. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -118,7 +117,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">10. </span>CMFD Acceleration</li>
+      <li class="breadcrumb-item active"><span class="section-number">9. </span>CMFD Acceleration</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -128,7 +127,7 @@
            <div itemprop="articleBody">
              
   <section id="cmfd-acceleration">
-<h1><span class="section-number">10. </span>CMFD Acceleration<a class="headerlink" href="#cmfd-acceleration" title="Link to this heading"></a></h1>
+<h1><span class="section-number">9. </span>CMFD Acceleration<a class="headerlink" href="#cmfd-acceleration" title="Link to this heading"></a></h1>
 <p>Coarse-mesh finite difference (CMFD) acceleration can be used with
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> through
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.CMFDAcceleration</span></code></a>.</p>
@@ -151,7 +150,7 @@ each CMFD correction. To make each transport update more tightly converged
 before CMFD is applied, increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> and tighten
 <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>.</p>
 <section id="basic-usage">
-<h2><span class="section-number">10.1. </span>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.1. </span>Basic Usage<a class="headerlink" href="#basic-usage" title="Link to this heading"></a></h2>
 <p>Construct the transport problem as usual, then pass a CMFD acceleration object
 to the power-iteration solver:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">CMFDAcceleration</span><span class="p">,</span> <span class="n">PowerIterationKEigenSolver</span>
@@ -196,7 +195,7 @@ groups. For example, with 361 transport groups, <code class="docutils literal no
 group aggregation size of 91 and therefore 4 CMFD energy groups.</p>
 </section>
 <section id="common-user-options">
-<h2><span class="section-number">10.2. </span>Common User Options<a class="headerlink" href="#common-user-options" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.2. </span>Common User Options<a class="headerlink" href="#common-user-options" title="Link to this heading"></a></h2>
 <p>These are the options most users should tune.</p>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code></dt><dd><p>Coarse-mesh construction method. The default is <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.
@@ -301,7 +300,7 @@ the point where the eigenvalue has already reached the requested accuracy.</p>
 </dl>
 </section>
 <section id="developer-and-debug-options">
-<h2><span class="section-number">10.3. </span>Developer And Debug Options<a class="headerlink" href="#developer-and-debug-options" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.3. </span>Developer And Debug Options<a class="headerlink" href="#developer-and-debug-options" title="Link to this heading"></a></h2>
 <p>The following options remain available for investigations, regression tests, and
 method development. Production inputs should usually leave them at their
 defaults.</p>
@@ -355,7 +354,7 @@ tuning.</p>
 </dl>
 </section>
 <section id="multi-groupset-behavior">
-<h2><span class="section-number">10.4. </span>Multi-Groupset Behavior<a class="headerlink" href="#multi-groupset-behavior" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.4. </span>Multi-Groupset Behavior<a class="headerlink" href="#multi-groupset-behavior" title="Link to this heading"></a></h2>
 <p>CMFD is constructed as one accelerator for the transport problem, not one
 accelerator per groupset. For problems with multiple groupsets, the transport
 solver advances the groupsets through the normal AGS process, then CMFD
@@ -364,7 +363,7 @@ coarse solve therefore couples all transport groups represented in the problem,
 regardless of how those groups are partitioned into groupsets.</p>
 </section>
 <section id="diagnostics">
-<h2><span class="section-number">10.5. </span>Diagnostics<a class="headerlink" href="#diagnostics" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.5. </span>Diagnostics<a class="headerlink" href="#diagnostics" title="Link to this heading"></a></h2>
 <p>Normal outer-iteration verbosity prints compact PI and CMFD status lines. The
 PI line reports the power-iteration state. When CMFD acceleration is active, a
 separate line reports whether the CMFD-specific convergence gate is satisfied:</p>
@@ -383,7 +382,7 @@ diagnostic lines for early iterations and periodic later iterations. These are
 intended for regression tests and performance studies.</p>
 </section>
 <section id="correction-safeties-and-warnings">
-<h2><span class="section-number">10.6. </span>Correction Safeties And Warnings<a class="headerlink" href="#correction-safeties-and-warnings" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.6. </span>Correction Safeties And Warnings<a class="headerlink" href="#correction-safeties-and-warnings" title="Link to this heading"></a></h2>
 <p>CMFD never applies an untrusted coarse correction. If a safety check rejects a
 correction, the current power iteration uses the unaccelerated transport update
 and its raw transport k-eigenvalue update. This applies to every skipped
@@ -417,7 +416,7 @@ skips usually mean that CMFD is not accelerating the calculation effectively and
 the input should be adjusted.</p>
 </section>
 <section id="supported-scope">
-<h2><span class="section-number">10.7. </span>Supported Scope<a class="headerlink" href="#supported-scope" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.7. </span>Supported Scope<a class="headerlink" href="#supported-scope" title="Link to this heading"></a></h2>
 <p>The CMFD accelerator currently supports:</p>
 <ul class="simple">
 <li><p>one or more groupsets,</p></li>
@@ -436,7 +435,7 @@ by the transport solve, but CMFD itself accelerates only the zeroth moment
 scalar-flux balance.</p>
 </section>
 <section id="limitations">
-<h2><span class="section-number">10.8. </span>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.8. </span>Limitations<a class="headerlink" href="#limitations" title="Link to this heading"></a></h2>
 <p>Current limitations are:</p>
 <ul class="simple">
 <li><p>CMFD is integrated with <a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>,
@@ -455,8 +454,8 @@ moments remain governed by the high-order transport solve.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="iterative_methods.html" class="btn btn-neutral float-left" title="9. Iterative Methods" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="boundary_conditions_sources.html" class="btn btn-neutral float-right" title="11. Boundary Conditions and Sources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="iterative_methods.html" class="btn btn-neutral float-left" title="8. Iterative Methods" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="boundary_conditions_sources.html" class="btn btn-neutral float-right" title="10. Boundary Conditions and Sources" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
