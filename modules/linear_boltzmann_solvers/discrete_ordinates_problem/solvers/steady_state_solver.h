@@ -21,6 +21,9 @@ public:
 
   void Execute() override;
 
+  /// Return the total number of transport sweeps applied by all WGS solvers.
+  std::size_t GetNumSweeps() const;
+
   BalanceTable ComputeBalanceTable() const;
 
 protected:
