@@ -72,24 +72,6 @@ PETScSolverStatusName(const PETScSolverStatus status)
   }
 }
 
-[[noreturn]] void
-ThrowPETScError(int ierr, const char* expr, const char* file, int line)
-{
-  const char* ierr_desc = nullptr;
-  char* ierr_desc_specific = nullptr;
-  PetscErrorMessage(static_cast<PetscErrorCode>(ierr), &ierr_desc, &ierr_desc_specific);
-
-  std::stringstream ss;
-  ss << "PETSc call failed at " << file << ":" << line << " in expression \"" << expr
-     << "\" with error code " << ierr;
-  if (ierr_desc != nullptr)
-    ss << ". " << ierr_desc;
-  if (ierr_desc_specific != nullptr)
-    ss << " (" << ierr_desc_specific << ")";
-
-  throw std::runtime_error(ss.str());
-}
-
 Vec
 CreateVector(PetscInt local_size, PetscInt global_size)
 {

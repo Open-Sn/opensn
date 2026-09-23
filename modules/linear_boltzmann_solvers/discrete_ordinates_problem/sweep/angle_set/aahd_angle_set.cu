@@ -18,9 +18,15 @@ AAHD_AngleSet::AAHD_AngleSet(size_t id,
                              std::vector<size_t>& angle_indices,
                              std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                              int maximum_message_size,
-                             const MPICommunicatorSet& comm_set)
+                             const SweepCommunicator& sweep_communicator)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
-    async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set),
+    async_comm_(*fluds,
+                groupset.id,
+                id,
+                num_groups_,
+                angle_indices.size(),
+                maximum_message_size,
+                sweep_communicator),
     device_angle_indices_(angles_.size())
 {
   stream_ = crb::Stream();
@@ -41,8 +47,8 @@ AAHD_AngleSet::InitializeDelayedUpstreamData()
 void
 AAHD_AngleSet::PrepostReceives()
 {
-  async_comm_.PrepostReceiveUpstreamPsi(static_cast<int>(this->GetID()));
-  async_comm_.PrepostReceiveDelayedData(static_cast<int>(this->GetID()));
+  async_comm_.PrepostReceiveUpstreamPsi();
+  async_comm_.PrepostReceiveDelayedData();
   auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
   aahd_fluds->CopyDelayedPsiToDevice();
 }
@@ -83,7 +89,7 @@ AAHD_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permissio
     for (auto& following_as : following_angle_sets_)
       following_as->DecrementCounter();
   }
-  async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
+  async_comm_.SendDownstreamPsi();
 
   aahd_fluds->CopySaveAngularFluxToDestinationPsi(
     aahd_sweep_chunk.GetProblem(), aahd_sweep_chunk.GetGroupset(), *this);

@@ -27,13 +27,15 @@ ResizeRequestVector(std::vector<mpi::Request>& request_vector,
 
 } // namespace
 
-AAHD_ASynchronousCommunicator::AAHD_ASynchronousCommunicator(FLUDS& fluds,
-                                                             unsigned int num_groups,
-                                                             std::size_t num_angles,
-                                                             int max_mpi_message_size,
-                                                             const MPICommunicatorSet& comm_set)
-  : AsynchronousCommunicator(fluds, comm_set),
-    max_num_messages_(0),
+AAHD_ASynchronousCommunicator::AAHD_ASynchronousCommunicator(
+  FLUDS& fluds,
+  std::size_t groupset_id,
+  std::size_t angle_set_id,
+  unsigned int num_groups,
+  std::size_t num_angles,
+  int max_mpi_message_size,
+  const SweepCommunicator& sweep_communicator)
+  : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
     max_mpi_message_size_(max_mpi_message_size)
 {
   BuildMessageStructure();
@@ -52,9 +54,8 @@ AAHD_ASynchronousCommunicator::BuildMessageStructure()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalIncomingNumUnknowns(i); },
     preloc_msg_data_,
     nullptr,
-    false,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   ResizeRequestVector(preloc_msg_request_, preloc_msg_data_);
   // Delayed predecessor locations
@@ -63,9 +64,8 @@ AAHD_ASynchronousCommunicator::BuildMessageStructure()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalDelayedIncomingNumUnknowns(i); },
     delayed_preloc_msg_data_,
     nullptr,
-    false,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   ResizeRequestVector(delayed_preloc_msg_request_, delayed_preloc_msg_data_);
   // Successor locations
@@ -74,19 +74,18 @@ AAHD_ASynchronousCommunicator::BuildMessageStructure()
     [aahd_fluds](std::size_t i) { return aahd_fluds->GetNonLocalOutgoingNumUnknowns(i); },
     deploc_msg_data_,
     nullptr,
-    true,
     max_num_messages_,
-    comm_set_,
+    sweep_communicator_,
     max_mpi_message_size_);
   ResizeRequestVector(deploc_msg_request_, deploc_msg_data_);
 }
 
 void
-AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi(int angle_set_num)
+AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi()
 {
 
   const auto& spds = fluds_.GetSPDS();
-  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const auto& comm = sweep_communicator_.GetCommunicator();
   const std::size_t num_dependencies = spds.GetLocationDependencies().size();
 
   for (std::size_t i = 0, req = 0; i < num_dependencies; ++i)
@@ -96,7 +95,7 @@ AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi(int angle_set_num)
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
+      const int tag = GetMessageTag(m);
       preloc_msg_request_[req] = comm.irecv(source, tag, &upstream_psi[block_pos], size);
     }
   }
@@ -115,11 +114,11 @@ AAHD_ASynchronousCommunicator::WaitForUpstreamPsi()
 }
 
 void
-AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData(int angle_set_num)
+AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData()
 {
 
   const auto& spds = fluds_.GetSPDS();
-  const auto& comm = comm_set_.LocICommunicator(opensn::mpi_comm.rank());
+  const auto& comm = sweep_communicator_.GetCommunicator();
   const std::size_t num_delayed_dependencies = spds.GetDelayedLocationDependencies().size();
 
   for (std::size_t i = 0, req = 0; i < num_delayed_dependencies; ++i)
@@ -129,7 +128,7 @@ AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData(int angle_set_num)
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
+      const int tag = GetMessageTag(m);
       delayed_preloc_msg_request_[req] = comm.irecv(source, tag, &upstream_psi[block_pos], size);
     }
   }
@@ -142,22 +141,22 @@ AAHD_ASynchronousCommunicator::WaitForDelayedIncomingPsi()
 }
 
 void
-AAHD_ASynchronousCommunicator::SendDownstreamPsi(int angle_set_num)
+AAHD_ASynchronousCommunicator::SendDownstreamPsi()
 {
 
   const auto& spds = fluds_.GetSPDS();
   const auto& location_successors = spds.GetLocationSuccessors();
   const std::size_t num_successors = location_successors.size();
+  const auto& comm = sweep_communicator_.GetCommunicator();
 
   for (std::size_t i = 0, req = 0; i < num_successors; ++i)
   {
-    const auto& comm = comm_set_.LocICommunicator(location_successors[i]);
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
 
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      int tag = max_num_messages_ * angle_set_num + m;
+      const int tag = GetMessageTag(m);
       deploc_msg_request_[req] = comm.isend(dest, tag, &outgoing_psi[block_pos], size);
     }
   }

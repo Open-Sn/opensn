@@ -15,8 +15,15 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_parallel_for.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
+#include <algorithm>
+#include <array>
 #include <cmath>
+#include <cstdint>
+#include <limits>
+#include <optional>
 #include <stdexcept>
+#include <string_view>
+#include <utility>
 
 namespace opensn
 {
@@ -52,6 +59,69 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
 
 namespace
 {
+
+// Pass any exception message to `on_failure` from within its catch block.
+template <typename Function, typename OnFailure>
+void
+RunAAHSetupStep(const Function& function, const OnFailure& on_failure)
+{
+  try
+  {
+    function();
+  }
+  catch (const std::exception& error)
+  {
+    std::string_view message = error.what();
+    on_failure(message.empty() ? std::string_view("Unknown exception during AAH setup.") : message);
+  }
+  catch (...)
+  {
+    on_failure(std::string_view("Unknown exception during AAH setup."));
+  }
+}
+
+// Propagate failures collectively from work that does not call MPI.
+template <typename Function>
+void
+RunAAHSetupCollectively(const Function& function)
+{
+  bool local_failed = false;
+  std::array<char, 2048> error_buffer{};
+  RunAAHSetupStep(function,
+                  [&](std::string_view message)
+                  {
+                    local_failed = true;
+                    std::copy_n(message.begin(),
+                                std::min(message.size(), error_buffer.size() - 1),
+                                error_buffer.begin());
+                  });
+
+  const int comm_size = opensn::mpi_comm.size();
+  const int local_failure_rank = local_failed ? opensn::mpi_comm.rank() : comm_size;
+  int failure_rank = comm_size;
+  opensn::mpi_comm.all_reduce(local_failure_rank, failure_rank, mpi::op::min<int>());
+  if (failure_rank == comm_size)
+    return;
+
+  opensn::mpi_comm.broadcast(
+    error_buffer.data(), static_cast<int>(error_buffer.size()), failure_rank);
+  throw std::logic_error("AAH sweep setup failed on rank " + std::to_string(failure_rank) + ": " +
+                         error_buffer.data());
+}
+
+// Abort if work containing collectives fails because peers may already be blocked.
+template <typename Function>
+void
+RunAAHCollectiveSequence(const Function& function)
+{
+  RunAAHSetupStep(function,
+                  [](std::string_view message)
+                  {
+                    log.LogAllError() << "AAH setup failed during MPI exchange: " << message;
+                    opensn::mpi_comm.abort(1);
+                    throw;
+                  });
+}
 
 // Developer-only diagnostic for tiny sweep graphs. Populate with AAH_SPDS ids when debugging.
 const std::vector<int> SWEEP_ORDER_DIRECTIONS_TO_PRINT = {};
@@ -222,23 +292,37 @@ AssociateSOsAndDirections(const std::string& problem_name,
 }
 
 void
-BuildSweepOrderingGroups(SweepRuntime& runtime,
-                         const std::string& problem_name,
-                         const std::vector<LBSGroupset>& groupsets,
-                         const std::shared_ptr<MeshContinuum>& grid,
-                         GeometryType geometry_type,
-                         std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map)
+BuildSweepOrderingGroups(
+  SweepRuntime& runtime,
+  const std::string& problem_name,
+  const std::vector<LBSGroupset>& groupsets,
+  const std::shared_ptr<MeshContinuum>& grid,
+  GeometryType geometry_type,
+  std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
+  std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& angle_aggregation_map)
 {
   for (const auto& groupset : groupsets)
   {
     if (runtime.quadrature_unq_so_grouping_map.count(groupset.quadrature) == 0)
     {
+      runtime.quadrature_order.push_back(groupset.quadrature);
       runtime.quadrature_unq_so_grouping_map[groupset.quadrature] = AssociateSOsAndDirections(
         problem_name, grid, *groupset.quadrature, groupset.angleagg_method, geometry_type);
     }
 
     if (allow_cycles_map.count(groupset.quadrature) == 0)
       allow_cycles_map[groupset.quadrature] = groupset.allow_cycles;
+    else if (allow_cycles_map.at(groupset.quadrature) != groupset.allow_cycles)
+      throw std::invalid_argument(problem_name +
+                                  ": Groupsets sharing a quadrature must use the same "
+                                  "allow_cycles setting.");
+
+    if (angle_aggregation_map.count(groupset.quadrature) == 0)
+      angle_aggregation_map[groupset.quadrature] = groupset.angleagg_method;
+    else if (angle_aggregation_map.at(groupset.quadrature) != groupset.angleagg_method)
+      throw std::invalid_argument(problem_name +
+                                  ": Groupsets sharing a quadrature must use the same angle "
+                                  "aggregation type.");
   }
 }
 
@@ -253,8 +337,9 @@ BuildSPDSForSweepOrderings(SweepRuntime& runtime, CreateSPDS create_spds)
     Vector3 omega;
   };
   std::vector<WorkItem> work;
-  for (const auto& [quadrature, info] : runtime.quadrature_unq_so_grouping_map)
+  for (const auto& quadrature : runtime.quadrature_order)
   {
+    const auto& info = runtime.quadrature_unq_so_grouping_map.at(quadrature);
     const auto& unique_so_groupings = info.first;
     size_t sweep_ordering_id = 0;
     for (const auto& so_grouping : unique_so_groupings)
@@ -307,12 +392,6 @@ BuildAAHSPDS(SweepRuntime& runtime,
   if (use_gpus)
     for (const auto& spds : spds_list)
       spds->CopySPLSDataOnDevice();
-  std::vector<std::vector<int>> local_dependencies(spds_list.size());
-  for (size_t i = 0; i < spds_list.size(); ++i)
-    local_dependencies[i] = spds_list[i]->GetLocationDependencies();
-  auto global_dependencies = BatchCommunicateLocationDependencies(local_dependencies);
-  for (size_t i = 0; i < spds_list.size(); ++i)
-    spds_list[i]->SetGlobalDependencies(std::move(global_dependencies[i]));
 }
 
 void
@@ -336,127 +415,270 @@ std::vector<std::shared_ptr<AAH_SPDS>>
 GetAAHSPDSList(const SweepRuntime& runtime)
 {
   std::vector<std::shared_ptr<AAH_SPDS>> aah_spds_list;
-  // The flattened order is the MPI serialization key for gathered AAH sweep FAS records. Keep this
-  // traversal deterministic across ranks and in sync with ApplyAAHSweepFAS.
-  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
       aah_spds_list.push_back(std::static_pointer_cast<AAH_SPDS>(spds));
+  }
 
   return aah_spds_list;
 }
 
 int
-GetSweepGraphOwner(size_t spds_ordinal)
+GetSweepGraphOwner(size_t spds_ordinal, size_t num_spds)
 {
-  return static_cast<int>(spds_ordinal % static_cast<size_t>(opensn::mpi_comm.size()));
-}
-
-void
-AccumulateAAHGlobalEdgeWeights(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list)
-{
-  const int comm_size = opensn::mpi_comm.size();
-  const int matrix_size = comm_size * comm_size;
-  std::vector<int> recv_counts(comm_size, comm_size);
-  std::vector<int> recv_displacements(comm_size, 0);
-  for (int loc = 0; loc < comm_size; ++loc)
-    recv_displacements[loc] = loc * comm_size;
-
-  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
-  {
-    const auto& spds = spds_list[spds_ordinal];
-    const int owner = GetSweepGraphOwner(spds_ordinal);
-
-    const auto local_row = spds->ComputeLocalLocationEdgeWeights();
-    std::vector<double> recv;
-    if (opensn::mpi_comm.rank() == owner)
-      recv.assign(matrix_size, 0.0);
-    opensn::mpi_comm.gather(local_row, recv, recv_counts, recv_displacements, owner);
-
-    if (opensn::mpi_comm.rank() == owner)
-      spds->SetGlobalEdgeWeights(std::move(recv));
-  }
-}
-
-void
-BuildOwnedAAHSweepFAS(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list)
-{
-  log.Log0Verbose1() << program_timer.GetTimeString() << " Build global sweep FAS for each SPDS.";
-  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
-    if (opensn::mpi_comm.rank() == GetSweepGraphOwner(spds_ordinal))
-      spds_list[spds_ordinal]->BuildGlobalSweepFAS();
+  OpenSnLogicalErrorIf(num_spds == 0, "Cannot assign an owner without AAH sweep graphs.");
+  const auto comm_size = static_cast<size_t>(opensn::mpi_comm.size());
+  if (num_spds <= comm_size)
+    return static_cast<int>((spds_ordinal * comm_size) / num_spds);
+  return static_cast<int>(spds_ordinal % comm_size);
 }
 
 std::vector<int>
-GatherAAHSweepFAS(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list)
+BuildOffsets(const std::vector<int>& counts, const char* error_message)
 {
-  log.Log0Verbose1() << program_timer.GetTimeString() << " Gather FAS for each SPDS.";
-  std::vector<int> local_edges_to_remove;
-  for (size_t spds_ordinal = 0; spds_ordinal < spds_list.size(); ++spds_ordinal)
+  std::vector<int> offsets(counts.size(), 0);
+  for (size_t i = 1; i < counts.size(); ++i)
   {
-    if (opensn::mpi_comm.rank() == GetSweepGraphOwner(spds_ordinal))
+    OpenSnLogicalErrorIf(counts[i - 1] > std::numeric_limits<int>::max() - offsets[i - 1],
+                         error_message);
+    offsets[i] = offsets[i - 1] + counts[i - 1];
+  }
+  OpenSnLogicalErrorIf(counts.back() > std::numeric_limits<int>::max() - offsets.back(),
+                       error_message);
+  return offsets;
+}
+
+void
+GatherAAHGlobalEdgeWeights(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list,
+                           size_t batch_begin,
+                           size_t batch_end)
+{
+  const int comm_size = opensn::mpi_comm.size();
+  const int rank = opensn::mpi_comm.rank();
+  const size_t batch_size = batch_end - batch_begin;
+  const char* const error_message = "AAH sweep graph edge count exceeds the MPI count limit.";
+
+  // The deterministic owner map also gives every rank its batch ownership count.
+  std::vector<int> owner(batch_size);
+  int owned_count = 0;
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+  {
+    owner[local_i] = GetSweepGraphOwner(batch_begin + local_i, spds_list.size());
+    if (owner[local_i] == rank)
+      ++owned_count;
+  }
+
+  // Compute each sparse local edge list once and use it to size the packed buffers.
+  std::vector<std::vector<std::pair<int, double>>> local_edges(batch_size);
+  std::vector<int> send_int_counts(comm_size, 0);
+  std::vector<int> send_double_counts(comm_size, 0);
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+  {
+    auto& edges = local_edges[local_i];
+    edges = spds_list[batch_begin + local_i]->ComputeLocalLocationEdgeWeights();
+    const auto num_edges = edges.size();
+    OpenSnLogicalErrorIf(num_edges > static_cast<size_t>(std::numeric_limits<int>::max()),
+                         "Too many local AAH sweep graph edges.");
+    auto& int_count = send_int_counts[owner[local_i]];
+    OpenSnLogicalErrorIf(static_cast<size_t>(int_count) >
+                           static_cast<size_t>(std::numeric_limits<int>::max()) - (2 + num_edges),
+                         error_message);
+    int_count += static_cast<int>(2 + num_edges);
+    send_double_counts[owner[local_i]] += static_cast<int>(num_edges);
+  }
+
+  const auto send_int_offsets = BuildOffsets(send_int_counts, error_message);
+  const auto send_double_offsets = BuildOffsets(send_double_counts, error_message);
+
+  // Pack each edge list as an integer header and parallel destination/weight arrays.
+  std::vector<int> send_int_buffer(static_cast<size_t>(send_int_offsets.back()) +
+                                   static_cast<size_t>(send_int_counts.back()));
+  std::vector<double> send_double_buffer(static_cast<size_t>(send_double_offsets.back()) +
+                                         static_cast<size_t>(send_double_counts.back()));
+  auto int_cursor = send_int_offsets;
+  auto double_cursor = send_double_offsets;
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+  {
+    auto& edges = local_edges[local_i];
+    auto& ic = int_cursor[owner[local_i]];
+    auto& dc = double_cursor[owner[local_i]];
+    send_int_buffer[ic++] = static_cast<int>(local_i);
+    send_int_buffer[ic++] = static_cast<int>(edges.size());
+    for (const auto& [to_loc, weight] : edges)
     {
-      const auto& edges_to_remove = spds_list[spds_ordinal]->GetGlobalSweepFAS();
-      local_edges_to_remove.push_back(static_cast<int>(spds_ordinal));
-      local_edges_to_remove.push_back(static_cast<int>(edges_to_remove.size()));
-      local_edges_to_remove.insert(
-        local_edges_to_remove.end(), edges_to_remove.begin(), edges_to_remove.end());
+      send_int_buffer[ic++] = to_loc;
+      send_double_buffer[dc++] = weight;
+    }
+    std::vector<std::pair<int, double>>().swap(edges);
+  }
+
+  // Derive integer receive counts from the exchanged edge counts and known record count.
+  std::vector<int> receive_double_counts(comm_size, 0);
+  opensn::mpi_comm.all_to_all(send_double_counts, receive_double_counts);
+  const auto receive_double_offsets = BuildOffsets(receive_double_counts, error_message);
+
+  std::vector<int> receive_int_counts(comm_size);
+  for (int source = 0; source < comm_size; ++source)
+    receive_int_counts[source] = 2 * owned_count + receive_double_counts[source];
+  const auto receive_int_offsets = BuildOffsets(receive_int_counts, error_message);
+
+  std::vector<int> receive_int_buffer;
+  opensn::mpi_comm.all_to_all(send_int_buffer,
+                              send_int_counts,
+                              send_int_offsets,
+                              receive_int_buffer,
+                              receive_int_counts,
+                              receive_int_offsets);
+  std::vector<int>().swap(send_int_buffer);
+
+  std::vector<double> receive_double_buffer;
+  opensn::mpi_comm.all_to_all(send_double_buffer,
+                              send_double_counts,
+                              send_double_offsets,
+                              receive_double_buffer,
+                              receive_double_counts,
+                              receive_double_offsets);
+  std::vector<double>().swap(send_double_buffer);
+
+  // Unpack, per source rank, into per-SPDS edge lists.
+  std::vector<std::vector<AAH_SPDS::GlobalSweepEdge>> global_edges(batch_size);
+  for (int source = 0; source < comm_size; ++source)
+  {
+    auto int_offset = static_cast<size_t>(receive_int_offsets[source]);
+    const size_t int_end = int_offset + static_cast<size_t>(receive_int_counts[source]);
+    auto double_offset = static_cast<size_t>(receive_double_offsets[source]);
+    const size_t double_end = double_offset + static_cast<size_t>(receive_double_counts[source]);
+    while (int_offset < int_end)
+    {
+      OpenSnLogicalErrorIf(int_end - int_offset < 2, "Malformed AAH sweep graph edge record.");
+      const int local_i = receive_int_buffer[int_offset++];
+      const int num_edges = receive_int_buffer[int_offset++];
+      OpenSnLogicalErrorIf(
+        local_i < 0 or std::cmp_greater_equal(local_i, batch_size) or num_edges < 0 or
+          static_cast<size_t>(num_edges) > int_end - int_offset or double_offset > double_end or
+          static_cast<size_t>(num_edges) > double_end - double_offset,
+        "Malformed AAH sweep graph edge record.");
+      auto& edges = global_edges[static_cast<size_t>(local_i)];
+      edges.reserve(edges.size() + static_cast<size_t>(num_edges));
+      for (int k = 0; k < num_edges; ++k)
+        edges.push_back(
+          {source, receive_int_buffer[int_offset++], receive_double_buffer[double_offset++]});
+    }
+    OpenSnLogicalErrorIf(double_offset != double_end, "Malformed AAH sweep graph edge record.");
+  }
+
+  for (size_t local_i = 0; local_i < batch_size; ++local_i)
+    if (owner[local_i] == rank)
+      spds_list[batch_begin + local_i]->SetGlobalEdges(std::move(global_edges[local_i]));
+}
+
+void
+DistributeAAHGlobalSweepMetadata(
+  const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list,
+  size_t batch_begin,
+  size_t batch_end,
+  const std::vector<std::optional<AAH_SPDS::GlobalSweepMetadata>>& metadata)
+{
+  const int comm_size = opensn::mpi_comm.size();
+  std::vector<int> send_counts(comm_size, 0);
+  std::vector<int> send_buffer;
+
+  for (size_t i = batch_begin; i < batch_end; ++i)
+  {
+    const auto& entry = metadata[i - batch_begin];
+    if (not entry.has_value())
+      continue;
+    const auto& graph_metadata = *entry;
+    OpenSnLogicalErrorIf(
+      graph_metadata.location_depths.size() != static_cast<size_t>(comm_size) or
+        graph_metadata.delayed_dependencies.size() != static_cast<size_t>(comm_size) or
+        graph_metadata.delayed_successors.size() != static_cast<size_t>(comm_size),
+      "Invalid AAH sweep graph metadata size.");
+
+    for (int r = 0; r < comm_size; ++r)
+    {
+      const size_t record_size = 4 + graph_metadata.delayed_dependencies[r].size() +
+                                 graph_metadata.delayed_successors[r].size();
+      OpenSnLogicalErrorIf(record_size > static_cast<size_t>(std::numeric_limits<int>::max()) or
+                             static_cast<size_t>(send_counts[r]) >
+                               static_cast<size_t>(std::numeric_limits<int>::max()) - record_size,
+                           "AAH sweep metadata exceeds the MPI count limit.");
+      send_counts[r] += static_cast<int>(record_size);
     }
   }
 
-  int local_size = static_cast<int>(local_edges_to_remove.size());
-  std::vector<int> receive_counts(opensn::mpi_comm.size(), 0);
-  std::vector<int> displacements(opensn::mpi_comm.size(), 0);
-  mpi_comm.all_gather(local_size, receive_counts);
+  const auto send_offsets =
+    BuildOffsets(send_counts, "AAH sweep metadata exceeds the MPI count limit.");
+  send_buffer.resize(static_cast<size_t>(send_offsets.back()) +
+                     static_cast<size_t>(send_counts.back()));
 
-  int total_size = 0;
-  for (size_t i = 0; i < receive_counts.size(); ++i)
+  // Pack only locally owned metadata, preserving one contiguous region per destination.
+  auto cursor = send_offsets;
+  for (size_t i = batch_begin; i < batch_end; ++i)
   {
-    displacements[i] = total_size;
-    total_size += receive_counts[i];
+    const auto& entry = metadata[i - batch_begin];
+    if (not entry.has_value())
+      continue;
+    const auto& graph_metadata = *entry;
+    for (int r = 0; r < comm_size; ++r)
+    {
+      const auto& dependencies = graph_metadata.delayed_dependencies[r];
+      const auto& successors = graph_metadata.delayed_successors[r];
+      auto& c = cursor[r];
+      send_buffer[c++] = static_cast<int>(i - batch_begin);
+      send_buffer[c++] = graph_metadata.location_depths[r];
+      send_buffer[c++] = static_cast<int>(dependencies.size());
+      send_buffer[c++] = static_cast<int>(successors.size());
+      for (const int dep : dependencies)
+        send_buffer[c++] = dep;
+      for (const int succ : successors)
+        send_buffer[c++] = succ;
+    }
   }
 
-  std::vector<int> global_edges_to_remove(total_size, 0);
-  mpi_comm.all_gather(local_edges_to_remove, global_edges_to_remove, receive_counts, displacements);
+  std::vector<int> receive_counts(comm_size, 0);
+  opensn::mpi_comm.all_to_all(send_counts, receive_counts);
 
-  return global_edges_to_remove;
-}
+  const auto receive_offsets =
+    BuildOffsets(receive_counts, "AAH sweep metadata exceeds the MPI count limit.");
+  std::vector<int> receive_buffer;
+  opensn::mpi_comm.all_to_all(
+    send_buffer, send_counts, send_offsets, receive_buffer, receive_counts, receive_offsets);
 
-void
-ApplyAAHSweepFAS(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list,
-                 const std::vector<int>& global_edges_to_remove)
-{
-  size_t offset = 0;
-  while (offset < global_edges_to_remove.size())
+  std::vector<bool> received(batch_end - batch_begin, false);
+  for (int source = 0; source < comm_size; ++source)
   {
-    if (offset + 2 > global_edges_to_remove.size())
-      OpenSnLogicalError("Malformed AAH sweep FAS payload.");
+    size_t offset = receive_offsets[source];
+    const size_t end = offset + receive_counts[source];
+    while (offset < end)
+    {
+      OpenSnLogicalErrorIf(end - offset < 4, "Malformed AAH sweep metadata record.");
+      const int batch_offset = receive_buffer[offset++];
+      const int location_depth = receive_buffer[offset++];
+      const int num_dependencies = receive_buffer[offset++];
+      const int num_successors = receive_buffer[offset++];
+      OpenSnLogicalErrorIf(batch_offset < 0 or
+                             static_cast<size_t>(batch_offset) >= received.size() or
+                             received[batch_offset] or num_dependencies < 0 or num_successors < 0 or
+                             static_cast<size_t>(num_dependencies) > end - offset or
+                             static_cast<size_t>(num_successors) >
+                               end - offset - static_cast<size_t>(num_dependencies),
+                           "Malformed AAH sweep metadata record.");
 
-    const auto spds_ordinal = static_cast<size_t>(global_edges_to_remove[offset++]);
-    const auto num_edges = global_edges_to_remove[offset++];
-    if (num_edges < 0 or offset + static_cast<size_t>(num_edges) > global_edges_to_remove.size())
-      OpenSnLogicalError("Malformed AAH sweep FAS payload.");
-
-    std::vector<int> edges;
-    edges.reserve(num_edges);
-    for (int i = 0; i < num_edges; ++i)
-      edges.emplace_back(global_edges_to_remove[offset++]);
-
-    if (spds_ordinal >= spds_list.size())
-      OpenSnLogicalError("Invalid SPDS ordinal gathered while building AAH sweep graph.");
-    spds_list[spds_ordinal]->SetGlobalSweepFAS(std::move(edges));
+      const auto record_begin =
+        receive_buffer.begin() + static_cast<std::vector<int>::difference_type>(offset);
+      const auto dependency_end = record_begin + num_dependencies;
+      const auto successor_end = dependency_end + num_successors;
+      spds_list[batch_begin + batch_offset]->SetGlobalSweepMetadata(
+        location_depth, {record_begin, dependency_end}, {dependency_end, successor_end});
+      received[batch_offset] = true;
+      offset += static_cast<size_t>(num_dependencies) + num_successors;
+    }
   }
-}
-
-void
-BuildAAHSweepTDGs(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_list)
-{
-  if (spds_list.empty())
-    return;
-  const size_t nthreads = std::min<size_t>(std::max(1U, opensn_num_threads), spds_list.size());
-  log.Log() << program_timer.GetTimeString() << " TDG build: " << spds_list.size() << " angles ("
-            << nthreads << " threads(s)).";
-  ParallelFor(spds_list.size(), nthreads, [&](size_t i) { spds_list[i]->BuildGlobalSweepTDG(); });
-  log.Log() << program_timer.GetTimeString() << " TDG build done.";
+  OpenSnLogicalErrorIf(std::find(received.begin(), received.end(), false) != received.end(),
+                       "Missing AAH sweep metadata record.");
 }
 
 void
@@ -471,14 +693,38 @@ PrintRequestedSweepGraphs(const std::vector<std::shared_ptr<AAH_SPDS>>& spds_lis
 void
 BuildAAHGlobalSweepGraph(SweepRuntime& runtime)
 {
-  // Creating an AAH SPDS can be expensive, so the global graph work is split across MPI ranks:
-  // accumulate graph edge weights, build the feedback arc set on owning ranks, gather the FAS on
-  // all ranks, then build each global sweep task dependency graph locally.
   const auto spds_list = GetAAHSPDSList(runtime);
-  AccumulateAAHGlobalEdgeWeights(spds_list);
-  BuildOwnedAAHSweepFAS(spds_list);
-  ApplyAAHSweepFAS(spds_list, GatherAAHSweepFAS(spds_list));
-  BuildAAHSweepTDGs(spds_list);
+  const auto local_count = spds_list.size();
+  const auto size_max = std::numeric_limits<size_t>::max();
+  const std::array<size_t, 2> local_bounds = {local_count, size_max - local_count};
+  std::array<size_t, 2> global_bounds{};
+  opensn::mpi_comm.all_reduce(local_bounds.data(),
+                              static_cast<int>(local_bounds.size()),
+                              global_bounds.data(),
+                              mpi::op::max<size_t>());
+  OpenSnLogicalErrorIf(global_bounds[0] != size_max - global_bounds[1],
+                       "AAH SPDS count differs across MPI ranks.");
+
+  const auto batch_size = static_cast<size_t>(opensn::mpi_comm.size());
+  for (size_t batch_begin = 0; batch_begin < spds_list.size(); batch_begin += batch_size)
+  {
+    const size_t batch_end = std::min(batch_begin + batch_size, spds_list.size());
+    RunAAHCollectiveSequence([&]
+                             { GatherAAHGlobalEdgeWeights(spds_list, batch_begin, batch_end); });
+
+    std::vector<std::optional<AAH_SPDS::GlobalSweepMetadata>> metadata;
+    RunAAHSetupCollectively(
+      [&]
+      {
+        metadata.resize(batch_end - batch_begin);
+        for (size_t i = batch_begin; i < batch_end; ++i)
+          if (opensn::mpi_comm.rank() == GetSweepGraphOwner(i, spds_list.size()))
+            metadata[i - batch_begin] = spds_list[i]->BuildGlobalSweepMetadata();
+      });
+
+    RunAAHCollectiveSequence(
+      [&] { DistributeAAHGlobalSweepMetadata(spds_list, batch_begin, batch_end, metadata); });
+  }
   PrintRequestedSweepGraphs(spds_list);
 }
 
@@ -493,9 +739,12 @@ BuildAAHCPUFludsCommonData(SweepRuntime& runtime,
     std::shared_ptr<SPDS> spds;
   };
   std::vector<WorkItem> work;
-  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
       work.push_back({quadrature, spds});
+  }
   if (work.empty())
     return;
 
@@ -530,9 +779,12 @@ BuildCBCCPUFludsCommonData(SweepRuntime& runtime,
     std::shared_ptr<SPDS> spds;
   };
   std::vector<WorkItem> work;
-  for (const auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
+  for (const auto& quadrature : runtime.quadrature_order)
+  {
+    const auto& spds_list = runtime.quadrature_spds_map.at(quadrature);
     for (const auto& spds : spds_list)
       work.push_back({quadrature, spds});
+  }
   if (work.empty())
     return;
 
@@ -564,15 +816,23 @@ BuildSweepRuntime(const std::string& problem_name,
 {
   SweepRuntime runtime;
   std::map<std::shared_ptr<AngularQuadrature>, bool> quadrature_allow_cycles_map;
+  std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType> quadrature_aggregation_map;
 
   const auto geometry_type = grid->GetGeometryType();
-  BuildSweepOrderingGroups(
-    runtime, problem_name, groupsets, grid, geometry_type, quadrature_allow_cycles_map);
+  BuildSweepOrderingGroups(runtime,
+                           problem_name,
+                           groupsets,
+                           grid,
+                           geometry_type,
+                           quadrature_allow_cycles_map,
+                           quadrature_aggregation_map);
   const auto face_neighbor_info = BuildSPDSFaceNeighborInfo(*grid);
 
   if (sweep_type == "AAH")
   {
-    BuildAAHSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus);
+    RunAAHSetupCollectively(
+      [&]
+      { BuildAAHSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus); });
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")

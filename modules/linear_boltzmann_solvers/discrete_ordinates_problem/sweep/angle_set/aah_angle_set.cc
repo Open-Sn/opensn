@@ -16,9 +16,15 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            int maximum_message_size,
-                           const MPICommunicatorSet& comm_set)
+                           const SweepCommunicator& sweep_communicator)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
-    async_comm_(*fluds, num_groups_, angle_indices.size(), maximum_message_size, comm_set)
+    async_comm_(*fluds,
+                groupset.id,
+                id,
+                num_groups_,
+                angle_indices.size(),
+                maximum_message_size,
+                sweep_communicator)
 {
 }
 
@@ -39,7 +45,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
   }
 
   // Check upstream data available
-  AngleSetStatus status = async_comm_.ReceiveUpstreamPsi(static_cast<int>(this->GetID()));
+  AngleSetStatus status = async_comm_.ReceiveUpstreamPsi();
 
   // Also check boundaries
   if (not IsDependencyResolved())
@@ -56,7 +62,7 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     sweep_chunk.Sweep(*this); // Execute chunk
 
     // Send outgoing psi and clear local and receive buffers
-    async_comm_.SendDownstreamPsi(static_cast<int>(this->GetID()));
+    async_comm_.SendDownstreamPsi();
     async_comm_.ClearLocalAndReceiveBuffers();
 
     // Update boundary readiness
@@ -107,7 +113,7 @@ AAH_AngleSet::ResetSweepBuffers()
 bool
 AAH_AngleSet::ReceiveDelayedData()
 {
-  return async_comm_.ReceiveDelayedData(static_cast<int>(this->GetID()));
+  return async_comm_.ReceiveDelayedData();
 }
 
 } // namespace opensn

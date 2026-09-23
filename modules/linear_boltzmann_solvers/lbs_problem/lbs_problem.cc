@@ -7,6 +7,7 @@
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mpi/sweep_communicator.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -1216,8 +1217,7 @@ LBSProblem::InitializeParrays()
     grid_nodal_mappings_.push_back(cell_nodal_mapping);
   }
 
-  // Get grid localized communicator set
-  grid_local_comm_set_ = grid_->MakeMPILocalCommunicatorSet();
+  sweep_communicator_ = std::make_shared<SweepCommunicator>(mpi_comm, groupsets_.size());
 
   opensn::mpi_comm.barrier();
   log.Log() << program_timer.GetTimeString() << " Done with parallel arrays." << std::endl;
