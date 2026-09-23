@@ -890,6 +890,7 @@ WrapLBS(py::module& slv)
           - time_function: AngularFluxTimeFunction, optional
               Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
               returns incoming angular flux from group, direction, and time.
+
         Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
         Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
         ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
@@ -948,6 +949,7 @@ WrapLBS(py::module& slv)
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
+
         These options are applied at problem creation.
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
@@ -1058,6 +1060,7 @@ WrapLBS(py::module& slv)
           - time_function: AngularFluxTimeFunction, optional
               Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
               returns incoming angular flux from group, direction, and time.
+
         Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
         Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
         ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
@@ -1400,6 +1403,7 @@ WrapLBS(py::module& slv)
           - time_function: AngularFluxTimeFunction, optional
               Required when ``type='arbitrary'`` unless ``function`` is supplied. Callable that
               returns incoming angular flux from group, direction, and time.
+
         Isotropic boundaries may use ``start_time``/``end_time`` for simple on/off behavior.
         Arbitrary boundaries must specify exactly one of ``function`` or ``time_function``; use
         ``time_function`` for time-dependent arbitrary inflow and handle any active window inside
@@ -1746,12 +1750,10 @@ WrapTransient(py::module& slv)
     R"(
     Register a callback that runs before each advance within :meth:`Execute`.
 
-    Parameters
-    ----------
-    callback : Optional[Callable[[], None]]
-        Function invoked before the solver advances a timestep. Pass None to clear.
-        If the callback modifies the timestep, the new value is used for the
+    :param callback: Function invoked before the solver advances a timestep. Pass None
+        to clear. If the callback modifies the timestep, the new value is used for the
         upcoming step.
+    :type callback: Optional[Callable[[], None]]
     )");
   transient_solver.def(
     "SetPreAdvanceCallback",
@@ -1764,10 +1766,9 @@ WrapTransient(py::module& slv)
     R"(
     Register a callback that runs after each advance within :meth:`Execute`.
 
-    Parameters
-    ----------
-    callback : Optional[Callable[[], None]]
-        Function invoked after the solver advances a timestep. Pass None to clear.
+    :param callback: Function invoked after the solver advances a timestep. Pass None
+        to clear.
+    :type callback: Optional[Callable[[], None]]
     )");
   transient_solver.def(
     "SetPostAdvanceCallback",
@@ -2253,6 +2254,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'identity' : one CMFD coarse cell per transport cell
             - 'local_aggregation' : connected same-block fine cells aggregated locally
             - 'global_aggregation' : connected same-block fine cells aggregated across MPI ranks
+
         ``"local_aggregation"`` is the conservative default. ``"global_aggregation"`` can
         reduce the coarse problem size on larger distributed meshes. Global aggregation is a
         logical CMFD coarse-space construction: it does not repartition the transport mesh or
@@ -2266,6 +2268,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
             - 'net' : match the signed transport current across each coarse face
             - 'partial' : build face coupling from outgoing partial currents on both sides
+
         ``"auto"`` is recommended for production use. A fixed closure is useful when
         comparing methods, reproducing a benchmark setting, or diagnosing a case where
         automatic selection is not robust.
@@ -2351,6 +2354,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'direct' : PETSc preonly+LU
             - 'iterative' : GMRES+Jacobi
             - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
+
         CMFD corrections from unconverged coarse linear solves are always skipped.
         The skipped correction uses the unaccelerated transport update for that power
         iteration, including the raw transport k update so that power iteration can continue

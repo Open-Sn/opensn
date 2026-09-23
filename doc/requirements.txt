@@ -3,5 +3,6 @@ sphinx_design
 sphinx-rtd-theme
 sphinxcontrib-bibtex
 nbsphinx
+ipython
 breathe
 exhale

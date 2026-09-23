@@ -81,7 +81,6 @@ The quickest selection guide is:
 - If you want local angular refinement around selected directions:
   consider an SLDFE square quadrature.
 
-===================
 Product Quadratures
 ===================
 
@@ -160,7 +159,7 @@ Example:
    )
 
 ``GLCProductQuadrature3DXYZ``
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+-----------------------------
 
 For 3D Cartesian ``XYZ`` geometry.
 

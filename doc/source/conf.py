@@ -12,10 +12,13 @@ from pathlib import Path
 project_dir = Path(__file__).resolve().parent.parent.parent
 binary_dir = project_dir / "build"
 
-# Prefer the in-tree package over any stale site-packages install.
+# Prefer the newly built package (build/pyopensn) over the project directory
+# or any site-packages install. Remove-then-insert so the final order is deterministic
+# even when one of these paths is already on sys.path, e.g. via PYTHONPATH.
 for path in (str(project_dir), str(binary_dir)):
-    if path not in sys.path:
-        sys.path.insert(0, path)
+    if path in sys.path:
+        sys.path.remove(path)
+    sys.path.insert(0, path)
 
 import pyopensn  # noqa: E402
 

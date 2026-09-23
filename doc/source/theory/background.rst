@@ -108,7 +108,10 @@ included, the above equation is amended as follows
 where the prompt fission operator is
 
 .. math:: P_p\Psi = \frac{1}{4\pi} \int dE' \int_{4\pi}d\Omega' \, \nu_p\sigma_f(\vec{r},E')p_f(E'\to E,t)\psi(\vec{r},\vec{\Omega}',E',t) \,,
-(often, the dependence of $p_f(E'\to E)$ is assumed to be weak in the incident energy $E'$ and thus $p_f(E'\to E)\approx p_f(E):=\chi_p(E)$, where $\chi_p$ is known as the prompt fission spectrum).
+
+(often, the dependence of :math:`p_f(E'\to E)` is assumed to be weak in the
+incident energy :math:`E'` and thus :math:`p_f(E'\to E)\approx p_f(E):=\chi_p(E)`,
+where :math:`\chi_p` is known as the prompt fission spectrum).
 
 and the delayed neutron operator is
 

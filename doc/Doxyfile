@@ -113,7 +113,7 @@ EXCLUDE                =
 
 EXCLUDE_SYMLINKS       = NO
 EXCLUDE_PATTERNS       = "*.py" "*.cc"
-EXCLUDE_SYMBOLS        =
+EXCLUDE_SYMBOLS        = opensn::detail opensn::detail::* opensn::gpu_kernel opensn::gpu_kernel::*
 EXAMPLE_PATH           =
 EXAMPLE_PATTERNS       =
 EXAMPLE_RECURSIVE      = NO
