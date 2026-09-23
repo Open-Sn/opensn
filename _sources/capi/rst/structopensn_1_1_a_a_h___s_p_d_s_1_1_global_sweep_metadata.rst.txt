@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata:
+
+Struct AAH_SPDS::GlobalSweepMetadata
+====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_a_a_h___s_p_d_s`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAH_SPDS::GlobalSweepMetadata
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

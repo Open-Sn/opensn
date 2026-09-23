@@ -108,14 +108,15 @@
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">AAH_ASynchronousCommunicator</span><span class="p">(</span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
 <span class="w">                               </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span>
 <span class="w">                               </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">,</span>
-<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">);</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">SweepCommunicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_communicator</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxNumMessages</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetMaxNumMessages</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">GetMaxNumMessages</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">SetMaxNumMessages</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">DoneSending</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -136,16 +137,16 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeLocalAndDownstreamBuffers</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Sends downstream psi. This method gets called after a sweep chunk has executed</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SendDownstreamPsi</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SendDownstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Receives delayed data from successor locations.</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReceiveDelayedData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReceiveDelayedData</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Sends downstream psi.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearDownstreamBuffers</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Check if all upstream dependencies have been met and receives it as it becomes available.</span>
-<span class="w">  </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="nf">ReceiveUpstreamPsi</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="nf">ReceiveUpstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Receive all upstream Psi. This method is called from within  an advancement of an angleset,</span>
@@ -172,7 +173,6 @@
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">done_sending_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">data_initialized_</span><span class="p">;</span>

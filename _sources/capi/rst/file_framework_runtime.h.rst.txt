@@ -52,9 +52,9 @@ Included By
 -----------
 
 
-- :ref:`file_framework_mpi_mpi_comm_set.h`
-
 - :ref:`file_framework_mpi_mpi_utils.h`
+
+- :ref:`file_framework_mpi_sweep_communicator.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_iterative_methods_iteration_logging.h`
 

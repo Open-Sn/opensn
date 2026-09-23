@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a5e77193d61f205bc81855ec072c0251b:
+
+Function opensn::CheckMPICall
+=============================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CheckMPICall(int, const char *, const char *, int)
+   :project: opensn

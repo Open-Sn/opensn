@@ -6,6 +6,17 @@ Class AAH_SPDS
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge`
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata`
+
+
 Inheritance Relationships
 -------------------------
 

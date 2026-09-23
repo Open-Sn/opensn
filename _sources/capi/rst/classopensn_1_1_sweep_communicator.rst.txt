@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_sweep_communicator:
+
+Class SweepCommunicator
+=======================
+
+- Defined in :ref:`file_framework_mpi_sweep_communicator.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::SweepCommunicator
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

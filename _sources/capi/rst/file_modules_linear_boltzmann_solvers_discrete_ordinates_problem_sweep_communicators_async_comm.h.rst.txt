@@ -34,7 +34,7 @@ Includes
 
 - ``cstdint``
 
-- ``framework/logging/log.h`` (:ref:`file_framework_logging_log.h`)
+- ``framework/mpi/sweep_communicator.h`` (:ref:`file_framework_mpi_sweep_communicator.h`)
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 

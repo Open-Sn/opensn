@@ -72,8 +72,6 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structopensn_1_1_s_t_d_g`
-
 - :ref:`exhale_struct_structopensn_1_1_task`
 
 
@@ -91,10 +89,6 @@ Enums
 Functions
 ---------
 
-
-- :ref:`exhale_function_namespaceopensn_1ad1113780d966f0fad569a39c2f989224`
-
-- :ref:`exhale_function_namespaceopensn_1a3fce481e799298c868cf51dad203166b`
 
 - :ref:`exhale_function_namespaceopensn_1a7941b868151f9e1906e9b3811922de31`
 

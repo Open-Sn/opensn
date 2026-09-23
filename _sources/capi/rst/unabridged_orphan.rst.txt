@@ -50,6 +50,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_a_a_h_d___bank.rst
 
 .. toctree::
@@ -126,11 +136,6 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_c_b_c___asynchronous_communicator_1_1_buffer_item.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   structopensn_1_1_c_b_c___asynchronous_communicator_1_1_send_peer.rst
 
 .. toctree::
    :maxdepth: 1
@@ -611,11 +616,6 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_split_file_mesh_generator_1_1_split_mesh_info.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   structopensn_1_1_s_t_d_g.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1425,11 +1425,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_m_p_i_communicator_set.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_multi_group_x_s.rst
 
 .. toctree::
@@ -1746,6 +1741,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_sweep_chunk.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_sweep_communicator.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3202,11 +3202,6 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mpi_mpi_comm_set.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
    file_framework_mpi_mpi_utils.h.rst
 
 .. toctree::
@@ -3603,6 +3598,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_mpi_sweep_communicator.h.rst
 
 .. toctree::
    :maxdepth: 1

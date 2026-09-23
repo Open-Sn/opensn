@@ -104,17 +104,18 @@
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">AAHD_ASynchronousCommunicator</span><span class="p">(</span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
 <span class="w">                                </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
 <span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span>
 <span class="w">                                </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">,</span>
-<span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">);</span>
+<span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">SweepCommunicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_communicator</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetMaxNumMessages</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetMaxNumMessages</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">GetMaxNumMessages</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">SetMaxNumMessages</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Pre-post receiving upstream dependencies have been met.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepostReceiveUpstreamPsi</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepostReceiveUpstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TestReceiveUpstreamPsi</span><span class="p">();</span>
 
@@ -122,13 +123,13 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">WaitForUpstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Pre-post receive delayed data from successor locations.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepostReceiveDelayedData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepostReceiveDelayedData</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Wait until all delayed incoming messages have been received.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">WaitForDelayedIncomingPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Send non-local outgoing psi.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SendDownstreamPsi</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">angle_set_num</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SendDownstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Wait until all downstream messages have been sent.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">WaitForDownstreamPsi</span><span class="p">();</span>
@@ -141,7 +142,6 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildMessageStructure</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_num_messages_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">preloc_msg_request_</span><span class="p">;</span>

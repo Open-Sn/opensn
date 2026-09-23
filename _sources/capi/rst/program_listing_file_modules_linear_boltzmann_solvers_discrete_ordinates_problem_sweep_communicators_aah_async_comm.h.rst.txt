@@ -33,14 +33,15 @@ Program Listing for File aah_async_comm.h
    {
    public:
      AAH_ASynchronousCommunicator(FLUDS& fluds,
+                                  std::size_t groupset_id,
+                                  std::size_t angle_set_id,
                                   unsigned int num_groups,
                                   std::size_t num_angles,
                                   int max_mpi_message_size,
-                                  const MPICommunicatorSet& comm_set);
+                                  const SweepCommunicator& sweep_communicator);
    
-     int GetMaxNumMessages() const { return max_num_messages_; }
-   
-     void SetMaxNumMessages(int count) { max_num_messages_ = count; }
+     using AsynchronousCommunicator::GetMaxNumMessages;
+     using AsynchronousCommunicator::SetMaxNumMessages;
    
      bool DoneSending() const;
    
@@ -61,16 +62,16 @@ Program Listing for File aah_async_comm.h
      void InitializeLocalAndDownstreamBuffers();
    
      /// Sends downstream psi. This method gets called after a sweep chunk has executed
-     void SendDownstreamPsi(int angle_set_num);
+     void SendDownstreamPsi();
    
      /// Receives delayed data from successor locations.
-     bool ReceiveDelayedData(int angle_set_num);
+     bool ReceiveDelayedData();
    
      /// Sends downstream psi.
      void ClearDownstreamBuffers();
    
      /// Check if all upstream dependencies have been met and receives it as it becomes available.
-     AngleSetStatus ReceiveUpstreamPsi(int angle_set_num);
+     AngleSetStatus ReceiveUpstreamPsi();
    
      /**
       * Receive all upstream Psi. This method is called from within  an advancement of an angleset,
@@ -97,7 +98,6 @@ Program Listing for File aah_async_comm.h
    private:
      unsigned int num_groups_;
      std::size_t num_angles_;
-     int max_num_messages_;
      int max_mpi_message_size_;
      bool done_sending_;
      bool data_initialized_;

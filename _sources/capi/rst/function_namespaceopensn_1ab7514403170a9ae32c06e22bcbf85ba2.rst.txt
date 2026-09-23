@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab7514403170a9ae32c06e22bcbf85ba2:
+
+Function opensn::ThrowMPIError
+==============================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ThrowMPIError(int, const char *, const char *, int)
+   :project: opensn

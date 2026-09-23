@@ -35,6 +35,7 @@ Program Listing for File sweep_runtime_builder.h
    
    struct SweepRuntime
    {
+     std::vector<std::shared_ptr<AngularQuadrature>> quadrature_order;
      std::map<std::shared_ptr<AngularQuadrature>, SweepOrderGroupingInfo>
        quadrature_unq_so_grouping_map;
      std::map<std::shared_ptr<AngularQuadrature>, std::vector<std::shared_ptr<SPDS>>>

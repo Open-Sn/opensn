@@ -108,13 +108,36 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator24AsynchronousCommunicatorER5FLUDSRK18MPICommunicatorSet">
-<span class="target" id="classopensn_1_1_asynchronous_communicator_1ae3124fdf90b5bd94771b1ddb3589c840"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AsynchronousCommunicator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_m_p_i_communicator_set.html#_CPPv4N6opensn18MPICommunicatorSetE" title="opensn::MPICommunicatorSet"><span class="n"><span class="pre">MPICommunicatorSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">comm_set</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator24AsynchronousCommunicatorER5FLUDSRK18MPICommunicatorSet" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator24AsynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tERK17SweepCommunicator">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1aded9e9763bf120cd1d9c36333b5d27cd"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AsynchronousCommunicator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sweep_communicator.html#_CPPv4N6opensn17SweepCommunicatorE" title="opensn::SweepCommunicator"><span class="n"><span class="pre">SweepCommunicator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sweep_communicator</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator24AsynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tERK17SweepCommunicator" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicatorD0Ev">
 <span class="target" id="classopensn_1_1_asynchronous_communicator_1a7b4c2bb6a974248fe81c4824a64de0d0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~AsynchronousCommunicator</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicatorD0Ev" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24AsynchronousCommunicator17GetMaxNumMessagesEv">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a6f13c9e48e9a94a18bf717c2a9af095d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMaxNumMessages</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24AsynchronousCommunicator17GetMaxNumMessagesEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator17SetMaxNumMessagesEi">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a38e0e9e0974fcca446fae95ba84f3c85"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetMaxNumMessages</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">count</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator17SetMaxNumMessagesEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24AsynchronousCommunicator13GetMessageTagEi">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1aeb9876b4cf3f8584d8dcd192377ed961"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetMessageTag</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24AsynchronousCommunicator13GetMessageTagEi" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24AsynchronousCommunicator15BuildMessageTagENSt6size_tENSt6size_tE">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a3e75d25c752caef9fa8f88200a6d4914"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildMessageTag</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">stride</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">offset</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24AsynchronousCommunicator15BuildMessageTagENSt6size_tENSt6size_tE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>
@@ -126,8 +149,28 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator9comm_set_E">
-<span class="target" id="classopensn_1_1_asynchronous_communicator_1a000b29630369a9cd6807c2507dff54ea"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_m_p_i_communicator_set.html#_CPPv4N6opensn18MPICommunicatorSetE" title="opensn::MPICommunicatorSet"><span class="n"><span class="pre">MPICommunicatorSet</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">comm_set_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator9comm_set_E" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator12groupset_id_E">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1ab254923b24c2f4b53a1a2ba5a591f1f8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator12groupset_id_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator13angle_set_id_E">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1ab8c43331934b6c8c58c17d6ba49af686"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">angle_set_id_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator13angle_set_id_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator19sweep_communicator_E">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a96adb061822e792b09e1917ad72b851f"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sweep_communicator.html#_CPPv4N6opensn17SweepCommunicatorE" title="opensn::SweepCommunicator"><span class="n"><span class="pre">SweepCommunicator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">sweep_communicator_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator19sweep_communicator_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator17max_num_messages_E">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a7733a9a611f0c64ed25958b5c805c061"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_num_messages_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator17max_num_messages_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24AsynchronousCommunicator17message_tag_base_E">
+<span class="target" id="classopensn_1_1_asynchronous_communicator_1a42f462ef9d1e2518c9a13d44c495cac0"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">message_tag_base_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn24AsynchronousCommunicator17message_tag_base_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

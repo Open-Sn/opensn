@@ -87,6 +87,16 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_aah.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-spds-aah-h"><span class="std std-ref">File aah.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge.html#exhale-struct-structopensn-1-1-a-a-h-s-p-d-s-1-1-global-sweep-edge"><span class="std std-ref">Struct AAH_SPDS::GlobalSweepEdge</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata.html#exhale-struct-structopensn-1-1-a-a-h-s-p-d-s-1-1-global-sweep-metadata"><span class="std std-ref">Struct AAH_SPDS::GlobalSweepMetadata</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -134,21 +144,21 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8AAH_SPDS20GetGlobalSweepPlanesEv">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1afa111ebd1d9d1cbabda0402a0b01693f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_s_t_d_g.html#_CPPv4N6opensn4STDGE" title="opensn::STDG"><span class="n"><span class="pre">STDG</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetGlobalSweepPlanes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS20GetGlobalSweepPlanesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Return the levelized global sweep TDG. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8AAH_SPDS16GetLocationDepthEv">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a7ce4117750f8e8aa61709ca6cc420895"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLocationDepth</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS16GetLocationDepthEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return this location’s depth in the global sweep graph for DOG scheduling. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19BuildGlobalSweepFASEv">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a95594228b0eb6c7fd62d8d2e3681ec4c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildGlobalSweepFAS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19BuildGlobalSweepFASEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Builds the Feedback Arc Set (FAS) for the global sweep. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS24BuildGlobalSweepMetadataEv">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1af75edab7079c74363ad75430711e22b3"></span><a class="reference internal" href="#_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadataE" title="opensn::AAH_SPDS::GlobalSweepMetadata"><span class="n"><span class="pre">GlobalSweepMetadata</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildGlobalSweepMetadata</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS24BuildGlobalSweepMetadataEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Builds the global sweep metadata on the graph-owning rank. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19BuildGlobalSweepTDGEv">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a7e83980f5946d59281a69146cfb0c430"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildGlobalSweepTDG</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19BuildGlobalSweepTDGEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Builds the <a class="reference internal" href="structopensn_1_1_task.html#structopensn_1_1_task"><span class="std std-ref">Task</span></a> Dependency <a class="reference internal" href="typedef_namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e.html#namespaceopensn_1a63eff85795c7a492580a1dd1fa09e00e"><span class="std std-ref">Graph</span></a> (TDG) for the global sweep. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS22SetGlobalSweepMetadataEiNSt6vectorIiEENSt6vectorIiEE">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a816cb53f94e4eade0f45a26c7445fe0c"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGlobalSweepMetadata</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">location_depth</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delayed_dependencies</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">delayed_successors</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS22SetGlobalSweepMetadataEiNSt6vectorIiEENSt6vectorIiEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Installs the metadata needed by this rank. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -170,38 +180,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn8AAH_SPDS17GetGlobalSweepFASEv">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a0c7ca95344adb34723d1a22aeab1684f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetGlobalSweepFAS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS17GetGlobalSweepFASEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the global sweep FAS as a vector of edges. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS17SetGlobalSweepFASENSt6vectorIiEE">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1aae824368510f333e5c5e6bcc7195fdfc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGlobalSweepFAS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edges</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS17SetGlobalSweepFASENSt6vectorIiEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets the global sweep FAS. </p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>edges</strong> – A vector of edges representing the FAS. </p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn8AAH_SPDS31ComputeLocalLocationEdgeWeightsEv">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1aa645fd92adb03e0f09d9f1d2f2513b29"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLocalLocationEdgeWeights</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS31ComputeLocalLocationEdgeWeightsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns the locally accumulated location-to-location edge weights for this <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a>. </p>
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a98b5e6e503e2a0170f3769e3102ebf9f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeLocalLocationEdgeWeights</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn8AAH_SPDS31ComputeLocalLocationEdgeWeightsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns non-zero outgoing edge weights as (destination, weight) pairs. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS20SetGlobalEdgeWeightsENSt6vectorIdEE">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a8d7b9c62310649271c1079f6e882c5f7"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGlobalEdgeWeights</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">weights</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS20SetGlobalEdgeWeightsENSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets the global location-to-location edge weights for this <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a>. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS21SetGlobalDependenciesENSt6vectorINSt6vectorIiEEEE">
-<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1aff014c0740f8a8225ee50495c8373561"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGlobalDependencies</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">deps</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS21SetGlobalDependenciesENSt6vectorINSt6vectorIiEEEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets the global location-to-location dependencies (result of BatchCommunicateLocationDeps). </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS14SetGlobalEdgesENSt6vectorI15GlobalSweepEdgeEE">
+<span class="target" id="classopensn_1_1_a_a_h___s_p_d_s_1a5dc57251ce7b14373edcd85102cbe3d4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetGlobalEdges</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdgeE" title="opensn::AAH_SPDS::GlobalSweepEdge"><span class="n"><span class="pre">GlobalSweepEdge</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">edges</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS14SetGlobalEdgesENSt6vectorI15GlobalSweepEdgeEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the sparse global sweep graph edges. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -211,6 +198,52 @@
 </dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdgeE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GlobalSweepEdge</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdgeE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge10dependencyE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge_1aaae7dd40b9769715d149d83a17a3af57"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dependency</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge10dependencyE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge8locationE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge_1a3dc522b9a4f1014cb78ae7c2374cf0cf"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">location</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge8locationE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge6weightE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_edge_1a3d139c7fb83e8a2917afd12e27e8f969"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weight</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS15GlobalSweepEdge6weightE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadataE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GlobalSweepMetadata</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadataE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata15location_depthsE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata_1a054820165e775dfa7e411ee5ed6832da"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">location_depths</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata15location_depthsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata20delayed_dependenciesE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata_1a58ede587245315884a2dc11f9f0f5826"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delayed_dependencies</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata20delayed_dependenciesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata18delayed_successorsE">
+<span class="target" id="structopensn_1_1_a_a_h___s_p_d_s_1_1_global_sweep_metadata_1a79521f3969f80daf5c4e897b826c958f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delayed_successors</span></span></span><a class="headerlink" href="#_CPPv4N6opensn8AAH_SPDS19GlobalSweepMetadata18delayed_successorsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>

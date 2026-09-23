@@ -34,7 +34,7 @@ Includes
 
 - ``cstddef``
 
-- ``framework/mpi/mpi_comm_set.h`` (:ref:`file_framework_mpi_mpi_comm_set.h`)
+- ``framework/mpi/sweep_communicator.h`` (:ref:`file_framework_mpi_sweep_communicator.h`)
 
 - ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 
@@ -75,5 +75,5 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a3266e9b3b3fa81018b9b218563dda4f5`
+- :ref:`exhale_function_namespaceopensn_1ac0b88a92d183270aed1e53f31cdaff1c`
 

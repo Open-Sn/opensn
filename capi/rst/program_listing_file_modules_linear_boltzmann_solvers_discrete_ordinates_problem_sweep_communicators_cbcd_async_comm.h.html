@@ -103,7 +103,7 @@
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">mpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">mpicpp_lite</span><span class="p">;</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">MPICommunicatorSet</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SweepCommunicator</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ByteArray</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">FLUDS</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">CBCD_FLUDS</span><span class="p">;</span>
@@ -112,9 +112,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">CBCD_AsynchronousCommunicator</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBCD_AsynchronousCommunicator</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">CBCD_AsynchronousCommunicator</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id</span><span class="p">,</span>
 <span class="w">                                         </span><span class="n">FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fluds</span><span class="p">,</span>
-<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="n">MPICommunicatorSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm_set</span><span class="p">);</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="n">SweepCommunicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_communicator</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Return writable outgoing face-psi storage for a downwind face.</span>
@@ -146,8 +147,8 @@
 <span class="w">  </span><span class="p">}</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Angle-set MPI message tag.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle_set_id_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Validated angle-set MPI message tag.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">message_tag_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// CBCD FLUDS receiving nonlocal face psi.</span>
 <span class="w">  </span><span class="n">CBCD_FLUDS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cbcd_fluds_</span><span class="p">;</span>
 

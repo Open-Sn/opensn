@@ -1,0 +1,14 @@
+.. _exhale_define_error_8h_1a351a55e3ddf802968c35da695fbd66f4:
+
+Define OpenSnMPICall
+====================
+
+- Defined in :ref:`file_framework_utils_error.h`
+
+
+Define Documentation
+--------------------
+
+
+.. doxygendefine:: OpenSnMPICall
+   :project: opensn

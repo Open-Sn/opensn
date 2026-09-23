@@ -1,8 +1,8 @@
 
-.. _file_framework_mpi_mpi_comm_set.h:
+.. _file_framework_mpi_sweep_communicator.h:
 
-File mpi_comm_set.h
-===================
+File sweep_communicator.h
+=========================
 
 |exhale_lsh| :ref:`Parent directory <dir_framework_mpi>` (``framework/mpi``)
 
@@ -13,14 +13,14 @@ File mpi_comm_set.h
    :local:
    :backlinks: none
 
-Definition (``framework/mpi/mpi_comm_set.h``)
----------------------------------------------
+Definition (``framework/mpi/sweep_communicator.h``)
+---------------------------------------------------
 
 
 .. toctree::
    :maxdepth: 1
 
-   program_listing_file_framework_mpi_mpi_comm_set.h.rst
+   program_listing_file_framework_mpi_sweep_communicator.h.rst
 
 
 
@@ -30,11 +30,17 @@ Includes
 --------
 
 
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+- ``cstddef``
 
 - ``framework/runtime.h`` (:ref:`file_framework_runtime.h`)
 
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
+
+- ``limits``
+
 - ``mpicpp-lite/mpicpp-lite.h``
+
+- ``stdexcept``
 
 
 
@@ -43,6 +49,8 @@ Included By
 
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`
 
 
 
@@ -58,5 +66,5 @@ Classes
 -------
 
 
-- :ref:`exhale_class_classopensn_1_1_m_p_i_communicator_set`
+- :ref:`exhale_class_classopensn_1_1_sweep_communicator`
 
