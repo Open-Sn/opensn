@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include <utility>
 

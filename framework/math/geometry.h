@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include <string_view>
 
 namespace opensn
@@ -18,6 +17,14 @@ enum class GeometryType
   TWOD_CARTESIAN = 4,
   TWOD_CYLINDRICAL = 5,
   THREED_CARTESIAN = 6,
+};
+
+enum CoordinateSystemType : int
+{
+  UNDEFINED = 0,
+  CARTESIAN = 1,
+  CYLINDRICAL = 2,
+  SPHERICAL = 3,
 };
 
 constexpr std::string_view

@@ -59,7 +59,7 @@ PieceWiseLinearBaseMapping::GetVertexLocations(const std::shared_ptr<MeshContinu
   verts.reserve(cell.vertex_ids.size());
 
   for (const auto vid : cell.vertex_ids)
-    verts.push_back(grid->vertices[vid]);
+    verts.push_back(grid->GlobalVertex(vid));
 
   return verts;
 }

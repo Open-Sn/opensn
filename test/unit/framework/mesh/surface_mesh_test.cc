@@ -1,5 +1,4 @@
 #include "framework/mesh/surface_mesh/surface_mesh.h"
-#include "framework/mesh/mesh_face.h"
 #include <gtest/gtest.h>
 #include <filesystem>
 

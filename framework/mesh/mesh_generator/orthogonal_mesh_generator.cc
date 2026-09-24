@@ -638,7 +638,7 @@ OrthogonalMeshGenerator::Execute()
     for (const auto vid : raw_cell->vertex_ids)
       vertices_needed.push_back(vid);
 
-    grid_ptr->cells.PushBack(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
+    grid_ptr->AddGlobalCell(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
   }
 
   SortUnique(vertices_needed);
@@ -657,7 +657,7 @@ OrthogonalMeshGenerator::Execute()
       return std::array<size_t, 3>{xy % nx, xy / nx, static_cast<size_t>(vid % nz)};
     }();
 
-    grid_ptr->vertices.Insert(vid, Vertex(node_sets_, info.dimension, i, j, k));
+    grid_ptr->AddGlobalVertex(vid, Vertex(node_sets_, info.dimension, i, j, k));
   }
 
   grid_ptr->SetDimension(info.dimension);

@@ -49,9 +49,9 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     const size_t num_nodes = cell_mapping.GetNumNodes();
@@ -76,10 +76,10 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
 
     // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = cell->faces.size();
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       if (face.has_neighbor)
         continue;
 
@@ -94,7 +94,7 @@ SimTest03_PWLC(std::shared_ptr<MeshContinuum> grid)
     // Develop node mapping
     std::vector<uint64_t> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = sdm.MapDOF(cell, i);
+      imap[i] = sdm.MapDOF(*cell, i);
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

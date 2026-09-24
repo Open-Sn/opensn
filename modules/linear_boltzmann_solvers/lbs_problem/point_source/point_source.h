@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "framework/mesh/mesh.h"
 #include "framework/math/math.h"
 #include "framework/parameters/input_parameters.h"
 #include <utility>

@@ -61,12 +61,12 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices;
-  unit_cell_matrices.resize(grid->local_cells.size());
+  unit_cell_matrices.resize(grid->GetLocalCellCount());
 
   // Build unit integrals
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
+    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
   }
 
   ScalarSpatialFunction mms_phi = MMS_phi;
@@ -103,9 +103,9 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
   // First get ghosted values
   const auto field_wg = ff->GetGhostedFieldVector();
   double local_error = 0.0;
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -113,7 +113,7 @@ acceleration_Diffusion_DFEM(std::shared_ptr<MeshContinuum> grid)
     std::vector<double> nodal_phi(num_nodes, 0.0);
     for (size_t j = 0; j < num_nodes; ++j)
     {
-      const auto jmap = sdm.MapDOFLocal(cell, j);
+      const auto jmap = sdm.MapDOFLocal(*cell, j);
       nodal_phi[j] = field_wg[jmap];
     } // for j
 

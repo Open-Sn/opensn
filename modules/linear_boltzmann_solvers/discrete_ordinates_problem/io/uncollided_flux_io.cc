@@ -156,32 +156,32 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
       .append(".");
     OpenSnInvalidArgumentIf(uncollided_moment.size() != file_node_offset * num_groups, size_error);
 
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
-      const auto file_cell_it = cell_id_to_file_layout.find(cell.global_id);
+      const auto file_cell_it = cell_id_to_file_layout.find(cell->global_id);
       std::string missing_cell_error = problem_name + ": local cell ";
-      missing_cell_error.append(std::to_string(cell.global_id))
+      missing_cell_error.append(std::to_string(cell->global_id))
         .append(" was not found in \"")
         .append(file_name)
         .append("\".");
       OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(), missing_cell_error);
 
-      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      const auto num_nodes = discretization.GetCellNumNodes(*cell);
       const auto [file_cell_offset, file_num_nodes, file_cell_ordinal] = file_cell_it->second;
       OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
                               problem_name + ": node count mismatch for cell " +
-                                std::to_string(cell.global_id) + ".");
-      const auto& transport_view = transport_views[cell.local_id];
+                                std::to_string(cell->global_id) + ".");
+      const auto& transport_view = transport_views[cell->local_id];
       const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto& vertex = grid->vertices[cell.vertex_ids[i]];
+        const auto& vertex = grid->GlobalVertex(cell->vertex_ids[i]);
         constexpr double coordinate_tolerance = 1.0e-12;
         OpenSnInvalidArgumentIf(
           std::abs(file_nodes_x[file_cell_offset + i] - vertex.x) > coordinate_tolerance or
             std::abs(file_nodes_y[file_cell_offset + i] - vertex.y) > coordinate_tolerance or
             std::abs(file_nodes_z[file_cell_offset + i] - vertex.z) > coordinate_tolerance,
-          problem_name + ": mesh coordinate mismatch for cell " + std::to_string(cell.global_id) +
+          problem_name + ": mesh coordinate mismatch for cell " + std::to_string(cell->global_id) +
             ".");
 
         const auto file_uk_map = (file_cell_offset + i) * num_groups;
@@ -197,7 +197,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
           const auto scale = std::max({1.0, std::abs(file_sigma_t), std::abs(sigma_t[g])});
           OpenSnInvalidArgumentIf(std::abs(file_sigma_t - sigma_t[g]) > 1.0e-12 * scale,
                                   problem_name + ": total cross-section mismatch for cell " +
-                                    std::to_string(cell.global_id) + ", group " +
+                                    std::to_string(cell->global_id) + ", group " +
                                     std::to_string(g) + ".");
         }
     }

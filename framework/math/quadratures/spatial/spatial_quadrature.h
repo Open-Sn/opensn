@@ -4,7 +4,6 @@
 #pragma once
 
 #include "framework/math/quadratures/quadrature_order.h"
-#include "framework/mesh/mesh.h"
 #include "framework/parameters/input_parameters.h"
 #include <vector>
 
