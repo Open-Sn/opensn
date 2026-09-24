@@ -240,11 +240,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_edge.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set.rst
 
 .. toctree::
@@ -256,11 +251,6 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_extrusion_layer.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   structopensn_1_1_face.rst
 
 .. toctree::
    :maxdepth: 1
@@ -500,11 +490,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_poly_face.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_quadrature_point_phi_theta.rst
 
 .. toctree::
@@ -606,6 +591,21 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_sub_set_info.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_mesh_1_1_edge.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_mesh_1_1_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_mesh_1_1_poly_face.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1225,11 +1225,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_global_cell_handler.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_g_l_product_quadrature1_d_slab.rst
 
 .. toctree::
@@ -1341,21 +1336,6 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_line_quadrature.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1_local_cell_handler.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1_local_cell_handler_1_1_const_iterator.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   classopensn_1_1_local_cell_handler_1_1_iterator.rst
 
 .. toctree::
    :maxdepth: 1
@@ -1835,11 +1815,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_vertex_handler.rst
-
-.. toctree::
-   :maxdepth: 1
-
    classopensn_1_1_volume_postprocessor.rst
 
 .. toctree::
@@ -2204,11 +2179,6 @@ Directories
    :maxdepth: 1
 
    dir_framework_mesh.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   dir_framework_mesh_cell.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2712,7 +2682,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_cell_cell.h.rst
+   file_framework_mesh_mesh_continuum_cell.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3122,42 +3092,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_mesh.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
    file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h.rst
 
 .. toctree::
    :maxdepth: 1
 
    file_framework_mesh_mesh_continuum_mesh_continuum.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_mesh_mesh_edge_loops.h.rst
-
-.. toctree::
-   :maxdepth: 1
-
-   file_framework_mesh_mesh_face.h.rst
 
 .. toctree::
    :maxdepth: 1

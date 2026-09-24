@@ -32,9 +32,7 @@ Includes
 
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
-
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
 
 
 

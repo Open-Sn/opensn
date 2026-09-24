@@ -34,8 +34,6 @@ Includes
 
 - ``framework/field_functions/field_function.h`` (:ref:`file_framework_field_functions_field_function.h`)
 
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
-
 - ``functional``
 
 - ``memory`` (:ref:`file_framework_utils_memory.h`)

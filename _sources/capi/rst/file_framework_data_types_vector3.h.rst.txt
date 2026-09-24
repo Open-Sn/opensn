@@ -66,15 +66,9 @@ Included By
 
 - :ref:`file_framework_math_spatial_weight_function.h`
 
-- :ref:`file_framework_mesh_cell_cell.h`
-
 - :ref:`file_framework_mesh_logical_volume_logical_volume.h`
 
-- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`
-
-- :ref:`file_framework_mesh_mesh_edge_loops.h`
-
-- :ref:`file_framework_mesh_mesh_face.h`
+- :ref:`file_framework_mesh_mesh_continuum_cell.h`
 
 - :ref:`file_framework_mesh_raytrace_raytracer.h`
 

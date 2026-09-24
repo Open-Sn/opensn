@@ -32,8 +32,6 @@ Includes
 
 - ``framework/math/math.h`` (:ref:`file_framework_math_math.h`)
 
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
-
 - ``framework/parameters/input_parameters.h`` (:ref:`file_framework_parameters_input_parameters.h`)
 
 - ``limits``

@@ -38,9 +38,9 @@ Includes
 
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
-
 - ``framework/mesh/logical_volume/logical_volume.h`` (:ref:`file_framework_mesh_logical_volume_logical_volume.h`)
+
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
 
 - ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
 

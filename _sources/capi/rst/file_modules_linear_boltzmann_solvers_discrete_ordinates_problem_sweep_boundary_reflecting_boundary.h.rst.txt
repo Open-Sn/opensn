@@ -30,7 +30,9 @@ Includes
 --------
 
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
 
 - ``limits``
 

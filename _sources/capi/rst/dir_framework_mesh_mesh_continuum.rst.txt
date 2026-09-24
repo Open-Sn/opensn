@@ -16,11 +16,9 @@ Directory mesh_continuum
 Files
 -----
 
+- :ref:`file_framework_mesh_mesh_continuum_cell.h`
 - :ref:`file_framework_mesh_mesh_continuum_grid_face_histogram.h`
 - :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
 - :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
-- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_global_cell_handler.h`
-- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_local_cell_handler.h`
-- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum_vertex_handler.h`
 
 

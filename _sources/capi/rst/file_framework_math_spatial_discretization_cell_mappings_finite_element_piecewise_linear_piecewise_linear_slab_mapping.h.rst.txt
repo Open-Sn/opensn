@@ -36,7 +36,7 @@ Includes
 
 - ``framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_finite_element_piecewise_linear_piecewise_linear_base_mapping.h`)
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
 
 
 

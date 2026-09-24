@@ -6,6 +6,18 @@ Class SurfaceMesh
 - Defined in :ref:`file_framework_mesh_surface_mesh_surface_mesh.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_edge`
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_face`
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_poly_face`
+
+
 Class Documentation
 -------------------
 

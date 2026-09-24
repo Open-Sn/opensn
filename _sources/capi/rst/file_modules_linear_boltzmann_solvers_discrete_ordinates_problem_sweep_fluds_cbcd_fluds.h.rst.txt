@@ -36,7 +36,7 @@ Includes
 
 - ``cstdint``
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 

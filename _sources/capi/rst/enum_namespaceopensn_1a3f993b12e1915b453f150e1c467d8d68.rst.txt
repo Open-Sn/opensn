@@ -3,7 +3,7 @@
 Enum CoordinateSystemType
 =========================
 
-- Defined in :ref:`file_framework_mesh_mesh.h`
+- Defined in :ref:`file_framework_math_geometry.h`
 
 
 Enum Documentation

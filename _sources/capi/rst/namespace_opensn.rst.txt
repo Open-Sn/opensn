@@ -121,13 +121,9 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_dummy_stream_1_1_dummy_stream_buffer`
 
-- :ref:`exhale_struct_structopensn_1_1_edge`
-
 - :ref:`exhale_struct_structopensn_1_1_epoch_state`
 
 - :ref:`exhale_struct_structopensn_1_1_extrusion_layer`
-
-- :ref:`exhale_struct_structopensn_1_1_face`
 
 - :ref:`exhale_struct_structopensn_1_1_face_nodal_mapping`
 
@@ -223,8 +219,6 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_point_source_1_1_subscriber`
 
-- :ref:`exhale_struct_structopensn_1_1_poly_face`
-
 - :ref:`exhale_struct_structopensn_1_1_quadrature_point_phi_theta`
 
 - :ref:`exhale_struct_structopensn_1_1_quadrature_view`
@@ -266,6 +260,12 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_split_file_mesh_generator_1_1_split_mesh_info`
 
 - :ref:`exhale_struct_structopensn_1_1_sub_set_info`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_edge`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_face`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_poly_face`
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_runtime`
 
@@ -511,8 +511,6 @@ Classes
 
 - :ref:`exhale_class_classopensn_1_1_g_l_c_triangular_quadrature3_d_x_y_z`
 
-- :ref:`exhale_class_classopensn_1_1_global_cell_handler`
-
 - :ref:`exhale_class_classopensn_1_1_g_l_product_quadrature1_d_slab`
 
 - :ref:`exhale_class_classopensn_1_1_g_l_product_quadrature1_d_spherical`
@@ -558,12 +556,6 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_linear_system_solver`
 
 - :ref:`exhale_class_classopensn_1_1_line_quadrature`
-
-- :ref:`exhale_class_classopensn_1_1_local_cell_handler`
-
-- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_const_iterator`
-
-- :ref:`exhale_class_classopensn_1_1_local_cell_handler_1_1_iterator`
 
 - :ref:`exhale_class_classopensn_1_1_logger`
 
@@ -754,8 +746,6 @@ Classes
 - :ref:`exhale_class_classopensn_1_1_vector_ghost_communicator`
 
 - :ref:`exhale_class_classopensn_1_1_vector_spatial_function`
-
-- :ref:`exhale_class_classopensn_1_1_vertex_handler`
 
 - :ref:`exhale_class_classopensn_1_1_volume_postprocessor`
 

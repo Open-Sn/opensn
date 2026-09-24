@@ -38,9 +38,7 @@ Includes
 
 - ``framework/math/spatial_discretization/spatial_discretization.h`` (:ref:`file_framework_math_spatial_discretization_spatial_discretization.h`)
 
-- ``framework/mesh/cell/cell.h`` (:ref:`file_framework_mesh_cell_cell.h`)
-
-- ``framework/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh.h`)
+- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
 
 
 

@@ -167,6 +167,24 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum12GlobalVertexEK8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1af864f770b1769e8165deecafd987a8b5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GlobalVertex</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum12GlobalVertexEK8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex using global vertex ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum12GlobalVertexEK8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1adf038988ec8abfba911b2d49752a0951"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GlobalVertex</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum12GlobalVertexEK8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Get vertex using global vertex ID. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum15AddGlobalVertexEK8uint64_tRK7Vector3">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a2cecd39a111dca887e868cb206110149"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddGlobalVertex</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">global_id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pos</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum15AddGlobalVertexEK8uint64_tRK7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Add global vertex providing global ID and location in 3D space. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv">
 <span class="target" id="classopensn_1_1_mesh_continuum_1ada60db05b4ed8c635fdd23c698ab24a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPartitions</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum16GetNumPartitionsEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -222,9 +240,66 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum15SetBoundaryNameENSt8uint64_tERKNSt6stringE">
+<span class="target" id="classopensn_1_1_mesh_continuum_1afd01184476d6c30172905da3d4fa1323"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBoundaryName</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum15SetBoundaryNameENSt8uint64_tERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Associate boundary name with a boundary ID. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>id</strong> – Boundary ID </p></li>
+<li><p><strong>name</strong> – Boundary name to associate with <code class="docutils literal notranslate"><span class="pre">id</span></code></p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum23SetOrthogonalBoundariesEv">
 <span class="target" id="classopensn_1_1_mesh_continuum_1ac98f4b85f1944b1ae0efcc75359c720f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetOrthogonalBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum23SetOrthogonalBoundariesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Defines the standard x/y/z min/max boundaries. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum14GhostCellCountEv">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a4a3c1409108304fc3155226f47e70ca5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GhostCellCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum14GhostCellCountEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the the total number of ghost cells. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum13AddGlobalCellENSt10shared_ptrI4CellEE">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a4bdc9b512639351de321596e48578d81"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddGlobalCell</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">new_cell</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum13AddGlobalCellENSt10shared_ptrI4CellEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds a new cell to the appropriate category (local or ghost). </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>new_cell</strong> – The cell to add. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum13GetGlobalCellE8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a4bd5f51451bf58749eb425eaf6142b94"></span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetGlobalCell</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_index</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum13GetGlobalCellE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a reference to a cell given its global cell index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum13GetGlobalCellE8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a0b3f056ba2ed735b38eb6c8fc148c11a"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetGlobalCell</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum13GetGlobalCellE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a const reference to a cell given its global cell index. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum17GetGhostGlobalIDsEv">
+<span class="target" id="classopensn_1_1_mesh_continuum_1aba5054dcb2cf64be3d224cb33590636c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGhostGlobalIDs</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum17GetGhostGlobalIDsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the cell global ids of all ghost cells. </p>
+<p>These are cells that neighbors to this partition’s cells but are on a different partition. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum15GetGhostLocalIDE8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1afb57e0cf2dec0edc7a5385d57c75eed9"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGhostLocalID</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_global_index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum15GetGhostLocalIDE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the local storage address of a ghost cell. </p>
+<p>If the ghost is not truly a ghost then -1 is returned, but is wasteful and therefore the user of this function should implement code to prevent it. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -242,6 +317,31 @@ The function populates face_categories which is a structure containing pairs. Pa
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum17GetLocalCellCountEv">
+<span class="target" id="classopensn_1_1_mesh_continuum_1ad2ee8ddc4465d5cc45f9d549b9f80645"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLocalCellCount</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum17GetLocalCellCountEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum12GetLocalCellE8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a657b43fad6f39778e425a39ac91437d8"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetLocalCell</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum12GetLocalCellE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum12GetLocalCellE8uint64_t">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a2fa7879a87a0bb6dd28bedf8114ce587"></span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetLocalCell</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum12GetLocalCellE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum13GetLocalCellsEv">
+<span class="target" id="classopensn_1_1_mesh_continuum_1a1dcb439dc5bb287173c1576749f811b3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetLocalCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum13GetLocalCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum13GetLocalCellsEv">
+<span class="target" id="classopensn_1_1_mesh_continuum_1af1a5be74404f5fa965421e7cfc8d30e7"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetLocalCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum13GetLocalCellsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn13MeshContinuum11IsCellLocalE8uint64_t">
@@ -344,24 +444,6 @@ The function populates face_categories which is a structure containing pairs. Pa
 <span class="target" id="classopensn_1_1_mesh_continuum_1afd24d38335ceaf43ff3e055a1b1aeae3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeVolumePerBlockID</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13MeshContinuum23ComputeVolumePerBlockIDEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Compute volume per block IDs. </p>
 </dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum8verticesE">
-<span class="target" id="classopensn_1_1_mesh_continuum_1aa92c091ffedf596c9f14d6f016d55933"></span><a class="reference internal" href="classopensn_1_1_vertex_handler.html#_CPPv4N6opensn13VertexHandlerE" title="opensn::VertexHandler"><span class="n"><span class="pre">VertexHandler</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">vertices</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum8verticesE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum11local_cellsE">
-<span class="target" id="classopensn_1_1_mesh_continuum_1a5a927feea7478d807c674ca90206f94b"></span><a class="reference internal" href="classopensn_1_1_local_cell_handler.html#_CPPv4N6opensn16LocalCellHandlerE" title="opensn::LocalCellHandler"><span class="n"><span class="pre">LocalCellHandler</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">local_cells</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum11local_cellsE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshContinuum5cellsE">
-<span class="target" id="classopensn_1_1_mesh_continuum_1a11abc51dd098015541db3ba6973a55f9"></span><a class="reference internal" href="classopensn_1_1_global_cell_handler.html#_CPPv4N6opensn17GlobalCellHandlerE" title="opensn::GlobalCellHandler"><span class="n"><span class="pre">GlobalCellHandler</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cells</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13MeshContinuum5cellsE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">

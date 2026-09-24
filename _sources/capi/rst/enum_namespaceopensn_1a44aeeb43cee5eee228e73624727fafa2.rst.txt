@@ -3,7 +3,7 @@
 Enum CellType
 =============
 
-- Defined in :ref:`file_framework_mesh_cell_cell.h`
+- Defined in :ref:`file_framework_mesh_mesh_continuum_cell.h`
 
 
 Enum Documentation

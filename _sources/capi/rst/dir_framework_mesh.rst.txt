@@ -15,7 +15,6 @@ Directory mesh
 Subdirectories
 --------------
 
-- :ref:`dir_framework_mesh_cell`
 - :ref:`dir_framework_mesh_io`
 - :ref:`dir_framework_mesh_logical_volume`
 - :ref:`dir_framework_mesh_mesh_continuum`
@@ -25,12 +24,5 @@ Subdirectories
 - :ref:`dir_framework_mesh_surface_mesh`
 - :ref:`dir_framework_mesh_unpartitioned_mesh`
 
-
-Files
------
-
-- :ref:`file_framework_mesh_mesh.h`
-- :ref:`file_framework_mesh_mesh_edge_loops.h`
-- :ref:`file_framework_mesh_mesh_face.h`
 
 

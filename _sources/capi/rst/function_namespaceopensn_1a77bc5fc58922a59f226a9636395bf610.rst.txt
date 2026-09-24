@@ -3,7 +3,7 @@
 Function opensn::ToString(MeshType)
 ===================================
 
-- Defined in :ref:`file_framework_mesh_mesh.h`
+- Defined in :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
 
 
 Function Documentation

@@ -15,7 +15,6 @@ Program Listing for File point_source.h
    
    #pragma once
    
-   #include "framework/mesh/mesh.h"
    #include "framework/math/math.h"
    #include "framework/parameters/input_parameters.h"
    #include <utility>

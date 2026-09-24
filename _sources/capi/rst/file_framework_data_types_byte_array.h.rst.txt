@@ -46,7 +46,7 @@ Included By
 -----------
 
 
-- :ref:`file_framework_mesh_cell_cell.h`
+- :ref:`file_framework_mesh_mesh_continuum_cell.h`
 
 - :ref:`file_framework_utils_utils.h`
 

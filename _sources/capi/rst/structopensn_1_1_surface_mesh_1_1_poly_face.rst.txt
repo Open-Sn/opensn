@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_surface_mesh_1_1_poly_face:
+
+Struct SurfaceMesh::PolyFace
+============================
+
+- Defined in :ref:`file_framework_mesh_surface_mesh_surface_mesh.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_surface_mesh`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SurfaceMesh::PolyFace
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

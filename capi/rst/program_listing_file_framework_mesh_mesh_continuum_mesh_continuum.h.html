@@ -90,14 +90,13 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/cell.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/ndarray.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_local_cell_handler.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_global_cell_handler.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh_continuum/mesh_continuum_vertex_handler.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -105,9 +104,66 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshGenerator</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LogicalVolume</span><span class="p">;</span>
 
+<span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span>
+<span class="nf">ToString</span><span class="p">(</span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CoordinateSystemType</span><span class="o">::</span><span class="no">UNDEFINED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;UNDEFINED&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CoordinateSystemType</span><span class="o">::</span><span class="no">CARTESIAN</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;CARTESIAN&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CoordinateSystemType</span><span class="o">::</span><span class="no">CYLINDRICAL</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;CYLINDRICAL&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">CoordinateSystemType</span><span class="o">::</span><span class="no">SPHERICAL</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;SPHERICAL&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;UNKNOWN&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="nc">MeshType</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">int</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">ORTHOGONAL</span><span class="p">,</span>
+<span class="w">  </span><span class="n">UNSTRUCTURED</span>
+<span class="p">};</span>
+
+<span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string_view</span>
+<span class="nf">ToString</span><span class="p">(</span><span class="n">MeshType</span><span class="w"> </span><span class="n">type</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">switch</span><span class="w"> </span><span class="p">(</span><span class="n">type</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">ORTHOGONAL</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;UNDEFINED&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">case</span><span class="w"> </span><span class="no">UNSTRUCTURED</span><span class="p">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;CARTESIAN&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="k">default</span><span class="o">:</span>
+<span class="w">      </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;UNKNOWN&quot;</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="nc">BoundaryID</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">int</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">XMIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">XMAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">YMIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">YMAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ZMIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ZMAX</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span>
+<span class="p">};</span>
+
+<span class="k">struct</span><span class="w"> </span><span class="nc">OrthoMeshAttributes</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">Nx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">Ny</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">Nz</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
 <span class="c1">/// Encapsulates all the necessary information required to fully define a computational domain.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span>
 <span class="p">{</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">GlobalVertexIDMap</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&gt;</span><span class="p">;</span>
+
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="n">MeshContinuum</span><span class="p">();</span>
 
@@ -131,6 +187,22 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetGlobalVertexCount</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">count</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetGlobalVertexCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get vertex using global vertex ID</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GlobalVertex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_vertex_id_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">global_id</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Get vertex using global vertex ID</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GlobalVertex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">global_vertex_id_map_</span><span class="p">.</span><span class="n">at</span><span class="p">(</span><span class="n">global_id</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Add global vertex providing global ID and location in 3D space</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGlobalVertex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pos</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">global_vertex_id_map_</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">make_pair</span><span class="p">(</span><span class="n">global_id</span><span class="p">,</span><span class="w"> </span><span class="n">pos</span><span class="p">));</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumPartitions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_partitions_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetGlobalNumberOfCells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -155,8 +227,44 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">MakeBoundaryID</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">boundary_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Associate boundary name with a boundary ID</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param id Boundary ID</span>
+<span class="cm">   * \param name Boundary name to associate with ``id``</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryName</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Defines the standard x/y/z min/max boundaries.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOrthogonalBoundaries</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Returns the the total number of ghost cells</span>
+<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GhostCellCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">global_cell_id_to_nonlocal_id_map_</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds a new cell to the appropriate category (local or ghost).</span>
+<span class="cm">   * @param new_cell The cell to add.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGlobalCell</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;</span><span class="w"> </span><span class="n">new_cell</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns a reference to a cell given its global cell index.</span>
+<span class="w">  </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetGlobalCell</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_index</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Returns a const reference to a cell given its global cell index.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetGlobalCell</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the cell global ids of all ghost cells. These are cells that neighbors to this</span>
+<span class="cm">   * partition&#39;s cells but are on a different partition.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGhostGlobalIDs</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the local storage address of a ghost cell. If the ghost is not truly a ghost then -1 is</span>
+<span class="cm">   * returned, but is wasteful and therefore the user of this function should implement code to</span>
+<span class="cm">   * prevent it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetGhostLocalID</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">cell_global_index</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Populates a face histogram.</span>
@@ -175,6 +283,14 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">GridFaceHistogram</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MakeGridFaceHistogram</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">master_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">100.0</span><span class="p">,</span>
 <span class="w">                                                           </span><span class="kt">double</span><span class="w"> </span><span class="n">slave_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.1</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetLocalCellCount</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetLocalCell</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetLocalCell</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">id</span><span class="p">);</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalCells</span><span class="p">();</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetLocalCells</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns whether the cell with the given global id is locally owned.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsCellLocal</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">noexcept</span>
@@ -240,10 +356,6 @@
 <span class="w">  </span><span class="c1">/// Compute volume per block IDs</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeVolumePerBlockID</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">VertexHandler</span><span class="w"> </span><span class="n">vertices</span><span class="p">;</span>
-<span class="w">  </span><span class="n">LocalCellHandler</span><span class="w"> </span><span class="n">local_cells</span><span class="p">;</span>
-<span class="w">  </span><span class="n">GlobalCellHandler</span><span class="w"> </span><span class="n">cells</span><span class="p">;</span>
-
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Spatial dimension</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dim_</span><span class="p">;</span>
@@ -256,12 +368,15 @@
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">global_vertex_count_</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">///</span>
+<span class="w">  </span><span class="n">GlobalVertexIDMap</span><span class="w"> </span><span class="n">global_vertex_id_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Locally owned cells</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">local_cells_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Locally stored ghost cells</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Cell</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">ghost_cells_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_cell_id_to_local_id_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Global to ghost ID map</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_cell_id_to_nonlocal_id_map_</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>

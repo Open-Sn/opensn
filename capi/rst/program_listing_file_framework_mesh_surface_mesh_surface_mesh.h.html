@@ -97,10 +97,6 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
-<span class="k">struct</span><span class="w"> </span><span class="nc">Face</span><span class="p">;</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">PolyFace</span><span class="p">;</span>
-<span class="k">struct</span><span class="w"> </span><span class="nc">Edge</span><span class="p">;</span>
-
 <span class="cm">/**</span>
 <span class="cm"> * Generic surface mesh class.</span>
 <span class="cm"> * This class facilitates many functions within the mesh environment including logically determining</span>
@@ -109,6 +105,69 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SurfaceMesh</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Structure containing edge properties</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Edge</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Indices of the vertices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v_index</span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="w">    </span><span class="c1">/// Indices of faces adjoining it</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="w"> </span><span class="n">f_index</span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="w">    </span><span class="c1">/// Vector vertices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertices</span><span class="p">{};</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Data structure for a triangular face.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Face</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// vertex indices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v_index</span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="w">    </span><span class="c1">/// normal indices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">n_index</span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="w">    </span><span class="c1">/// vertex texture indices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vt_index</span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">};</span>
+<span class="w">    </span><span class="c1">/// edge indices</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">4</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e_index</span><span class="p">{</span>
+<span class="w">      </span><span class="p">{{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">},</span><span class="w"> </span><span class="p">{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">}}};</span>
+
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">geometric_normal</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">assigned_normal</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">face_centroid</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">invalidated</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Data structure for a polygon face.</span>
+<span class="cm">   *</span>
+<span class="cm">   * edges</span>
+<span class="cm">   * An array of 4 integers.</span>
+<span class="cm">   * [0] = Vertex index of edge start.</span>
+<span class="cm">   * [1] = Vertex index of edge end.</span>
+<span class="cm">   * [2] = Index of the face adjoining this edge (not the current face).</span>
+<span class="cm">   *       -1 if not connected to anything,-1*boundary_index if connected</span>
+<span class="cm">   *       to a boundary.</span>
+<span class="cm">   * [3] = Edge number of adjoining face. -1 if not connected</span>
+<span class="cm">   *       to anything. 0 if a boundary.</span>
+<span class="cm">   *</span>
+<span class="cm">   * face_indices</span>
+<span class="cm">   *  [0] = Index of the adjoining cell. -1 if not connected to anything.</span>
+<span class="cm">   *        -1*boundary_index if connected to a boundary.</span>
+<span class="cm">   *  [1] = Face number of adjoining cell. -1 if not connected</span>
+<span class="cm">   *       to anything. 0 if a boundary.</span>
+<span class="cm">   *  [2] = Partition ID of adjacent cell.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">PolyFace</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">v_indices</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">edges</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_indices</span><span class="p">{{</span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">,</span><span class="w"> </span><span class="mi">-1</span><span class="p">}};</span>
+
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">geometric_normal</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">face_centroid</span><span class="p">;</span>
+
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">invalidated</span><span class="p">{</span><span class="nb">false</span><span class="p">};</span>
+<span class="w">  </span><span class="p">};</span>
+
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SurfaceMesh</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetVertices</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertices_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
