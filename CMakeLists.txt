@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.29)
 
-file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" OPENSN_VERSION LIMIT_COUNT 1)
+file(READ "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" OPENSN_VERSION)
+string(STRIP "${OPENSN_VERSION}" OPENSN_VERSION)
 if(NOT OPENSN_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
   message(FATAL_ERROR
     "VERSION.txt must contain a semantic version such as 1.2.3, not '${OPENSN_VERSION}'.")
