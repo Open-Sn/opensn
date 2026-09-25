@@ -27,7 +27,11 @@ import pyopensn  # noqa: E402
 project = "OpenSn"
 copyright = "2023-present, OpenSn team"
 author = "OpenSn team"
-release = pyopensn.__version__
+release = (project_dir / "VERSION.txt").read_text().strip()
+if pyopensn.__version__ != release:
+    raise RuntimeError(
+        f"The pyopensn build is version {pyopensn.__version__}, but VERSION.txt contains {release}"
+    )
 
 # -- General configuration ---------------------------------------------------
 

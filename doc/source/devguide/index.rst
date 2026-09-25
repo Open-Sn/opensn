@@ -5,6 +5,7 @@ Developer's Guide
    :maxdepth: 2
 
    workflow
+   dependency_management
    coding_standard
    doxygen
    py_bindings

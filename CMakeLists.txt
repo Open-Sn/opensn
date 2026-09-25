@@ -1,9 +1,18 @@
 cmake_minimum_required(VERSION 3.29)
 
+file(STRINGS "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt" OPENSN_VERSION LIMIT_COUNT 1)
+if(NOT OPENSN_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
+  message(FATAL_ERROR
+    "VERSION.txt must contain a semantic version such as 1.2.3, not '${OPENSN_VERSION}'.")
+endif()
 project(opensn
-    VERSION 1.0.1
+    VERSION "${OPENSN_VERSION}"
     LANGUAGES C CXX
 )
+
+# Reconfigure when the version changes.
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS
+  "${CMAKE_CURRENT_SOURCE_DIR}/VERSION.txt")
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_EXTENSIONS OFF)
