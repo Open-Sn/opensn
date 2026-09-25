@@ -1614,5 +1614,49 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "gpu_cpu_parity.py",
+    "comment": "Full-vector CPU/GPU parity for AAH and CBC sweeps",
+    "requires_gpu": true,
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_GPU_CPU_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_GPU_CPU_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_GPU_CPU_BALANCE_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_GPU_CPU_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_GPU_CPU_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_GPU_CPU_BALANCE_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      }
+    ]
   }
 ]

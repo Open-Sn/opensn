@@ -129,6 +129,12 @@ if(OPENSN_WITH_HIP AND CMAKE_HIP_PLATFORM STREQUAL "nvidia")
 else()
   set(HIP_ON_NVIDIA OFF)
 endif()
+if(OPENSN_WITH_HIP AND NOT HIP_ON_NVIDIA)
+  message(WARNING "Native AMD HIP builds are not covered by the OpenSn regression CI.")
+endif()
+if(OPENSN_WITH_SYCL)
+  message(WARNING "SYCL builds are not covered by the OpenSn regression CI.")
+endif()
 
 # Python interface
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
