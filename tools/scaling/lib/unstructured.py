@@ -46,8 +46,9 @@ pquad = GLCProductQuadrature3DXYZ(n_polar=n_polar,
                                   n_azimuthal=n_azimuthal,
                                   scattering_order=scattering_order)
 
-# Solver
-for i in range({{outer_repetition}}):
+
+def run_trial():
+    """Run one scaling trial without retaining its solver or problem afterward."""
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=n_g,
@@ -75,3 +76,7 @@ for i in range({{outer_repetition}}):
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
+
+
+for _ in range({{outer_repetition}}):
+    run_trial()
