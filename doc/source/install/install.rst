@@ -173,6 +173,15 @@ To compile the console application:
    cmake ..
    make -j$NPROC
 
+.. note::
+
+   CMake builds also compile the unit-test executable ``test/opensn-unit``,
+   downloading GoogleTest if it is not found on the system. To skip the tests
+   in a production build, configure with ``-DOPENSN_BUILD_TESTING=OFF``. If
+   that option is not set, it follows the standard CMake ``BUILD_TESTING``
+   variable when one is provided. The module build performed by
+   ``pip install .`` always disables the tests.
+
 .. danger::
 
    In the console application, all classes and functions are implicitly imported

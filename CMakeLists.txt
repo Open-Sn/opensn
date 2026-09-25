@@ -139,6 +139,13 @@ endif()
 # Python interface
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
+# Follow the standard BUILD_TESTING setting when one is provided.
+if(DEFINED BUILD_TESTING)
+  set(_opensn_build_testing_default ${BUILD_TESTING})
+else()
+  set(_opensn_build_testing_default ON)
+endif()
+option(OPENSN_BUILD_TESTING "Build OpenSn tests" ${_opensn_build_testing_default})
 if(OPENSN_WITH_PYTHON_MODULE)
   set(OPENSN_WITH_PYTHON ON CACHE BOOL "Python support requested for building module" FORCE)
 endif()
@@ -234,15 +241,18 @@ if(caliper_FOUND)
 endif()
 
 # google test
-find_package(GTest QUIET)
-if(NOT TARGET GTest::gtest_main)
-  message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
-  FetchContent_Declare(
-        googletest
-        GIT_REPOSITORY https://github.com/google/googletest.git
-        GIT_TAG v1.15.2
-    )
-  FetchContent_MakeAvailable(googletest)
+if(OPENSN_BUILD_TESTING AND OPENSN_WITH_PYTHON)
+  find_package(GTest QUIET)
+  if(NOT TARGET GTest::gtest_main)
+    message(STATUS "System GoogleTest not found. Fetching GoogleTest via FetchContent.")
+    set(INSTALL_GTEST OFF CACHE BOOL "" FORCE)
+    FetchContent_Declare(
+          googletest
+          GIT_REPOSITORY https://github.com/google/googletest.git
+          GIT_TAG v1.15.2
+      )
+    FetchContent_MakeAvailable(googletest)
+  endif()
 endif()
 
 # compile options
@@ -455,13 +465,17 @@ endif()
 
 if(OPENSN_WITH_PYTHON)
   add_subdirectory(python)
-  add_subdirectory(test)
+
+  if(OPENSN_BUILD_TESTING)
+    add_subdirectory(test)
+  endif()
 
   if(OPENSN_WITH_PYTHON_MODULE)
     add_subdirectory(pyopensn)
   endif()
 
-  add_custom_target(test
+  if(OPENSN_BUILD_TESTING)
+    add_custom_target(test
       COMMAND
       ${CMAKE_BINARY_DIR}/test/opensn-unit &&
               ${CMAKE_SOURCE_DIR}/test/run_tests
@@ -470,6 +484,7 @@ if(OPENSN_WITH_PYTHON)
               -w3
       WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
+  endif()
 endif()
 
 configure_file(config.h.in config.h)
