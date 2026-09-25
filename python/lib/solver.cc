@@ -487,6 +487,97 @@ WrapLBS(py::module& slv)
     py::arg("file_base")
   );
   lbs_problem.def(
+    "WriteSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self,
+       const std::string& file_base,
+       const std::vector<std::string>& boundary_surfaces,
+       const std::map<std::string, std::pair<std::string, double>>& interior_surfaces)
+    {
+      DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
+        self, file_base, boundary_surfaces, interior_surfaces);
+    },
+    R"(
+    Write surface angular flux data to file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    boundary_surfaces: list[str], default=[]
+        Boundary names to export.
+    interior_surfaces: dict[str, tuple[str, float]], default={}
+        Interior surfaces in the form {'name': ('axis', value)}, where axis is 'x', 'y', or 'z'.
+        Each interior surface is written under two tags: '<name>_u' for faces whose outward normal
+        aligns with the positive axis and '<name>_d' for faces with the opposite orientation.
+        An interior surface may not coincide with an exterior boundary; export that boundary by
+        name using boundary_surfaces instead.
+    )",
+    py::arg("file_base"),
+    py::arg("boundary_surfaces") = std::vector<std::string>{},
+    py::arg("interior_surfaces") = std::map<std::string, std::pair<std::string, double>>{}
+  );
+  lbs_problem.def(
+    "ReadSurfaceAngularFluxes",
+    [](DiscreteOrdinatesProblem& self, const std::string& file_base, py::list surfaces)
+    {
+      std::vector<std::string> surface_ids;
+      for (py::handle surface : surfaces)
+        surface_ids.push_back(surface.cast<std::string>());
+
+      const auto surface_fluxes =
+        DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(self, file_base, surface_ids);
+      py::list result;
+      for (const auto& surface_flux : surface_fluxes)
+      {
+        py::dict mapping;
+        mapping["cell_ids"] = surface_flux.mapping.cell_ids;
+        mapping["num_face_nodes"] = surface_flux.mapping.num_face_nodes;
+        mapping["cell_map"] = surface_flux.mapping.cell_map;
+        mapping["cell_stride"] = surface_flux.mapping.cell_stride;
+        mapping["nodes_x"] = surface_flux.mapping.nodes_x;
+        mapping["nodes_y"] = surface_flux.mapping.nodes_y;
+        mapping["nodes_z"] = surface_flux.mapping.nodes_z;
+
+        py::dict data;
+        data["omega"] = surface_flux.data.omega;
+        data["mu"] = surface_flux.data.mu;
+        data["wt_d"] = surface_flux.data.wt_d;
+        data["M_ij"] = surface_flux.data.mass_matrix;
+        data["fe_shape"] = surface_flux.data.fe_shape;
+        data["psi"] = surface_flux.data.psi;
+        data["node_index"] = surface_flux.data.node_index;
+        data["dir_index"] = surface_flux.data.dir_index;
+
+        py::dict entry;
+        entry["groupset_id"] = surface_flux.groupset_id;
+        entry["surface_name"] = surface_flux.surface_name;
+        entry["mapping"] = std::move(mapping);
+        entry["data"] = std::move(data);
+        result.append(std::move(entry));
+      }
+      return result;
+    },
+    R"(
+    Read surface angular fluxes from file.
+
+    Parameters
+    ----------
+    file_base: str
+        File basename.
+    surfaces: list[str]
+        Stored surface tags to read. Use the boundary name for an exterior boundary. For an
+        interior surface named '<name>', use '<name>_u' for faces whose outward normal aligns with
+        the positive axis and '<name>_d' for faces with the opposite orientation.
+
+    Returns
+    -------
+    List[dict]
+        Surface mapping and angular-flux data for each groupset and requested surface.
+    )",
+    py::arg("file_base"),
+    py::arg("surfaces")
+  );
+  lbs_problem.def(
     "SetPointSources",
     [](LBSProblem& self, py::kwargs& params)
     {
