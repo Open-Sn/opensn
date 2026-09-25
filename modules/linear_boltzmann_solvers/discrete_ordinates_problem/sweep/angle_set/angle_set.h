@@ -45,6 +45,10 @@ public:
 
   /// Returns the angle indices associated with this angleset.
   std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() { return boundaries_; }
+  const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& GetBoundaries() const
+  {
+    return boundaries_;
+  }
 
   unsigned int GetNumGroups() const { return num_groups_; }
 
@@ -108,6 +112,17 @@ public:
     return boundary->ZeroFlux(groupset_id_, g);
   }
 
+  virtual double* PsiBoundaryE(uint64_t boundary_id,
+                               unsigned int angle_num,
+                               uint64_t cell_local_id,
+                               unsigned int face_num,
+                               unsigned int fi,
+                               unsigned int g)
+  {
+    return boundaries_[boundary_id]->PsiIncomingE(
+      cell_local_id, face_num, fi, angle_num, groupset_id_, g);
+  }
+
   /// Returns a pointer to outbound reflected flux data.
   double* PsiReflected(uint64_t boundary_id,
                        unsigned int angle_num,
@@ -121,6 +136,16 @@ public:
 
   /// Update the angle index data on the device to match the host.
   virtual void SyncDeviceAngleIndices() {}
+
+  virtual double* PsiReflectedE(uint64_t boundary_id,
+                                unsigned int angle_num,
+                                uint64_t cell_local_id,
+                                unsigned int face_num,
+                                unsigned int fi)
+  {
+    return boundaries_[boundary_id]->PsiOutgoingE(
+      cell_local_id, face_num, fi, angle_num, groupset_id_);
+  }
 
   virtual ~AngleSet() = default;
 

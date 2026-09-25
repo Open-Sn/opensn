@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify uncollided-file compatibility checks."""
+"""Verify uncollided-file compatibility checks, including a later adjoint switch."""
 
 import importlib
 import os
@@ -101,15 +101,26 @@ if __name__ == "__main__":
     except Exception as error:
         xs_mismatch_rejected = "total cross-section mismatch" in str(error)
 
+    # A valid problem with an uncollided file must not be switchable to adjoint mode.
+    adjoint_switch_rejected = False
+    problem = make_collided_problem(grid, xs_reference, 0, moment_file)
+    try:
+        problem.SetAdjoint(True)
+    except Exception as error:
+        adjoint_switch_rejected = "uncollided flux is not supported for adjoint" in str(error)
+
     remove_file(moment_file)
     remove_file(xs_file)
 
     if rank == 0:
         print(f"UncollidedMomentOrderRejected={int(moment_order_rejected)}")
         print(f"UncollidedXSMismatchRejected={int(xs_mismatch_rejected)}")
+        print(f"UncollidedAdjointSwitchRejected={int(adjoint_switch_rejected)}")
         sys.stdout.flush()
 
     if not moment_order_rejected:
         raise RuntimeError("Uncollided file with insufficient moment order was accepted.")
     if not xs_mismatch_rejected:
         raise RuntimeError("Uncollided file with mismatched total cross section was accepted.")
+    if not adjoint_switch_rejected:
+        raise RuntimeError("Adjoint switch on a problem with an uncollided file was accepted.")

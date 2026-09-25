@@ -22,6 +22,7 @@
 #include <petscksp.h>
 #include <chrono>
 #include <functional>
+#include <optional>
 
 namespace opensn
 {
@@ -79,6 +80,12 @@ public:
 
   /// Returns true if the problem is currently in time-dependent mode.
   virtual bool IsTimeDependent() const;
+
+  /**
+   * Throws if the problem cannot be switched to adjoint mode. The base class adds no
+   * restrictions; derived problems override this to reject unsupported features.
+   */
+  virtual void ValidateAdjointModeAllowed() const {}
 
   /// Set the problem to time-dependent mode.
   virtual void SetTimeDependentMode();
@@ -353,6 +360,8 @@ protected:
   void UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
                                   const std::string& xs_name,
                                   double power_normalization_target);
+  virtual std::optional<std::vector<double>>
+  ComputeDerivedFieldFunctionData(const std::string& xs_name) const;
   virtual bool ReadProblemRestartData(hid_t file_id,
                                       bool allow_transient_initialization_from_steady);
   virtual bool WriteProblemRestartData(hid_t file_id) const;

@@ -5,6 +5,8 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <cmath>
+#include <stdexcept>
+#include <string>
 
 namespace opensn
 {
@@ -59,9 +61,27 @@ MultiGroupXS::Combine(
 
     // Define and check number of groups
     if (xsecs.size() == 1)
+    {
       n_grps = xs->GetNumGroups();
+      mgxs.num_groups_ = n_grps;
+    }
     OpenSnLogicalErrorIf(xs->GetNumGroups() != n_grps,
                          "All cross sections being combined must have the same group structure.");
+
+    // Inputs may omit energy bounds, but all supplied bounds must match per group.
+    if (xs->HasEnergyGroupBounds())
+    {
+      if (not mgxs.HasEnergyGroupBounds())
+      {
+        mgxs.e_bounds_ = xs->e_bounds_;
+        mgxs.e_upper_bounds_ = xs->e_upper_bounds_;
+      }
+      else
+        for (unsigned int g = 0; g < n_grps; ++g)
+          OpenSnLogicalErrorIf(
+            xs->GetEnergyGroupBounds(g) != mgxs.GetEnergyGroupBounds(g),
+            "All cross sections being combined must have the same group energy bounds.");
+    }
 
     // Increment number of precursors
     if (xs->IsFissionable())
@@ -86,7 +106,6 @@ MultiGroupXS::Combine(
                            "specify precursors.");
 
   // Initialize the data
-  mgxs.num_groups_ = n_grps;
   mgxs.scattering_order_ = 0;
   mgxs.num_precursors_ = n_precs;
   for (const auto& xs : xsecs)
@@ -97,7 +116,10 @@ MultiGroupXS::Combine(
   mgxs.sigma_a_.assign(n_grps, 0.0);
   std::map<std::string, std::vector<double>> combined_custom_xs;
   mgxs.energy_deposition_.assign(n_grps, 0.0);
+  mgxs.stopping_power_.assign(n_grps, 0.0);
   bool has_energy_deposition = false;
+  bool has_stopping_power = false;
+  mgxs.custom_xs_.clear();
 
   // Init transfer matrices only if at least one exists
   if (std::any_of(xsecs.begin(),
@@ -162,6 +184,11 @@ MultiGroupXS::Combine(
       {
         has_energy_deposition = true;
         mgxs.energy_deposition_[g] += density * xsecs[x]->GetEnergyDeposition()[g];
+      }
+      if (not xsecs[x]->GetStoppingPower().empty())
+      {
+        has_stopping_power = true;
+        mgxs.stopping_power_[g] += density * xsecs[x]->GetStoppingPower()[g];
       }
 
       if (xs->IsFissionable())
@@ -239,6 +266,8 @@ MultiGroupXS::Combine(
   mgxs.custom_xs_ = std::move(combined_custom_xs);
   if (not has_energy_deposition)
     mgxs.energy_deposition_.clear();
+  if (not has_stopping_power)
+    mgxs.stopping_power_.clear();
   mgxs.ComputeDiffusionParameters();
 
   return mgxs;
@@ -257,6 +286,7 @@ MultiGroupXS::Reset()
   sigma_t_.clear();
   sigma_a_.clear();
   energy_deposition_.clear();
+  stopping_power_.clear();
   transfer_matrices_.clear();
   transposed_transfer_matrices_.clear();
 
@@ -270,6 +300,8 @@ MultiGroupXS::Reset()
   precursors_.clear();
 
   inv_velocity_.clear();
+  e_bounds_.clear();
+  e_upper_bounds_.clear();
 
   // Diffusion quantities
   diffusion_initialized_ = false;
@@ -281,6 +313,8 @@ MultiGroupXS::Reset()
 
   base_sigma_t_.clear();
   base_sigma_a_.clear();
+  base_energy_deposition_.clear();
+  base_stopping_power_.clear();
   base_sigma_f_.clear();
   base_nu_sigma_f_.clear();
   base_nu_prompt_sigma_f_.clear();
@@ -315,6 +349,127 @@ MultiGroupXS::GetCustomXSNames() const
   return names;
 }
 
+std::vector<double>
+MultiGroupXS::GetDeltaE() const
+{
+  if (e_bounds_.size() != num_groups_ + 1)
+    throw std::runtime_error("MultiGroupXS: energy bounds not initialized for delta_e");
+
+  std::vector<double> delta_e;
+  delta_e.reserve(num_groups_);
+  for (size_t g = 0; g < num_groups_; ++g)
+  {
+    const auto [upper, lower] = GetEnergyGroupBounds(g);
+    const double de = upper - lower;
+    delta_e.push_back(std::abs(de));
+  }
+  return delta_e;
+}
+
+std::pair<double, double>
+MultiGroupXS::GetEnergyGroupBounds(const unsigned int g) const
+{
+  if (not HasEnergyGroupBounds() or g >= num_groups_)
+    throw std::out_of_range("MultiGroupXS: energy group bounds are unavailable or group index is "
+                            "out of range");
+
+  return {e_upper_bounds_.empty() ? e_bounds_.at(g) : e_upper_bounds_.at(g),
+          e_bounds_.at(static_cast<size_t>(g) + 1)};
+}
+
+std::vector<std::pair<unsigned int, unsigned int>>
+MultiGroupXS::GetStoppingPowerGroupRanges() const
+{
+  std::vector<std::pair<unsigned int, unsigned int>> ranges;
+
+  unsigned int g = 0;
+  while (g < stopping_power_.size())
+  {
+    while (g < stopping_power_.size() and std::abs(stopping_power_[g]) <= STOPPING_POWER_TOLERANCE)
+      ++g;
+    if (g >= stopping_power_.size())
+      break;
+
+    const unsigned int g_begin = g;
+    while (g < stopping_power_.size() and std::abs(stopping_power_[g]) > STOPPING_POWER_TOLERANCE)
+      ++g;
+    ranges.emplace_back(g_begin, g);
+  }
+
+  return ranges;
+}
+
+EnergyGroupStructure
+MultiGroupXS::ResolveEnergyGroupStructure(
+  const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map,
+  const unsigned int num_groups)
+{
+  std::vector<std::pair<double, double>> bounds;
+  for (const auto& [block_id, xs] : xs_map)
+  {
+    const auto context = "Material block " + std::to_string(block_id);
+    if (xs->GetNumGroups() != num_groups)
+      throw std::invalid_argument(context + ": cross sections are incompatible with the configured "
+                                            "number of groups.");
+    if (not xs->HasEnergyGroupBounds())
+      continue;
+
+    const bool first = bounds.empty();
+    for (unsigned int g = 0; g < num_groups; ++g)
+    {
+      const auto group_bounds = xs->GetEnergyGroupBounds(g);
+      const auto [upper, lower] = group_bounds;
+      if (not std::isfinite(upper) or not std::isfinite(lower) or lower < 0.0 or upper <= lower)
+        throw std::invalid_argument(context + ": invalid energy bounds for group " +
+                                    std::to_string(g) + ".");
+      if (first)
+        bounds.push_back(group_bounds);
+      else if (group_bounds != bounds[g])
+        throw std::invalid_argument(context +
+                                    ": all supplied energy group structures must match; "
+                                    "conflicting bounds for group " +
+                                    std::to_string(g) + ".");
+    }
+  }
+  if (bounds.empty())
+    throw std::invalid_argument(
+      "At least one material must provide a complete energy group structure.");
+
+  EnergyGroupStructure structure;
+  structure.centers.reserve(num_groups);
+  structure.widths.reserve(num_groups);
+  for (const auto& [upper, lower] : bounds)
+  {
+    structure.centers.push_back(0.5 * upper + 0.5 * lower);
+    structure.widths.push_back(upper - lower);
+  }
+  return structure;
+}
+
+std::vector<double>
+MultiGroupXS::ComputeCollisionEnergyLossCoefficients(const EnergyGroupStructure& energy) const
+{
+  if (sigma_t_.size() != num_groups_ or energy.centers.size() != num_groups_)
+    throw std::invalid_argument(
+      "Collision energy-loss coefficients require one total cross section and energy-group "
+      "center per group.");
+
+  std::vector<double> coefficients(num_groups_, 0.0);
+  for (unsigned int g = 0; g < num_groups_; ++g)
+    coefficients[g] = energy.centers[g] * sigma_t_[g];
+
+  const auto& transfer_matrices = GetTransferMatrices();
+  if (not transfer_matrices.empty())
+  {
+    const auto& S0 = transfer_matrices.front();
+    for (unsigned int g_to = 0; g_to < num_groups_; ++g_to)
+      for (const auto& [_, g_from, sigma_s] : S0.Row(g_to))
+        coefficients.at(g_from) -= energy.centers[g_to] * sigma_s;
+  }
+
+  return coefficients;
+}
+
 const std::vector<double>*
 MultiGroupXS::GetByName(const std::string& xs_name) const
 {
@@ -322,6 +477,10 @@ MultiGroupXS::GetByName(const std::string& xs_name) const
     return &GetSigmaTotal();
   if (xs_name == "sigma_a")
     return &GetSigmaAbsorption();
+  if (xs_name == "energy_deposition")
+    return GetEnergyDeposition().empty() ? nullptr : &GetEnergyDeposition();
+  if (xs_name == "stopping_power")
+    return GetStoppingPower().empty() ? nullptr : &GetStoppingPower();
   if (xs_name == "sigma_f")
     return GetSigmaFission().empty() ? nullptr : &GetSigmaFission();
   if (xs_name == "nu_sigma_f")
@@ -473,12 +632,16 @@ MultiGroupXS::Scale(const double factor)
   // Apply to 1D data
   sigma_t_ = base_sigma_t_;
   sigma_a_ = base_sigma_a_;
+  energy_deposition_ = base_energy_deposition_;
+  stopping_power_ = base_stopping_power_;
   for (unsigned int g = 0; g < num_groups_; ++g)
   {
     sigma_t_[g] *= scaling_factor_;
     sigma_a_[g] *= scaling_factor_;
     if (not energy_deposition_.empty())
       energy_deposition_[g] *= scaling_factor_;
+    if (not stopping_power_.empty())
+      stopping_power_[g] *= scaling_factor_;
 
     if (is_fissionable_)
     {
@@ -526,6 +689,8 @@ MultiGroupXS::InitializeBaseXS()
 
   base_sigma_t_ = sigma_t_;
   base_sigma_a_ = sigma_a_;
+  base_energy_deposition_ = energy_deposition_;
+  base_stopping_power_ = stopping_power_;
   base_sigma_f_ = sigma_f_;
   base_nu_sigma_f_ = nu_sigma_f_;
   base_nu_prompt_sigma_f_ = nu_prompt_sigma_f_;

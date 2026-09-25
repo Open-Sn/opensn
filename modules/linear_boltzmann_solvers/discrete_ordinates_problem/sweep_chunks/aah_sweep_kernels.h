@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_sweep_chunk.h"
+#include "framework/utils/error.h"
 #include <algorithm>
 
 namespace opensn
@@ -81,7 +82,8 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
 
-    const auto& sigma_t = data.xs.at(cell.block_id)->GetSigmaTotal();
+    const auto& xs = data.xs.at(cell.block_id);
+    const auto& sigma_t = xs->GetSigmaTotal();
 
     std::vector<double> tau_gsg;
     if constexpr (time_dependent)

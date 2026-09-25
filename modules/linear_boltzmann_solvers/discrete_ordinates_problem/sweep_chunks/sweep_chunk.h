@@ -67,7 +67,7 @@ public:
    * Zero the portion of the output flux moments vector corresponding to the groupset for this
    * sweep chunk.
    */
-  void ZeroDestinationPhi();
+  virtual void ZeroDestinationPhi();
 
   /// Sets all elements of the output angular flux vector to zero.
   void ZeroDestinationPsi() { (destination_psi_).assign((destination_psi_).size(), 0.0); }

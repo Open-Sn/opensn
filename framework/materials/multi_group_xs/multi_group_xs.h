@@ -5,13 +5,25 @@
 
 #include "framework/data_types/sparse_matrix/sparse_matrix.h"
 #include <map>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace opensn
 {
 
+/// Shared energy group centers and widths, in the units of the supplied cross sections.
+struct EnergyGroupStructure
+{
+  std::vector<double> centers;
+  std::vector<double> widths;
+};
+
 class MultiGroupXS
 {
 public:
+  static constexpr double STOPPING_POWER_TOLERANCE = 1.0e-12;
+
   MultiGroupXS()
     : num_groups_(0),
       scattering_order_(0),
@@ -73,6 +85,10 @@ public:
   const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
 
   const std::vector<double>& GetEnergyDeposition() const { return energy_deposition_; }
+  const std::vector<double>& GetStoppingPower() const { return stopping_power_; }
+
+  /// Returns contiguous half-open ranges of groups with nonzero stopping power.
+  std::vector<std::pair<unsigned int, unsigned int>> GetStoppingPowerGroupRanges() const;
 
   const std::vector<SparseMatrix>& GetTransferMatrices() const
   {
@@ -118,6 +134,34 @@ public:
   const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }
 
   const std::vector<double>& GetSigmaSGtoG() const { return sigma_s_gtog_; }
+  std::vector<double> GetDeltaE() const;
+
+  /// Returns true when a complete energy group structure is available.
+  bool HasEnergyGroupBounds() const
+  {
+    return e_bounds_.size() == static_cast<size_t>(num_groups_) + 1 and
+           (e_upper_bounds_.empty() or e_upper_bounds_.size() == num_groups_);
+  }
+
+  /**
+   * Returns the upper and lower energy bounds of group g in the imported energy units.
+   * This accounts for the shared maximum energy at CEPXS particle-species transitions.
+   * Throws std::out_of_range if group bounds are unavailable or g is out of range.
+   */
+  std::pair<double, double> GetEnergyGroupBounds(unsigned int g) const;
+
+  /**
+   * Resolves one energy group structure from a collection of material cross sections.
+   * Materials may omit their group structure, but all supplied structures must have
+   * identical per-group bounds. At least one complete structure is required.
+   */
+  static EnergyGroupStructure
+  ResolveEnergyGroupStructure(const std::map<unsigned int, std::shared_ptr<MultiGroupXS>>& xs_map,
+                              unsigned int num_groups);
+
+  /// Computes the per-group collision energy-loss coefficients for this material.
+  std::vector<double>
+  ComputeCollisionEnergyLossCoefficients(const EnergyGroupStructure& energy) const;
 
   bool HasCustomXS(const std::string& name) const;
   const std::vector<double>& GetCustomXS(const std::string& name) const;
@@ -142,12 +186,16 @@ private:
   double temperature_ = 294.0;
   /// Energy bin boundaries in MeV
   std::vector<double> e_bounds_;
+  /// Per-group upper bounds for CEPXS libraries; empty for an ordinary group structure.
+  std::vector<double> e_upper_bounds_;
   /// Total cross section
   std::vector<double> sigma_t_;
   /// Absorption cross section
   std::vector<double> sigma_a_;
   /// Energy deposition cross section
   std::vector<double> energy_deposition_;
+  /// Stopping power used by CSDA charged-particle transport
+  std::vector<double> stopping_power_;
   /// Fission cross section
   std::vector<double> sigma_f_;
   /// Neutron production due to fission
@@ -187,6 +235,8 @@ private:
   bool base_xs_initialized_ = false;
   std::vector<double> base_sigma_t_;
   std::vector<double> base_sigma_a_;
+  std::vector<double> base_energy_deposition_;
+  std::vector<double> base_stopping_power_;
   std::vector<double> base_sigma_f_;
   std::vector<double> base_nu_sigma_f_;
   std::vector<double> base_nu_prompt_sigma_f_;
@@ -209,7 +259,17 @@ public:
   /// Makes a simple material with a 1-group cross-section set.
   static MultiGroupXS CreateSimpleOneGroup(double sigma_t, double c, double velocity = 0.0);
   static MultiGroupXS LoadFromOpenSn(const std::string& filename);
-  static MultiGroupXS LoadFromCEPXS(const std::string& filename, int material_id = 0);
+  /**
+   * Loads multi-group cross sections from a CEPXS-BFP binary file.
+   *
+   * \param filename Path to the CEPXS-BFP binary file.
+   * \param material_id Zero-based index of the material to read from the file.
+   * \param csda_format When true, reads the CSDA row layout produced by the modified CEPXS, which
+   *        adds stopping power and requires physical energy group bounds. When false, reads the
+   *        standard CEPXS row layout and imports no stopping power.
+   */
+  static MultiGroupXS
+  LoadFromCEPXS(const std::string& filename, int material_id = 0, bool csda_format = false);
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
                                      const std::string& dataset_name,

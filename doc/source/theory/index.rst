@@ -13,3 +13,4 @@ Theory Manual
     iterative
     parallelization
     adjoint
+    csda

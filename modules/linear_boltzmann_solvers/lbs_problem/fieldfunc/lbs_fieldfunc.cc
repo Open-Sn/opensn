@@ -2,12 +2,10 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
-
 #include <iomanip>
 #include <memory>
 #include <sstream>
@@ -118,6 +116,10 @@ LBSProblem::UpdateDerivedFieldFunction(FieldFunctionGridBased& ff,
     double local_total_power = 0.0;
     data_vector_local = ComputePowerFieldFunctionData(local_total_power);
   }
+  else if (const auto specialized_data = ComputeDerivedFieldFunctionData(xs_name))
+  {
+    data_vector_local = *specialized_data;
+  }
   else
   {
     data_vector_local = ComputeXSFieldFunctionData(xs_name);
@@ -172,6 +174,12 @@ LBSProblem::ComputeFieldFunctionPowerScaleFactor(const double power_normalizatio
     GetName() + ": Power normalization requested, but global total power is non-positive.");
 
   return power_normalization_target / global_total_power;
+}
+
+std::optional<std::vector<double>>
+LBSProblem::ComputeDerivedFieldFunctionData(const std::string& /*xs_name*/) const
+{
+  return std::nullopt;
 }
 
 std::vector<double>

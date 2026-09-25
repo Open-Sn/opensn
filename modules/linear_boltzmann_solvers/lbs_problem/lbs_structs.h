@@ -74,6 +74,8 @@ struct LBSOptions
 
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule
 
+  bool csda_enabled = false;
+
   std::string field_function_prefix_option = "prefix";
   std::string field_function_prefix; // Default is empty
 
