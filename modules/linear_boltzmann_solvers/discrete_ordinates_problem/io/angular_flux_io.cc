@@ -311,11 +311,11 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   for (const auto& surface : interior_surfs)
   {
     const auto& [axis, slice] = surface.second;
-    for (const auto& cell : grid->local_cells)
+    for (const auto& cell : grid->GetLocalCells())
     {
-      const auto& cell_mapping = discretization.GetCellMapping(cell);
-      for (size_t f = 0; f < cell.faces.size(); ++f)
-        if (not cell.faces[f].has_neighbor and
+      const auto& cell_mapping = discretization.GetCellMapping(*cell);
+      for (size_t f = 0; f < cell->faces.size(); ++f)
+        if (not cell->faces[f].has_neighbor and
             FaceMatchesInteriorSurface(cell_mapping, f, axis, slice))
         {
           coincides_with_boundary = 1;
@@ -413,15 +413,15 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   std::map<std::string, std::vector<double>> x_map, y_map, z_map;
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
 
-  for (const auto& cell : grid->local_cells)
+  for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = discretization.GetCellMapping(cell);
+    const auto& cell_mapping = discretization.GetCellMapping(*cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const auto& fe_values = unit_cell_matrices.at(cell.local_id);
+    const auto& fe_values = unit_cell_matrices.at(cell->local_id);
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell->faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell->faces[f];
       bool is_surface = false;
       std::string surface_name;
 
@@ -459,12 +459,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         continue;
 
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-      SurfaceFaceInfo surface_face{cell.local_id, surface_name, face.normal, {}, {}, {}};
+      SurfaceFaceInfo surface_face{cell->local_id, surface_name, face.normal, {}, {}, {}};
       surface_face.node_indices.reserve(num_face_nodes);
       surface_face.fe_shape.reserve(num_face_nodes);
       surface_face.mass_matrix.reserve(num_face_nodes * num_face_nodes);
 
-      cell_map[surface_name].push_back(cell.global_id);
+      cell_map[surface_name].push_back(cell->global_id);
       node_map[surface_name].push_back(num_face_nodes);
 
       const auto& int_f_shape_i = fe_values.intS_shapeI[f];
@@ -525,7 +525,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
 
     for (const auto& surface_face : surface_faces)
     {
-      const auto& cell = grid->local_cells[surface_face.cell_local_id];
+      const auto& cell = grid->GetLocalCell(surface_face.cell_local_id);
       auto& surface_data = data_map[surface_face.surface_name];
 
       for (size_t fi = 0; fi < surface_face.node_indices.size(); ++fi)
@@ -732,7 +732,7 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& d
         OpenSnLogicalErrorIf(not grid->IsCellLocal(cell_id),
                              "Surface cell " + std::to_string(cell_id) + " for " + surface +
                                " is not local in the current mesh.");
-        const auto& cell = grid->cells[cell_id];
+        const auto& cell = grid->GetGlobalCell(cell_id);
         const auto& cell_mapping = discretization.GetCellMapping(cell);
         bool compatible_face_found = false;
         for (size_t f = 0; f < cell.faces.size() and not compatible_face_found; ++f)
