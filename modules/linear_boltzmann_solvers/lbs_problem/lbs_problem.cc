@@ -89,6 +89,9 @@ LBSProblem::LBSProblem(const InputParameters& params)
     ParseOptions(options_params);
   }
 
+  if (options_.adjoint)
+    ValidateAdjointModeAllowed();
+
   // Set geometry type
   geometry_type_ = grid_->GetGeometryType();
   OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::INVALID,
@@ -567,7 +570,7 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter(
     "save_angular_flux", false, "Flag indicating whether angular fluxes are to be stored or not.");
   params.AddOptionalParameter(
-    "adjoint", false, "Flag for toggling whether the solver is in adjoint mode.");
+    "adjoint", false, "Flag for enabling adjoint mode on Cartesian geometries.");
   params.AddOptionalParameter(
     "verbose_inner_iterations",
     true,
@@ -788,11 +791,22 @@ LBSProblem::InitializeRuntimeCore()
 }
 
 void
+LBSProblem::ValidateAdjointModeAllowed() const
+{
+  OpenSnInvalidArgumentIf(grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN,
+                          GetName() +
+                            ": Adjoint calculations are supported only for Cartesian geometry.");
+}
+
+void
 LBSProblem::ValidateRuntimeModeConfiguration() const
 {
   if (options_.adjoint)
+  {
+    ValidateAdjointModeAllowed();
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+  }
 }
 
 void
@@ -1374,8 +1388,11 @@ void
 LBSProblem::SetAdjoint(bool adjoint)
 {
   if (adjoint)
+  {
+    ValidateAdjointModeAllowed();
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+  }
 
   const bool mode_changed = (adjoint != options_.adjoint);
   if (not mode_changed)

@@ -10,6 +10,9 @@ Top=-6.190966583965322e-15
 Bottom=-5.231802747012948e-16
 Side=97.24938933424164
 Total=97.24938933424164
+The gold side and total leakage, 97.24863206086, is this RZ discretization converged to
+l_abs_tol = 1e-12; it differs from the 3D value by the RZ discretization error. The solve below
+uses l_abs_tol = 1e-8, which reproduces it to about 2e-8, well inside the check tolerance.
 """
 
 import os
@@ -63,8 +66,8 @@ if __name__ == "__main__":
                 "angular_quadrature": quad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
-                "l_max_its": 50,
+                "l_abs_tol": 1.0e-8,
+                "l_max_its": 500,
                 "gmres_restart_interval": 10,
             }
         ],

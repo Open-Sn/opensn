@@ -370,6 +370,10 @@ of the transport problem itself, not just the iterative algorithm.
 It can be set at construction time through options or later with
 ``SetAdjoint(True)``.
 
+Adjoint calculations are supported only for Cartesian geometries. Cylindrical
+and spherical coordinate systems require a dedicated discrete-adjoint treatment
+of their angular-redistribution terms and are rejected.
+
 Because this is a fundamental change in problem interpretation, users should be
 deliberate about when they switch it on.
 
@@ -797,6 +801,8 @@ The problem object also exposes file-based state helpers such as:
 * :py:meth:`ReadFluxMomentsAndMakeSourceMoments`
 * :py:meth:`WriteAngularFluxes`
 * :py:meth:`ReadAngularFluxes`
+* :py:meth:`WriteSurfaceAngularFluxes`
+* :py:meth:`ReadSurfaceAngularFluxes`
 
 These are useful for:
 

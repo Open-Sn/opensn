@@ -121,6 +121,17 @@ public:
 
   const std::map<uint64_t, BoundaryDefinition>& GetBoundaryDefinitions() const;
 
+  /**
+   * Look up the mesh boundary ID for a user-facing boundary name.
+   *
+   * Orthogonal 2D cylindrical (RZ) meshes are addressed as rmin, rmax, zmin, and zmax, which map
+   * to the mesh boundaries xmin, xmax, ymin, and ymax. Other meshes use their boundary names
+   * directly.
+   *
+   * \return The boundary ID, or std::nullopt if the name is not valid for this problem.
+   */
+  std::optional<uint64_t> FindBoundaryID(const std::string& name) const;
+
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 

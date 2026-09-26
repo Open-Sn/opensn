@@ -509,8 +509,18 @@ WrapLBS(py::module& slv)
         Interior surfaces in the form {'name': ('axis', value)}, where axis is 'x', 'y', or 'z'.
         Each interior surface is written under two tags: '<name>_u' for faces whose outward normal
         aligns with the positive axis and '<name>_d' for faces with the opposite orientation.
-        An interior surface may not coincide with an exterior boundary; export that boundary by
-        name using boundary_surfaces instead.
+        An interior surface must match at least one cell face, must lie on cell faces inside the
+        mesh, and may not share a plane with another interior surface. Its generated tags may not
+        equal a requested boundary name. It may not coincide with an exterior boundary; export
+        that boundary by name using boundary_surfaces instead.
+
+    Notes
+    -----
+    Requires ``options.save_angular_flux=True``. Collective over all ranks; surface selections may
+    differ by rank. Each rank writes ``<file_base><rank>.h5``. The file records whether the problem
+    is in adjoint mode. After an adjoint steady-state solve, the stored angular flux is the adjoint
+    flux for the listed direction, so forward and adjoint data with the same indices refer to the
+    same direction.
     )",
     py::arg("file_base"),
     py::arg("boundary_surfaces") = std::vector<std::string>{},
@@ -533,6 +543,8 @@ WrapLBS(py::module& slv)
         mapping["cell_ids"] = surface_flux.mapping.cell_ids;
         mapping["num_face_nodes"] = surface_flux.mapping.num_face_nodes;
         mapping["cell_map"] = surface_flux.mapping.cell_map;
+        mapping["centroid_origin"] = surface_flux.mapping.centroid_origin;
+        mapping["centroid_spacing"] = surface_flux.mapping.centroid_spacing;
         mapping["cell_stride"] = surface_flux.mapping.cell_stride;
         mapping["nodes_x"] = surface_flux.mapping.nodes_x;
         mapping["nodes_y"] = surface_flux.mapping.nodes_y;
@@ -550,6 +562,7 @@ WrapLBS(py::module& slv)
 
         py::dict entry;
         entry["groupset_id"] = surface_flux.groupset_id;
+        entry["adjoint"] = surface_flux.adjoint;
         entry["surface_name"] = surface_flux.surface_name;
         entry["mapping"] = std::move(mapping);
         entry["data"] = std::move(data);
@@ -572,7 +585,18 @@ WrapLBS(py::module& slv)
     Returns
     -------
     List[dict]
-        Surface mapping and angular-flux data for each groupset and requested surface.
+        Surface mapping and angular-flux data for each groupset and requested surface. Each entry
+        has keys 'groupset_id', 'adjoint', 'surface_name', 'mapping', and 'data'. 'adjoint' is
+        True when the file was written from an adjoint problem. The 'cell_map' in 'mapping' maps
+        face centroids, with 'centroid_origin' subtracted before each coordinate is divided by
+        'centroid_spacing' (1e-9 times the global mesh extent) and rounded to an integer, to the
+        surface face index. The same face has the same key from either side of an interior surface
+        and in every file for the same mesh.
+
+    Notes
+    -----
+    Each rank reads ``<file_base><rank>.h5``; the files must have been written with the same mesh
+    partitioning.
     )",
     py::arg("file_base"),
     py::arg("surfaces")
@@ -731,7 +755,8 @@ WrapLBS(py::module& slv)
     Parameters
     ----------
     adjoint: bool, default=True
-        ``True`` enables adjoint mode and ``False`` enables forward mode.
+        ``True`` enables adjoint mode and ``False`` enables forward mode. Adjoint mode is
+        supported only for Cartesian geometries.
 
     Notes
     -----

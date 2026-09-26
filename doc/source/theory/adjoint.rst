@@ -133,3 +133,41 @@ formulation, use quadrature-weighted sums and the corresponding discrete
 flux and source normalization defined above. Nonzero boundary data and
 time-dependent problems introduce additional boundary and initial/final
 terms in the response identity.
+
+Discrete implementation
+-----------------------
+
+OpenSn supports adjoint calculations only for Cartesian geometries. Cylindrical
+and spherical coordinate systems contain angular-redistribution terms whose
+discrete transpose requires a dedicated curvilinear adjoint sweep.
+
+OpenSn does not sweep in reversed directions. In adjoint mode it transposes
+the energy-transfer and fission cross sections and solves the resulting
+problem with the forward sweeps. The computed angular flux for direction
+:math:`\vec{\Omega}_n` is then the adjoint angular flux for
+:math:`-\vec{\Omega}_n`, and each flux moment of degree :math:`\ell` carries a
+factor :math:`(-1)^\ell`. After the solve, the steady-state, power-iteration,
+and nonlinear k-eigenvalue solvers reorient the solution: odd moments change
+sign and each stored angular flux is exchanged with that of the opposite
+direction. Afterward, the stored adjoint angular flux at index :math:`n` is
+:math:`\Psi^\dagger(\vec{\Omega}_n)`, and forward and adjoint quantities with
+the same direction index refer to the same direction.
+
+Quadrature sets for reduced dimensions store one representative per direction
+class, so the opposite direction is taken within that class:
+:math:`(\Omega_x, \Omega_y, -\Omega_z)` for 1D slab quadratures and
+:math:`(-\Omega_x, -\Omega_y, \Omega_z)` for 2D quadratures, which hold only
+:math:`\Omega_z \geq 0`.
+
+A moment source :math:`Q` enters the discrete equations for each direction as
+:math:`Q/W`, where :math:`W=\sum_n w_n` is the quadrature weight sum. Responses
+expressed through angular fluxes therefore carry a factor :math:`W`, for example
+:math:`R = W\sum_n w_n \int \Psi^\dagger_n\, q_n\, dV`, while responses
+expressed through flux moments, such as :math:`\int \phi^\dagger Q\, dV`, do
+not. OpenSn quadratures are normalized so that :math:`W=1`; the response
+evaluator and the cross-section sensitivity postprocessor nevertheless apply
+the factor so that they remain correct for any normalization.
+
+For the supported Cartesian geometries, the transposed-cross-section sweep is
+the exact transpose of the discretized operator, and forward and adjoint
+responses agree to solver tolerance.
