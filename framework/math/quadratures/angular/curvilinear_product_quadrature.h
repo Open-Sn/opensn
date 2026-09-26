@@ -30,6 +30,9 @@ protected:
   {
   }
 
+  /// Scale the weights to sum to one, the normalization used by all OpenSn quadratures.
+  void NormalizeWeights();
+
   /// Factor to account for angular diamond differencing.
   std::vector<double> fac_diamond_difference_;
 

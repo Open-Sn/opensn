@@ -126,42 +126,54 @@ DiscreteOrdinatesProblem::SetBoundaryOptions(const std::vector<InputParameters>&
   }
 }
 
+namespace
+{
+
+bool
+UsesRZBoundaryNames(const MeshContinuum& grid)
+{
+  return grid.GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL and
+         grid.GetType() == MeshType::ORTHOGONAL and grid.GetDimension() == 2;
+}
+
+} // namespace
+
+std::optional<uint64_t>
+DiscreteOrdinatesProblem::FindBoundaryID(const std::string& name) const
+{
+  // RZ meshes are addressed as rmin/rmax/zmin/zmax, which map to xmin/xmax/ymin/ymax.
+  std::string lookup_name = name;
+  if (UsesRZBoundaryNames(*grid_))
+  {
+    static const std::map<std::string, std::string> rz_map = {
+      {"rmin", "xmin"}, {"rmax", "xmax"}, {"zmin", "ymin"}, {"zmax", "ymax"}};
+    const auto rz_it = rz_map.find(name);
+    if (rz_it == rz_map.end())
+      return std::nullopt;
+    lookup_name = rz_it->second;
+  }
+
+  const auto& bnd_name_map = grid_->GetBoundaryNameMap();
+  const auto it = bnd_name_map.find(lookup_name);
+  if (it == bnd_name_map.end())
+    return std::nullopt;
+  return it->second;
+}
+
 void
 DiscreteOrdinatesProblem::UpdateBoundaryDefinition(const InputParameters& params)
 {
   const auto boundary_name = params.GetParamValue<std::string>("name");
-  const auto coord_sys = grid_->GetCoordinateSystem();
-  const auto bnd_name_map = grid_->GetBoundaryNameMap();
-  const auto mesh_type = grid_->GetType();
-
-  // If we're using RZ, the user should use rmin/rmax/zmin/zmax and we'll
-  // map internally to xmin/xmax/ymin/max
-  std::string lookup_name = boundary_name;
-  if (coord_sys == CoordinateSystemType::CYLINDRICAL and mesh_type == MeshType::ORTHOGONAL and
-      grid_->GetDimension() == 2)
+  const auto bid = FindBoundaryID(boundary_name);
+  if (not bid.has_value())
   {
-    if (boundary_name != "rmin" and boundary_name != "rmax" and boundary_name != "zmin" and
-        boundary_name != "zmax")
-    {
+    if (UsesRZBoundaryNames(*grid_))
       throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
                                "' is invalid for cylindrical orthogonal meshes. "
                                "Use rmin, rmax, zmin, zmax.");
-    }
-
-    const std::map<std::string, std::string> rz_map = {
-      {"rmin", "xmin"}, {"rmax", "xmax"}, {"zmin", "ymin"}, {"zmax", "ymax"}};
-    const auto rz_it = rz_map.find(boundary_name);
-    if (rz_it != rz_map.end())
-      lookup_name = rz_it->second;
-  }
-
-  const auto it = bnd_name_map.find(lookup_name);
-  if (it == bnd_name_map.end())
-  {
     throw std::runtime_error("Boundary name \"" + boundary_name + "\" not found in mesh.");
   }
-  const auto bid = it->second;
-  boundary_definitions_[bid] = BoundaryDefinition(params, GetNumGroups());
+  boundary_definitions_[*bid] = BoundaryDefinition(params, GetNumGroups());
 }
 
 void

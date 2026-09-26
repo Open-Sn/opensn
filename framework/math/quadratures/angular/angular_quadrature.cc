@@ -461,4 +461,34 @@ AngularQuadrature::GetMomentToHarmonicsIndexMap() const
   return m_to_ell_em_map_;
 }
 
+std::vector<size_t>
+AngularQuadrature::MapOppositeDirections() const
+{
+  constexpr double tolerance = 1.0e-8;
+  const auto num_angles = omegas_.size();
+  std::vector<size_t> opposite(num_angles);
+  for (size_t n = 0; n < num_angles; ++n)
+  {
+    const auto& omega = omegas_[n];
+    Vector3 omega_opposite = -1.0 * omega;
+    if (dimension_ == 1)
+      omega_opposite = Vector3(omega.x, omega.y, -omega.z);
+    else if (dimension_ == 2)
+      omega_opposite = Vector3(-omega.x, -omega.y, omega.z);
+
+    bool found = false;
+    for (size_t m = 0; m < num_angles and not found; ++m)
+      if ((omegas_[m] - omega_opposite).NormSquare() < tolerance * tolerance)
+      {
+        opposite[n] = m;
+        found = true;
+      }
+
+    if (not found)
+      throw std::logic_error("AngularQuadrature: No opposite direction found for direction " +
+                             std::to_string(n) + " " + omega.PrintStr() + " in " + GetName() + ".");
+  }
+  return opposite;
+}
+
 } // namespace opensn

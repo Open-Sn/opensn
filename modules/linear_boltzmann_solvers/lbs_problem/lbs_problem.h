@@ -92,6 +92,7 @@ public:
    * If the requested mode differs from the current mode, this performs a
    * mode-transition reset. Materials are reinitialized in the selected mode,
    * sources and boundaries are cleared, and solution vectors are zeroed.
+   * Adjoint mode is supported only for Cartesian geometries.
    */
   void SetAdjoint(bool adjoint = true);
 
@@ -417,6 +418,7 @@ protected:
 
 private:
   void InitializeRuntimeCore();
+  void ValidateAdjointModeAllowed() const;
   void ValidateRuntimeModeConfiguration() const;
   void InitializeSources();
   /// Initializes parallel arrays.

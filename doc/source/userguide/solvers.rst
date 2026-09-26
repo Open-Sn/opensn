@@ -406,6 +406,10 @@ In OpenSn, an adjoint solve is still a steady-state transport solve, but the
 problem is placed in adjoint mode so that the transport operator, materials,
 and source interpretation are all treated in the adjoint sense.
 
+Adjoint calculations are supported only for Cartesian geometries. OpenSn
+rejects adjoint mode for cylindrical and spherical coordinate systems because
+their angular-redistribution terms require dedicated discrete-adjoint sweeps.
+
 There are two common ways to enable adjoint mode:
 
 * set ``options={"adjoint": True}`` when constructing the problem, or
@@ -454,7 +458,7 @@ form.
 .. note::
 
    Time-dependent adjoint problems are not supported. Adjoint mode is therefore
-   a steady-state capability in the current solver stack.
+   a steady-state Cartesian capability in the current solver stack.
 
 .. note::
 
@@ -727,6 +731,8 @@ At a high level, the solver:
 4. updates ``k_eff``
 5. repeats until the eigenvalue change satisfies ``k_tol`` or ``max_iters`` is
    reached
+6. reorients the solution if adjoint mode is active (after the final restart
+   dump, so restart data holds the unreoriented iterate)
 
 This solver uses the groupset inner solver and AGS settings configured on the
 problem.
@@ -855,7 +861,8 @@ backtrack or terminate with the appropriate SNES reason.
    behavior or controls. That keeps the initial setup simpler.
 
 As with power iteration, :py:meth:`ComputeBalanceTable` uses
-``1 / k_eff`` scaling on the production term.
+``1 / k_eff`` scaling on the production term, and the solution is reoriented
+after the nonlinear solve when adjoint mode is active.
 
 Initialization Order and Common Patterns
 ========================================

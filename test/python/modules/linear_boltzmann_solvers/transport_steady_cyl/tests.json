@@ -178,19 +178,19 @@
       {
         "type": "KeyValuePair",
         "key": "Side leakage=",
-        "goldvalue": 97.24863271745009,
+        "goldvalue": 97.24863206086,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Total leakage=",
-        "goldvalue": 97.24863271745009,
+        "goldvalue": 97.24863206086,
         "abs_tol": 1e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Leakage/Source=",
-        "goldvalue": 0.7933569432523587,
+        "goldvalue": 0.7933569378956,
         "abs_tol": 1e-06
       }
     ]
@@ -244,6 +244,25 @@
         "key": "PASS",
         "goldvalue": 1,
         "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_isotropic_void.py",
+    "comment": "RZ void with isotropic boundaries: phi equals the boundary angular flux (unit-sum quadrature weights)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MIN=",
+        "goldvalue": 2.5,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX=",
+        "goldvalue": 2.5,
+        "rel_tol": 1e-6
       }
     ]
   }

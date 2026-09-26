@@ -125,32 +125,71 @@
   },
   {
     "file": "response_2d_surf.py",
-    "comment": "2D transport response evaluation test writing surface data",
+    "comment": "2D surface angular-flux export; surface-response identity equals forward and adjoint QoI",
     "num_procs": 2,
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "Forward QoI=",
-        "goldvalue": 4.94381e-04,
-        "abs_tol": 1e-8
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
       },
       {
         "type": "KeyValuePair",
         "key": "Adjoint QoI=",
-        "goldvalue": 4.94381e-04,
-        "abs_tol": 1e-8
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
       },
       {
         "type": "KeyValuePair",
-        "key": "Forward Boundary Flux=",
-        "goldvalue": 6.02053e+01,
-        "abs_tol": 1e-8
+        "key": "Surface QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      }
+    ]
+  },
+  {
+    "file": "response_2d_boundary_source.py",
+    "comment": "2D adjoint response to an isotropic boundary source equals the forward QoI",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 1.10891372e-02,
+        "rel_tol": 1e-6
       },
       {
         "type": "KeyValuePair",
-        "key": "Adjoint Boundary Importance=",
-        "goldvalue": 1.23155e+01,
-        "abs_tol": 1e-8
+        "key": "Adjoint QoI=",
+        "goldvalue": 1.10891372e-02,
+        "rel_tol": 1e-6
+      }
+    ]
+  },
+  {
+    "file": "adjoint_curvilinear_rejected.py",
+    "comment": "Curvilinear problems reject adjoint mode through constructor options and SetAdjoint",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_CURVILINEAR_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "surface_flux_validation.py",
+    "comment": "Surface export rejects boundary/interior tag collisions and planes matching no faces; face keys work on translated fine-scale meshes",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SURFACE_VALIDATION_PASSED=",
+        "goldvalue": 1,
+        "abs_tol": 0
       }
     ]
   },

@@ -342,27 +342,35 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
       const auto num_gs_groups = groupset.GetNumGroups();
       const auto num_gs_angles = quadrature->GetOmegas().size();
 
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
-      {
-        const auto V_i = fe_values.intV_shapeI(i);
-        for (size_t n = 0; n < num_gs_angles; ++n)
+      // The collision term enters the discrete transport equations through the consistent mass
+      // matrix, so the sensitivity is W sum_ij psi^dagger_i M_ij psi_j for each direction and
+      // group. A moment source Q enters each direction as Q / W, where W is the quadrature weight
+      // sum, so angular inner products carry a factor W relative to moment inner products.
+      const double weight_sum = quadrature->GetWeightSum();
+      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      for (uint64_t i = 0; i < num_nodes; ++i)
+        for (uint64_t j = 0; j < num_nodes; ++j)
         {
-          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
-          const auto weight = quadrature->GetWeight(n) * V_i;
-          for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+          const auto M_ij = fe_values.intV_shapeI_shapeJ(i, j);
+          for (size_t n = 0; n < num_gs_angles; ++n)
           {
-            const auto g = groupset.first_group + gsg;
-            const int column = group_to_column[g];
-            if (column < 0)
-              continue;
-            double contribution =
-              -weight * adjoint_psi[gs][dof_map + gsg] * forward_psi[gs][dof_map + gsg];
-            if (relative_)
-              contribution *= sigma_t[g];
-            local[column] += contribution;
+            const auto dof_i = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
+            const auto dof_j = discretization.MapDOFLocal(cell, j, uk_man, n, 0);
+            const auto weight = weight_sum * quadrature->GetWeight(n) * M_ij;
+            for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
+            {
+              const auto g = groupset.first_group + gsg;
+              const int column = group_to_column[g];
+              if (column < 0)
+                continue;
+              double contribution =
+                -weight * adjoint_psi[gs][dof_i + gsg] * forward_psi[gs][dof_j + gsg];
+              if (relative_)
+                contribution *= sigma_t[g];
+              local[column] += contribution;
+            }
           }
         }
-      }
     }
   }
 
@@ -393,7 +401,31 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
     }
   OpenSnLogicalErrorIf(coefficient_groupset == nullptr,
                        "Unable to identify groupset for scattering destination group.");
-  const auto& moment_map = coefficient_groupset->quadrature->GetMomentToHarmonicsIndexMap();
+  const auto& quadrature = *coefficient_groupset->quadrature;
+  const auto& moment_map = quadrature.GetMomentToHarmonicsIndexMap();
+  const auto num_moments = moment_map.size();
+
+  // Perturbing sigma_s,ell adds sum_m M2D(n,m) phi_m to the source in direction n, which the
+  // adjoint weights by W sum_n w_n psi^dagger_n, where W is the quadrature weight sum (see
+  // ComputeTotalSensitivity). In terms of adjoint moments this is sum_k G(m,k) phi^dagger_k. For
+  // the standard operators, D2M(m,n) = w_n Y_m(Omega_n) and M2D(n,m) = (2 ell + 1) / W
+  // Y_m(Omega_n), so G is diagonal with entries 2 ell + 1. For Galerkin operators,
+  // psi^dagger = M2D phi^dagger and G = W M2D^T diag(w) M2D.
+  NDArray<double, 2> moment_coupling({num_moments, num_moments}, 0.0);
+  if (quadrature.GetOperatorConstructionMethod() == OperatorConstructionMethod::STANDARD)
+  {
+    for (size_t m = 0; m < num_moments; ++m)
+      moment_coupling(m, m) = 2.0 * moment_map[m].ell + 1.0;
+  }
+  else
+  {
+    const double weight_sum = quadrature.GetWeightSum();
+    const auto& m2d = quadrature.GetMomentToDiscreteOperator();
+    for (size_t n = 0; n < quadrature.GetNumAngles(); ++n)
+      for (size_t m = 0; m < num_moments; ++m)
+        for (size_t k = 0; k < num_moments; ++k)
+          moment_coupling(m, k) += weight_sum * quadrature.GetWeight(n) * m2d(n, m) * m2d(n, k);
+  }
 
   std::vector<int> ell_to_column(do_problem_->GetNumMoments(), -1);
   for (size_t k = 0; k < scattering_moments_.size(); ++k)
@@ -407,7 +439,7 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
     const auto& transport_view = transport_views[cell.local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
 
-    for (unsigned int m = 0; m < moment_map.size(); ++m)
+    for (unsigned int m = 0; m < num_moments; ++m)
     {
       const auto ell = moment_map[m].ell;
       const int column = ell < ell_to_column.size() ? ell_to_column[ell] : -1;
@@ -423,11 +455,21 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
           relative_coefficient = 0.0;
       }
 
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+      const auto num_nodes = transport_view.GetNumNodes();
+      for (int i = 0; i < num_nodes; ++i)
       {
-        const auto dof_map = transport_view.MapDOF(i, m, 0);
-        local[column] += relative_coefficient * adjoint_phi[dof_map + to_group] *
-                         forward_phi[dof_map + from_group] * fe_values.intV_shapeI(i);
+        double adjoint_moment = 0.0;
+        for (unsigned int k = 0; k < num_moments; ++k)
+          if (moment_coupling(m, k) != 0.0)
+            adjoint_moment +=
+              moment_coupling(m, k) * adjoint_phi[transport_view.MapDOF(i, k, 0) + to_group];
+
+        for (int j = 0; j < num_nodes; ++j)
+        {
+          const auto dof_j = transport_view.MapDOF(j, m, 0);
+          local[column] += relative_coefficient * adjoint_moment *
+                           fe_values.intV_shapeI_shapeJ(i, j) * forward_phi[dof_j + from_group];
+        }
       }
     }
   }
@@ -479,16 +521,21 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
     if (coefficient == 0.0)
       continue;
 
-    for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+    const auto num_nodes = transport_view.GetNumNodes();
+    for (int i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = transport_view.MapDOF(i, 0, 0);
+      const auto dof_i = transport_view.MapDOF(i, 0, 0);
 
       double adjoint_fission_importance = 0.0;
       for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
-        adjoint_fission_importance += chi[g] * adjoint_phi[dof_map + g];
+        adjoint_fission_importance += chi[g] * adjoint_phi[dof_i + g];
 
-      local += coefficient * forward_phi[dof_map + group] * adjoint_fission_importance *
-               fe_values.intV_shapeI(i);
+      for (int j = 0; j < num_nodes; ++j)
+      {
+        const auto dof_j = transport_view.MapDOF(j, 0, 0);
+        local += coefficient * adjoint_fission_importance * fe_values.intV_shapeI_shapeJ(i, j) *
+                 forward_phi[dof_j + group];
+      }
     }
   }
 
@@ -521,20 +568,23 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
                            nu_sigma_f.size() < do_problem_->GetNumGroups(),
                          "Fission XS data does not contain all energy groups.");
 
-    for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+    const auto num_nodes = transport_view.GetNumNodes();
+    std::vector<double> adjoint_fission_importance(num_nodes, 0.0);
+    std::vector<double> forward_fission_production(num_nodes, 0.0);
+    for (int i = 0; i < num_nodes; ++i)
     {
       const auto dof_map = transport_view.MapDOF(i, 0, 0);
-
-      double adjoint_fission_importance = 0.0;
-      double forward_fission_production = 0.0;
       for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
       {
-        adjoint_fission_importance += chi[g] * adjoint_phi[dof_map + g];
-        forward_fission_production += nu_sigma_f[g] * forward_phi[dof_map + g];
+        adjoint_fission_importance[i] += chi[g] * adjoint_phi[dof_map + g];
+        forward_fission_production[i] += nu_sigma_f[g] * forward_phi[dof_map + g];
       }
-
-      local += adjoint_fission_importance * forward_fission_production * fe_values.intV_shapeI(i);
     }
+
+    for (int i = 0; i < num_nodes; ++i)
+      for (int j = 0; j < num_nodes; ++j)
+        local += adjoint_fission_importance[i] * fe_values.intV_shapeI_shapeJ(i, j) *
+                 forward_fission_production[j];
   }
 
   double global = 0.0;
