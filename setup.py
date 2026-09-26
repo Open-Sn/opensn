@@ -119,8 +119,13 @@ class CMakeBuilder(build_ext):
 
 
 if __name__ == "__main__":
+    version = (Path(__file__).parent / "VERSION.txt").read_text().strip()
+    if re.fullmatch(r"[0-9]+(?:\.[0-9]+){2}", version) is None:
+        raise RuntimeError("VERSION.txt must contain a semantic version such as 1.2.3")
+
     setup(
         name="pyopensn",
+        version=version,
         author="The OpenSn Authors",
         description="Python extension for OpenSn",
         packages=["pyopensn"],
