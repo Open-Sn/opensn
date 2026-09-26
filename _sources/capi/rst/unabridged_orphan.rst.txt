@@ -225,6 +225,21 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_distributed_mesh_generator_1_1_distributed_mesh_data.rst
 
 .. toctree::

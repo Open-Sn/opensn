@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map:
+
+Struct DiscreteOrdinatesProblemIO::SurfaceMap
+=============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_discrete_ordinates_problem_i_o`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DiscreteOrdinatesProblemIO::SurfaceMap
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

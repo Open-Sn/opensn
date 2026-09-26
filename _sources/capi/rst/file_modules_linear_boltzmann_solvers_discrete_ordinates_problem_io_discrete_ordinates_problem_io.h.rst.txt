@@ -36,9 +36,15 @@ Includes
 
 - ``hdf5.h``
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
 - ``optional``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``tuple``
+
+- ``utility``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 
@@ -57,6 +63,12 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux`
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data`
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map`
 
 - :ref:`exhale_struct_structopensn_1_1_uncollided_flux_data`
 

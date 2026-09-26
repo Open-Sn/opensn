@@ -6,6 +6,18 @@ Class DiscreteOrdinatesProblemIO
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux`
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data`
+- :ref:`exhale_struct_structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map`
+
+
 Class Documentation
 -------------------
 

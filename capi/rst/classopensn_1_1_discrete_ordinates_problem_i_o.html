@@ -87,12 +87,32 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_io_discrete_ordinates_problem_io.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-io-discrete-ordinates-problem-io-h"><span class="std std-ref">File discrete_ordinates_problem_io.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#exhale-struct-structopensn-1-1-discrete-ordinates-problem-i-o-1-1-surface-angular-flux"><span class="std std-ref">Struct DiscreteOrdinatesProblemIO::SurfaceAngularFlux</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#exhale-struct-structopensn-1-1-discrete-ordinates-problem-i-o-1-1-surface-data"><span class="std std-ref">Struct DiscreteOrdinatesProblemIO::SurfaceData</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#exhale-struct-structopensn-1-1-discrete-ordinates-problem-i-o-1-1-surface-map"><span class="std std-ref">Struct DiscreteOrdinatesProblemIO::SurfaceMap</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="class-documentation">
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIOE">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_i_o"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DiscreteOrdinatesProblemIO</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIOE" title="Link to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO19QuantizedCoordinateE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_i_o_1abe3a7bd42ad6d9436ec7ba64594bcaee"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">QuantizedCoordinate</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">tuple</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">int64_t</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO19QuantizedCoordinateE" title="Link to this definition"></a><br /></dt>
+<dd><p>Surface Angular flux. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18ReadUncollidedFluxERK24DiscreteOrdinatesProblemRKNSt6stringE">
@@ -139,7 +159,161 @@
 </dl>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO25WriteSurfaceAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringERKNSt6vectorINSt6stringEEERKNSt3mapINSt6stringENSt4pairINSt6stringEdEEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_i_o_1af39d5a475b9f048e2f078dfeafd93201"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WriteSurfaceAngularFluxes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file_base</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">boundary_surfs</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">interior_surfs</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO25WriteSurfaceAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringERKNSt6vectorINSt6stringEEERKNSt3mapINSt6stringENSt4pairINSt6stringEdEEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Write surface angular flux vector(s) to a file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>do_problem</strong> – Discrete ordinates problem </p></li>
+<li><p><strong>file_base</strong> – File name base </p></li>
+<li><p><strong>boundary_surfs</strong> – Boundary surface names </p></li>
+<li><p><strong>interior_surfs</strong> – Interior surface definitions, which must not coincide with exterior boundaries. Each surface is written with an <code class="docutils literal notranslate"><span class="pre">_u</span></code> tag for face normals aligned with the positive specified axis and a <code class="docutils literal notranslate"><span class="pre">_d</span></code> tag for the opposite orientation. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO24ReadSurfaceAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringERKNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_i_o_1a6e0187d0c657af7efe0793cc299e38bf"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFluxE" title="opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux"><span class="n"><span class="pre">SurfaceAngularFlux</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReadSurfaceAngularFluxes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file_base</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">surfaces</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO24ReadSurfaceAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringERKNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Read a surface angular flux vector from a file. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>do_problem</strong> – Discrete ordinates problem </p></li>
+<li><p><strong>file_base</strong> – File name base </p></li>
+<li><p><strong>surfaces</strong> – Stored surface tags to read. Boundary tags are their boundary names. Interior surface tags use <code class="docutils literal notranslate"><span class="pre">_u</span></code> for face normals aligned with the positive specified axis and <code class="docutils literal notranslate"><span class="pre">_d</span></code> for the opposite orientation. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFluxE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceAngularFlux</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFluxE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11groupset_idE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a6fcf1d0b9a688c3a95b259aaa1970736"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">groupset_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11groupset_idE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux12surface_nameE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a0f6554cdf6bddd5d4fc2bea5fc19fc87"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">surface_name</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux12surface_nameE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux7mappingE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1ad3b7a8fd7229e901a72ab84b2b77306a"></span><a class="reference internal" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE" title="opensn::DiscreteOrdinatesProblemIO::SurfaceMap"><span class="n"><span class="pre">SurfaceMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mapping</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux7mappingE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux4dataE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1aa79369fa38a9f966be545dfc15bea15e"></span><a class="reference internal" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE" title="opensn::DiscreteOrdinatesProblemIO::SurfaceData"><span class="n"><span class="pre">SurfaceData</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">data</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux4dataE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceData</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE" title="Link to this definition"></a><br /></dt>
+<dd><p>Flattened angular-flux data for a surface and groupset. </p>
+<p>The angular flux <code class="docutils literal notranslate"><span class="pre">psi</span></code> is ordered by cell, face node, direction, and group. The <code class="docutils literal notranslate"><span class="pre">omega</span></code> array follows cell, face node, direction, and Cartesian component, with three components per node-direction pair. The <code class="docutils literal notranslate"><span class="pre">mu</span></code>, <code class="docutils literal notranslate"><span class="pre">wt_d</span></code>, and <code class="docutils literal notranslate"><span class="pre">fe_shape</span></code> arrays follow cell, face node, and direction, with one value per node-direction pair. The <code class="docutils literal notranslate"><span class="pre">mass_matrix</span></code> array is ordered by cell, row face node, and column face node.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">node_index</span></code> and <code class="docutils literal notranslate"><span class="pre">dir_index</span></code> arrays contain start offsets into <code class="docutils literal notranslate"><span class="pre">psi</span></code> for each face node and node-direction pair, respectively. All arrays, including the index arrays, are empty when the requested surface has no local faces. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData5omegaE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a8e122782389a308ef759db146046f6c1"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">omega</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData5omegaE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData2muE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a49423a5cdd1b830b2a99b6658361302f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mu</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData2muE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData4wt_dE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a77cf9264036caf1da87b7f115471261a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wt_d</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData4wt_dE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData11mass_matrixE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a711ec4bd86acf6dfba63f631e636fe0b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mass_matrix</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData11mass_matrixE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData8fe_shapeE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1af941ab4985e5a0b6ee93f3b5ca434964"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fe_shape</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData8fe_shapeE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData3psiE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a2c93dab7741f908b66ae275112a829c9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">psi</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData3psiE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10node_indexE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1acb8b965d48973986013ba5c3ae8bbffb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10node_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData9dir_indexE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a39e6d9a994771353b8dfa2fa303b0cb6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dir_index</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData9dir_indexE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMap</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE" title="Link to this definition"></a><br /></dt>
+<dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_idsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a1dd561352cbda0e91feeab6285b4c7fc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_ids</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_idsE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap14num_face_nodesE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a2a2380809f2cfe6df20f040af79d1581"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_face_nodes</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap14num_face_nodesE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_mapE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a08919764bb0b117cd4f6289a6d35f1b6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO19QuantizedCoordinateE" title="opensn::DiscreteOrdinatesProblemIO::QuantizedCoordinate"><span class="n"><span class="pre">QuantizedCoordinate</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_map</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_mapE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a6ece6888b235233ee25c2eb3aaa9846f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_stride</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE" title="Link to this definition"></a><br /></dt>
+<dd><p>Start offset into the corresponding <a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a2c93dab7741f908b66ae275112a829c9"><span class="std std-ref">SurfaceData::psi</span></a> array for each surface cell. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_xE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a16f3403abd0e47c874e5aba1851ac708"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes_x</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_xE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_yE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a179b55c7e5abf4cff0ecf132dae04091"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes_y</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_yE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_zE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1adea99d8ef44dbc4fe255af2abd2f9a5c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes_z</span></span></span><a class="headerlink" href="#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_zE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>
