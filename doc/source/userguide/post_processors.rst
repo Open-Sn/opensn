@@ -663,6 +663,30 @@ which is dimensionless and easier to compare across coefficients:
        relative=True,
    )
 
+Discrete Formulas
+-----------------
+
+The sensitivities are exact derivatives of the discrete response for the
+supported Cartesian geometries (see :doc:`../theory/adjoint`). Products of
+forward and adjoint fields are integrated with the consistent finite-element
+mass matrix :math:`M_{ij}=\int b_i b_j\,dV`, which is how the collision,
+scattering, and fission terms enter the discrete transport equations. For a
+single cell and group:
+
+* ``"sigma_t"``: :math:`-W\sum_n w_n\sum_{ij}\psi^\dagger_{n,i} M_{ij}\psi_{n,j}`,
+  where :math:`W=\sum_n w_n` is the quadrature weight sum (:math:`W=1` for
+  OpenSn quadratures; the factor is kept so the formula holds for any
+  normalization);
+* ``"scatter"`` for moment degree :math:`\ell`:
+  :math:`(2\ell+1)\sum_{m\in\ell}\sum_{ij}\phi^\dagger_{m,i} M_{ij}\phi_{m,j}`
+  (adjoint mode, and therefore these sensitivities, require the standard
+  angular operators);
+* ``"production"``:
+  :math:`\sum_{ij}\big(\sum_{g'}\chi_{g'}\phi^\dagger_{0,g',i}\big) M_{ij}\phi_{0,g,j}`.
+
+The adjoint fluxes must be the reoriented adjoint solution produced by the
+steady-state or k-eigenvalue solvers (see :doc:`../theory/adjoint`).
+
 k-Eigenvalue Scaling
 -----------------------
 

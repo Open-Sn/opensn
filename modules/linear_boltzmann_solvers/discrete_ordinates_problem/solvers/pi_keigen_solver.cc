@@ -244,6 +244,11 @@ PowerIterationKEigenSolver::Execute()
   if (options.restart.writes_enabled)
     WriteRestartData();
 
+  // The adjoint is solved by sweeping the forward directions; map it to the physical adjoint
+  // after the final restart dump so that restart data holds the iterate.
+  if (options.adjoint)
+    do_problem_->ReorientAdjointSolution();
+
   // Print summary
   const auto total_num_sweeps = GetNumSweeps();
 

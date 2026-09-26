@@ -277,11 +277,10 @@ ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
                              "' in ResponseEvaluator does not support \"function\".");
   const auto bndry_type = params.GetParamValue<std::string>("type");
 
-  auto grid = do_problem_->GetGrid();
-  const auto bnd_name_map = grid->GetBoundaryNameMap();
-  OpenSnInvalidArgumentIf(not bnd_name_map.count(bndry_name),
+  const auto bid_opt = do_problem_->FindBoundaryID(bndry_name);
+  OpenSnInvalidArgumentIf(not bid_opt.has_value(),
                           "Boundary \"" + bndry_name + "\" does not exist.");
-  const auto bid = bnd_name_map.at(bndry_name);
+  const auto bid = *bid_opt;
   if (bndry_type == "isotropic")
   {
     OpenSnInvalidArgumentIf(not params.Has("group_strength"),
@@ -392,6 +391,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
       const auto& quadrature = groupset.quadrature;
       const auto num_gs_angles = quadrature->GetNumAngles();
       const auto& num_gs_groups = groupset.GetNumGroups();
+      // Moment sources enter each direction divided by the quadrature weight sum W, so angular
+      // inner products of forward and adjoint angular fluxes carry a factor W.
+      const double weight_sum = quadrature->GetWeightSum();
 
       for (const auto& cell : grid->GetLocalCells())
       {
@@ -420,7 +422,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
                 if (mu < 0.0)
                 {
                   const auto& wt = quadrature->GetWeight(n);
-                  const auto weight = -mu * wt * intF_shapeI;
+                  const auto weight = -mu * weight_sum * wt * intF_shapeI;
                   const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, 0);
 
                   for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)

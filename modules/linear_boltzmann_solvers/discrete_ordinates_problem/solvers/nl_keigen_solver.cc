@@ -136,6 +136,10 @@ NonLinearKEigenSolver::Execute()
   if (not nl_solver_.IsConverged())
     log.Log0Warning() << GetName() << ": Nonlinear solve failed to converge.";
 
+  // The adjoint is solved by sweeping the forward directions; map it to the physical adjoint.
+  if (do_problem_->GetOptions().adjoint)
+    do_problem_->ReorientAdjointSolution();
+
   if (do_problem_->GetOptions().use_precursors)
   {
     ComputePrecursors(*do_problem_);

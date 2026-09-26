@@ -185,6 +185,22 @@ public:
   const std::vector<Vector3>& GetOmegas() const { return omegas_; }
 
   const Vector3& GetOmega(size_t angle_index) const { return omegas_.at(angle_index); }
+
+  /**
+   * Map each direction index to the index of its opposite direction.
+   *
+   * For 3D quadratures, the opposite of direction \f$\Omega_n\f$ is \f$-\Omega_n\f$. Lower
+   * dimensional quadratures store only a representative of each direction class, so the opposite
+   * direction is the one that is equivalent to \f$-\Omega_n\f$:
+   * \f$(\Omega_x, \Omega_y, -\Omega_z)\f$ in 1D (the polar cosine changes sign) and
+   * \f$(-\Omega_x, -\Omega_y, \Omega_z)\f$ in 2D (quadratures hold only
+   * \f$\Omega_z > 0\f$).
+   *
+   * Complexity is \f$O(N^2)\f$ in the number of directions.
+   *
+   * \throws std::logic_error if an opposite direction is not in the quadrature set.
+   */
+  std::vector<size_t> MapOppositeDirections() const;
 };
 
 } // namespace opensn

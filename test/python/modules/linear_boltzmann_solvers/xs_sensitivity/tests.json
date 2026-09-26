@@ -30,5 +30,36 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "keigen_2d_heterogeneous_fd.py",
+    "comment": "2D heterogeneous k-eigenvalue sigma_t (PI and NLKE adjoints), production, and P1 scatter sensitivities vs central differences",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_2D_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_2D_NLKE_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_2D_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_2D_SCATTER_P1_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      }
+    ]
   }
 ]

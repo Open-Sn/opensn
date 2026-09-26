@@ -367,7 +367,9 @@ At a high level, the steady-state solver:
 3. calls the AGS solver attached to the problem,
 4. optionally writes restart data,
 5. optionally computes precursor fields,
-6. reorients the solution if adjoint mode is active, and
+6. in adjoint mode, reorients the solution (swaps each direction's angular flux
+   with that of its opposite direction and multiplies each flux moment of
+   degree :math:`\ell` by :math:`(-1)^\ell`), and
 7. updates the completed transport state and balance information
 
 The corresponding balance summary is available from
@@ -405,6 +407,14 @@ importance studies, and related sensitivity workflows.
 In OpenSn, an adjoint solve is still a steady-state transport solve, but the
 problem is placed in adjoint mode so that the transport operator, materials,
 and source interpretation are all treated in the adjoint sense.
+
+Adjoint calculations are supported only for Cartesian geometries. OpenSn
+rejects adjoint mode for cylindrical and spherical coordinate systems because
+their angular-redistribution terms require dedicated discrete-adjoint sweeps.
+Adjoint mode also requires the standard angular operators
+(``operator_method='standard'``); Galerkin quadratures are rejected because
+transposing the cross sections does not, in general, give the exact discrete
+adjoint of the Galerkin scattering operator.
 
 There are two common ways to enable adjoint mode:
 
@@ -447,14 +457,18 @@ Important behavior:
 * after such a mode change, the desired adjoint sources and boundary conditions
   must be reapplied before solving
 
-At the end of the steady-state solve, OpenSn reorients the adjoint solution for
-the discrete-ordinates problem so the stored result is in the expected adjoint
-form.
+At the end of the steady-state solve, OpenSn reorients the adjoint solution. The
+adjoint is computed with the forward sweeps, so the angular flux stored for
+direction :math:`\vec{\Omega}_n` is the adjoint flux for
+:math:`-\vec{\Omega}_n`. Reorientation swaps each direction's angular flux with
+that of its opposite direction and multiplies each flux moment of degree
+:math:`\ell` by :math:`(-1)^\ell`, so forward and adjoint quantities with the same direction index refer to the same
+direction (see :doc:`../theory/adjoint`).
 
 .. note::
 
    Time-dependent adjoint problems are not supported. Adjoint mode is therefore
-   a steady-state capability in the current solver stack.
+   a steady-state Cartesian capability in the current solver stack.
 
 .. note::
 
@@ -727,6 +741,10 @@ At a high level, the solver:
 4. updates ``k_eff``
 5. repeats until the eigenvalue change satisfies ``k_tol`` or ``max_iters`` is
    reached
+6. in adjoint mode, reorients the solution: each direction's angular flux is
+   swapped with that of its opposite direction and each flux moment of degree
+   :math:`\ell` is multiplied by :math:`(-1)^\ell` (see :doc:`../theory/adjoint`). This happens after the final restart dump, so
+   restart data holds the unreoriented iterate.
 
 This solver uses the groupset inner solver and AGS settings configured on the
 problem.
@@ -856,6 +874,10 @@ backtrack or terminate with the appropriate SNES reason.
 
 As with power iteration, :py:meth:`ComputeBalanceTable` uses
 ``1 / k_eff`` scaling on the production term.
+
+In adjoint mode, the solution is reoriented after the nonlinear solve: each
+direction's angular flux is swapped with that of its opposite direction and each
+flux moment of degree :math:`\ell` is multiplied by :math:`(-1)^\ell` (see :doc:`../theory/adjoint`).
 
 Initialization Order and Common Patterns
 ========================================
