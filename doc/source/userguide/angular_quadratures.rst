@@ -319,6 +319,15 @@ For 2D Cartesian ``XY`` geometry. Only upper-hemisphere points are retained.
 
 This is the 2D Cartesian reduction of the Lebedev family.
 
+Every 2D Lebedev set contains the polar direction :math:`(0, 0, 1)`. That
+direction has no in-plane component, so in ``XY`` geometry it does not couple to
+boundaries or neighboring cells and its angular flux is purely local. In
+scattering-dominated regions this is harmless, but in void or streaming-dominated
+regions it can bias the scalar flux by up to the polar weight (0.33 at order 3,
+0.095 at order 7, below 0.01 above order 29). OpenSn logs a warning when the
+quadrature is constructed. Prefer a product or triangular quadrature for 2D
+problems dominated by streaming.
+
 ``LebedevQuadrature3DXYZ``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -334,6 +343,10 @@ Parameters:
 Currently available Lebedev orders are:
 
 ``3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 35, 41, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119, 125, 131``
+
+The order 25 and order 27 rules contain negative weights (a property of those
+Lebedev rules), which can produce negative angular fluxes and flux moments.
+OpenSn logs a warning for these orders; prefer a neighboring order.
 
 Example:
 

@@ -20,6 +20,8 @@ This section covers:
 * how these inputs are specified at construction time
 * how to replace them later with the problem-level setter methods
 * how time dependence works for transient problems
+* the normalization and units of sources, boundary inputs, and integrated
+  quantities in each geometry
 
 Overview
 ========
@@ -798,6 +800,89 @@ But meshes can also use custom boundary ids, for example:
 
 The boundary ids used in the input must match the boundary ids present on the
 mesh.
+
+.. _normalization_conventions:
+
+Normalization and Units
+=======================
+
+OpenSn uses the same normalization in every geometry. These conventions fix the
+meaning of every input and output that involves an angular or spatial integral.
+
+Angular normalization
+---------------------
+
+The weights of every angular quadrature sum to ``1.0``, and the scalar flux is
+:math:`\phi = \sum_n w_n \psi_n`. The discrete angular flux :math:`\psi_n` is
+therefore :math:`4\pi` times the physical angular flux per steradian, and the
+scalar flux is the physical scalar flux. Partial currents are
+:math:`j^\pm = \sum_{\pm\vec{\Omega}_n \cdot \vec{n} > 0} w_n
+|\vec{\Omega}_n \cdot \vec{n}|\, \psi_n`. For example, a uniform isotropic
+incoming angular flux ``X`` on a boundary produces the scalar flux ``X`` in a
+void and an incoming partial current
+:math:`X \sum_{\vec{\Omega}_n \cdot \vec{n} < 0} w_n |\vec{\Omega}_n \cdot \vec{n}|`,
+which approaches ``X / 4`` as the quadrature is refined. Boundary inputs
+(``group_strength`` and ``"arbitrary"`` callbacks) are given in this discrete
+convention.
+
+Sources
+-------
+
+Source strengths are angle-integrated emission rates:
+
+* a volumetric source strength is the emission rate per unit volume;
+* a point source strength is the total emission rate of the source. In reduced
+  geometries a point represents the corresponding extended source:
+
+  .. list-table::
+     :header-rows: 1
+
+     * - Geometry
+       - Point source represents
+       - Strength is
+     * - 3D Cartesian
+       - a point
+       - total emission rate
+     * - 2D Cartesian (XY)
+       - a line along :math:`z`
+       - emission rate per unit length in :math:`z`
+     * - 1D slab
+       - a plane normal to :math:`z`
+       - emission rate per unit area of the plane
+     * - RZ
+       - a ring about the axis
+       - total emission rate of the ring
+
+Integrated quantities
+---------------------
+
+The balance table, :py:meth:`ComputeLeakage`, response evaluation, power
+normalization, volume postprocessors, volume field-function integrals, and the
+integration weights of exported surface angular fluxes all integrate over the
+physical extent of the model. Dimensions that the model treats as infinite are
+reported per unit length or area:
+
+.. list-table::
+   :header-rows: 1
+
+   * - Geometry
+     - Volume element
+     - Integrated rates are
+   * - 3D Cartesian
+     - :math:`dx\,dy\,dz`
+     - totals
+   * - 2D Cartesian (XY)
+     - :math:`dx\,dy`
+     - per unit length in :math:`z`
+   * - 1D slab
+     - :math:`dz`
+     - per unit area normal to :math:`z`
+   * - RZ
+     - :math:`2\pi r\,dr\,dz`
+     - totals for the full revolution
+
+RZ results can therefore be compared directly with an equivalent 3D model, and
+2D or 1D results with a 3D model of unit depth or unit cross-sectional area.
 
 Best Practices
 ==============

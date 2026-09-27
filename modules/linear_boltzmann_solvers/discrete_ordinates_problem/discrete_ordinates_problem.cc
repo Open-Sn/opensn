@@ -768,9 +768,12 @@ DiscreteOrdinatesProblem::ConfigureTransientSourceScopes()
                          GetName() + ": Null WGS solver while enabling transient source scopes.");
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
     OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+    // Within-groupset fission (prompt and the implicit part of the delayed source) is linear in
+    // the flux being solved for and stays in the operator, so the within-groupset solve converges
+    // it; single-groupset problems take only one across-groupset iteration. The decay of the
+    // precursor inventory from the previous step does not depend on that flux and belongs on the
+    // right-hand side only.
     wgs_context->lhs_src_scope.Unset(APPLY_PREVIOUS_PRECURSOR_SOURCES);
-    wgs_context->rhs_src_scope |= APPLY_WGS_FISSION_SOURCES;
     wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
     wgs_context->rhs_src_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
   }

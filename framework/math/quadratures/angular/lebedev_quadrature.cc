@@ -9,11 +9,32 @@
 #include <sstream>
 #include <iostream>
 #include <iomanip>
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
 namespace opensn
 {
+
+namespace
+{
+
+// Some Lebedev rules (for example orders 25 and 27) contain negative weights, which can produce
+// negative angular fluxes and flux moments.
+void
+WarnIfNegativeWeights(const std::string& name,
+                      unsigned int quadrature_order,
+                      const std::vector<double>& weights)
+{
+  const auto num_negative =
+    std::count_if(weights.begin(), weights.end(), [](double w) { return w < 0.0; });
+  if (num_negative > 0)
+    log.Log0Warning() << name << " of order " << quadrature_order << " has " << num_negative
+                      << " negative weights. Angular fluxes and flux moments may become "
+                         "negative; consider a different order.";
+}
+
+} // namespace
 
 LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
                                                unsigned int scattering_order,
@@ -23,6 +44,7 @@ LebedevQuadrature3DXYZ::LebedevQuadrature3DXYZ(unsigned int quadrature_order,
     quadrature_order_(quadrature_order)
 {
   LoadFromOrder(quadrature_order, verbose);
+  WarnIfNegativeWeights("LebedevQuadrature3DXYZ", quadrature_order, weights_);
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();
@@ -111,6 +133,19 @@ LebedevQuadrature2DXY::LebedevQuadrature2DXY(unsigned int quadrature_order,
     quadrature_order_(quadrature_order)
 {
   LoadFromOrder(quadrature_order, verbose);
+  WarnIfNegativeWeights("LebedevQuadrature2DXY", quadrature_order, weights_);
+
+  // Every 2D Lebedev set includes the polar direction, which has no in-plane component.
+  for (size_t n = 0; n < omegas_.size(); ++n)
+    if (std::fabs(omegas_[n].x) < 1.0e-12 and std::fabs(omegas_[n].y) < 1.0e-12)
+      log.Log0Warning() << "LebedevQuadrature2DXY: The set includes the polar direction (0, 0, 1) "
+                        << "with weight " << weights_[n]
+                        << ". It has no in-plane component, so in XY geometry it does not couple "
+                           "to boundaries or neighboring cells and its angular flux is purely "
+                           "local. In streaming-dominated regions this can bias the scalar flux by "
+                           "up to the magnitude of that weight; the effect decreases with "
+                           "quadrature order.";
+
   MakeHarmonicIndices();
   BuildDiscreteToMomentOperator();
   BuildMomentToDiscreteOperator();

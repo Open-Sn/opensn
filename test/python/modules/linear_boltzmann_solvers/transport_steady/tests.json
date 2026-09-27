@@ -1658,5 +1658,48 @@
         "abs_tol": 1.0e-9
       }
     ]
+  },
+  {
+    "file": "transport_lebedev_reflecting.py",
+    "comment": "Lebedev 2D/3D with reflecting boundaries: exact infinite medium and 2D mirror symmetry (tangent directions)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_2D_INFINITE_MEDIUM_MIN=",
+        "goldvalue": 3.25,
+        "rel_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_2D_INFINITE_MEDIUM_MAX=",
+        "goldvalue": 3.25,
+        "rel_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_3D_INFINITE_MEDIUM_MIN=",
+        "goldvalue": 3.25,
+        "rel_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_3D_INFINITE_MEDIUM_MAX=",
+        "goldvalue": 3.25,
+        "rel_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_2D_MIRROR_ABSORPTION_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "LEBEDEV_2D_MIRROR_PEAK_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-9
+      }
+    ]
   }
 ]

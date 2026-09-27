@@ -1311,35 +1311,22 @@ WrapLBS(py::module& slv)
     [](DiscreteOrdinatesProblem& self, py::list bnd_names)
     {
       auto grid = self.GetGrid();
-      // get the supported boundaries
-      std::map<std::string, std::uint64_t> allowed_bd_names = grid->GetBoundaryNameMap();
       std::map<std::uint64_t, std::string> allowed_bd_ids = grid->GetBoundaryIDMap();
       const auto coord_sys = grid->GetCoordinateSystem();
       const auto mesh_type = grid->GetType();
       const auto dim = grid->GetDimension();
-      // get the boundaries to parse, preserving user order
+      // Resolve the requested boundaries, preserving user order. An empty list selects all.
       std::vector<std::uint64_t> bndry_ids;
-      if (bnd_names.size() > 1)
+      if (not bnd_names.empty())
       {
         for (py::handle name : bnd_names)
         {
-          auto sname = name.cast<std::string>();
-          if (coord_sys == CoordinateSystemType::CYLINDRICAL && dim == 2)
-          {
-            if (sname == "xmin" || sname == "xmax" || sname == "ymin" || sname == "ymax")
-              throw std::runtime_error("ComputeLeakage: Boundary name '" + sname +
-                                       "' is invalid for cylindrical orthogonal meshes. "
-                                       "Use rmin, rmax, zmin, zmax.");
-
-            if (mesh_type == MeshType::ORTHOGONAL)
-            {
-              if (sname == "rmin") sname = "xmin";
-              else if (sname == "rmax") sname = "xmax";
-              else if (sname == "zmin") sname = "ymin";
-              else if (sname == "zmax") sname = "ymax";
-            }
-          }
-          bndry_ids.push_back(allowed_bd_names.at(sname));
+          const auto sname = name.cast<std::string>();
+          const auto bid = self.FindBoundaryID(sname);
+          if (not bid.has_value())
+            throw std::runtime_error("ComputeLeakage: Boundary name '" + sname +
+                                     "' is not valid for this problem.");
+          bndry_ids.push_back(*bid);
         }
       }
       else
@@ -1387,14 +1374,16 @@ WrapLBS(py::module& slv)
     Parameters
     ----------
     bnd_names : List[str]
-        A list of boundary names for which leakage should be computed.
+        A list of boundary names for which leakage should be computed. An empty list selects all
+        boundaries. RZ problems use rmin, rmax, zmin, and zmax.
 
     Returns
     -------
     Dict[str, numpy.ndarray]
         A dictionary mapping boundary names to group-wise leakage vectors.
-        Each array contains the outgoing angular flux (per group) integrated over
-        the corresponding boundary surface.
+        Each array contains the net leakage (outflow minus inflow, per group) integrated over
+        the corresponding boundary surface. In RZ geometry the surface integral covers the full
+        revolution.
 
     Raises
     ------
