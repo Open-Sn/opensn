@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/logging/log.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
 #include "framework/utils/caliper_scopes.h"
 #include "caliper/cali.h"
@@ -61,7 +62,10 @@ GetInflow(const Cell& cell,
 } // namespace
 
 BalanceTable
-ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
+ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
+                    double scaling_factor,
+                    const std::vector<double>* initial_phi,
+                    const std::vector<double>* final_phi)
 {
   opensn::mpi_comm.barrier();
 
@@ -192,7 +196,18 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
       } // for g
     } // for i
 
-    if (time_dependent)
+    if (time_dependent and initial_phi != nullptr and final_phi != nullptr)
+    {
+      for (size_t i = 0; i < num_nodes; ++i)
+        for (unsigned int g = 0; g < num_groups; ++g)
+        {
+          const auto imap = transport_view.MapDOF(i, 0, g);
+          const double val = inv_vel[g] * IntV_shapeI(i);
+          local_initial += val * (*initial_phi)[imap];
+          local_final += val * (*final_phi)[imap];
+        }
+    }
+    else if (time_dependent)
     {
       for (const auto& groupset : groupsets)
       {
@@ -239,6 +254,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
     local_balance_table.push_back(local_initial);
     local_balance_table.push_back(local_final);
   }
+  // Report physical rates: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
+  for (auto& value : local_balance_table)
+    value *= measure_scale;
   auto table_size = static_cast<int>(local_balance_table.size());
 
   // Compute global balance
@@ -408,6 +427,11 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
     }
   }
 
+  // Report physical rates: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
+  for (auto& value : local_leakage)
+    value *= measure_scale;
+
   // Reduce
   std::vector<double> global_leakage(num_gs_groups, 0.0);
   mpi_comm.all_reduce(local_leakage.data(),
@@ -480,6 +504,11 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
     const auto& vec = local_leakage.at(bid);
     local_data.insert(local_data.end(), vec.begin(), vec.end());
   }
+
+  // Report physical rates: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
+  for (auto& value : local_data)
+    value *= measure_scale;
 
   // Reduce
   auto count = static_cast<const int>(local_data.size());

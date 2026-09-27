@@ -28,6 +28,7 @@
 #include <cmath>
 #include <iomanip>
 #include <numeric>
+#include <limits>
 #include <sstream>
 #include <stdexcept>
 
@@ -377,6 +378,44 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
 }
 
 void
+DiscreteOrdinatesProblem::ValidateNonStreamingDirections(const BlockID2XSMap& xs_map) const
+{
+  // Same in-plane tolerance that LebedevQuadrature2DXY uses to report its pole.
+  if (geometry_type_ != GeometryType::TWOD_CARTESIAN)
+    return;
+  constexpr double tol = 1.0e-12;
+  for (const auto& groupset : groupsets_)
+  {
+    const auto& omegas = groupset.quadrature->GetOmegas();
+    if (std::none_of(omegas.begin(),
+                     omegas.end(),
+                     [](const auto& om)
+                     { return std::fabs(om.x) < tol and std::fabs(om.y) < tol; }))
+      continue;
+
+    auto invalid_block = std::numeric_limits<unsigned int>::max();
+    for (const auto& cell : grid_->GetLocalCells())
+    {
+      const auto xs = xs_map.find(cell->block_id);
+      if (xs == xs_map.end())
+        continue;
+      const auto& sigma_t = xs->second->GetSigmaTotal();
+      for (auto g = groupset.first_group; g <= groupset.last_group and g < sigma_t.size(); ++g)
+        if (sigma_t[g] <= 0.0)
+          invalid_block = std::min(invalid_block, cell->block_id);
+    }
+    unsigned int global_invalid_block = 0;
+    mpi_comm.all_reduce(invalid_block, global_invalid_block, mpi::op::min<unsigned int>());
+    OpenSnInvalidArgumentIf(global_invalid_block != std::numeric_limits<unsigned int>::max(),
+                            GetName() + ": block " + std::to_string(global_invalid_block) +
+                              " has sigma_t <= 0, but the XY quadrature of groupset " +
+                              std::to_string(groupset.id) +
+                              " has a direction with no in-plane component, which requires a "
+                              "positive sigma_t.");
+  }
+}
+
+void
 DiscreteOrdinatesProblem::BuildRuntime()
 {
   CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
@@ -410,6 +449,9 @@ DiscreteOrdinatesProblem::BuildRuntime()
                               " does not match dimensionality of mesh (" +
                               std::to_string(grid_dim) + ").");
   }
+
+  // Check all ranks before any sweep can propagate NaNs.
+  ValidateNonStreamingDirections(block_id_to_xs_map_);
 
   // Initialize source function according to problem mode.
   using namespace std::placeholders;
@@ -578,7 +620,15 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
 void
 DiscreteOrdinatesProblem::SetTimeDependentMode()
 {
-  ResetMode(SweepChunkMode::TIME_DEPENDENT);
+  SetTimeDependentMode(1.0);
+}
+
+void
+DiscreteOrdinatesProblem::SetTimeDependentMode(double reconstruction_keff)
+{
+  OpenSnInvalidArgumentIf(not std::isfinite(reconstruction_keff) or reconstruction_keff <= 0.0,
+                          GetName() + ": reconstruction keff must be finite and positive.");
+  ResetMode(SweepChunkMode::TIME_DEPENDENT, reconstruction_keff);
 }
 
 void
@@ -588,20 +638,50 @@ DiscreteOrdinatesProblem::SetSteadyStateMode()
 }
 
 void
-DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState()
+DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstruction_keff)
 {
   // Cache converged steady-state flux moments
   const auto phi_new_ref = GetPhiNewLocal();
   const auto phi_old_ref = GetPhiOldLocal();
 
-  // Reconstruct psi from the converged steady-state phi before enabling transient RHS time terms.
+  // Rebuilding the solver schemes resets the lagged angular fluxes. Keep the converged ones.
+  std::vector<std::vector<double>> saved_delayed_psi_old(groupsets_.size());
+  for (size_t gs = 0; gs < groupsets_.size(); ++gs)
+    if (groupsets_[gs].angle_agg)
+      saved_delayed_psi_old[gs] = groupsets_[gs].angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+
+  // A stored psi is the initial transient state. Rebuilding it from phi with the current operator
+  // would not reproduce it (e.g. after an XS change or a 1/k-scaled solve). Reconstruct only if
+  // no psi is stored.
+  double local_psi_sum_sq = 0.0;
+  for (const auto& psi_gs : psi_new_local_)
+    local_psi_sum_sq += std::inner_product(psi_gs.begin(), psi_gs.end(), psi_gs.begin(), 0.0);
+  double psi_sum_sq = 0.0;
+  mpi_comm.all_reduce(local_psi_sum_sq, psi_sum_sq, mpi::op::sum<double>());
+  const bool have_stored_psi = psi_sum_sq > 0.0;
+  const auto saved_psi_new = psi_new_local_;
+
   ReinitializeSolverSchemes();
-  // A single call to RebuildAngularFluxFromConvergedPhi is insufficient with
-  // lagged angular fluxes. Instead, we perform a fixed-point iteration on the
-  // lagged fluxes with phi/q held at the converged steady-state value. This is
-  // a sweep-only reconstruction of psi.
-  constexpr int max_reconstruction_passes = 50;
-  constexpr double lagged_psi_rel_tol = 1.0e-3;
+  for (size_t gs = 0; gs < groupsets_.size(); ++gs)
+  {
+    auto& angle_agg = groupsets_[gs].angle_agg;
+    if (angle_agg and not saved_delayed_psi_old[gs].empty() and
+        angle_agg->GetOldDelayedAngularDOFsAsSTLVector().size() == saved_delayed_psi_old[gs].size())
+      angle_agg->SetOldDelayedAngularDOFsFromSTLVector(saved_delayed_psi_old[gs]);
+  }
+
+  if (have_stored_psi)
+  {
+    psi_new_local_ = saved_psi_new;
+    GetPhiNewLocal() = phi_new_ref;
+    GetPhiOldLocal() = phi_old_ref;
+    return;
+  }
+
+  // Rebuild psi from the steady-state phi, iterating the lagged fluxes with phi/q fixed. The
+  // transient time term uses this psi, so converge it tightly.
+  constexpr int max_reconstruction_passes = 500;
+  constexpr double lagged_psi_rel_tol = 1.0e-12;
   const auto q_moments_ref = GetQMomentsLocal();
   bool lagged_psi_converged = false;
   for (int pass = 0; pass < max_reconstruction_passes; ++pass)
@@ -623,10 +703,39 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState()
       const auto delayed_psi_old =
         wgs_context->groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
 
-      // Keep source moments and scalar flux fixed at converged steady-state values.
-      GetQMomentsLocal() = q_moments_ref;
+      // Hold phi at the steady-state value. The source function accumulates, so start from zero.
+      ZeroQMoments();
       GetPhiOldLocal() = phi_new_ref;
-      wgs_context->RebuildAngularFluxFromConvergedPhi(false, pass == 0);
+      // Add the 1/k-scaled fission source here if necessary and exclude fission below.
+      const auto lhs_scope = wgs_context->lhs_src_scope;
+      const auto rhs_scope = wgs_context->rhs_src_scope;
+      if (reconstruction_keff != 1.0)
+      {
+        active_set_source_function_(wgs_context->groupset,
+                                    GetQMomentsLocal(),
+                                    phi_new_ref,
+                                    APPLY_WGS_FISSION_SOURCES | APPLY_AGS_FISSION_SOURCES);
+        ScaleQMoments(1.0 / reconstruction_keff);
+        wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+        wgs_context->lhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES);
+        wgs_context->rhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+        wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES);
+      }
+      try
+      {
+        wgs_context->RebuildAngularFluxFromConvergedPhi(false, false);
+      }
+      catch (...)
+      {
+        wgs_context->lhs_src_scope = lhs_scope;
+        wgs_context->rhs_src_scope = rhs_scope;
+        GetQMomentsLocal() = q_moments_ref;
+        GetPhiNewLocal() = phi_new_ref;
+        GetPhiOldLocal() = phi_old_ref;
+        throw;
+      }
+      wgs_context->lhs_src_scope = lhs_scope;
+      wgs_context->rhs_src_scope = rhs_scope;
 
       const auto delayed_psi_new =
         wgs_context->groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
@@ -664,33 +773,63 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState()
                       << ".";
   GetQMomentsLocal() = q_moments_ref;
 
-  // Scale psi to match the norm of the cached steady-state phi, then restore cached phi.
-  auto& phi_new = GetPhiNewLocal();
-  auto& phi_old = GetPhiOldLocal();
-  const auto& phi_new_rebuilt = phi_new;
-  const double phi_ref_local_sum_sq =
-    std::inner_product(phi_new_ref.begin(), phi_new_ref.end(), phi_new_ref.begin(), 0.0);
-  const double phi_rebuilt_local_sum_sq = std::inner_product(
-    phi_new_rebuilt.begin(), phi_new_rebuilt.end(), phi_new_rebuilt.begin(), 0.0);
-  double phi_ref_sum_sq = 0.0;
-  double phi_rebuilt_sum_sq = 0.0;
-  mpi_comm.all_reduce(phi_ref_local_sum_sq, phi_ref_sum_sq, mpi::op::sum<double>());
-  mpi_comm.all_reduce(phi_rebuilt_local_sum_sq, phi_rebuilt_sum_sq, mpi::op::sum<double>());
-  const double phi_ref_norm = std::sqrt(phi_ref_sum_sq);
-  const double phi_rebuilt_norm = std::sqrt(phi_rebuilt_sum_sq);
-  const double scale =
-    (phi_ref_norm > 0.0 and phi_rebuilt_norm > 0.0) ? phi_ref_norm / phi_rebuilt_norm : 1.0;
+  // If the operator changed, the rebuilt psi need not reproduce the saved phi. Rescale per node
+  // and group to preserve it.
+  double local_max_correction = 0.0;
+  double local_max_phi = 0.0;
+  for (const auto& cell : grid_->GetLocalCells())
+  {
+    const auto& view = cell_transport_views_[cell->local_id];
+    for (const auto& groupset : groupsets_)
+    {
+      auto& psi = psi_new_local_[groupset.id];
+      const auto& quad = *groupset.quadrature;
+      const auto num_groups = groupset.GetNumGroups();
+      const double weight_sum = quad.GetWeightSum();
+      for (int i = 0; i < view.GetNumNodes(); ++i)
+      {
+        for (unsigned int g = 0; g < num_groups; ++g)
+        {
+          const double target = phi_new_ref[view.MapDOF(i, 0, groupset.first_group + g)];
+          double reconstructed = 0.0;
+          for (size_t n = 0; n < quad.GetNumAngles(); ++n)
+          {
+            const auto dof = discretization_->MapDOFLocal(*cell, i, groupset.psi_uk_man_, n, g);
+            reconstructed += quad.GetWeight(n) * psi[dof];
+          }
+          local_max_correction = std::max(local_max_correction, std::abs(target - reconstructed));
+          local_max_phi = std::max(local_max_phi, std::abs(target));
+          const double scale = reconstructed != 0.0 ? target / reconstructed : 0.0;
+          for (size_t n = 0; n < quad.GetNumAngles(); ++n)
+          {
+            const auto dof = discretization_->MapDOFLocal(*cell, i, groupset.psi_uk_man_, n, g);
+            auto& value = psi[dof];
+            value = std::isfinite(scale) and scale > 0.0 ? value * scale : target / weight_sum;
+          }
+        }
+      }
+    }
+  }
+  double max_correction = 0.0;
+  double max_phi = 0.0;
+  mpi_comm.all_reduce(local_max_correction, max_correction, mpi::op::max<double>());
+  mpi_comm.all_reduce(local_max_phi, max_phi, mpi::op::max<double>());
+  if (max_correction > 1.0e-8 * max_phi)
+    log.Log0Warning() << GetName()
+                      << ": Angular-flux reconstruction required a scalar-flux correction "
+                         "(maximum correction / maximum saved scalar flux = "
+                      << (max_phi > 0.0 ? max_correction / max_phi
+                                        : std::numeric_limits<double>::infinity())
+                      << "). The saved scalar flux is preserved at each node and group; "
+                         "the angular distribution and higher moments are approximate.";
 
-  phi_new = phi_new_ref;
-  phi_old = phi_old_ref;
-
-  for (auto& psi_gs : psi_new_local_)
-    for (double& v : psi_gs)
-      v *= scale;
+  // Restore the cached steady-state flux moments.
+  GetPhiNewLocal() = phi_new_ref;
+  GetPhiOldLocal() = phi_old_ref;
 }
 
 void
-DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
+DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode, double reconstruction_keff)
 {
   OpenSnInvalidArgumentIf(target_mode == SweepChunkMode::DEFAULT,
                           GetName() + ": target mode cannot be SweepChunkMode::Default.");
@@ -718,7 +857,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   if (has_no_active_mode)
   {
     if (switching_to_transient)
-      ReconstructAngularFluxFromSteadyState();
+      ReconstructAngularFluxFromSteadyState(reconstruction_keff);
 
     SetSweepChunkMode(target_mode);
 
@@ -730,7 +869,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
   {
     if (switching_to_transient)
     {
-      ReconstructAngularFluxFromSteadyState();
+      ReconstructAngularFluxFromSteadyState(reconstruction_keff);
       SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
     }
     else
@@ -768,9 +907,9 @@ DiscreteOrdinatesProblem::ConfigureTransientSourceScopes()
                          GetName() + ": Null WGS solver while enabling transient source scopes.");
     auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
     OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+    // Flux-dependent fission (prompt and implicit delayed) stays in the operator so the WGS solve
+    // converges it; decay of the previous step's precursors is right-hand side only.
     wgs_context->lhs_src_scope.Unset(APPLY_PREVIOUS_PRECURSOR_SOURCES);
-    wgs_context->rhs_src_scope |= APPLY_WGS_FISSION_SOURCES;
     wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
     wgs_context->rhs_src_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
   }
@@ -816,6 +955,7 @@ DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   OpenSnInvalidArgumentIf(
     HasUncollidedFlux(),
     GetName() + ": cross sections cannot be replaced after loading an uncollided flux file.");
+  ValidateNonStreamingDirections(xs_map);
   LBSProblem::SetBlockID2XSMap(xs_map);
 
   for (auto& groupset : groupsets_)

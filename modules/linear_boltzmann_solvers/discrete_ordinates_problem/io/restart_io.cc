@@ -132,6 +132,30 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
     }
   }
 
+  // A steady-state restart that includes the angular flux supplies it for a transient initial
+  // condition. The switch to time-dependent mode keeps a stored angular flux instead of
+  // reconstructing it from the flux moments.
+  if (not full_time_dependent_restart and do_problem.GetOptions().save_angular_flux)
+  {
+    auto& psi_old_local = do_problem.GetPsiOldLocal();
+    auto& psi_new_local = do_problem.GetPsiNewLocal();
+    for (size_t gsid = 0; gsid < psi_new_local.size(); ++gsid)
+    {
+      const auto new_name = "psi_new_gs" + std::to_string(gsid);
+      if (psi_new_local[gsid].empty() or not H5Has(file_id, new_name))
+        continue;
+      std::vector<double> psi_new;
+      success &= ReadSizedDoubleVector(
+        file_id, new_name, psi_new, psi_new_local[gsid].size(), do_problem.GetName());
+      if (success)
+      {
+        psi_new_local[gsid] = psi_new;
+        if (gsid < psi_old_local.size() and psi_old_local[gsid].size() == psi_new.size())
+          psi_old_local[gsid] = std::move(psi_new);
+      }
+    }
+  }
+
   return success;
 }
 

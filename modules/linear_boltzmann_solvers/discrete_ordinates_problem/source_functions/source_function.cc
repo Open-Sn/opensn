@@ -49,6 +49,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
   // Apply all nodal sources
   const auto& grid = lbs_problem_.GetGrid();
+  const auto& discretization = lbs_problem_.GetSpatialDiscretization();
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& transport_view = cell_transport_views[cell->local_id];
@@ -66,6 +67,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
+      const auto node_id = discretization.MapDOFLocal(*cell, i);
       // Loop over moments
       for (unsigned int m = 0; m < num_moments; ++m)
       {
@@ -125,7 +127,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 rhs += F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], cell->local_id);
+              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], node_id);
           }
 
           // Add to destination vector
@@ -149,7 +151,7 @@ double
 SourceFunction::DelayedFission(const PrecursorList& precursors,
                                const std::vector<double>& nu_delayed_sigma_f,
                                const double* phi,
-                               std::uint64_t cell_local_id) const
+                               std::size_t /*node_id*/) const
 {
   double value = 0.0;
   if (apply_ags_fission_src_)

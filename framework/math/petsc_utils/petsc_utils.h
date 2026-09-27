@@ -113,6 +113,9 @@ Vec CreateVectorWithGhosts(PetscInt local_size,
  */
 Mat CreateSquareMatrix(PetscInt local_size, PetscInt global_size);
 
+/// Creates a general square matrix, as above, on the communicator `comm`.
+Mat CreateSquareMatrix(MPI_Comm comm, PetscInt local_size, PetscInt global_size);
+
 /**
  * Creates a general square matrix.
  *

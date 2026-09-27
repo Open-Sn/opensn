@@ -87,6 +87,13 @@ DiffusionSolver::~DiffusionSolver()
   OpenSnPETScCall(VecDestroy(&rhs_));
   OpenSnPETScCall(VecDestroy(&x_));
   OpenSnPETScCall(KSPDestroy(&ksp_));
+  if (petsc_comm_ != MPI_COMM_NULL)
+  {
+    int finalized = 0;
+    MPI_Finalized(&finalized);
+    if (not finalized)
+      MPI_Comm_free(&petsc_comm_);
+  }
 }
 
 std::string
@@ -166,7 +173,9 @@ DiffusionSolver::Initialize()
   opensn::mpi_comm.barrier();
   log.Log() << "Done Sparsity pattern";
   opensn::mpi_comm.barrier();
-  A_ = CreateSquareMatrix(num_local_dofs_, num_global_dofs_);
+  if (petsc_comm_ == MPI_COMM_NULL)
+    OpenSnMPICall(MPI_Comm_dup(opensn::mpi_comm, &petsc_comm_));
+  A_ = CreateSquareMatrix(petsc_comm_, num_local_dofs_, num_global_dofs_);
   InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
   opensn::mpi_comm.barrier();
   log.Log() << "Done matrix creation";
@@ -192,7 +201,7 @@ DiffusionSolver::Initialize()
   OpenSnPETScCall(VecDuplicate(rhs_, &x_));
 
   // Create KSP
-  OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
+  OpenSnPETScCall(KSPCreate(petsc_comm_, &ksp_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, name_.c_str()));
 
   OpenSnPETScCall(

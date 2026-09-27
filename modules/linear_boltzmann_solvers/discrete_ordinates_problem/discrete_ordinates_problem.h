@@ -53,6 +53,15 @@ public:
 
   void SetTimeDependentMode() override;
 
+  /**
+   * Switch to transient mode. If no angular flux is stored, it is reconstructed from the current
+   * steady state with the fission source divided by reconstruction_keff, the eigenvalue the state
+   * was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical
+   * states. The value must be finite and positive; it is not retained for later switches and does
+   * not scale the physical transient source. Collective over the problem ranks.
+   */
+  void SetTimeDependentMode(double reconstruction_keff);
+
   void SetSteadyStateMode() override;
 
   void SetTime(double time) override;
@@ -215,6 +224,10 @@ protected:
   /// Validates that time-dependent mode may be enabled, given the current GPU, adjoint,
   /// geometry, and angular-flux-storage configuration.
   void ValidateTimeDependentModeAllowed() const;
+
+  /// Rejects sigma_t <= 0 in groupsets whose XY quadrature has a direction with no in-plane
+  /// component.
+  void ValidateNonStreamingDirections(const BlockID2XSMap& xs_map) const;
   /** @} */
 
   void PrintSimHeader() override;
@@ -231,14 +244,15 @@ protected:
 
   void SetSweepChunkMode(SweepChunkMode mode);
   void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
-  void ResetMode(SweepChunkMode target_mode);
+  void ResetMode(SweepChunkMode target_mode, double reconstruction_keff = 1.0);
 
   /**
    * Reconstructs lagged angular fluxes from the converged steady-state scalar flux via a
    * fixed-point iteration, holding phi/q at the converged steady-state value. Used when
-   * transitioning into time-dependent mode.
+   * transitioning into time-dependent mode. If no angular flux was stored, the reconstructed
+   * distribution is rescaled per node and group to preserve the saved scalar flux.
    */
-  void ReconstructAngularFluxFromSteadyState();
+  void ReconstructAngularFluxFromSteadyState(double reconstruction_keff);
 
   void InitializeBoundaryCarrier();
 

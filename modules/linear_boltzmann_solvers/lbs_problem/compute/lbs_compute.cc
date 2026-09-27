@@ -119,51 +119,44 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 void
 ComputePrecursors(LBSProblem& lbs_problem)
 {
-
+  // Equilibrium precursor concentrations C_j = gamma_j / lambda_j * sum_g nu_d sigma_f,g phi_g,
+  // stored per spatial node like the scalar flux (index node * J + j).
   const auto J = lbs_problem.GetMaxPrecursorsPerMaterial();
 
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
 
   const auto& grid = lbs_problem.GetGrid();
-  const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
+  const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
 
-  // Loop over cells
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& fe_values = unit_cell_matrices[cell->local_id];
     const auto& transport_view = cell_transport_views[cell->local_id];
-    const double cell_volume = transport_view.GetVolume();
-    assert(cell_volume > 0.0 && "ComputePrecursors encountered non-positive cell volume.");
-
-    // Obtain xs
     const auto& xs = transport_view.GetXS();
     const auto& precursors = xs.GetPrecursors();
+    if (precursors.empty())
+      continue;
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
-    // Loop over precursors
-    for (unsigned int j = 0; j < precursors.size(); ++j)
+    for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      size_t dof = cell->local_id * J + j;
-      const auto& precursor = precursors[j];
-      assert(precursor.decay_constant > 0.0 &&
-             "ComputePrecursors encountered non-positive precursor decay constant.");
-      const double coeff = precursor.fractional_yield / precursor.decay_constant;
+      const auto uk_map = transport_view.MapDOF(i, 0, 0);
+      double delayed_production = 0.0;
+      for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
+        delayed_production += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g];
 
-      // Loop over nodes
-      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+      const size_t node_base = discretization.MapDOFLocal(*cell, i) * J;
+      for (unsigned int j = 0; j < precursors.size(); ++j)
       {
-        const auto uk_map = transport_view.MapDOF(i, 0, 0);
-        const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
-
-        // Loop over groups
-        for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
-          precursor_new_local[dof] +=
-            coeff * nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
-      } // for node i
-    } // for precursor j
+        const auto& precursor = precursors[j];
+        assert(precursor.decay_constant > 0.0 &&
+               "ComputePrecursors encountered non-positive precursor decay constant.");
+        precursor_new_local[node_base + j] =
+          precursor.fractional_yield / precursor.decay_constant * delayed_production;
+      }
+    } // for node i
   } // for cell
 }
 

@@ -65,6 +65,9 @@ private:
   /// Time discretization values and methods
   double stop_time_ = 0.1;
   double current_time_ = 0.0;
+  /// Time-discretization parameters used by the most recent completed Advance.
+  double last_dt_ = 0.0;
+  double last_theta_ = 0.0;
   unsigned int step_ = 0;
   bool verbose_ = true;
   bool initialized_ = false;

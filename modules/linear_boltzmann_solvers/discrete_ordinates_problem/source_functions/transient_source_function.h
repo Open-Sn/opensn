@@ -24,7 +24,7 @@ public:
   double DelayedFission(const PrecursorList& precursors,
                         const std::vector<double>& nu_delayed_sigma_f,
                         const double* phi,
-                        std::uint64_t cell_local_id) const override;
+                        std::size_t node_id) const override;
 };
 
 } // namespace opensn

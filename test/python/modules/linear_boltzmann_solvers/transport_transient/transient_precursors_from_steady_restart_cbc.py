@@ -25,9 +25,9 @@ def build_problem(grid, xs, sources, quadrature, options, time_dependent=False):
             {
                 "groups_from_to": (0, 0),
                 "angular_quadrature": quadrature,
-                "inner_linear_method": "petsc_richardson",
-                "l_abs_tol": 1.0e-8,
-                "l_max_its": 200,
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-12,
+                "l_max_its": 500,
             }
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],
@@ -36,17 +36,19 @@ def build_problem(grid, xs, sources, quadrature, options, time_dependent=False):
             {"name": "zmin", "type": "reflecting"},
             {"name": "zmax", "type": "reflecting"},
         ],
+        sweep_type="CBC",
         options=options,
         time_dependent=time_dependent,
-        sweep_type="CBC",
     )
 
 
-def run_decay_transient(phys, dt):
+def run_decay_transient(phys, dt, before_execute=None):
     solver = TransientSolver(
         problem=phys, dt=dt, theta=1.0, stop_time=dt, initial_state="existing", verbose=False
     )
     solver.Initialize()
+    if before_execute is not None:
+        before_execute()
     solver.Execute()
     return (
         np.array(phys.GetPhiNewLocal(), copy=True),
@@ -63,7 +65,7 @@ if __name__ == "__main__":
 
     dt = 0.05
     xs = MultiGroupXS()
-    xs.LoadFromOpenSn("../../../../assets/xs/xs1g_delayed_crit_1p.cxs")
+    xs.LoadFromOpenSn("../../../../assets/xs/xs1g_delayed_sub_1p.cxs")
 
     source = VolumetricSource(block_ids=[0], group_strength=[0.5], start_time=0.0, end_time=10.0)
     quadrature = GLProductQuadrature1DSlab(n_polar=4, scattering_order=0)
@@ -104,8 +106,17 @@ if __name__ == "__main__":
                 **common_options,
                 "read_initial_condition_path": restart_base,
             }
-            phys_split = build_problem(grid, xs, [], quadrature, transient_options)
-            phi_split, psi_split = run_decay_transient(phys_split, dt)
+            # Without a stored angular flux the initial angular flux is reconstructed from the
+            # flux moments with the sources present at the switch to time-dependent mode, so the
+            # steady-state source must still be set then; it is removed before stepping.
+            phys_split = build_problem(grid, xs, [source], quadrature, transient_options)
+            phi_split, psi_split = run_decay_transient(
+                phys_split,
+                dt,
+                before_execute=lambda: phys_split.SetVolumetricSources(
+                    clear_volumetric_sources=True
+                ),
+            )
 
             local_ok = np.allclose(phi_continuous, phi_split, rtol=1.0e-10, atol=1.0e-12)
             local_ok = local_ok and len(psi_continuous) == len(psi_split)

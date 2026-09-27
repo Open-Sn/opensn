@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/math/math_time_stepping.h"
 
 namespace opensn
 {
@@ -30,7 +31,7 @@ IsotropicBoundary::IsotropicBoundary(BoundaryBank& bank,
 void
 IsotropicBoundary::UpdateBoundaryFlux(const std::vector<LBSGroupset>& groupsets)
 {
-  bool is_active = (evaluation_time_ >= start_time_ and evaluation_time_ <= end_time_);
+  const bool is_active = IsTimeInWindow(evaluation_time_, start_time_, end_time_);
   if (current_state_ != is_active)
   {
     for (const auto& groupset : groupsets)

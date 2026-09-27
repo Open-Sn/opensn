@@ -319,6 +319,27 @@ For 2D Cartesian ``XY`` geometry. Only upper-hemisphere points are retained.
 
 This is the 2D Cartesian reduction of the Lebedev family.
 
+Every 2D Lebedev set contains the polar direction :math:`(0, 0, 1)`. That
+direction has no in-plane component, so in ``XY`` geometry it does not couple to
+boundaries or neighboring cells by streaming. For a given source its angular
+flux is local, although scattering couples it to other directions. Its weight
+does not bound the scalar-flux error: in a pure absorber with isotropic source
+:math:`Q`, the polar contribution is :math:`w_p Q/\sigma_t`, which can grow
+without bound as :math:`\sigma_t` approaches zero. At exactly zero total cross
+section the local steady equation is singular. For any ``XY`` groupset whose
+quadrature has a direction with no in-plane component (every 2D Lebedev set),
+OpenSn therefore rejects a total cross section :math:`\sigma_t \le 0` in any of
+the groupset's groups, both when the problem is constructed and when the
+cross-section map is replaced with ``SetXSMap``. A rejected ``SetXSMap`` call
+leaves the existing cross sections in place. The check also applies to
+time-dependent problems, although the time term makes each step's local
+equation well-posed, because reconstructing the initial angular flux and any
+return to steady-state mode use the steady equation. Scattering-dominated
+problems can be less sensitive to the polar direction, but angular refinement
+is still needed to assess accuracy. OpenSn logs a warning when the quadrature is
+constructed. Prefer a product or triangular quadrature for 2D problems
+dominated by streaming.
+
 ``LebedevQuadrature3DXYZ``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -334,6 +355,10 @@ Parameters:
 Currently available Lebedev orders are:
 
 ``3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 35, 41, 47, 53, 59, 65, 71, 77, 83, 89, 95, 101, 107, 113, 119, 125, 131``
+
+The order 13, 25, and 27 rules contain negative weights (a property of those
+Lebedev rules), which can produce negative angular fluxes and flux moments.
+OpenSn logs a warning for these orders; prefer a neighboring order.
 
 Example:
 

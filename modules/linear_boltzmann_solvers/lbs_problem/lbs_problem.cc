@@ -302,13 +302,12 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 
   if (options_.use_precursors)
   {
-    const size_t num_cells = grid_->GetLocalCellCount();
     const size_t new_max_precursors_per_material = max_precursors_per_material_;
-    const size_t num_precursor_dofs = num_cells * new_max_precursors_per_material;
+    const size_t num_precursor_dofs = local_node_count_ * new_max_precursors_per_material;
 
     std::vector<double> remapped_precursors_new(num_precursor_dofs, 0.0);
     std::vector<double> remapped_precursors_old(num_precursor_dofs, 0.0);
-    if (old_precursor_new_state.size() == num_cells * old_max_precursors_per_material)
+    if (old_precursor_new_state.size() == local_node_count_ * old_max_precursors_per_material)
     {
       for (const auto& cell : grid_->GetLocalCells())
       {
@@ -326,12 +325,17 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
-        const size_t old_base = cell->local_id * old_max_precursors_per_material;
-        const size_t new_base = cell->local_id * new_max_precursors_per_material;
-        for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
+        const auto& cell_mapping = discretization_->GetCellMapping(*cell);
+        for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
-          remapped_precursors_new[new_base + j] = old_precursor_new_state[old_base + j];
-          remapped_precursors_old[new_base + j] = old_precursor_old_state[old_base + j];
+          const auto node_id = discretization_->MapDOFLocal(*cell, i);
+          const size_t old_base = node_id * old_max_precursors_per_material;
+          const size_t new_base = node_id * new_max_precursors_per_material;
+          for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
+          {
+            remapped_precursors_new[new_base + j] = old_precursor_new_state[old_base + j];
+            remapped_precursors_old[new_base + j] = old_precursor_old_state[old_base + j];
+          }
         }
       }
     }
@@ -1152,7 +1156,8 @@ LBSProblem::InitializeParrays()
   // Setup precursor vector
   if (options_.use_precursors)
   {
-    size_t num_precursor_dofs = grid_->GetLocalCellCount() * max_precursors_per_material_;
+    // Precursors are stored per spatial node, like the scalar flux: index node * J + j.
+    size_t num_precursor_dofs = local_node_count_ * max_precursors_per_material_;
     precursor_new_local_.assign(num_precursor_dofs, 0.0);
     precursor_old_local_.assign(num_precursor_dofs, 0.0);
   }

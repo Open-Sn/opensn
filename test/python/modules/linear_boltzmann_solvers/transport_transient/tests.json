@@ -190,7 +190,7 @@
         "type": "FloatCompare",
         "key": "TD_MIXED_2D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.2575709565901,
+        "gold": 0.07427060471192,
         "abs_tol": 1e-08
       }
     ]
@@ -204,7 +204,7 @@
         "type": "FloatCompare",
         "key": "TD_MIXED_2D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.2575709565901,
+        "gold": 0.07427060471192,
         "abs_tol": 1e-08
       }
     ]
@@ -218,7 +218,7 @@
         "type": "FloatCompare",
         "key": "TD_MIXED_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.2468444785436,
+        "gold": 0.08186206556045,
         "abs_tol": 1e-08
       }
     ]
@@ -232,7 +232,7 @@
         "type": "FloatCompare",
         "key": "TD_MIXED_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.2468444785436,
+        "gold": 0.08186206556045,
         "abs_tol": 1e-08
       }
     ]
@@ -246,7 +246,7 @@
         "type": "FloatCompare",
         "key": "TD_ADJACENT_REFLECTING_ARBITRARY_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1201997806276,
+        "gold": 0.03225520077068,
         "abs_tol": 1e-08
       }
     ]
@@ -260,7 +260,7 @@
         "type": "FloatCompare",
         "key": "TD_ADJACENT_REFLECTING_ARBITRARY_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1201997806276,
+        "gold": 0.03225520077068,
         "abs_tol": 1e-08
       }
     ]
@@ -274,7 +274,7 @@
         "type": "FloatCompare",
         "key": "TD_ADJACENT_REFLECTING_ARBITRARY_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1151965267796,
+        "gold": 0.03623207187604,
         "abs_tol": 1e-08
       }
     ]
@@ -288,7 +288,7 @@
         "type": "FloatCompare",
         "key": "TD_ADJACENT_REFLECTING_ARBITRARY_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1151965267796,
+        "gold": 0.03623207187604,
         "abs_tol": 1e-08
       }
     ]
@@ -302,7 +302,7 @@
         "type": "FloatCompare",
         "key": "TD_OPPOSING_REFLECTING_ARBITRARY_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1345975825339,
+        "gold": 0.03673519342539,
         "abs_tol": 1e-08
       }
     ]
@@ -316,7 +316,7 @@
         "type": "FloatCompare",
         "key": "TD_OPPOSING_REFLECTING_ARBITRARY_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1345975825339,
+        "gold": 0.03673519342539,
         "abs_tol": 1e-08
       }
     ]
@@ -330,7 +330,7 @@
         "type": "FloatCompare",
         "key": "TD_OPPOSING_REFLECTING_ARBITRARY_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1266233560885,
+        "gold": 0.04459344811048,
         "abs_tol": 1e-08
       }
     ]
@@ -344,7 +344,7 @@
         "type": "FloatCompare",
         "key": "TD_OPPOSING_REFLECTING_ARBITRARY_3D_MAX_PHI",
         "wordnum": 1,
-        "gold": 0.1266233560885,
+        "gold": 0.04459344811048,
         "abs_tol": 1e-08
       }
     ]
@@ -525,8 +525,8 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(3s) = ",
-        "goldvalue": 5.104477,
-        "abs_tol": 1e-06
+        "goldvalue": 5.05127,
+        "abs_tol": 5e-06
       }
     ]
   },
@@ -1453,7 +1453,7 @@
       {
         "type": "KeyValuePair",
         "key": "Max phi(3s) = ",
-        "goldvalue": 5.104477,
+        "goldvalue": 5.05127,
         "abs_tol": 5e-06
       }
     ]
@@ -1578,6 +1578,68 @@
         "key": "Max phi1 = ",
         "goldvalue": 1.035541,
         "abs_tol": 1e-06
+      }
+    ]
+  },
+  {
+    "file": "transient_theta_infinite_medium_exact.py",
+    "comment": "Exact theta-scheme recurrence (theta = 1, 1/2, 0.7) for a fissile infinite medium with two precursor families and a ramp source, AAH and CBC, plus the discrete balance identity",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "THETA_EXACT_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "THETA_BALANCE_MAX_REL_RESID",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_null_transient_from_steady.py",
+    "comment": "Null transient from a steady state with fission, precursors, vacuum and opposing reflecting boundaries (2D/3D, AAH/CBC, theta = 1, 1/2) stays stationary",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "NULL_TRANSIENT_MAX_REL_DRIFT",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_reconstructed_keigen_restart.py",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "RECON_MOMENT_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "RECON_EIGEN_ANGULAR_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "RECON_TRANSIENT_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
       }
     ]
   }

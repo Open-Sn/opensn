@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
 #include "framework/parameters/input_parameters.h"
@@ -478,6 +479,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
           local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
       }
     }
+
+  // Report a physical response: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  local_response *= IntegralMeasureScale(grid->GetCoordinateSystem());
 
   double global_response = 0.0;
   mpi_comm.all_reduce(local_response, global_response, mpi::op::sum<double>());

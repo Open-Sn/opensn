@@ -300,6 +300,14 @@ with
 :math:`\eta=\vec{\Omega} \cdot \vec{e}_\theta=\sqrt{1-\mu^2}\sin{\varphi}`,
 :math:`\mu=\vec{\Omega}\cdot \vec{e}_z`
 
+In OpenSn's RZ discretization the cell integrals are formed with the weight
+:math:`r` and the azimuthal factor :math:`2\pi` is applied when integrated
+quantities are reported, so reported rates use the physical volume element
+:math:`d^3r = 2\pi r\,dr\,dz` and the corresponding surface element. In the RZ
+angular quadrature, the direction components are stored as
+:math:`(\xi, \mu, \eta)` in the :math:`(x, y, z)` slots, with the symmetric
+out-of-plane component :math:`\eta \geq 0`.
+
 
 References
 ----------
