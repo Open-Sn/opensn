@@ -248,6 +248,15 @@ cmake<span class="w"> </span>..
 make<span class="w"> </span>-j<span class="nv">$NPROC</span>
 </pre></div>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CMake builds also compile the unit-test executable <code class="docutils literal notranslate"><span class="pre">test/opensn-unit</span></code>,
+downloading GoogleTest if it is not found on the system. To skip the tests
+in a production build, configure with <code class="docutils literal notranslate"><span class="pre">-DOPENSN_BUILD_TESTING=OFF</span></code>. If
+that option is not set, it follows the standard CMake <code class="docutils literal notranslate"><span class="pre">BUILD_TESTING</span></code>
+variable when one is provided. The module build performed by
+<code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> always disables the tests.</p>
+</div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>In the console application, all classes and functions are implicitly imported
