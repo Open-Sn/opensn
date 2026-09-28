@@ -62,7 +62,8 @@ class CMakeBuilder(build_ext):
         cmake_args = [
             f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY={extdir}{os.sep}",
             f"-DCMAKE_BUILD_TYPE={cfg}",
-            "-DOPENSN_WITH_PYTHON_MODULE=ON"
+            "-DOPENSN_WITH_PYTHON_MODULE=ON",
+            "-DOPENSN_BUILD_TESTING=OFF",
         ]
         if sys.platform.startswith("win"):
             cmake_args += [f"-DCMAKE_LIBRARY_OUTPUT_DIRECTORY_{cfg.upper()}={extdir}"]
