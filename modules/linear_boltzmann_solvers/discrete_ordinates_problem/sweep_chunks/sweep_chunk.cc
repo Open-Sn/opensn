@@ -46,6 +46,7 @@ SweepChunk::ZeroDestinationPhi()
         } // for g
       } // for moment
     } // for dof
+
   } // for cell
 }
 

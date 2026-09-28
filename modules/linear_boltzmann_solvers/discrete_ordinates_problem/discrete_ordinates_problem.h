@@ -66,6 +66,10 @@ public:
    */
   const std::string& GetSweepType() const { return sweep_type_; }
 
+  void ValidateOptions(std::optional<SweepChunkMode> mode = std::nullopt) const;
+  /// Rejects adjoint mode for CSDA problems and problems with an uncollided flux file.
+  void ValidateAdjointModeAllowed() const override;
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
@@ -95,7 +99,14 @@ public:
   /// Read access to previous angular flux vector.
   const std::vector<std::vector<double>>& GetPsiOldLocal() const;
 
+  /// Read/write access to cellwise scalar CSDA slope moments \phi_{E,g}.
+  std::vector<double>& GetPhiENewLocal();
+
+  /// Read access to cellwise scalar CSDA slope moments \phi_{E,g}.
+  const std::vector<double>& GetPhiENewLocal() const;
+
   void ZeroPsi();
+  void ZeroPhiE();
 
   bool SaveAngularFluxEnabled() const { return options_.save_angular_flux; }
 
@@ -274,6 +285,8 @@ protected:
   void ResetDerivedSolutionVectors() override;
   void UpdateBoundaryDefinition(const InputParameters& params);
   void RebuildBoundaryRuntimeData();
+  std::optional<std::vector<double>>
+  ComputeDerivedFieldFunctionData(const std::string& xs_name) const override;
 
   /**
    * @name Sweep dependency data
@@ -315,6 +328,7 @@ protected:
   unsigned int max_groupset_size_ = 0;
   std::vector<std::vector<double>> psi_new_local_;
   std::vector<std::vector<double>> psi_old_local_;
+  std::vector<double> phi_e_new_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
   std::string uncollided_flux_file_;
   std::vector<double> uncollided_flux_moments_local_;
@@ -384,6 +398,9 @@ private:
                                       size_t groupset_id,
                                       unsigned int group,
                                       size_t angle);
+  /// Validate common energy bounds and charged blocks before installing an XS map.
+  /// Materials may omit bounds; at least one complete structure must be supplied.
+  void ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const;
   /** @} */
 
 public:

@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
@@ -129,6 +130,9 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
+  uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
+  ValidateOptions();
+
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");
@@ -136,15 +140,11 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     boundary_conditions_block_ = bcs;
   }
 
-  uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
-  if (not uncollided_flux_file_.empty())
+  if (HasUncollidedFlux())
   {
     OpenSnInvalidArgumentIf(params.GetParamValue<bool>("time_dependent"),
                             GetName() + ": uncollided flux is only supported for steady-state "
                                         "fixed-source calculations.");
-    OpenSnInvalidArgumentIf(options_.adjoint,
-                            GetName() + ": uncollided flux is not supported for adjoint "
-                                        "calculations.");
   }
 
   // Check for consistency between quadrature sets
@@ -307,6 +307,18 @@ DiscreteOrdinatesProblem::GetPsiOldLocal() const
   return psi_old_local_;
 }
 
+std::vector<double>&
+DiscreteOrdinatesProblem::GetPhiENewLocal()
+{
+  return phi_e_new_local_;
+}
+
+const std::vector<double>&
+DiscreteOrdinatesProblem::GetPhiENewLocal() const
+{
+  return phi_e_new_local_;
+}
+
 size_t
 DiscreteOrdinatesProblem::GetMaxLevelSize() const
 {
@@ -377,6 +389,101 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
 }
 
 void
+DiscreteOrdinatesProblem::ValidateOptions(std::optional<SweepChunkMode> mode) const
+{
+  // Call this class's implementation directly. ValidateOptions() is called from
+  // the constructor, where virtual dispatch cannot reach a derived-class override.
+  if (options_.adjoint)
+    DiscreteOrdinatesProblem::ValidateAdjointModeAllowed();
+
+  if (not options_.csda_enabled)
+    return;
+
+  const auto validation_mode = mode.value_or(sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT));
+  OpenSnInvalidArgumentIf(validation_mode == SweepChunkMode::TIME_DEPENDENT,
+                          GetName() + ": CSDA is only supported for steady-state source "
+                                      "problems and cannot be used in time-dependent mode.");
+  OpenSnInvalidArgumentIf(use_gpus_, GetName() + ": CSDA is not supported on GPUs.");
+  OpenSnInvalidArgumentIf(sweep_type_ == "CBC",
+                          GetName() + ": CSDA is not supported with CBC sweeps.");
+  OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::TWOD_CYLINDRICAL,
+                          GetName() + ": CSDA is not supported for RZ problems.");
+  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
+                          GetName() + ": CSDA is not supported with an uncollided flux file.");
+}
+
+void
+DiscreteOrdinatesProblem::ValidateAdjointModeAllowed() const
+{
+  OpenSnInvalidArgumentIf(options_.csda_enabled,
+                          GetName() + ": CSDA is not supported for adjoint problems.");
+  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
+                          GetName() + ": uncollided flux is not supported for adjoint "
+                                      "calculations.");
+}
+
+void
+DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const
+{
+  if (not options_.csda_enabled)
+    return;
+
+  MultiGroupXS::ResolveEnergyGroupStructure(xs_map, num_groups_);
+
+  for (const auto& [_, xs] : xs_map)
+  {
+    const auto& stopping_power = xs->GetStoppingPower();
+    if (stopping_power.empty())
+      continue;
+
+    OpenSnInvalidArgumentIf(stopping_power.size() != num_groups_,
+                            GetName() +
+                              ": CSDA stopping power data is incompatible with the configured "
+                              "number of groups.");
+    OpenSnInvalidArgumentIf(
+      std::any_of(stopping_power.begin(),
+                  stopping_power.end(),
+                  [](const double value) { return not std::isfinite(value) or value < 0.0; }),
+      GetName() + ": CSDA stopping power must contain finite, nonnegative values.");
+    OpenSnInvalidArgumentIf(
+      xs->GetStoppingPowerGroupRanges().size() > 2,
+      GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron).");
+  }
+
+  // Blocks are defined across all materials; the charge sign of deposition depends on it.
+  const auto charged_ranges = FindCSDAProblemChargedGroupRanges(xs_map, num_groups_);
+  OpenSnInvalidArgumentIf(
+    charged_ranges.empty(),
+    GetName() + ": CSDA requires at least one charged-particle group with nonzero stopping "
+                "power. Load CSDA-format cross sections with LoadFromCEPXS(..., "
+                "csda_format=True).");
+  OpenSnInvalidArgumentIf(
+    charged_ranges.size() > 2,
+    GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron) "
+                "across all materials.");
+
+  for (const auto& [g_begin, g_end] : charged_ranges)
+  {
+    bool covered_by_one_groupset = false;
+    for (const auto& groupset : groupsets_)
+    {
+      if (groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end)
+      {
+        covered_by_one_groupset = true;
+        break;
+      }
+    }
+
+    OpenSnInvalidArgumentIf(
+      not covered_by_one_groupset,
+      GetName() + ": CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
+        std::to_string(g_end - 1) +
+        "] is split across groupsets. Current CSDA implementation requires each contiguous "
+        "charged-particle block to be fully contained within a single groupset.");
+  }
+}
+
+void
 DiscreteOrdinatesProblem::BuildRuntime()
 {
   CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
@@ -396,7 +503,14 @@ DiscreteOrdinatesProblem::BuildRuntime()
   }
 
   LBSProblem::BuildRuntime();
+  if (options_.csda_enabled)
+    phi_e_new_local_.assign(grid_->GetLocalCellCount() * static_cast<size_t>(num_groups_), 0.0);
+  else
+    phi_e_new_local_.clear();
   InitializeFCS();
+
+  ValidateOptions();
+  ValidateCSDAGroupConfiguration(block_id_to_xs_map_);
 
   UpdateAngularFluxStorage();
 
@@ -709,6 +823,7 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode)
 
   // True when the requested target mode is time-dependent.
   const bool switching_to_transient = target_mode == SweepChunkMode::TIME_DEPENDENT;
+  ValidateOptions(target_mode);
 
   if (switching_to_transient)
     ValidateTimeDependentModeAllowed();
@@ -816,6 +931,8 @@ DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
   OpenSnInvalidArgumentIf(
     HasUncollidedFlux(),
     GetName() + ": cross sections cannot be replaced after loading an uncollided flux file.");
+  // Validate before installing so a rejected map leaves the problem unchanged.
+  ValidateCSDAGroupConfiguration(xs_map);
   LBSProblem::SetBlockID2XSMap(xs_map);
 
   for (auto& groupset : groupsets_)
@@ -1005,6 +1122,7 @@ void
 DiscreteOrdinatesProblem::ResetDerivedSolutionVectors()
 {
   ZeroPsi();
+  ZeroPhiE();
 }
 
 void
@@ -1041,5 +1159,11 @@ void
 DiscreteOrdinatesProblem::ComputeBalance(double scaling_factor)
 {
   opensn::ComputeBalance(*this, scaling_factor);
+}
+
+void
+DiscreteOrdinatesProblem::ZeroPhiE()
+{
+  std::fill(phi_e_new_local_.begin(), phi_e_new_local_.end(), 0.0);
 }
 } // namespace opensn

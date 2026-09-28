@@ -17,6 +17,7 @@ OpenSn User Guide (Draft)
    CMFD Acceleration <cmfd_acceleration>
    Boundary Conditions and Sources <boundary_conditions_sources>
    Discrete-Ordinates Problems <discrete_ordinates_problems>
+   CSDA Charged-Particle Transport <csda>
    Solvers <solvers>
    Example Problems <example_problems>
    Post Processors <post_processors>

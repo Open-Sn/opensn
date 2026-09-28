@@ -148,7 +148,10 @@ WrapMultiGroupXS(py::module& xs)
     - Named custom 1D XS are preserved and combined with the same density weighting.
     - Fission spectra and precursor yields are weighted by fissile density
       fraction so their sums remain normalized.
-    - All inputs must have the same number of groups.
+    - All inputs must have the same number of groups. Inputs may omit energy
+      bounds; all supplied bounds must match per group, and the result keeps them.
+    - CEPXS stopping power and energy-deposition responses are density-weighted
+      along with the other cross sections. Particle-species energy bounds are preserved.
     - If inverse velocity is present, all inputs must have identical values.
 
     Examples
@@ -191,13 +194,40 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "LoadFromCEPXS",
-    [](MultiGroupXS& self, const std::string& file_name, int material_id)
+    [](MultiGroupXS& self, const std::string& file_name, int material_id, bool csda_format)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id);
+      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format);
     },
-    "Load multi-group cross sections from a CEPXS cross-section file.",
+    R"(
+    Load multi-group cross sections from a CEPXS-BFP binary cross-section file.
+
+    Parameters
+    ----------
+    file_name : str
+        CEPXS-BFP Fortran-record binary library to load.
+    material_id : int, default=0
+        Material id to load from the CEPXS library.
+    csda_format : bool, default=False
+        Interpret the CEPXS rows using OpenSn's CSDA charged-particle convention.
+        This also imports stopping power. Both formats import energy deposition
+        and the custom 1D XS ``charge_deposition`` used by the
+        ``csda_charge_deposition`` field function.
+
+    Notes
+    -----
+    Use ``csda_format=True`` together with
+    ``DiscreteOrdinatesProblem(..., options={"csda_enabled": True})`` for CSDA
+    charged-particle transport.
+
+    CSDA libraries are not standard CEPXS output. Generating them requires a
+    modified version of CEPXS; contact the OpenSn developers for more
+    information.
+
+    This method mutates ``self`` by replacing its current contents.
+    )",
     py::arg("file_name"),
-    py::arg("material_id") = 0
+    py::arg("material_id") = 0,
+    py::arg("csda_format") = false
   );
   multigroup_xs.def(
     "Scale",
@@ -209,6 +239,8 @@ WrapMultiGroupXS(py::module& xs)
     -----
     Scaling does not compound. Each call scales from the original baseline data.
     Named custom 1D XS are scaled along with the standard 1D cross-section data.
+    CEPXS stopping power and energy-deposition responses are also scaled;
+    energy-group bounds are unchanged.
     )",
     py::arg("factor")
   );
