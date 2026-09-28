@@ -1,0 +1,195 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Version and Dependency Maintenance &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Coding Standards" href="coding_standard.html" />
+    <link rel="prev" title="Developer Workflow" href="workflow.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Developer’s Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="workflow.html">Developer Workflow</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Version and Dependency Maintenance</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#updating-the-opensn-version">Updating the OpenSn version</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#making-a-release">Making a release</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="coding_standard.html">Coding Standards</a></li>
+<li class="toctree-l2"><a class="reference internal" href="doxygen.html">Doxygen guidelines</a></li>
+<li class="toctree-l2"><a class="reference internal" href="py_bindings.html">Binding C++ classes to Python</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Developer’s Guide</a></li>
+      <li class="breadcrumb-item active">Version and Dependency Maintenance</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="version-and-dependency-maintenance">
+<span id="dependency-maintenance"></span><h1>Version and Dependency Maintenance<a class="headerlink" href="#version-and-dependency-maintenance" title="Link to this heading"></a></h1>
+<p>OpenSn keeps release metadata in a small set of authoritative files. This page
+describes how those files are used and how to change them without leaving the
+CMake build, Python package, or documentation out of sync.</p>
+<section id="updating-the-opensn-version">
+<h2>Updating the OpenSn version<a class="headerlink" href="#updating-the-opensn-version" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">VERSION.txt</span></code> is the authoritative OpenSn version and must contain three
+numeric components, <code class="docutils literal notranslate"><span class="pre">MAJOR.MINOR.PATCH</span></code>, such as <code class="docutils literal notranslate"><span class="pre">1.2.3</span></code>. CMake, the Python
+package, and Sphinx read it directly, and CMake and <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> reject any
+other format. The build reconfigures automatically when the file changes.</p>
+<p>The shared-library <code class="docutils literal notranslate"><span class="pre">SOVERSION</span></code> is the major version. Increment <code class="docutils literal notranslate"><span class="pre">MAJOR</span></code> for
+changes that break the C++ or Python interface, <code class="docutils literal notranslate"><span class="pre">MINOR</span></code> for
+backward-compatible features, and <code class="docutils literal notranslate"><span class="pre">PATCH</span></code> for backward-compatible fixes.</p>
+</section>
+<section id="making-a-release">
+<h2>Making a release<a class="headerlink" href="#making-a-release" title="Link to this heading"></a></h2>
+<p>A release is an annotated <code class="docutils literal notranslate"><span class="pre">vMAJOR.MINOR.PATCH</span></code> tag on a commit in <code class="docutils literal notranslate"><span class="pre">main</span></code>,
+plus a GitHub release for that tag. Publishing a release requires a maintainer
+with permission to push tags to <code class="docutils literal notranslate"><span class="pre">Open-Sn/opensn</span></code>. No workflow runs on tags or
+releases, and the documentation site is deployed from <code class="docutils literal notranslate"><span class="pre">main</span></code>, so publishing
+the release does not start any builds.</p>
+<p>The steps below use the remote names from <a class="reference internal" href="workflow.html"><span class="doc">Developer Workflow</span></a>, where <code class="docutils literal notranslate"><span class="pre">upstream</span></code>
+is <code class="docutils literal notranslate"><span class="pre">Open-Sn/opensn</span></code>.</p>
+<ol class="arabic">
+<li><p><strong>Open a release pull request.</strong> On a branch from the latest <code class="docutils literal notranslate"><span class="pre">main</span></code>:</p>
+<ul class="simple">
+<li><p>Set <code class="docutils literal notranslate"><span class="pre">VERSION.txt</span></code> to the new version.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">distribution/spack/packages/opensn/package.py</span></code>, add
+<code class="docutils literal notranslate"><span class="pre">version(&quot;X.Y.Z&quot;,</span> <span class="pre">tag=&quot;vX.Y.Z&quot;)</span></code> above the previous release and point
+<code class="docutils literal notranslate"><span class="pre">url</span></code> at <code class="docutils literal notranslate"><span class="pre">.../archive/refs/tags/vX.Y.Z.tar.gz</span></code>. Spack resolves the tag
+only when it fetches, so the entry can be added before the tag exists.</p></li>
+<li><p>Update the <code class="docutils literal notranslate"><span class="pre">opensn&#64;</span></code> examples in <code class="docutils literal notranslate"><span class="pre">distribution/spack/README.md</span></code>.</p></li>
+</ul>
+<p>Merge the pull request after CI passes.</p>
+</li>
+<li><p><strong>Check the merged commit.</strong> Fetch <code class="docutils literal notranslate"><span class="pre">upstream</span></code> and confirm that CI passed on
+the merge commit in <code class="docutils literal notranslate"><span class="pre">main</span></code>. From a clean checkout of that commit, confirm
+that <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">setup.py</span> <span class="pre">--version</span></code> and the CMake configure report the new
+version.</p></li>
+<li><p><strong>Tag the release.</strong> Create an annotated tag on the merge commit and push it:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>fetch<span class="w"> </span>upstream
+git<span class="w"> </span>tag<span class="w"> </span>-a<span class="w"> </span>vX.Y.Z<span class="w"> </span>-m<span class="w"> </span><span class="s2">&quot;OpenSn vX.Y.Z&quot;</span><span class="w"> </span>&lt;merge-commit&gt;
+git<span class="w"> </span>push<span class="w"> </span>upstream<span class="w"> </span>vX.Y.Z
+</pre></div>
+</div>
+<p>Do not move or delete a tag after it has been pushed. Anything that was
+fetched from it, including Spack, keeps the old commit. Fix a bad release
+with a new patch release.</p>
+</li>
+<li><p><strong>Publish the GitHub release.</strong> With the GitHub CLI:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gh<span class="w"> </span>release<span class="w"> </span>create<span class="w"> </span>vX.Y.Z<span class="w"> </span>--repo<span class="w"> </span>Open-Sn/opensn<span class="w"> </span>--verify-tag<span class="w"> </span><span class="se">\</span>
+<span class="w">  </span>--title<span class="w"> </span>vX.Y.Z<span class="w"> </span>--generate-notes
+</pre></div>
+</div>
+<p>In the web interface, use <strong>Releases</strong> &gt; <strong>Draft a new release</strong>, choose the
+existing tag, and select <strong>Generate release notes</strong>. Edit the generated
+notes into a short <em>What’s Changed</em> list of user-visible changes and keep the
+<em>Full Changelog</em> comparison link. Do not upload files. GitHub attaches the
+source archives that the Spack <code class="docutils literal notranslate"><span class="pre">url</span></code> points to.</p>
+</li>
+</ol>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="workflow.html" class="btn btn-neutral float-left" title="Developer Workflow" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="coding_standard.html" class="btn btn-neutral float-right" title="Coding Standards" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
