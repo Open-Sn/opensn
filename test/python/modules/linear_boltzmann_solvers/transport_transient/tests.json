@@ -1642,5 +1642,19 @@
         "abs_tol": 1e-09
       }
     ]
+  },
+  {
+    "file": "transient_dsa_time_absorption.py",
+    "comment": "WGDSA/TGDSA in transients include the time absorption 1/(v theta dt); Richardson with DSA at small and changing dt, with an XS swap, matches unaccelerated GMRES (1 rank: direct diffusion solves)",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_TRANSIENT_MAX_REL_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
   }
 ]

@@ -5,6 +5,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/utils/error.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/logging/log.h"
+#include "framework/runtime.h"
 
 namespace opensn
 {
@@ -165,7 +167,22 @@ DiscreteOrdinatesProblemIO::WriteRestartData(const DiscreteOrdinatesProblem& do_
 {
   bool success = H5CreateAttribute<bool>(file_id, "time_dependent", do_problem.IsTimeDependent());
 
-  if (do_problem.GetOptions().restart.write_delayed_psi)
+  // A time-dependent restart cannot be read without the angular flux and the lagged angular
+  // flux, so they are always written in time-dependent mode. Time-dependent mode keeps both
+  // angular-flux levels regardless of `save_angular_flux`.
+  const bool time_dependent = do_problem.IsTimeDependent();
+  const auto& restart_options = do_problem.GetOptions().restart;
+  if (time_dependent and
+      not(restart_options.write_delayed_psi and restart_options.write_angular_flux))
+    log.Log0Warning() << do_problem.GetName()
+                      << ": write_delayed_psi_to_restart and write_angular_flux_to_restart are "
+                         "ignored for time-dependent restarts, which always include the angular "
+                         "flux state.";
+  const bool write_delayed_psi = restart_options.write_delayed_psi or time_dependent;
+  const bool write_angular_flux = time_dependent or (do_problem.GetOptions().save_angular_flux and
+                                                     restart_options.write_angular_flux);
+
+  if (write_delayed_psi)
   {
     int gs_id = 0;
     for (const auto& gs : do_problem.GetGroupsets())
@@ -183,8 +200,7 @@ DiscreteOrdinatesProblemIO::WriteRestartData(const DiscreteOrdinatesProblem& do_
     }
   }
 
-  if (do_problem.GetOptions().save_angular_flux and
-      do_problem.GetOptions().restart.write_angular_flux)
+  if (write_angular_flux)
   {
     const auto& psi_old_local = do_problem.GetPsiOldLocal();
     const auto& psi_new_local = do_problem.GetPsiNewLocal();

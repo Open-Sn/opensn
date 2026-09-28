@@ -127,12 +127,14 @@ CMFDAcceleration::GetInputParameters()
     "global_aggregation builds connected same-block aggregates that may span MPI ranks. identity "
     "creates one CMFD cell per transport cell and is intended mainly for debugging and method "
     "comparisons.");
-  params.AddOptionalParameter("current_closure",
-                              "auto",
-                              "CMFD face-current closure. Valid choices are auto, net, and "
-                              "partial. auto probes the early CMFD operator behavior and may use "
-                              "net, partial, or a blend; fixed choices are useful for comparison "
-                              "studies or cases where auto is not robust.");
+  params.AddOptionalParameter(
+    "current_closure",
+    "partial",
+    "CMFD face-current closure. Valid choices are partial, net, and auto. partial (the "
+    "default) is the partial-current CMFD (pCMFD) closure; it is typically stable unrelaxed on "
+    "both optically thin and thick coarse cells, whereas the net closure can oscillate or "
+    "diverge on optically thick coarse cells. auto probes the early CMFD operator behavior and "
+    "may use net, partial, or a blend.");
   params.AddOptionalParameter(
     "aggregation_size",
     32,
@@ -147,7 +149,7 @@ CMFDAcceleration::GetInputParameters()
     "a desired number of CMFD energy groups.");
   params.AddOptionalParameter(
     "relaxation",
-    0.5,
+    1.0,
     "Strictly positive relaxation factor for the CMFD scalar-flux correction. The correction "
     "limiter may damp or skip an individual correction if the requested correction is not "
     "admissible.");
@@ -1412,17 +1414,28 @@ CMFDAcceleration::AssembleOperator()
             if (phi_neighbor_it != coarse_phi_cache_.end())
             {
               const auto phi_neighbor = phi_neighbor_it->second;
-              if (active_current_closure_ == "partial" and std::fabs(phi_owner) > 1.0e-14 and
+              // pCMFD closure: each partial current carries half of the diffusion coupling,
+              // J+ = D/2 (phi_owner - phi_neighbor) + Dhat+ phi_owner and
+              // J- = D/2 (phi_neighbor - phi_owner) + Dhat- phi_neighbor, with Dhat+- chosen so
+              // that J+- reproduce the transport partial currents.
+              const bool needs_partial_closure =
+                active_current_closure_ == "partial" or
+                (active_current_closure_ == "blend" and blend > 0.0);
+              if (needs_partial_closure and std::fabs(phi_owner) > 1.0e-14 and
                   std::fabs(phi_neighbor) > 1.0e-14)
               {
                 const auto [owner_partial_current, neighbor_partial_current] =
                   ComputePartialOutwardCurrents(coarse_cell, f, cg);
-                const double owner_coeff = owner_partial_current / phi_owner;
-                const double neighbor_coeff = neighbor_partial_current / phi_neighbor;
-                if (std::isfinite(owner_coeff) and std::isfinite(neighbor_coeff))
+                const double half_coeff = 0.5 * coeff;
+                const double owner_dhat =
+                  (owner_partial_current - half_coeff * (phi_owner - phi_neighbor)) / phi_owner;
+                const double neighbor_dhat =
+                  (neighbor_partial_current - half_coeff * (phi_neighbor - phi_owner)) /
+                  phi_neighbor;
+                if (std::isfinite(owner_dhat) and std::isfinite(neighbor_dhat))
                 {
-                  partial_diag = owner_coeff;
-                  partial_offdiag = -neighbor_coeff;
+                  partial_diag = coeff + owner_dhat;
+                  partial_offdiag = -coeff - neighbor_dhat;
                   partial_current_closure_available = true;
                 }
               }
@@ -1436,22 +1449,6 @@ CMFDAcceleration::AssembleOperator()
                   const double transport_current = ComputeOutwardCurrent(coarse_cell, f, cg);
                   current_correction =
                     (transport_current - coeff * (phi_owner - phi_neighbor)) / phi_sum;
-                }
-              }
-
-              if (active_current_closure_ == "blend" and blend > 0.0 and
-                  not partial_current_closure_available and std::fabs(phi_owner) > 1.0e-14 and
-                  std::fabs(phi_neighbor) > 1.0e-14)
-              {
-                const auto [owner_partial_current, neighbor_partial_current] =
-                  ComputePartialOutwardCurrents(coarse_cell, f, cg);
-                const double owner_coeff = owner_partial_current / phi_owner;
-                const double neighbor_coeff = neighbor_partial_current / phi_neighbor;
-                if (std::isfinite(owner_coeff) and std::isfinite(neighbor_coeff))
-                {
-                  partial_diag = owner_coeff;
-                  partial_offdiag = -neighbor_coeff;
-                  partial_current_closure_available = true;
                 }
               }
             }

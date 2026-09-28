@@ -1719,5 +1719,33 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "transport_dsa_opposing_reflecting.py",
+    "comment": "WGDSA with opposing reflecting boundaries (lagged angular flux corrected by DSA): infinite medium c=0.99, 2D/3D, classic/PETSc Richardson and GMRES, exact phi = Q/sigma_a",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "transport_tgdsa_two_group_infinite_medium.py",
+    "comment": "TGDSA spectrum (Perron eigenvector when the Jacobi matrix has eigenvalues +/-rho) and TGDSA-only consistency with the single-sweep iteration: 2-group infinite medium, classic Richardson with TGDSA and WGDSA+TGDSA, exact phi from (Sigma_t - S) phi = Q",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TGDSA_TWO_GROUP_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
   }
 ]

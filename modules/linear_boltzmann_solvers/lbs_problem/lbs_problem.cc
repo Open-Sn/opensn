@@ -17,6 +17,7 @@
 #include "framework/utils/caliper_scopes.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <cmath>
 #include <iomanip>
 #include <fstream>
 #include <cstring>
@@ -309,6 +310,9 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 
     std::vector<double> remapped_precursors_new(num_precursor_dofs, 0.0);
     std::vector<double> remapped_precursors_old(num_precursor_dofs, 0.0);
+    // Families are matched by index. Concentrations in families that the new material does not
+    // have are discarded; the sum of their absolute nodal values is reported below.
+    double local_discarded = 0.0;
     if (old_precursor_new_state.size() == local_node_count_ * old_max_precursors_per_material)
     {
       for (const auto& cell : grid_->GetLocalCells())
@@ -338,9 +342,21 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
             remapped_precursors_new[new_base + j] = old_precursor_new_state[old_base + j];
             remapped_precursors_old[new_base + j] = old_precursor_old_state[old_base + j];
           }
+          for (unsigned int j = num_precursors_to_copy; j < old_num_precursors; ++j)
+            local_discarded += std::fabs(old_precursor_new_state[old_base + j]) +
+                               std::fabs(old_precursor_old_state[old_base + j]);
         }
       }
     }
+
+    double global_discarded = 0.0;
+    mpi_comm.all_reduce(local_discarded, global_discarded, mpi::op::sum<double>());
+    if (global_discarded > 0.0)
+      log.Log0Warning() << GetName()
+                        << ": The new cross sections have fewer precursor families than the old "
+                           "ones in some cells; precursor concentrations of the missing families "
+                           "(sum of absolute nodal values over the new and old time levels "
+                        << global_discarded << ") were discarded.";
 
     precursor_new_local_ = std::move(remapped_precursors_new);
     precursor_old_local_ = std::move(remapped_precursors_old);
@@ -553,11 +569,14 @@ LBSProblem::GetOptionsBlock()
     "restart_writes_enabled", false, "Flag that controls writing of restart dumps");
   params.AddOptionalParameter("write_delayed_psi_to_restart",
                               true,
-                              "Flag that controls writing of delayed angular fluxes to restarts.");
+                              "Flag that controls writing of delayed angular fluxes to "
+                              "steady-state restarts. Time-dependent restarts always include "
+                              "them.");
   params.AddOptionalParameter("write_angular_flux_to_restart",
                               true,
-                              "Flag that controls writing angular fluxes to restart dumps when "
-                              "`save_angular_flux` is enabled.");
+                              "Flag that controls writing angular fluxes to steady-state restart "
+                              "dumps when `save_angular_flux` is enabled. Time-dependent restarts "
+                              "always include them.");
   params.AddOptionalParameter(
     "read_restart_path", "", "Full path for reading restart dumps including file stem.");
   params.AddOptionalParameter(

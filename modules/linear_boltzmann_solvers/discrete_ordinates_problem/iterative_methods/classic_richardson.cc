@@ -76,6 +76,13 @@ ClassicRichardson::Solve()
     }
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
+    // Scalar flux before acceleration, to form the DSA correction applied to the lagged
+    // boundary angular fluxes.
+    const bool correct_delayed_psi =
+      (groupset.apply_wgdsa or groupset.apply_tgdsa) and not psi_old_.empty();
+    if (correct_delayed_psi)
+      phi_unaccelerated_ = do_problem.GetPhiNewLocal();
+
     // Apply WGDSA
     if (groupset.apply_wgdsa)
     {
@@ -102,6 +109,14 @@ ClassicRichardson::Solve()
       groupset.tgdsa_solver->Solve(delta_phi);
       TGDSA::DisassembleDeltaPhiVector(
         do_problem, groupset, delta_phi, do_problem.GetPhiNewLocal());
+    }
+
+    if (correct_delayed_psi)
+    {
+      const auto& phi_new = do_problem.GetPhiNewLocal();
+      for (size_t i = 0; i < phi_new.size(); ++i)
+        phi_unaccelerated_[i] = phi_new[i] - phi_unaccelerated_[i];
+      ApplyDSACorrectionToDelayedBoundaryFlux(do_problem, groupset, phi_unaccelerated_);
     }
 
     double pw_phi_change = ComputePointwisePhiChange(do_problem, groupset.id);

@@ -459,6 +459,33 @@ ReflectingBoundary::CopyDelayedAngularFluxNewToOld(int groupset_id)
   }
 }
 
+void
+ReflectingBoundary::AddToNewDelayedAngularFlux(int groupset_id,
+                                               const DelayedFluxCorrection& correction)
+{
+  if (not opposing_reflected_)
+    return;
+
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto node_stride = extra_data.node_stride;
+  const auto groupset_size = bank_[groupset_id].groupset_size;
+  double* flux = GetBoundaryFlux(groupset_id);
+  for (const auto& [face_node, facenode_idx] : facenode_to_index_)
+  {
+    const auto cell_local_id = static_cast<std::uint32_t>(face_node.GetCellIndex());
+    const auto face = face_node.GetFaceIndex();
+    const auto fnode = face_node.GetFaceNodeIndex();
+    for (unsigned int g = 0; g < groupset_size; ++g)
+    {
+      const double delta = correction(cell_local_id, face, fnode, g);
+      if (delta == 0.0)
+        continue;
+      for (std::uint64_t a = 0; a < node_stride; ++a)
+        flux[(facenode_idx * node_stride + a) * groupset_size + g] += delta;
+    }
+  }
+}
+
 double*
 ReflectingBoundary::PsiIncoming(std::uint32_t cell_local_id,
                                 unsigned int face_num,

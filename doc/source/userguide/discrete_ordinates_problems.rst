@@ -240,15 +240,15 @@ Restart-related options include:
 * ``read_initial_condition_path``: file stem used when reading restart data as
   an initial condition. :py:class:`pyopensn.solver.TransientSolver` can use a
   steady-state restart this way, then switch the problem to time-dependent mode.
-* ``write_angular_flux_to_restart``: include stored angular fluxes in restart
-  dumps when ``save_angular_flux=True``. This is required for full transient
-  continuation restarts, but optional when a steady-state restart is used only
-  as a transient initial condition.
-* ``write_delayed_psi_to_restart``: include delayed sweep angular-flux buffers.
-  Full continuation restarts require these buffers whenever the problem has
-  delayed sweep angular state, including partitioned parallel,
-  reflected-boundary, and cyclic-sweep cases. These buffers are optional for
-  the steady-state-restart-as-transient-initial-condition workflow.
+* ``write_angular_flux_to_restart``: include stored angular fluxes in
+  steady-state restart dumps when ``save_angular_flux=True``. They are optional
+  when a steady-state restart is used only as a transient initial condition.
+  Time-dependent restart dumps always include them, regardless of this option,
+  because full transient restarts require them.
+* ``write_delayed_psi_to_restart``: include delayed sweep angular-flux buffers
+  in steady-state restart dumps. These buffers are optional for the
+  steady-state-restart-as-transient-initial-condition workflow. Time-dependent
+  restart dumps always include them, regardless of this option.
 
 .. warning::
 

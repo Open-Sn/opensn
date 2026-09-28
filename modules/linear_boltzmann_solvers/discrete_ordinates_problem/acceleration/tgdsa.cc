@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "framework/utils/error.h"
 #include "caliper/cali.h"
 #include <algorithm>
 
@@ -17,6 +18,12 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
   {
     CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
 
+    OpenSnInvalidArgumentIf(groupset.GetNumGroups() < 2,
+                            do_problem.GetName() +
+                              ": apply_tgdsa requires a groupset with at "
+                              "least two groups (groupset " +
+                              std::to_string(groupset.id) + " has one).");
+
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& uk_man = sdm.UNITARY_UNKNOWN_MANAGER;
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -26,12 +33,25 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     auto bcs = TranslateBCs(sweep_boundaries);
 
     // Make TwoGridInfo
+    groupset.tg_acceleration_info_.map_mat_id_2_tginfo.clear();
     for (const auto& mat_id_xs_pair : block_id_to_xs_map)
     {
       const auto& mat_id = mat_id_xs_pair.first;
       const auto& xs = mat_id_xs_pair.second;
 
-      TwoGridCollapsedInfo tginfo = MakeTwoGridCollapsedInfo(*xs, EnergyCollapseScheme::JFULL);
+      // With WGDSA, each groupset iteration (one sweep followed by a within-group DSA solve)
+      // behaves like Jacobi iteration with converged within-group scattering (JFULL). Without
+      // it, the iteration is a single sweep with all scattering lagged (JPARTIAL). The spectrum
+      // and the residual must match the iteration being accelerated (Hanus, Ragusa, and
+      // Hackemack, M&C 2017).
+      const auto scheme =
+        groupset.apply_wgdsa ? EnergyCollapseScheme::JFULL : EnergyCollapseScheme::JPARTIAL;
+      TwoGridCollapsedInfo tginfo =
+        MakeTwoGridCollapsedInfo(*xs,
+                                 scheme,
+                                 groupset.first_group,
+                                 groupset.last_group,
+                                 do_problem.GetDSATimeAbsorptionScale());
 
       groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
         std::make_pair(mat_id, std::move(tginfo)));
@@ -92,6 +112,10 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
+  // The residual is the scattering lagged by the iteration within the groupset: between groups
+  // only with WGDSA (JFULL), all scattering without it (JPARTIAL). See TGDSA::Init. Groups outside
+  // the groupset are not part of its iteration error.
+  const bool include_within_group = not groupset.apply_wgdsa;
 
   auto local_node_count = do_problem.GetLocalNodeCount();
   if (delta_phi_local.size() != local_node_count)
@@ -117,7 +141,8 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       {
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime != (gsi + g))
+          if (gprime >= gsi and gprime < gsi + gss and
+              (include_within_group or gprime != (gsi + g)))
             R_g += sigma_sm * phi_in_mapped[gprime];
 
         delta_phi_mapped += R_g;
@@ -168,7 +193,10 @@ TGDSA::CleanUp(LBSGroupset& groupset)
 {
 
   if (groupset.apply_tgdsa)
+  {
     groupset.tgdsa_solver = nullptr;
+    groupset.tg_acceleration_info_.map_mat_id_2_tginfo.clear();
+  }
 }
 
 } // namespace opensn
