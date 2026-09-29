@@ -275,7 +275,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsFluxCoupled());
         const auto& IntF_shapeI = data.unit_cell_matrices[cell_local_id].intS_shapeI[f];
 
         if (not is_boundary_face and not is_local_face)
@@ -549,7 +549,7 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
-          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+          (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsFluxCoupled());
         const auto& IntF_shapeI = data.unit_cell_matrices[cell_local_id].intS_shapeI[f];
 
         if (not is_boundary_face and not is_local_face)

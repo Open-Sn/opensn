@@ -14,7 +14,8 @@ namespace
 std::map<std::string, LBSBoundaryType> type_map = {{"vacuum", LBSBoundaryType::VACUUM},
                                                    {"isotropic", LBSBoundaryType::ISOTROPIC},
                                                    {"reflecting", LBSBoundaryType::REFLECTING},
-                                                   {"arbitrary", LBSBoundaryType::ARBITRARY}};
+                                                   {"arbitrary", LBSBoundaryType::ARBITRARY},
+                                                   {"periodic", LBSBoundaryType::PERIODIC}};
 
 std::string
 UnsupportedParameterMessage(const std::string& boundary_name,

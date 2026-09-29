@@ -72,6 +72,8 @@ Supported boundary types are:
   incoming flux
 * ``"reflecting"`` returns outgoing particles back into the domain with the
   appropriate reflected direction
+* ``"periodic"`` transfers outgoing angular flux to the translated point on
+  the opposite Cartesian face, preserving direction and energy group
 * ``"isotropic"`` prescribes a group-wise isotropic incoming flux on the
   boundary
 * ``"arbitrary"`` prescribes incoming angular flux through a user callback, so
@@ -139,9 +141,32 @@ Use reflecting boundaries for symmetry planes or to model an infinite medium.
 
 .. note::
 
-   Reflecting boundaries are a modeling statement, not just a numerical trick.
-   They are appropriate when the physical problem really has mirror symmetry or
-   an intended periodic-like repeated structure.
+   Reflecting boundaries model mirror symmetry. Use periodic boundaries when
+   flux should cross a face and re-enter through its opposite partner.
+
+Periodic Boundaries
+-------------------
+
+``"periodic"`` models a repeating unit cell on an orthogonal Cartesian mesh.
+Specify both faces of each periodic pair: ``xmin`` with ``xmax``, ``ymin``
+with ``ymax``, or ``zmin`` with ``zmax``. One, two, or three pairs may be
+periodic; other faces may use another boundary type. For example, a periodic
+slab along the z axis uses:
+
+.. code-block:: python
+
+   boundary_conditions = [
+       {"name": "zmin", "type": "periodic"},
+       {"name": "zmax", "type": "periodic"},
+   ]
+
+At a periodic face, outgoing angular flux supplies incoming flux at the
+translated point on the partner face for the same direction and energy group.
+The two faces must have matching face nodes under translation. This condition
+also applies when the faces belong to different MPI ranks. The CPU AAH and CBC
+sweeps support periodic boundaries; GPU sweeps and nonorthogonal or curvilinear
+meshes do not. Periodic coupling is included among the delayed angular-flux
+unknowns solved by the groupset iteration.
 
 Isotropic Boundaries
 --------------------
