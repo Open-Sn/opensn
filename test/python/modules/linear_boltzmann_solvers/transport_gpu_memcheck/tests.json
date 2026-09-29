@@ -1,0 +1,200 @@
+[
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with vacuum boundaries with an isotropic incident flux, AAH sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"source\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_source_aah"
+  },
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with vacuum boundaries with an isotropic incident flux, CBC sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"source\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_source_cbc"
+  },
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with a single reflecting boundary, AAH sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"reflecting\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_reflecting_aah"
+  },
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with a single reflecting boundary, CBC sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"reflecting\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_reflecting_cbc"
+  },
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with opposing reflecting boundaries, AAH sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"opposing_reflecting\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_opposing_reflecting_aah"
+  },
+  {
+    "file": "memcheck_steady.py",
+    "comment": "Tiny GPU memcheck input: source-driven problem with opposing reflecting boundaries, CBC sweep, 2 capped GMRES iterations, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "bc_case=\"opposing_reflecting\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_steady_opposing_reflecting_cbc"
+  },
+  {
+    "file": "memcheck_keigen.py",
+    "comment": "Tiny GPU memcheck input: all-reflecting pyramid k-eigenvalue problem, AAH sweep, 2 power iterations with 1 sweep per inner, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_K_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_keigen_aah"
+  },
+  {
+    "file": "memcheck_keigen.py",
+    "comment": "Tiny GPU memcheck input: all-reflecting pyramid k-eigenvalue problem, CBC sweep, 2 power iterations with 1 sweep per inner, CPU/GPU parity",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_K_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GPU_CPU_PHI_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ],
+    "outfileprefix": "memcheck_keigen_cbc"
+  }
+]

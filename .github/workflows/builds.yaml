@@ -122,18 +122,18 @@ jobs:
             --run-log "$RUNNER_TEMP/logs/nightly_cuda_${{ matrix.tag }}_log.txt"
       - name: CUDA memory checks
         if: matrix.tag == 'gcc-14'
+        timeout-minutes: 30
         shell: bash
         run: |
           module load cuda/13.3.1 python3/3.12.3 opensn/gcc/14
-          test/run_tests --gpu --gpu-jobs 1 --fail-on-nonzero-exit -j 1 -v 1 \
+          # --show-backtrace device: the default host-backtrace capture on every kernel launch
+          # takes the Python GIL, which deadlocks AAH sweeps that launch kernels from worker
+          # threads while the console holds the GIL. Device-side error and leak checking are
+          # unaffected.
+          test/run_tests --gpu --gpu-jobs 4 --fail-on-nonzero-exit -j 8 -v 1 \
             --exe build/python/opensn \
-            --exe-prefix "compute-sanitizer --tool memcheck --leak-check full --error-exitcode=99" \
-            -t \
-              test/python/modules/linear_boltzmann_solvers/transport_steady/gpu_cpu_parity.py \
-              test/python/modules/linear_boltzmann_solvers/transport_steady/reed_balance_gpu.py \
-              test/python/modules/linear_boltzmann_solvers/transport_steady/reed_balance_cbc_gpu.py \
-              test/python/modules/linear_boltzmann_solvers/transport_keigen/keigenvalue_transport_3d_2g_exo_pyramid_gpu.py \
-              test/python/modules/linear_boltzmann_solvers/transport_keigen/keigenvalue_transport_3d_2g_exo_pyramid_cbc_gpu.py \
+            --exe-prefix "compute-sanitizer --tool memcheck --leak-check full --show-backtrace device --error-exitcode=99" \
+            -d test/python/modules/linear_boltzmann_solvers/transport_gpu_memcheck \
             --run-log "$RUNNER_TEMP/logs/nightly_cuda_memcheck_log.txt"
       - name: upload test logs
         if: always()
