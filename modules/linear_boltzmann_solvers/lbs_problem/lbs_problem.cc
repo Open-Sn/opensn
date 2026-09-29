@@ -95,6 +95,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
                           GetName() + ": Invalid geometry type.");
 
   InitializeGroupsets(params);
+
+  if (options_.adjoint)
+    ValidateAdjointModeAllowed();
+
   InitializeSources(params);
   InitializeXSMap(params);
   InitializeMaterials();
@@ -567,7 +571,7 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter(
     "save_angular_flux", false, "Flag indicating whether angular fluxes are to be stored or not.");
   params.AddOptionalParameter(
-    "adjoint", false, "Flag for toggling whether the solver is in adjoint mode.");
+    "adjoint", false, "Flag for enabling adjoint mode on Cartesian geometries.");
   params.AddOptionalParameter(
     "verbose_inner_iterations",
     true,
@@ -788,11 +792,31 @@ LBSProblem::InitializeRuntimeCore()
 }
 
 void
+LBSProblem::ValidateAdjointModeAllowed() const
+{
+  OpenSnInvalidArgumentIf(grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN,
+                          GetName() +
+                            ": Adjoint calculations are supported only for Cartesian geometry.");
+
+  // The adjoint is solved with transposed cross sections and the forward M2D/D2M operators. That
+  // is the exact discrete adjoint only when G = W M2D^T diag(w) M2D commutes with the scattering
+  // operator, which does not hold in general for Galerkin operators.
+  for (const auto& groupset : groupsets_)
+    OpenSnInvalidArgumentIf(
+      groupset.quadrature->GetOperatorConstructionMethod() != OperatorConstructionMethod::STANDARD,
+      GetName() + ": Adjoint calculations are not supported with Galerkin quadrature operators " +
+        "(groupset " + std::to_string(groupset.id) + "). Use operator_method='standard'.");
+}
+
+void
 LBSProblem::ValidateRuntimeModeConfiguration() const
 {
   if (options_.adjoint)
+  {
+    ValidateAdjointModeAllowed();
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+  }
 }
 
 void
@@ -1374,8 +1398,11 @@ void
 LBSProblem::SetAdjoint(bool adjoint)
 {
   if (adjoint)
+  {
+    ValidateAdjointModeAllowed();
     if (IsTimeDependent())
       OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+  }
 
   const bool mode_changed = (adjoint != options_.adjoint);
   if (not mode_changed)

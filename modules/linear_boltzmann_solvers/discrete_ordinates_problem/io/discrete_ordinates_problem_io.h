@@ -4,6 +4,7 @@
 #pragma once
 
 #include "hdf5.h"
+#include <array>
 #include <cstdint>
 #include <functional>
 #include <map>
@@ -69,13 +70,23 @@ public:
   /**
    * Surface Angular flux
    */
-  using QuantizedCoordinate = std::tuple<int64_t, int64_t, int64_t>;
+  using FaceCentroidKey = std::tuple<int64_t, int64_t, int64_t>;
 
   struct SurfaceMap
   {
     std::vector<uint64_t> cell_ids;
     std::vector<uint64_t> num_face_nodes;
-    std::map<QuantizedCoordinate, uint64_t> cell_map;
+    /// Origin subtracted from face centroids
+    std::array<double, 3> centroid_origin = {0.0, 0.0, 0.0};
+    /// Spacing used to key faces by centroid: 1e-9 times the global mesh extent.
+    double centroid_spacing = 1.0e-6;
+    /**
+     * Surface face index keyed by the face centroid, with centroid_origin subtracted from each
+     * coordinate before division by centroid_spacing and rounding to the nearest integer. The
+     * same face yields the same key from either side of an interior surface and in every file
+     * written for the same mesh.
+     */
+    std::map<FaceCentroidKey, uint64_t> cell_map;
     /** Start offset into the corresponding SurfaceData::psi array for each surface cell. */
     std::vector<uint64_t> cell_stride;
     std::vector<double> nodes_x;
@@ -95,6 +106,11 @@ public:
    * The `node_index` and `dir_index` arrays contain start offsets into `psi` for each face node and
    * node-direction pair, respectively. All arrays, including the index arrays, are empty when the
    * requested surface has no local faces.
+   *
+   * `psi` holds the face-node values of the problem's stored angular flux on the cell that owns the
+   * face; the two sides of an interior surface are stored under separate tags. After an adjoint
+   * steady-state solve the stored angular flux is the adjoint flux for the listed direction, so
+   * forward and adjoint data with the same indices refer to the same direction.
    */
   struct SurfaceData
   {
@@ -111,6 +127,8 @@ public:
   struct SurfaceAngularFlux
   {
     int groupset_id = 0;
+    /// True when the data were written from an adjoint problem.
+    bool adjoint = false;
     std::string surface_name;
     SurfaceMap mapping;
     SurfaceData data;
@@ -122,9 +140,16 @@ public:
    * \param do_problem Discrete ordinates problem
    * \param file_base File name base
    * \param boundary_surfs Boundary surface names
-   * \param interior_surfs Interior surface definitions, which must not coincide with exterior
-   * boundaries. Each surface is written with an `_u` tag for face normals aligned with the
-   * positive specified axis and a `_d` tag for the opposite orientation.
+   * \param interior_surfs Interior surface definitions, keyed by name, as an axis ("x", "y", or
+   * "z") and a coordinate. Each surface must match at least one cell face, must lie on cell faces
+   * inside the mesh, must not coincide with an exterior boundary, and must not share a plane with
+   * another requested surface. Each surface is written with an `_u` tag for face normals aligned
+   * with the positive specified axis and a `_d` tag for the opposite orientation; these tags must
+   * not equal a requested boundary name.
+   *
+   * Collective over all ranks. Surface selections may differ by rank. Plane-matching tolerances
+   * are relative to the global mesh extent. Each rank writes `<file_base><rank>.h5`, which records
+   * whether the problem is in adjoint mode.
    */
   static void WriteSurfaceAngularFluxes(
     DiscreteOrdinatesProblem& do_problem,
@@ -140,6 +165,9 @@ public:
    * \param surfaces Stored surface tags to read. Boundary tags are their boundary names. Interior
    * surface tags use `_u` for face normals aligned with the positive specified axis and `_d` for
    * the opposite orientation.
+   *
+   * Reads `<file_base><rank>.h5` on each rank; the files must have been written with the same mesh
+   * partitioning. Not collective.
    */
   static std::vector<SurfaceAngularFlux>
   ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& do_problem,

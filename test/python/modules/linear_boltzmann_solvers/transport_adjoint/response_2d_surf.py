@@ -3,6 +3,17 @@
 
 """
 2D transport response test exercising surface angular-flux I/O.
+
+The interior plane x = 6 separates the source (x < 1) from the detector (x > 9.5) and all
+exterior boundaries are vacuum, so the response is carried entirely across the plane:
+
+    QoI = int_S int_4pi (Omega . n) psi(r, Omega) psi^dagger(r, Omega) dOmega dA,
+
+with n = +x. For the upwind DFEM discretization the discrete identity is exact when psi is taken
+from its upwind side of the face and psi^dagger from its own upwind side (the downstream side of
+the forward direction). The surface QoI is evaluated from the exported directions, weights,
+direction cosines, face mass matrices, and angular fluxes, and must equal the volumetric forward
+QoI and the adjoint response.
 """
 
 import os
@@ -178,6 +189,24 @@ if __name__ == "__main__":
     if os.path.exists(f"{invalid_surface_prefix}{rank}.h5"):
         raise RuntimeError("Rejected surface selection created an output file")
 
+    invalid_interior_cases = [
+        ({"cuts_cells": ("x", 6.25)}, "cuts through mesh cells"),
+        ({"outside": ("x", 12.0)}, "lies outside the mesh"),
+        ({"first": ("y", 4.0), "second": ("y", 4.0)}, "defined on the same plane"),
+    ]
+    for interior_surfaces, expected_error in invalid_interior_cases:
+        rejected = False
+        try:
+            problem.WriteSurfaceAngularFluxes(
+                invalid_surface_prefix, interior_surfaces=interior_surfaces
+            )
+        except ValueError as error:
+            rejected = expected_error in str(error)
+        if not rejected:
+            raise RuntimeError(f"Invalid interior surface {interior_surfaces} was not rejected")
+        if os.path.exists(f"{invalid_surface_prefix}{rank}.h5"):
+            raise RuntimeError("Rejected surface selection created an output file")
+
     problem.WriteSurfaceAngularFluxes(
         forward_surface_prefix,
         boundary_surfaces=["xmin", "xmax", "ymin", "ymax"],
@@ -232,33 +261,80 @@ if __name__ == "__main__":
     )
     adjoint_qoi = evaluator.EvaluateResponse("detector")
 
-    forward_surface_up = problem.ReadSurfaceAngularFluxes(
-        forward_surface_prefix, ["inter_x_u"]
-    )
-    forward_surface_down = problem.ReadSurfaceAngularFluxes(
-        forward_surface_prefix, ["inter_x_d"]
-    )
-    local_forward_flux = sum(forward_surface_up[0]["data"]["psi"], 0.0) + sum(
-        forward_surface_down[0]["data"]["psi"], 0.0
-    )
-    forward_boundary_flux = global_sum(local_forward_flux)
+    def read_surface(prefix, tag, adjoint):
+        (surface,) = problem.ReadSurfaceAngularFluxes(prefix, [tag])
+        if surface["adjoint"] != adjoint:
+            raise RuntimeError(f"Unexpected adjoint flag for {tag} in {prefix}")
+        return surface
 
-    adjoint_surface_up = problem.ReadSurfaceAngularFluxes(
-        adjoint_surface_prefix, ["inter_x_u"]
-    )
-    adjoint_surface_down = problem.ReadSurfaceAngularFluxes(
-        adjoint_surface_prefix, ["inter_x_d"]
-    )
-    local_adjoint_importance = sum(adjoint_surface_up[0]["data"]["psi"], 0.0) + sum(
-        adjoint_surface_down[0]["data"]["psi"], 0.0
-    )
-    adjoint_boundary_importance = global_sum(local_adjoint_importance)
+    def face_nodes(surface, face):
+        mapping = surface["mapping"]
+        start = sum(mapping["num_face_nodes"][:face])
+        return [
+            (mapping["nodes_x"][start + i], mapping["nodes_y"][start + i])
+            for i in range(mapping["num_face_nodes"][face])
+        ]
+
+    def node_permutation(nodes_from, nodes_to):
+        """Index in nodes_to of each node in nodes_from."""
+        def distance_sq(k, x, y):
+            return (nodes_to[k][0] - x) ** 2 + (nodes_to[k][1] - y) ** 2
+
+        return [
+            min(range(len(nodes_to)), key=lambda k: distance_sq(k, x, y)) for x, y in nodes_from
+        ]
+
+    forward_up = read_surface(forward_surface_prefix, "inter_x_u", False)
+    forward_down = read_surface(forward_surface_prefix, "inter_x_d", False)
+    adjoint_up = read_surface(adjoint_surface_prefix, "inter_x_u", True)
+    adjoint_down = read_surface(adjoint_surface_prefix, "inter_x_d", True)
+
+    # Both sides of each face must be local to evaluate the upwind traces. The partition used by
+    # this test does not cut the x = 6 plane.
+    if len(forward_up["mapping"]["cell_ids"]) != len(forward_down["mapping"]["cell_ids"]):
+        raise RuntimeError("The x = 6 plane is split across ranks")
+
+    num_up_nodes = sum(forward_up["mapping"]["num_face_nodes"])
+    num_dirs = len(forward_up["data"]["wt_d"]) // max(1, num_up_nodes)
+    local_surface_qoi = 0.0
+    m_offset = 0
+    for face, num_nodes in enumerate(forward_up["mapping"]["num_face_nodes"]):
+        centroid_key = next(k for k, v in forward_up["mapping"]["cell_map"].items() if v == face)
+        face_down = forward_down["mapping"]["cell_map"].get(centroid_key)
+        if face_down is None:
+            raise RuntimeError("The x = 6 plane is split across ranks")
+        nodes_up = face_nodes(forward_up, face)
+        down_of_up = node_permutation(nodes_up, face_nodes(forward_down, face_down))
+
+        def psi(surface, face_index, node, d):
+            node_start = surface["data"]["node_index"][
+                sum(surface["mapping"]["num_face_nodes"][:face_index]) + node
+            ]
+            return surface["data"]["psi"][node_start + d]
+
+        node0 = sum(forward_up["mapping"]["num_face_nodes"][:face])
+        mass = forward_up["data"]["M_ij"][m_offset : m_offset + num_nodes * num_nodes]
+        for d in range(num_dirs):
+            mu = forward_up["data"]["mu"][node0 * num_dirs + d]
+            weight = forward_up["data"]["wt_d"][node0 * num_dirs + d]
+            for i in range(num_nodes):
+                if mu > 0.0:
+                    psi_i = psi(forward_up, face, i, d)
+                else:
+                    psi_i = psi(forward_down, face_down, down_of_up[i], d)
+                for j in range(num_nodes):
+                    if mu > 0.0:
+                        psi_adj_j = psi(adjoint_down, face_down, down_of_up[j], d)
+                    else:
+                        psi_adj_j = psi(adjoint_up, face, j, d)
+                    local_surface_qoi += weight * mu * mass[i * num_nodes + j] * psi_i * psi_adj_j
+        m_offset += num_nodes * num_nodes
+    surface_qoi = global_sum(local_surface_qoi)
 
     if rank == 0:
-        print(f"Forward QoI={forward_qoi:.5e}")
-        print(f"Adjoint QoI={adjoint_qoi:.5e}")
-        print(f"Forward Boundary Flux={forward_boundary_flux:.5e}")
-        print(f"Adjoint Boundary Importance={adjoint_boundary_importance:.5e}")
+        print(f"Forward QoI={forward_qoi:.8e}")
+        print(f"Adjoint QoI={adjoint_qoi:.8e}")
+        print(f"Surface QoI={surface_qoi:.8e}")
 
     barrier()
     for file_prefix in (

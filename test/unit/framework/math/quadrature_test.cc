@@ -7,6 +7,7 @@
 #include "framework/math/quadratures/angular/sldfe_sq_quadrature.h"
 #include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/math/quadratures/angular/triangular_quadrature.h"
+#include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include <gtest/gtest.h>
 #include <numeric>
 
@@ -437,4 +438,92 @@ TEST(QuadratureTest, GLCTriangularQuadrature3DXYZ)
     EXPECT_NEAR(quad.GetOmegas()[i].y, ref[i][2], tol) << "omega.y mismatch at index " << i;
     EXPECT_NEAR(quad.GetOmegas()[i].z, ref[i][3], tol) << "omega.z mismatch at index " << i;
   }
+}
+
+namespace
+{
+
+// Checks that each direction maps to its opposite in the quadrature's symmetry class, that the
+// map is an involution, and that paired directions carry the same weight.
+void
+ExpectOppositeDirections(const AngularQuadrature& quad)
+{
+  constexpr double tol = 1.0e-12;
+  const auto opposite = quad.MapOppositeDirections();
+  ASSERT_EQ(opposite.size(), quad.GetNumAngles());
+  for (size_t n = 0; n < opposite.size(); ++n)
+  {
+    const auto m = opposite[n];
+    ASSERT_LT(m, opposite.size());
+    EXPECT_EQ(opposite[m], n) << quad.GetName() << ": direction " << n;
+    EXPECT_NEAR(quad.GetWeight(m), quad.GetWeight(n), tol) << quad.GetName() << ": direction " << n;
+
+    const auto& omega_n = quad.GetOmega(n);
+    const auto& omega_m = quad.GetOmega(m);
+    if (quad.GetDimension() == 1)
+    {
+      EXPECT_NEAR(omega_m.x, omega_n.x, tol);
+      EXPECT_NEAR(omega_m.y, omega_n.y, tol);
+      EXPECT_NEAR(omega_m.z, -omega_n.z, tol);
+    }
+    else if (quad.GetDimension() == 2)
+    {
+      EXPECT_NEAR(omega_m.x, -omega_n.x, tol);
+      EXPECT_NEAR(omega_m.y, -omega_n.y, tol);
+      EXPECT_NEAR(omega_m.z, omega_n.z, tol);
+    }
+    else
+    {
+      EXPECT_NEAR(omega_m.x, -omega_n.x, tol);
+      EXPECT_NEAR(omega_m.y, -omega_n.y, tol);
+      EXPECT_NEAR(omega_m.z, -omega_n.z, tol);
+    }
+  }
+}
+
+// A 3D quadrature whose directions are not closed under negation.
+class AsymmetricQuadrature : public AngularQuadrature
+{
+public:
+  AsymmetricQuadrature() : AngularQuadrature(AngularQuadratureType::PRODUCT_QUADRATURE, 3, 0)
+  {
+    omegas_ = {Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, -1.0), Vector3(1.0, 0.0, 0.0)};
+    weights_ = {1.0, 1.0, 1.0};
+  }
+  std::string GetName() const override { return "Asymmetric"; }
+};
+
+} // namespace
+
+TEST(QuadratureTest, MapOppositeDirections)
+{
+  ExpectOppositeDirections(GLProductQuadrature1DSlab(8, 0));
+  ExpectOppositeDirections(GLCProductQuadrature2DXY(4, 8, 0));
+  ExpectOppositeDirections(GLCProductQuadrature3DXYZ(4, 8, 0));
+  ExpectOppositeDirections(GLCTriangularQuadrature2DXY(4, 0));
+  ExpectOppositeDirections(GLCTriangularQuadrature3DXYZ(4, 0));
+  // The 2D Lebedev set includes the pole (0, 0, 1), which is its own opposite in 2D.
+  ExpectOppositeDirections(LebedevQuadrature2DXY(3, 0));
+  ExpectOppositeDirections(LebedevQuadrature3DXYZ(3, 0));
+  ExpectOppositeDirections(SLDFEsqQuadrature2DXY(0, 0));
+  ExpectOppositeDirections(SLDFEsqQuadrature3DXYZ(0, 0));
+  // RZ directions store the symmetric out-of-plane component as z >= 0, including the zero-weight
+  // starting directions, so the 2D rule applies.
+  ExpectOppositeDirections(GLCProductQuadrature2DRZ(4, 8, 0));
+}
+
+TEST(QuadratureTest, CurvilinearQuadratureWeightsSumToOne)
+{
+  // All OpenSn quadratures normalize their weights to one, so boundary angular-flux inputs mean
+  // the same thing in every geometry.
+  const GLCProductQuadrature2DRZ rz(4, 8, 0);
+  EXPECT_NEAR(rz.GetWeightSum(), 1.0, 1.0e-12);
+  const GLProductQuadrature1DSpherical spherical(8, 0);
+  EXPECT_NEAR(spherical.GetWeightSum(), 1.0, 1.0e-12);
+}
+
+TEST(QuadratureTest, MapOppositeDirectionsMissingDirectionThrows)
+{
+  const AsymmetricQuadrature quad;
+  EXPECT_THROW(quad.MapOppositeDirections(), std::logic_error);
 }

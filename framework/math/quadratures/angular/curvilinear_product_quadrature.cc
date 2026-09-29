@@ -12,6 +12,16 @@
 namespace opensn
 {
 
+void
+CurvilinearProductQuadrature::NormalizeWeights()
+{
+  const auto weight_sum = std::accumulate(weights_.begin(), weights_.end(), 0.0);
+  OpenSnLogicalErrorIf(weight_sum <= 0.0,
+                       GetName() + ": Quadrature weights must sum to a positive value.");
+  for (auto& weight : weights_)
+    weight /= weight_sum;
+}
+
 GLProductQuadrature1DSpherical::GLProductQuadrature1DSpherical(unsigned int Npolar,
                                                                unsigned int scattering_order,
                                                                bool verbose,
@@ -123,6 +133,11 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
   // Curvilinear product quadrature
   // Compute additional parametrising factors
   InitializeParameters();
+
+  // Normalize the weights to sum to one, as for all other OpenSn quadratures, so that boundary
+  // angular-flux inputs have the same meaning in every geometry. The parametrising factors depend
+  // only on weight ratios and are unaffected.
+  NormalizeWeights();
 
   // Print
   if (verbose)
@@ -361,6 +376,11 @@ GLCProductQuadrature2DRZ::Initialize(const GaussQuadrature& quad_polar,
   // Curvilinear product quadrature
   // Compute additional parametrising factors
   InitializeParameters();
+
+  // Normalize the weights to sum to one, as for all other OpenSn quadratures, so that boundary
+  // angular-flux inputs have the same meaning in every geometry. The parametrising factors depend
+  // only on weight ratios and are unaffected.
+  NormalizeWeights();
 
   // Print
   if (verbose)

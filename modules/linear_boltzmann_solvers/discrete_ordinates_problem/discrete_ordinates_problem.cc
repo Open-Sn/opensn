@@ -883,42 +883,10 @@ DiscreteOrdinatesProblem::ReorientAdjointSolution()
     std::map<std::size_t, std::size_t> reversed_angle_map;
     if (options_.save_angular_flux)
     {
-      const auto& omegas = groupset.quadrature->GetOmegas();
-      const auto num_gs_angles = omegas.size();
-
-      // Go through angles until all are paired
-      std::set<std::size_t> visited;
-      for (std::size_t idir = 0; idir < num_gs_angles; ++idir)
-      {
-        // Skip if already encountered
-        if (visited.count(idir) > 0)
-          continue;
-
-        bool found = true;
-        for (std::size_t jdir = 0; jdir < num_gs_angles; ++jdir)
-        {
-          // Angles are opposite if their sum is zero
-          const auto sum = grid_->GetDimension() == 1
-                             ? Vector3(0.0, 0.0, omegas[idir].z + omegas[jdir].z)
-                             : omegas[idir] + omegas[jdir];
-          const bool opposite = sum.NormSquare() < 1.0e-8;
-
-          // Add opposites to mapping
-          if (opposite)
-          {
-            found = true;
-            reversed_angle_map[idir] = jdir;
-
-            visited.insert(idir);
-            visited.insert(jdir);
-          }
-        } // for angle n
-
-        OpenSnLogicalErrorIf(not found,
-                             "Opposing angle for " + omegas[idir].PrintStr() + " in groupset " +
-                               std::to_string(gs) + " not found.");
-
-      } // for angle m
+      const auto opposite = groupset.quadrature->MapOppositeDirections();
+      for (std::size_t idir = 0; idir < opposite.size(); ++idir)
+        if (idir < opposite[idir])
+          reversed_angle_map[idir] = opposite[idir];
     } // if saving angular flux
 
     const auto num_gs_groups = groupset.GetNumGroups();
