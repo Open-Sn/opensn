@@ -1,5 +1,42 @@
 [
   {
+    "file": "periodic_transverse_shift.py",
+    "comment": "Localized-source translation invariance in 2D and 3D on four MPI ranks",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "PeriodicTransverseError2D=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicTransverseError3D=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicTransverseBalance2D=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicTransverseBalance3D=", "goldvalue": 0.0, "abs_tol": 1e-7}
+    ]
+  },
+  {
+    "file": "periodic_shift_invariance.py",
+    "comment": "Periodic slab transport is invariant under a half-period source shift",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "PeriodicShiftErrorAAH=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicShiftErrorCBC=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicShiftBalanceAAH=", "goldvalue": 0.0, "abs_tol": 1e-7},
+      {"type": "KeyValuePair", "key": "PeriodicShiftBalanceCBC=", "goldvalue": 0.0, "abs_tol": 1e-7}
+    ]
+  },
+  {
+    "file": "periodic_cartesian.py",
+    "comment": "Cartesian periodic pure-absorber analytic solution, AAH and CBC",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "PeriodicError1DAAH=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicError1DCBC=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicError2DAAH=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicError2DCBC=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicError3DAAH=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicError3DCBC=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicBalance3DAAH=", "goldvalue": 0.0, "abs_tol": 1e-6},
+      {"type": "KeyValuePair", "key": "PeriodicBalance3DCBC=", "goldvalue": 0.0, "abs_tol": 1e-6}
+    ]
+  },
+  {
     "file": "1g_infinite_pure_absorber_balance_gmres.py",
     "comment": "Infinite, 1g, pure absorber, with balance using GMRES",
     "num_procs": 3,
