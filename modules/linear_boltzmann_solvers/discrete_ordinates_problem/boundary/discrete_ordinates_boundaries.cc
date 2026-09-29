@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/periodic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/vacuum_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/isotropic_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h"
@@ -298,6 +299,7 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
 
   sweep_boundaries_.clear();
   const auto coord_sys = MapGeometryTypeToCoordSys(geometry_type_);
+  std::map<std::uint64_t, Vector3> periodic_normals;
   for (auto bid : unique_bids_set)
   {
     auto& bndry_def = boundary_definitions_.find(bid)->second;
@@ -334,6 +336,18 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
         has_reflecting_boundaries_ = true;
         break;
       }
+      case LBSBoundaryType::PERIODIC:
+      {
+        if (coord_sys != CoordinateSystemType::CARTESIAN or
+            grid_->GetType() != MeshType::ORTHOGONAL or bid > BoundaryID::ZMAX)
+          throw std::runtime_error("Periodic boundaries require an orthogonal Cartesian mesh.");
+        if (use_gpus_)
+          throw std::runtime_error("Periodic boundaries are not supported by GPU sweeps.");
+        periodic_normals.emplace(bid, ComputeReflectingBoundaryNormal(bid));
+        sweep_boundaries_[bid] =
+          std::make_shared<PeriodicBoundary>(boundary_bank_, bid, grid_, groupsets_);
+        break;
+      }
       default:
       {
         throw std::logic_error("Boundary type not implemented.");
@@ -345,6 +359,22 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
   {
     bndry->SetOpposingReflected(bid, sweep_boundaries_);
   }
+
+  for (auto& [bid, normal] : periodic_normals)
+  {
+    const auto partner_id = bid ^ 1U;
+    const auto partner_it = sweep_boundaries_.find(partner_id);
+    if (partner_it == sweep_boundaries_.end() or
+        partner_it->second->GetType() != LBSBoundaryType::PERIODIC)
+      throw std::runtime_error("Periodic boundaries must be specified on both opposite faces.");
+    if (normal.Dot(periodic_normals.at(partner_id)) > -1.0 + 1.0e-10)
+      throw std::runtime_error("Paired periodic boundary normals are not opposite.");
+    auto* periodic = static_cast<PeriodicBoundary*>(sweep_boundaries_.at(bid).get());
+    periodic->SetPartner(*static_cast<PeriodicBoundary*>(partner_it->second.get()));
+    periodic->GatherNodeGeometry();
+  }
+  for (auto& [bid, normal] : periodic_normals)
+    static_cast<PeriodicBoundary*>(sweep_boundaries_.at(bid).get())->MatchPartnerNodes();
 }
 
 void

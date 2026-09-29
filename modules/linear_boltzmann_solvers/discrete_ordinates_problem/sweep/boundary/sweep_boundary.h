@@ -36,10 +36,11 @@ public:
   LBSBoundaryType GetType() const { return type_; }
 
   bool IsReflecting() const { return type_ == LBSBoundaryType::REFLECTING; }
-  bool IsAngleDependent() const
+  bool IsFluxCoupled() const
   {
-    return type_ == LBSBoundaryType::REFLECTING || type_ == LBSBoundaryType::ARBITRARY;
+    return type_ == LBSBoundaryType::REFLECTING or type_ == LBSBoundaryType::PERIODIC;
   }
+  bool IsAngleDependent() const { return IsFluxCoupled() || type_ == LBSBoundaryType::ARBITRARY; }
 
   double GetEvaluationTime() const { return evaluation_time_; }
 
@@ -69,6 +70,9 @@ public:
   virtual size_t CountDelayedAngularDOFsNew(int groupset_id) const { return 0; }
 
   virtual size_t CountDelayedAngularDOFsOld(int groupset_id) const { return 0; }
+
+  /// Complete any inter-rank coupling before reading newly swept boundary unknowns.
+  virtual void PrepareNewDelayedAngularFlux(int groupset_id) {}
 
   virtual void AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                                    std::vector<double>& output) const

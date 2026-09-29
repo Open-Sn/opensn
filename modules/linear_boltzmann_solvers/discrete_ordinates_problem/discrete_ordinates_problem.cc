@@ -91,7 +91,8 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
     "function takes an energy group index, a direction index, and time, and returns the incoming "
     "angular flux value.");
   params.ConstrainParameterRange(
-    "type", AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary"}));
+    "type",
+    AllowableRangeList::New({"vacuum", "isotropic", "reflecting", "arbitrary", "periodic"}));
 
   return params;
 }
