@@ -104,7 +104,7 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
-
 - :ref:`exhale_function_namespaceopensn_1af5d0740a6b08cd24f6f67db3c5eeb06c`
+
+- :ref:`exhale_function_namespaceopensn_1a77bc5fc58922a59f226a9636395bf610`
 

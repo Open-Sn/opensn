@@ -109,9 +109,23 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap15centroid_originE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a83516c1bf7d9a0fe1453455b3d240da3"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">3</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid_origin</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="p"><span class="pre">{</span></span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><span class="p"><span class="pre">}</span></span><br /></dt>
+<dd><p>Origin subtracted from face centroids. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap16centroid_spacingE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a8a2bbc47a92241465c0e863d263afa95"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">centroid_spacing</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0e-6</span></span><br /></dt>
+<dd><p>Spacing used to key faces by centroid: 1e-9 times the global mesh extent. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_mapE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a08919764bb0b117cd4f6289a6d35f1b6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO19QuantizedCoordinateE" title="opensn::DiscreteOrdinatesProblemIO::QuantizedCoordinate"><span class="n"><span class="pre">QuantizedCoordinate</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_map</span></span></span><br /></dt>
-<dd></dd></dl>
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a4badfe43ee69fdb8c0878226ff2d3267"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO15FaceCentroidKeyE" title="opensn::DiscreteOrdinatesProblemIO::FaceCentroidKey"><span class="n"><span class="pre">FaceCentroidKey</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_map</span></span></span><br /></dt>
+<dd><p>Surface face index keyed by the face centroid, with centroid_origin subtracted from each coordinate before division by centroid_spacing and rounding to the nearest integer. </p>
+<p>The same face yields the same key from either side of an interior surface and in every file written for the same mesh. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE">

@@ -357,6 +357,18 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem14FindBoundaryIDERKNSt6stringE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1acdbf183381ba6ac2f66bf28ab26d187d"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FindBoundaryID</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem14FindBoundaryIDERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Look up the mesh boundary ID for a user-facing boundary name. </p>
+<p>Orthogonal 2D cylindrical (RZ) meshes are addressed as rmin, rmax, zmin, and zmax, which map to the mesh boundaries xmin, xmax, ymin, and ymax. Other meshes use their boundary names directly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The boundary ID, or std::nullopt if the name is not valid for this problem. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ad79f974ab8df726e4fc3f66886ff6c6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReorientAdjointSolution</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Reorient an adjoint solution to account for backwards streaming. </p>

@@ -179,6 +179,7 @@
 <span class="cm">   * If the requested mode differs from the current mode, this performs a</span>
 <span class="cm">   * mode-transition reset. Materials are reinitialized in the selected mode,</span>
 <span class="cm">   * sources and boundaries are cleared, and solution vectors are zeroed.</span>
+<span class="cm">   * Adjoint mode is supported only for Cartesian geometries.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetAdjoint</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
 
@@ -504,6 +505,7 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeRuntimeCore</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAdjointModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateRuntimeModeConfiguration</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Initializes parallel arrays.</span>

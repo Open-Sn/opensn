@@ -64,6 +64,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">7. Adjoint Flux Formalism</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#discrete-adjoint-formulation">7.1. Discrete adjoint formulation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#theory-adjoint-response-identity">7.2. Theory: adjoint response identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-implementation">7.3. Discrete implementation</a></li>
 </ul>
 </li>
 </ul>
@@ -214,6 +215,66 @@ formulation, use quadrature-weighted sums and the corresponding discrete
 flux and source normalization defined above. Nonzero boundary data and
 time-dependent problems introduce additional boundary and initial/final
 terms in the response identity.</p>
+</section>
+<section id="discrete-implementation">
+<h2><span class="section-number">7.3. </span>Discrete implementation<a class="headerlink" href="#discrete-implementation" title="Link to this heading"></a></h2>
+<p>OpenSn supports adjoint calculations only for Cartesian geometries with the
+standard angular operators (<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>). Cylindrical and
+spherical coordinate systems contain angular-redistribution terms whose
+discrete transpose requires a dedicated curvilinear adjoint sweep. Galerkin
+operators are excluded for the reason given at the end of this section.</p>
+<p>OpenSn does not sweep in reversed directions. In adjoint mode it transposes
+the energy-transfer and fission cross sections and solves the resulting
+problem with the forward sweeps. The computed angular flux for direction
+<span class="math notranslate nohighlight">\(\vec{\Omega}_n\)</span> is then the adjoint angular flux for
+<span class="math notranslate nohighlight">\(-\vec{\Omega}_n\)</span>. Because
+<span class="math notranslate nohighlight">\(Y_{\ell m}(-\vec{\Omega})=(-1)^\ell Y_{\ell m}(\vec{\Omega})\)</span>, each
+computed flux moment of degree <span class="math notranslate nohighlight">\(\ell\)</span> carries a factor
+<span class="math notranslate nohighlight">\((-1)^\ell\)</span>. After the solve, the steady-state, power-iteration, and
+nonlinear k-eigenvalue solvers reorient the solution: each flux moment of
+degree <span class="math notranslate nohighlight">\(\ell\)</span> is multiplied by <span class="math notranslate nohighlight">\((-1)^\ell\)</span> (moments of odd degree
+change sign) and each stored angular flux is exchanged with that of the
+opposite direction. Afterward, the stored adjoint angular flux at index
+<span class="math notranslate nohighlight">\(n\)</span> is <span class="math notranslate nohighlight">\(\Psi^\dagger(\vec{\Omega}_n)\)</span>, and forward and adjoint
+quantities with the same direction index refer to the same direction. Energy
+groups are not reordered; the adjoint flux of group <span class="math notranslate nohighlight">\(g\)</span> remains at group
+index <span class="math notranslate nohighlight">\(g\)</span>.</p>
+<p>Quadrature sets for lower spatial dimensions store one representative per
+direction class, so the opposite direction is taken within that class:
+<span class="math notranslate nohighlight">\((\Omega_x, \Omega_y, -\Omega_z)\)</span> for 1D slab quadratures and
+<span class="math notranslate nohighlight">\((-\Omega_x, -\Omega_y, \Omega_z)\)</span> for 2D quadratures, which hold only
+<span class="math notranslate nohighlight">\(\Omega_z \geq 0\)</span>. The factor <span class="math notranslate nohighlight">\((-1)^\ell\)</span> still applies to the
+moments these quadratures retain: 1D slab quadratures keep only <span class="math notranslate nohighlight">\(m=0\)</span>,
+for which <span class="math notranslate nohighlight">\(P_\ell(-\mu)=(-1)^\ell P_\ell(\mu)\)</span>, and 2D quadratures keep
+only moments with <span class="math notranslate nohighlight">\(\ell+m\)</span> even, for which the factor <span class="math notranslate nohighlight">\((-1)^m\)</span>
+produced by <span class="math notranslate nohighlight">\((-\Omega_x, -\Omega_y, \Omega_z)\)</span> equals
+<span class="math notranslate nohighlight">\((-1)^\ell\)</span>.</p>
+<p>Groupsets are iterated in the same order in forward and adjoint mode. Within a
+groupset, all groups are solved together, so the order does not matter. With
+several groupsets, the transposed transfer matrices couple mostly from
+higher to lower group indices, so the forward groupset order can require more
+AGS iterations in adjoint mode. The converged solution is the same.</p>
+<p>A moment source <span class="math notranslate nohighlight">\(Q\)</span> enters the discrete equations for each direction as
+<span class="math notranslate nohighlight">\(Q/W\)</span>, where <span class="math notranslate nohighlight">\(W=\sum_n w_n\)</span> is the quadrature weight sum. Responses
+expressed through angular fluxes therefore carry a factor <span class="math notranslate nohighlight">\(W\)</span>, for example
+<span class="math notranslate nohighlight">\(R = W\sum_n w_n \int \Psi^\dagger_n\, q_n\, dV\)</span>, while responses
+expressed through flux moments, such as <span class="math notranslate nohighlight">\(\int \phi^\dagger Q\, dV\)</span>, do
+not. OpenSn quadratures are normalized so that <span class="math notranslate nohighlight">\(W=1\)</span>; the response
+evaluator and the cross-section sensitivity postprocessor nevertheless apply
+the factor so that they remain correct for any normalization.</p>
+<p>For the supported configurations, the transposed-cross-section sweep is the
+exact transpose of the discretized operator, and forward and adjoint responses
+agree to solver tolerance. With respect to the quadrature inner product, the
+exact discrete adjoint of the scattering operator
+<span class="math notranslate nohighlight">\(\mathrm{M2D}\,\Sigma\,\mathrm{D2M}\)</span> is
+<span class="math notranslate nohighlight">\(\mathrm{diag}(w)^{-1}(\mathrm{M2D}\,\Sigma\,\mathrm{D2M})^T\mathrm{diag}(w)\)</span>.
+For the standard operators this equals
+<span class="math notranslate nohighlight">\(\mathrm{M2D}\,\Sigma^T\,\mathrm{D2M}\)</span>, which is what transposing the
+cross sections produces. For Galerkin operators the two agree only when
+<span class="math notranslate nohighlight">\(G=W\,\mathrm{M2D}^T\mathrm{diag}(w)\,\mathrm{M2D}\)</span> commutes with
+<span class="math notranslate nohighlight">\(\Sigma\)</span>. That does not hold in general for anisotropic scattering with
+multidimensional Galerkin sets, so OpenSn rejects Galerkin quadratures in
+adjoint mode.</p>
 </section>
 </section>
 

@@ -23,6 +23,8 @@
       <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -250,6 +252,19 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn17AngularQuadrature8GetOmegaE6size_t">
 <span class="target" id="classopensn_1_1_angular_quadrature_1a382b32d751ee1e7d0dc5cd76f53dea29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetOmega</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_index</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17AngularQuadrature8GetOmegaE6size_t" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17AngularQuadrature21MapOppositeDirectionsEv">
+<span class="target" id="classopensn_1_1_angular_quadrature_1a04ac69f9ad8128cfb868f4df50c8e8dc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MapOppositeDirections</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17AngularQuadrature21MapOppositeDirectionsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Map each direction index to the index of its opposite direction. </p>
+<p>For 3D quadratures, the opposite of direction <span class="math notranslate nohighlight">\(\Omega_n\)</span> is <span class="math notranslate nohighlight">\(-\Omega_n\)</span>. Lower dimensional quadratures store only a representative of each direction class, so the opposite direction is the one that is equivalent to <span class="math notranslate nohighlight">\(-\Omega_n\)</span>: <span class="math notranslate nohighlight">\((\Omega_x, \Omega_y, -\Omega_z)\)</span> in 1D (the polar cosine changes sign) and <span class="math notranslate nohighlight">\((-\Omega_x, -\Omega_y, \Omega_z)\)</span> in 2D (quadratures hold only <span class="math notranslate nohighlight">\(\Omega_z &gt; 0\)</span>).</p>
+<p>Complexity is <span class="math notranslate nohighlight">\(O(N^2)\)</span> in the number of directions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Throws<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">logic_error</span></span></span> – if an opposite direction is not in the quadrature set. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">

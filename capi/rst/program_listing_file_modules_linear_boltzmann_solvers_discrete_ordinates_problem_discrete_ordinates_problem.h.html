@@ -208,6 +208,17 @@
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBoundaryDefinitions</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Look up the mesh boundary ID for a user-facing boundary name.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Orthogonal 2D cylindrical (RZ) meshes are addressed as rmin, rmax, zmin, and zmax, which map</span>
+<span class="cm">   * to the mesh boundaries xmin, xmax, ymin, and ymax. Other meshes use their boundary names</span>
+<span class="cm">   * directly.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \return The boundary ID, or std::nullopt if the name is not valid for this problem.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">FindBoundaryID</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Reorient an adjoint solution to account for backwards streaming.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 

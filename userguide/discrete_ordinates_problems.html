@@ -507,6 +507,9 @@ already running correctly on the CPU.</p>
 of the transport problem itself, not just the iterative algorithm.</p>
 <p>It can be set at construction time through options or later with
 <code class="docutils literal notranslate"><span class="pre">SetAdjoint(True)</span></code>.</p>
+<p>Adjoint calculations are supported only for Cartesian geometries. Cylindrical
+and spherical coordinate systems require a dedicated discrete-adjoint treatment
+of their angular-redistribution terms and are rejected.</p>
 <p>Because this is a fundamental change in problem interpretation, users should be
 deliberate about when they switch it on.</p>
 </section>
@@ -889,6 +892,8 @@ flux.</p>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ReadFluxMomentsAndMakeSourceMoments()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">WriteAngularFluxes()</span></code></p></li>
 <li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ReadAngularFluxes()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">WriteSurfaceAngularFluxes()</span></code></p></li>
+<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">ReadSurfaceAngularFluxes()</span></code></p></li>
 </ul>
 <p>These are useful for:</p>
 <ul class="simple">

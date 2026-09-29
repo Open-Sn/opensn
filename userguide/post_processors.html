@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -111,8 +113,9 @@
 <li class="toctree-l4"><a class="reference internal" href="#id2">24.9.3. Spatial Restriction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#forward-and-adjoint-state">24.9.4. Forward and Adjoint State</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#relative-sensitivities">24.9.5. Relative Sensitivities</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#k-eigenvalue-scaling">24.9.6. k-Eigenvalue Scaling</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id3">24.9.7. Results</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#discrete-formulas">24.9.6. Discrete Formulas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#k-eigenvalue-scaling">24.9.7. k-Eigenvalue Scaling</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#id3">24.9.8. Results</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#other-useful-post-processing-paths">24.10. Other Useful Post-Processing Paths</a></li>
@@ -741,8 +744,31 @@ which is dimensionless and easier to compare across coefficients:</p>
 </pre></div>
 </div>
 </section>
+<section id="discrete-formulas">
+<h3><span class="section-number">24.9.6. </span>Discrete Formulas<a class="headerlink" href="#discrete-formulas" title="Link to this heading"></a></h3>
+<p>The sensitivities are exact derivatives of the discrete response for the
+supported Cartesian geometries (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>). Products of
+forward and adjoint fields are integrated with the consistent finite-element
+mass matrix <span class="math notranslate nohighlight">\(M_{ij}=\int b_i b_j\,dV\)</span>, which is how the collision,
+scattering, and fission terms enter the discrete transport equations. For a
+single cell and group:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code>: <span class="math notranslate nohighlight">\(-W\sum_n w_n\sum_{ij}\psi^\dagger_{n,i} M_{ij}\psi_{n,j}\)</span>,
+where <span class="math notranslate nohighlight">\(W=\sum_n w_n\)</span> is the quadrature weight sum (<span class="math notranslate nohighlight">\(W=1\)</span> for
+OpenSn quadratures; the factor is kept so the formula holds for any
+normalization);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code> for moment degree <span class="math notranslate nohighlight">\(\ell\)</span>:
+<span class="math notranslate nohighlight">\((2\ell+1)\sum_{m\in\ell}\sum_{ij}\phi^\dagger_{m,i} M_{ij}\phi_{m,j}\)</span>
+(adjoint mode, and therefore these sensitivities, require the standard
+angular operators);</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>:
+<span class="math notranslate nohighlight">\(\sum_{ij}\big(\sum_{g'}\chi_{g'}\phi^\dagger_{0,g',i}\big) M_{ij}\phi_{0,g,j}\)</span>.</p></li>
+</ul>
+<p>The adjoint fluxes must be the reoriented adjoint solution produced by the
+steady-state or k-eigenvalue solvers (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>).</p>
+</section>
 <section id="k-eigenvalue-scaling">
-<h3><span class="section-number">24.9.6. </span>k-Eigenvalue Scaling<a class="headerlink" href="#k-eigenvalue-scaling" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.9.7. </span>k-Eigenvalue Scaling<a class="headerlink" href="#k-eigenvalue-scaling" title="Link to this heading"></a></h3>
 <p>For k-eigenvalue problems, call
 <a class="reference internal" href="../pyapi/generated/pyopensn.post.CrossSectionSensitivityPostprocessor.html#pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling" title="pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling()</span></code></a>
 after <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> to convert the computed sensitivities into first-order
@@ -771,7 +797,7 @@ the adjoint state at this point, so the default (current state) is correct
 for that term; only the forward term needs to be pointed at the saved file.</p>
 </section>
 <section id="id3">
-<h3><span class="section-number">24.9.7. </span>Results<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<h3><span class="section-number">24.9.8. </span>Results<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <p>After calling <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>, retrieve results with <code class="docutils literal notranslate"><span class="pre">GetValue()</span></code>. The
 return value is a 2D array indexed as <code class="docutils literal notranslate"><span class="pre">result[region][column]</span></code>, where
 <code class="docutils literal notranslate"><span class="pre">column</span></code> runs over groups (<code class="docutils literal notranslate"><span class="pre">&quot;sigma_t&quot;</span></code>), scattering moments

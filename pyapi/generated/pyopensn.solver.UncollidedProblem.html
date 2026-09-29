@@ -391,12 +391,21 @@ the positive axis and ‘&lt;name&gt;_d’ for faces with the opposite orientati
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Surface mapping and angular-flux data for each groupset and requested surface.</p>
+<dd class="field-even"><p>Surface mapping and angular-flux data for each groupset and requested surface. Each entry
+has keys ‘groupset_id’, ‘adjoint’, ‘surface_name’, ‘mapping’, and ‘data’. ‘adjoint’ is
+True when the file was written from an adjoint problem. The ‘cell_map’ in ‘mapping’ maps
+face centroids, with ‘centroid_origin’ subtracted before each coordinate is divided by
+‘centroid_spacing’ (1e-9 times the global mesh extent) and rounded to an integer, to the
+surface face index. The same face has the same key from either side of an interior surface
+and in every file for the same mesh.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[dict]</p>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Each rank reads <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>; the files must have been written with the same mesh
+partitioning.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -405,7 +414,9 @@ the positive axis and ‘&lt;name&gt;_d’ for faces with the opposite orientati
 <dd><p>Set forward/adjoint transport mode.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode.</p>
+<dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode. Adjoint mode is
+supported only for Cartesian geometries with standard quadrature operators
+(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>).</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -555,11 +566,19 @@ problem also changes the transport mode seen by the others.</p>
 <li><p><strong>interior_surfaces</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em><em>, </em><em>default={}</em>) – Interior surfaces in the form {‘name’: (‘axis’, value)}, where axis is ‘x’, ‘y’, or ‘z’.
 Each interior surface is written under two tags: ‘&lt;name&gt;_u’ for faces whose outward normal
 aligns with the positive axis and ‘&lt;name&gt;_d’ for faces with the opposite orientation.
-An interior surface may not coincide with an exterior boundary; export that boundary by
-name using boundary_surfaces instead.</p></li>
+An interior surface must match at least one cell face, must lie on cell faces inside the
+mesh, and may not share a plane with another interior surface. Its generated tags may not
+equal a requested boundary name. It may not coincide with an exterior boundary; export
+that boundary by name using boundary_surfaces instead.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Requires <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code>. Collective over all ranks; surface selections may
+differ by rank. Each rank writes <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. The file records whether the problem
+is in adjoint mode. After an adjoint steady-state solve, the stored angular flux is the adjoint
+flux for the listed direction, so forward and adjoint data with the same indices refer to the
+same direction.</p>
 </dd></dl>
 
 <dl class="py method">

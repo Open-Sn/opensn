@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -498,7 +500,9 @@ sweeps. In practice, that means:</p>
 <li><p>calls the AGS solver attached to the problem,</p></li>
 <li><p>optionally writes restart data,</p></li>
 <li><p>optionally computes precursor fields,</p></li>
-<li><p>reorients the solution if adjoint mode is active, and</p></li>
+<li><p>in adjoint mode, reorients the solution (swaps each direction’s angular flux
+with that of its opposite direction and multiplies each flux moment of
+degree <span class="math notranslate nohighlight">\(\ell\)</span> by <span class="math notranslate nohighlight">\((-1)^\ell\)</span>), and</p></li>
 <li><p>updates the completed transport state and balance information</p></li>
 </ol>
 <p>The corresponding balance summary is available from
@@ -533,6 +537,13 @@ importance studies, and related sensitivity workflows.</p>
 <p>In OpenSn, an adjoint solve is still a steady-state transport solve, but the
 problem is placed in adjoint mode so that the transport operator, materials,
 and source interpretation are all treated in the adjoint sense.</p>
+<p>Adjoint calculations are supported only for Cartesian geometries. OpenSn
+rejects adjoint mode for cylindrical and spherical coordinate systems because
+their angular-redistribution terms require dedicated discrete-adjoint sweeps.
+Adjoint mode also requires the standard angular operators
+(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>); Galerkin quadratures are rejected because
+transposing the cross sections does not, in general, give the exact discrete
+adjoint of the Galerkin scattering operator.</p>
 <p>There are two common ways to enable adjoint mode:</p>
 <ul class="simple">
 <li><p>set <code class="docutils literal notranslate"><span class="pre">options={&quot;adjoint&quot;:</span> <span class="pre">True}</span></code> when constructing the problem, or</p></li>
@@ -570,13 +581,17 @@ boundary conditions, and zeroes scalar and angular flux state</p></li>
 <li><p>after such a mode change, the desired adjoint sources and boundary conditions
 must be reapplied before solving</p></li>
 </ul>
-<p>At the end of the steady-state solve, OpenSn reorients the adjoint solution for
-the discrete-ordinates problem so the stored result is in the expected adjoint
-form.</p>
+<p>At the end of the steady-state solve, OpenSn reorients the adjoint solution. The
+adjoint is computed with the forward sweeps, so the angular flux stored for
+direction <span class="math notranslate nohighlight">\(\vec{\Omega}_n\)</span> is the adjoint flux for
+<span class="math notranslate nohighlight">\(-\vec{\Omega}_n\)</span>. Reorientation swaps each direction’s angular flux with
+that of its opposite direction and multiplies each flux moment of degree
+<span class="math notranslate nohighlight">\(\ell\)</span> by <span class="math notranslate nohighlight">\((-1)^\ell\)</span>, so forward and adjoint quantities with the same direction index refer to the same
+direction (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Time-dependent adjoint problems are not supported. Adjoint mode is therefore
-a steady-state capability in the current solver stack.</p>
+a steady-state Cartesian capability in the current solver stack.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -833,6 +848,10 @@ acceleration.</p>
 <li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
 <li><p>repeats until the eigenvalue change satisfies <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is
 reached</p></li>
+<li><p>in adjoint mode, reorients the solution: each direction’s angular flux is
+swapped with that of its opposite direction and each flux moment of degree
+<span class="math notranslate nohighlight">\(\ell\)</span> is multiplied by <span class="math notranslate nohighlight">\((-1)^\ell\)</span> (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>). This happens after the final restart dump, so
+restart data holds the unreoriented iterate.</p></li>
 </ol>
 <p>This solver uses the groupset inner solver and AGS settings configured on the
 problem.</p>
@@ -952,6 +971,9 @@ behavior or controls. That keeps the initial setup simpler.</p>
 </div>
 <p>As with power iteration, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> uses
 <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">k_eff</span></code> scaling on the production term.</p>
+<p>In adjoint mode, the solution is reoriented after the nonlinear solve: each
+direction’s angular flux is swapped with that of its opposite direction and each
+flux moment of degree <span class="math notranslate nohighlight">\(\ell\)</span> is multiplied by <span class="math notranslate nohighlight">\((-1)^\ell\)</span> (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>).</p>
 </section>
 </section>
 <section id="initialization-order-and-common-patterns">
