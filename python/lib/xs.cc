@@ -2,10 +2,14 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_wrappers.h"
+#include "framework/materials/interpolator/interpolator.h"
+#include "framework/materials/interpolator/linear_interpolator.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/materials/multi_group_xs/xsfile.h"
+#include <pybind11/numpy.h>
 #include <pybind11/stl.h>
 #include <memory>
+#include <sstream>
 #include <string>
 #include <vector>
 
@@ -21,6 +25,41 @@ void
 WrapMultiGroupXS(py::module& xs)
 {
   // clang-format off
+  // sparse matrix
+  auto sparse_matrix = py::class_<SparseMatrix>(
+    xs,
+    "SparseMatrix",
+    R"(
+    Sparse matrix wrapper.
+
+    Wrapper of :cpp:class:`opensn::SparseMatrix`.
+    )"
+  );
+  sparse_matrix.def(
+    "GetValueIJ",
+    &SparseMatrix::GetValueIJ,
+    py::arg("i"),
+    py::arg("j"),
+    "Get the value at matrix entry ``(i, j)``."
+  );
+  sparse_matrix.def_property_readonly(
+    "shape",
+    [](const SparseMatrix& self) { return py::make_tuple(self.GetNumRows(), self.GetNumCols()); },
+    "Get the matrix shape as ``(rows, columns)``."
+  );
+  sparse_matrix.def_property_readonly(
+    "num_columns_per_row",
+    [](const SparseMatrix& self)
+    {
+      std::vector<std::size_t> counts;
+      counts.reserve(self.GetNumRows());
+      for (const auto& column_indices : self.rowI_indices)
+        counts.push_back(column_indices.size());
+      return counts;
+    },
+    "Get the number of stored columns in each row."
+  );
+
   // multi-group cross section
   auto multigroup_xs = py::class_<MultiGroupXS, std::shared_ptr<MultiGroupXS>>(
     xs,
@@ -277,6 +316,11 @@ WrapMultiGroupXS(py::module& xs)
     XS_GETTER(GetNuDelayedSigmaF),
     "Get delayed neutron production due to fission."
   );
+  multigroup_xs.def_property_readonly(
+    "production_matrix",
+    [](const MultiGroupXS& self) { return self.GetProductionMatrix(); },
+    "Get the fission production matrix."
+  );
   multigroup_xs.def(
     "has_custom_xs",
     &MultiGroupXS::HasCustomXS,
@@ -300,6 +344,213 @@ WrapMultiGroupXS(py::module& xs)
     XS_GETTER(GetInverseVelocity),
     "Get inverse velocity."
   );
+  multigroup_xs.def(
+    "GetTransferMatrix",
+    &MultiGroupXS::GetTransferMatrix,
+    py::arg("ell"),
+    py::return_value_policy::reference_internal,
+    "Get the transfer matrix for moment ``ell``."
+  );
+  // clang-format on
+}
+
+// Wrap cross section interpolators
+void
+WrapInterpolator(py::module& xs)
+{
+  // clang-format off
+  // xs type
+  auto xs_type = py::enum_<XSType>(xs, "XSType");
+  xs_type.value("Total",              XSType::Total);
+  xs_type.value("Absorption",         XSType::Absorption);
+  xs_type.value("Fission",            XSType::Fission);
+  xs_type.value("NuFission",          XSType::NuFission);
+  xs_type.value("Chi",                XSType::Chi);
+  xs_type.value("ProductionMatrix",   XSType::ProductionMatrix);
+  xs_type.value("NuPromptFission",    XSType::NuPromptFission);
+  xs_type.value("NuDelayedFission",   XSType::NuDelayedFission);
+  xs_type.value("Precursor",          XSType::Precursor);
+  xs_type.value("Transfer",           XSType::Transfer);
+  xs_type.value("Default",            XSType::Default);
+  xs_type.def(
+    "__or__",
+    [](XSType a, XSType b) {
+      return static_cast<XSType>(static_cast<std::uint64_t>(a) | static_cast<std::uint64_t>(b));
+    }
+  );
+
+  // grid
+  auto cartesian_grid = py::class_<CartesianGrid, std::shared_ptr<CartesianGrid>>(
+    xs,
+    "CartesianGrid",
+    R"(
+    Cartesian interpolation grid.
+
+    Wrapper of :cpp:class:`opensn::CartesianGrid`.
+    )"
+  );
+  cartesian_grid.def(
+    py::init(
+      [](const std::vector<std::vector<double>>& grid_data)
+      {
+        return std::make_shared<CartesianGrid>(grid_data);
+      }),
+    R"(
+    Construct a Cartesian interpolation grid from a sequence of point arrays.
+
+    Parameters
+    ----------
+    grid_data: Sequence[Sequence[float]]
+        One sequence per dimension, each containing sorted unique grid points.
+    )",
+    py::arg("grid_data")
+  );
+  cartesian_grid.def(
+    "__repr__",
+    [](const CartesianGrid& self)
+    {
+      std::ostringstream os;
+      os << "CartesianGrid([";
+
+      const auto shape = self.GetShape();
+      for (std::size_t d = 0; d < shape.size(); ++d)
+      {
+        if (d > 0)
+          os << ", ";
+
+        os << "[";
+        const auto grid_d = self.GetGrid(static_cast<std::uint32_t>(d));
+        for (std::size_t i = 0; i < grid_d.size(); ++i)
+        {
+          if (i > 0)
+            os << ", ";
+          os << grid_d[i];
+        }
+        os << "]";
+      }
+
+      os << "])";
+      return os.str();
+    }
+  );
+
+  // interpolator
+  auto interpolator = py::class_<Interpolator, std::shared_ptr<Interpolator>>(
+    xs,
+    "Interpolator",
+    R"(
+    Cross-section interpolator.
+
+    Wrapper of :cpp:class:`opensn::Interpolator`.
+    )"
+  );
+  interpolator.def(
+    "Evaluate",
+    [](Interpolator& self, py::array_t<double, py::array::c_style | py::array::forcecast> state)
+    {
+      py::buffer_info buf = state.request();
+      if (buf.ndim != 1)
+        throw std::runtime_error("Interpolator.Evaluate expects a 1D NumPy array.");
+
+      auto* ptr = static_cast<double*>(buf.ptr);
+      const auto size = static_cast<std::size_t>(buf.shape[0]);
+      return std::make_shared<MultiGroupXS>(self.Evaluate(std::span<double>(ptr, size)));
+    },
+    R"(
+    Evaluate the interpolator at a state point.
+
+    Parameters
+    ----------
+    state: numpy.ndarray
+        One-dimensional NumPy array containing the interpolation state point.
+
+    Returns
+    -------
+    pyopensn.xs.MultiGroupXS
+        Interpolated multi-group cross section.
+    )",
+    py::arg("state")
+  );
+
+  // linear interpolator
+  auto linear_interp = py::class_<LinearInterpolator, std::shared_ptr<LinearInterpolator>, Interpolator>(
+    xs,
+    "LinearInterpolator",
+    R"(
+    Cross-section linear interpolator.
+
+    Wrapper of :cpp:class:`opensn::LinearInterpolator`.
+    )"
+  );
+  linear_interp.def(
+    py::init(
+      [](const std::shared_ptr<CartesianGrid>& grid,
+         py::array xs_data,
+         XSType flag)
+      {
+        if (not grid)
+          throw std::runtime_error("grid cannot be None.");
+
+        const auto shape = grid->GetShape();
+        if (xs_data.ndim() != static_cast<py::ssize_t>(shape.size()))
+          throw std::runtime_error("xs_data rank does not match the CartesianGrid rank.");
+
+        if (py::str(xs_data.dtype().attr("kind")).cast<std::string>() != "O")
+          throw std::runtime_error("xs_data must be a NumPy object array of MultiGroupXS.");
+
+        for (std::size_t d = 0; d < shape.size(); ++d)
+        {
+          if (xs_data.shape(static_cast<py::ssize_t>(d)) != static_cast<py::ssize_t>(shape[d]))
+            throw std::runtime_error("xs_data shape does not match the CartesianGrid shape.");
+        }
+
+        py::buffer_info buf = xs_data.request();
+        auto* base_ptr = static_cast<char*>(buf.ptr);
+        std::vector<std::shared_ptr<MultiGroupXS>> xs_vec;
+        xs_vec.reserve(grid->GetSize());
+        std::vector<py::ssize_t> index(shape.size(), 0);
+
+        for (std::size_t flat_i = 0; flat_i < grid->GetSize(); ++flat_i)
+        {
+          py::ssize_t byte_offset = 0;
+          for (std::size_t d = 0; d < shape.size(); ++d)
+            byte_offset += index[d] * buf.strides[d];
+
+          // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+          auto* obj_ptr = reinterpret_cast<PyObject**>(base_ptr + byte_offset);
+          xs_vec.push_back(
+            py::reinterpret_borrow<py::object>(*obj_ptr).cast<std::shared_ptr<MultiGroupXS>>());
+
+          for (std::size_t d = shape.size(); d-- > 0;)
+          {
+            ++index[d];
+            if (index[d] < buf.shape[d])
+              break;
+            index[d] = 0;
+          }
+        }
+
+        return std::make_shared<LinearInterpolator>(
+          *grid, xs_vec, static_cast<std::uint64_t>(flag));
+      }),
+    R"(
+    Construct a linear cross-section interpolator.
+
+    Parameters
+    ----------
+    grid: pyopensn.xs.CartesianGrid
+        Interpolation grid.
+    xs_data: numpy.ndarray
+        Object array of ``MultiGroupXS`` values whose shape matches ``grid``.
+        The array is traversed in C-order before constructing the interpolator.
+    flag: pyopensn.xs.XSType
+        Bitmask describing which cross-section data are interpolated.
+    )",
+    py::arg("grid"),
+    py::arg("xs_data"),
+    py::arg("flag") = XSType::Default
+  );
+
   // clang-format on
 }
 
@@ -309,6 +560,7 @@ py_xs(py::module& pyopensn)
 {
   py::module xs = pyopensn.def_submodule("xs", "Cross section module.");
   WrapMultiGroupXS(xs);
+  WrapInterpolator(xs);
 }
 
 } // namespace opensn

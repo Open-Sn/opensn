@@ -240,6 +240,7 @@ void WrapVolumetricSource(py::module& src);
 /// Wrap the cross section components of OpenSn.
 void py_xs(py::module& pyopensn);
 void WrapMultiGroupXS(py::module& xs);
+void WrapInterpolator(py::module& xs);
 
 /// Wrap the post-processing components of OpenSn
 void py_post(py::module& pyopensn);

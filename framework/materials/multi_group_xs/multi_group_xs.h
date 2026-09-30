@@ -12,14 +12,20 @@ namespace opensn
 class MultiGroupXS
 {
 public:
-  MultiGroupXS()
-    : num_groups_(0),
-      scattering_order_(0),
-      num_precursors_(0),
-      is_fissionable_(false),
-      adjoint_(false),
-      scaling_factor_(1.0),
-      diffusion_initialized_(false)
+  MultiGroupXS(unsigned int num_groups = 0,
+               unsigned int scattering_order = 0,
+               unsigned int num_precursors = 0,
+               bool is_fissionable = false,
+               bool adjoint = false,
+               double scaling_factor = 1.0,
+               bool diffusion_initialized = false)
+    : num_groups_(num_groups),
+      scattering_order_(scattering_order),
+      num_precursors_(num_precursors),
+      is_fissionable_(is_fissionable),
+      adjoint_(adjoint),
+      scaling_factor_(scaling_factor),
+      diffusion_initialized_(diffusion_initialized)
   {
   }
 
@@ -70,11 +76,22 @@ public:
 
   const std::vector<double>& GetSigmaTotal() const { return sigma_t_; }
 
+  std::vector<double>& GetSigmaTotal() { return sigma_t_; }
+
   const std::vector<double>& GetSigmaAbsorption() const { return sigma_a_; }
+
+  std::vector<double>& GetSigmaAbsorption() { return sigma_a_; }
 
   const std::vector<double>& GetEnergyDeposition() const { return energy_deposition_; }
 
+  std::vector<double>& GetEnergyDeposition() { return energy_deposition_; }
+
   const std::vector<SparseMatrix>& GetTransferMatrices() const
+  {
+    return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
+  }
+
+  std::vector<SparseMatrix>& GetTransferMatrices()
   {
     return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
   }
@@ -86,13 +103,23 @@ public:
 
   const std::vector<double>& GetChi() const { return chi_; }
 
+  std::vector<double>& GetChi() { return chi_; }
+
   const std::vector<double>& GetSigmaFission() const { return sigma_f_; }
+
+  std::vector<double>& GetSigmaFission() { return sigma_f_; }
 
   const std::vector<double>& GetNuSigmaF() const { return nu_sigma_f_; }
 
+  std::vector<double>& GetNuSigmaF() { return nu_sigma_f_; }
+
   const std::vector<double>& GetNuPromptSigmaF() const { return nu_prompt_sigma_f_; }
 
+  std::vector<double>& GetNuPromptSigmaF() { return nu_prompt_sigma_f_; }
+
   const std::vector<double>& GetNuDelayedSigmaF() const { return nu_delayed_sigma_f_; }
+
+  std::vector<double>& GetNuDelayedSigmaF() { return nu_delayed_sigma_f_; }
 
   /**
    * @note The LBS source and fission-production routines assume this matrix represents
@@ -105,7 +132,14 @@ public:
     return adjoint_ ? transposed_production_matrix_ : production_matrix_;
   }
 
+  std::vector<std::vector<double>>& GetProductionMatrix()
+  {
+    return adjoint_ ? transposed_production_matrix_ : production_matrix_;
+  }
+
   const std::vector<Precursor>& GetPrecursors() const { return precursors_; }
+
+  std::vector<Precursor>& GetPrecursors() { return precursors_; }
 
   const std::vector<double>& GetInverseVelocity() const { return inv_velocity_; }
 
@@ -124,6 +158,8 @@ public:
   std::vector<std::string> GetCustomXSNames() const;
 
   const std::vector<double>* GetByName(const std::string& xs_name) const;
+
+  void ComputeDiffusionParameters();
 
 private:
   /// Total number of groups
@@ -198,8 +234,6 @@ private:
   void Reset();
 
   void ComputeAbsorption();
-
-  void ComputeDiffusionParameters();
 
   void TransposeTransferAndProduction();
 
