@@ -343,7 +343,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
         {
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization_->MapDOFLocal(cell, j, uk_man, 0, c);
+            const auto dof_map = discretization_->MapDOFLocal(cell_local_id, j, uk_man, 0, c);
             const double dof_value = field_vector[dof_map];
 
             local_point_value[c] += dof_value * shape_values(j);
@@ -418,14 +418,14 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         point.z < xyz_min.z or point.z > xyz_max.z)
       continue;
 
-    for (const size_t c : bins.Candidates(point))
+    for (const size_t cell_local_id : bins.Candidates(point))
     {
-      const auto& cell = local_cells[c];
+      const auto& cell = local_cells[cell_local_id];
       if (not master_grid->CheckPointInsideCell(cell, point))
         continue;
 
       ++local_num_point_hits[p];
-      const auto& master_mapping = master.discretization_->GetLocalCellMapping(c);
+      const auto& master_mapping = master.discretization_->GetLocalCellMapping(cell_local_id);
       Vector<double> master_shape_values;
       master_mapping.ShapeValues(point, master_shape_values);
       for (size_t f = 0; f < field_functions.size(); ++f)
@@ -433,7 +433,7 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         const auto& field_function = *field_functions[f];
         const auto& discretization = *field_function.discretization_;
         const auto& unknown_manager = field_function.GetUnknownManager();
-        const auto& cell_mapping = discretization.GetLocalCellMapping(c);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
         const auto& field_vector = *field_function.ghosted_field_vector_;
         Vector<double> alternate_shape_values;
         const Vector<double>* shape_values = &master_shape_values;
@@ -448,7 +448,8 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         for (size_t c = 0; c < field_num_components; ++c)
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, j, unknown_manager, 0, c);
+            const auto dof_map =
+              discretization.MapDOFLocal(cell_local_id, j, unknown_manager, 0, c);
             const size_t value_index = p * num_components + component_offsets[f] + c;
             local_values[value_index] += field_vector[dof_map] * (*shape_values)(j);
           }
@@ -502,7 +503,8 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   const size_t num_nodes = cell_mapping.GetNumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
-    const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
+    const auto dof_map =
+      discretization_->MapDOFLocal(cell_local_id, j, GetUnknownManager(), 0, component);
     value += field_vector[dof_map] * shape_values(j);
   }
 
@@ -558,15 +560,17 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
       point_array->SetName(component_name.c_str());
 
       // Populate the array here
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
+        const auto& cell = grid->GetLocalCell(cell_local_id);
         const size_t num_nodes = sdm->GetCellNumNodes(cell);
 
         if (num_nodes == cell.vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
 
@@ -578,7 +582,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
           double node_average = 0.0;
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
             node_average += field_value;

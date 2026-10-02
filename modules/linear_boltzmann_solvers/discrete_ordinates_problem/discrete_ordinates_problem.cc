@@ -1155,7 +1155,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
           double reconstructed = 0.0;
           for (size_t n = 0; n < quad.GetNumAngles(); ++n)
           {
-            const auto dof = discretization_->MapDOFLocal(cell, i, groupset.psi_uk_man_, n, g);
+            const auto dof =
+              discretization_->MapDOFLocal(cell_local_id, i, groupset.psi_uk_man_, n, g);
             reconstructed += quad.GetWeight(n) * psi[dof];
           }
           local_max_correction = std::max(local_max_correction, std::abs(target - reconstructed));
@@ -1163,7 +1164,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
           const double scale = reconstructed != 0.0 ? target / reconstructed : 0.0;
           for (size_t n = 0; n < quad.GetNumAngles(); ++n)
           {
-            const auto dof = discretization_->MapDOFLocal(cell, i, groupset.psi_uk_man_, n, g);
+            const auto dof =
+              discretization_->MapDOFLocal(cell_local_id, i, groupset.psi_uk_man_, n, g);
             auto& value = psi[dof];
             value = std::isfinite(scale) and scale > 0.0 ? value * scale : target / weight_sum;
           }
@@ -1394,8 +1396,8 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
           for (const auto& [idir, jdir] : reversed_angle_map)
           {
             const auto dof_map =
-              std::make_pair(discretization_->MapDOFLocal(cell, i, uk_man, idir, 0),
-                             discretization_->MapDOFLocal(cell, i, uk_man, jdir, 0));
+              std::make_pair(discretization_->MapDOFLocal(cell_local_id, i, uk_man, idir, 0),
+                             discretization_->MapDOFLocal(cell_local_id, i, uk_man, jdir, 0));
 
             for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
               std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);
@@ -1484,7 +1486,7 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
             {
               if (reflected != nullptr)
                 inflow[base + g] =
-                  psi[discretization_->MapDOFLocal(cell, i, uk_man, (*reflected)[d], g)];
+                  psi[discretization_->MapDOFLocal(cell_local_id, i, uk_man, (*reflected)[d], g)];
               // With source moments the sweep does not apply the incoming flux of the other
               // boundaries, so the solve used zero.
               else if (options_.use_src_moments)

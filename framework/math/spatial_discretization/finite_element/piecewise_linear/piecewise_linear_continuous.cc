@@ -454,12 +454,13 @@ PieceWiseLinearContinuous::MapDOF(const Cell& cell,
 }
 
 uint64_t
-PieceWiseLinearContinuous::MapDOFLocal(const Cell& cell,
+PieceWiseLinearContinuous::MapDOFLocal(std::uint32_t cell_local_id,
                                        const unsigned int node,
                                        const UnknownManager& unknown_manager,
                                        const unsigned int unknown_id,
                                        const unsigned int component) const
 {
+  auto& cell = GetMesh()->GetLocalCell(cell_local_id);
   const uint64_t vertex_id = cell.vertex_ids[node];
 
   OpenSnLogicalErrorIf(node_mapping_.count(vertex_id) == 0, "Bad trouble");

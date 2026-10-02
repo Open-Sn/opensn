@@ -503,7 +503,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
       std::vector<double> nodal_value(num_nodes, 0.0);
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = sdm.MapDOFLocal(cell_id, i, uk_man, 0, groups_[k]);
         nodal_value[i] = phi[imap];
       }
 
@@ -544,7 +544,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = sdm.MapDOFLocal(cell_id, i, uk_man, 0, groups_[k]);
         const double value = coeffs[groups_[k]] * phi[imap];
         extremum[k] = is_max ? std::max(extremum[k], value) : std::min(extremum[k], value);
       }

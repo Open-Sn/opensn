@@ -83,7 +83,7 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
     const auto num_faces = cell.faces.size();
     const double* cell_psi =
-      &psi[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+      &psi[discretization_.MapDOFLocal(cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
     for (size_t i = 0; i < num_nodes; ++i)
       for (unsigned int m = 0; m < num_moments_; ++m)

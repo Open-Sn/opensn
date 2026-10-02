@@ -41,7 +41,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
     double phi_integral = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, g);
+      const auto imap = sdm.MapDOFLocal(cell.local_id, i, phi_uk_man, 0, g);
       phi_integral += intV_shapeI(i) * phi_new_local[imap];
     }
     phi_avg[g] = phi_integral / cell_volume;
@@ -155,8 +155,8 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, angle, group_in_groupset);
-      const auto imapB = sdm.MapDOFLocal(cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i, uk_man, angle, group_in_groupset);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i);
       data_vector_local[imapB] = psi[imapA];
     }
   }
@@ -278,13 +278,13 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
         for (const auto& charged_range : data.charged_ranges)
         {
           const unsigned int g = charged_range.second - 1;
-          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, g);
+          const auto imap = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, g);
           const double slowing_down_density =
             stopping_power[g] *
             (phi_new_local_[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
           nodal_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
-        data_vector_local[sdm.MapDOFLocal(cell, i)] = nodal_value;
+        data_vector_local[sdm.MapDOFLocal(cell_local_id, i)] = nodal_value;
       }
       continue;
     }
@@ -332,7 +332,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     const double cell_value = cell_avg_raw_value + csda_value;
 
     for (size_t i = 0; i < num_nodes; ++i)
-      data_vector_local[sdm.MapDOFLocal(cell, i)] = cell_value;
+      data_vector_local[sdm.MapDOFLocal(cell_local_id, i)] = cell_value;
   }
 
   return data_vector_local;

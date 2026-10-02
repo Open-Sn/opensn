@@ -189,8 +189,8 @@ SpatialDiscretization::CopyVectorWithUnknownScope(const std::vector<double>& fro
       {
         for (size_t c = 0; c < num_comps; ++c)
         {
-          const auto fmap = MapDOFLocal(cell, i, ukmanF, ukidF, c);
-          const auto imap = MapDOFLocal(cell, i, ukmanT, ukidT, c);
+          const auto fmap = MapDOFLocal(cell_local_id, i, ukmanF, ukidF, c);
+          const auto imap = MapDOFLocal(cell_local_id, i, ukmanT, ukidT, c);
 
           to_vector[imap] = from_vector[fmap];
         } // for component c

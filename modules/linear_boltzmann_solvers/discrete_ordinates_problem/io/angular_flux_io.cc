@@ -135,13 +135,15 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     std::vector<double> values;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
     }
@@ -320,11 +322,11 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
         uint64_t v = 0;
         for (size_t c = 0; c < mesh.cell_ids.size(); ++c)
         {
-          const auto& cell = grid->GetGlobalCell(mesh.cell_ids[c]);
+          const auto cell_local_id = grid->MapCellGlobalID2LocalID(mesh.cell_ids[c]);
           for (const auto node : mesh.node_maps[c])
             for (uint64_t n = 0; n < num_gs_dirs; ++n)
               for (unsigned int g = 0; g < num_gs_groups; ++g)
-                psi[discretization.MapDOFLocal(cell, node, uk_man, n, g)] = values[v++];
+                psi[discretization.MapDOFLocal(cell_local_id, node, uk_man, n, g)] = values[v++];
         }
       };
       for (const auto& groupset : groupsets)
@@ -921,7 +923,8 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
           const bool enters = adjoint ? mu_d > 0.0 : mu_d < 0.0;
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, d, g);
+            const auto dof_map =
+              discretization.MapDOFLocal(surface_face.cell_local_id, i, uk_man, d, g);
             surface_data.psi.push_back(psi[groupset_id][dof_map]);
             if (not on_boundary)
               continue;

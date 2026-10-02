@@ -32,9 +32,9 @@ CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
-    cell_psi_start_[cell_local_id] =
-      (sdm_.MapDOFLocal(cell, 0, psi_uk_man_, 0, 0) / num_angles_in_gs_quadrature / num_groups_) *
-      num_groups_and_angles_;
+    cell_psi_start_[cell_local_id] = (sdm_.MapDOFLocal(cell_local_id, 0, psi_uk_man_, 0, 0) /
+                                      num_angles_in_gs_quadrature / num_groups_) *
+                                     num_groups_and_angles_;
 
     for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {

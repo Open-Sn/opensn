@@ -99,13 +99,14 @@ LBSSolverIO::WriteFluxMoments(
   // Loop through dof and store flux values
   std::vector<double> values;
   values.reserve(num_local_dofs);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)
         {
-          const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, m, g);
+          const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, m, g);
           values.push_back(src[dof_map]);
         }
   }
@@ -323,11 +324,11 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
       uint64_t v = 0;
       for (size_t c = 0; c < mesh.cell_ids.size(); ++c)
       {
-        const auto& cell = grid->GetGlobalCell(mesh.cell_ids[c]);
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(mesh.cell_ids[c]);
         for (const auto node : mesh.node_maps[c])
           for (unsigned int m = 0; m < num_moments; ++m)
             for (unsigned int g = 0; g < num_groups; ++g)
-              result[discretization.MapDOFLocal(cell, node, uk_man, m, g)] = values[v++];
+              result[discretization.MapDOFLocal(cell_local_id, node, uk_man, m, g)] = values[v++];
       }
     });
 

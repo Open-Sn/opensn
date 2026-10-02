@@ -308,7 +308,7 @@ PieceWiseLinearDiscontinuous::MapDOF(const Cell& cell,
 }
 
 uint64_t
-PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
+PieceWiseLinearDiscontinuous::MapDOFLocal(std::uint32_t cell_local_id,
                                           const unsigned int node,
                                           const UnknownManager& unknown_manager,
                                           const unsigned int unknown_id,
@@ -319,58 +319,20 @@ PieceWiseLinearDiscontinuous::MapDOFLocal(const Cell& cell,
   size_t num_unknowns = unknown_manager.GetTotalUnknownStructureSize();
   size_t block_id = unknown_manager.MapUnknown(unknown_id, component);
 
-  if (cell.partition_id == opensn::mpi_comm.rank())
+  if (storage == UnknownStorageType::BLOCK)
   {
-    if (storage == UnknownStorageType::BLOCK)
-    {
-      auto address =
-        cell_local_block_address_[cell.local_id] + local_base_block_size_ * block_id + node;
-      return address;
-    }
-    else if (storage == UnknownStorageType::NODAL)
-    {
-      auto address =
-        cell_local_block_address_[cell.local_id] * num_unknowns + node * num_unknowns + block_id;
-      return address;
-    }
+    auto address =
+      cell_local_block_address_[cell_local_id] + local_base_block_size_ * block_id + node;
+    return address;
+  }
+  else if (storage == UnknownStorageType::NODAL)
+  {
+    auto address =
+      cell_local_block_address_[cell_local_id] * num_unknowns + node * num_unknowns + block_id;
+    return address;
   }
   else
-  {
-    int index = 0;
-    bool found = false;
-    for (auto neighbor_info : neighbor_cell_block_address_)
-    {
-      if (neighbor_info.first == cell.global_id)
-      {
-        found = true;
-        break;
-      }
-      ++index;
-    }
-
-    if (not found)
-    {
-      std::stringstream oss;
-      oss << "PieceWiseLinearDiscontinuous: Mapping failed for cell (global index = "
-          << cell.global_id << ", partition id = " << cell.partition_id << ")";
-      throw std::runtime_error(oss.str());
-    }
-
-    if (storage == UnknownStorageType::BLOCK)
-    {
-      auto address = neighbor_cell_block_address_[index].second +
-                     locJ_block_size_[cell.partition_id] * block_id + node;
-      return address;
-    }
-    else if (storage == UnknownStorageType::NODAL)
-    {
-      auto address =
-        neighbor_cell_block_address_[index].second * num_unknowns + node * num_unknowns + block_id;
-      return address;
-    }
-  }
-
-  return -1;
+    return -1;
 }
 
 std::uint64_t

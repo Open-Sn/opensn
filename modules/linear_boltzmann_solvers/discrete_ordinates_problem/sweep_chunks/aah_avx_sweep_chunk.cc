@@ -180,10 +180,10 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       const double* __restrict m2d_row = m2d_op.data() + dir_moment_offset;
       const double* __restrict d2m_row = d2m_op.data() + dir_moment_offset;
 
-      const double* psi_old =
-        (time_dependent and data.psi_old)
-          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
-          : nullptr;
+      const double* psi_old = (time_dependent and data.psi_old)
+                                ? &(*data.psi_old)[data.discretization.MapDOFLocal(
+                                    cell_local_id, 0, groupset.psi_uk_man_, 0, 0)]
+                                : nullptr;
 
       ComputeAngularSource(cell_transport_view,
                            NumNodes,
@@ -308,9 +308,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* cell_psi_data =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &data.destination_psi[data.discretization.MapDOFLocal(
+          cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
         PRAGMA_UNROLL
         for (int i = 0; i < NumNodes; ++i)
         {

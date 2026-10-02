@@ -296,7 +296,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
       if (SaveAngularFluxEnabled())
       {
         double* psi_new =
-          &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+          &destination_psi_[discretization_.MapDOFLocal(cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {

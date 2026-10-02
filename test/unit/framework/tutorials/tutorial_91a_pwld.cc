@@ -120,7 +120,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     {
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
         q_source[dof_map] = 1.0;
       }
@@ -244,9 +244,9 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
             const double* upwind_psi = zero_vector.data();
             if (face.has_neighbor)
             {
-              const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
+              const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
               const int aj = cell_adj_mapping[cell_local_id][f][fj];
-              const auto ajmap = sdm.MapDOFLocal(adj_cell, aj, psi_uk_man, d, 0);
+              const auto ajmap = sdm.MapDOFLocal(adj_cell_local_id, aj, psi_uk_man, d, 0);
               upwind_psi = &psi_old[ajmap];
             }
 
@@ -270,7 +270,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
         double temp_src = 0.0;
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
           temp_src += m2d(d, m) * source_moments[dof_map];
         } // for m
         source[i] = temp_src;
@@ -300,7 +300,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
       const auto wn_d2m = d2m(d, m);
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+        const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
         for (unsigned int g = 0; g < num_groups; ++g)
           phi_new[dof_map + g] += wn_d2m * b[g](i);
       }
@@ -309,7 +309,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
     // Save angular fluxes
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dof_map = sdm.MapDOFLocal(cell, i, psi_uk_man, d, 0);
+      const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, psi_uk_man, d, 0);
       for (unsigned int g = 0; g < num_groups; ++g)
         psi_old[dof_map + g] = b[g](i);
     }
@@ -367,7 +367,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
       {
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+          const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
           const auto ell = m_ell_em_map[m].ell;
 
           for (unsigned int g = 0; g < num_groups; ++g)
@@ -407,13 +407,13 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
       for (size_t i = 0; i < num_nodes; ++i)
       {
         // Get scalar moments
-        const auto m0_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, 0);
+        const auto m0_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, 0);
 
         const double* phi_new_m0 = &in_phi_new[m0_map];
         const double* phi_old_m0 = &in_phi_old[m0_map];
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          const auto m_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, 0);
+          const auto m_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, 0);
 
           const double* phi_new_m = &in_phi_new[m_map];
           const double* phi_old_m = &in_phi_old[m_map];

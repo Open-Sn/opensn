@@ -295,7 +295,7 @@ template <typename Fn>
 void
 AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
 {
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
   const auto& node_tracker = common_data_.GetNodeTracker();
   const auto& nonlocal_offsets = common_data_.GetNonLocalDelayedIncomingNodeOffsets();
@@ -372,7 +372,7 @@ AAHD_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
 {
   OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
                        "AAHD_FLUDS: the number of directions does not match the FLUDS.");
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& omegas = quadrature.GetOmegas();
   const auto& weights = quadrature.GetWeights();
 
@@ -497,7 +497,7 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
     const auto& cell = grid->GetLocalCell(cell_local_id);
     // get pointer to the cell's angular fluxes
     double* dst_psi =
-      &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi = save_angular_flux_.host_storage.data() +
                       mesh_carrier->saved_psi_offset[cell_local_id] * num_groups_and_angles_;
     // get number of cell nodes
