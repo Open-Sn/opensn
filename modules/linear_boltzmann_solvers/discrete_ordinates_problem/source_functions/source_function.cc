@@ -51,7 +51,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& grid = lbs_problem_.GetGrid();
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
@@ -125,7 +125,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
                 rhs += F_g[gp] * phi_im[gp];
 
             if (lbs_problem_.GetOptions().use_precursors)
-              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], cell->local_id);
+              rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], cell.local_id);
           }
 
           // Add to destination vector

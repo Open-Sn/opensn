@@ -58,10 +58,10 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    cell_ids.push_back(cell->global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(*cell));
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell));
 
-    const auto& nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -100,11 +100,11 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     std::vector<double> values;
     for (const auto& cell : grid->GetLocalCells())
     {
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
     }
@@ -280,7 +280,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   local_min.fill(std::numeric_limits<double>::max());
   local_max.fill(std::numeric_limits<double>::lowest());
   for (const auto& cell : grid->GetLocalCells())
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell.vertex_ids)
     {
       const auto& vertex = grid->GlobalVertex(vid);
       for (size_t d = 0; d < 3; ++d)
@@ -359,7 +359,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
     {
       double cell_min = std::numeric_limits<double>::max();
       double cell_max = std::numeric_limits<double>::lowest();
-      for (const auto vid : cell->vertex_ids)
+      for (const auto vid : cell.vertex_ids)
       {
         const auto coordinate = grid->GlobalVertex(vid)[a];
         cell_min = std::min(cell_min, coordinate);
@@ -393,8 +393,8 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
     for (const auto& cell : grid->GetLocalCells())
     {
       const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      for (size_t f = 0; f < cell->faces.size(); ++f)
-        if (not cell->faces[f].has_neighbor and
+      for (size_t f = 0; f < cell.faces.size(); ++f)
+        if (not cell.faces[f].has_neighbor and
             FaceMatchesInteriorSurface(cell_mapping, f, axis, slice))
         {
           coincides_with_boundary = 1;
@@ -445,7 +445,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& cell_mapping = discretization.GetCellMapping(*cell);
-    for (size_t f = 0; f < cell->faces.size(); ++f)
+    for (size_t f = 0; f < cell.faces.size(); ++f)
       for (size_t p = 0; p < planes.size(); ++p)
         if (FaceMatchesInteriorSurface(
               cell_mapping, f, axis_names[planes[p].first], planes[p].second))
@@ -586,11 +586,11 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   {
     const auto& cell_mapping = discretization.GetCellMapping(*cell);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const auto& fe_values = unit_cell_matrices.at(cell->local_id);
+    const auto& fe_values = unit_cell_matrices.at(cell.local_id);
 
-    for (size_t f = 0; f < cell->faces.size(); ++f)
+    for (size_t f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell.faces[f];
       bool is_surface = false;
       std::string surface_name;
 
@@ -628,12 +628,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         continue;
 
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-      SurfaceFaceInfo surface_face{cell->local_id, surface_name, face.normal, {}, {}, {}};
+      SurfaceFaceInfo surface_face{cell.local_id, surface_name, face.normal, {}, {}, {}};
       surface_face.node_indices.reserve(num_face_nodes);
       surface_face.fe_shape.reserve(num_face_nodes);
       surface_face.mass_matrix.reserve(num_face_nodes * num_face_nodes);
 
-      cell_map[surface_name].push_back(cell->global_id);
+      cell_map[surface_name].push_back(cell.global_id);
       node_map[surface_name].push_back(num_face_nodes);
 
       const auto& int_f_shape_i = fe_values.intS_shapeI[f];
