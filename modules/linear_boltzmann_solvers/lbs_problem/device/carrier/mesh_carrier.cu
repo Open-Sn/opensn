@@ -98,6 +98,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
        ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     std::size_t cell_num_faces = mesh.GetCellFaceCount();
     const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
@@ -160,7 +161,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     char* face_data = cell_data;
     for (std::size_t f = 0; f < cell_num_faces; ++f)
     {
-      const CellFace& face = cell.faces[f];
+      const CellFace& face = cell_faces[f];
       *(offset_face_data++) = face_data - cell_data;
       // number of face node
       std::uint64_t* num_face_nodes_data = reinterpret_cast<std::uint64_t*>(face_data);

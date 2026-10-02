@@ -163,11 +163,12 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
   for (const auto& cell_local_id : cell_local_ids)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     auto outgoing_boundary_it = cell_to_outgoing_boundary_nodes_.find(cell_local_id);
     if (outgoing_boundary_it != cell_to_outgoing_boundary_nodes_.end())
       for (const auto& node : outgoing_boundary_it->second)
       {
-        const auto& face = cell.faces[node.face_id];
+        const auto& face = cell_faces[node.face_id];
         if (angle_set->GetBoundaries().at(face.neighbor_id)->IsReflecting())
         {
           for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
@@ -186,7 +187,7 @@ CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
     if (outgoing_nonlocal_it != cell_to_outgoing_nonlocal_nodes_.end())
       for (const auto& node : outgoing_nonlocal_it->second)
       {
-        const auto& face = cell.faces[node.face_id];
+        const auto& face = cell_faces[node.face_id];
         const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
         const auto& face_nodal_mapping =
           common_data_.GetFaceNodalMapping(node.cell_local_id, node.face_id);
