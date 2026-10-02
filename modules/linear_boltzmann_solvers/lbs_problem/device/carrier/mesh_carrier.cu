@@ -92,10 +92,13 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   std::uint64_t* offset_cell_data = reinterpret_cast<std::uint64_t*>(data);
   data = reinterpret_cast<char*>(offset_cell_data + num_cells);
   std::uint64_t saved_psi_index = 0;
-  for (char* cell_data = data; const auto& cell : mesh.GetLocalCells())
+  for (char* cell_data = data; std::uint32_t cell_local_id = 0;
+       cell_local_id < grid->GetLocalCellCount();
+       ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     std::size_t cell_num_faces = cell.faces.size();
-    const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell);
+    const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
     if (cell_num_nodes > LBSProblem::max_dofs_gpu)
