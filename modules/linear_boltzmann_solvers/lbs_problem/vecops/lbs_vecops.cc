@@ -16,7 +16,7 @@ LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
                               Functor func)
 {
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
@@ -48,7 +48,7 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
 
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& sdm = lbs_problem.GetSpatialDiscretization();
   const auto& unknown_manager = lbs_problem.GetUnknownManager();
 

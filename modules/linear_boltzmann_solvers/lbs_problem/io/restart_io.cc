@@ -75,7 +75,7 @@ ReadRestartMeshData(hid_t file_id, RestartMeshData& data)
 bool
 WriteRestartMeshData(hid_t file_id, const LBSProblem& problem)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   std::vector<uint64_t> cell_ids;
   std::vector<uint64_t> num_cell_nodes;
@@ -117,7 +117,7 @@ WriteCellwiseDataset(hid_t file_id,
                      const std::vector<double>& source,
                      CellwiseField field)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
@@ -151,7 +151,7 @@ WriteCellwiseDataset(hid_t file_id,
 bool
 SameLocalPartition(const LBSProblem& problem, const RestartMeshData& data)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   if (data.cell_ids.size() != grid->GetLocalCellCount())
     return false;
@@ -190,7 +190,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
                     std::vector<double>& destination,
                     CellwiseField field)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
@@ -344,7 +344,7 @@ ReadPrecursorVector(hid_t file_id,
 
   // Precursors are stored per spatial node (index node * J + j). Files written before this layout
   // stored one value per cell and family; expand those to the nodes of each cell.
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const size_t num_local_nodes = discretization.GetNumLocalNodes();
   const size_t num_local_cells = grid->GetLocalCellCount();

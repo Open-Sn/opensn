@@ -208,7 +208,7 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
   ASSERT_GT(moment_map.size(), 1U);
   ASSERT_EQ(moment_map[0].ell, 0U);
   ASSERT_EQ(moment_map[1].ell, 1U);
-  const auto& local_cells = restarted_problem->GetGrid()->GetLocalCells();
+  const auto& local_cells = restarted_problem->GetMesh()->GetLocalCells();
   if (not local_cells.empty())
   {
     const auto& cell = local_cells.front();

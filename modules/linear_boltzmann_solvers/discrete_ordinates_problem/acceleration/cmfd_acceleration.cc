@@ -366,12 +366,12 @@ CMFDAcceleration::Initialize()
   do_problem_.ConfigureOutflowStorage(true);
 
   if (coarse_mesh_type_ == "identity")
-    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetGrid());
+    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetMesh());
   else if (coarse_mesh_type_ == "local_aggregation")
-    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(*do_problem_.GetMesh(), aggregation_size_);
   else if (coarse_mesh_type_ == "global_aggregation")
     coarse_mesh_ =
-      CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+      CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetMesh(), aggregation_size_);
 
   if (update_wgs_max_its_ > 1 and update_wgs_abs_tol_ > balance_residual_tolerance_)
     log.Log0Warning() << "CMFD update_wgs_abs_tol (" << update_wgs_abs_tol_
@@ -1136,7 +1136,7 @@ CMFDAcceleration::BuildCoarseFluxCache()
 void
 CMFDAcceleration::BuildFaceCurrentCache()
 {
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
 
   std::map<int, std::set<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>>>
@@ -1418,7 +1418,7 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
                                                 const std::size_t face_index,
                                                 const unsigned int coarse_group) const
 {
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   const auto& coarse_face = coarse_cell.faces.at(face_index);
   const auto& outflow_views = do_problem_.GetCellOutflowViews();
 
@@ -1718,7 +1718,7 @@ CMFDAcceleration::FluxUpdateDiagnostics
 CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double k_eff) const
 {
   const auto& transport_views = do_problem_.GetCellTransportViews();
-  const auto& grid = *do_problem_.GetGrid();
+  const auto& grid = *do_problem_.GetMesh();
   double local_min_phi = std::numeric_limits<double>::max();
   bool local_nonfinite = false;
   for (const auto& cell : grid.GetLocalCells())

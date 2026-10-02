@@ -28,7 +28,7 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
   const auto problem_name = do_problem.GetName();
   const auto num_groups = do_problem.GetNumGroups();
   const auto scattering_order = do_problem.GetScatteringOrder();
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& transport_views = do_problem.GetCellTransportViews();
 

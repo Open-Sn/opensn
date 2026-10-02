@@ -63,7 +63,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -229,7 +229,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
             "vectors are restored to solver orientation together.");
       }
 
-      const auto& grid = do_problem.GetGrid();
+      const auto& grid = do_problem.GetMesh();
       const auto& discretization = do_problem.GetSpatialDiscretization();
       const auto& groupsets = do_problem.GetGroupsets();
 
@@ -399,7 +399,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                           "its boundary values.");
 
   // Get problem information
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
   const auto num_groupsets = static_cast<uint64_t>(groupsets.size());

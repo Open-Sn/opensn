@@ -41,7 +41,7 @@ LBSSolverIO::WriteFluxMoments(
 
   log.Log() << "Writing flux moments to " << file_base;
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& uk_man = lbs_problem.GetUnknownManager();
 
@@ -289,7 +289,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
             "vectors are restored to solver orientation together.");
       }
 
-      const auto& grid = lbs_problem.GetGrid();
+      const auto& grid = lbs_problem.GetMesh();
       const auto& discretization = lbs_problem.GetSpatialDiscretization();
       const auto& uk_man = lbs_problem.GetUnknownManager();
       const auto num_moments = lbs_problem.GetNumMoments();

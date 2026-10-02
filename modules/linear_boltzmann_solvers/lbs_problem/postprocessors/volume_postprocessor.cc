@@ -271,7 +271,7 @@ VolumePostprocessor::VolumePostprocessor(const InputParameters& params)
 void
 VolumePostprocessor::CreateSpatialRestriction()
 {
-  const auto& grid = lbs_problem_->GetGrid();
+  const auto& grid = lbs_problem_->GetMesh();
 
   if (logical_volumes_.empty())
   {

@@ -302,7 +302,7 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                           "Material source strengths must be finite.");
 
   std::uint64_t local_cell_count = 0;
-  for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
+  for (const auto& cell : do_problem_->GetMesh()->GetLocalCells())
     if (cell.block_id == blkid)
       ++local_cell_count;
   std::uint64_t global_cell_count = 0;
@@ -395,7 +395,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();

@@ -183,7 +183,7 @@ FaceTraceConstant(const CellMapping& cell_mapping,
       for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
         N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
-  const auto& grid = *cell_mapping.GetGrid();
+  const auto& grid = *cell_mapping.GetMesh();
   return FaceOrthogonalLength(grid, cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
 }
 

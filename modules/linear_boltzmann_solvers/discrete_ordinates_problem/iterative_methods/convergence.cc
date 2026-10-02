@@ -49,7 +49,7 @@ ComputePointwisePhiChange(
   const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
-  auto grid_ptr = lbs_problem.GetGrid();
+  auto grid_ptr = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
@@ -108,7 +108,7 @@ ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
   double pw_change = 0.0;
   if (not psi_new.empty())
   {
-    const auto& grid = *do_problem.GetGrid();
+    const auto& grid = *do_problem.GetMesh();
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& transport_views = do_problem.GetCellTransportViews();
     const auto& phi_new = do_problem.GetPhiNewLocal();

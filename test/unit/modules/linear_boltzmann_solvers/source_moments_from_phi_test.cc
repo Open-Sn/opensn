@@ -123,7 +123,7 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
   const auto& uk_man = problem.GetUnknownManager();
   const auto& moment_map = problem.GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   std::vector<double> q(phi.size(), 0.0);
-  for (const auto& cell : problem.GetGrid()->GetLocalCells())
+  for (const auto& cell : problem.GetMesh()->GetLocalCells())
     for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell); ++i)
       for (unsigned int m = 0; m < problem.GetNumMoments(); ++m)
       {
@@ -311,7 +311,7 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
 
   auto reversed = phi;
   problem->ReverseMomentDirections(reversed);
-  for (const auto& cell : problem->GetGrid()->GetLocalCells())
+  for (const auto& cell : problem->GetMesh()->GetLocalCells())
     for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell); ++i)
       for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
         for (unsigned int g = 0; g < 2; ++g)

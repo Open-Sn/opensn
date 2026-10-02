@@ -390,7 +390,7 @@ LBSProblem::RebuildRuntimeObjects()
 }
 
 std::shared_ptr<Mesh>
-LBSProblem::GetGrid() const
+LBSProblem::GetMesh() const
 {
   return grid_;
 }
