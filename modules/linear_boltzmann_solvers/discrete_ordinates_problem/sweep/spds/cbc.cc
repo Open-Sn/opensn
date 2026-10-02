@@ -65,15 +65,15 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   task_list_.reserve(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto num_faces = cell->faces.size();
+    const auto num_faces = cell.faces.size();
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
     successors.reserve(num_faces);
 
     for (std::size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell->faces[f];
-      const auto& orientation = cell_face_orientations_[cell->local_id][f];
+      const auto& face = cell.faces[f];
+      const auto& orientation = cell_face_orientations_[cell.local_id][f];
 
       if (orientation == INCOMING)
       {
@@ -87,7 +87,7 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
       }
     }
 
-    task_list_.push_back({num_dependencies, successors, cell->local_id, cell.get(), false});
+    task_list_.push_back({num_dependencies, successors, cell.local_id, &cell, false});
   }
 }
 

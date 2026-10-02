@@ -211,7 +211,7 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
   const auto& local_cells = restarted_problem->GetGrid()->GetLocalCells();
   if (not local_cells.empty())
   {
-    const auto& cell = *local_cells.front();
+    const auto& cell = local_cells.front();
     const auto& sdm = restarted_problem->GetSpatialDiscretization();
     const auto& uk_man = restarted_problem->GetUnknownManager();
     const auto even_dof = sdm.MapDOFLocal(cell, 0, uk_man, 0, 0);

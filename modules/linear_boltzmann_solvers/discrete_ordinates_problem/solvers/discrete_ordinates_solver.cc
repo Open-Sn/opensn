@@ -62,7 +62,7 @@ DiscreteOrdinatesSolver::RequireFissionableMaterial(std::vector<std::string>& er
   int local_fissionable = 0;
   for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
   {
-    const auto xs = xs_map.find(cell->block_id);
+    const auto xs = xs_map.find(cell.block_id);
     if (xs != xs_map.end() and xs->second->IsFissionable())
     {
       local_fissionable = 1;
