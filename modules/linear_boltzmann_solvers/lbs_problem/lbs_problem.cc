@@ -329,23 +329,23 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
       for (const auto& cell : grid_->GetLocalCells())
       {
         unsigned int old_num_precursors = 0;
-        if (const auto old_xs_it = old_xs_map.find(cell->block_id); old_xs_it != old_xs_map.end())
+        if (const auto old_xs_it = old_xs_map.find(cell.block_id); old_xs_it != old_xs_map.end())
         {
           const auto& old_xs = old_xs_it->second;
           if (old_xs->IsFissionable())
             old_num_precursors = old_xs->GetPrecursors().size();
         }
 
-        const auto& new_xs = block_id_to_xs_map_.at(cell->block_id);
+        const auto& new_xs = block_id_to_xs_map_.at(cell.block_id);
         const unsigned int new_num_precursors =
           new_xs->IsFissionable() ? new_xs->GetPrecursors().size() : 0;
         const unsigned int num_precursors_to_copy =
           std::min(old_num_precursors, new_num_precursors);
 
-        const auto& cell_mapping = discretization_->GetCellMapping(*cell);
+        const auto& cell_mapping = discretization_->GetCellMapping(cell);
         for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
-          const auto node_id = discretization_->MapDOFLocal(*cell, i);
+          const auto node_id = discretization_->MapDOFLocal(cell, i);
           const size_t old_base = node_id * old_max_precursors_per_material;
           const size_t new_base = node_id * new_max_precursors_per_material;
           for (unsigned int j = 0; j < num_precursors_to_copy; ++j)
@@ -964,7 +964,7 @@ LBSProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
   { return block_id != std::numeric_limits<unsigned int>::max() and xs_map.contains(block_id); };
   std::uint64_t local_cells_without_xs = 0;
   for (const auto& cell : grid_->GetLocalCells())
-    local_cells_without_xs += has_xs(cell->block_id) ? 0 : 1;
+    local_cells_without_xs += has_xs(cell.block_id) ? 0 : 1;
   std::uint64_t cells_without_xs = 0;
   mpi_comm.all_reduce(local_cells_without_xs, cells_without_xs, mpi::op::sum<std::uint64_t>());
   if (cells_without_xs > 0)
@@ -1170,8 +1170,8 @@ LBSProblem::InitializeMaterials()
   if (grid_->GetLocalCellCount() == cell_transport_views_.size())
     for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto& xs_ptr = block_id_to_xs_map_[cell->block_id];
-      auto& transport_view = cell_transport_views_[cell->local_id];
+      const auto& xs_ptr = block_id_to_xs_map_[cell.block_id];
+      auto& transport_view = cell_transport_views_[cell.local_id];
       transport_view.ReassignXS(*xs_ptr);
     }
 
@@ -1204,8 +1204,8 @@ LBSProblem::ComputeUnitIntegrals()
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    unit_cell_matrices_[cell->local_id] =
-      ComputeUnitCellIntegrals(sdm, *cell, grid_->GetCoordinateSystem());
+    unit_cell_matrices_[cell.local_id] =
+      ComputeUnitCellIntegrals(sdm, cell, grid_->GetCoordinateSystem());
   }
 
   const auto ghost_ids = grid_->GetGhostGlobalIDs();
@@ -1275,22 +1275,22 @@ LBSProblem::InitializeParrays()
   cell_transport_views_.reserve(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
   {
-    size_t num_nodes = discretization_->GetCellNumNodes(*cell);
+    size_t num_nodes = discretization_->GetCellNumNodes(cell);
 
     // compute cell volumes
     double cell_volume = 0.0;
-    const auto& IntV_shapeI = unit_cell_matrices_[cell->local_id].intV_shapeI;
+    const auto& IntV_shapeI = unit_cell_matrices_[cell.local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI(i);
 
     size_t cell_phi_address = block_MG_counter;
 
-    const size_t num_faces = cell->faces.size();
+    const size_t num_faces = cell.faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
     std::vector<int> face_locality(num_faces, opensn::mpi_comm.rank());
     std::vector<const Cell*> neighbor_cell_ptrs(num_faces, nullptr);
     int f = 0;
-    for (auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       if (not face.has_neighbor)
       {
@@ -1314,7 +1314,7 @@ LBSProblem::InitializeParrays()
                                        num_nodes,
                                        num_groups_,
                                        num_moments_,
-                                       *block_id_to_xs_map_[cell->block_id],
+                                       *block_id_to_xs_map_[cell.block_id],
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
@@ -1332,9 +1332,9 @@ LBSProblem::InitializeParrays()
   for (const auto& cell : grid_->GetLocalCells())
   {
     CellFaceNodalMapping cell_nodal_mapping;
-    cell_nodal_mapping.reserve(cell->faces.size());
+    cell_nodal_mapping.reserve(cell.faces.size());
 
-    for (auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       std::vector<short> face_node_mapping;
       std::vector<short> cell_node_mapping;
