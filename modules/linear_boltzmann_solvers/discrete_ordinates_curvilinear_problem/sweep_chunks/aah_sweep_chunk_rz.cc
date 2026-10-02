@@ -16,7 +16,7 @@ namespace opensn
 AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
   : SweepChunk(problem.GetPhiNewLocal(),
                problem.GetPsiNewLocal()[groupset.id],
-               problem.GetGrid(),
+               problem.GetMesh(),
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),

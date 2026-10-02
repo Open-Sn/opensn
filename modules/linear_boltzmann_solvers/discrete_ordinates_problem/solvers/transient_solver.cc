@@ -458,7 +458,7 @@ TransientSolver::StepPrecursors()
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
 
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {

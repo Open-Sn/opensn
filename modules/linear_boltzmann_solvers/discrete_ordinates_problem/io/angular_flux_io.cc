@@ -37,7 +37,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -139,7 +139,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -263,7 +263,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                           "WriteSurfaceAngularFluxes requires `options.save_angular_flux=true`.");
 
   // Get problem information
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
   const auto num_groupsets = static_cast<uint64_t>(groupsets.size());
@@ -794,7 +794,7 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& d
                        "Invalid centroid spacing in " + file_name + ".");
 
   const auto& groupsets = do_problem.GetGroupsets();
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto num_groupsets = groupsets.size();
 

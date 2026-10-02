@@ -269,14 +269,14 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
 
   // loop for each cell in the mesh
   auto* mesh_carrier = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
+  auto grid = problem.GetMesh();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   std::size_t groupset_angle_group_stride =
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
-  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     // get pointer to the cell's angular fluxes
     double* dst_psi =
       &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];

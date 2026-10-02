@@ -60,7 +60,7 @@ ReadPrecursorVector(hid_t file_id,
 
   // Precursors are stored per spatial node (index node * J + j). Files written before this layout
   // stored one value per cell and family; expand those to the nodes of each cell.
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const size_t num_local_nodes = discretization.GetNumLocalNodes();
   const size_t num_local_cells = grid->GetLocalCellCount();

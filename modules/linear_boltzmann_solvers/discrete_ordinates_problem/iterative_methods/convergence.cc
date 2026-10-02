@@ -43,7 +43,7 @@ ComputePointwisePhiChange(
   const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
-  auto grid_ptr = lbs_problem.GetGrid();
+  auto grid_ptr = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
