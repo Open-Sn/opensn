@@ -461,8 +461,8 @@ TransientSolver::StepPrecursors()
   const auto& transport_views = do_problem_->GetCellTransportViews();
   for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
   {
-    const auto& transport_view = transport_views[cell->local_id];
-    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
+    const auto& transport_view = transport_views[cell.local_id];
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     const auto& precursors = xs->GetPrecursors();
     if (precursors.empty())
       continue;
@@ -475,7 +475,7 @@ TransientSolver::StepPrecursors()
       for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
         delayed_production += nu_delayed_sigma_f[g] * phi_theta[uk_map + g];
 
-      const size_t node_base = discretization.MapDOFLocal(*cell, i) * max_precursors;
+      const size_t node_base = discretization.MapDOFLocal(cell, i) * max_precursors;
       for (unsigned int j = 0; j < precursors.size(); ++j)
       {
         const auto& precursor = precursors[j];

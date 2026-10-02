@@ -27,8 +27,8 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
   double local_production = 0.0;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -85,8 +85,8 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
   double local_fission_rate = 0.0;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    const auto& cell_matrices = unit_cell_matrices[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
+    const auto& cell_matrices = unit_cell_matrices[cell.local_id];
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
@@ -133,7 +133,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     const auto& xs = transport_view.GetXS();
     const auto& precursors = xs.GetPrecursors();
     if (precursors.empty())
@@ -147,7 +147,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
       for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
         delayed_production += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g];
 
-      const size_t node_base = discretization.MapDOFLocal(*cell, i) * J;
+      const size_t node_base = discretization.MapDOFLocal(cell, i) * J;
       for (unsigned int j = 0; j < precursors.size(); ++j)
       {
         const auto& precursor = precursors[j];

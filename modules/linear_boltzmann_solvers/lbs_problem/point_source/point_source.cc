@@ -111,10 +111,10 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   std::vector<Subscriber> subscribers;
   for (const auto& cell : grid->GetLocalCells())
   {
-    if (PointIsInCellOrOnBoundary(*cell, location_))
+    if (PointIsInCellOrOnBoundary(cell, location_))
     {
-      const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      const auto& fe_values = unit_cell_matrices[cell->local_id];
+      const auto& cell_mapping = discretization.GetCellMapping(cell);
+      const auto& fe_values = unit_cell_matrices[cell.local_id];
 
       // Map the point source to the finite element space
       Vector<double> shape_vals;
@@ -129,7 +129,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       total_volume += cell_volume;
 
       // Add to subscribers
-      subscribers.push_back(Subscriber{cell_volume, cell->local_id, shape_vals, node_wgts});
+      subscribers.push_back(Subscriber{cell_volume, cell.local_id, shape_vals, node_wgts});
     }
   }
 

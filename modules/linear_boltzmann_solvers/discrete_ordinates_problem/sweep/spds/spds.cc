@@ -23,15 +23,15 @@ BuildSPDSFaceNeighborInfo(const Mesh& grid)
   info.resize(grid.GetLocalCellCount());
   for (const auto& cell : grid.GetLocalCells())
   {
-    auto& cell_info = info[cell->local_id];
-    cell_info.resize(cell->faces.size());
-    for (size_t f = 0; f < cell->faces.size(); ++f)
+    auto& cell_info = info[cell.local_id];
+    cell_info.resize(cell.faces.size());
+    for (size_t f = 0; f < cell.faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell.faces[f];
       auto& fi = cell_info[f];
       fi.has_neighbor = face.has_neighbor;
       fi.owns_face = true;
-      if (face.has_neighbor and cell->global_id > face.neighbor_id)
+      if (face.has_neighbor and cell.global_id > face.neighbor_id)
         fi.owns_face = false;
 
       if (face.has_neighbor)
@@ -370,18 +370,18 @@ SPDS::PopulateCellRelationships(
 
   cell_face_orientations_.assign(grid_->GetLocalCellCount(), {});
   for (const auto& cell : grid_->GetLocalCells())
-    cell_face_orientations_[cell->local_id].assign(cell->faces.size(), FOPARALLEL);
+    cell_face_orientations_[cell.local_id].assign(cell.faces.size(), FOPARALLEL);
 
   for (const auto& cell : grid_->GetLocalCells())
   {
     size_t f = 0;
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
     {
       // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
       const double mu = omega.Dot(face.normal);
 
-      const auto& finfo = face_info[cell->local_id][f];
+      const auto& finfo = face_info[cell.local_id][f];
       const bool owns_face = finfo.owns_face;
 
       if (owns_face)
@@ -391,7 +391,7 @@ SPDS::PopulateCellRelationships(
         else if (mu < -tolerance)
           orientation = FOINCOMING;
 
-        cell_face_orientations_[cell->local_id][f] = orientation;
+        cell_face_orientations_[cell.local_id][f] = orientation;
 
         if (finfo.has_neighbor and finfo.neighbor_local)
         {
@@ -419,7 +419,7 @@ SPDS::PopulateCellRelationships(
         const auto adj_face_idx = finfo.neighbor_adj_face;
         const auto& adj_face = adj_cell.faces[adj_face_idx];
 
-        auto& cur_face_ori = cell_face_orientations_[cell->local_id][f];
+        auto& cur_face_ori = cell_face_orientations_[cell.local_id][f];
 
         const double adj_mu = omega.Dot(adj_face.normal);
         if (adj_mu > tolerance)
@@ -449,33 +449,33 @@ SPDS::PopulateCellRelationships(
   for (const auto& cell : grid_->GetLocalCells())
   {
     size_t f = 0;
-    for (auto& face : cell->faces)
+    for (auto& face : cell.faces)
     {
       const double mu = omega.Dot(face.normal);
       // If outgoing determine if it is to a local cell
-      if (cell_face_orientations_[cell->local_id][f] == FOOUTGOING)
+      if (cell_face_orientations_[cell.local_id][f] == FOOUTGOING)
       {
         // If it is a cell and not bndry
-        if (face_info[cell->local_id][f].has_neighbor)
+        if (face_info[cell.local_id][f].has_neighbor)
         {
           // If it is in the current location
-          if (face_info[cell->local_id][f].neighbor_local)
+          if (face_info[cell.local_id][f].neighbor_local)
           {
             const auto weight = mu * face.area;
-            cell_successors[cell->local_id].emplace_back(
-              face_info[cell->local_id][f].neighbor_local_id, weight);
+            cell_successors[cell.local_id].emplace_back(
+              face_info[cell.local_id][f].neighbor_local_id, weight);
           }
           else
-            location_successors.push_back(face_info[cell->local_id][f].neighbor_partition_id);
+            location_successors.push_back(face_info[cell.local_id][f].neighbor_partition_id);
         }
       }
       // If not outgoing determine what it is dependent on
-      else if (cell_face_orientations_[cell->local_id][f] == FOINCOMING)
+      else if (cell_face_orientations_[cell.local_id][f] == FOINCOMING)
       {
         // if it is a cell and not bndry
-        if (face_info[cell->local_id][f].has_neighbor and
-            not face_info[cell->local_id][f].neighbor_local)
-          location_dependencies.push_back(face_info[cell->local_id][f].neighbor_partition_id);
+        if (face_info[cell.local_id][f].has_neighbor and
+            not face_info[cell.local_id][f].neighbor_local)
+          location_dependencies.push_back(face_info[cell.local_id][f].neighbor_partition_id);
       }
       ++f;
     } // for face
@@ -510,9 +510,9 @@ SPDS::PrintGhostedGraph() const
 
       for (const auto& cell : grid_->GetLocalCells())
       {
-        std::cout << "  " << cell->global_id << " [shape=\"circle\"]\n";
+        std::cout << "  " << cell.global_id << " [shape=\"circle\"]\n";
 
-        for (const auto& face : cell->faces)
+        for (const auto& face : cell.faces)
         {
           if (face.has_neighbor and (not grid_->IsCellLocal(face.neighbor_id)))
             std::cout << "  " << face.neighbor_id
@@ -526,14 +526,14 @@ SPDS::PrintGhostedGraph() const
                 << "  /* Edges */\n";
       for (const auto& cell : grid_->GetLocalCells())
       {
-        for (const auto& face : cell->faces)
+        for (const auto& face : cell.faces)
         {
-          if (face.has_neighbor and (cell->global_id > face.neighbor_id))
+          if (face.has_neighbor and (cell.global_id > face.neighbor_id))
           {
             if (omega_.Dot(face.normal) > tolerance)
-              std::cout << "  " << cell->global_id << " -> " << face.neighbor_id << "\n";
+              std::cout << "  " << cell.global_id << " -> " << face.neighbor_id << "\n";
             else if (omega_.Dot(face.normal) < tolerance)
-              std::cout << "  " << face.neighbor_id << " -> " << cell->global_id << "\n";
+              std::cout << "  " << face.neighbor_id << " -> " << cell.global_id << "\n";
           } // if outgoing
         }
       }

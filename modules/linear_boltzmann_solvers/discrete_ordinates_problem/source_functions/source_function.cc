@@ -52,7 +52,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& discretization = lbs_problem_.GetSpatialDiscretization();
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& transport_view = cell_transport_views[cell.local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
@@ -67,7 +67,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto node_id = discretization.MapDOFLocal(*cell, i);
+      const auto node_id = discretization.MapDOFLocal(cell, i);
       // Loop over moments
       for (unsigned int m = 0; m < num_moments; ++m)
       {
