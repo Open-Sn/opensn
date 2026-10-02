@@ -35,6 +35,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   for (std::uint32_t cell_local_id = 0; cell_local_id < mesh.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = mesh.GetLocalCell(cell_local_id);
+    const auto cell_faces = mesh.GetCellFaces(cell_local_id);
     // number of faces and nodes
     alloc_size += 2 * sizeof(std::uint32_t);
     // pointer to total cross sections
@@ -48,7 +49,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     alloc_size += M.size() * (4 * sizeof(double));
     // offset to the data of each face
-    std::size_t cell_num_faces = cell.faces.size();
+    std::size_t cell_num_faces = cell_faces.size();
     alloc_size += cell_num_faces * sizeof(std::uint64_t);
     // data of each face
     const std::vector<std::vector<int>>& face_node_mappings =
@@ -97,7 +98,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
        ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    std::size_t cell_num_faces = cell.faces.size();
+    std::size_t cell_num_faces = mesh.GetCellFaceCount();
     const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
