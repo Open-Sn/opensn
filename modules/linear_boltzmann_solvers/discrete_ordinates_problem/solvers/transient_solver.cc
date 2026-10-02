@@ -477,7 +477,7 @@ TransientSolver::StepPrecursors()
       for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
         delayed_production += nu_delayed_sigma_f[g] * phi_theta[uk_map + g];
 
-      const size_t node_base = discretization.MapDOFLocal(cell, i) * max_precursors;
+      const size_t node_base = discretization.MapDOFLocal(cell_local_id, i) * max_precursors;
       for (unsigned int j = 0; j < precursors.size(); ++j)
       {
         const auto& precursor = precursors[j];

@@ -92,7 +92,7 @@ ReadPrecursorVector(hid_t file_id,
     const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto node_id = discretization.MapDOFLocal(cell, i);
+      const auto node_id = discretization.MapDOFLocal(cell_local_id, i);
       const size_t old_base = (node_layout ? node_id : cell_local_id) * old_stride;
       const size_t new_base = node_id * new_stride;
       for (size_t j = 0; j < copy_stride; ++j)

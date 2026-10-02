@@ -710,7 +710,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = sdm.MapDOFLocal(cell, i);
+        const auto ir = sdm.MapDOFLocal(cell_local_id, i);
 
         for (size_t g = 0; g < num_groups_; ++g)
         {
@@ -1075,7 +1075,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_index, i);
           for (size_t g = 0; g < num_groups_; ++g)
             phi_new_local_[ir * num_groups_ + g] += cell_phi[g](i);
         }
@@ -1088,7 +1088,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               mass_matrix, moment_rhs[moment_index][g], static_cast<int>(cell_num_nodes));
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
-              const auto ir = sdm.MapDOFLocal(cell, i);
+              const auto ir = sdm.MapDOFLocal(cell_index, i);
               accumulated_moments_[moment_index][ir * num_groups_ + g] +=
                 moment_rhs[moment_index][g](i);
             }
@@ -1271,7 +1271,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                                      " face " + std::to_string(f_) + ".");
 
               // Compute rhs for bulk region sweep
-              const auto jr = sdm.MapDOFLocal(neighbor, j);
+              const auto jr = sdm.MapDOFLocal(neighbor_id, j);
               double fallback_rhs_weight = 0.0;
               size_t qp_index = 0;
               for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
@@ -1464,7 +1464,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     // Update flux solution
     for (size_t i = 0; i < cell_num_nodes; ++i)
     {
-      const auto ir = sdm.MapDOFLocal(cell, i);
+      const auto ir = sdm.MapDOFLocal(cell_local_id, i);
       for (size_t g = 0; g < num_groups_; ++g)
         destination_phi_[ir * num_groups_ + g] = phi[g](i);
     }
@@ -1580,7 +1580,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
         // counted twice.
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           phi(i) += destination_phi_[ir * num_groups_ + g];
         }
 
@@ -1648,7 +1648,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
                       " to neighbor cell " + std::to_string(neighbor.global_id) + " face " +
                       std::to_string(f_) + ".");
 
-                  const auto jr = sdm.MapDOFLocal(neighbor, k);
+                  const auto jr = sdm.MapDOFLocal(neighbor_id, k);
                   const double phi_j = destination_phi_[jr * num_groups_ + g];
                   phi(i) -= surface_matrix(i, j) * phi_j;
                 }
@@ -1683,7 +1683,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
         // Update flux solution
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           destination_phi_[ir * num_groups_ + g] = phi(i);
         }
       }
@@ -1790,7 +1790,7 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
     for (size_t g = 0; g < num_groups_; ++g)
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = sdm.MapDOFLocal(cell, i);
+        const auto ir = sdm.MapDOFLocal(cell_local_id, i);
         physical_removal_ += sigma_t[g] * destination_phi_[ir * num_groups_ + g] * intV_shapeI(i);
       }
   }
@@ -1818,7 +1818,7 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
         for (size_t g = 0; g < num_groups_; ++g)
           for (size_t i = 0; i < cell_num_nodes; ++i)
           {
-            const auto ir = sdm.MapDOFLocal(cell, i);
+            const auto ir = sdm.MapDOFLocal(cell_local_id, i);
             out_flow_ +=
               destination_phi_[ir * num_groups_ + g] * integrand * fe_srf_data.ShapeValue(i, qp);
           }
@@ -1858,7 +1858,7 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
       std::vector<double> phi_qp(num_groups_, 0.0);
       for (size_t j = 0; j < cell_num_nodes; ++j)
       {
-        const auto jr = sdm.MapDOFLocal(cell, j);
+        const auto jr = sdm.MapDOFLocal(cell_local_id, j);
         const double shape = fe_vol_data.ShapeValue(j, qp);
         for (size_t g = 0; g < num_groups_; ++g)
           phi_qp[g] += shape * destination_phi_[jr * num_groups_ + g];
@@ -1885,7 +1885,7 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
           mass_matrix, moment_rhs[moment_index][g], static_cast<int>(cell_num_nodes));
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           accumulated_moments_[moment_index][ir * num_groups_ + g] +=
             moment_rhs[moment_index][g](i);
         }

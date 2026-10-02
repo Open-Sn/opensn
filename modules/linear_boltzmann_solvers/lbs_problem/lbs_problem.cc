@@ -330,7 +330,7 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
         const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
         {
-          const auto node_id = discretization_->MapDOFLocal(cell, i);
+          const auto node_id = discretization_->MapDOFLocal(cell_local_id, i);
           const size_t old_base = node_id * old_max_precursors_per_material;
           const size_t new_base = node_id * new_max_precursors_per_material;
           for (unsigned int j = 0; j < num_precursors_to_copy; ++j)

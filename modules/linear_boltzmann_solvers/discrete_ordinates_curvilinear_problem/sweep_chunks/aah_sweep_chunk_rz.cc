@@ -134,7 +134,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
         for (size_t j = 0; j < cell_num_nodes; ++j)
         {
           const auto jr =
-            discretization_.MapDOFLocal(cell, j, unknown_manager_, polar_level, gs_gi);
+            discretization_.MapDOFLocal(cell_local_id, j, unknown_manager_, polar_level, gs_gi);
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             b[gsg](i) += fac_streaming_operator * Maux(i, j) * psi_sweep_[jr + gsg];
         }
@@ -272,8 +272,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Save angular flux during sweep
       if (SaveAngularFluxEnabled())
       {
-        double* cell_psi_data =
-          &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &destination_psi_[discretization_.MapDOFLocal(
+          cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
@@ -336,7 +336,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       const auto f1 = f0 - 1;
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = discretization_.MapDOFLocal(cell, i, unknown_manager_, polar_level, gs_gi);
+        const auto ir =
+          discretization_.MapDOFLocal(cell_local_id, i, unknown_manager_, polar_level, gs_gi);
         for (size_t gsg = 0; gsg < gs_size; ++gsg)
           psi_sweep_[ir + gsg] = f0 * b[gsg](i) - f1 * psi_sweep_[ir + gsg];
       }

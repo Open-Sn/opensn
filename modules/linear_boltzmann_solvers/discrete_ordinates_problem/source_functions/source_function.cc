@@ -68,7 +68,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto node_id = discretization.MapDOFLocal(cell, i);
+      const auto node_id = discretization.MapDOFLocal(cell_local_id, i);
       // Loop over moments
       for (unsigned int m = 0; m < num_moments; ++m)
       {

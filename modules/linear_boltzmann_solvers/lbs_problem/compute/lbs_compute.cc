@@ -150,7 +150,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
       for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
         delayed_production += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g];
 
-      const size_t node_base = discretization.MapDOFLocal(cell, i) * J;
+      const size_t node_base = discretization.MapDOFLocal(cell_local_id, i) * J;
       for (unsigned int j = 0; j < precursors.size(); ++j)
       {
         const auto& precursor = precursors[j];
