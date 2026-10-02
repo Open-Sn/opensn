@@ -66,14 +66,15 @@ CBC_SPDS::CBC_SPDS(const Vector3& omega,
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const auto num_faces = cell.faces.size();
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const auto num_faces = grid_->GetCellFaceCount(cell_local_id);
     unsigned int num_dependencies = 0;
     std::vector<std::uint32_t> successors;
     successors.reserve(num_faces);
 
     for (std::size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const auto& orientation = cell_face_orientations_[cell_local_id][f];
 
       if (orientation == INCOMING)

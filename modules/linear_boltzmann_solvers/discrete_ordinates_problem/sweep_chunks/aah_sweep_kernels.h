@@ -72,10 +72,11 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
   {
     const auto cell_local_id = spls[spls_index];
     auto& cell = data.grid->GetLocalCell(cell_local_id);
+    const auto cell_faces = data.grid->GetCellFaces(cell_local_id);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
-    const size_t cell_num_faces = cell.faces.size();
+    const size_t cell_num_faces = cell_faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
@@ -122,7 +123,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           Amat(i, j) = omega.Dot(G(i, j));
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       int in_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -130,7 +131,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces[f];
+        auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -270,7 +271,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
           continue;
 
         ++out_face_counter;
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
@@ -364,7 +365,8 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
     const auto& cell_mapping = data.discretization.GetLocalCellMapping(cell_local_id);
-    const size_t cell_num_faces = cell.faces.size();
+    const size_t cell_num_faces = data.grid->GetCellFaceCount(cell_local_id);
+    const auto cell_faces = data.grid->GetCellFaces(cell_local_id);
     const size_t N = cell_mapping.GetNumNodes();
     const auto Idx = [N](size_t i, size_t j) { return i * N + j; };
 
@@ -406,7 +408,7 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
           Amat[Idx(i, j)] = omega.Dot(G(i, j));
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       int in_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -414,7 +416,7 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces[f];
+        auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -525,9 +527,8 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* psi_new =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
+        double* psi_new = &data.destination_psi[data.discretization.MapDOFLocal(
+          cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
         for (size_t i = 0; i < N; ++i)
         {
           const size_t imap =
@@ -544,7 +545,7 @@ AAH_Sweep_Unified(AAHSweepData& data, AngleSet& angle_set)
           continue;
 
         ++out_face_counter;
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =

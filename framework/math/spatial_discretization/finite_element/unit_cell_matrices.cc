@@ -17,7 +17,7 @@ ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
   const auto& cell = sdm.GetMesh()->GetLocalCell(cell_local_id);
   auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
-  const size_t cell_num_faces = cell.faces.size();
+  const size_t cell_num_faces = sdm.GetMesh()->GetCellFaceCount(cell_local_id);
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
