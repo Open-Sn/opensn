@@ -38,9 +38,10 @@ AAHD_FLUDSCommonData::ComputeNodeIndexForBoundaryFaces(
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
-    for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
     {
-      const CellFace& face = cell.faces[f];
+      const CellFace& face = cell_faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
       std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
 
@@ -104,11 +105,12 @@ AAHD_FLUDSCommonData::CopyFlattenNodeIndexToDevice(const SpatialDiscretization& 
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     // record the offset
     cell_offset.push_back(offset);
     // record each face node to the data
     std::uint64_t num_nodes = 0;
-    for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
+    for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
     {
       std::uint32_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
       for (std::uint32_t fnode = 0; fnode < num_face_nodes; ++fnode)

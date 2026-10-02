@@ -468,6 +468,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   std::vector<Cell> raw_boundary_cells;
   std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
   std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  std::vector<CellFace> mesh_faces;
 
   for (const auto& [element_tag, element_type, physical_reg, node_tags] : element_data)
   {
@@ -519,6 +520,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
                                " vertices were read from the $Nodes section.");
 
     std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+    std::vector<CellFace> cell_faces;
 
     // Populate faces
     if (element_type == 1) // 2-node edge
@@ -529,8 +531,8 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       std::vector<std::uint64_t> f0_vids = {nodes.at(0)};
       std::vector<std::uint64_t> f1_vids = {nodes.at(1)};
 
-      cell.faces.push_back(face0);
-      cell.faces.push_back(face1);
+      cell_faces.push_back(face0);
+      cell_faces.push_back(face1);
       cell_face_vertex_ids.push_back(std::move(f0_vids));
       cell_face_vertex_ids.push_back(std::move(f1_vids));
     }
@@ -544,7 +546,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
         std::vector<std::uint64_t> f_vids = {nodes[e], nodes[ep1]};
 
-        cell.faces.push_back(std::move(face));
+        cell_faces.emplace_back(face);
         cell_face_vertex_ids.push_back(std::move(f_vids));
       }
     }
@@ -556,7 +558,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
         {v[0], v[2], v[1]}, {v[0], v[3], v[2]}, {v[3], v[1], v[2]}, {v[3], v[0], v[1]}};
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else if (element_type == 5) // 8-node hexahedron
     {
@@ -570,7 +572,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
                               {v[0], v[1], v[5], v[4]}};
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else
       throw std::runtime_error(fname + ": Unsupported cell type.");
@@ -582,6 +584,8 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     }
     else
     {
+      for (auto& f : cell_faces)
+        mesh_faces.emplace_back(f);
       raw_cells.emplace_back(cell);
       cell_connect.emplace_back(nodes);
       cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
@@ -604,7 +608,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
 
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(raw_cells), cell_connect);
-  mesh->SetCellFaces(cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -623,9 +627,10 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   size_t cell_idx = 0;
   for (auto& cell : mesh->GetCells())
   {
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = mesh->GetCellFaces(cell_idx);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      auto& face = cell.faces[f];
+      auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
         const auto& face_vids = cell_face_connect[cell_idx][f];
@@ -676,6 +681,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   std::vector<Cell> raw_boundary_cells;
   std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
   std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  std::vector<CellFace> mesh_faces;
 
   // Scan sections
   file.clear();
@@ -1020,6 +1026,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
                                      " vertices were read from the $Nodes section.");
 
           std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+          std::vector<CellFace> cell_faces;
 
           if (element_type == 1)
           {
@@ -1029,8 +1036,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
             std::vector<std::uint64_t> f0_vids = {nodes.at(0)};
             std::vector<std::uint64_t> f1_vids = {nodes.at(1)};
 
-            cell.faces.push_back(face0);
-            cell.faces.push_back(face1);
+            cell_faces.push_back(face0);
+            cell_faces.push_back(face1);
             cell_face_vertex_ids.push_back(std::move(f0_vids));
             cell_face_vertex_ids.push_back(std::move(f1_vids));
           }
@@ -1044,7 +1051,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
               std::vector<std::uint64_t> f_vids = {nodes[e], nodes[ep1]};
 
-              cell.faces.push_back(std::move(face));
+              cell_faces.emplace_back(face);
               cell_face_vertex_ids.push_back(std::move(f_vids));
             }
           }
@@ -1056,7 +1063,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
               {v[0], v[2], v[1]}, {v[0], v[3], v[2]}, {v[3], v[1], v[2]}, {v[3], v[0], v[1]}};
 
             for (auto& lw_face : lw_faces)
-              cell.faces.push_back(lw_face);
+              cell_faces.push_back(lw_face);
           }
           else if (element_type == 5)
           {
@@ -1070,7 +1077,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
                                     {v[0], v[1], v[5], v[4]}};
 
             for (auto& lw_face : lw_faces)
-              cell.faces.push_back(lw_face);
+              cell_faces.push_back(lw_face);
           }
           else if (element_type == 6 or element_type == 7)
           {
@@ -1084,6 +1091,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           }
           else
           {
+            for (auto& f : cell_faces)
+              mesh_faces.emplace_back(f);
             raw_cells.emplace_back(cell);
             cell_connect.emplace_back(nodes);
             cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
@@ -1109,7 +1118,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
 
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(raw_cells), cell_connect);
-  mesh->SetCellFaces(cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -1128,9 +1137,10 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   size_t cell_idx = 0;
   for (auto& cell : mesh->GetCells())
   {
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = mesh->GetCellFaces(cell_idx);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      auto& face = cell.faces[f];
+      auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
         const auto& face_vids = cell_face_connect[cell_idx][f];
