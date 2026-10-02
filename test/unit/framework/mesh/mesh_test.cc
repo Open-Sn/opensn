@@ -20,32 +20,32 @@ TestPointInsideCell(const std::shared_ptr<Mesh> grid)
   for (const auto& cell : grid->GetLocalCells())
     for (const auto& other_cell : grid->GetLocalCells())
     {
-      const auto same_cell = cell->global_id == other_cell->global_id;
-      const auto within = grid->CheckPointInsideCell(*other_cell, cell->centroid);
+      const auto same_cell = cell.global_id == other_cell.global_id;
+      const auto within = grid->CheckPointInsideCell(other_cell, cell.centroid);
       EXPECT_EQ(same_cell, within);
     }
 
   // Vertices are contained within cells
   for (const auto& cell : grid->GetLocalCells())
-    for (const auto vi : cell->vertex_ids)
+    for (const auto vi : cell.vertex_ids)
       for (const auto& other_cell : grid->GetLocalCells())
       {
         const auto has_vertex =
-          std::find(other_cell->vertex_ids.begin(), other_cell->vertex_ids.end(), vi) !=
-          other_cell->vertex_ids.end();
-        const auto within = grid->CheckPointInsideCell(*other_cell, grid->GlobalVertex(vi));
+          std::find(other_cell.vertex_ids.begin(), other_cell.vertex_ids.end(), vi) !=
+          other_cell.vertex_ids.end();
+        const auto within = grid->CheckPointInsideCell(other_cell, grid->GlobalVertex(vi));
         EXPECT_EQ(has_vertex, within);
       }
 
   // Face centroids are contained within cells (including neighbors)
   for (const auto& cell : grid->GetLocalCells())
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       for (const auto& other_cell : grid->GetLocalCells())
       {
         const auto same_cell_or_neighbor =
-          (cell->global_id == other_cell->global_id ||
-           (face.has_neighbor && face.neighbor_id == other_cell->global_id));
-        const auto within = grid->CheckPointInsideCell(*other_cell, face.centroid);
+          (cell.global_id == other_cell.global_id ||
+           (face.has_neighbor && face.neighbor_id == other_cell.global_id));
+        const auto within = grid->CheckPointInsideCell(other_cell, face.centroid);
         EXPECT_EQ(same_cell_or_neighbor, within);
       }
 
@@ -53,14 +53,14 @@ TestPointInsideCell(const std::shared_ptr<Mesh> grid)
   {
     // Face edge centroids contained
     for (const auto& cell : grid->GetLocalCells())
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
         for (size_t side = 0; side < face.vertex_ids.size(); ++side)
         {
           const size_t sp1 = (side < (face.vertex_ids.size() - 1)) ? side + 1 : 0;
           const auto& v0 = grid->GlobalVertex(face.vertex_ids[side]);
           const auto& v1 = grid->GlobalVertex(face.vertex_ids[sp1]);
           const auto c = (v0 + v1) / 2.0;
-          EXPECT_TRUE(grid->CheckPointInsideCell(*cell, c));
+          EXPECT_TRUE(grid->CheckPointInsideCell(cell, c));
         }
   }
 
@@ -69,19 +69,19 @@ TestPointInsideCell(const std::shared_ptr<Mesh> grid)
     // Tetrahedral centroids contained
     for (const auto& cell : grid->GetLocalCells())
     {
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
         for (size_t side = 0; side < face.vertex_ids.size(); ++side)
         {
           const size_t sp1 = (side < (face.vertex_ids.size() - 1)) ? side + 1 : 0;
           const auto& v0 = grid->GlobalVertex(face.vertex_ids[side]);
           const auto& v1 = face.centroid;
           const auto& v2 = grid->GlobalVertex(face.vertex_ids[sp1]);
-          const auto& v3 = cell->centroid;
+          const auto& v3 = cell.centroid;
           const auto c = (v0 + v1 + v2 + v3) / 4.0;
           for (const auto& other_cell : grid->GetLocalCells())
           {
-            const auto same_cell = cell->global_id == other_cell->global_id;
-            const auto within = grid->CheckPointInsideCell(*other_cell, c);
+            const auto same_cell = cell.global_id == other_cell.global_id;
+            const auto within = grid->CheckPointInsideCell(other_cell, c);
             EXPECT_EQ(same_cell, within);
           }
         }
@@ -89,17 +89,17 @@ TestPointInsideCell(const std::shared_ptr<Mesh> grid)
 
     // Tetrahedral face centroids contained
     for (const auto& cell : grid->GetLocalCells())
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
         for (size_t side = 0; side < face.vertex_ids.size(); ++side)
         {
-          const auto tet_face_vertices = grid->GetTetrahedralFaceVertices(*cell, face, side);
+          const auto tet_face_vertices = grid->GetTetrahedralFaceVertices(cell, face, side);
           for (const auto& v : tet_face_vertices)
             for (const auto& other_cell : grid->GetLocalCells())
             {
               const auto same_cell_or_neighbor =
-                (cell->global_id == other_cell->global_id ||
-                 (face.has_neighbor && face.neighbor_id == other_cell->global_id));
-              const auto within = grid->CheckPointInsideCell(*other_cell, face.centroid);
+                (cell.global_id == other_cell.global_id ||
+                 (face.has_neighbor && face.neighbor_id == other_cell.global_id));
+              const auto within = grid->CheckPointInsideCell(other_cell, face.centroid);
               EXPECT_EQ(same_cell_or_neighbor, within);
             }
         }
@@ -144,7 +144,7 @@ TEST(MeshTest, PointOnSharedFace)
   const Cell* below = nullptr;
   const Cell* above = nullptr;
   for (const auto& cell : grid->GetLocalCells())
-    (cell->centroid.x + cell->centroid.y < 31200.0 ? below : above) = cell.get();
+    (cell.centroid.x + cell.centroid.y < 31200.0 ? below : above) = &cell;
   ASSERT_NE(below, nullptr);
   ASSERT_NE(above, nullptr);
 
@@ -171,12 +171,12 @@ TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
   // Vertices contained within faces that have those vertices
   for (uint64_t vi = 0; vi < grid->GetGlobalVertexCount(); ++vi)
     for (const auto& cell : grid->GetLocalCells())
-      for (std::size_t face_i = 0; face_i < cell->faces.size(); ++face_i)
+      for (std::size_t face_i = 0; face_i < cell.faces.size(); ++face_i)
       {
-        const auto& face = cell->faces[face_i];
+        const auto& face = cell.faces[face_i];
         const auto has_vertex =
           std::find(face.vertex_ids.begin(), face.vertex_ids.end(), vi) != face.vertex_ids.end();
-        const auto within = grid->CheckPointInsideCellFace(*cell, face_i, grid->GlobalVertex(vi));
+        const auto within = grid->CheckPointInsideCellFace(cell, face_i, grid->GlobalVertex(vi));
         EXPECT_EQ(has_vertex, within);
       }
 
@@ -184,23 +184,23 @@ TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
   for (const auto& cell : grid->GetLocalCells())
     for (const auto& other_cell : grid->GetLocalCells())
     {
-      for (std::size_t other_face_i = 0; other_face_i < other_cell->faces.size(); ++other_face_i)
-        EXPECT_FALSE(grid->CheckPointInsideCellFace(*other_cell, other_face_i, cell->centroid));
+      for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size(); ++other_face_i)
+        EXPECT_FALSE(grid->CheckPointInsideCellFace(other_cell, other_face_i, cell.centroid));
     }
 
   if (grid->GetDimension() > 1)
   {
     // Face centroids contained within faces
     for (const auto& cell : grid->GetLocalCells())
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
         for (const auto& other_cell : grid->GetLocalCells())
-          for (std::size_t other_face_i = 0; other_face_i < other_cell->faces.size();
+          for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size();
                ++other_face_i)
           {
-            const auto& other_face = other_cell->faces[other_face_i];
+            const auto& other_face = other_cell.faces[other_face_i];
             const auto same_face = other_face.centroid.AbsoluteEquals(face.centroid);
             const auto within =
-              grid->CheckPointInsideCellFace(*other_cell, other_face_i, face.centroid);
+              grid->CheckPointInsideCellFace(other_cell, other_face_i, face.centroid);
             EXPECT_EQ(same_face, within);
           }
   }
@@ -209,7 +209,7 @@ TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
   {
     // Face edge centroids contained within faces that have the vertices that contain the edge
     for (const auto& cell : grid->GetLocalCells())
-      for (const auto& face : cell->faces)
+      for (const auto& face : cell.faces)
         for (std::size_t i = 0; i < face.vertex_ids.size(); ++i)
         {
           const auto vi1 = face.vertex_ids[i];
@@ -217,17 +217,17 @@ TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
             (i == face.vertex_ids.size() - 1) ? face.vertex_ids[0] : face.vertex_ids[i + 1];
           const auto edge_centroid = (grid->GlobalVertex(vi1) + grid->GlobalVertex(vi2)) / 2;
           for (const auto& other_cell : grid->GetLocalCells())
-            for (std::size_t other_face_i = 0; other_face_i < other_cell->faces.size();
+            for (std::size_t other_face_i = 0; other_face_i < other_cell.faces.size();
                  ++other_face_i)
             {
-              const auto& other_face = other_cell->faces[other_face_i];
+              const auto& other_face = other_cell.faces[other_face_i];
               const auto has_edges =
                 (std::find(other_face.vertex_ids.begin(), other_face.vertex_ids.end(), vi1) !=
                  other_face.vertex_ids.end()) &&
                 (std::find(other_face.vertex_ids.begin(), other_face.vertex_ids.end(), vi2) !=
                  other_face.vertex_ids.end());
               const auto within =
-                grid->CheckPointInsideCellFace(*other_cell, other_face_i, edge_centroid);
+                grid->CheckPointInsideCellFace(other_cell, other_face_i, edge_centroid);
               EXPECT_EQ(has_edges, within);
             }
         }
@@ -295,11 +295,11 @@ TEST(MeshTest, PointInsideCellFaceTolerance)
   const double beyond = 2.0e-6;
   for (const auto& cell : grid_ptr->GetLocalCells())
   {
-    const double x0 = cell->centroid.x - 1.0;
-    const double y0 = cell->centroid.y - 0.5;
-    const auto face_i = FaceWithNormal(*cell, Vector3(0.0, 0.0, 1.0));
+    const double x0 = cell.centroid.x - 1.0;
+    const double y0 = cell.centroid.y - 0.5;
+    const auto face_i = FaceWithNormal(cell, Vector3(0.0, 0.0, 1.0));
     const auto on_face = [&](double dx, double dy, double z)
-    { return grid_ptr->CheckPointInsideCellFace(*cell, face_i, Vector3(x0 + dx, y0 + dy, z)); };
+    { return grid_ptr->CheckPointInsideCellFace(cell, face_i, Vector3(x0 + dx, y0 + dy, z)); };
 
     // Either side of the plane of the face
     EXPECT_TRUE(on_face(1.0, 0.5, 1.0 + within));
@@ -340,7 +340,7 @@ TEST(MeshTest, PointInsideCellFaceConcave)
   const auto grid_ptr = BuildExtrudedMeshFromFile(
     std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "l_shaped_polygon.obj", 1.0, 1);
   ASSERT_EQ(grid_ptr->GetLocalCells().size(), std::size_t(1));
-  const auto& cell = *grid_ptr->GetLocalCells()[0];
+  const auto& cell = grid_ptr->GetLocalCells()[0];
 
   for (const double z : {0.0, 1.0})
   {
@@ -420,7 +420,7 @@ CountNamedBoundaryFaces(const Mesh& grid, const std::string& name, double z)
   int local_count = 0;
   const auto& id_map = grid.GetBoundaryIDMap();
   for (const auto& cell : grid.GetLocalCells())
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       if (face.has_neighbor or std::fabs(face.centroid.z - z) > 1.0e-12)
         continue;

@@ -43,8 +43,8 @@ public:
     for (const auto& cell : cells)
       for (std::size_t d = 0; d < 3; ++d)
       {
-        origin_[d] = std::min(origin_[d], cell->centroid[d]);
-        cmax[d] = std::max(cmax[d], cell->centroid[d]);
+        origin_[d] = std::min(origin_[d], cell.centroid[d]);
+        cmax[d] = std::max(cmax[d], cell.centroid[d]);
       }
 
     // About one bin per cell, with bins of equal width in the directions the centroids span. A
@@ -89,10 +89,10 @@ public:
     offsets_.assign(num_bins + 1, 0);
     for (const auto& cell : cells)
     {
-      const auto& c = cell->centroid;
-      cell_bin[cell->local_id] =
+      const auto& c = cell.centroid;
+      cell_bin[cell.local_id] =
         (BinIndex(0, c.x) * num_bins_[1] + BinIndex(1, c.y)) * num_bins_[2] + BinIndex(2, c.z);
-      ++offsets_[cell_bin[cell->local_id] + 1];
+      ++offsets_[cell_bin[cell.local_id] + 1];
     }
     for (std::size_t b = 0; b < num_bins; ++b)
       offsets_[b + 1] += offsets_[b];
@@ -171,7 +171,7 @@ GetLogicalVolumeCellIDs(const Mesh& grid,
   else
   {
     for (const auto& cell : grid.GetLocalCells())
-      add_if_selected(cell->local_id);
+      add_if_selected(cell.local_id);
   }
   return cell_ids;
 }
@@ -280,14 +280,14 @@ VolumePostprocessor::CreateSpatialRestriction()
     if (block_ids_.empty())
     {
       for (const auto& cell : grid->GetLocalCells())
-        cell_ids.push_back(cell->local_id);
+        cell_ids.push_back(cell.local_id);
     }
     else
     {
       for (const auto& cell : grid->GetLocalCells())
       {
-        if (std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-          cell_ids.push_back(cell->local_id);
+        if (std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+          cell_ids.push_back(cell.local_id);
       }
     }
     cell_local_ids_[0] = cell_ids;

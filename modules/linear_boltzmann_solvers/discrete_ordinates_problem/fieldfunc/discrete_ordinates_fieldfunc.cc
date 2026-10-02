@@ -149,13 +149,13 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(*cell, i, uk_man, angle, group_in_groupset);
-      const auto imapB = sdm.MapDOFLocal(*cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, angle, group_in_groupset);
+      const auto imapB = sdm.MapDOFLocal(cell, i);
       data_vector_local[imapB] = psi[imapA];
     }
   }
@@ -259,12 +259,12 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& data = GetMaterialData(cell->block_id);
+    const auto& data = GetMaterialData(cell.block_id);
     const auto& stopping_power = data.xs->GetStoppingPower();
 
-    const size_t cell_g_offset = cell->local_id * static_cast<size_t>(num_groups_);
+    const size_t cell_g_offset = cell.local_id * static_cast<size_t>(num_groups_);
 
     if (is_csda_charge_deposition_term)
     {
@@ -276,19 +276,19 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
         for (const auto& charged_range : data.charged_ranges)
         {
           const unsigned int g = charged_range.second - 1;
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, g);
+          const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, g);
           const double slowing_down_density =
             stopping_power[g] *
             (phi_new_local_[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
           nodal_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
-        data_vector_local[sdm.MapDOFLocal(*cell, i)] = nodal_value;
+        data_vector_local[sdm.MapDOFLocal(cell, i)] = nodal_value;
       }
       continue;
     }
 
     const auto phi_cell_avg = ComputeCellAveragePhi0g(
-      sdm, *cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
+      sdm, cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
 
     // The CSDA terminal correction below is fundamentally a cell-averaged quantity: it is
     // built entirely from cell-averaged flux and psi_E moments, so it is constant across a cell.
@@ -330,7 +330,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     const double cell_value = cell_avg_raw_value + csda_value;
 
     for (size_t i = 0; i < num_nodes; ++i)
-      data_vector_local[sdm.MapDOFLocal(*cell, i)] = cell_value;
+      data_vector_local[sdm.MapDOFLocal(cell, i)] = cell_value;
   }
 
   return data_vector_local;

@@ -106,13 +106,13 @@ TEST(MeshIOTest, ReadGmshPrismsAndPyramids)
     ASSERT_NE(outer_id, std::numeric_limits<uint64_t>::max());
     for (const auto& cell : grid->GetLocalCells())
     {
-      ++counts[cell->GetSubType()];
-      EXPECT_GT(cell->volume, 0.0);
-      volume += cell->volume;
-      for (const auto& face : cell->faces)
+      ++counts[cell.GetSubType()];
+      EXPECT_GT(cell.volume, 0.0);
+      volume += cell.volume;
+      for (const auto& face : cell.faces)
       {
-        EXPECT_GT((face.centroid - cell->centroid).Dot(face.normal), 0.0)
-          << "inward face on cell " << cell->global_id;
+        EXPECT_GT((face.centroid - cell.centroid).Dot(face.normal), 0.0)
+          << "inward face on cell " << cell.global_id;
         if (not face.has_neighbor)
         {
           EXPECT_EQ(face.neighbor_id, outer_id);
@@ -188,7 +188,7 @@ TEST(MeshIOTest, ReadGmshPhysicalNamesWithSharedTags)
         continue;
       size_t num_boundary_faces = 0;
       for (const auto& cell : grid->GetLocalCells())
-        for (const auto& face : cell->faces)
+        for (const auto& face : cell.faces)
           if (not face.has_neighbor)
           {
             EXPECT_EQ(face.neighbor_id, outer_id);
@@ -246,9 +246,9 @@ TEST(MeshIOTest, ReadGmshUntaggedAndMultiTaggedEntities)
   std::map<unsigned int, size_t> cells_per_block[3];
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& c = cell->centroid;
+    const auto& c = cell.centroid;
     const int volume = c.z > 1.0 ? 2 : (c.x < 1.0 ? 0 : 1);
-    ++cells_per_block[volume][cell->block_id];
+    ++cells_per_block[volume][cell.block_id];
   }
   const unsigned int expected[3] = {0, 2, 1};
   for (int v = 0; v < 3; ++v)

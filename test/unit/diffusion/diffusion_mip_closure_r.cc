@@ -93,7 +93,7 @@ CubeMatrix(unsigned int num_cells,
   xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0 / (3.0 * sigma_t)}, {1.0e-4 * sigma_t}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
   for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
 
   DiffusionMIPSolver solver(
     "ClosureR", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
@@ -159,9 +159,9 @@ TEST(DiffusionClosureR, TraceConstant)
     std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
     for (const auto& cell : grid->GetLocalCells())
     {
-      const auto K = ComputeUnitCellIntegrals(*sdm, *cell).intV_gradshapeI_gradshapeJ;
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(*cell), *cell, f, K), 1.0, 1.0e-10);
+      const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
+      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(cell), cell, f, K), 1.0, 1.0e-10);
     }
   }
   {
@@ -174,9 +174,9 @@ TEST(DiffusionClosureR, TraceConstant)
     {
       if (checked++ == 50)
         break;
-      const auto K = ComputeUnitCellIntegrals(*sdm, *cell).intV_gradshapeI_gradshapeJ;
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(*cell), *cell, f, K), 3.0, 1.0e-9);
+      const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
+      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetCellMapping(cell), cell, f, K), 3.0, 1.0e-9);
     }
   }
 }
@@ -191,15 +191,15 @@ TEST(DiffusionClosureR, TraceConstantRZ)
   std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& mapping = sdm->GetCellMapping(*cell);
-    const auto K = ComputeUnitCellIntegrals(*sdm, *cell).intV_gradshapeI_gradshapeJ;
-    const auto K_rz = ComputeUnitCellIntegrals(*sdm, *cell, CoordinateSystemType::CYLINDRICAL)
+    const auto& mapping = sdm->GetCellMapping(cell);
+    const auto K = ComputeUnitCellIntegrals(*sdm, cell).intV_gradshapeI_gradshapeJ;
+    const auto K_rz = ComputeUnitCellIntegrals(*sdm, cell, CoordinateSystemType::CYLINDRICAL)
                         .intV_gradshapeI_gradshapeJ;
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
-      const double c_xy = FaceTraceConstant(mapping, *cell, f, K);
+      const double c_xy = FaceTraceConstant(mapping, cell, f, K);
       const double c_rz =
-        FaceTraceConstant(mapping, *cell, f, K_rz, CoordinateSystemType::CYLINDRICAL);
+        FaceTraceConstant(mapping, cell, f, K_rz, CoordinateSystemType::CYLINDRICAL);
       EXPECT_NEAR(c_rz, c_xy, 2.0e-3 * c_xy);
     }
   }

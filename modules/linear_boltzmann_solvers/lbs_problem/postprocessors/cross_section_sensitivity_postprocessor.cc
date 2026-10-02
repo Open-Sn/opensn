@@ -139,8 +139,8 @@ CrossSectionSensitivityPostprocessor::CreateSpatialRestriction()
     cell_local_ids_.resize(1);
     for (const auto& cell : grid->GetLocalCells())
       if (block_ids_.empty() or
-          std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-        cell_local_ids_[0].push_back(cell->local_id);
+          std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+        cell_local_ids_[0].push_back(cell.local_id);
   }
   else
   {
@@ -169,11 +169,11 @@ CrossSectionSensitivityPostprocessor::GetLogicalVolumeCellIDs(
   std::vector<std::uint32_t> cell_ids;
   for (const auto& cell : grid->GetLocalCells())
   {
-    if (not log_vol->Inside(cell->centroid))
+    if (not log_vol->Inside(cell.centroid))
       continue;
     if (block_ids_.empty() or
-        std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-      cell_ids.push_back(cell->local_id);
+        std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+      cell_ids.push_back(cell.local_id);
   }
   return cell_ids;
 }
@@ -659,7 +659,7 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
   double local = 0.0;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     if (not xs->IsFissionable())
       continue;
     auto it = production_by_xs.find(xs.get());
@@ -667,8 +667,8 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
       it = production_by_xs.emplace(xs.get(), GetFissionProductionMatrix(*xs)).first;
     const auto& production = it->second;
 
-    const auto& fe_values = unit_cell_matrices[cell->local_id];
-    const auto& transport_view = transport_views[cell->local_id];
+    const auto& fe_values = unit_cell_matrices[cell.local_id];
+    const auto& transport_view = transport_views[cell.local_id];
     const auto num_nodes = transport_view.GetNumNodes();
     std::vector<double> forward_fission_source(static_cast<size_t>(num_nodes) * num_groups, 0.0);
     for (int j = 0; j < num_nodes; ++j)

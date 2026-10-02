@@ -68,7 +68,7 @@ TallyDelayedSource(const DiscreteOrdinatesProblem& do_problem,
   {
     if (current == 0.0)
       return;
-    const auto& cell = *grid.GetLocalCells()[cell_local_id];
+    const auto& cell = grid.GetLocalCells()[cell_local_id];
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto& face_mass = unit_cell_matrices[cell_local_id].intS_shapeI_shapeJ[face];
     const auto j = cell_mapping.MapFaceNode(face, face_node);
@@ -208,14 +208,14 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& transfer_matrices =
-      block_id_to_xs_map.at(cell->block_id)->GetTransferMatrices(adjoint);
+      block_id_to_xs_map.at(cell.block_id)->GetTransferMatrices(adjoint);
     if (transfer_matrices.empty())
       continue;
-    const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+    const size_t num_nodes = sdm.GetCellMapping(cell).GetNumNodes();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const double* dphi = &phi_change[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const double* dphi = &phi_change[sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         add_transfer(
           transfer_matrices[0],
@@ -245,7 +245,7 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
     {
       for (const auto& cell : grid->GetLocalCells())
       {
-        const auto& xs = *block_id_to_xs_map.at(cell->block_id);
+        const auto& xs = *block_id_to_xs_map.at(cell.block_id);
         const auto csda_data = MakeCSDAMaterialData(xs, energy);
         const bool slows_down =
           IsCSDAActive(csda_data, gsi + g) and IsCSDAActive(csda_data, gsi + g - 1);
@@ -253,10 +253,10 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
           slows_down ? (*csda_data.stopping_power)[gsi + g - 1] / (*csda_data.delta_e)[gsi + g - 1]
                      : 0.0;
         const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
-        const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+        const size_t num_nodes = sdm.GetCellMapping(cell).GetNumNodes();
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+          const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
           if (not transfer_matrices.empty())
             add_transfer(
               transfer_matrices[0],
@@ -276,11 +276,11 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+    const size_t num_nodes = sdm.GetCellMapping(cell).GetNumNodes();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      double* phi_new_mapped = &phi_new[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      double* phi_new_mapped = &phi_new[sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         phi_new_mapped[g] += correction[g][dphi_map];
     }
@@ -367,14 +367,14 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = block_id_to_xs_map.at(cell->block_id)->GetSigmaSGtoG();
+    const auto& sigma_s = block_id_to_xs_map.at(cell.block_id)->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
 
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -404,13 +404,13 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
 
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
@@ -486,13 +486,13 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
 
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -528,13 +528,13 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, gsi);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];

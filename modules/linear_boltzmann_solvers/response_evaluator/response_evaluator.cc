@@ -303,7 +303,7 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 
   std::uint64_t local_cell_count = 0;
   for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
-    if (cell->block_id == blkid)
+    if (cell.block_id == blkid)
       ++local_cell_count;
   std::uint64_t global_cell_count = 0;
   mpi_comm.all_reduce(local_cell_count, global_cell_count, mpi::op::sum<std::uint64_t>());
@@ -411,14 +411,14 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
   {
     for (const auto& cell : grid->GetLocalCells())
     {
-      const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      const auto& transport_view = transport_views[cell->local_id];
-      const auto& fe_values = unit_cell_matrices[cell->local_id];
+      const auto& cell_mapping = discretization.GetCellMapping(cell);
+      const auto& transport_view = transport_views[cell.local_id];
+      const auto& fe_values = unit_cell_matrices[cell.local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
-      if (material_sources_.count(cell->block_id) > 0)
+      if (material_sources_.count(cell.block_id) > 0)
       {
-        const auto& src = material_sources_.at(cell->block_id);
+        const auto& src = material_sources_.at(cell.block_id);
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -446,11 +446,11 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
 
       for (const auto& cell : grid->GetLocalCells())
       {
-        const auto& cell_mapping = discretization.GetCellMapping(*cell);
-        const auto& fe_values = unit_cell_matrices[cell->local_id];
+        const auto& cell_mapping = discretization.GetCellMapping(cell);
+        const auto& fe_values = unit_cell_matrices[cell.local_id];
 
         size_t f = 0;
-        for (const auto& face : cell->faces)
+        for (const auto& face : cell.faces)
         {
           if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
@@ -471,7 +471,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
                 {
                   const auto& wt = quadrature->GetWeight(n);
                   const auto weight = -mu * weight_sum * wt * intF_shapeI;
-                  const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, 0);
+                  const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
 
                   for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=

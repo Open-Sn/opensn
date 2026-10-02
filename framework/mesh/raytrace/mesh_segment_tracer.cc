@@ -89,7 +89,7 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   // Compact mesh vertices.
   std::unordered_map<std::uint64_t, std::uint32_t> compact_vertex;
   for (const auto& cell : cells)
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell.vertex_ids)
     {
       const auto [it, inserted] =
         compact_vertex.try_emplace(vid, static_cast<std::uint32_t>(points_.size()));
@@ -129,10 +129,10 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   std::vector<std::uint32_t> cell_face_starts;
   for (const auto& cell : cells)
   {
-    const auto c = static_cast<std::uint32_t>(cell->local_id);
-    Vector3 lo = grid.GlobalVertex(cell->vertex_ids.front());
+    const auto c = static_cast<std::uint32_t>(cell.local_id);
+    Vector3 lo = grid.GlobalVertex(cell.vertex_ids.front());
     Vector3 hi = lo;
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell.vertex_ids)
     {
       const auto compact = compact_vertex.at(vid);
       cell_vertices_.push_back(compact);
@@ -148,7 +148,7 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
     cell_face_starts.clear();
     std::vector<std::uint32_t> cell_points(cell_vertices_.begin() + cell_vertex_offset_[c],
                                            cell_vertices_.end());
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
     {
       const size_t n = face.vertex_ids.size();
       OpenSnInvalidArgumentIf(n < 3, "MeshSegmentTracer: a face has fewer than three vertices.");
@@ -322,7 +322,7 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
         }
       }
       OpenSnInvalidArgumentIf(not StarShapedAbout(center),
-                              "MeshSegmentTracer: cell " + std::to_string(cell->global_id) +
+                              "MeshSegmentTracer: cell " + std::to_string(cell.global_id) +
                                 " (centroid " + interior.PrintStr() +
                                 ") is not star-shaped about any point, so it cannot be traced "
                                 "through side tetrahedra.");
@@ -419,9 +419,9 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
                             (t1.a == t0.c and t1.b == t0.b and t1.c == t0.a);
       OpenSnInvalidArgumentIf(not opposite,
                               "MeshSegmentTracer: cells " +
-                                std::to_string(cells[piece_cell_[PieceOf(tris[0])]]->global_id) +
+                                std::to_string(cells[piece_cell_[PieceOf(tris[0])]].global_id) +
                                 " and " +
-                                std::to_string(cells[piece_cell_[PieceOf(tris[1])]]->global_id) +
+                                std::to_string(cells[piece_cell_[PieceOf(tris[1])]].global_id) +
                                 " lie on the same side of a face they share: the mesh is "
                                 "inverted or self-overlapping.");
       triangles_[tris[0]].across = PieceOf(tris[1]);

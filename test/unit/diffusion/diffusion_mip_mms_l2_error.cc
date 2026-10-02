@@ -70,7 +70,7 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid, const std::string& h_perp_con
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
   for (const auto& cell : grid->GetLocalCells())
   {
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
   }
 
   ScalarSpatialFunction mms_phi = MMS_phi;
@@ -108,14 +108,14 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid, const std::string& h_perp_con
     double local_error = 0.0;
     for (const auto& cell : grid->GetLocalCells())
     {
-      const auto& cell_mapping = sdm.GetCellMapping(*cell);
+      const auto& cell_mapping = sdm.GetCellMapping(cell);
       const size_t num_nodes = cell_mapping.GetNumNodes();
       const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
       std::vector<double> nodal_phi(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
       {
-        const auto jmap = sdm.MapDOFLocal(*cell, j);
+        const auto jmap = sdm.MapDOFLocal(cell, j);
         nodal_phi[j] = field_wg[jmap];
       }
 
@@ -254,7 +254,7 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
   for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
 
   DiffusionMIPSolver solver("HPerp",
                             sdm,
@@ -265,17 +265,17 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
                             false,
                             false);
   for (const auto& cell : grid->GetLocalCells())
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
       solver.options.h_perp_convention = "cell";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h / 6.0, 1.0e-12);
+      EXPECT_NEAR(solver.HPerpendicular(cell, f), h / 6.0, 1.0e-12);
       solver.options.h_perp_convention = "face_side";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
+      EXPECT_NEAR(solver.HPerpendicular(cell, f), h, 1.0e-12);
     }
   solver.options.h_perp_convention = "cell";
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 1.0);
   solver.options.h_perp_convention = "face_side";
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   solver.options.h_perp_convention = "edge";
-  EXPECT_THROW(solver.HPerpendicular(*grid->GetLocalCells().front(), 0), std::invalid_argument);
+  EXPECT_THROW(solver.HPerpendicular(grid->GetLocalCells().front(), 0), std::invalid_argument);
 }

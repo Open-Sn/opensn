@@ -444,7 +444,7 @@ AngleAggregation::GetDelayedAngularDOFLayoutFingerprint() const
 
   add(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
-    add(cell->global_id);
+    add(cell.global_id);
 
   add(boundaries_.size());
   for (const auto& [bid, bndry] : boundaries_)

@@ -87,7 +87,7 @@ MIPMatrix(const std::shared_ptr<Mesh>& grid,
   xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{100.0}, {1.0e-3}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
   for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
   DiffusionMIPSolver solver(
     "SidePenalty", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
   solver.options.h_perp_convention = convention;
@@ -109,8 +109,8 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
   {
     auto grid = BuildOrthogonalMesh(node_sets);
     for (const auto& cell : grid->GetLocalCells())
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
-        EXPECT_NEAR(FaceSideLength(*grid, *cell, f), cell->volume / cell->faces[f].area, 1.0e-12);
+      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+        EXPECT_NEAR(FaceSideLength(*grid, cell, f), cell.volume / cell.faces[f].area, 1.0e-12);
   }
 }
 
@@ -122,7 +122,7 @@ TEST(DiffusionMIPSidePenalty, DegenerateSideSimplexThrows)
   for (const auto& node_sets : std::vector<std::vector<std::vector<double>>>{{x, y}, {x, y, z}})
   {
     auto grid = BuildOrthogonalMesh(node_sets);
-    const auto& cell = *grid->GetLocalCells().front();
+    const auto& cell = grid->GetLocalCells().front();
     Cell flat = cell;
     flat.centroid = flat.faces[0].centroid;
     EXPECT_NO_THROW(FaceSideLength(*grid, cell, 0));
@@ -149,8 +149,8 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
     for (const auto& cell : grid->GetLocalCells())
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
-        EXPECT_NEAR(solver.HPerpendicular(*cell, f), cell->volume / cell->faces[f].area, 1.0e-12);
+      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+        EXPECT_NEAR(solver.HPerpendicular(cell, f), cell.volume / cell.faces[f].area, 1.0e-12);
     EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
 }
@@ -184,9 +184,9 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
   // The cap is active somewhere: twice the side length is below the face length on some face.
   double min_ratio = 1.0;
   for (const auto& cell : grid->GetLocalCells())
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
       min_ratio =
-        std::min(min_ratio, 2.0 * FaceSideLength(*grid, *cell, f) / FaceOrthogonalLength(*cell, f));
+        std::min(min_ratio, 2.0 * FaceSideLength(*grid, cell, f) / FaceOrthogonalLength(cell, f));
   EXPECT_LT(min_ratio, 0.1);
 }
 
@@ -210,13 +210,13 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
     for (const auto& cell : grid->GetLocalCells())
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      for (unsigned int f = 0; f < cell.faces.size(); ++f)
       {
-        const double h_face = FaceOrthogonalLength(*cell, f);
-        EXPECT_NEAR(solver.HPerpendicular(*cell, f), h_face, 1.0e-10 * h_face);
-        if (cell->faces.size() == 4)
+        const double h_face = FaceOrthogonalLength(cell, f);
+        EXPECT_NEAR(solver.HPerpendicular(cell, f), h_face, 1.0e-10 * h_face);
+        if (cell.faces.size() == 4)
         {
-          EXPECT_NEAR(FaceSideLength(*grid, *cell, f), 0.5 * h_face, 1.0e-10 * h_face);
+          EXPECT_NEAR(FaceSideLength(*grid, cell, f), 0.5 * h_face, 1.0e-10 * h_face);
         }
       }
   }

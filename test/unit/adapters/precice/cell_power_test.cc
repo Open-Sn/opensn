@@ -50,8 +50,8 @@ GlobalPower(const coupling::CellPowerData& cell_data)
 TEST(PreciceCellPower, IntegratesOwnedLinearField1D)
 {
   auto grid = BuildLineMesh(4.0, 4, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
-    cell->block_id = 7;
+  for (auto& cell : grid->GetLocalCells())
+    cell.block_id = 7;
   const auto field = MakeNodalField(grid, [](const Vector3& x) { return 2.0 + 3.0 * x.z; });
 
   // source_rate * joules_per_energy_unit = 1; the 2.0 cross-sectional area scales volume and power.
@@ -103,8 +103,8 @@ TEST(PreciceCellPower, IntegratesOwnedTrilinearField3D)
 TEST(PreciceCellPower, SelectsBlocks)
 {
   auto grid = BuildLineMesh(4.0, 4, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
-    cell->block_id = cell->centroid.z < 2.0 ? 1 : 2;
+  for (auto& cell : grid->GetLocalCells())
+    cell.block_id = cell.centroid.z < 2.0 ? 1 : 2;
   const auto field = MakeNodalField(grid, [](const Vector3& x) { return 2.0 + 3.0 * x.z; });
 
   const auto cell_data = coupling::MakeCellPowerData(*field, 0, 1.0, 1.0, 1.0, {2, 2});

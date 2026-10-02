@@ -21,10 +21,10 @@ TEST(FieldFunctionInterpolationVolume, TransformedExtrema)
   std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
   for (auto& cell : grid->GetLocalCells())
   {
-    cell->block_id = 3;
-    const auto& nodes = sdm->GetCellNodeLocations(*cell);
+    cell.block_id = 3;
+    const auto& nodes = sdm->GetCellNodeLocations(cell);
     for (size_t i = 0; i < nodes.size(); ++i)
-      values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] = nodes[i].z;
+      values[sdm->MapDOFLocal(cell, i, unknowns, 0, 0)] = nodes[i].z;
   }
   ff->UpdateFieldVector(values);
 
@@ -80,10 +80,10 @@ TEST(FieldFunctionGridBased, BatchedPointValues)
   std::vector<double> shifted_values(linear_values.size());
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& nodes = sdm->GetCellNodeLocations(*cell);
+    const auto& nodes = sdm->GetCellNodeLocations(cell);
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-      const auto dof = sdm->MapDOFLocal(*cell, i, unknowns, 0, 0);
+      const auto dof = sdm->MapDOFLocal(cell, i, unknowns, 0, 0);
       linear_values[dof] = nodes[i].z;
       shifted_values[dof] = 2.0 * nodes[i].z + 3.0;
     }
@@ -134,18 +134,18 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
     std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
     for (const auto& cell : grid->GetLocalCells())
     {
-      const auto& nodes = sdm->GetCellNodeLocations(*cell);
+      const auto& nodes = sdm->GetCellNodeLocations(cell);
       for (size_t i = 0; i < nodes.size(); ++i)
-        values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] = field(nodes[i]);
+        values[sdm->MapDOFLocal(cell, i, unknowns, 0, 0)] = field(nodes[i]);
     }
     ff->UpdateFieldVector(values);
 
     auto jump = std::make_shared<FieldFunctionGridBased>("jump", sdm, Unknown(UnknownType::SCALAR));
     std::vector<double> jump_values(sdm->GetNumLocalDOFs(unknowns));
     for (const auto& cell : grid->GetLocalCells())
-      for (size_t i = 0; i < sdm->GetCellNumNodes(*cell); ++i)
-        jump_values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] =
-          1.0 + static_cast<double>(cell->global_id);
+      for (size_t i = 0; i < sdm->GetCellNumNodes(cell); ++i)
+        jump_values[sdm->MapDOFLocal(cell, i, unknowns, 0, 0)] =
+          1.0 + static_cast<double>(cell.global_id);
     jump->UpdateFieldVector(jump_values);
 
     // A lattice that includes the domain boundary and, on the box mesh, the vertices, edges, and
