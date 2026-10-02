@@ -203,7 +203,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
         const size_t groupset_angle_group_stride =
           groupset.psi_uk_man_.GetNumberOfUnknowns() * num_gs_groups;
         const size_t groupset_group_stride = num_gs_groups;
-        const size_t base = discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0);
+        const size_t base =
+          discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0);
 
         for (size_t i = 0; i < num_nodes; ++i)
         {

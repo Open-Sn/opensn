@@ -115,8 +115,8 @@ DiscreteOrdinatesProblem::ComputeAngularFieldFunctionData(const size_t groupset_
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(cell, i, uk_man, angle, group_in_groupset);
-      const auto imapB = sdm.MapDOFLocal(cell, i);
+      const auto imapA = sdm.MapDOFLocal(cell_local_id, i, uk_man, angle, group_in_groupset);
+      const auto imapB = sdm.MapDOFLocal(cell_local_id, i);
       data_vector_local[imapB] = psi[imapA];
     }
   }
