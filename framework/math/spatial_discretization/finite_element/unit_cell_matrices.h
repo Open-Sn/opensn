@@ -6,7 +6,7 @@
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector3.h"
 #include "framework/math/geometry.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 
 namespace opensn
@@ -27,7 +27,7 @@ struct UnitCellMatrices
 /// Compute unit cell matrices for a given cell
 UnitCellMatrices
 ComputeUnitCellIntegrals(const SpatialDiscretization& sdm,
-                         const Cell& cell,
+                         std::uint32_t cell_local_id,
                          CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);
 
 } // namespace opensn

@@ -1,8 +1,8 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include <vtkPoints.h>
@@ -21,18 +21,20 @@ namespace opensn
 {
 
 void
-UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
-                                const Cell& cell,
+UploadCellGeometryDiscontinuous(const std::shared_ptr<Mesh> grid,
+                                std::uint32_t cell_local_id,
                                 int64_t& node_counter,
                                 vtkNew<vtkPoints>& points,
                                 vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  size_t num_verts = cell.vertex_ids.size();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
+  auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+  size_t num_verts = cell_vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
   for (size_t v = 0; v < num_verts; ++v)
   {
-    uint64_t vgi = cell.vertex_ids[v];
+    uint64_t vgi = cell_vertex_ids[v];
     std::vector<double> d_node(3);
     d_node[0] = grid->GlobalVertex(vgi).x;
     d_node[1] = grid->GlobalVertex(vgi).y;
@@ -72,16 +74,17 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
     // Build polyhedron faces
     std::vector<vtkIdType> faces_vids;
 
-    size_t num_faces = cell.faces.size();
-    for (const auto& face : cell.faces)
+    size_t num_faces = grid->GetCellFaceCount(cell_local_id);
+    for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
     {
-      size_t num_fverts = face.vertex_ids.size();
+      auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+      size_t num_fverts = face_vertex_ids.size();
       std::vector<vtkIdType> face_info(num_fverts);
       for (size_t fv = 0; fv < num_fverts; ++fv)
       {
         size_t v = 0;
         for (size_t cv = 0; cv < num_verts; ++cv)
-          if (cell.vertex_ids[cv] == face.vertex_ids[fv])
+          if (cell_vertex_ids[cv] == face_vertex_ids[fv])
           {
             v = cv;
             break;
@@ -127,15 +130,18 @@ UploadCellGeometryDiscontinuous(const std::shared_ptr<MeshContinuum> grid,
 }
 
 void
-UploadCellGeometryContinuous(const Cell& cell,
+UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
+                             std::uint32_t cell_local_id,
                              const std::vector<uint64_t>& vertex_map,
                              vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  size_t num_verts = cell.vertex_ids.size();
+  const auto& cell = grid->GetLocalCell(cell_local_id);
+  auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+  size_t num_verts = cell_vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids(num_verts);
   for (size_t v = 0; v < num_verts; ++v)
-    cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell.vertex_ids[v]]);
+    cell_vids[v] = static_cast<vtkIdType>(vertex_map[cell_vertex_ids[v]]);
 
   if (cell.GetType() == CellType::SLAB)
   {
@@ -194,16 +200,17 @@ UploadCellGeometryContinuous(const Cell& cell,
     {
       case CellType::POLYHEDRON:
       {
-        size_t num_faces = cell.faces.size();
-        for (const auto& face : cell.faces)
+        size_t num_faces = grid->GetCellFaceCount(cell_local_id);
+        for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
         {
-          size_t num_fverts = face.vertex_ids.size();
+          auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+          size_t num_fverts = face_vertex_ids.size();
           std::vector<vtkIdType> face_info(num_fverts);
           for (size_t fv = 0; fv < num_fverts; ++fv)
           {
             size_t v = 0;
             for (size_t cv = 0; cv < num_verts; ++cv)
-              if (cell.vertex_ids[cv] == face.vertex_ids[fv])
+              if (cell_vertex_ids[cv] == face_vertex_ids[fv])
               {
                 v = cv;
                 break;
@@ -231,15 +238,18 @@ UploadCellGeometryContinuous(const Cell& cell,
 }
 
 void
-UploadFaceGeometry(const CellFace& cell_face,
+UploadFaceGeometry(std::shared_ptr<Mesh> grid,
+                   std::uint32_t cell_local_id,
+                   std::uint32_t face_idx,
                    const std::vector<uint64_t>& vertex_map,
                    vtkNew<vtkUnstructuredGrid>& ugrid)
 {
-  const size_t num_verts = cell_face.vertex_ids.size();
+  auto cell_face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
+  const size_t num_verts = cell_face_vertex_ids.size();
 
   std::vector<vtkIdType> cell_vids;
-  cell_vids.reserve(cell_face.vertex_ids.size());
-  for (uint64_t vid : cell_face.vertex_ids)
+  cell_vids.reserve(cell_face_vertex_ids.size());
+  for (uint64_t vid : cell_face_vertex_ids)
     cell_vids.push_back(static_cast<vtkIdType>(vertex_map[vid]));
 
   if (num_verts == 1)
@@ -528,7 +538,7 @@ BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
 }
 
 vtkNew<vtkUnstructuredGrid>
-PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool discontinuous)
+PrepareVtkUnstructuredGrid(std::shared_ptr<Mesh> grid, bool discontinuous)
 {
   // Instantiate VTK items
   vtkNew<vtkUnstructuredGrid> ugrid;
@@ -553,24 +563,26 @@ PrepareVtkUnstructuredGrid(const std::shared_ptr<MeshContinuum> grid, bool disco
 
   // Populate cell information
   int64_t node_count = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     if (discontinuous)
-      UploadCellGeometryDiscontinuous(grid, *cell, node_count, points, ugrid);
+      UploadCellGeometryDiscontinuous(grid, cell_local_id, node_count, points, ugrid);
     else
     {
-      for (uint64_t vid : cell->vertex_ids)
+      auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+      for (uint64_t vid : cell_vertex_ids)
       {
         const auto& vertex = grid->GlobalVertex(vid);
         points->InsertNextPoint(vertex.x, vertex.y, vertex.z);
         vertex_map[vid] = node_count;
         ++node_count;
       }
-      UploadCellGeometryContinuous(*cell, vertex_map, ugrid);
+      UploadCellGeometryContinuous(grid, cell_local_id, vertex_map, ugrid);
     }
 
-    block_array->InsertNextValue(static_cast<int>(cell->block_id));
-    partition_id_array->InsertNextValue(cell->partition_id);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    block_array->InsertNextValue(static_cast<int>(cell.block_id));
+    partition_id_array->InsertNextValue(cell.partition_id);
   } // for local cells
   ugrid->SetPoints(points);
 

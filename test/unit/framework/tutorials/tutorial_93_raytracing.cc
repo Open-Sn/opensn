@@ -6,7 +6,7 @@
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/random_number_generation/random_number_generator.h"
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/raytrace/raytracer.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/runtime.h"
@@ -18,7 +18,7 @@ namespace
 {
 
 void
-SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
+SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
 {
   const std::string fname = "SimTest93_RayTracing";
   opensn::log.Log() << "SimTest93_RayTracing";
@@ -87,11 +87,12 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
   Cell const* source_cell_ptr = nullptr;
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::size_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    if (grid->CheckPointInsideCell(*cell, source_pos))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    if (grid->CheckPointInsideCell(cell_local_id, source_pos))
     {
-      source_cell_ptr = cell.get();
+      source_cell_ptr = &cell;
       break;
     }
   }
@@ -120,7 +121,8 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
       const int g,
       double weight)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     const auto phi_theta = OmegaToPhiThetaSafe(omega);
@@ -154,7 +156,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
         for (unsigned int m = 0; m < num_moments; ++m)
         {
-          const auto dof_map = sdm.MapDOFLocal(cell, i, phi_uk_man, m, g);
+          const auto dof_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
 
           // Apply harmonic weight
           const auto& ell_em = m_to_ell_em_map.at(m);
@@ -181,14 +183,14 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
     } // for d
   };
 
-  auto GetCellApproximateSize = [&grid](const Cell& cell)
+  auto GetCellApproximateSize = [&grid](std::span<const std::uint64_t> cell_vertex_ids)
   {
-    const auto& v0 = grid->GlobalVertex(cell.vertex_ids[0]);
+    const auto& v0 = grid->GlobalVertex(cell_vertex_ids[0]);
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
 
-    for (uint64_t vid : cell.vertex_ids)
+    for (uint64_t vid : cell_vertex_ids)
     {
       const auto& v = grid->GlobalVertex(vid);
 
@@ -205,8 +207,12 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
   // Create raytracer
   std::vector<double> cell_sizes(grid->GetLocalCellCount(), 0.0);
-  for (const auto& cell : grid->GetLocalCells())
-    cell_sizes[cell->local_id] = GetCellApproximateSize(*cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    cell_sizes[cell_local_id] = GetCellApproximateSize(cell_vertex_ids);
+  }
 
   RayTracer ray_tracer(grid, &cell_sizes);
 
@@ -226,9 +232,11 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
     {
       // Get the current cell
       const auto& cell = grid->GetGlobalCell(particle.cell_id);
+      const auto cell_local_id = grid->MapCellGlobalID2LocalID(particle.cell_id);
 
       // Perform the trace to the next surface
-      auto destination_info = ray_tracer.TraceRay(cell, particle.position, particle.direction);
+      auto destination_info =
+        ray_tracer.TraceRay(cell_local_id, particle.position, particle.direction);
 
       const Vector3& end_of_track_position = destination_info.pos_f;
 
@@ -245,7 +253,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
       if (not destination_info.particle_lost)
       {
         const auto& f = destination_info.destination_face_index;
-        const auto& current_cell_face = cell.faces[f];
+        const auto& current_cell_face = grid->GetCellFace(cell_local_id, f);
 
         if (current_cell_face.has_neighbor)
           particle.cell_id = current_cell_face.neighbor_id;
@@ -269,10 +277,11 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
   } // for ray n
 
   // Post process tallies
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     // Compute mass matrix and its inverse
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto& fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
@@ -292,7 +301,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
       {
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
           T(i) = phi_tally[imap] / num_particles;
         }
 
@@ -300,7 +309,7 @@ SimTest93_RayTracing(std::shared_ptr<MeshContinuum> grid)
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, m, g);
+          const auto imap = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, m, g);
           phi_tally[imap] = phi_uc(i);
         }
       } // for group g

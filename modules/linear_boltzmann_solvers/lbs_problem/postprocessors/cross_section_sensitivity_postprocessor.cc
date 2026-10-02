@@ -128,15 +128,19 @@ CrossSectionSensitivityPostprocessor::CrossSectionSensitivityPostprocessor(
 void
 CrossSectionSensitivityPostprocessor::CreateSpatialRestriction()
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
 
   if (logical_volumes_.empty())
   {
     cell_local_ids_.resize(1);
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       if (block_ids_.empty() or
-          std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-        cell_local_ids_[0].push_back(cell->local_id);
+          std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+        cell_local_ids_[0].push_back(cell_local_id);
+    }
   }
   else
   {
@@ -153,15 +157,16 @@ std::vector<std::uint32_t>
 CrossSectionSensitivityPostprocessor::GetLogicalVolumeCellIDs(
   std::shared_ptr<LogicalVolume> log_vol) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   std::vector<std::uint32_t> cell_ids;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    if (not log_vol->Inside(cell->centroid))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    if (not log_vol->Inside(cell.centroid))
       continue;
     if (block_ids_.empty() or
-        std::find(block_ids_.begin(), block_ids_.end(), cell->block_id) != block_ids_.end())
-      cell_ids.push_back(cell->local_id);
+        std::find(block_ids_.begin(), block_ids_.end(), cell.block_id) != block_ids_.end())
+      cell_ids.push_back(cell_local_id);
   }
   return cell_ids;
 }
@@ -326,7 +331,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
   const std::vector<std::vector<double>>& forward_psi,
   const std::vector<std::vector<double>>& adjoint_psi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& groupsets = do_problem_->GetGroupsets();
@@ -339,7 +344,7 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     const auto& sigma_t = xs->GetSigmaTotal();
 
@@ -356,15 +361,15 @@ CrossSectionSensitivityPostprocessor::ComputeTotalSensitivity(
       // group. A moment source Q enters each direction as Q / W, where W is the quadrature weight
       // sum, so angular inner products carry a factor W relative to moment inner products.
       const double weight_sum = quadrature->GetWeightSum();
-      const auto num_nodes = discretization.GetCellNumNodes(cell);
+      const auto num_nodes = discretization.GetCellNumNodes(cell_id);
       for (uint64_t i = 0; i < num_nodes; ++i)
         for (uint64_t j = 0; j < num_nodes; ++j)
         {
           const auto M_ij = fe_values.intV_shapeI_shapeJ(i, j);
           for (size_t n = 0; n < num_gs_angles; ++n)
           {
-            const auto dof_i = discretization.MapDOFLocal(cell, i, uk_man, n, 0);
-            const auto dof_j = discretization.MapDOFLocal(cell, j, uk_man, n, 0);
+            const auto dof_i = discretization.MapDOFLocal(cell_id, i, uk_man, n, 0);
+            const auto dof_j = discretization.MapDOFLocal(cell_id, j, uk_man, n, 0);
             const auto weight = weight_sum * quadrature->GetWeight(n) * M_ij;
             for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
             {
@@ -395,7 +400,7 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
   const std::vector<double>& forward_phi,
   const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto from_group = from_group_.value_or(0);
@@ -427,8 +432,8 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell_id];
+    const auto& transport_view = transport_views[cell_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
 
     for (unsigned int m = 0; m < num_moments; ++m)
@@ -475,7 +480,7 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   const std::vector<double>& forward_phi,
   const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto group = selected_group_.value_or(0);
@@ -484,8 +489,8 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   for (const auto cell_id : cell_local_ids)
   {
     const auto& cell = grid->GetLocalCell(cell_id);
-    const auto& fe_values = unit_cell_matrices[cell.local_id];
-    const auto& transport_view = transport_views[cell.local_id];
+    const auto& fe_values = unit_cell_matrices[cell_id];
+    const auto& transport_view = transport_views[cell_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
 
     if (not xs->IsFissionable())
@@ -537,19 +542,20 @@ double
 CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
   const std::vector<double>& forward_phi, const std::vector<double>& adjoint_phi) const
 {
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
 
   double local = 0.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& xs = do_problem_->GetBlockID2XSMap().at(cell.block_id);
     if (not xs->IsFissionable())
       continue;
 
-    const auto& fe_values = unit_cell_matrices[cell->local_id];
-    const auto& transport_view = transport_views[cell->local_id];
+    const auto& fe_values = unit_cell_matrices[cell_local_id];
+    const auto& transport_view = transport_views[cell_local_id];
     const auto& chi = xs->GetChi();
     const auto& nu_sigma_f = xs->GetNuSigmaF();
 

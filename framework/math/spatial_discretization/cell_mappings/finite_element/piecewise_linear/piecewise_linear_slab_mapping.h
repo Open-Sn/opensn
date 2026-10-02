@@ -5,7 +5,7 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 #include "framework/math/quadratures/spatial/line_quadrature.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include <array>
 
 namespace opensn
@@ -20,8 +20,8 @@ class PieceWiseLinearSlabMapping : public PieceWiseLinearBaseMapping
 {
 public:
   /// Constructor for a slab view.
-  PieceWiseLinearSlabMapping(const Cell& slab_cell,
-                             std::shared_ptr<MeshContinuum> ref_grid,
+  PieceWiseLinearSlabMapping(std::uint32_t cell_local_id,
+                             std::shared_ptr<Mesh> ref_grid,
                              const LineQuadrature& volume_quadrature);
 
   VolumetricFiniteElementData MakeVolumetricFiniteElementData() const override;

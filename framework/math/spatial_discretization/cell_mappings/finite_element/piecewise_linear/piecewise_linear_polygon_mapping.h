@@ -22,8 +22,8 @@ class LineQuadrature;
 class PieceWiseLinearPolygonMapping : public PieceWiseLinearBaseMapping
 {
 public:
-  PieceWiseLinearPolygonMapping(const Cell& poly_cell,
-                                std::shared_ptr<MeshContinuum> ref_grid,
+  PieceWiseLinearPolygonMapping(std::uint32_t cell_local_id,
+                                std::shared_ptr<Mesh> ref_grid,
                                 const TriangleQuadrature& volume_quadrature,
                                 const LineQuadrature& surface_quadrature);
 

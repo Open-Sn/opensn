@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <cassert>
 #include <memory>
 #include <utility>
@@ -13,7 +14,7 @@
 namespace opensn
 {
 
-class MeshContinuum;
+class Mesh;
 struct Vector3;
 class Cell;
 class VolumetricFiniteElementData;
@@ -28,10 +29,10 @@ class CellMapping
 {
 public:
   /// Returns the cell this mapping is based on.
-  const Cell& GetCell() const { return cell_; }
+  const Cell& GetCell() const { return grid_->GetLocalCell(cell_local_id_); }
 
   /// Returns the grid on which the cell for this mapping lives.
-  std::shared_ptr<MeshContinuum> GetGrid() const { return grid_; }
+  std::shared_ptr<Mesh> GetMesh() const { return grid_; }
 
   /// Returns the number of nodes on this element.
   size_t GetNumNodes() const { return num_nodes_; }
@@ -87,14 +88,14 @@ public:
   virtual ~CellMapping() = default;
 
 protected:
-  CellMapping(std::shared_ptr<MeshContinuum> grid,
-              const Cell& cell,
+  CellMapping(std::shared_ptr<Mesh> grid,
+              std::uint32_t cell_local_id,
               size_t num_nodes,
               std::vector<Vector3> node_locations,
               std::vector<std::vector<int>> face_node_mappings);
 
-  const std::shared_ptr<MeshContinuum> grid_;
-  const Cell& cell_;
+  const std::shared_ptr<Mesh> grid_;
+  const std::uint32_t cell_local_id_;
 
   const size_t num_nodes_;
   const std::vector<Vector3> node_locations_;

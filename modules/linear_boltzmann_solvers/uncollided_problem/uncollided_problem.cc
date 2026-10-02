@@ -124,13 +124,15 @@ UncollidedProblem::InitializeSpatialDiscretization()
   // Without this, RayTracer::TraceRay() recomputes it on every call by iterating
   // over all cell vertices.
   cell_sizes_.resize(grid_->GetLocalCellCount());
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& v0 = grid_->GlobalVertex(cell->vertex_ids.front());
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    const auto& v0 = grid_->GlobalVertex(cell_vertex_ids.front());
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& v = grid_->GlobalVertex(vid);
       xmin = std::min(xmin, v.x);
@@ -140,7 +142,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
       zmin = std::min(zmin, v.z);
       zmax = std::max(zmax, v.z);
     }
-    cell_sizes_[cell->local_id] =
+    cell_sizes_[cell_local_id] =
       std::max((Vector3(xmax, ymax, zmax) - Vector3(xmin, ymin, zmin)).Norm(), 1.0);
   }
 
@@ -149,17 +151,23 @@ UncollidedProblem::InitializeSpatialDiscretization()
   // dot(n, v - v0) <= 0. Standard hex/tet meshes are fully convex.
   all_cells_convex_ = [&]() -> bool
   {
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const double tol = cell_sizes_[cell->local_id] * 1.0e-8;
-      for (const auto& face : cell->faces)
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+      auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+      const double tol = cell_sizes_[cell_local_id] * 1.0e-8;
+      for (size_t f = 0; f < cell_faces.size(); ++f)
       {
-        const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());
+        const auto& face = cell_faces[f];
+        auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, f);
+        const auto& v0 = grid_->GlobalVertex(face_vertex_ids.front());
         const auto& n = face.normal;
-        for (const auto vid : cell->vertex_ids)
+        for (const auto vid : cell_vertex_ids)
         {
           bool on_face = false;
-          for (const auto fvid : face.vertex_ids)
+          for (const auto fvid : face_vertex_ids)
             if (fvid == vid)
             {
               on_face = true;
@@ -185,11 +193,15 @@ UncollidedProblem::InitializeSpatialDiscretization()
   {
     size_t total_faces = 0;
     bool can_fast = true;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      for (const auto& face : cell->faces)
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+      for (size_t f = 0; f < cell_faces.size(); ++f)
       {
-        if (face.vertex_ids.size() > FaceVertData::max_sides)
+        const auto num_face_verts = grid_->GetCellFaceVertexCount(cell_local_id, f);
+        if (num_face_verts > FaceVertData::max_sides)
         {
           can_fast = false;
           break;
@@ -197,7 +209,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
       }
       if (not can_fast)
         break;
-      total_faces += cell->faces.size();
+      total_faces += cell_faces.size();
     }
 
     if (can_fast)
@@ -207,17 +219,22 @@ UncollidedProblem::InitializeSpatialDiscretization()
       cell_num_faces_.resize(grid_->GetLocalCellCount());
       global_to_local_id_.reserve(grid_->GetLocalCellCount());
       size_t offset = 0;
-      for (const auto& cell : grid_->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+           ++cell_local_id)
       {
-        cell_face_offsets_[cell->local_id] = static_cast<uint32_t>(offset);
-        cell_num_faces_[cell->local_id] = static_cast<uint32_t>(cell->faces.size());
-        global_to_local_id_[cell->global_id] = static_cast<uint32_t>(cell->local_id);
-        for (const auto& face : cell->faces)
+        const auto& cell = grid_->GetLocalCell(cell_local_id);
+        const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+        cell_face_offsets_[cell_local_id] = static_cast<uint32_t>(offset);
+        cell_num_faces_[cell_local_id] = static_cast<uint32_t>(cell_faces.size());
+        global_to_local_id_[cell.global_id] = static_cast<uint32_t>(cell_local_id);
+        for (size_t f = 0; f < cell_faces.size(); ++f)
         {
+          const auto& face = cell_faces[f];
+          auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, f);
           auto& fv = all_face_verts_[offset++];
-          fv.num_sides = static_cast<uint32_t>(face.vertex_ids.size());
+          fv.num_sides = static_cast<uint32_t>(face_vertex_ids.size());
           for (size_t s = 0; s < fv.num_sides; ++s)
-            fv.verts[s] = grid_->GlobalVertex(face.vertex_ids[s]);
+            fv.verts[s] = grid_->GlobalVertex(face_vertex_ids[s]);
           fv.centroid = face.centroid;
           fv.neighbor_id = face.neighbor_id;
           fv.pad = 0;
@@ -271,9 +288,11 @@ UncollidedProblem::InitializeReflectingBoundaries(const InputParameters& params)
     bool found_face = false;
     Vector3 normal;
     double offset = 0.0;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      for (const auto& face : cell->faces)
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
         if (not face.has_neighbor and face.neighbor_id == boundary_id)
         {
           if (not found_face)
@@ -334,12 +353,14 @@ UncollidedProblem::BuildSourcePoints()
     const auto& subscribers = source_points_.back().subscribers;
     if (subscribers.size() == 1)
     {
-      const Cell& source_cell = grid_->GetLocalCell(subscribers.front().cell_local_id);
+      const auto cell_local_id = subscribers.front().cell_local_id;
+      const Cell& source_cell = grid_->GetLocalCell(cell_local_id);
+      const auto source_cell_faces = grid_->GetCellFaces(cell_local_id);
       const Vector3& loc = source_points_.back().location;
 
       double min_face_dist = std::numeric_limits<double>::max();
       double centroid_clearance = std::numeric_limits<double>::max();
-      for (const auto& face : source_cell.faces)
+      for (const auto& face : source_cell_faces)
       {
         min_face_dist = std::min(min_face_dist, std::abs(face.normal.Dot(loc - face.centroid)));
         centroid_clearance = std::min(
@@ -422,21 +443,28 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 
   const size_t num_local_cells = grid_->GetLocalCellCount();
   cell_face_orientations_.assign(num_local_cells, {});
-  for (const auto& cell : grid_->GetLocalCells())
-    cell_face_orientations_[cell->local_id].assign(cell->faces.size(), FOPARALLEL);
-
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
   {
-    size_t f = 0;
-    for (auto& face : cell->faces)
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    cell_face_orientations_[cell_local_id].assign(grid_->GetCellFaceCount(cell_local_id),
+                                                  FOPARALLEL);
+  }
+
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
+      const auto& face = cell_faces[f];
       // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
       Vector3 omega = ComputeOmega(source_point.location, face.centroid);
       const double mu = omega.Dot(face.normal);
 
       bool owns_face = true;
-      if (face.has_neighbor and cell->global_id > face.neighbor_id)
+      if (face.has_neighbor and cell.global_id > face.neighbor_id)
         owns_face = false;
 
       if (owns_face)
@@ -446,13 +474,14 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
         else if (mu < -tolerance)
           orientation = FOINCOMING;
 
-        cell_face_orientations_[cell->local_id][f] = orientation;
+        cell_face_orientations_[cell_local_id][f] = orientation;
 
         if (face.has_neighbor)
         {
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
-          const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
-          auto& adj_face_ori = cell_face_orientations_[adj_cell.local_id][adj_face_idx];
+          const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+          const auto adj_face_idx = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
+          auto& adj_face_ori = cell_face_orientations_[adj_cell_local_id][adj_face_idx];
 
           switch (orientation)
           {
@@ -468,18 +497,18 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
           }
         }
       }
-
-      ++f;
     } // for face
   }
 
   Graph local_cell_graph(num_local_cells);
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
   {
-    for (size_t f = 0; f < cell->faces.size(); ++f)
-      if (cell_face_orientations_[cell->local_id][f] == FOOUTGOING and cell->faces[f].has_neighbor)
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
+      if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING and cell_faces[f].has_neighbor)
         boost::add_edge(
-          cell->local_id, cell->faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
+          cell_local_id, cell_faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
   }
 
   std::vector<size_t> sweep_order;
@@ -521,11 +550,12 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
         continue;
 
       const auto& cell = grid_->GetLocalCell(cell_id);
-      const size_t cell_num_faces = cell.faces.size();
+      const auto cell_faces = grid_->GetCellFaces(cell_id);
+      const size_t cell_num_faces = cell_faces.size();
 
       for (size_t f = 0; f < cell_num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         if (not face.has_neighbor or
             cell_face_orientations_[cell_id][f] != FaceOrientation::INCOMING)
           continue;
@@ -613,11 +643,13 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   nodes_x.reserve(num_loc_nodes);
   nodes_y.reserve(num_loc_nodes);
   nodes_z.reserve(num_loc_nodes);
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    global_ids[cell->local_id] = cell->global_id;
-    cell_node_counts[cell->local_id] = sdm.GetCellNumNodes(*cell);
-    for (const auto vertex_id : cell->vertex_ids)
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    global_ids[cell_local_id] = cell.global_id;
+    cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell_local_id);
+    for (const auto vertex_id : cell_vertex_ids)
     {
       const auto& vertex = grid_->GlobalVertex(vertex_id);
       nodes_x.push_back(vertex.x);
@@ -625,9 +657,9 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
       nodes_z.push_back(vertex.z);
     }
 
-    const auto& sigma_t = cell_transport_views_[cell->local_id].GetXS().GetSigmaTotal();
+    const auto& sigma_t = cell_transport_views_[cell_local_id].GetXS().GetSigmaTotal();
     for (size_t g = 0; g < num_groups_; ++g)
-      cell_sigma_t[static_cast<size_t>(cell->local_id) * num_groups_ + g] = sigma_t[g];
+      cell_sigma_t[static_cast<size_t>(cell_local_id) * num_groups_ + g] = sigma_t[g];
   }
   OpenSnLogicalErrorIf(not H5WriteDataset1D<uint64_t>(file, "cell ids", global_ids),
                        GetName() + ": failed to write cell ids.");
@@ -689,14 +721,16 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
       SweepBulkRegion(source_point);
 
     // Update phi_new_local_
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(*cell);
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = sdm.MapDOFLocal(*cell, i);
+        const auto ir = sdm.MapDOFLocal(cell_local_id, i);
 
         for (size_t g = 0; g < num_groups_; ++g)
         {
@@ -742,7 +776,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 
 void
 UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
-                                    const Cell& cell,
+                                    std::uint32_t cell_local_id,
                                     const Vector3& qp_xyz,
                                     const SourcePoint& source_point,
                                     std::vector<double>& phi_out,
@@ -779,7 +813,6 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
   std::sort(scratch_bp.begin(), scratch_bp.end());
 
   scratch_segs.clear();
-  size_t cell_id = cell.local_id;
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
     Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
@@ -807,10 +840,10 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       if (use_fast_trace_)
       {
         // Fast path: precomputed flat face vertex data -- no std::map traversal.
-        const double cell_size = cell_sizes_[cell_id];
+        const double cell_size = cell_sizes_[cell_local_id];
         const double back_tol = cell_size * 1.0e-10;
-        const uint32_t face_off = cell_face_offsets_[cell_id];
-        const uint32_t n_faces = cell_num_faces_[cell_id];
+        const uint32_t face_off = cell_face_offsets_[cell_local_id];
+        const uint32_t n_faces = cell_num_faces_[cell_local_id];
 
         bool found = false;
         for (uint32_t f = 0; f < n_faces and not found; ++f)
@@ -843,8 +876,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         if (not found)
         {
           // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
-          const auto oi =
-            ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), line_point, segment_omega);
+          const auto oi = ray_tracer.TraceRay(cell_local_id, line_point, segment_omega);
           OpenSnLogicalErrorIf(oi.particle_lost,
                                GetName() +
                                  ": reflected image-source ray lost in fast-trace fallback.");
@@ -856,8 +888,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       else
       {
         // Original path: used for non-convex meshes or faces with >max_sides vertices.
-        const auto oi =
-          ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), line_point, segment_omega);
+        const auto oi = ray_tracer.TraceRay(cell_local_id, line_point, segment_omega);
         OpenSnLogicalErrorIf(oi.particle_lost,
                              GetName() + ": ray lost in mesh during segment traversal.");
         dist_in_cell = oi.distance_to_surface;
@@ -868,7 +899,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       const double distance_in_cell = std::min(dist_in_cell, remaining_distance);
       OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
                            GetName() + ": reflected image-source ray failed to advance.");
-      scratch_segs.emplace_back(cell_id, distance_in_cell);
+      scratch_segs.emplace_back(cell_local_id, distance_in_cell);
       remaining_distance -= distance_in_cell;
       if (remaining_distance <= tolerance)
         break;
@@ -880,14 +911,14 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         OpenSnLogicalErrorIf(
           it == global_to_local_id_.end(),
           GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = it->second;
+        cell_local_id = it->second;
       }
       else
       {
         OpenSnLogicalErrorIf(
           not grid_->IsCellLocal(dest_neighbor),
           GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = grid_->GetGlobalCell(dest_neighbor).local_id;
+        cell_local_id = grid_->MapCellGlobalID2LocalID(dest_neighbor);
       }
       line_point = exit_point;
     }
@@ -951,12 +982,12 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
       for (size_t cell_index = thread_id; cell_index < num_cells; cell_index += num_threads)
       {
         const auto& cell = grid_->GetLocalCell(cell_index);
-        const auto& cell_mapping = sdm.GetCellMapping(cell);
+        const auto& cell_mapping = sdm.GetLocalCellMapping(cell_index);
         const size_t cell_num_nodes = cell_mapping.GetNumNodes();
         const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-        const auto& unit_matrices = unit_cell_matrices_[cell.local_id];
+        const auto& unit_matrices = unit_cell_matrices_[cell_index];
         const auto& intV_shapeI = unit_matrices.intV_shapeI;
-        const auto& sigma_t = cell_transport_views_[cell.local_id].GetXS().GetSigmaTotal();
+        const auto& sigma_t = cell_transport_views_[cell_index].GetXS().GetSigmaTotal();
         std::vector<Vector<double>> cell_phi(num_groups_, Vector<double>(cell_num_nodes, 0.0));
         std::vector<std::vector<Vector<double>>> moment_rhs(
           num_moments,
@@ -969,7 +1000,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
             RaytraceLineInto(ray_tracer,
-                             cell,
+                             cell_index,
                              qp_xyz,
                              source_point,
                              phi_qp,
@@ -1029,9 +1060,10 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
             }
           }
 
-          for (size_t f = 0; f < cell.faces.size(); ++f)
+          const auto cell_faces = grid_->GetCellFaces(cell_index);
+          for (size_t f = 0; f < cell_faces.size(); ++f)
           {
-            const auto& face = cell.faces[f];
+            const auto& face = cell_faces[f];
             if (face.has_neighbor or IsReflectingBoundary(face.neighbor_id))
               continue;
 
@@ -1046,7 +1078,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               const auto omega = ComputeOmega(source_point.location, qp_xyz);
               const double integrand = omega.Dot(face.normal) * fe_srf_data.JxW(qp);
               RaytraceLineInto(ray_tracer,
-                               cell,
+                               cell_index,
                                qp_xyz,
                                source_point,
                                phi_qp,
@@ -1061,7 +1093,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_index, i);
           for (size_t g = 0; g < num_groups_; ++g)
             phi_new_local_[ir * num_groups_ + g] += cell_phi[g](i);
         }
@@ -1074,7 +1106,7 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               mass_matrix, moment_rhs[moment_index][g], static_cast<int>(cell_num_nodes));
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
-              const auto ir = sdm.MapDOFLocal(cell, i);
+              const auto ir = sdm.MapDOFLocal(cell_index, i);
               accumulated_moments_[moment_index][ir * num_groups_ + g] +=
                 moment_rhs[moment_index][g](i);
             }
@@ -1161,16 +1193,18 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   double max_relative_outgoing_change = 0.0;
 
   // Ray-trace near-source region cells
-  for (size_t c : near_spls_)
+  for (size_t cell_local_id : near_spls_)
   {
-    const Cell& cell = grid_->GetLocalCell(c);
+    const Cell& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
     bool cell_current_mismatched = false;
 
     // Cell mapping
     auto coord_sys = grid_->GetCoordinateSystem();
     auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
-    const size_t cell_num_faces = cell.faces.size();
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const size_t cell_num_faces = cell_faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -1182,14 +1216,14 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     cell_leakage.resize(cell_num_faces);
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
-      const auto orientation = cell_face_orientations_[c][f];
+      const auto orientation = cell_face_orientations_[cell_local_id][f];
       face_leakage.assign(num_groups_, 0.);
 
       // Compute leakage out of outgoing face
       if (orientation == FOOUTGOING)
       {
         // Face data
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
 
         const Vector3& normal = face.normal;
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
@@ -1202,7 +1236,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         {
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
-          const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+          const auto phi_qp = RaytraceLine(ray_tracer, cell_local_id, qp_xyz, source_point);
           const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
@@ -1224,9 +1258,10 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
             // Neighbor data
             const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
-            const auto& neighbor_mapping = sdm.GetCellMapping(neighbor);
+            auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
+            const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
 
-            size_t f_ = face.GetNeighborAdjacentFaceIndex(grid_.get());
+            size_t f_ = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
             const size_t neighbor_num_face_nodes = neighbor_mapping.GetNumFaceNodes(f_);
             double face_measure = 0.0;
             for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
@@ -1244,7 +1279,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
               for (size_t fj = 0; fj < neighbor_num_face_nodes; ++fj)
               {
                 const int neighbor_node = neighbor_mapping.MapFaceNode(f_, fj);
-                if (neighbor.vertex_ids[neighbor_node] == cell.vertex_ids[i])
+                if (neighbor_vertex_ids[neighbor_node] == cell_vertex_ids[i])
                 {
                   j = neighbor_node;
                   break;
@@ -1257,7 +1292,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                                      " face " + std::to_string(f_) + ".");
 
               // Compute rhs for bulk region sweep
-              const auto jr = sdm.MapDOFLocal(neighbor, j);
+              const auto jr = sdm.MapDOFLocal(neighbor_id, j);
               double fallback_rhs_weight = 0.0;
               size_t qp_index = 0;
               for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
@@ -1288,11 +1323,11 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       // Retrieve leakage in from incoming face
       else if (orientation == FOINCOMING)
       {
-        if (not cell.faces[f].has_neighbor)
+        if (not cell_faces[f].has_neighbor)
           continue;
 
-        size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
-        size_t neigh_face_ind = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
+        size_t neigh_id = cell_faces[f].GetNeighborLocalID(grid_.get());
+        size_t neigh_face_ind = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
         face_leakage = leakages[neigh_id][neigh_face_ind];
       }
 
@@ -1301,7 +1336,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     }
 
     // Save leakage through cell faces
-    leakages.emplace(c, cell_leakage);
+    leakages.emplace(cell_local_id, cell_leakage);
 
     // Mass matrix times least-squares flux vector
     std::vector<Vector<double>> phi(num_groups_, Vector<double>(cell_num_nodes, 0.));
@@ -1310,7 +1345,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       // Raytrace to point
       Vector3 qp_xyz = fe_vol_data.QPointXYZ(qp);
 
-      std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+      std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell_local_id, qp_xyz, source_point);
 
       for (unsigned int i = 0; i < cell_num_nodes; ++i)
       {
@@ -1327,16 +1362,16 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     // Invert mass matrix
     for (size_t g = 0; g < num_groups_; ++g)
     {
-      auto mass_matrix = unit_cell_matrices_[c].intV_shapeI_shapeJ;
+      auto mass_matrix = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
       GaussElimination(mass_matrix, phi[g], static_cast<int>(cell_num_nodes));
     }
 
     // Transport view
-    const auto& transport_view = cell_transport_views_[c];
+    const auto& transport_view = cell_transport_views_[cell_local_id];
     const auto& xs = transport_view.GetXS();
     const auto& sigma_t = xs.GetSigmaTotal();
 
-    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
+    const auto& fe_intgrl_values = unit_cell_matrices_[cell_local_id];
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
 
     // Enforce conservation
@@ -1349,7 +1384,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     // roundoff.
     for (const auto& subscriber : source_point.subscribers)
     {
-      if (subscriber.cell_local_id == c)
+      if (subscriber.cell_local_id == cell_local_id)
       {
         for (size_t g = 0; g < num_groups_; ++g)
           source[g] += strength[g] * subscriber.volume_weight;
@@ -1359,17 +1394,17 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
     // Incoming leakage contributes to the available cell source.
     for (size_t f = 0; f < cell_num_faces; ++f)
-      if (cell_face_orientations_[c][f] == FOINCOMING)
+      if (cell_face_orientations_[cell_local_id][f] == FOINCOMING)
         for (size_t g = 0; g < num_groups_; ++g)
-          source[g] += leakages[c][f][g];
+          source[g] += leakages[cell_local_id][f][g];
 
     // Apply the cell-wise correction from Woodsford et al. (2026), Eqs. (24)-(25).
     for (size_t g = 0; g < num_groups_; ++g)
     {
       double outgoing_leakage = 0.0;
       for (size_t f = 0; f < cell_num_faces; ++f)
-        if (cell_face_orientations_[c][f] == FOOUTGOING)
-          outgoing_leakage += leakages[c][f][g];
+        if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING)
+          outgoing_leakage += leakages[cell_local_id][f][g];
 
       double projected_integral = 0.0;
       for (size_t i = 0; i < cell_num_nodes; ++i)
@@ -1407,7 +1442,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       {
         size_t outgoing_face_count = 0;
         for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
+          if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING)
             ++outgoing_face_count;
         OpenSnLogicalErrorIf(outgoing_face_count == 0,
                              GetName() + ": near-source cell " + std::to_string(cell.global_id) +
@@ -1418,9 +1453,9 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
         const double face_share = source[g] / static_cast<double>(outgoing_face_count);
         for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
+          if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING)
           {
-            leakages[c][f][g] = face_share;
+            leakages[cell_local_id][f][g] = face_share;
             for (const auto& [jr, weight] : bulk_face_rhs_weights[f])
               cell_bulk_rhs[jr][g] += face_share * weight;
           }
@@ -1429,17 +1464,17 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       {
         // Apply the shared correction to leakage and the bulk interface source.
         for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
-            leakages[c][f][g] *= alpha;
+          if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING)
+            leakages[cell_local_id][f][g] *= alpha;
         for (auto& [jr, rhs_g] : cell_bulk_rhs)
           rhs_g[g] *= alpha;
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        if (not cell.faces[f].has_neighbor and
-            not IsReflectingBoundary(cell.faces[f].neighbor_id) and
-            cell_face_orientations_[c][f] == FOOUTGOING)
-          out_flow_ += leakages[c][f][g];
+        if (not cell_faces[f].has_neighbor and
+            not IsReflectingBoundary(cell_faces[f].neighbor_id) and
+            cell_face_orientations_[cell_local_id][f] == FOOUTGOING)
+          out_flow_ += leakages[cell_local_id][f][g];
     }
 
     // The bulk sweep receives the analytic ray-traced interface current.
@@ -1450,7 +1485,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     // Update flux solution
     for (size_t i = 0; i < cell_num_nodes; ++i)
     {
-      const auto ir = sdm.MapDOFLocal(cell, i);
+      const auto ir = sdm.MapDOFLocal(cell_local_id, i);
       for (size_t g = 0; g < num_groups_; ++g)
         destination_phi_[ir * num_groups_ + g] = phi[g](i);
     }
@@ -1499,7 +1534,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
 std::vector<double>
 UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
-                                const Cell& cell,
+                                std::uint32_t cell_local_id,
                                 const Vector3& qp_xyz,
                                 const SourcePoint& source_point,
                                 const double tolerance)
@@ -1510,8 +1545,15 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   std::vector<double> scratch_mfp(num_groups_, 0.0);
   scratch_segs.reserve(16);
   scratch_bp.reserve(8);
-  RaytraceLineInto(
-    ray_tracer, cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
+  RaytraceLineInto(ray_tracer,
+                   cell_local_id,
+                   qp_xyz,
+                   source_point,
+                   phi,
+                   scratch_segs,
+                   scratch_bp,
+                   scratch_mfp,
+                   tolerance);
   return phi;
 }
 
@@ -1532,23 +1574,25 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
   auto SweepGroups = [&](const size_t thread_id)
   {
     // Sweep bulk region cells
-    for (size_t c : bulk_spls_)
+    for (size_t cell_local_id : bulk_spls_)
     {
-      const Cell& cell = grid_->GetLocalCell(c);
+      const Cell& cell = grid_->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
 
       // Cell data
-      const auto& cell_mapping = sdm.GetCellMapping(cell);
-      const size_t cell_num_faces = cell.faces.size();
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
+      const size_t cell_num_faces = cell_faces.size();
       const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
-      const auto& transport_view = cell_transport_views_[c];
+      const auto& transport_view = cell_transport_views_[cell_local_id];
       const auto& xs = transport_view.GetXS();
       const auto& sigma_t = xs.GetSigmaTotal();
 
       // Compute matrices
-      const auto matrices = ComputeUncollidedIntegrals(cell, pt_loc);
+      const auto matrices = ComputeUncollidedIntegrals(cell_local_id, pt_loc);
       const auto& base_matrix = matrices.intV_shapeJ_omega_gradshapeI;
-      const auto& mass_matrix = unit_cell_matrices_[c].intV_shapeI_shapeJ;
+      const auto& mass_matrix = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
 
       for (size_t g = thread_id; g < num_groups_; g += num_group_threads)
       {
@@ -1566,7 +1610,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
         // counted twice.
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           phi(i) += destination_phi_[ir * num_groups_ + g];
         }
 
@@ -1579,12 +1623,12 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
           const auto& surface_matrix = matrices.intS_omega_n_shapeI_shapeJ[f];
 
           // Incoming faces (source terms)
-          if (cell_face_orientations_[c][f] == FaceOrientation::INCOMING)
+          if (cell_face_orientations_[cell_local_id][f] == FaceOrientation::INCOMING)
           {
-            if (not cell.faces[f].has_neighbor)
+            if (not cell_faces[f].has_neighbor)
               continue;
 
-            size_t neighbor_id = cell.faces[f].GetNeighborLocalID(grid_.get());
+            size_t neighbor_id = cell_faces[f].GetNeighborLocalID(grid_.get());
 
             // Near-source/bulk region interface
             if (cell_regions_[neighbor_id] == CellRegion::NEAR_SOURCE)
@@ -1595,10 +1639,11 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
             // Bulk region cell neighbor
             else
             {
-              size_t f_ = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
+              size_t f_ = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
 
               const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
-              const auto& neighbor_mapping = sdm.GetCellMapping(neighbor);
+              auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
+              const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
               const size_t neighbor_num_face_nodes = neighbor_mapping.GetNumFaceNodes(f_);
 
               for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -1621,7 +1666,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
                   for (size_t fk = 0; fk < neighbor_num_face_nodes; ++fk)
                   {
                     const int kn = neighbor_mapping.MapFaceNode(f_, fk);
-                    if (neighbor.vertex_ids[kn] == cell.vertex_ids[j])
+                    if (neighbor_vertex_ids[kn] == cell_vertex_ids[j])
                     {
                       k = kn;
                       break;
@@ -1634,7 +1679,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
                       " to neighbor cell " + std::to_string(neighbor.global_id) + " face " +
                       std::to_string(f_) + ".");
 
-                  const auto jr = sdm.MapDOFLocal(neighbor, k);
+                  const auto jr = sdm.MapDOFLocal(neighbor_id, k);
                   const double phi_j = destination_phi_[jr * num_groups_ + g];
                   phi(i) -= surface_matrix(i, j) * phi_j;
                 }
@@ -1643,7 +1688,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
           }
 
           // Outgoing faces (coefficient matrix)
-          if (cell_face_orientations_[c][f] == FaceOrientation::OUTGOING)
+          if (cell_face_orientations_[cell_local_id][f] == FaceOrientation::OUTGOING)
           {
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
@@ -1669,7 +1714,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
         // Update flux solution
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           destination_phi_[ir * num_groups_ + g] = phi(i);
         }
       }
@@ -1688,15 +1733,17 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
 }
 
 UncollidedMatrices
-UncollidedProblem::ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc)
+UncollidedProblem::ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const Vector3& pt_loc)
 {
   const auto& sdm = *discretization_;
+  const Cell& cell = grid_->GetLocalCell(cell_local_id);
 
   // Cell mapping
   auto coord_sys = grid_->GetCoordinateSystem();
   auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
-  const auto& cell_mapping = sdm.GetCellMapping(cell);
-  const size_t cell_num_faces = cell.faces.size();
+  const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
+  const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+  const size_t cell_num_faces = cell_faces.size();
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -1737,7 +1784,7 @@ UncollidedProblem::ComputeUncollidedIntegrals(const Cell& cell, const Vector3& p
           Vector3 omega = ComputeOmega(pt_loc, qp_xyz);
 
           IntS_omega_n_shapeI_shapeJ[f](i, j) +=
-            (*swf)(qp_xyz)*omega.Dot(cell.faces[f].normal) * fe_srf_data.ShapeValue(i, qp) *
+            (*swf)(qp_xyz)*omega.Dot(cell_faces[f].normal) * fe_srf_data.ShapeValue(i, qp) *
             fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
 
         } // for qp
@@ -1762,10 +1809,11 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
   for (size_t g = 0; g < num_groups_; ++g)
     production_ += strength[g];
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const uint64_t c = cell->local_id;
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const uint64_t c = cell_local_id;
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto& sigma_t = cell_transport_views_[c].GetXS().GetSigmaTotal();
     const auto& intV_shapeI = unit_cell_matrices_[c].intV_shapeI;
@@ -1774,22 +1822,23 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
     for (size_t g = 0; g < num_groups_; ++g)
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = sdm.MapDOFLocal(*cell, i);
+        const auto ir = sdm.MapDOFLocal(cell_local_id, i);
         physical_removal_ += sigma_t[g] * destination_phi_[ir * num_groups_ + g] * intV_shapeI(i);
       }
   }
 
   const auto swf = SpatialWeightFunction::FromCoordinateType(grid_->GetCoordinateSystem());
-  for (const size_t c : bulk_spls_)
+  for (const size_t cell_local_id : bulk_spls_)
   {
-    const auto& cell = grid_->GetLocalCell(c);
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (face.has_neighbor or IsReflectingBoundary(face.neighbor_id) or
-          cell_face_orientations_[c][f] != FaceOrientation::OUTGOING)
+          cell_face_orientations_[cell_local_id][f] != FaceOrientation::OUTGOING)
         continue;
 
       const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
@@ -1802,7 +1851,7 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
         for (size_t g = 0; g < num_groups_; ++g)
           for (size_t i = 0; i < cell_num_nodes; ++i)
           {
-            const auto ir = sdm.MapDOFLocal(cell, i);
+            const auto ir = sdm.MapDOFLocal(cell_local_id, i);
             out_flow_ +=
               destination_phi_[ir * num_groups_ + g] * integrand * fe_srf_data.ShapeValue(i, qp);
           }
@@ -1819,9 +1868,10 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
   const auto& sdm = *discretization_;
   const auto swf = SpatialWeightFunction::FromCoordinateType(grid_->GetCoordinateSystem());
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     std::vector<std::vector<Vector<double>>> moment_rhs(
@@ -1841,7 +1891,7 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
       std::vector<double> phi_qp(num_groups_, 0.0);
       for (size_t j = 0; j < cell_num_nodes; ++j)
       {
-        const auto jr = sdm.MapDOFLocal(*cell, j);
+        const auto jr = sdm.MapDOFLocal(cell_local_id, j);
         const double shape = fe_vol_data.ShapeValue(j, qp);
         for (size_t g = 0; g < num_groups_; ++g)
           phi_qp[g] += shape * destination_phi_[jr * num_groups_ + g];
@@ -1863,12 +1913,12 @@ UncollidedProblem::AccumulateMoments(const Vector3& pt_loc)
     for (size_t moment_index = 0; moment_index < moments_.size(); ++moment_index)
       for (size_t g = 0; g < num_groups_; ++g)
       {
-        auto mass_matrix = unit_cell_matrices_[cell->local_id].intV_shapeI_shapeJ;
+        auto mass_matrix = unit_cell_matrices_[cell_local_id].intV_shapeI_shapeJ;
         GaussElimination(
           mass_matrix, moment_rhs[moment_index][g], static_cast<int>(cell_num_nodes));
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const auto ir = sdm.MapDOFLocal(*cell, i);
+          const auto ir = sdm.MapDOFLocal(cell_local_id, i);
           accumulated_moments_[moment_index][ir * num_groups_ + g] +=
             moment_rhs[moment_index][g](i);
         }

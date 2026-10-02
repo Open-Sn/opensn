@@ -4,7 +4,7 @@
 #include "gtest/gtest.h"
 #include "framework/data_types/byte_array.h"
 #include "framework/data_types/ndarray.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
@@ -26,72 +26,57 @@ TEST(DataTypesTest, 00)
     Cell poster_child_cell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
     {
       poster_child_cell.global_id = 321;
-      poster_child_cell.local_id = 123;
       poster_child_cell.partition_id = 0;
       poster_child_cell.centroid = Vector3(0.5, 0.5, 0.5);
       poster_child_cell.block_id = 2;
 
-      poster_child_cell.vertex_ids = {0, 1, 2, 3, 4, 5, 6, 7};
-
       // Bottom face
       {
         CellFace face;
-        face.vertex_ids = {0, 3, 2, 1};
         face.normal = {0, 0, -1};
         face.centroid = {0.5, 0.5, 0.0};
         face.has_neighbor = false;
         face.neighbor_id = 0;
-        poster_child_cell.faces.push_back(std::move(face));
       }
       // Top face
       {
         CellFace face;
-        face.vertex_ids = {4, 5, 6, 7};
         face.normal = {0, 0, 1};
         face.centroid = {0.5, 0.5, 1.0};
         face.has_neighbor = false;
         face.neighbor_id = 1;
-        poster_child_cell.faces.push_back(std::move(face));
       }
       // Left face
       {
         CellFace face;
-        face.vertex_ids = {0, 4, 7, 3};
         face.normal = {-1, 0, 0};
         face.centroid = {0.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 2;
-        poster_child_cell.faces.push_back(std::move(face));
       }
       // Right face
       {
         CellFace face;
-        face.vertex_ids = {1, 2, 6, 5};
         face.normal = {1, 0, 0};
         face.centroid = {1.0, 0.5, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 3;
-        poster_child_cell.faces.push_back(std::move(face));
       }
       // Front face
       {
         CellFace face;
-        face.vertex_ids = {0, 1, 5, 4};
         face.normal = {0, -1, 0};
         face.centroid = {0.5, 0.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 4;
-        poster_child_cell.faces.push_back(std::move(face));
       }
       // Back face
       {
         CellFace face;
-        face.vertex_ids = {3, 7, 6, 2};
         face.normal = {0, 1, 0};
         face.centroid = {0.5, 1.0, 0.5};
         face.has_neighbor = false;
         face.neighbor_id = 5;
-        poster_child_cell.faces.push_back(std::move(face));
       }
     }
 
@@ -141,12 +126,6 @@ TEST(DataTypesTest, 00)
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
         }
-        if (rcell.local_id != pcell.local_id)
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
         if (rcell.partition_id != pcell.partition_id)
         {
           passed = false;
@@ -158,45 +137,6 @@ TEST(DataTypesTest, 00)
           passed = false;
           opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
           break;
-        }
-        if (rcell.vertex_ids != pcell.vertex_ids)
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-
-        if (rcell.faces.size() != pcell.faces.size())
-        {
-          passed = false;
-          opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-          break;
-        }
-
-        size_t f = 0;
-        for (const auto& rface : rcell.faces)
-        {
-          const auto& pface = pcell.faces[f];
-
-          if (rface.vertex_ids != pface.vertex_ids)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
-          if (rface.has_neighbor != pface.has_neighbor)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
-          if (rface.neighbor_id != pface.neighbor_id)
-          {
-            passed = false;
-            opensn::log.Log0Error() << "Line: " << __LINE__ << "\n";
-            break;
-          }
-          ++f;
         }
       }
     }

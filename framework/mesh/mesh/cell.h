@@ -16,7 +16,7 @@ namespace opensn
 {
 
 class Cell;
-class MeshContinuum;
+class Mesh;
 
 /// Key identifying a face by global cell ID and local face ID.
 struct CellFaceKey
@@ -110,19 +110,16 @@ class CellFace
 {
 public:
   /// Determines the neighbor's partition and whether it's local or not.
-  bool IsNeighborLocal(const MeshContinuum* grid) const;
+  bool IsNeighborLocal(const Mesh* grid) const;
 
   /// Determines the neighbor's partition.
-  int GetNeighborPartitionID(const MeshContinuum* grid) const;
+  int GetNeighborPartitionID(const Mesh* grid) const;
 
   /// Determines the neighbor's local id.
-  std::uint32_t GetNeighborLocalID(const MeshContinuum* grid) const;
-
-  /// Determines the neighbor's associated face.
-  int GetNeighborAdjacentFaceIndex(const MeshContinuum* grid) const;
+  std::uint32_t GetNeighborLocalID(const Mesh* grid) const;
 
   /// Computes the geometric info on the face.
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell);
+  void ComputeGeometricInfo(const Mesh& grid, std::uint64_t cell_local_id, std::uint32_t face_idx);
 
   /// Serializes a face into a vector of bytes.
   ByteArray Serialize() const;
@@ -130,7 +127,7 @@ public:
   /// Provides string information of the face.
   std::string ToString() const;
 
-  void ComputeGeometricInfo(const MeshContinuum* grid, const Cell& cell, unsigned int f);
+  void ComputeGeometricInfo(const Mesh& grid, const Cell& cell, unsigned int f);
 
   /// Flag indicating whether face has a neighbor
   bool has_neighbor = false;
@@ -143,9 +140,6 @@ public:
   Vector3 centroid;
   /// The area of the face
   double area = 0.0;
-
-  /// A list of the vertices
-  std::vector<uint64_t> vertex_ids;
 
 public:
   /// Deserializes a face from a set of raw data
@@ -169,7 +163,9 @@ public:
   CellType GetSubType() const { return cell_sub_type_; }
 
   /// Computes the geometric info on the cell.
-  void ComputeGeometricInfo(const MeshContinuum* grid);
+  void ComputeGeometricInfo(Mesh& grid);
+
+  void ComputeVolume(const Mesh& mesh);
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;
@@ -178,16 +174,11 @@ public:
   std::string ToString() const;
 
   uint64_t global_id = 0;
-  std::uint32_t local_id = 0;
   int partition_id = 0;
-  int num_parition = 0;
   unsigned int block_id = std::numeric_limits<unsigned int>::max();
 
   Vector3 centroid;
-  double volume = 0.0;
-
-  std::vector<uint64_t> vertex_ids;
-  std::vector<CellFace> faces;
+  double volume = 0.;
 
 private:
   /// Primary type, i.e. SLAB, POLYGON, POLYHEDRON

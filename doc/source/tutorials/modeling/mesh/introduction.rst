@@ -6,7 +6,7 @@ Meshing
 
 Python mesh construction starts with :py:class:`~pyopensn.mesh.MeshGenerator`. Calling
 :py:meth:`~pyopensn.mesh.MeshGenerator.Execute` completes the generator pipeline and returns the
-:py:class:`~pyopensn.mesh.MeshContinuum` used by a problem.
+:py:class:`~pyopensn.mesh.Mesh` used by a problem.
 
 The ``pyopensn.mesh`` module provides these mesh generators:
 
@@ -30,7 +30,7 @@ The ``pyopensn.mesh`` module provides these mesh generators:
 
 Imported meshes can carry block IDs for materials and volumetric sources and boundary IDs for
 boundary conditions and sources. IDs can also be assigned after generation using the methods on
-:py:class:`~pyopensn.mesh.MeshContinuum`.
+:py:class:`~pyopensn.mesh.Mesh`.
 
 Mesh generators can be chained through their ``inputs`` parameter, allowing one generator to
 transform the output of another.

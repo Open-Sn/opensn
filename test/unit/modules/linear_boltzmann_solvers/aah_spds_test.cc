@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "framework/mesh/mesh_continuum/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "gtest/gtest.h"
 #include <cstdint>
@@ -15,13 +15,22 @@ using namespace opensn;
 
 TEST(AAHSPDSTest, ReportsGlobalCycle)
 {
-  auto grid = MeshContinuum::New();
-  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
-  cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank());
-  cell->partition_id = mpi_comm.rank();
-  grid->AddGlobalCell(cell);
+  auto grid = Mesh::New();
+  auto cell = Cell(CellType::SLAB, CellType::SLAB);
+  cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
+  cell.partition_id = mpi_comm.rank();
+  std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
+  cell_connect[0] = {0, 1};
 
-  SPDSFaceNeighborInfoVec face_info(1);
+  std::map<std::uint64_t, std::vector<CellFace>> cell_faces;
+  cell_faces[0] = {{}, {}};
+  std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect[0] = {{0}, {1}};
+
+  grid->SetCells({cell}, {}, cell_connect);
+  grid->SetCellFaces(cell_faces, cell_face_connect);
+
+  SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
 
   std::vector<AAH_SPDS::GlobalSweepEdge> edges;

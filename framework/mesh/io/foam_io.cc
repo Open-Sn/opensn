@@ -449,7 +449,7 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
                                      size_t n_faces,
                                      const std::string& fname)
 {
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
 
   uint64_t bid = 0;
   for (const auto& patch : patches)
@@ -479,10 +479,10 @@ AssignBoundaryIDsFromOpenFOAMPatches(std::shared_ptr<UnpartitionedMesh> mesh,
         throw std::logic_error(fname + ": Missing owner face location for boundary face " +
                                std::to_string(f) + " in patch '" + patch.name + "'.");
 
-      auto& face = raw_cells.at(loc.cell_id)->faces.at(loc.local_face_id);
+      auto& face = mesh->GetCellFace(loc.cell_id, loc.local_face_id);
 
       // Adjust this to your final field name
-      face.neighbor = bid;
+      face.neighbor_id = bid;
 
       ++num_assigned;
     }
@@ -813,58 +813,72 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     }
   }
 
-  auto& raw_cells = mesh->GetRawCells();
-  raw_cells.reserve(ncells);
+  std::vector<Cell> cells;
+  cells.reserve(ncells);
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  cell_connect.reserve(ncells);
+
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect.reserve(ncells);
+  std::vector<CellFace> mesh_faces;
 
   std::vector<FaceLocation> owner_face_location(n_faces);
 
   for (size_t c = 0; c < ncells; ++c)
   {
-    auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                     CellType::POLYHEDRON);
-    cell->block_id = block_map[c];
+    Cell cell(CellType::POLYHEDRON, CellType::POLYHEDRON);
+    cell.block_id = block_map[c];
 
+    std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+    size_t local_face_id = 0;
     for (auto code : cell_faces[c])
     {
       const int64_t f = (code >= 0) ? code : (-code - 1);
       const auto& f_v = face_verts[static_cast<size_t>(f)];
 
-      UnpartitionedMesh::LightWeightFace lwf;
-      lwf.vertex_ids.reserve(f_v.size());
+      CellFace lwf;
+
+      std::vector<std::uint64_t> lwf_vertex_ids;
+      lwf_vertex_ids.reserve(f_v.size());
 
       if (code >= 0)
       {
         for (int v : f_v)
-          lwf.vertex_ids.push_back(static_cast<uint64_t>(v));
+          lwf_vertex_ids.push_back(static_cast<uint64_t>(v));
       }
       else
       {
         for (auto it = f_v.rbegin(); it != f_v.rend(); ++it)
-          lwf.vertex_ids.push_back(static_cast<uint64_t>(*it));
+          lwf_vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
 
-      const auto local_face_id = cell->faces.size();
-      cell->faces.push_back(std::move(lwf));
+      mesh_faces.emplace_back(lwf);
+      cell_face_vertex_ids.emplace_back(std::move(lwf_vertex_ids));
 
       // Keep the owner-oriented location for each global face.
       // Boundary patch assignment will use this directly.
       if (code >= 0)
         owner_face_location.at(static_cast<size_t>(f)) = {c, local_face_id, true};
+        
+      ++local_face_id;
     }
 
     std::vector<uint64_t> v_set;
-    for (const auto& f : cell->faces)
-      v_set.insert(v_set.end(), f.vertex_ids.begin(), f.vertex_ids.end());
+    for (const auto& f_vertex_ids : cell_face_vertex_ids)
+      v_set.insert(v_set.end(), f_vertex_ids.begin(), f_vertex_ids.end());
 
     std::sort(v_set.begin(), v_set.end());
     v_set.erase(std::unique(v_set.begin(), v_set.end()), v_set.end());
-    cell->vertex_ids = std::move(v_set);
 
-    raw_cells.push_back(std::move(cell));
+    cells.emplace_back(cell);
+    cell_connect.emplace_back(v_set);
+    cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
   }
 
   mesh->SetDimension(3);
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(cells), cell_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -880,7 +894,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
   log.Log() << "OpenFOAM polyMesh processed.\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size() << "\n"
+            << "Number of cells read: " << mesh->GetCells().size() << "\n"
             << "Number of boundary patches read: " << patches.size() << "\n";
 
   return mesh;

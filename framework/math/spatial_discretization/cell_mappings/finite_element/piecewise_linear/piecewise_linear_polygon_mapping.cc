@@ -5,32 +5,37 @@
 #include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
 
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
-  const Cell& poly_cell,
-  std::shared_ptr<MeshContinuum> ref_grid,
+  std::uint32_t cell_local_id,
+  std::shared_ptr<Mesh> ref_grid,
   const TriangleQuadrature& volume_quadrature,
   const LineQuadrature& surface_quadrature)
-  : PieceWiseLinearBaseMapping(
-      ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
+  : PieceWiseLinearBaseMapping(ref_grid,
+                               cell_local_id,
+                               GetNumberOfNodes(ref_grid, cell_local_id),
+                               MakeFaceNodeMapping(ref_grid, cell_local_id)),
     volume_quadrature_(volume_quadrature),
     surface_quadrature_(surface_quadrature),
-    num_of_subtris_(poly_cell.faces.size()),
-    beta_(1.0 / static_cast<double>(num_of_subtris_)),
-    // Get raw vertices
-    vc_(poly_cell.centroid)
+    num_of_subtris_(grid_->GetCellFaceCount(cell_local_id)),
+    beta_(1.0 / static_cast<double>(num_of_subtris_))
 {
+  const auto& poly_cell = ref_grid->GetLocalCell(cell_local_id);
+  vc_ = poly_cell.centroid;
+
   // Calculate legs and determinants
+  const auto poly_cell_faces = ref_grid->GetCellFaces(cell_local_id);
   for (std::size_t side = 0; side < num_of_subtris_; ++side)
   {
-    const CellFace& face = poly_cell.faces[side];
+    const auto& face = poly_cell_faces[side];
+    auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
 
-    const auto& v0 = grid_->GlobalVertex(face.vertex_ids[0]);
-    const auto& v1 = grid_->GlobalVertex(face.vertex_ids[1]);
+    const auto& v0 = grid_->GlobalVertex(face_vertex_ids[0]);
+    const auto& v1 = grid_->GlobalVertex(face_vertex_ids[1]);
     Vector3 v2 = vc_;
 
     Vector3 sidev01 = v1 - v0;
@@ -42,8 +47,8 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     triangle_data.detJ = sidedetJ;
     triangle_data.detJ_surf = sidev01.Norm();
 
-    triangle_data.v_index[0] = face.vertex_ids[0];
-    triangle_data.v_index[1] = face.vertex_ids[1];
+    triangle_data.v_index[0] = face_vertex_ids[0];
+    triangle_data.v_index[1] = face_vertex_ids[1];
 
     triangle_data.v0 = v0;
 
@@ -74,21 +79,23 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     sides_.push_back(triangle_data);
   }
 
+  auto poly_cell_vertex_ids = ref_grid->GetCellConnectivity(cell_local_id);
   // Compute node to side mapping
-  for (std::size_t v = 0; v < poly_cell.vertex_ids.size(); ++v)
+  for (std::size_t v = 0; v < poly_cell_vertex_ids.size(); ++v)
   {
-    const uint64_t vindex = poly_cell.vertex_ids[v];
+    const uint64_t vindex = poly_cell_vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
     for (std::size_t side = 0; side < num_of_subtris_; ++side)
     {
       side_mapping[side] = -1;
 
-      const CellFace& face = poly_cell.faces[side];
-      if (face.vertex_ids[0] == vindex)
+      const auto& face = poly_cell_faces[side];
+      auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
+      if (face_vertex_ids[0] == vindex)
       {
         side_mapping[side] = 0;
       }
-      if (face.vertex_ids[1] == vindex)
+      if (face_vertex_ids[1] == vindex)
       {
         side_mapping[side] = 1;
       }

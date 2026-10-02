@@ -11,6 +11,7 @@
 #include <array>
 #include <cstring>
 #include <utility>
+#include <optional>
 
 namespace opensn
 {
@@ -462,27 +463,29 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     }
   }
 
+  std::vector<Cell> raw_cells;
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  std::vector<Cell> raw_boundary_cells;
+  std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  std::vector<CellFace> mesh_faces;
+
   for (const auto& [element_tag, element_type, physical_reg, node_tags] : element_data)
   {
-    auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
-    auto& raw_cells = mesh->GetRawCells();
-
     // Make the cell on either the volume or the boundary
-    std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
+    std::optional<Cell> raw_cell;
+    bool is_boundary_cell = false;
     if (mesh_is_2D)
     {
       if (IsElementType1D(element_type))
       {
-        raw_cell =
-          std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
-        raw_boundary_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::SLAB, CellType::SLAB);
+        is_boundary_cell = true;
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-        raw_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
         log.Log0Verbose2() << "Added to raw_cells.";
       }
     }
@@ -490,24 +493,21 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
     {
       if (IsElementType2D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-        raw_boundary_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+        is_boundary_cell = true;
         log.Log0Verbose2() << "Added to raw_boundary_cells.";
       }
       else if (IsElementType3D(element_type))
       {
-        raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-          CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
-        raw_cells.push_back(raw_cell);
+        raw_cell = Cell(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
         log.Log0Verbose2() << "Added to raw_cells.";
       }
     }
 
-    if (raw_cell == nullptr)
+    if (not raw_cell.has_value())
       continue;
 
-    auto& cell = *raw_cell;
+    auto& cell = raw_cell.value();
     cell.block_id = physical_reg;
     std::vector<uint64_t> nodes(node_tags.size());
     for (size_t i = 0; i < node_tags.size(); ++i)
@@ -518,62 +518,84 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
                                std::to_string(vid + 1) + ", but only " +
                                std::to_string(vertices.size()) +
                                " vertices were read from the $Nodes section.");
-    cell.vertex_ids = nodes;
+
+    std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+    std::vector<CellFace> cell_faces;
 
     // Populate faces
     if (element_type == 1) // 2-node edge
     {
-      UnpartitionedMesh::LightWeightFace face0;
-      UnpartitionedMesh::LightWeightFace face1;
+      CellFace face0;
+      CellFace face1;
 
-      face0.vertex_ids = {cell.vertex_ids.at(0)};
-      face1.vertex_ids = {cell.vertex_ids.at(1)};
+      std::vector<std::uint64_t> f0_vids = {nodes.at(0)};
+      std::vector<std::uint64_t> f1_vids = {nodes.at(1)};
 
-      cell.faces.push_back(face0);
-      cell.faces.push_back(face1);
+      cell_faces.push_back(face0);
+      cell_faces.push_back(face1);
+      cell_face_vertex_ids.push_back(std::move(f0_vids));
+      cell_face_vertex_ids.push_back(std::move(f1_vids));
     }
     else if (element_type == 2 or element_type == 3) // 3-node triangle or 4-node quadrangle
     {
-      size_t num_verts = cell.vertex_ids.size();
+      size_t num_verts = nodes.size();
       for (size_t e = 0; e < num_verts; e++)
       {
         size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
 
-        face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
+        std::vector<std::uint64_t> f_vids = {nodes[e], nodes[ep1]};
 
-        cell.faces.push_back(std::move(face));
+        cell_faces.emplace_back(face);
+        cell_face_vertex_ids.push_back(std::move(f_vids));
       }
     }
     else if (element_type == 4) // 4-node tetrahedron
     {
-      auto& v = cell.vertex_ids;
-      std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(4);
-      lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
-      lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
-      lw_faces[2].vertex_ids = {v[3], v[1], v[2]};
-      lw_faces[3].vertex_ids = {v[3], v[0], v[1]};
+      const auto& v = nodes;
+      std::vector<CellFace> lw_faces(4);
+      cell_face_vertex_ids = {
+        {v[0], v[2], v[1]},
+        {v[0], v[3], v[2]},
+        {v[3], v[1], v[2]},
+        {v[3], v[0], v[1]}
+      };
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else if (element_type == 5) // 8-node hexahedron
     {
-      auto& v = cell.vertex_ids;
-      std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(6);
-      lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
-      lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
-      lw_faces[2].vertex_ids = {v[0], v[3], v[2], v[1]}; // North face
-      lw_faces[3].vertex_ids = {v[4], v[5], v[6], v[7]}; // South face
-      lw_faces[4].vertex_ids = {v[2], v[3], v[7], v[6]}; // Top face
-      lw_faces[5].vertex_ids = {v[0], v[1], v[5], v[4]}; // Bottom face
+      const auto& v = nodes;
+      std::vector<CellFace> lw_faces(6);
+      cell_face_vertex_ids = {
+        {v[5], v[1], v[2], v[6]},
+        {v[0], v[4], v[7], v[3]},
+        {v[0], v[3], v[2], v[1]},
+        {v[4], v[5], v[6], v[7]},
+        {v[2], v[3], v[7], v[6]},
+        {v[0], v[1], v[5], v[4]}
+      };
 
       for (auto& lw_face : lw_faces)
-        cell.faces.push_back(lw_face);
+        cell_faces.push_back(lw_face);
     }
     else
       throw std::runtime_error(fname + ": Unsupported cell type.");
 
+    if (is_boundary_cell)
+    {
+      raw_boundary_cells.emplace_back(cell);
+      bnd_cell_connect.emplace_back(nodes);
+    }
+    else
+    {
+      for (auto& f : cell_faces)
+        mesh_faces.emplace_back(f);
+      raw_cells.emplace_back(cell);
+      cell_connect.emplace_back(nodes);
+      cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
+    }
   } // for elements
 
   file.close();
@@ -591,36 +613,46 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   }
 
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(raw_cells), cell_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  for (std::size_t i = 0; i < raw_boundary_cells.size(); ++i)
   {
+    const auto& bnd_cell = raw_boundary_cells[i];
+    const auto& bnd_cell_vertex_ids = bnd_cell_connect[i];
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell->vertex_ids)
+    for (const auto& vid : bnd_cell_vertex_ids)
       key.insert(vid);
-    bnd_cell_to_bnd_id_map[key] = bnd_cell->block_id;
+    bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
-  auto& raw_cells = mesh->GetRawCells();
-  for (auto& cell_ptr : raw_cells)
-    for (auto& face : cell_ptr->faces)
+  size_t cell_idx = 0;
+  for (auto& cell : mesh->GetCells())
+  {
+    const auto cell_faces = mesh->GetCellFaces(cell_idx);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
+    {
+      auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
-        std::set<uint64_t> key;
-        for (auto& vid : face.vertex_ids)
-          key.insert(vid);
+        const auto& face_vids = cell_face_connect[cell_idx][f];
+        std::set<uint64_t> key(face_vids.begin(), face_vids.end());
 
         auto it = bnd_cell_to_bnd_id_map.find(key);
         if (it != bnd_cell_to_bnd_id_map.end())
-          face.neighbor = it->second;
+          face.neighbor_id = it->second;
       }
+    }
+    ++cell_idx;
+  }
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size();
+            << "Number of cells read: " << mesh->GetCells().size();
 
   return mesh;
 }
@@ -649,6 +681,13 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   std::map<int, int> curve_entities, surface_entities, volume_entities;
   bool have_entities = false;
   bool mesh_is_2D = true;
+
+  std::vector<Cell> raw_cells;
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  std::vector<Cell> raw_boundary_cells;
+  std::vector<std::vector<std::uint64_t>> bnd_cell_connect;
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  std::vector<CellFace> mesh_faces;
 
   // Scan sections
   file.clear();
@@ -950,42 +989,34 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           for (int j = 0; j < num_cell_nodes; ++j)
             node_tags[j] = static_cast<size_t>(ReadSize(file));
 
-          auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
-          auto& raw_cells = mesh->GetRawCells();
-
-          std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
+          std::optional<Cell> raw_cell;
+          bool is_boundary_cell = false;
           if (mesh_is_2D)
           {
             if (IsElementType1D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB,
-                                                                              CellType::SLAB);
-              raw_boundary_cells.push_back(raw_cell);
+              raw_cell = Cell(CellType::SLAB, CellType::SLAB);
+              is_boundary_cell = true;
             }
             else if (IsElementType2D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-              raw_cells.push_back(raw_cell);
+              raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
             }
           }
           else
           {
             if (IsElementType2D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
-              raw_boundary_cells.push_back(raw_cell);
+              raw_cell = Cell(CellType::POLYGON, CellTypeFromMSHTypeID(element_type));
+              is_boundary_cell = true;
             }
             else if (IsElementType3D(element_type))
             {
-              raw_cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(
-                CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
-              raw_cells.push_back(raw_cell);
+              raw_cell = Cell(CellType::POLYHEDRON, CellTypeFromMSHTypeID(element_type));
             }
           }
 
-          if (raw_cell == nullptr)
+          if (not raw_cell.has_value())
             continue;
 
           auto& cell = *raw_cell;
@@ -999,61 +1030,84 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
                                      std::to_string(vid + 1) + ", but only " +
                                      std::to_string(mesh->GetVertices().size()) +
                                      " vertices were read from the $Nodes section.");
-          cell.vertex_ids = nodes;
+
+          std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
+          std::vector<CellFace> cell_faces;
 
           if (element_type == 1)
           {
-            UnpartitionedMesh::LightWeightFace face0;
-            UnpartitionedMesh::LightWeightFace face1;
+            CellFace face0;
+            CellFace face1;
 
-            face0.vertex_ids = {cell.vertex_ids.at(0)};
-            face1.vertex_ids = {cell.vertex_ids.at(1)};
+            std::vector<std::uint64_t> f0_vids = {nodes.at(0)};
+            std::vector<std::uint64_t> f1_vids = {nodes.at(1)};
 
-            cell.faces.push_back(face0);
-            cell.faces.push_back(face1);
+            cell_faces.push_back(face0);
+            cell_faces.push_back(face1);
+            cell_face_vertex_ids.push_back(std::move(f0_vids));
+            cell_face_vertex_ids.push_back(std::move(f1_vids));
           }
           else if (element_type == 2 or element_type == 3)
           {
-            size_t num_verts = cell.vertex_ids.size();
+            size_t num_verts = nodes.size();
             for (size_t e = 0; e < num_verts; e++)
             {
               size_t ep1 = (e < (num_verts - 1)) ? e + 1 : 0;
-              UnpartitionedMesh::LightWeightFace face;
+              CellFace face;
 
-              face.vertex_ids = {cell.vertex_ids[e], cell.vertex_ids[ep1]};
+              std::vector<std::uint64_t> f_vids = {nodes[e], nodes[ep1]};
 
-              cell.faces.push_back(std::move(face));
+              cell_faces.emplace_back(face);
+              cell_face_vertex_ids.push_back(std::move(f_vids));
             }
           }
           else if (element_type == 4)
           {
-            auto& v = cell.vertex_ids;
-            std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(4);
-            lw_faces[0].vertex_ids = {v[0], v[2], v[1]}; // Base face
-            lw_faces[1].vertex_ids = {v[0], v[3], v[2]};
-            lw_faces[2].vertex_ids = {v[3], v[1], v[2]};
-            lw_faces[3].vertex_ids = {v[3], v[0], v[1]};
+            const auto& v = nodes;
+            std::vector<CellFace> lw_faces(4);
+            cell_face_vertex_ids = {
+              {v[0], v[2], v[1]},
+              {v[0], v[3], v[2]},
+              {v[3], v[1], v[2]},
+              {v[3], v[0], v[1]}
+            };
 
             for (auto& lw_face : lw_faces)
-              cell.faces.push_back(lw_face);
+              cell_faces.push_back(lw_face);
           }
           else if (element_type == 5)
           {
-            auto& v = cell.vertex_ids;
-            std::vector<UnpartitionedMesh::LightWeightFace> lw_faces(6);
-            lw_faces[0].vertex_ids = {v[5], v[1], v[2], v[6]}; // East face
-            lw_faces[1].vertex_ids = {v[0], v[4], v[7], v[3]}; // West face
-            lw_faces[2].vertex_ids = {v[0], v[3], v[2], v[1]}; // North face
-            lw_faces[3].vertex_ids = {v[4], v[5], v[6], v[7]}; // South face
-            lw_faces[4].vertex_ids = {v[2], v[3], v[7], v[6]}; // Top face
-            lw_faces[5].vertex_ids = {v[0], v[1], v[5], v[4]}; // Bottom face
+            const auto& v = nodes;
+            std::vector<CellFace> lw_faces(6);
+            cell_face_vertex_ids = {
+              {v[5], v[1], v[2], v[6]},
+              {v[0], v[4], v[7], v[3]},
+              {v[0], v[3], v[2], v[1]},
+              {v[4], v[5], v[6], v[7]},
+              {v[2], v[3], v[7], v[6]},
+              {v[0], v[1], v[5], v[4]}
+            };
 
             for (auto& lw_face : lw_faces)
-              cell.faces.push_back(lw_face);
+              cell_faces.push_back(lw_face);
           }
           else if (element_type == 6 or element_type == 7)
           {
             throw std::logic_error(fname + ": Polyhedral cells are unsupported for binary reader.");
+          }
+
+          if (is_boundary_cell)
+          {
+            raw_boundary_cells.emplace_back(cell);
+            bnd_cell_connect.emplace_back(nodes);
+          }
+          else
+          {
+            for (auto& f : cell_faces)
+              mesh_faces.emplace_back(f);
+            raw_cells.emplace_back(cell);
+            cell_connect.emplace_back(nodes);
+            cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
           }
         }
       }
@@ -1075,35 +1129,46 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   }
 
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(raw_cells), cell_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  for (std::size_t i = 0; i < raw_boundary_cells.size(); ++i)
   {
+    const auto& bnd_cell = raw_boundary_cells[i];
+    const auto& bnd_cell_vertex_ids = bnd_cell_connect[i];
     std::set<uint64_t> key;
-    for (auto& vid : bnd_cell->vertex_ids)
+    for (const auto& vid : bnd_cell_vertex_ids)
       key.insert(vid);
-    bnd_cell_to_bnd_id_map[key] = bnd_cell->block_id;
+    bnd_cell_to_bnd_id_map[key] = bnd_cell.block_id;
   }
-  for (auto& cell_ptr : mesh->GetRawCells())
-    for (auto& face : cell_ptr->faces)
+  size_t cell_idx = 0;
+  for (auto& cell : mesh->GetCells())
+  {
+    const auto cell_faces = mesh->GetCellFaces(cell_idx);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
+    {
+      auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
-        std::set<uint64_t> key;
-        for (auto& vid : face.vertex_ids)
-          key.insert(vid);
+        const auto& face_vids = cell_face_connect[cell_idx][f];
+        std::set<uint64_t> key(face_vids.begin(), face_vids.end());
 
         auto it = bnd_cell_to_bnd_id_map.find(key);
         if (it != bnd_cell_to_bnd_id_map.end())
-          face.neighbor = it->second;
+          face.neighbor_id = it->second;
       }
+    }
+    ++cell_idx;
+  }
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size();
+            << "Number of cells read: " << mesh->GetCells().size();
 
   return mesh;
 }

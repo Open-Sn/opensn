@@ -18,15 +18,15 @@ class vtkSmartPointer;
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 class CellFace;
 
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryDiscontinuous(std::shared_ptr<MeshContinuum> grid,
-                                     const Cell& cell,
+void UploadCellGeometryDiscontinuous(std::shared_ptr<Mesh> grid,
+                                     std::uint32_t cell_local_id,
                                      int64_t& node_counter,
                                      vtkNew<vtkPoints>& points,
                                      vtkNew<vtkUnstructuredGrid>& ugrid);
@@ -34,13 +34,16 @@ void UploadCellGeometryDiscontinuous(std::shared_ptr<MeshContinuum> grid,
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryContinuous(const Cell& cell,
+void UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
+                                  std::uint32_t cell_local_id,
                                   const std::vector<uint64_t>& vertex_map,
                                   vtkNew<vtkUnstructuredGrid>& ugrid);
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadFaceGeometry(const CellFace& cell_face,
+void UploadFaceGeometry(std::shared_ptr<Mesh> grid,
+                        std::uint32_t cell_local_id,
+                        std::uint32_t face,
                         const std::vector<uint64_t>& vertex_map,
                         vtkNew<vtkUnstructuredGrid>& ugrid);
 
@@ -90,7 +93,7 @@ std::vector<int> BuildCellBlockIDsFromField(vtkUGridPtr& ugrid,
  * Uploads vertices and cells to an unstructured grid. This routine also uploads cell block ids
  * (sub-domain ids) and partition ids.
  */
-vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(std::shared_ptr<MeshContinuum> grid,
+vtkNew<vtkUnstructuredGrid> PrepareVtkUnstructuredGrid(std::shared_ptr<Mesh> grid,
                                                        bool discontinuous = true);
 
 /**

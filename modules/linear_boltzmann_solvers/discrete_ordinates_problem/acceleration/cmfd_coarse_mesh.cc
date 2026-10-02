@@ -2,8 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/mesh.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
@@ -47,12 +47,13 @@ MakeCoarseFaceKey(const bool has_neighbor, const uint64_t neighbor_id, const Vec
 }
 
 std::map<uint64_t, uint64_t>
-BuildGhostFineToCoarseMap(const MeshContinuum& grid, const CMFDCoarseMesh& coarse_mesh)
+BuildGhostFineToCoarseMap(const Mesh& grid, const CMFDCoarseMesh& coarse_mesh)
 {
   std::map<int, std::set<uint64_t>> pid_request_sets;
   for (const auto& cell : grid.GetLocalCells())
   {
-    for (const auto& face : cell->faces)
+    const auto faces = grid.GetCellFaces(grid.MapCellGlobalID2LocalID(cell.global_id));
+    for (const auto& face : faces)
       if (face.has_neighbor and not grid.IsCellLocal(face.neighbor_id))
       {
         const auto& neighbor_cell = grid.GetGlobalCell(face.neighbor_id);
@@ -92,7 +93,7 @@ BuildGhostFineToCoarseMap(const MeshContinuum& grid, const CMFDCoarseMesh& coars
 }
 
 std::map<uint64_t, CoarseCellMetadata>
-BuildRemoteCoarseCellMetadataMap(const MeshContinuum& grid,
+BuildRemoteCoarseCellMetadataMap(const Mesh& grid,
                                  const CMFDCoarseMesh& coarse_mesh,
                                  const std::map<uint64_t, uint64_t>& ghost_fine_to_coarse)
 {
@@ -483,7 +484,7 @@ CMFDCoarseMesh::AddLocalFineCellMembership(const uint64_t fine_cell_id,
 }
 
 void
-CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
+CMFDCoarseMesh::BuildExteriorFaces(const Mesh& grid)
 {
   const auto ghost_fine_to_coarse = BuildGhostFineToCoarseMap(grid, *this);
   const auto coarse_cell_metadata =
@@ -498,9 +499,11 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
     for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
     {
       const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
-      for (std::size_t f = 0; f < fine_cell.faces.size(); ++f)
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell.global_id);
+      const auto fine_cell_faces = grid.GetCellFaces(fine_cell_local_id);
+      for (std::size_t f = 0; f < fine_cell_faces.size(); ++f)
       {
-        const auto& fine_face = fine_cell.faces[f];
+        const auto& fine_face = fine_cell_faces[f];
         if (fine_face.has_neighbor and fine_cell_set.count(fine_face.neighbor_id) > 0)
           continue;
 
@@ -562,46 +565,49 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
 }
 
 CMFDCoarseMesh
-CMFDCoarseMesh::BuildIdentity(const MeshContinuum& grid)
+CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
 {
   CMFDCoarseMesh coarse_mesh;
   coarse_mesh.local_cells_.reserve(grid.GetLocalCellCount());
 
-  for (const auto& fine_cell : grid.GetLocalCells())
+  for (std::uint32_t fine_cell_local_id = 0; fine_cell_local_id < grid.GetLocalCellCount();
+       ++fine_cell_local_id)
   {
+    const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
     CMFDCoarseCell coarse_cell;
-    coarse_cell.global_id = fine_cell->global_id;
-    coarse_cell.partition_id = fine_cell->partition_id;
-    coarse_cell.block_id = fine_cell->block_id;
-    coarse_cell.centroid = fine_cell->centroid;
-    coarse_cell.volume = fine_cell->volume;
-    coarse_cell.fine_cell_ids = {fine_cell->global_id};
-    coarse_cell.faces.reserve(fine_cell->faces.size());
+    coarse_cell.global_id = fine_cell.global_id;
+    coarse_cell.partition_id = fine_cell.partition_id;
+    coarse_cell.block_id = fine_cell.block_id;
+    coarse_cell.centroid = fine_cell.centroid;
+    coarse_cell.volume = fine_cell.volume;
+    coarse_cell.fine_cell_ids = {fine_cell.global_id};
+    coarse_cell.faces.reserve(grid.GetCellFaceCount(fine_cell_local_id));
 
-    for (const auto& fine_face : fine_cell->faces)
+    const auto faces = grid.GetCellFaces(fine_cell_local_id);
+    for (const auto& fine_face : faces)
     {
       CMFDCoarseFace coarse_face;
       coarse_face.has_neighbor = fine_face.has_neighbor;
       coarse_face.neighbor_id = fine_face.neighbor_id;
       coarse_face.neighbor_partition_id = fine_face.has_neighbor
                                             ? grid.GetGlobalCell(fine_face.neighbor_id).partition_id
-                                            : fine_cell->partition_id;
+                                            : fine_cell.partition_id;
       coarse_face.neighbor_block_id = fine_face.has_neighbor
                                         ? grid.GetGlobalCell(fine_face.neighbor_id).block_id
-                                        : fine_cell->block_id;
+                                        : fine_cell.block_id;
       coarse_face.neighbor_centroid = fine_face.has_neighbor
                                         ? grid.GetGlobalCell(fine_face.neighbor_id).centroid
-                                        : fine_cell->centroid;
+                                        : fine_cell.centroid;
       coarse_face.normal = fine_face.normal;
       coarse_face.centroid = fine_face.centroid;
       coarse_face.area = fine_face.area;
       coarse_face.fine_faces.push_back(
-        {fine_cell->global_id,
-         fine_cell->partition_id,
+        {fine_cell.global_id,
+         fine_cell.partition_id,
          coarse_cell.faces.size(),
          fine_face.has_neighbor ? std::optional<uint64_t>(fine_face.neighbor_id) : std::nullopt,
          fine_face.has_neighbor ? grid.GetGlobalCell(fine_face.neighbor_id).partition_id
-                                : fine_cell->partition_id});
+                                : fine_cell.partition_id});
       coarse_cell.faces.push_back(coarse_face);
     }
 
@@ -613,7 +619,7 @@ CMFDCoarseMesh::BuildIdentity(const MeshContinuum& grid)
 }
 
 CMFDCoarseMesh
-CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
+CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
                                       const std::size_t target_fine_cells_per_coarse_cell)
 {
   OpenSnInvalidArgumentIf(target_fine_cells_per_coarse_cell == 0,
@@ -628,36 +634,39 @@ CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
   std::size_t local_coarse_count = 0;
   for (const auto& seed_cell : grid.GetLocalCells())
   {
-    if (assigned.count(seed_cell->global_id) > 0)
+    if (assigned.count(seed_cell.global_id) > 0)
       continue;
 
     CMFDCoarseCell coarse_cell;
     coarse_cell.global_id = local_coarse_count++;
     coarse_cell.partition_id = opensn::mpi_comm.rank();
-    coarse_cell.block_id = seed_cell->block_id;
+    coarse_cell.block_id = seed_cell.block_id;
 
     std::deque<uint64_t> queue;
-    queue.push_back(seed_cell->global_id);
-    assigned.insert(seed_cell->global_id);
+    queue.push_back(seed_cell.global_id);
+    assigned.insert(seed_cell.global_id);
 
     while (not queue.empty() and
            coarse_cell.fine_cell_ids.size() < target_fine_cells_per_coarse_cell)
     {
       const auto fine_cell_id = queue.front();
       queue.pop_front();
-      const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
+      const auto fine_cell_local_id = grid.MapCellGlobalID2LocalID(fine_cell_id);
+      const auto& fine_cell = grid.GetLocalCell(fine_cell_local_id);
 
       coarse_cell.fine_cell_ids.push_back(fine_cell.global_id);
-      coarse_cell.volume += fine_cell.volume;
-      coarse_cell.centroid += fine_cell.centroid * fine_cell.volume;
+      auto fine_cell_volume = fine_cell.volume;
+      coarse_cell.volume += fine_cell_volume;
+      coarse_cell.centroid += fine_cell.centroid * fine_cell_volume;
 
-      for (const auto& face : fine_cell.faces)
+      const auto faces = grid.GetCellFaces(fine_cell_local_id);
+      for (const auto& face : faces)
       {
         if (not face.has_neighbor or not grid.IsCellLocal(face.neighbor_id))
           continue;
 
         const auto& neighbor = grid.GetGlobalCell(face.neighbor_id);
-        if (neighbor.block_id != seed_cell->block_id or assigned.count(neighbor.global_id) > 0 or
+        if (neighbor.block_id != seed_cell.block_id or assigned.count(neighbor.global_id) > 0 or
             coarse_cell.fine_cell_ids.size() + queue.size() >= target_fine_cells_per_coarse_cell)
           continue;
 
@@ -700,7 +709,7 @@ CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
 // and every rank reaches the same conclusion independently. Phases 4-5 below fetch only the
 // bounded set of merge-loser cells actually needed and assemble the final coarse mesh.
 CMFDCoarseMesh
-CMFDCoarseMesh::BuildGlobalAggregation(const MeshContinuum& grid,
+CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
                                        const std::size_t target_fine_cells_per_coarse_cell)
 {
   OpenSnInvalidArgumentIf(target_fine_cells_per_coarse_cell == 0,
@@ -902,10 +911,10 @@ CMFDCoarseMesh::BuildGlobalAggregation(const MeshContinuum& grid,
 
   for (const auto& local_fine_cell : grid.GetLocalCells())
   {
-    const auto original_coarse_id = provisional.MapFineCell(local_fine_cell->global_id);
+    const auto original_coarse_id = provisional.MapFineCell(local_fine_cell.global_id);
     const auto final_id = final_id_of.at(original_coarse_id);
     coarse_mesh.AddLocalFineCellMembership(
-      local_fine_cell->global_id, final_id, final_summaries.at(final_id).partition_id);
+      local_fine_cell.global_id, final_id, final_summaries.at(final_id).partition_id);
   }
 
   return coarse_mesh;

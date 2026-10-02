@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/hdf_utils.h"
 #include <algorithm>
 #include <array>
@@ -36,7 +36,7 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   log.Log() << "Writing angular flux to " << file_base;
 
   // Write macro info
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -56,12 +56,13 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    cell_ids.push_back(cell->global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(*cell));
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
-    const auto& nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -98,13 +99,15 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
 
     // Write the groupset angular flux data
     std::vector<double> values;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, g);
             values.push_back(src[groupset_id][dof_map]);
           }
     }
@@ -138,7 +141,7 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
   H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
 
@@ -172,7 +175,8 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
       continue;
 
     // Check for cell compatibility
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
                          "Incompatible number of cell nodes encountered on cell " +
                            std::to_string(cell_global_id) + ".");
@@ -238,13 +242,14 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     for (uint64_t c = 0; c < file_num_local_cells; ++c)
     {
       const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid->GetGlobalCell(cell_global_id);
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
+      const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_global_id);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
         for (uint64_t n = 0; n < num_gs_dirs; ++n)
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
             const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
-            const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);
+            const auto dof_map = discretization.MapDOFLocal(cell_local_id, imap, uk_man, n, g);
             psi[dof_map] = values[v];
             ++v;
           }
@@ -262,7 +267,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                           "WriteSurfaceAngularFluxes requires `options.save_angular_flux=true`.");
 
   // Get problem information
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto& groupsets = do_problem.GetGroupsets();
   const auto num_groupsets = static_cast<uint64_t>(groupsets.size());
@@ -279,8 +284,11 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   std::array<double, 3> local_max{};
   local_min.fill(std::numeric_limits<double>::max());
   local_max.fill(std::numeric_limits<double>::lowest());
-  for (const auto& cell : grid->GetLocalCells())
-    for (const auto vid : cell->vertex_ids)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& vertex = grid->GlobalVertex(vid);
       for (size_t d = 0; d < 3; ++d)
@@ -289,6 +297,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         local_max[d] = std::max(local_max[d], vertex[d]);
       }
     }
+  }
   std::array<double, 3> global_min{};
   std::array<double, 3> global_max{};
   mpi_comm.all_reduce(local_min.data(), 3, global_min.data(), mpi::op::min<double>());
@@ -355,11 +364,14 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
           std::abs(other->second.second - slice) <= surface_tolerance)
         local_surface_errors[DUPLICATE_PLANE] = 1;
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
       double cell_min = std::numeric_limits<double>::max();
       double cell_max = std::numeric_limits<double>::lowest();
-      for (const auto vid : cell->vertex_ids)
+      for (const auto vid : cell_vertex_ids)
       {
         const auto coordinate = grid->GlobalVertex(vid)[a];
         cell_min = std::min(cell_min, coordinate);
@@ -390,11 +402,14 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   for (const auto& surface : interior_surfs)
   {
     const auto& [axis, slice] = surface.second;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      for (size_t f = 0; f < cell->faces.size(); ++f)
-        if (not cell->faces[f].has_neighbor and
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (size_t f = 0; f < cell_faces.size(); ++f)
+        if (not cell_faces[f].has_neighbor and
             FaceMatchesInteriorSurface(cell_mapping, f, axis, slice))
         {
           coincides_with_boundary = 1;
@@ -442,10 +457,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
 
   static const std::array<std::string, 3> axis_names = {"x", "y", "z"};
   std::vector<uint64_t> local_plane_faces(planes.size(), 0);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization.GetCellMapping(*cell);
-    for (size_t f = 0; f < cell->faces.size(); ++f)
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
       for (size_t p = 0; p < planes.size(); ++p)
         if (FaceMatchesInteriorSurface(
               cell_mapping, f, axis_names[planes[p].first], planes[p].second))
@@ -582,15 +599,17 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   std::map<std::string, std::vector<double>> x_map, y_map, z_map;
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     const auto& node_locations = cell_mapping.GetNodeLocations();
-    const auto& fe_values = unit_cell_matrices.at(cell->local_id);
+    const auto& fe_values = unit_cell_matrices.at(cell_local_id);
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
 
-    for (size_t f = 0; f < cell->faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell_faces[f];
       bool is_surface = false;
       std::string surface_name;
 
@@ -628,12 +647,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         continue;
 
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-      SurfaceFaceInfo surface_face{cell->local_id, surface_name, face.normal, {}, {}, {}};
+      SurfaceFaceInfo surface_face{cell_local_id, surface_name, face.normal, {}, {}, {}};
       surface_face.node_indices.reserve(num_face_nodes);
       surface_face.fe_shape.reserve(num_face_nodes);
       surface_face.mass_matrix.reserve(num_face_nodes * num_face_nodes);
 
-      cell_map[surface_name].push_back(cell->global_id);
+      cell_map[surface_name].push_back(cell.global_id);
       node_map[surface_name].push_back(num_face_nodes);
 
       const auto& int_f_shape_i = fe_values.intS_shapeI[f];
@@ -712,7 +731,8 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
           surface_data.fe_shape.push_back(surface_face.fe_shape[fi]);
           for (unsigned int g = 0; g < num_gs_groups; ++g)
           {
-            const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, d, g);
+            const auto dof_map =
+              discretization.MapDOFLocal(surface_face.cell_local_id, i, uk_man, d, g);
             surface_data.psi.push_back(psi[groupset_id][dof_map]);
           }
         }
@@ -787,7 +807,7 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& d
                        "Invalid centroid spacing in " + file_name + ".");
 
   const auto& groupsets = do_problem.GetGroupsets();
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   const auto num_groupsets = groupsets.size();
 
@@ -917,8 +937,10 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& d
         OpenSnLogicalErrorIf(not grid->IsCellLocal(cell_id),
                              "Surface cell " + std::to_string(cell_id) + " for " + surface +
                                " is not local in the current mesh.");
-        const auto& cell = grid->GetGlobalCell(cell_id);
-        const auto& cell_mapping = discretization.GetCellMapping(cell);
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_id);
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+        const auto cell_faces = grid->GetCellFaces(cell_local_id);
 
         // Match nodes relative to the face size so the check is independent of mesh units.
         double face_size = 0.0;
@@ -929,7 +951,7 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& d
         const double node_tolerance_sq = node_tolerance * node_tolerance;
 
         bool compatible_face_found = false;
-        for (size_t f = 0; f < cell.faces.size() and not compatible_face_found; ++f)
+        for (size_t f = 0; f < cell_faces.size() and not compatible_face_found; ++f)
         {
           if (cell_mapping.GetNumFaceNodes(f) != num_face_nodes)
             continue;

@@ -19,24 +19,26 @@ TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
   ASSERT_EQ(coarse_mesh.NumLocalCells(), grid->GetLocalCellCount());
   ASSERT_EQ(coarse_mesh.LocalFineCellMemberships().size(), grid->GetLocalCellCount());
 
-  for (const auto& fine_cell : grid->GetLocalCells())
+  for (std::uint32_t fine_cell_local_id = 0; fine_cell_local_id < grid->GetLocalCellCount();
+       ++fine_cell_local_id)
   {
-    ASSERT_TRUE(coarse_mesh.HasCoarseCell(fine_cell->global_id));
-    EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell->global_id), fine_cell->global_id);
+    const auto& fine_cell = grid->GetLocalCell(fine_cell_local_id);
+    ASSERT_TRUE(coarse_mesh.HasCoarseCell(fine_cell.global_id));
+    EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell.global_id), fine_cell.global_id);
 
-    const auto& coarse_cell = coarse_mesh.LocalCell(fine_cell->local_id);
-    EXPECT_EQ(coarse_cell.global_id, fine_cell->global_id);
-    EXPECT_EQ(coarse_cell.local_id, fine_cell->local_id);
-    EXPECT_EQ(coarse_cell.partition_id, fine_cell->partition_id);
-    EXPECT_EQ(coarse_cell.block_id, fine_cell->block_id);
-    EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell->volume);
-    EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell->global_id}));
-    ASSERT_EQ(coarse_cell.faces.size(), fine_cell->faces.size());
+    const auto& coarse_cell = coarse_mesh.LocalCell(fine_cell_local_id);
+    EXPECT_EQ(coarse_cell.global_id, fine_cell.global_id);
+    EXPECT_EQ(coarse_cell.local_id, fine_cell_local_id);
+    EXPECT_EQ(coarse_cell.partition_id, fine_cell.partition_id);
+    EXPECT_EQ(coarse_cell.block_id, fine_cell.block_id);
+    EXPECT_DOUBLE_EQ(coarse_cell.volume, fine_cell.volume);
+    EXPECT_EQ(coarse_cell.fine_cell_ids, std::vector<uint64_t>({fine_cell.global_id}));
+    ASSERT_EQ(coarse_cell.faces.size(), grid->GetCellFaceCount(grid->MapCellGlobalID2LocalID(fine_cell.global_id)));
 
-    for (size_t f = 0; f < fine_cell->faces.size(); ++f)
+    for (size_t f = 0; f < grid->GetCellFaceCount(grid->MapCellGlobalID2LocalID(fine_cell.global_id)); ++f)
     {
       const auto& coarse_face = coarse_cell.faces[f];
-      const auto& fine_face = fine_cell->faces[f];
+      const auto& fine_face = grid->GetCellFace(grid->MapCellGlobalID2LocalID(fine_cell.global_id), f);
       EXPECT_EQ(coarse_face.has_neighbor, fine_face.has_neighbor);
       EXPECT_EQ(coarse_face.neighbor_id, fine_face.neighbor_id);
       EXPECT_DOUBLE_EQ(coarse_face.area, fine_face.area);
@@ -80,7 +82,9 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
       for (const auto fine_cell_id : coarse_cell.fine_cell_ids)
       {
         EXPECT_EQ(coarse_mesh.MapFineCell(fine_cell_id), coarse_cell.global_id);
-        expected_volume += grid->GetGlobalCell(fine_cell_id).volume;
+        auto fine_cell_local_id = grid->MapCellGlobalID2LocalID(fine_cell_id);
+        const auto& fine_cell = grid->GetLocalCell(fine_cell_local_id);
+        expected_volume += fine_cell.volume;
       }
       EXPECT_DOUBLE_EQ(coarse_cell.volume, expected_volume);
       EXPECT_FALSE(coarse_cell.faces.empty());
@@ -106,8 +110,14 @@ TEST(CMFDCoarseMesh, LocalAggregationBuildsConnectedCoarseCells)
   EXPECT_EQ(coarse_mesh.MapFineCell(2), second.global_id);
   EXPECT_EQ(coarse_mesh.MapFineCell(3), second.global_id);
 
-  EXPECT_DOUBLE_EQ(first.volume, grid->GetGlobalCell(0).volume + grid->GetGlobalCell(1).volume);
-  EXPECT_DOUBLE_EQ(second.volume, grid->GetGlobalCell(2).volume + grid->GetGlobalCell(3).volume);
+  auto lid0 = grid->MapCellGlobalID2LocalID(0);
+
+  auto lid1 = grid->MapCellGlobalID2LocalID(1);
+  EXPECT_DOUBLE_EQ(first.volume, grid->GetLocalCell(lid0).volume + grid->GetLocalCell(lid1).volume);
+  auto lid2 = grid->MapCellGlobalID2LocalID(2);
+  auto lid3 = grid->MapCellGlobalID2LocalID(3);
+  EXPECT_DOUBLE_EQ(second.volume,
+                   grid->GetLocalCell(lid2).volume + grid->GetLocalCell(lid3).volume);
 
   ASSERT_EQ(first.faces.size(), 2);
   ASSERT_EQ(second.faces.size(), 2);
@@ -165,7 +175,7 @@ TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
 
       double expected_area = 0.0;
       for (const auto& fine_face : coarse_face.fine_faces)
-        expected_area += grid->GetGlobalCell(fine_face.cell_id).faces[fine_face.face_index].area;
+        expected_area += grid->GetCellFace(grid->MapCellGlobalID2LocalID(fine_face.cell_id), fine_face.face_index).area;
 
       EXPECT_DOUBLE_EQ(coarse_face.area, expected_area);
       found_merged_face = true;
