@@ -133,7 +133,7 @@ TEST(MeshMappingTest, GetCoarseMappingMissing)
       try
       {
         for (const auto& cell : grid_ptr->GetLocalCells())
-          mesh_mapping.GetCoarseMapping(*cell);
+          mesh_mapping.GetCoarseMapping(cell);
       }
       catch (const std::logic_error& e)
       {
@@ -158,7 +158,7 @@ TEST(MeshMappingTest, GetFineMappingMissing)
       try
       {
         for (const auto& cell : grid_ptr->GetLocalCells())
-          mesh_mapping.GetFineMapping(*cell);
+          mesh_mapping.GetFineMapping(cell);
       }
       catch (const std::logic_error& e)
       {

@@ -302,16 +302,16 @@ AAHD_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
   // slot holds every direction and group of the angle set, direction-major.
   for (const auto& cell : grid.GetLocalCells())
   {
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
-      if (face_orientations[cell->local_id][f] != FaceOrientation::INCOMING or
-          not cell->faces[f].has_neighbor)
+      if (face_orientations[cell.local_id][f] != FaceOrientation::INCOMING or
+          not cell.faces[f].has_neighbor)
         continue;
       const auto num_face_nodes =
-        common_data_.GetFaceNodalMapping(cell->local_id, f).face_node_mapping_.size();
+        common_data_.GetFaceNodalMapping(cell.local_id, f).face_node_mapping_.size();
       for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        const auto it = node_tracker.find(FaceNode(cell->local_id, f, fnode));
+        const auto it = node_tracker.find(FaceNode(cell.local_id, f, fnode));
         if (it == node_tracker.end())
           continue;
         const AAHD_NodeIndex& node_index = it->second;
@@ -333,7 +333,7 @@ AAHD_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
 
         for (unsigned int g = 0; g < num_groups_; ++g)
         {
-          const double delta = correction(cell->local_id, f, fnode, g);
+          const double delta = correction(cell.local_id, f, fnode, g);
           if (delta == 0.0)
             continue;
           for (std::size_t n = 0; n < num_angles_; ++n)
@@ -433,11 +433,11 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
   {
     // get pointer to the cell's angular fluxes
     double* dst_psi =
-      &destination_psi[discretization.MapDOFLocal(*cell, 0, groupset.psi_uk_man_, 0, 0)];
+      &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi = save_angular_flux_.host_storage.data() +
-                      mesh_carrier->saved_psi_offset[cell->local_id] * num_groups_and_angles_;
+                      mesh_carrier->saved_psi_offset[cell.local_id] * num_groups_and_angles_;
     // get number of cell nodes
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(*cell).GetNumNodes();
+    std::uint32_t cell_num_nodes = discretization.GetCellMapping(cell).GetNumNodes();
     // loop for each cell node
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {
