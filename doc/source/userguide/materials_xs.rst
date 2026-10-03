@@ -279,6 +279,23 @@ fission production. This is useful for advanced data preparation, but most user
 inputs are clearer when written in terms of ``SIGMA_F``, ``NU`` or
 ``NU_PROMPT``/``NU_DELAYED``, and the corresponding spectra.
 
+Each ``PRODUCTION_MATRIX`` entry is written as
+``GPRIME_G_VAL g_to g_from value``: the first index is the group in which
+fission neutrons are produced and the second is the group of the neutron that
+causes fission, so ``value`` is :math:`\nu\sigma_f^{g_\text{from} \to g_\text{to}}`.
+Despite the keyword name, the destination group comes first. For a separable
+spectrum, the entry for ``(g_to, g_from)`` is :math:`\chi^{g_\text{to}}
+\nu\sigma_f^{g_\text{from}}`:
+
+.. code-block:: text
+
+   PRODUCTION_MATRIX_BEGIN
+   GPRIME_G_VAL 0 0 0.275
+   GPRIME_G_VAL 0 1 0.330
+   GPRIME_G_VAL 1 0 0.125
+   GPRIME_G_VAL 1 1 0.150
+   PRODUCTION_MATRIX_END
+
 Loading OpenMC MGXS Files
 =========================
 

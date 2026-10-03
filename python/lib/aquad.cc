@@ -38,6 +38,8 @@ GetScatteringOrder(py::kwargs& params)
     return pop_cast(params, "scattering_order").cast<unsigned int>();
 }
 
+} // namespace
+
 // Wrap harmonic indices
 void
 WrapHarmonicIndices(py::module& aquad)
@@ -58,8 +60,6 @@ WrapHarmonicIndices(py::module& aquad)
   harmonic_indices.def_readonly(
     "m", &AngularQuadrature::HarmonicIndices::m, "Order of the spherical harmonic.");
 }
-
-} // namespace
 
 // Wrap quadrature point
 void

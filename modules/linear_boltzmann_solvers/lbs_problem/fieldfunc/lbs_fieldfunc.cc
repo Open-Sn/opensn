@@ -5,6 +5,7 @@
 
 #include "framework/field_functions/field_function_grid_based.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
 
@@ -247,6 +248,9 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
       local_total_power += nodal_power * Vi(i);
     }
   }
+
+  // Report physical power: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  local_total_power *= IntegralMeasureScale(grid_->GetCoordinateSystem());
 
   return data_vector_power_local;
 }

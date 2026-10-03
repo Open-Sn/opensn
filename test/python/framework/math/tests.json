@@ -1,0 +1,15 @@
+[
+  {
+    "file": "angular_quadrature_harmonics.py",
+    "comment": "Harmonic index maps and first-moment rows of 3D, 2D XY, and RZ quadratures",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "HARMONIC_INDICES_PASSED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  }
+]

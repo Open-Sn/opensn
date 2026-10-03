@@ -55,6 +55,8 @@ FieldFunctionInterpolationVolume::Execute()
   const auto cid = ref_component_;
 
   const auto field_data = ref_ff.GetGhostedFieldVector();
+  // Physical volume measure (2*pi*r in RZ, 4*pi*r^2 in 1D spherical geometry).
+  const auto spatial_weight = sdm.GetSpatialWeightingFunction();
 
   double local_volume = 0.0;
   double local_sum = 0.0;
@@ -95,8 +97,9 @@ FieldFunctionInterpolationVolume::Execute()
           op_type_ <= FieldFunctionInterpolationOperation::OP_MIN_FUNC)
         function_value = oper_function_(ff_value, cell.block_id);
 
-      local_volume += fe_vol_data.JxW(qp);
-      local_sum += function_value * fe_vol_data.JxW(qp);
+      const double dV = spatial_weight(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);
+      local_volume += dV;
+      local_sum += function_value * dV;
       local_max = std::fmax(function_value, local_max);
       local_min = std::fmin(function_value, local_min);
     }
