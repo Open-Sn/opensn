@@ -872,9 +872,21 @@ It uses the same general construction pattern, but currently requires:
 Important current limitations:
 
 * the curvilinear solver only supports cylindrical geometries,
+* reflecting boundaries are supported only on the symmetry axis (``rmin``) and on
+  constant-``z`` boundaries,
 * GPU acceleration is not supported,
 * users should treat it as a more specialized path than the standard Cartesian
   problem.
+
+Integrated quantities are reported in physical units for the full revolution:
+the balance table, :py:meth:`ComputeLeakage`, response evaluation, power
+normalization, volume postprocessors, and volume field-function integrals all use
+the volume element :math:`2\pi r\,dr\,dz` and the corresponding surface element,
+so they can be compared directly with an equivalent three-dimensional model.
+Volumetric source strengths are per unit volume. A point source at
+:math:`(r, z)` represents a ring, and its strength is the total emission rate of
+that ring. See :ref:`normalization_conventions` for the conventions in all
+geometries.
 
 Example:
 

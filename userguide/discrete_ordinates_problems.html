@@ -957,10 +957,21 @@ curvilinear companion to the Cartesian problem class.</p>
 <p>Important current limitations:</p>
 <ul class="simple">
 <li><p>the curvilinear solver only supports cylindrical geometries,</p></li>
+<li><p>reflecting boundaries are supported only on the symmetry axis (<code class="docutils literal notranslate"><span class="pre">rmin</span></code>) and on
+constant-<code class="docutils literal notranslate"><span class="pre">z</span></code> boundaries,</p></li>
 <li><p>GPU acceleration is not supported,</p></li>
 <li><p>users should treat it as a more specialized path than the standard Cartesian
 problem.</p></li>
 </ul>
+<p>Integrated quantities are reported in physical units for the full revolution:
+the balance table, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code>, response evaluation, power
+normalization, volume postprocessors, and volume field-function integrals all use
+the volume element <span class="math notranslate nohighlight">\(2\pi r\,dr\,dz\)</span> and the corresponding surface element,
+so they can be compared directly with an equivalent three-dimensional model.
+Volumetric source strengths are per unit volume. A point source at
+<span class="math notranslate nohighlight">\((r, z)\)</span> represents a ring, and its strength is the total emission rate of
+that ring. See <a class="reference internal" href="boundary_conditions_sources.html#normalization-conventions"><span class="std std-ref">Normalization and Units</span></a> for the conventions in all
+geometries.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
     <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>

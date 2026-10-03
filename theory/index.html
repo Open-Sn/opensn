@@ -57,11 +57,12 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Theory Manual</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
@@ -117,31 +118,38 @@
 <li class="toctree-l2"><a class="reference internal" href="discretization.html#references">2.4. References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l1"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l1"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#multigroup-solution-process-background">5.1. Multigroup Solution Process: Background</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#source-iteration-and-krylov-solvers">5.2. Source Iteration and Krylov Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#within-group-acceleration">5.3. Within-group Acceleration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#thermal-upscattering-acceleration">5.4. Thermal Upscattering Acceleration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#power-iterations">5.5. Power Iterations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#acceleration-of-power-iterations">5.6. Acceleration of Power Iterations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#coarse-mesh-finite-difference-acceleration">5.7. Coarse-Mesh Finite Difference Acceleration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#uncollided-flux-treatment">5.8. Uncollided-flux Treatment</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html#references">5.9. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html#theta-scheme">3.1. Theta scheme</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html#delayed-neutron-precursors">3.2. Delayed-neutron precursors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html#particle-balance">3.3. Particle balance</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html#initial-state">3.4. Initial state</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html#introduction">6.1. Introduction</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html#aggregation">6.2. Aggregation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html#partitioning-and-scheduling">6.3. Partitioning and Scheduling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html#references">6.4. References</a></li>
+<li class="toctree-l1"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l1"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#multigroup-solution-process-background">6.1. Multigroup Solution Process: Background</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#source-iteration-and-krylov-solvers">6.2. Source Iteration and Krylov Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#within-group-acceleration">6.3. Within-group Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#thermal-upscattering-acceleration">6.4. Thermal Upscattering Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#power-iterations">6.5. Power Iterations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#acceleration-of-power-iterations">6.6. Acceleration of Power Iterations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#coarse-mesh-finite-difference-acceleration">6.7. Coarse-Mesh Finite Difference Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#uncollided-flux-treatment">6.8. Uncollided-flux Treatment</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html#references">6.9. References</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html#discrete-adjoint-formulation">7.1. Discrete adjoint formulation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html#theory-adjoint-response-identity">7.2. Theory: adjoint response identity</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html#discrete-implementation">7.3. Discrete implementation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html#introduction">7.1. Introduction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html#aggregation">7.2. Aggregation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html#partitioning-and-scheduling">7.3. Partitioning and Scheduling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html#references">7.4. References</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html#discrete-adjoint-formulation">8.1. Discrete adjoint formulation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html#theory-adjoint-response-identity">8.2. Theory: adjoint response identity</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html#discrete-implementation">8.3. Discrete implementation</a></li>
 </ul>
 </li>
 </ul>

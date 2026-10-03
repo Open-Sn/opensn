@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -91,7 +93,13 @@
 <li class="toctree-l3"><a class="reference internal" href="#replacing-sources-after-construction">10.6. Replacing Sources After Construction</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#transient-source-and-boundary-behavior">10.7. Transient Source and Boundary Behavior</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#boundary-names-and-mesh-labels">10.8. Boundary Names and Mesh Labels</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#best-practices">10.9. Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#normalization-and-units">10.9. Normalization and Units</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#angular-normalization">10.9.1. Angular normalization</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#sources">10.9.2. Sources</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#integrated-quantities">10.9.3. Integrated quantities</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#best-practices">10.10. Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
@@ -168,6 +176,8 @@ is handled through boundary conditions.</p>
 <li><p>how these inputs are specified at construction time</p></li>
 <li><p>how to replace them later with the problem-level setter methods</p></li>
 <li><p>how time dependence works for transient problems</p></li>
+<li><p>the normalization and units of sources, boundary inputs, and integrated
+quantities in each geometry</p></li>
 </ul>
 <section id="overview">
 <h2><span class="section-number">10.1. </span>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
@@ -326,6 +336,11 @@ time interval with <code class="docutils literal notranslate"><span class="pre">
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&gt;=</span> <span class="pre">start_time</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&lt;=</span> <span class="pre">end_time</span></code></p></li>
 </ul>
+<p>where <code class="docutils literal notranslate"><span class="pre">time</span></code> is the evaluation time of the step, <span class="math notranslate nohighlight">\(t^{n+\theta}\)</span> (see
+<a class="reference internal" href="../theory/time_discretization.html"><span class="doc">Time Discretization</span></a>). Both ends of the window are inclusive,
+and the comparisons allow a relative round-off tolerance of <span class="math notranslate nohighlight">\(10^{-12}\)</span>, so
+a time accumulated from repeated steps (for example twenty steps of 0.05) is
+treated the same as the exact time.</p>
 <p>Outside that interval, the isotropic inflow on that boundary is zero.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -519,6 +534,11 @@ clearer model.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&gt;=</span> <span class="pre">start_time</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">time</span> <span class="pre">&lt;=</span> <span class="pre">end_time</span></code></p></li>
 </ul>
+<p>where <code class="docutils literal notranslate"><span class="pre">time</span></code> is the evaluation time of the step, <span class="math notranslate nohighlight">\(t^{n+\theta}\)</span> (see
+<a class="reference internal" href="../theory/time_discretization.html"><span class="doc">Time Discretization</span></a>). Both ends of the window are inclusive,
+and the comparisons allow a relative round-off tolerance of <span class="math notranslate nohighlight">\(10^{-12}\)</span>, so
+a time accumulated from repeated steps (for example twenty steps of 0.05) is
+treated the same as the exact time.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The start/end window is the simplest transient source option when the source
@@ -867,8 +887,100 @@ directions in the abstract.</p>
 <p>The boundary ids used in the input must match the boundary ids present on the
 mesh.</p>
 </section>
+<section id="normalization-and-units">
+<span id="normalization-conventions"></span><h2><span class="section-number">10.9. </span>Normalization and Units<a class="headerlink" href="#normalization-and-units" title="Link to this heading"></a></h2>
+<p>OpenSn uses the same normalization in every geometry. These conventions fix the
+meaning of every input and output that involves an angular or spatial integral.</p>
+<section id="angular-normalization">
+<h3><span class="section-number">10.9.1. </span>Angular normalization<a class="headerlink" href="#angular-normalization" title="Link to this heading"></a></h3>
+<p>The weights of every angular quadrature sum to <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, and the scalar flux is
+<span class="math notranslate nohighlight">\(\phi = \sum_n w_n \psi_n\)</span>. The discrete angular flux <span class="math notranslate nohighlight">\(\psi_n\)</span> is
+therefore <span class="math notranslate nohighlight">\(4\pi\)</span> times the physical angular flux per steradian, and the
+scalar flux is the physical scalar flux. Partial currents are
+<span class="math notranslate nohighlight">\(j^\pm = \sum_{\pm\vec{\Omega}_n \cdot \vec{n} &gt; 0} w_n
+|\vec{\Omega}_n \cdot \vec{n}|\, \psi_n\)</span>. For example, a uniform isotropic
+incoming angular flux <code class="docutils literal notranslate"><span class="pre">X</span></code> on a boundary produces the scalar flux <code class="docutils literal notranslate"><span class="pre">X</span></code> in a
+void and an incoming partial current
+<span class="math notranslate nohighlight">\(X \sum_{\vec{\Omega}_n \cdot \vec{n} &lt; 0} w_n |\vec{\Omega}_n \cdot \vec{n}|\)</span>,
+which approaches <code class="docutils literal notranslate"><span class="pre">X</span> <span class="pre">/</span> <span class="pre">4</span></code> as the quadrature is refined. Boundary inputs
+(<code class="docutils literal notranslate"><span class="pre">group_strength</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code> callbacks) are given in this discrete
+convention.</p>
+</section>
+<section id="sources">
+<h3><span class="section-number">10.9.2. </span>Sources<a class="headerlink" href="#sources" title="Link to this heading"></a></h3>
+<p>Source strengths are angle-integrated emission rates:</p>
+<ul>
+<li><p>a volumetric source strength is the emission rate per unit volume;</p></li>
+<li><p>a point source strength is the total emission rate of the source. In reduced
+geometries a point represents the corresponding extended source:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Geometry</p></th>
+<th class="head"><p>Point source represents</p></th>
+<th class="head"><p>Strength is</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3D Cartesian</p></td>
+<td><p>a point</p></td>
+<td><p>total emission rate</p></td>
+</tr>
+<tr class="row-odd"><td><p>2D Cartesian (XY)</p></td>
+<td><p>a line along <span class="math notranslate nohighlight">\(z\)</span></p></td>
+<td><p>emission rate per unit length in <span class="math notranslate nohighlight">\(z\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>1D slab</p></td>
+<td><p>a plane normal to <span class="math notranslate nohighlight">\(z\)</span></p></td>
+<td><p>emission rate per unit area of the plane</p></td>
+</tr>
+<tr class="row-odd"><td><p>RZ</p></td>
+<td><p>a ring about the axis</p></td>
+<td><p>total emission rate of the ring</p></td>
+</tr>
+</tbody>
+</table>
+</li>
+</ul>
+</section>
+<section id="integrated-quantities">
+<h3><span class="section-number">10.9.3. </span>Integrated quantities<a class="headerlink" href="#integrated-quantities" title="Link to this heading"></a></h3>
+<p>The balance table, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code>, response evaluation, power
+normalization, volume postprocessors, volume field-function integrals, and the
+integration weights of exported surface angular fluxes all integrate over the
+physical extent of the model. Dimensions that the model treats as infinite are
+reported per unit length or area:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Geometry</p></th>
+<th class="head"><p>Volume element</p></th>
+<th class="head"><p>Integrated rates are</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>3D Cartesian</p></td>
+<td><p><span class="math notranslate nohighlight">\(dx\,dy\,dz\)</span></p></td>
+<td><p>totals</p></td>
+</tr>
+<tr class="row-odd"><td><p>2D Cartesian (XY)</p></td>
+<td><p><span class="math notranslate nohighlight">\(dx\,dy\)</span></p></td>
+<td><p>per unit length in <span class="math notranslate nohighlight">\(z\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>1D slab</p></td>
+<td><p><span class="math notranslate nohighlight">\(dz\)</span></p></td>
+<td><p>per unit area normal to <span class="math notranslate nohighlight">\(z\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>RZ</p></td>
+<td><p><span class="math notranslate nohighlight">\(2\pi r\,dr\,dz\)</span></p></td>
+<td><p>totals for the full revolution</p></td>
+</tr>
+</tbody>
+</table>
+<p>RZ results can therefore be compared directly with an equivalent 3D model, and
+2D or 1D results with a 3D model of unit depth or unit cross-sectional area.</p>
+</section>
+</section>
 <section id="best-practices">
-<h2><span class="section-number">10.9. </span>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
+<h2><span class="section-number">10.10. </span>Best Practices<a class="headerlink" href="#best-practices" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Use vacuum and reflecting boundaries whenever they represent the actual
 physical model; they are the clearest and least error-prone options.</p></li>

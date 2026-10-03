@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>7. Adjoint Flux Formalism &mdash; OpenSn 1.0.1 documentation</title>
+  <title>8. Adjoint Flux Formalism &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,7 +29,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Tutorials" href="../tutorials/index.html" />
-    <link rel="prev" title="6. Parallel Sweeps" href="parallelization.html" /> 
+    <link rel="prev" title="7. Parallel Sweeps" href="parallelization.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,14 +57,15 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">7. Adjoint Flux Formalism</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#discrete-adjoint-formulation">7.1. Discrete adjoint formulation</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#theory-adjoint-response-identity">7.2. Theory: adjoint response identity</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#discrete-implementation">7.3. Discrete implementation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">8. Adjoint Flux Formalism</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-adjoint-formulation">8.1. Discrete adjoint formulation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#theory-adjoint-response-identity">8.2. Theory: adjoint response identity</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#discrete-implementation">8.3. Discrete implementation</a></li>
 </ul>
 </li>
 </ul>
@@ -92,7 +93,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">7. </span>Adjoint Flux Formalism</li>
+      <li class="breadcrumb-item active"><span class="section-number">8. </span>Adjoint Flux Formalism</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -102,9 +103,9 @@
            <div itemprop="articleBody">
              
   <section id="adjoint-flux-formalism">
-<h1><span class="section-number">7. </span>Adjoint Flux Formalism<a class="headerlink" href="#adjoint-flux-formalism" title="Link to this heading"></a></h1>
+<h1><span class="section-number">8. </span>Adjoint Flux Formalism<a class="headerlink" href="#adjoint-flux-formalism" title="Link to this heading"></a></h1>
 <section id="discrete-adjoint-formulation">
-<h2><span class="section-number">7.1. </span>Discrete adjoint formulation<a class="headerlink" href="#discrete-adjoint-formulation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.1. </span>Discrete adjoint formulation<a class="headerlink" href="#discrete-adjoint-formulation" title="Link to this heading"></a></h2>
 <p>Using OpenSn’s standard discrete angular operators, the multigroup adjoint
 transport equation for quadrature direction <span class="math notranslate nohighlight">\(\vec{\Omega}_n\)</span> is</p>
 <div class="math notranslate nohighlight">
@@ -186,7 +187,7 @@ averaged over group <span class="math notranslate nohighlight">\(g\)</span> rath
 </ul>
 </section>
 <section id="theory-adjoint-response-identity">
-<h2><span class="section-number">7.2. </span>Theory: adjoint response identity<a class="headerlink" href="#theory-adjoint-response-identity" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.2. </span>Theory: adjoint response identity<a class="headerlink" href="#theory-adjoint-response-identity" title="Link to this heading"></a></h2>
 <p>The continuous formulation explains why an adjoint solution can be used to
 compute a detector response. For clarity, consider a steady-state problem
 with vacuum forward and adjoint boundary conditions. Define the inner product</p>
@@ -217,7 +218,7 @@ time-dependent problems introduce additional boundary and initial/final
 terms in the response identity.</p>
 </section>
 <section id="discrete-implementation">
-<h2><span class="section-number">7.3. </span>Discrete implementation<a class="headerlink" href="#discrete-implementation" title="Link to this heading"></a></h2>
+<h2><span class="section-number">8.3. </span>Discrete implementation<a class="headerlink" href="#discrete-implementation" title="Link to this heading"></a></h2>
 <p>OpenSn supports adjoint calculations only for Cartesian geometries with the
 standard angular operators (<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>). Cylindrical and
 spherical coordinate systems contain angular-redistribution terms whose
@@ -282,7 +283,7 @@ adjoint mode.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="parallelization.html" class="btn btn-neutral float-left" title="6. Parallel Sweeps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parallelization.html" class="btn btn-neutral float-left" title="7. Parallel Sweeps" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../tutorials/index.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

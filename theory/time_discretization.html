@@ -1,0 +1,256 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3. Time Discretization &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="4. Multigroup Cross-Section Data" href="cross_sections.html" />
+    <link rel="prev" title="2. Phase-space Discretization" href="discretization.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">3. Time Discretization</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#theta-scheme">3.1. Theta scheme</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#delayed-neutron-precursors">3.2. Delayed-neutron precursors</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#particle-balance">3.3. Particle balance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#initial-state">3.4. Initial state</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3. </span>Time Discretization</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="time-discretization">
+<h1><span class="section-number">3. </span>Time Discretization<a class="headerlink" href="#time-discretization" title="Link to this heading"></a></h1>
+<p>This section describes how OpenSn discretizes the time-dependent transport
+equation with delayed-neutron precursors,</p>
+<div class="math notranslate nohighlight">
+\[\frac{1}{v^g}\frac{\partial \psi^g}{\partial t}
++ \vec{\Omega}\cdot\vec{\nabla}\psi^g + \sigma_t^g \psi^g
+= \sum_{g'} M \Sigma^{g'\to g} \Phi^{g'} + M F_p \Phi
++ \sum_j \chi_{d,j}^g \lambda_j C_j + Q^g(t),\]</div>
+<div class="math notranslate nohighlight">
+\[\frac{dC_j}{dt} = \gamma_j \sum_{g} \nu_d\sigma_f^{g} \phi_{0,0}^{g}
+- \lambda_j C_j ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(F_p\)</span> is the prompt fission operator, <span class="math notranslate nohighlight">\(\gamma_j\)</span> the
+fractional yield of precursor family <span class="math notranslate nohighlight">\(j\)</span> (relative to the delayed
+production <span class="math notranslate nohighlight">\(\nu_d\sigma_f\)</span>), <span class="math notranslate nohighlight">\(\lambda_j\)</span> its decay constant, and
+<span class="math notranslate nohighlight">\(\chi_{d,j}\)</span> its emission spectrum. The spectra carry the discrete
+normalization of the moment-to-discrete operator described in
+<a class="reference internal" href="discretization.html"><span class="doc">Phase-space Discretization</span></a>.</p>
+<section id="theta-scheme">
+<h2><span class="section-number">3.1. </span>Theta scheme<a class="headerlink" href="#theta-scheme" title="Link to this heading"></a></h2>
+<p>A step from <span class="math notranslate nohighlight">\(t^n\)</span> to <span class="math notranslate nohighlight">\(t^{n+1} = t^n + \Delta t\)</span> uses the theta
+scheme, <span class="math notranslate nohighlight">\(0 &lt; \theta \le 1\)</span> (backward Euler for <span class="math notranslate nohighlight">\(\theta = 1\)</span>,
+Crank-Nicolson for <span class="math notranslate nohighlight">\(\theta = 1/2\)</span>), written in intermediate form. The
+solver computes the state at <span class="math notranslate nohighlight">\(t^{n+\theta} = t^n + \theta\Delta t\)</span> from</p>
+<div class="math notranslate nohighlight">
+\[\frac{\psi^{n+\theta} - \psi^n}{v\,\theta\Delta t}
++ \vec{\Omega}\cdot\vec{\nabla}\psi^{n+\theta} + \sigma_t\psi^{n+\theta}
+= S\bigl(\psi^{n+\theta}\bigr) + Q\bigl(t^{n+\theta}\bigr),\]</div>
+<p>where <span class="math notranslate nohighlight">\(S\)</span> collects scattering, prompt fission, and the delayed source,
+and then extrapolates</p>
+<div class="math notranslate nohighlight">
+\[\psi^{n+1} = \frac{\psi^{n+\theta} - (1-\theta)\psi^n}{\theta},\]</div>
+<p>and likewise for the flux moments. This is equivalent to the standard theta
+method: <span class="math notranslate nohighlight">\((\psi^{n+1}-\psi^n)/(v\Delta t)\)</span> equals the right-hand side
+evaluated at <span class="math notranslate nohighlight">\(\theta\psi^{n+1} + (1-\theta)\psi^n\)</span>. In the sweep, the
+time term adds <span class="math notranslate nohighlight">\(1/(v\theta\Delta t)\)</span> to the total cross section and
+<span class="math notranslate nohighlight">\(\psi^n/(v\theta\Delta t)\)</span> to the source.</p>
+<p>Volumetric and point sources, and time-dependent boundary conditions, are
+evaluated at <span class="math notranslate nohighlight">\(t^{n+\theta}\)</span>: at the end of the step for backward Euler
+and at the midpoint for Crank-Nicolson. A source or boundary with an on/off
+window is active for a step when <span class="math notranslate nohighlight">\(t^{n+\theta}\)</span> lies in the closed window,
+up to a tolerance of <span class="math notranslate nohighlight">\(10^{-12}\)</span> times the larger magnitude of the
+evaluation time and the finite window bound. There is no minimum absolute
+tolerance, so this comparison also applies to short pulses near time zero.
+Consequently, accumulation from a negative time origin that leaves a small
+negative value at an intended zero endpoint is treated as outside a window
+starting at zero; there is no absolute tolerance to absorb that cancellation.</p>
+<p>All terms that depend on the flux being solved for, including prompt fission
+and the implicit part of the delayed source, are treated implicitly within the
+step.</p>
+</section>
+<section id="delayed-neutron-precursors">
+<h2><span class="section-number">3.2. </span>Delayed-neutron precursors<a class="headerlink" href="#delayed-neutron-precursors" title="Link to this heading"></a></h2>
+<p>Precursor concentrations are stored at the same spatial nodes as the scalar
+flux. Applying the theta scheme to the precursor equation gives</p>
+<div class="math notranslate nohighlight">
+\[C_j^{n+\theta} = \frac{C_j^n + \theta\Delta t\,\gamma_j F_d\phi^{n+\theta}}
+{1 + \theta\Delta t\,\lambda_j},
+\qquad F_d\phi = \sum_g \nu_d\sigma_f^g\phi_{0,0}^g ,\]</div>
+<p>which is substituted into the delayed source of the transport step. The
+delayed source then consists of an implicit part proportional to
+<span class="math notranslate nohighlight">\(\phi^{n+\theta}\)</span>, and the decay of the inventory from the previous step,
+<span class="math notranslate nohighlight">\(\chi_{d,j}\lambda_j C_j^n/(1+\theta\Delta t\lambda_j)\)</span>. After the
+transport solve, the precursors are updated with the same
+<span class="math notranslate nohighlight">\(\phi^{n+\theta}\)</span> and extrapolated to <span class="math notranslate nohighlight">\(t^{n+1}\)</span> like the flux.</p>
+<p>A steady-state source solve with precursors stores the equilibrium concentrations
+<span class="math notranslate nohighlight">\(C_j = \gamma_j F_d\phi/\lambda_j\)</span>. A transient started from this converged
+state remains stationary when the material, sources, and boundaries are unchanged.
+The k-eigenvalue solver instead stores
+<span class="math notranslate nohighlight">\(C_j = \gamma_j F_d\phi/(k_\mathrm{eff}\lambda_j)\)</span>, consistent with its
+fission source scaled by <span class="math notranslate nohighlight">\(1/k_\mathrm{eff}\)</span>. The physical transient removes
+that scaling, so a noncritical eigenstate generally grows or decays even when
+the inputs are unchanged. The stationary guarantee applies to an equilibrated
+critical eigenstate (<span class="math notranslate nohighlight">\(k_\mathrm{eff}=1\)</span>).
+With <code class="docutils literal notranslate"><span class="pre">use_precursors=False</span></code> the model is prompt only: delayed
+neutrons are omitted from steady-state, k-eigenvalue, and transient solves,
+which lowers <span class="math notranslate nohighlight">\(k_\text{eff}\)</span> by approximately the delayed fraction.</p>
+</section>
+<section id="particle-balance">
+<h2><span class="section-number">3.3. </span>Particle balance<a class="headerlink" href="#particle-balance" title="Link to this heading"></a></h2>
+<p>With the rates evaluated at the intermediate state, the scheme satisfies the
+discrete balance</p>
+<div class="math notranslate nohighlight">
+\[\frac{N^{n+1} - N^n}{\Delta t} = P\bigl(t^{n+\theta}\bigr)
++ I\bigl(t^{n+\theta}\bigr) - A\bigl(t^{n+\theta}\bigr)
+- L\bigl(t^{n+\theta}\bigr),\]</div>
+<p>where <span class="math notranslate nohighlight">\(N = \sum_g \int \phi_{0,0}^g/v^g\,dV\)</span> is the particle inventory
+and <span class="math notranslate nohighlight">\(P\)</span>, <span class="math notranslate nohighlight">\(I\)</span>, <span class="math notranslate nohighlight">\(A\)</span>, and <span class="math notranslate nohighlight">\(L\)</span> are the production
+(including fission and precursor decay), boundary inflow, absorption, and
+leakage rates. The transient balance table reports these rates at
+<span class="math notranslate nohighlight">\(t^{n+\theta}\)</span>, and its inventory residual measures how well this
+statement holds for the last step; it is at the level of the iterative
+tolerances for any <span class="math notranslate nohighlight">\(\theta\)</span>.</p>
+</section>
+<section id="initial-state">
+<h2><span class="section-number">3.4. </span>Initial state<a class="headerlink" href="#initial-state" title="Link to this heading"></a></h2>
+<p>A transient starts from the problem’s current state. When the problem stores
+the angular flux of a preceding solve, that angular flux is used as
+<span class="math notranslate nohighlight">\(\psi^0\)</span>, together with the converged boundary angular fluxes for
+reflecting boundaries. Only when no angular flux is stored is <span class="math notranslate nohighlight">\(\psi^0\)</span>
+reconstructed from the scalar flux by sweeping with the source held fixed.
+When an initial-condition restart includes <span class="math notranslate nohighlight">\(k_\mathrm{eff}\)</span>, reconstruction
+uses its eigenvalue-scaled fission source. The subsequent transient uses the
+physical, unscaled fission source.</p>
+<p>Without the original operator and sources, reconstruction is an approximation.
+The rebuilt angular flux is rescaled independently at each node and group to
+match the saved scalar flux. If a finite positive rescaling is unavailable, an
+isotropic distribution with that scalar flux is used. This preserves the initial
+particle inventory, but does not guarantee the original angular distribution or
+higher moments. The rescaling does not update the reconstructed lagged or
+reflecting boundary angular fluxes, so approximate reconstruction can also leave
+interior and boundary angular fluxes inconsistent at the first transient step.
+A significant scalar-flux correction is reported relative to the maximum
+absolute saved scalar flux.
+For the most faithful reconstruction, retain the original cross sections,
+sources, and boundary conditions until the switch to time-dependent mode.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="discretization.html" class="btn btn-neutral float-left" title="2. Phase-space Discretization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cross_sections.html" class="btn btn-neutral float-right" title="4. Multigroup Cross-Section Data" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

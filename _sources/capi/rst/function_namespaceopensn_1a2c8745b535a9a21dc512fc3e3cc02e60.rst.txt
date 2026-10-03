@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a0d422d04938d9065c221644e80c17146:
+.. _exhale_function_namespaceopensn_1a2c8745b535a9a21dc512fc3e3cc02e60:
 
 Function opensn::ComputeBalanceTable
 ====================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::ComputeBalanceTable(DiscreteOrdinatesProblem&, double)
+.. doxygenfunction:: opensn::ComputeBalanceTable(DiscreteOrdinatesProblem&, double, const std::vector<double> *, const std::vector<double> *)
    :project: opensn

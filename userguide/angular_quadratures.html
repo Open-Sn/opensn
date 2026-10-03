@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -425,6 +427,26 @@ spherical direction set rather than a polar/azimuthal construction.</p>
 <h4><span class="section-number">6.3.6.1. </span><code class="docutils literal notranslate"><span class="pre">LebedevQuadrature2DXY</span></code><a class="headerlink" href="#lebedevquadrature2dxy" title="Link to this heading"></a></h4>
 <p>For 2D Cartesian <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry. Only upper-hemisphere points are retained.</p>
 <p>This is the 2D Cartesian reduction of the Lebedev family.</p>
+<p>Every 2D Lebedev set contains the polar direction <span class="math notranslate nohighlight">\((0, 0, 1)\)</span>. That
+direction has no in-plane component, so in <code class="docutils literal notranslate"><span class="pre">XY</span></code> geometry it does not couple to
+boundaries or neighboring cells by streaming. For a given source its angular
+flux is local, although scattering couples it to other directions. Its weight
+does not bound the scalar-flux error: in a pure absorber with isotropic source
+<span class="math notranslate nohighlight">\(Q\)</span>, the polar contribution is <span class="math notranslate nohighlight">\(w_p Q/\sigma_t\)</span>, which can grow
+without bound as <span class="math notranslate nohighlight">\(\sigma_t\)</span> approaches zero. At exactly zero total cross
+section the local steady equation is singular. For any <code class="docutils literal notranslate"><span class="pre">XY</span></code> groupset whose
+quadrature has a direction with no in-plane component (every 2D Lebedev set),
+OpenSn therefore rejects a total cross section <span class="math notranslate nohighlight">\(\sigma_t \le 0\)</span> in any of
+the groupset’s groups, both when the problem is constructed and when the
+cross-section map is replaced with <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code>. A rejected <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code> call
+leaves the existing cross sections in place. The check also applies to
+time-dependent problems, although the time term makes each step’s local
+equation well-posed, because reconstructing the initial angular flux and any
+return to steady-state mode use the steady equation. Scattering-dominated
+problems can be less sensitive to the polar direction, but angular refinement
+is still needed to assess accuracy. OpenSn logs a warning when the quadrature is
+constructed. Prefer a product or triangular quadrature for 2D problems
+dominated by streaming.</p>
 </section>
 <section id="lebedevquadrature3dxyz">
 <h4><span class="section-number">6.3.6.2. </span><code class="docutils literal notranslate"><span class="pre">LebedevQuadrature3DXYZ</span></code><a class="headerlink" href="#lebedevquadrature3dxyz" title="Link to this heading"></a></h4>
@@ -438,6 +460,9 @@ spherical direction set rather than a polar/azimuthal construction.</p>
 </ul>
 <p>Currently available Lebedev orders are:</p>
 <p><code class="docutils literal notranslate"><span class="pre">3,</span> <span class="pre">5,</span> <span class="pre">7,</span> <span class="pre">9,</span> <span class="pre">11,</span> <span class="pre">13,</span> <span class="pre">15,</span> <span class="pre">17,</span> <span class="pre">19,</span> <span class="pre">21,</span> <span class="pre">23,</span> <span class="pre">25,</span> <span class="pre">27,</span> <span class="pre">29,</span> <span class="pre">31,</span> <span class="pre">35,</span> <span class="pre">41,</span> <span class="pre">47,</span> <span class="pre">53,</span> <span class="pre">59,</span> <span class="pre">65,</span> <span class="pre">71,</span> <span class="pre">77,</span> <span class="pre">83,</span> <span class="pre">89,</span> <span class="pre">95,</span> <span class="pre">101,</span> <span class="pre">107,</span> <span class="pre">113,</span> <span class="pre">119,</span> <span class="pre">125,</span> <span class="pre">131</span></code></p>
+<p>The order 13, 25, and 27 rules contain negative weights (a property of those
+Lebedev rules), which can produce negative angular fluxes and flux moments.
+OpenSn logs a warning for these orders; prefer a neighboring order.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">LebedevQuadrature3DXYZ</span>
 

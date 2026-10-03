@@ -140,6 +140,15 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Switch to transient mode. If no angular flux is stored, it is reconstructed from the current</span>
+<span class="cm">   * steady state with the fission source divided by reconstruction_keff, the eigenvalue the state</span>
+<span class="cm">   * was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical</span>
+<span class="cm">   * states. The value must be finite and positive; it is not retained for later switches and does</span>
+<span class="cm">   * not scale the physical transient source. Collective over the problem ranks.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">reconstruction_keff</span><span class="p">);</span>
+
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSteadyStateMode</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTime</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -302,6 +311,10 @@
 <span class="w">  </span><span class="c1">/// Validates that time-dependent mode may be enabled, given the current GPU, adjoint,</span>
 <span class="w">  </span><span class="c1">/// geometry, and angular-flux-storage configuration.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateTimeDependentModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Rejects sigma_t &lt;= 0 in groupsets whose XY quadrature has a direction with no in-plane</span>
+<span class="w">  </span><span class="c1">/// component.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateNonStreamingDirections</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -318,14 +331,15 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSweepChunkMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetSweepChunkMode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">target_mode</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">target_mode</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">reconstruction_keff</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Reconstructs lagged angular fluxes from the converged steady-state scalar flux via a</span>
 <span class="cm">   * fixed-point iteration, holding phi/q at the converged steady-state value. Used when</span>
-<span class="cm">   * transitioning into time-dependent mode.</span>
+<span class="cm">   * transitioning into time-dependent mode. If no angular flux was stored, the reconstructed</span>
+<span class="cm">   * distribution is rescaled per node and group to preserve the saved scalar flux.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReconstructAngularFluxFromSteadyState</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReconstructAngularFluxFromSteadyState</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">reconstruction_keff</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaryCarrier</span><span class="p">();</span>
 

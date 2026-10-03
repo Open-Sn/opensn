@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6b1ef404518fe9d0cac8d922eee7c9e4:
+
+Function opensn::IntegralMeasureScale
+=====================================
+
+- Defined in :ref:`file_framework_math_spatial_weight_function.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::IntegralMeasureScale(CoordinateSystemType)
+   :project: opensn

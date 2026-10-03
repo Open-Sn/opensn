@@ -108,6 +108,17 @@
 <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="nf">SteppingMethodStringName</span><span class="p">(</span><span class="n">SteppingMethod</span><span class="w"> </span><span class="n">method</span><span class="p">);</span>
 <span class="n">SteppingMethod</span><span class="w"> </span><span class="nf">SteppingMethodFromString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Returns true if `time` lies in the closed window [start_time, end_time].</span>
+<span class="cm"> *</span>
+<span class="cm"> * The comparison allows a relative round-off tolerance so that times accumulated</span>
+<span class="cm"> * by repeated time steps (e.g. 20 steps of 0.05 giving 1.0000000000000002) are</span>
+<span class="cm"> * classified the same as the exact time. The tolerance is 1e-12 times the larger magnitude of</span>
+<span class="cm"> * the evaluation time and the finite bound, with no minimum absolute tolerance. Infinite window</span>
+<span class="cm"> * bounds are supported.</span>
+<span class="cm"> */</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeInWindow</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">start_time</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">end_time</span><span class="p">);</span>
+
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>
 </div>

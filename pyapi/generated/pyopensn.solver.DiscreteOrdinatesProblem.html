@@ -200,12 +200,15 @@ without needing a field function.</p>
 <dd><p>Compute leakage for the problem.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>bnd_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of boundary names for which leakage should be computed.</p>
+<dd class="field-odd"><p><strong>bnd_names</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – A list of boundary names for which leakage should be computed. An empty list selects all
+boundaries. RZ problems use rmin, rmax, zmin, and zmax.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary mapping boundary names to group-wise leakage vectors.
-Each array contains the outgoing angular flux (per group) integrated over
-the corresponding boundary surface.</p>
+Each array contains the outflow (the outgoing partial current, per group) integrated over
+the corresponding boundary surface. Incoming flux is not subtracted, so on boundaries
+with inflow (sources or reflection) this is not the net leakage. In RZ geometry the
+surface integral covers the full revolution.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, numpy.ndarray]</p>

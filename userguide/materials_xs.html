@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -390,10 +392,29 @@ infer the remaining quantities</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PRECURSOR_DECAY_CONSTANTS</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">PRECURSOR_FRACTIONAL_YIELDS</span></code></p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">NU_DELAYED</span></code> is the total delayed neutron yield per fission. The fractional
+yields partition it among the precursor families and are normalized on input to
+sum to one, so absolute delayed fractions <span class="math notranslate nohighlight">\(\beta_j\)</span> may also be given;
+they are converted to <span class="math notranslate nohighlight">\(\beta_j/\beta\)</span>.</p>
 <p>OpenSn also supports an alternative <code class="docutils literal notranslate"><span class="pre">PRODUCTION_MATRIX</span></code> representation for
 fission production. This is useful for advanced data preparation, but most user
 inputs are clearer when written in terms of <code class="docutils literal notranslate"><span class="pre">SIGMA_F</span></code>, <code class="docutils literal notranslate"><span class="pre">NU</span></code> or
 <code class="docutils literal notranslate"><span class="pre">NU_PROMPT</span></code>/<code class="docutils literal notranslate"><span class="pre">NU_DELAYED</span></code>, and the corresponding spectra.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">PRODUCTION_MATRIX</span></code> entry is written as
+<code class="docutils literal notranslate"><span class="pre">GPRIME_G_VAL</span> <span class="pre">g_to</span> <span class="pre">g_from</span> <span class="pre">value</span></code>: the first index is the group in which
+fission neutrons are produced and the second is the group of the neutron that
+causes fission, so <code class="docutils literal notranslate"><span class="pre">value</span></code> is <span class="math notranslate nohighlight">\(\nu\sigma_f^{g_\text{from} \to g_\text{to}}\)</span>.
+Despite the keyword name, the destination group comes first. For a separable
+spectrum, the entry for <code class="docutils literal notranslate"><span class="pre">(g_to,</span> <span class="pre">g_from)</span></code> is <span class="math notranslate nohighlight">\(\chi^{g_\text{to}}
+\nu\sigma_f^{g_\text{from}}\)</span>:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>PRODUCTION_MATRIX_BEGIN
+GPRIME_G_VAL 0 0 0.275
+GPRIME_G_VAL 0 1 0.330
+GPRIME_G_VAL 1 0 0.125
+GPRIME_G_VAL 1 1 0.150
+PRODUCTION_MATRIX_END
+</pre></div>
+</div>
 </section>
 </section>
 <section id="loading-openmc-mgxs-files">

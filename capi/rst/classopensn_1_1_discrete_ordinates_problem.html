@@ -273,25 +273,36 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem15IsTimeDependentEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a8fc373eb8c0b1974682ed1f835e98098"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsTimeDependent</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem15IsTimeDependentEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Returns true if the problem is currently in time-dependent mode. </p>
+<dd><p>Switch to transient mode. </p>
+<p>If no angular flux is stored, it is reconstructed from the current steady state with the fission source divided by reconstruction_keff, the eigenvalue the state was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical states. The value must be finite and positive; it is not retained for later switches and does not scale the physical transient source. Collective over the problem ranks. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ac588f4fe20dd1a83bedbf3d1d2764c39"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Set the problem to time-dependent mode. </p>
+<dd><p>Switch to transient mode. </p>
+<p>If no angular flux is stored, it is reconstructed from the current steady state with the fission source divided by reconstruction_keff, the eigenvalue the state was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical states. The value must be finite and positive; it is not retained for later switches and does not scale the physical transient source. Collective over the problem ranks. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEd">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a0102cbd61051bd9720643c4f70942227"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reconstruction_keff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20SetTimeDependentModeEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Switch to transient mode. </p>
+<p>If no angular flux is stored, it is reconstructed from the current steady state with the fission source divided by reconstruction_keff, the eigenvalue the state was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical states. The value must be finite and positive; it is not retained for later switches and does not scale the physical transient source. Collective over the problem ranks. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1aad0704cfd1d03aeed1b3d5cd5e2b33"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetSteadyStateMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem18SetSteadyStateModeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Set the problem to steady-state mode. </p>
+<dd><p>Switch to transient mode. </p>
+<p>If no angular flux is stored, it is reconstructed from the current steady state with the fission source divided by reconstruction_keff, the eigenvalue the state was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical states. The value must be finite and positive; it is not retained for later switches and does not scale the physical transient source. Collective over the problem ranks. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem7SetTimeEd">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aefbe39411709f841611dbf92d7956e4e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTime</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem7SetTimeEd" title="Link to this definition"></a><br /></dt>
-<dd><p>Sets simulation time in seconds for time dependent problems. </p>
+<dd><p>Switch to transient mode. </p>
+<p>If no angular flux is stored, it is reconstructed from the current steady state with the fission source divided by reconstruction_keff, the eigenvalue the state was normalized with. Use 1.0 (as the no-argument overload does) for source-driven or critical states. The value must be finite and positive; it is not retained for later switches and does not scale the physical transient source. Collective over the problem ranks. </p>
 </dd></dl>
 
 </div>
@@ -426,6 +437,12 @@
 <dd><p>Validates that time-dependent mode may be enabled, given the current GPU, adjoint, geometry, and angular-flux-storage configuration. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem30ValidateNonStreamingDirectionsERK13BlockID2XSMap">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a5638ed3b702c2fadda21c98058761e85"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateNonStreamingDirections</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559.html#_CPPv4N6opensn13BlockID2XSMapE" title="opensn::BlockID2XSMap"><span class="n"><span class="pre">BlockID2XSMap</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_map</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem30ValidateNonStreamingDirectionsERK13BlockID2XSMap" title="Link to this definition"></a><br /></dt>
+<dd><p>Rejects sigma_t &lt;= 0 in groupsets whose XY quadrature has a direction with no in-plane component. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-solver-and-sweep-state">Solver and sweep state</p>
@@ -460,16 +477,16 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkMode">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ab21aa2b4a2e005f8feff99bdb06c0841"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetMode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkModeE" title="opensn::DiscreteOrdinatesProblem::SweepChunkMode"><span class="n"><span class="pre">SweepChunkMode</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">target_mode</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkMode" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkModed">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a549e23be32551a9a5a7309a5f68f8d23"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ResetMode</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkModeE" title="opensn::DiscreteOrdinatesProblem::SweepChunkMode"><span class="n"><span class="pre">SweepChunkMode</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">target_mode</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reconstruction_keff</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem9ResetModeE14SweepChunkModed" title="Link to this definition"></a><br /></dt>
 <dd><p>Rebuild WGS/AGS solver schemes after runtime configuration changes. </p>
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a722f6ae223170ec494237c57a64cf21e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReconstructAngularFluxFromSteadyState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEv" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEd">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aac323bda223e4e484eb542a065331d15"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReconstructAngularFluxFromSteadyState</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">reconstruction_keff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem37ReconstructAngularFluxFromSteadyStateEd" title="Link to this definition"></a><br /></dt>
 <dd><p>Reconstructs lagged angular fluxes from the converged steady-state scalar flux via a fixed-point iteration, holding phi/q at the converged steady-state value. </p>
-<p>Used when transitioning into time-dependent mode. </p>
+<p>Used when transitioning into time-dependent mode. If no angular flux was stored, the reconstructed distribution is rescaled per node and group to preserve the saved scalar flux. </p>
 </dd></dl>
 
 <dl class="cpp function">

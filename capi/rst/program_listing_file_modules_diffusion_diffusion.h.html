@@ -209,6 +209,14 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">num_local_dofs_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">num_global_dofs_</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Duplicate of opensn::mpi_comm owned by this solver, on which the matrix and KSP are created.</span>
+<span class="cm">   * PETSc keeps one SuperLU_DIST process grid per matrix communicator, and PETSc releases (at</span>
+<span class="cm">   * least through 3.24.5) the grid of a second factorization on the same communicator twice.</span>
+<span class="cm">   * A communicator per solver keeps coexisting direct diffusion solvers (e.g. WGDSA and TGDSA)</span>
+<span class="cm">   * from sharing that grid.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">petsc_comm_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">MPI_COMM_NULL</span><span class="p">;</span>
 <span class="w">  </span><span class="n">Mat</span><span class="w"> </span><span class="n">A_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">Vec</span><span class="w"> </span><span class="n">rhs_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">Vec</span><span class="w"> </span><span class="n">x_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>

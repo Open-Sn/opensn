@@ -181,7 +181,9 @@ Problem options available in Python include:
 ``use_precursors`` controls whether delayed-neutron precursor treatment is kept
 active for the problem. The default is ``True``. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
-prompt-only model.
+prompt-only model. With ``use_precursors=False``, delayed neutrons are omitted
+from steady-state and k-eigenvalue solves as well as from transients, which
+lowers :math:`k_\text{eff}` by approximately the delayed fraction.
 
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
 ``read_initial_condition_path`` reads restart data as an initial condition; this
@@ -561,6 +563,10 @@ Important behavior:
 
 * the last timestep is shortened automatically if needed so the solver lands
   exactly on ``stop_time``
+* each step solves for the state at :math:`t^n + \theta\Delta t`, so
+  time-dependent sources and boundary conditions (including on/off windows) are
+  evaluated there: at the end of the step for backward Euler and at the
+  midpoint for Crank-Nicolson (see :doc:`../theory/time_discretization`)
 * pre- and post-advance callbacks, if registered, are called around each
   internal timestep
 
@@ -676,8 +682,10 @@ summary that includes:
 * predicted and actual inventory change
 * inventory residual
 
-This is often the most direct way to check that a transient step is behaving
-sensibly.
+The rates are evaluated at :math:`t^n + \theta\Delta t`, where the theta scheme
+satisfies the discrete balance exactly, so the inventory residual is at the level
+of the iterative tolerances for any ``theta``. This is often the most direct way
+to check that a transient step is behaving sensibly.
 
 .. note::
 

@@ -324,7 +324,9 @@ flux storage, AGS behavior, and other global settings</p></li>
 <p><code class="docutils literal notranslate"><span class="pre">use_precursors</span></code> controls whether delayed-neutron precursor treatment is kept
 active for the problem. The default is <code class="docutils literal notranslate"><span class="pre">True</span></code>. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
-prompt-only model.</p>
+prompt-only model. With <code class="docutils literal notranslate"><span class="pre">use_precursors=False</span></code>, delayed neutrons are omitted
+from steady-state and k-eigenvalue solves as well as from transients, which
+lowers <span class="math notranslate nohighlight">\(k_\text{eff}\)</span> by approximately the delayed fraction.</p>
 <p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code> reads a full restart for continuing a compatible solve.
 <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> reads restart data as an initial condition; this
 is the option to use when a <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> should
@@ -679,6 +681,10 @@ reaches <code class="docutils literal notranslate"><span class="pre">stop_time</
 <ul class="simple">
 <li><p>the last timestep is shortened automatically if needed so the solver lands
 exactly on <code class="docutils literal notranslate"><span class="pre">stop_time</span></code></p></li>
+<li><p>each step solves for the state at <span class="math notranslate nohighlight">\(t^n + \theta\Delta t\)</span>, so
+time-dependent sources and boundary conditions (including on/off windows) are
+evaluated there: at the end of the step for backward Euler and at the
+midpoint for Crank-Nicolson (see <a class="reference internal" href="../theory/time_discretization.html"><span class="doc">Time Discretization</span></a>)</p></li>
 <li><p>pre- and post-advance callbacks, if registered, are called around each
 internal timestep</p></li>
 </ul>
@@ -788,8 +794,10 @@ summary that includes:</p>
 <li><p>predicted and actual inventory change</p></li>
 <li><p>inventory residual</p></li>
 </ul>
-<p>This is often the most direct way to check that a transient step is behaving
-sensibly.</p>
+<p>The rates are evaluated at <span class="math notranslate nohighlight">\(t^n + \theta\Delta t\)</span>, where the theta scheme
+satisfies the discrete balance exactly, so the inventory residual is at the level
+of the iterative tolerances for any <code class="docutils literal notranslate"><span class="pre">theta</span></code>. This is often the most direct way
+to check that a transient step is behaving sensibly.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When a transient result looks suspicious, the balance table is often the

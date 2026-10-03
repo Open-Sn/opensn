@@ -119,6 +119,17 @@
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">operator</span><span class="p">()(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pt</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">pt</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
 <span class="p">};</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Factor that converts an integral computed with the weights above into a physical integral.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The cylindrical and spherical weights omit the angular extent of the coordinate system, so</span>
+<span class="cm"> * integrals built from them are per radian in RZ and per steradian in 1D spherical geometry.</span>
+<span class="cm"> * The physical measure is 2*pi*r in RZ and 4*pi*r^2 in 1D spherical geometry.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \return 2*pi for cylindrical, 4*pi for spherical, and 1 for Cartesian coordinates.</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">IntegralMeasureScale</span><span class="p">(</span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_sys</span><span class="p">);</span>
+
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>
 </div>

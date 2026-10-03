@@ -200,6 +200,9 @@
 <span class="cm"> */</span>
 <span class="n">Mat</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
 
+<span class="c1">/// Creates a general square matrix, as above, on the communicator `comm`.</span>
+<span class="n">Mat</span><span class="w"> </span><span class="nf">CreateSquareMatrix</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">local_size</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">global_size</span><span class="p">);</span>
+
 <span class="cm">/**</span>
 <span class="cm"> * Creates a general square matrix.</span>
 <span class="cm"> *</span>

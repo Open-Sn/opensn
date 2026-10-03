@@ -67,11 +67,12 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
@@ -364,6 +365,13 @@ given by</p>
 <span class="math notranslate nohighlight">\(\xi=\vec{\Omega} \cdot \vec{e}_r=\sqrt{1-\mu^2}\cos{\varphi}\)</span>,
 <span class="math notranslate nohighlight">\(\eta=\vec{\Omega} \cdot \vec{e}_\theta=\sqrt{1-\mu^2}\sin{\varphi}\)</span>,
 <span class="math notranslate nohighlight">\(\mu=\vec{\Omega}\cdot \vec{e}_z\)</span></p>
+<p>In OpenSn’s RZ discretization the cell integrals are formed with the weight
+<span class="math notranslate nohighlight">\(r\)</span> and the azimuthal factor <span class="math notranslate nohighlight">\(2\pi\)</span> is applied when integrated
+quantities are reported, so reported rates use the physical volume element
+<span class="math notranslate nohighlight">\(d^3r = 2\pi r\,dr\,dz\)</span> and the corresponding surface element. In the RZ
+angular quadrature, the direction components are stored as
+<span class="math notranslate nohighlight">\((\xi, \mu, \eta)\)</span> in the <span class="math notranslate nohighlight">\((x, y, z)\)</span> slots, with the symmetric
+out-of-plane component <span class="math notranslate nohighlight">\(\eta \geq 0\)</span>.</p>
 </section>
 <section id="references">
 <h2><span class="section-number">1.8. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>

@@ -31,6 +31,13 @@ Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rate
 
   .. math:: \mathcal{L}^\pm = \sum_{g \in \mathbb{G}} \int_\text{BoI} d^2r \, j^{\pm,g}(\vec{r},t)
 
+These integrals are taken over the physical extent of the model. In reduced
+Cartesian geometries the ignored dimensions are infinite, so 2D results are per
+unit length in :math:`z` and 1D slab results are per unit area normal to
+:math:`z`; in RZ geometry the volume element is :math:`d^3r = 2\pi r\,dr\,dz`,
+so results cover the full revolution. See :ref:`normalization_conventions` for
+the corresponding source conventions.
+
 For net leakage rates across a surface of interest (SoI), that is, in
 the interior of the domain, we simply use the three first-order flux
 moments:

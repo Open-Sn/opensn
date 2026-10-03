@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5. Iterative Solution Algorithms &mdash; OpenSn 1.0.1 documentation</title>
+  <title>6. Iterative Solution Algorithms &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="6. Parallel Sweeps" href="parallelization.html" />
-    <link rel="prev" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" href="outcome.html" /> 
+    <link rel="next" title="7. Parallel Sweeps" href="parallelization.html" />
+    <link rel="prev" title="5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" href="outcome.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,33 +57,34 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="outcome.html">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Iterative Solution Algorithms</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#multigroup-solution-process-background">5.1. Multigroup Solution Process: Background</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#source-iteration-and-krylov-solvers">5.2. Source Iteration and Krylov Solvers</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#source-iteration">5.2.1. Source Iteration:</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#krylov-subspace-method">5.2.2. Krylov Subspace Method:</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="outcome.html">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">6. Iterative Solution Algorithms</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#multigroup-solution-process-background">6.1. Multigroup Solution Process: Background</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#source-iteration-and-krylov-solvers">6.2. Source Iteration and Krylov Solvers</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#source-iteration">6.2.1. Source Iteration:</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#krylov-subspace-method">6.2.2. Krylov Subspace Method:</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#within-group-acceleration">5.3. Within-group Acceleration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">5.4. Thermal Upscattering Acceleration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#power-iterations">5.5. Power Iterations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">5.6. Acceleration of Power Iterations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#coarse-mesh-finite-difference-acceleration">5.7. Coarse-Mesh Finite Difference Acceleration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#restriction-and-energy-collapse">5.7.1. Restriction and energy collapse</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#coarse-diffusion-balance">5.7.2. Coarse diffusion balance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#matrix-form-and-coarse-solve">5.7.3. Matrix form and coarse solve</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#prolongation-and-damping">5.7.4. Prolongation and damping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cmfd-iteration-outline">5.7.5. CMFD Iteration Outline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#within-group-acceleration">6.3. Within-group Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">6.4. Thermal Upscattering Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#power-iterations">6.5. Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">6.6. Acceleration of Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coarse-mesh-finite-difference-acceleration">6.7. Coarse-Mesh Finite Difference Acceleration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#restriction-and-energy-collapse">6.7.1. Restriction and energy collapse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#coarse-diffusion-balance">6.7.2. Coarse diffusion balance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matrix-form-and-coarse-solve">6.7.3. Matrix form and coarse solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prolongation-and-damping">6.7.4. Prolongation and damping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmfd-iteration-outline">6.7.5. CMFD Iteration Outline</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">5.8. Uncollided-flux Treatment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#references">5.9. References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">6.8. Uncollided-flux Treatment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">6.9. References</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
@@ -109,7 +110,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5. </span>Iterative Solution Algorithms</li>
+      <li class="breadcrumb-item active"><span class="section-number">6. </span>Iterative Solution Algorithms</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -119,12 +120,12 @@
            <div itemprop="articleBody">
              
   <section id="iterative-solution-algorithms">
-<h1><span class="section-number">5. </span>Iterative Solution Algorithms<a class="headerlink" href="#iterative-solution-algorithms" title="Link to this heading"></a></h1>
+<h1><span class="section-number">6. </span>Iterative Solution Algorithms<a class="headerlink" href="#iterative-solution-algorithms" title="Link to this heading"></a></h1>
 <p>The Adams-Larsen review paper is a good reference for fast iterative
 schemes for discrete-ordinates particle transport calculations
 <span id="id1">Adams and Larsen [<a class="reference internal" href="#id53" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
 <section id="multigroup-solution-process-background">
-<h2><span class="section-number">5.1. </span>Multigroup Solution Process: Background<a class="headerlink" href="#multigroup-solution-process-background" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.1. </span>Multigroup Solution Process: Background<a class="headerlink" href="#multigroup-solution-process-background" title="Link to this heading"></a></h2>
 <p>The transport equation needs to be solved for each group <span class="math notranslate nohighlight">\(g\)</span>
 (<span class="math notranslate nohighlight">\(1 \le g \le G\)</span>). In operator notation, this is written as</p>
 <div class="math notranslate nohighlight">
@@ -158,7 +159,7 @@ thermal iteration:</p>
 </div></blockquote>
 </section>
 <section id="source-iteration-and-krylov-solvers">
-<h2><span class="section-number">5.2. </span>Source Iteration and Krylov Solvers<a class="headerlink" href="#source-iteration-and-krylov-solvers" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.2. </span>Source Iteration and Krylov Solvers<a class="headerlink" href="#source-iteration-and-krylov-solvers" title="Link to this heading"></a></h2>
 <p>For each group, scattering within-group must also be resolved. Omitting
 the group indexing for brevity, the within-group problem can be stated
 as follows</p>
@@ -170,7 +171,7 @@ as follows</p>
 <p>where <span class="math notranslate nohighlight">\(Q\)</span> contains the external, downscattering, and upscattering
 contributions).</p>
 <section id="source-iteration">
-<h3><span class="section-number">5.2.1. </span>Source Iteration:<a class="headerlink" href="#source-iteration" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.2.1. </span>Source Iteration:<a class="headerlink" href="#source-iteration" title="Link to this heading"></a></h3>
 <p>In the Source Iteration (SI) method
 <span id="id2">Adams and Larsen [<a class="reference internal" href="#id53" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
 lagged at iteration <span class="math notranslate nohighlight">\(i\)</span> to yield the following iterative strategy</p>
@@ -200,7 +201,7 @@ These changes are not squared, so no square root is taken. The estimate is
 set to zero on the first iteration.</p>
 </section>
 <section id="krylov-subspace-method">
-<h3><span class="section-number">5.2.2. </span>Krylov Subspace Method:<a class="headerlink" href="#krylov-subspace-method" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.2.2. </span>Krylov Subspace Method:<a class="headerlink" href="#krylov-subspace-method" title="Link to this heading"></a></h3>
 <p>The original problem can be recast as</p>
 <div class="math notranslate nohighlight">
 \[\Phi = D L^{-1} \left(M\Sigma \Phi  + Q_{\text{ext}}\right)\]</div>
@@ -218,7 +219,7 @@ fashion to solve such a system
 </section>
 </section>
 <section id="within-group-acceleration">
-<h2><span class="section-number">5.3. </span>Within-group Acceleration<a class="headerlink" href="#within-group-acceleration" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.3. </span>Within-group Acceleration<a class="headerlink" href="#within-group-acceleration" title="Link to this heading"></a></h2>
 <p>In optically thick regions with a significant amount of scattering, the
 Source Iteration process can be slow. From spectral error analyses, the
 slowest-decaying error modes are diffusive modes. Hence, the idea to
@@ -256,7 +257,7 @@ well, using the Modified Interior Penalty (MIP) formalism
 <span id="id13">Wang and Ragusa [<a class="reference internal" href="#id162" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id133" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
 </section>
 <section id="thermal-upscattering-acceleration">
-<h2><span class="section-number">5.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
 <p>In low-leakage configurations containing materials with low neutron
 absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
@@ -295,7 +296,7 @@ infinite medium calculation for each distinct material type.</p>
 </ol>
 </section>
 <section id="power-iterations">
-<h2><span class="section-number">5.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
 <p>For eigenvalue problems, the problem has the following form:</p>
 <div class="math notranslate nohighlight">
 \[L\Psi = M\Sigma\Phi + \frac{1}{k_\text{eff}}MF\Phi\]</div>
@@ -316,7 +317,7 @@ for each of these iterative schemes):</p>
 \[L\Psi^{\text{(o+1,$i$+1)}} = M\Sigma\Phi^{\text{(o+1,$i$)}} + \frac{1}{k^{\text{(o)}}_\text{eff}} M S_f^{\text{(o)}} \,.\]</div>
 </section>
 <section id="acceleration-of-power-iterations">
-<h2><span class="section-number">5.6. </span>Acceleration of Power Iterations<a class="headerlink" href="#acceleration-of-power-iterations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.6. </span>Acceleration of Power Iterations<a class="headerlink" href="#acceleration-of-power-iterations" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line">Power Iterations can be slow to converge when the dominance ratio
 (ratio of the largest eigenvalue to the second largest eigenvalue) is
@@ -374,7 +375,7 @@ convergence of the transport problem.</p>
 </div></blockquote>
 </section>
 <section id="coarse-mesh-finite-difference-acceleration">
-<h2><span class="section-number">5.7. </span>Coarse-Mesh Finite Difference Acceleration<a class="headerlink" href="#coarse-mesh-finite-difference-acceleration" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.7. </span>Coarse-Mesh Finite Difference Acceleration<a class="headerlink" href="#coarse-mesh-finite-difference-acceleration" title="Link to this heading"></a></h2>
 <p>OpenSn provides Coarse-Mesh Finite Difference (CMFD) acceleration for
 discrete-ordinates power iteration. The implementation is a nonlinear
 low-order acceleration scheme. During each outer power iteration OpenSn
@@ -436,7 +437,7 @@ are made consistent with the latest transport sweep, how the coarse
 k-eigenvalue problem is solved, and how the coarse solution is prolonged
 back to the fine transport unknowns.</p>
 <section id="restriction-and-energy-collapse">
-<h3><span class="section-number">5.7.1. </span>Restriction and energy collapse<a class="headerlink" href="#restriction-and-energy-collapse" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.7.1. </span>Restriction and energy collapse<a class="headerlink" href="#restriction-and-energy-collapse" title="Link to this heading"></a></h3>
 <p>Let <span class="math notranslate nohighlight">\(\phi_{i,n,g_f}\)</span> denote the transport scalar flux in fine cell
 <span class="math notranslate nohighlight">\(i\)</span>, node <span class="math notranslate nohighlight">\(n\)</span>, and transport group <span class="math notranslate nohighlight">\(g_f\)</span>, and let
 <span class="math notranslate nohighlight">\(V_{i,n}\)</span> denote the nodal volume contribution from the transport
@@ -518,7 +519,7 @@ responsible for making the assembled face current match the latest
 transport current at the current iterate.</p>
 </section>
 <section id="coarse-diffusion-balance">
-<h3><span class="section-number">5.7.2. </span>Coarse diffusion balance<a class="headerlink" href="#coarse-diffusion-balance" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.7.2. </span>Coarse diffusion balance<a class="headerlink" href="#coarse-diffusion-balance" title="Link to this heading"></a></h3>
 <p>For each coarse cell <span class="math notranslate nohighlight">\(I\)</span> and coarse group <span class="math notranslate nohighlight">\(g_c\)</span>, OpenSn
 assembles a balance equation of the form</p>
 <div class="math notranslate nohighlight">
@@ -733,7 +734,7 @@ low-order correction is actually consistent with transport. Either way,
 the gate also requires the current correction to not have been skipped.</p>
 </section>
 <section id="matrix-form-and-coarse-solve">
-<h3><span class="section-number">5.7.3. </span>Matrix form and coarse solve<a class="headerlink" href="#matrix-form-and-coarse-solve" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.7.3. </span>Matrix form and coarse solve<a class="headerlink" href="#matrix-form-and-coarse-solve" title="Link to this heading"></a></h3>
 <p>The assembled system may be written as</p>
 <div class="math notranslate nohighlight">
 \[A(\Phi^{\text{HO}})\Phi
@@ -779,7 +780,7 @@ k^{(m)}
 <p>The production sum is reduced globally over all MPI ranks.</p>
 </section>
 <section id="prolongation-and-damping">
-<h3><span class="section-number">5.7.4. </span>Prolongation and damping<a class="headerlink" href="#prolongation-and-damping" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.7.4. </span>Prolongation and damping<a class="headerlink" href="#prolongation-and-damping" title="Link to this heading"></a></h3>
 <p>After the coarse solve, OpenSn applies a multiplicative scalar-flux
 correction to the high-order transport iterate. First, the coarse
 solution is relaxed toward the restricted post-transport coarse flux.
@@ -827,7 +828,7 @@ with the high-order transport state rather than stagnating on a stale
 accelerated value.</p>
 </section>
 <section id="cmfd-iteration-outline">
-<h3><span class="section-number">5.7.5. </span>CMFD Iteration Outline<a class="headerlink" href="#cmfd-iteration-outline" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.7.5. </span>CMFD Iteration Outline<a class="headerlink" href="#cmfd-iteration-outline" title="Link to this heading"></a></h3>
 <p>CMFD is a power-iteration accelerator in OpenSn. For each outer power
 iteration:</p>
 <ol class="arabic simple">
@@ -863,7 +864,7 @@ and accelerates the all-groups scalar-flux balance.</p>
 </section>
 </section>
 <section id="uncollided-flux-treatment">
-<h2><span class="section-number">5.8. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.8. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
 <p>In streaming regions (low-density material), in regions with low amount
 of scattering, and with localized small sources, the <span class="math notranslate nohighlight">\(S_n\)</span> method
 will exhibit ray effects (angular discretization error). These ray
@@ -990,7 +991,7 @@ source in this problem.</p></li>
 </ol>
 </section>
 <section id="references">
-<h2><span class="section-number">5.9. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.9. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <div class="docutils container" id="id24">
 <div role="list" class="citation-list">
 <div class="citation" id="id53" role="doc-biblioentry">
@@ -1084,8 +1085,8 @@ source in this problem.</p></li>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="outcome.html" class="btn btn-neutral float-left" title="4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="parallelization.html" class="btn btn-neutral float-right" title="6. Parallel Sweeps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="outcome.html" class="btn btn-neutral float-left" title="5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="parallelization.html" class="btn btn-neutral float-right" title="7. Parallel Sweeps" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

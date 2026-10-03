@@ -286,6 +286,13 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver11petsc_comm_E">
+<span class="target" id="classopensn_1_1_diffusion_solver_1addf241c29470f1d6e04c63dc6322304d"></span><span class="n"><span class="pre">MPI_Comm</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">petsc_comm_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">MPI_COMM_NULL</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver11petsc_comm_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Duplicate of <a class="reference internal" href="variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9.html#namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9"><span class="std std-ref">opensn::mpi_comm</span></a> owned by this solver, on which the matrix and KSP are created. </p>
+<p>PETSc keeps one SuperLU_DIST process grid per matrix communicator, and PETSc releases (at least through 3.24.5) the grid of a second factorization on the same communicator twice. A communicator per solver keeps coexisting direct diffusion solvers (e.g. <a class="reference internal" href="classopensn_1_1_w_g_d_s_a.html#classopensn_1_1_w_g_d_s_a"><span class="std std-ref">WGDSA</span></a> and <a class="reference internal" href="classopensn_1_1_t_g_d_s_a.html#classopensn_1_1_t_g_d_s_a"><span class="std std-ref">TGDSA</span></a>) from sharing that grid. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver2A_E">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a2132d3a20dbef2f5d6e70979fed2a34b"></span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">A_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver2A_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>

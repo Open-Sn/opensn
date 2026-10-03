@@ -58,3 +58,10 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_spherical_spatial_weight_function`
 
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a6b1ef404518fe9d0cac8d922eee7c9e4`
+

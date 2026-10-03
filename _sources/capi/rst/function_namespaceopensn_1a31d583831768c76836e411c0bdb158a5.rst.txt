@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a31d583831768c76836e411c0bdb158a5:
+
+Function opensn::IsTimeInWindow
+===============================
+
+- Defined in :ref:`file_framework_math_math_time_stepping.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::IsTimeInWindow(double, double, double)
+   :project: opensn

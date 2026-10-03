@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -28,8 +28,8 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="5. Iterative Solution Algorithms" href="iterative.html" />
-    <link rel="prev" title="3. Multigroup Cross-Section Data" href="cross_sections.html" /> 
+    <link rel="next" title="6. Iterative Solution Algorithms" href="iterative.html" />
+    <link rel="prev" title="4. Multigroup Cross-Section Data" href="cross_sections.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -57,11 +57,12 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Theory Manual</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="background.html">1. Background on the Linear Boltzmann Equation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discretization.html">2. Phase-space Discretization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">3. Multigroup Cross-Section Data</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">4. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative.html">5. Iterative Solution Algorithms</a></li>
-<li class="toctree-l2"><a class="reference internal" href="parallelization.html">6. Parallel Sweeps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="adjoint.html">7. Adjoint Flux Formalism</a></li>
+<li class="toctree-l2"><a class="reference internal" href="time_discretization.html">3. Time Discretization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cross_sections.html">4. Multigroup Cross-Section Data</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">5. Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative.html">6. Iterative Solution Algorithms</a></li>
+<li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint.html">8. Adjoint Flux Formalism</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
@@ -87,7 +88,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">Theory Manual</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</li>
+      <li class="breadcrumb-item active"><span class="section-number">5. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -97,7 +98,7 @@
            <div itemprop="articleBody">
              
   <section id="outcome-of-a-simulation-particle-distribution-reaction-rates-and-leakage-rates">
-<h1><span class="section-number">4. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates<a class="headerlink" href="#outcome-of-a-simulation-particle-distribution-reaction-rates-and-leakage-rates" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5. </span>Outcome of a Simulation: Particle Distribution, Reaction Rates, and Leakage Rates<a class="headerlink" href="#outcome-of-a-simulation-particle-distribution-reaction-rates-and-leakage-rates" title="Link to this heading"></a></h1>
 <div class="line-block">
 <div class="line">Deterministic approaches for solving the linear Boltzmann equation
 yield the global solution in every spatial cell and in every energy
@@ -132,6 +133,12 @@ subset of the energy groups <span class="math notranslate nohighlight">\(\mathbb
 <div class="math notranslate nohighlight">
 \[\mathcal{L}^\pm = \sum_{g \in \mathbb{G}} \int_\text{BoI} d^2r \, j^{\pm,g}(\vec{r},t)\]</div>
 </div></blockquote>
+<p>These integrals are taken over the physical extent of the model. In reduced
+Cartesian geometries the ignored dimensions are infinite, so 2D results are per
+unit length in <span class="math notranslate nohighlight">\(z\)</span> and 1D slab results are per unit area normal to
+<span class="math notranslate nohighlight">\(z\)</span>; in RZ geometry the volume element is <span class="math notranslate nohighlight">\(d^3r = 2\pi r\,dr\,dz\)</span>,
+so results cover the full revolution. See <a class="reference internal" href="../userguide/boundary_conditions_sources.html#normalization-conventions"><span class="std std-ref">Normalization and Units</span></a> for
+the corresponding source conventions.</p>
 <p>For net leakage rates across a surface of interest (SoI), that is, in
 the interior of the domain, we simply use the three first-order flux
 moments:</p>
@@ -152,8 +159,8 @@ moments:</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cross_sections.html" class="btn btn-neutral float-left" title="3. Multigroup Cross-Section Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="iterative.html" class="btn btn-neutral float-right" title="5. Iterative Solution Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="cross_sections.html" class="btn btn-neutral float-left" title="4. Multigroup Cross-Section Data" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="iterative.html" class="btn btn-neutral float-right" title="6. Iterative Solution Algorithms" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::ComputeBalanceTable &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::IsTimeInWindow &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::ComputeFissionProduction" href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html" />
-    <link rel="prev" title="Function opensn::ComputeBalance" href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html" /> 
+    <link rel="next" title="Function opensn::IterationStatusFromSolve" href="function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78.html" />
+    <link rel="prev" title="Function opensn::IsPositive" href="function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -111,7 +111,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1003ac6b77f9886c19dfdfd94c977d46.html">Function opensn::CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem&amp;, unsigned int, unsigned int, const CMFDCoarseMesh&amp;, const std::vector&lt;double&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a97d808c24531d22343e840533a950f11.html">Function opensn::CommunicateGhostEntries</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html">Function opensn::ComputeBalance</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ComputeBalanceTable</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2c8745b535a9a21dc512fc3e3cc02e60.html">Function opensn::ComputeBalanceTable</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html">Function opensn::ComputeFissionProduction</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aee9196a158eb2c2f70975ad9ceaaa3a5.html">Function opensn::ComputeFissionRate</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad137c5d303e39cb4af7e7e2bebd821a1.html">Function opensn::ComputeGroupBlockSize</a></li>
@@ -134,6 +134,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d036a041ad41ba72c34a1f49b9d02be.html">Function opensn::CreateCommonKrylovSolverSetup</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4aeab78f422da7c681a978e79d5070bd.html">Template Function opensn::CreateObject</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8d9391911f669455e1acd1fd49643868.html">Function opensn::CreateSquareMatrix(PetscInt, PetscInt)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3ec2beedc7b877057ebf34c938402ea5.html">Function opensn::CreateSquareMatrix(MPI_Comm, PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2bdc26e2893394e99294a66ae0d46af5.html">Function opensn::CreateSquareMatrix(Mat&amp;, PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa23a89f962cc2d2ad9cc7d31bdc2b47b.html">Function opensn::CreateVector(PetscInt, PetscInt)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a19f6abef3b4a8567173206de39d6031d.html">Function opensn::CreateVector(Vec&amp;, PetscInt, PetscInt)</a></li>
@@ -196,12 +197,14 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2603b50ede73cc62a97d092346a976af.html">Function opensn::Initialize</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4a943cd4ab43ee0c8732ea13052460f8.html">Function opensn::InitMatrixSparsity(Mat&amp;, const std::vector&lt;int64_t&gt;&amp;, const std::vector&lt;int64_t&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae3c19e76a3093fc6b02efdd9c3e32f23.html">Function opensn::InitMatrixSparsity(Mat&amp;, int64_t, int64_t)</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a6b1ef404518fe9d0cac8d922eee7c9e4.html">Function opensn::IntegralMeasureScale</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a18b5e25b2eb4c7f42b6018278d5073dc.html">Template Function opensn::Inverse</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a95d6f66ba869623b59a1a1b78148d94f.html">Template Function opensn::InverseGEPivoting</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aba39c6729aaf37d65540f18f2ee63fcc.html">Function opensn::InvertMatrix(const std::vector&lt;std::vector&lt;double&gt;&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a90a066c315750af6f6c781392a5a2e2c.html">Function opensn::InvertMatrix(const NDArray&lt;double, 2&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac7c0232212b4c28d47595e8520281d22.html">Function opensn::IsNonNegative</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5.html">Function opensn::IsPositive</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::IsTimeInWindow</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78.html">Function opensn::IterationStatusFromSolve</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1afb4b87f00f6d07f1d345f2a018f5c9d7.html">Function opensn::IterationStatusName</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1a772889c5ca897ef33121c36b8ebfd4.html">Function opensn::KEigenKSPMonitor</a></li>
@@ -343,7 +346,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::ComputeBalanceTable</li>
+      <li class="breadcrumb-item active">Function opensn::IsTimeInWindow</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -352,17 +355,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-computebalancetable">
-<span id="exhale-function-namespaceopensn-1a0d422d04938d9065c221644e80c17146"></span><h1>Function opensn::ComputeBalanceTable<a class="headerlink" href="#function-opensn-computebalancetable" title="Link to this heading"></a></h1>
+  <section id="function-opensn-istimeinwindow">
+<span id="exhale-function-namespaceopensn-1a31d583831768c76836e411c0bdb158a5"></span><h1>Function opensn::IsTimeInWindow<a class="headerlink" href="#function-opensn-istimeinwindow" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_compute_discrete_ordinates_compute.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-compute-discrete-ordinates-compute-h"><span class="std std-ref">File discrete_ordinates_compute.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_framework_math_math_time_stepping.h.html#file-framework-math-math-time-stepping-h"><span class="std std-ref">File math_time_stepping.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19ComputeBalanceTableER24DiscreteOrdinatesProblemd">
-<span class="target" id="namespaceopensn_1a0d422d04938d9065c221644e80c17146"></span><a class="reference internal" href="structopensn_1_1_balance_table.html#_CPPv4N6opensn12BalanceTableE" title="opensn::BalanceTable"><span class="n"><span class="pre">BalanceTable</span></span></a><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ComputeBalanceTable</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">scaling_factor</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.0</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19ComputeBalanceTableER24DiscreteOrdinatesProblemd" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14IsTimeInWindowEddd">
+<span class="target" id="namespaceopensn_1a31d583831768c76836e411c0bdb158a5"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">IsTimeInWindow</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">time</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">start_time</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">end_time</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14IsTimeInWindowEddd" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true if <code class="docutils literal notranslate"><span class="pre">time</span></code> lies in the closed window [start_time, end_time]. </p>
+<p>The comparison allows a relative round-off tolerance so that times accumulated by repeated time steps (e.g. 20 steps of 0.05 giving 1.0000000000000002) are classified the same as the exact time. The tolerance is 1e-12 times the larger magnitude of the evaluation time and the finite bound, with no minimum absolute tolerance. Infinite window bounds are supported. </p>
+</dd></dl>
 
 </section>
 </section>
@@ -371,8 +376,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1a34bfa5e3ac31f79a84eb9e4fdce91166.html" class="btn btn-neutral float-left" title="Function opensn::ComputeBalance" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44.html" class="btn btn-neutral float-right" title="Function opensn::ComputeFissionProduction" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1a1a389594753619fc6b1d544485f4f3c5.html" class="btn btn-neutral float-left" title="Function opensn::IsPositive" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1a9795aed06169ce5eaa2333046d17eb78.html" class="btn btn-neutral float-right" title="Function opensn::IterationStatusFromSolve" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
