@@ -8,6 +8,7 @@ Theory Manual
 
     background
     discretization
+    time_discretization
     cross_sections
     outcome
     iterative

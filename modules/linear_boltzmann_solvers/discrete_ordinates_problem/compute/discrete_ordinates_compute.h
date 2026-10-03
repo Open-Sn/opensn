@@ -27,7 +27,17 @@ struct BalanceTable
   std::optional<double> inventory_residual;
 };
 
-BalanceTable ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem, double scaling_factor = 1.0);
+/**
+ * Compute the global particle balance table.
+ *
+ * In time-dependent mode, the initial and final inventories are computed from the angular flux
+ * unless initial_phi and final_phi are given, in which case they are computed from those scalar
+ * flux vectors.
+ */
+BalanceTable ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
+                                 double scaling_factor = 1.0,
+                                 const std::vector<double>* initial_phi = nullptr,
+                                 const std::vector<double>* final_phi = nullptr);
 
 /// Compute balance
 void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor = 1.0);

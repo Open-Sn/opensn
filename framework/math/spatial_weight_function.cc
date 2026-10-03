@@ -4,6 +4,8 @@
 #include "framework/math/spatial_weight_function.h"
 #include <stdexcept>
 
+#include <cmath>
+
 namespace opensn
 {
 
@@ -18,6 +20,22 @@ SpatialWeightFunction::FromCoordinateType(CoordinateSystemType coord_sys)
     return std::make_shared<CylindricalSpatialWeightFunction>();
   else
     throw std::runtime_error("Undefined coordinate system type");
+}
+
+double
+IntegralMeasureScale(CoordinateSystemType coord_sys)
+{
+  switch (coord_sys)
+  {
+    case CoordinateSystemType::CARTESIAN:
+      return 1.0;
+    case CoordinateSystemType::CYLINDRICAL:
+      return 2.0 * M_PI;
+    case CoordinateSystemType::SPHERICAL:
+      return 4.0 * M_PI;
+    default:
+      throw std::runtime_error("Undefined coordinate system type");
+  }
 }
 
 } // namespace opensn

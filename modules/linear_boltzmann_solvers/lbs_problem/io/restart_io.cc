@@ -16,6 +16,8 @@ namespace opensn
 namespace
 {
 
+constexpr unsigned int PRECURSOR_NODE_LAYOUT_VERSION = 2;
+
 bool
 ReadSizedDoubleVector(hid_t file_id,
                       const std::string& dataset_name,
@@ -41,6 +43,7 @@ ReadPrecursorVector(hid_t file_id,
                     std::vector<double>& destination,
                     size_t expected_size,
                     const LBSProblem& problem,
+                    unsigned int restart_format_version,
                     bool allow_size_remap)
 {
   std::vector<double> values;
@@ -48,39 +51,52 @@ ReadPrecursorVector(hid_t file_id,
   if (not success)
     return false;
 
-  if (values.size() == expected_size)
+  const bool node_layout = restart_format_version >= PRECURSOR_NODE_LAYOUT_VERSION;
+  if (node_layout and values.size() == expected_size)
   {
     destination = std::move(values);
     return true;
   }
 
-  OpenSnInvalidArgumentIf(not allow_size_remap,
+  // Precursors are stored per spatial node (index node * J + j). Files written before this layout
+  // stored one value per cell and family; expand those to the nodes of each cell.
+  const auto& grid = problem.GetGrid();
+  const auto& discretization = problem.GetSpatialDiscretization();
+  const size_t num_local_nodes = discretization.GetNumLocalNodes();
+  const size_t num_local_cells = grid->GetLocalCellCount();
+  const size_t num_layout_entities = node_layout ? num_local_nodes : num_local_cells;
+  OpenSnInvalidArgumentIf(num_layout_entities == 0 or num_local_nodes == 0,
+                          problem.GetName() +
+                            ": cannot remap restart precursor data without local cells and nodes.");
+  OpenSnInvalidArgumentIf(
+    values.size() % num_layout_entities != 0 or expected_size % num_local_nodes != 0,
+    problem.GetName() + ": restart dataset `precursors_new` cannot be remapped from size " +
+      std::to_string(values.size()) + " to " + std::to_string(expected_size) + ".");
+
+  const size_t old_stride = values.size() / num_layout_entities;
+  const size_t new_stride = expected_size / num_local_nodes;
+  OpenSnInvalidArgumentIf(not allow_size_remap and old_stride != new_stride,
                           problem.GetName() + ": restart dataset `precursors_new` has size " +
                             std::to_string(values.size()) + " but expected " +
                             std::to_string(expected_size) + ".");
-
-  const auto& grid = problem.GetGrid();
-  const size_t num_local_cells = grid->GetLocalCellCount();
-  OpenSnInvalidArgumentIf(num_local_cells == 0,
-                          problem.GetName() +
-                            ": cannot remap restart precursor data without local cells.");
-  OpenSnInvalidArgumentIf(
-    values.size() % num_local_cells != 0 or expected_size % num_local_cells != 0,
-    problem.GetName() + ": restart dataset `precursors_new` cannot be remapped from size " +
-      std::to_string(values.size()) + " to " + std::to_string(expected_size) + " for " +
-      std::to_string(num_local_cells) + " local cells.");
-
-  const size_t old_stride = values.size() / num_local_cells;
-  const size_t new_stride = expected_size / num_local_cells;
+  if (not node_layout)
+    log.Log0Warning() << problem.GetName()
+                      << ": restart precursors use the former cell-averaged layout; expanding "
+                         "each cell value to the nodes of that cell.";
   const size_t copy_stride = std::min(old_stride, new_stride);
 
   std::vector<double> remapped(expected_size, 0.0);
   for (const auto& cell : grid->GetLocalCells())
   {
-    const size_t old_base = cell->local_id * old_stride;
-    const size_t new_base = cell->local_id * new_stride;
-    for (size_t j = 0; j < copy_stride; ++j)
-      remapped[new_base + j] = values[old_base + j];
+    const auto& cell_mapping = discretization.GetCellMapping(*cell);
+    for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
+    {
+      const auto node_id = discretization.MapDOFLocal(*cell, i);
+      const size_t old_base = (node_layout ? node_id : cell->local_id) * old_stride;
+      const size_t new_base = node_id * new_stride;
+      for (size_t j = 0; j < copy_stride; ++j)
+        remapped[new_base + j] = values[old_base + j];
+    }
   }
 
   destination = std::move(remapped);
@@ -105,6 +121,14 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
   {
     const size_t expected_phi_size = phi_old_local_.size();
     const size_t expected_precursor_size = precursor_new_local_.size();
+    unsigned int restart_format_version = 1;
+
+    success &= H5ReadOptionalAttribute<unsigned int>(
+      file.Id(), "restart_format_version", restart_format_version);
+    OpenSnInvalidArgumentIf(
+      restart_format_version == 0 or restart_format_version > PRECURSOR_NODE_LAYOUT_VERSION,
+      GetName() + ": unsupported restart format version " + std::to_string(restart_format_version) +
+        ". The newest supported version is " + std::to_string(PRECURSOR_NODE_LAYOUT_VERSION) + ".");
 
     if (H5Aexists(file.Id(), "mpi_size") > 0)
     {
@@ -140,16 +164,13 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
                                      precursor_new_local_,
                                      expected_precursor_size,
                                      *this,
+                                     restart_format_version,
                                      allow_transient_initialization_from_steady);
 
     double time = GetTime();
     double dt = GetTimeStep();
     double theta = GetTheta();
     bool adjoint = GetOptions().adjoint;
-    unsigned int restart_format_version = 1;
-
-    success &= H5ReadOptionalAttribute<unsigned int>(
-      file.Id(), "restart_format_version", restart_format_version);
     success &= H5ReadOptionalAttribute<double>(file.Id(), "time", time);
     success &= H5ReadOptionalAttribute<double>(file.Id(), "dt", dt);
     success &= H5ReadOptionalAttribute<double>(file.Id(), "theta", theta);
@@ -194,7 +215,7 @@ LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
   bool success = (file.Id() >= 0);
   if (file.Id() >= 0)
   {
-    constexpr unsigned int restart_format_version = 1;
+    constexpr unsigned int restart_format_version = PRECURSOR_NODE_LAYOUT_VERSION;
 
     success &=
       H5CreateAttribute<unsigned int>(file.Id(), "restart_format_version", restart_format_version);

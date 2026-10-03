@@ -16,7 +16,7 @@ double
 TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
                                         const std::vector<double>& nu_delayed_sigma_f,
                                         const double* phi,
-                                        std::uint64_t cell_local_id) const
+                                        std::size_t node_id) const
 {
   const double eff_dt = lbs_problem_.GetTheta() * lbs_problem_.GetTimeStep();
 
@@ -43,19 +43,19 @@ TransientSourceFunction::DelayedFission(const PrecursorList& precursors,
       }
 
   // Contribution from the decay of precursor inventory accumulated prior to this time step
-  // (C_j(t_n)). This term is independent of the flux being solved for, so it must be requested
-  // only for RHS/source diagnostics and not for inner LHS-operator applications.
+  // (C_j(t_n)) at this node. This term is independent of the flux being solved for, so it must
+  // be requested only for RHS/source diagnostics and not for inner LHS-operator applications.
   if (apply_previous_precursor_src_ and not precursors.empty())
   {
     const auto& precursor_old_local = lbs_problem_.GetPrecursorsOldLocal();
     const auto max_precursors = lbs_problem_.GetMaxPrecursorsPerMaterial();
-    const auto cell_base = cell_local_id * max_precursors;
+    const auto node_base = node_id * max_precursors;
     for (std::size_t j = 0; j < precursors.size(); ++j)
     {
       const auto& precursor = precursors[j];
       const double coeff = precursor.emission_spectrum[g_] * precursor.decay_constant /
                            (1.0 + eff_dt * precursor.decay_constant);
-      value += coeff * precursor_old_local[cell_base + j];
+      value += coeff * precursor_old_local[node_base + j];
     }
   }
 

@@ -10,6 +10,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/parameters/input_parameters.h"
+#include "framework/math/math_time_stepping.h"
 #include <memory>
 #include <limits>
 
@@ -174,7 +175,7 @@ VolumetricSource::Evaluate(const Cell& cell,
 bool
 VolumetricSource::IsActive(double time) const
 {
-  return time >= start_time_ && time <= end_time_;
+  return IsTimeInWindow(time, start_time_, end_time_);
 }
 
 } // namespace opensn

@@ -7,6 +7,7 @@
 #include "framework/runtime.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/hdf_utils.h"
+#include "framework/math/spatial_weight_function.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
@@ -581,6 +582,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   std::map<std::string, std::vector<uint64_t>> cell_map, node_map;
   std::map<std::string, std::vector<double>> x_map, y_map, z_map;
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
+  const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
 
   for (const auto& cell : grid->GetLocalCells())
   {
@@ -636,6 +638,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
       cell_map[surface_name].push_back(cell->global_id);
       node_map[surface_name].push_back(num_face_nodes);
 
+      // Physical face integrals: curvilinear unit integrals omit the angular extent (2*pi in RZ).
       const auto& int_f_shape_i = fe_values.intS_shapeI[f];
       const auto& mass_matrix = fe_values.intS_shapeI_shapeJ[f];
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -643,7 +646,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         const auto i = cell_mapping.MapFaceNode(f, fi);
         const auto& node = node_locations[i];
         surface_face.node_indices.push_back(i);
-        surface_face.fe_shape.push_back(int_f_shape_i(i));
+        surface_face.fe_shape.push_back(measure_scale * int_f_shape_i(i));
         x_map[surface_name].push_back(node.x);
         y_map[surface_name].push_back(node.y);
         z_map[surface_name].push_back(node.z);
@@ -651,7 +654,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
         for (size_t fj = 0; fj < num_face_nodes; ++fj)
         {
           const auto j = cell_mapping.MapFaceNode(f, fj);
-          surface_face.mass_matrix.push_back(mass_matrix(i, j));
+          surface_face.mass_matrix.push_back(measure_scale * mass_matrix(i, j));
         }
       }
       surface_faces.push_back(std::move(surface_face));

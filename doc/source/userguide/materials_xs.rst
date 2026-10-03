@@ -274,10 +274,32 @@ For delayed-neutron problems, the file may additionally provide:
 * ``PRECURSOR_DECAY_CONSTANTS``
 * ``PRECURSOR_FRACTIONAL_YIELDS``
 
+``NU_DELAYED`` is the total delayed neutron yield per fission. The fractional
+yields partition it among the precursor families and are normalized on input to
+sum to one, so absolute delayed fractions :math:`\beta_j` may also be given;
+they are converted to :math:`\beta_j/\beta`.
+
 OpenSn also supports an alternative ``PRODUCTION_MATRIX`` representation for
 fission production. This is useful for advanced data preparation, but most user
 inputs are clearer when written in terms of ``SIGMA_F``, ``NU`` or
 ``NU_PROMPT``/``NU_DELAYED``, and the corresponding spectra.
+
+Each ``PRODUCTION_MATRIX`` entry is written as
+``GPRIME_G_VAL g_to g_from value``: the first index is the group in which
+fission neutrons are produced and the second is the group of the neutron that
+causes fission, so ``value`` is :math:`\nu\sigma_f^{g_\text{from} \to g_\text{to}}`.
+Despite the keyword name, the destination group comes first. For a separable
+spectrum, the entry for ``(g_to, g_from)`` is :math:`\chi^{g_\text{to}}
+\nu\sigma_f^{g_\text{from}}`:
+
+.. code-block:: text
+
+   PRODUCTION_MATRIX_BEGIN
+   GPRIME_G_VAL 0 0 0.275
+   GPRIME_G_VAL 0 1 0.330
+   GPRIME_G_VAL 1 0 0.125
+   GPRIME_G_VAL 1 1 0.150
+   PRODUCTION_MATRIX_END
 
 Loading OpenMC MGXS Files
 =========================

@@ -12,6 +12,12 @@ Q = Q_tot / V ~= 3.7408 cm^-3 s^-1.
 phi1 = phi(1s) = Q * (1 - e^{-1}) ~= 2.365
 phi2 = phi(2s) = phi1 * e^{-1} ~=0.870
 phi3 = phi(3s) = phi2*e^{-1} + 2*Q*(1-e^{-1}) ~= 5.049
+
+Gold value: the exact Crank-Nicolson (dt = 0.1) recurrence for this infinite
+medium, with sources evaluated at the step midpoint t^{n+1/2},
+    phi^{n+1/2} = (phi^n / (v dt/2) + Q(t^{n+1/2})) / (sigma_t + 1 / (v dt/2)),
+    phi^{n+1} = 2 phi^{n+1/2} - phi^n,
+gives phi(3s) = 5.051270 (analytic 5.049352).
 """
 
 import os

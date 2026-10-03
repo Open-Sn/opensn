@@ -121,8 +121,14 @@ CreateVectorWithGhosts(PetscInt local_size,
 Mat
 CreateSquareMatrix(PetscInt local_size, PetscInt global_size)
 {
+  return CreateSquareMatrix(opensn::mpi_comm, local_size, global_size);
+}
+
+Mat
+CreateSquareMatrix(MPI_Comm comm, PetscInt local_size, PetscInt global_size)
+{
   Mat A = nullptr;
-  OpenSnPETScCall(MatCreate(opensn::mpi_comm, &A));
+  OpenSnPETScCall(MatCreate(comm, &A));
   OpenSnPETScCall(MatSetType(A, MATMPIAIJ));
   OpenSnPETScCall(MatSetSizes(A, local_size, local_size, global_size, global_size));
 

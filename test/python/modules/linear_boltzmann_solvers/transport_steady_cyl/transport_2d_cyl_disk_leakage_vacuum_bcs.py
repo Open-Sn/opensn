@@ -83,12 +83,12 @@ if __name__ == "__main__":
     lkg_bottom = leakage["zmin"]
     lkg_top = leakage["zmax"]
     lkg_total = lkg_side + lkg_top + lkg_bottom
-    scale = 2.0 * math.pi
+    # ComputeLeakage reports RZ leakage for the full revolution.
 
-    top_val = float(lkg_top.item()) * scale
-    bottom_val = float(lkg_bottom.item()) * scale
-    side_val = float(lkg_side.item()) * scale
-    total_val = float(lkg_total.item()) * scale
+    top_val = float(lkg_top.item())
+    bottom_val = float(lkg_bottom.item())
+    side_val = float(lkg_side.item())
+    total_val = float(lkg_total.item())
 
     if rank == 0:
         volume = math.pi * rmax * rmax * (zmax - zmin)

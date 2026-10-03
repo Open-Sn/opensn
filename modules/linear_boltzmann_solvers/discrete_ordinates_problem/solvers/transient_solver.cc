@@ -81,7 +81,44 @@ TransientSolver::SetTheta(double theta)
 BalanceTable
 TransientSolver::ComputeBalanceTable() const
 {
-  return opensn::ComputeBalanceTable(*do_problem_);
+  // Before the first step there is no step to balance; report the current state.
+  if (step_ == 0 or phi_prev_local_.empty() or last_dt_ <= 0.0 or last_theta_ <= 0.0)
+    return opensn::ComputeBalanceTable(*do_problem_);
+
+  // The theta scheme satisfies (N^{n+1} - N^n) / dt = R(t^{n+theta}) exactly, where N is the
+  // inventory and R the net rate. Evaluate the rates at the intermediate state:
+  // phi^{n+theta} = theta phi^{n+1} + (1 - theta) phi^n and t^{n+theta} = t^n + theta dt. The
+  // outflow tallies come from the sweep of the last solve, which is at t^{n+theta}.
+  const double theta = last_theta_;
+  auto& phi_new = do_problem_->GetPhiNewLocal();
+  const std::vector<double> phi_final = phi_new;
+  const double time_final = do_problem_->GetTime();
+  const double dt_final = do_problem_->GetTimeStep();
+  const double theta_final = do_problem_->GetTheta();
+
+  BalanceTable table;
+  try
+  {
+    for (size_t i = 0; i < phi_new.size(); ++i)
+      phi_new[i] = theta * phi_final[i] + (1.0 - theta) * phi_prev_local_[i];
+    do_problem_->SetTimeStep(last_dt_);
+    do_problem_->SetTheta(theta);
+    do_problem_->SetTime(time_final - (1.0 - theta) * last_dt_);
+    table = opensn::ComputeBalanceTable(*do_problem_, 1.0, &phi_prev_local_, &phi_final);
+  }
+  catch (...)
+  {
+    phi_new = phi_final;
+    do_problem_->SetTimeStep(dt_final);
+    do_problem_->SetTheta(theta_final);
+    do_problem_->SetTime(time_final);
+    throw;
+  }
+  phi_new = phi_final;
+  do_problem_->SetTimeStep(dt_final);
+  do_problem_->SetTheta(theta_final);
+  do_problem_->SetTime(time_final);
+  return table;
 }
 
 std::shared_ptr<TransientSolver>
@@ -319,6 +356,9 @@ TransientSolver::Advance()
   else
     precursor_prev_local_.clear();
 
+  auto ags_solver = do_problem_->GetAGSSolver();
+  OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+
   // Ensure RHS time term is enabled for transient sweeps
   std::vector<std::shared_ptr<SweepWGSContext>> transient_sweep_contexts;
   transient_sweep_contexts.reserve(do_problem_->GetNumWGSSolvers());
@@ -334,25 +374,26 @@ TransientSolver::Advance()
     }
   }
 
-  do_problem_->SetTime(current_time_);
-
-  // Zero source moments before recomputing sources for this step
-  do_problem_->ZeroQMoments();
-
-  // Solve
-  do_problem_->SetPhiOldFrom(phi_prev_local_);
-  if (options.use_precursors)
-    do_problem_->SetPrecursorsOldFrom(precursor_prev_local_);
-  auto ags_solver = do_problem_->GetAGSSolver();
-  OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
   try
   {
+    // The theta scheme solves for the state at t^{n+theta}; evaluate time-dependent sources and
+    // boundaries there.
+    do_problem_->SetTime(current_time_ + theta * dt);
+
+    // Zero source moments before recomputing sources for this step
+    do_problem_->ZeroQMoments();
+
+    // Solve
+    do_problem_->SetPhiOldFrom(phi_prev_local_);
+    if (options.use_precursors)
+      do_problem_->SetPrecursorsOldFrom(precursor_prev_local_);
     ags_solver->Solve();
   }
   catch (...)
   {
     for (const auto& sweep_context : transient_sweep_contexts)
       sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
+    do_problem_->SetTime(current_time_);
     throw;
   }
 
@@ -377,14 +418,16 @@ TransientSolver::Advance()
                    "TS", step_ + 1, dt, current_time_ + dt, ags_summary, wgs_summaries);
   }
 
+  // The solve produced phi^{n+theta}. Advance the precursors with it, consistent with the delayed
+  // source used in the solve, before extrapolating the flux to t^{n+1}.
+  if (options.use_precursors)
+    StepPrecursors();
+
   // Compute t^{n+1}
   const double inv_theta = 1.0 / theta;
   const auto& phi_prev = phi_prev_local_;
   for (size_t i = 0; i < phi_new_local.size(); ++i)
     phi_new_local[i] = inv_theta * (phi_new_local[i] + (theta - 1.0) * phi_prev[i]);
-
-  if (options.use_precursors)
-    StepPrecursors();
 
   if (verbose_ and has_fissionable_material and options.use_precursors)
   {
@@ -393,6 +436,8 @@ TransientSolver::Advance()
   }
 
   current_time_ += dt;
+  last_dt_ = dt;
+  last_theta_ = theta;
   do_problem_->SetTime(current_time_);
   do_problem_->UpdatePsiOld();
   ++step_;
@@ -401,57 +446,46 @@ TransientSolver::Advance()
 void
 TransientSolver::StepPrecursors()
 {
+  // Theta scheme for dC_j/dt = gamma_j sum_g nu_d sigma_f,g phi_g - lambda_j C_j at each node,
+  // with phi = phi^{n+theta} (the current phi_new):
+  //   C_j^{n+theta} = (C_j^n + theta dt gamma_j F_d phi^{n+theta}) / (1 + theta dt lambda_j),
+  //   C_j^{n+1} = (C_j^{n+theta} - (1 - theta) C_j^n) / theta.
   const double theta = do_problem_->GetTheta();
   const double eff_dt = theta * do_problem_->GetTimeStep();
-  do_problem_->ZeroPrecursors();
-  auto& phi_new_local = do_problem_->GetPhiNewLocal();
+  const double inv_theta = 1.0 / theta;
+  const auto& phi_theta = do_problem_->GetPhiNewLocal();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
+  const auto& discretization = do_problem_->GetSpatialDiscretization();
+  const auto max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
 
-  // Uses phi_new and precursor_prev_local to compute precursor_new_local (theta-flavor)
   const auto& transport_views = do_problem_->GetCellTransportViews();
   for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
   {
-    const auto& fe_values = do_problem_->GetUnitCellMatrices()[cell->local_id];
-    const double cell_volume = transport_views[cell->local_id].GetVolume();
+    const auto& transport_view = transport_views[cell->local_id];
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
     const auto& precursors = xs->GetPrecursors();
     if (precursors.empty())
       continue;
 
     const auto& nu_delayed_sigma_f = xs->GetNuDelayedSigmaF();
-
-    // Compute delayed fission production
-    double delayed_fission = 0.0;
-    for (int i = 0; i < transport_views[cell->local_id].GetNumNodes(); ++i)
+    for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const size_t uk_map = transport_views[cell->local_id].MapDOF(i, 0, 0);
-      const double node_V_fraction = fe_values.intV_shapeI(i) / cell_volume;
+      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
+      double delayed_production = 0.0;
+      for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
+        delayed_production += nu_delayed_sigma_f[g] * phi_theta[uk_map + g];
 
-      for (int g = 0; g < do_problem_->GetNumGroups(); ++g)
-        delayed_fission += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g] * node_V_fraction;
-    }
-
-    // Loop over precursors
-    const auto& max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();
-    for (unsigned int j = 0; j < precursors.size(); ++j)
-    {
-      const size_t dof_map = cell->local_id * max_precursors + j;
-      const auto& precursor = precursors[j];
-      const double coeff = 1.0 / (1.0 + eff_dt * precursor.decay_constant);
-
-      // Contribute last time step precursors
-      precursor_new_local[dof_map] = coeff * precursor_prev_local_[dof_map];
-
-      // Contribute delayed fission production
-      precursor_new_local[dof_map] += coeff * eff_dt * precursor.fractional_yield * delayed_fission;
+      const size_t node_base = discretization.MapDOFLocal(*cell, i) * max_precursors;
+      for (unsigned int j = 0; j < precursors.size(); ++j)
+      {
+        const auto& precursor = precursors[j];
+        const double c_old = precursor_prev_local_[node_base + j];
+        const double c_theta = (c_old + eff_dt * precursor.fractional_yield * delayed_production) /
+                               (1.0 + eff_dt * precursor.decay_constant);
+        precursor_new_local[node_base + j] = inv_theta * (c_theta + (theta - 1.0) * c_old);
+      }
     }
   }
-
-  // Compute t^{n+1} value
-  const double inv_theta = 1.0 / theta;
-  for (size_t i = 0; i < precursor_new_local.size(); ++i)
-    precursor_new_local[i] =
-      inv_theta * (precursor_new_local[i] + (theta - 1.0) * precursor_prev_local_[i]);
 }
 
 bool
@@ -467,8 +501,12 @@ TransientSolver::ReadInitialConditionData()
   const double requested_dt = do_problem_->GetTimeStep();
   const double requested_theta = do_problem_->GetTheta();
 
+  double reconstruction_keff = 1.0;
   bool success = do_problem_->ReadRestartData(
-    {}, do_problem_->GetOptions().restart.read_initial_condition_path, true);
+    [&reconstruction_keff](hid_t file_id)
+    { return H5ReadOptionalAttribute<double>(file_id, "keff", reconstruction_keff); },
+    do_problem_->GetOptions().restart.read_initial_condition_path,
+    true);
   OpenSnInvalidArgumentIf(
     not success, GetName() + ": failed to read transient initial condition from restart data.");
 
@@ -477,7 +515,7 @@ TransientSolver::ReadInitialConditionData()
   current_time_ = do_problem_->GetTime();
   step_ = 0;
 
-  do_problem_->SetTimeDependentMode();
+  do_problem_->SetTimeDependentMode(reconstruction_keff);
 
   return success;
 }

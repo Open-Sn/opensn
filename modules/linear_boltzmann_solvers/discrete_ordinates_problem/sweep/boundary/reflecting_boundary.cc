@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/reflecting_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include <algorithm>
@@ -134,19 +135,14 @@ ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& grou
           break;
         case CoordinateSystemType::CYLINDRICAL:
         {
-          // left, top and bottom are regular reflecting
-          if (std::fabs(normal_.Dot(jhat)) > 0.999999 or normal_.Dot(ihat) < -0.999999)
-            omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
-          // right derives normal from omega_n
-          else if (normal_.Dot(ihat) > 0.999999)
-          {
-            Vector3 normal_star;
-            if (omega_n.Dot(normal_) > 0.0)
-              normal_star = Vector3(omega_n.x, 0.0, omega_n.z).Normalized();
-            else
-              normal_star = Vector3(-omega_n.x, 0.0, -omega_n.y).Normalized();
-            omega_reflected = omega_n - 2.0 * normal_star * omega_n.Dot(normal_star);
-          }
+          // Reflection is supported on the symmetry axis and on constant-z planes. Other
+          // orientations, such as the outer radial boundary, have no mirror direction in the
+          // RZ quadrature.
+          OpenSnInvalidArgumentIf(
+            std::fabs(normal_.Dot(jhat)) <= 0.999999 and normal_.Dot(ihat) >= -0.999999,
+            "ReflectingBoundary: Reflecting boundaries in RZ are supported only on the symmetry "
+            "axis (rmin) and on constant-z planes. Use vacuum or isotropic on other boundaries.");
+          omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
           break;
         }
         case CoordinateSystemType::CARTESIAN:
@@ -252,7 +248,9 @@ ReflectingBoundary::GetFollowingAngleSets(int groupset_id,
   const auto& omegas = angle_agg.GetQuadrature()->GetOmegas();
   for (const auto& angle_idx : angleset.GetAngleIndices())
   {
-    if (omegas[angle_idx].Dot(normal_) < 0.0)
+    // Incoming and tangent directions do not feed the reflected angle set. A tangent direction
+    // reflects onto itself, and treating it as outgoing would make its angle set depend on itself.
+    if (omegas[angle_idx].Dot(normal_) <= FACE_ORIENTATION_TOLERANCE)
       continue;
     auto reflected_angle_num = extra_data_[groupset_id].reflected_anglenum[angle_idx];
     following_angle_sets.insert(angle_agg.GetAngleSetForAngleIndex(reflected_angle_num));

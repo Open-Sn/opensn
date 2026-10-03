@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "framework/math/math_time_stepping.h"
+#include <algorithm>
+#include <cmath>
 #include <stdexcept>
 
 namespace opensn
@@ -30,5 +32,18 @@ SteppingMethodStringName(SteppingMethod method)
   }
 }
 #pragma GCC diagnostic pop
+
+bool
+IsTimeInWindow(const double time, const double start_time, const double end_time)
+{
+  constexpr double rel_tol = 1.0e-12;
+  const auto tol = [time](const double bound)
+  {
+    const double scale =
+      std::isfinite(bound) ? std::max(std::abs(time), std::abs(bound)) : std::abs(time);
+    return rel_tol * scale;
+  };
+  return time >= start_time - tol(start_time) and time <= end_time + tol(end_time);
+}
 
 } // namespace opensn

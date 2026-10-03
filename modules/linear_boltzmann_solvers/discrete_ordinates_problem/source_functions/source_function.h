@@ -50,7 +50,7 @@ public:
   virtual double DelayedFission(const PrecursorList& precursors,
                                 const std::vector<double>& nu_delayed_sigma_f,
                                 const double* phi,
-                                std::uint64_t cell_local_id) const;
+                                std::size_t node_id) const;
 
   virtual void AddAdditionalSources(const LBSGroupset& groupset,
                                     std::vector<double>& q,

@@ -3,12 +3,14 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/math/functions/function.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/runtime.h"
+#include "framework/math/math_time_stepping.h"
 #include <numeric>
 #include <limits>
 
@@ -120,11 +122,14 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       const auto M_inv = Inverse(fe_values.intV_shapeI_shapeJ);
       const auto node_wgts = Mult(M_inv, shape_vals);
 
-      // Increment the total volume
-      total_volume += cell->volume;
+      // Increment the total volume. Use the same unit-integral volume as for ghost cells below;
+      // in curvilinear geometry it differs from the geometric cell volume.
+      const double cell_volume =
+        std::accumulate(fe_values.intV_shapeI.begin(), fe_values.intV_shapeI.end(), 0.0);
+      total_volume += cell_volume;
 
       // Add to subscribers
-      subscribers.push_back(Subscriber{cell->volume, cell->local_id, shape_vals, node_wgts});
+      subscribers.push_back(Subscriber{cell_volume, cell->local_id, shape_vals, node_wgts});
     }
   }
 
@@ -142,19 +147,24 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
     }
   }
 
-  // Create the actual subscriber list
+  // Create the actual subscriber list. The strength is the total emission rate; curvilinear
+  // unit integrals omit the angular extent, so in RZ the source is a ring emitting strength / 2pi
+  // per radian.
+  const double measure_scale = IntegralMeasureScale(grid->GetCoordinateSystem());
   subscribers_.clear();
   for (const auto& sub : subscribers)
   {
-    subscribers_.push_back(
-      {sub.volume_weight / total_volume, sub.cell_local_id, sub.shape_values, sub.node_weights});
+    subscribers_.push_back({sub.volume_weight / (total_volume * measure_scale),
+                            sub.cell_local_id,
+                            sub.shape_values,
+                            sub.node_weights});
 
     std::stringstream ss;
     ss << "Point source at " << location_.PrintStr() << " assigned to cell "
        << grid->GetLocalCell(sub.cell_local_id).global_id << " with shape values [ ";
     for (const auto& value : sub.shape_values)
       ss << value << " ";
-    ss << "] and volume weight " << sub.volume_weight / total_volume;
+    ss << "] and volume weight " << sub.volume_weight / (total_volume * measure_scale);
     log.LogAll() << ss.str();
   }
 
@@ -174,7 +184,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
 bool
 PointSource::IsActive(double time) const
 {
-  return time >= start_time_ && time <= end_time_;
+  return IsTimeInWindow(time, start_time_, end_time_);
 }
 
 std::vector<double>

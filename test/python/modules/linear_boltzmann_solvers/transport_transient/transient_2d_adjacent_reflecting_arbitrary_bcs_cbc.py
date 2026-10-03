@@ -7,6 +7,10 @@
 Uses a small orthogonal mesh with:
   xmin/ymin: reflecting
   xmax/ymax: time-dependent arbitrary
+
+The pulse is active for t <= 0.1. Boundary conditions are evaluated at
+t^{n+theta}, which is t^{n+1} for backward Euler, so with dt = 0.1 only the
+first step sees the pulse and the second step is source-free.
 """
 
 import os

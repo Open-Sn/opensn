@@ -184,6 +184,7 @@ void py_context(py::module& pyopensn);
 /// Wrap the angular quadrature components of OpenSn.
 void py_aquad(py::module& pyopensn);
 void WrapQuadraturePointPhiTheta(py::module& aquad);
+void WrapHarmonicIndices(py::module& aquad);
 void WrapQuadrature(py::module& aquad);
 void WrapProductQuadrature(py::module& aquad);
 void WrapTriangularQuadrature(py::module& aquad);

@@ -284,5 +284,84 @@
         "rel_tol": 1e-8
       }
     ]
+  },
+  {
+    "file": "transport_2d_cyl_integrated_quantities.py",
+    "comment": "RZ balance, leakage, response, power-style integrals, and point sources in physical (full-revolution) units",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_PRODUCTION_OVER_QV=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ABSORPTION_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FF_SUM_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FF_AVG_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_VOLUME_PP_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_EVALUATOR_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_POWER_NORMALIZATION_OVER_TARGET=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_SURFACE_FE_AREA_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_SURFACE_MASS_AREA_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_POINT_SOURCE_PRODUCTION_OVER_S=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_LEAKAGE_OVER_OUTFLOW=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_INVALID_BOUNDARY_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]
