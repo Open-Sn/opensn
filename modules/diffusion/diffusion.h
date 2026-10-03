@@ -9,7 +9,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 struct Vector3;
 class SpatialDiscretization;
@@ -109,7 +109,7 @@ public:
 
 protected:
   const std::string name_;
-  const std::shared_ptr<MeshContinuum> grid_;
+  const std::shared_ptr<Mesh> grid_;
   const class SpatialDiscretization& sdm_;
   const UnknownManager uk_man_;
 

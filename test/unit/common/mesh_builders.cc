@@ -5,7 +5,7 @@
 
 using namespace opensn;
 
-std::shared_ptr<MeshContinuum>
+std::shared_ptr<Mesh>
 BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
 {
   ParameterBlock array("node_sets");
@@ -21,7 +21,7 @@ BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
   return OrthogonalMeshGenerator(params).Execute();
 }
 
-std::shared_ptr<opensn::MeshContinuum>
+std::shared_ptr<opensn::Mesh>
 BuildLineMesh(double length, unsigned int n, double xmin)
 {
   std::vector<double> nodes(n + 1, 0.);
@@ -41,7 +41,7 @@ BuildLineMesh(double length, unsigned int n, double xmin)
   return OrthogonalMeshGenerator(params).Execute();
 }
 
-std::shared_ptr<opensn::MeshContinuum>
+std::shared_ptr<opensn::Mesh>
 BuildSquareMesh(double length, unsigned int n, double xmin)
 {
   std::vector<double> nodes(n + 1, 0.);
@@ -62,7 +62,7 @@ BuildSquareMesh(double length, unsigned int n, double xmin)
   return OrthogonalMeshGenerator(params).Execute();
 }
 
-std::shared_ptr<opensn::MeshContinuum>
+std::shared_ptr<opensn::Mesh>
 BuildBoxMesh(double length, unsigned int n, double xmin)
 {
   std::vector<double> nodes(n + 1, 0.);
@@ -84,7 +84,7 @@ BuildBoxMesh(double length, unsigned int n, double xmin)
   return OrthogonalMeshGenerator(params).Execute();
 }
 
-std::shared_ptr<opensn::MeshContinuum>
+std::shared_ptr<opensn::Mesh>
 BuildMeshFromFile(std::filesystem::path file_name)
 {
   ParameterBlock block;

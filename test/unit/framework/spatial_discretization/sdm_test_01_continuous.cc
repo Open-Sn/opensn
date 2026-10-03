@@ -3,7 +3,7 @@
 
 #include "gmock/gmock.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/field_functions/field_function_grid_based.h"
@@ -20,7 +20,7 @@ namespace
 {
 
 void
-math_SDM_Test01_Continuous(std::shared_ptr<MeshContinuum> grid,
+math_SDM_Test01_Continuous(std::shared_ptr<Mesh> grid,
                            std::string sdm_type,
                            bool export_vtk,
                            double gold)

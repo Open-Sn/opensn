@@ -1,14 +1,13 @@
 #include "gtest/gtest.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/mesh_mapping/mesh_mapping.h"
 #include "framework/runtime.h"
 
 using namespace opensn;
 
 void
-TestMapping(const std::shared_ptr<MeshContinuum> fine_grid,
-            const std::shared_ptr<MeshContinuum> coarse_grid)
+TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> coarse_grid)
 {
   MeshMapping mesh_mapping;
   mesh_mapping.Build(fine_grid, coarse_grid);
