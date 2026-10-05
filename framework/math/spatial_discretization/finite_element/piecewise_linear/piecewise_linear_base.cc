@@ -5,12 +5,12 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polygon_mapping.h"
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_polyhedron_mapping.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
 
-PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<MeshContinuum>& grid,
+PieceWiseLinearBase::PieceWiseLinearBase(const std::shared_ptr<Mesh>& grid,
                                          QuadratureOrder q_order,
                                          SpatialDiscretizationType sdm_type)
   : FiniteElementBase(grid, sdm_type, q_order),

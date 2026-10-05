@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -13,7 +13,7 @@ namespace opensn
 {
 
 CBC_SPDS::CBC_SPDS(const Vector3& omega,
-                   const std::shared_ptr<MeshContinuum>& grid,
+                   const std::shared_ptr<Mesh>& grid,
                    const SPDSFaceNeighborInfoVec& face_neighbor_info,
                    bool allow_cycles)
   : SPDS(omega, grid)

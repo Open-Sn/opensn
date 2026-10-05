@@ -10,7 +10,7 @@
 #include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/mesh/surface_mesh/surface_mesh.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
@@ -83,7 +83,7 @@ pyobj_to_param_block(const std::string& key, const py::object& obj)
   TO_PARAMBLOCK(GraphPartitioner);
   TO_PARAMBLOCK(DiscreteOrdinatesKEigenAcceleration);
   TO_PARAMBLOCK(LogicalVolume);
-  TO_PARAMBLOCK(MeshContinuum);
+  TO_PARAMBLOCK(Mesh);
   TO_PARAMBLOCK(MeshGenerator);
   TO_PARAMBLOCK(MultiGroupXS);
   TO_PARAMBLOCK(PointSource);

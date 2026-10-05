@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "caribou/main.hpp"
 #include <cinttypes>
 
@@ -16,7 +16,7 @@ namespace opensn
 void
 CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization& sdm)
 {
-  const MeshContinuum& grid = *(spds_.GetGrid());
+  const Mesh& grid = *(spds_.GetGrid());
   const std::size_t num_local_cells = grid.GetLocalCellCount();
   std::uint64_t total_face_nodes = 0;
   for (const auto& cell : grid.GetLocalCells())

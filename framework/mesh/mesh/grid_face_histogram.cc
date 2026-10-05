@@ -1,7 +1,7 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/grid_face_histogram.h"
+#include "framework/mesh/mesh/grid_face_histogram.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -39,7 +39,7 @@ GridFaceHistogram::GetFaceHistogramBinDOFSize(size_t bin_number) const
   }
   catch (std::out_of_range& o)
   {
-    log.LogAllWarning() << "Fault detected in MeshContinuum::"
+    log.LogAllWarning() << "Fault detected in Mesh::"
                         << "GetFaceHistogramBinDOFSize.";
     return 0;
   }
