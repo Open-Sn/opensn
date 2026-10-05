@@ -178,7 +178,6 @@ public:
   std::string ToString() const;
 
   uint64_t global_id = 0;
-  std::uint32_t local_id = 0;
   int partition_id = 0;
   unsigned int block_id = std::numeric_limits<unsigned int>::max();
 
