@@ -194,7 +194,7 @@ AAH_FLUDSCommonData::SlotDynamics(
     for (auto& slot : lock_box)
     {
       if (slot.first.has_value() and std::cmp_equal(slot.first.value(), face.neighbor_id) and
-          (slot.second == adj_face_idx))
+          std::cmp_equal(slot.second, adj_face_idx))
       {
         slot.first.reset();
         found = true;
