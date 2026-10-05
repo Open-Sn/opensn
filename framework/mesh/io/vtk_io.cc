@@ -390,26 +390,29 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       else if (vtk_celldim == 0)
         std::tie(raw_cell, raw_cell_vertex_ids, raw_cell_faces, raw_cell_face_vertex_ids) =
           CreateCellFromVTKVertex(vtk_cell);
+
+      if (raw_cell.has_value())
+      {
+        // Map the cell vertex-ids
+        for (uint64_t& vid : raw_cell_vertex_ids)
+          vid = node_map[vid];
+
+        // Map face vertex-ids
+        for (auto& face_vertex_ids : raw_cell_face_vertex_ids)
+          for (uint64_t& vid : face_vertex_ids)
+            vid = node_map[vid];
+
+        raw_cell->block_id = block_id_array->GetValue(c);
+
+        for (auto& f : raw_cell_faces)
+          mesh_faces.emplace_back(f);
+        cells[cell_gid] = std::move(raw_cell);
+        cell_connect[cell_gid] = std::move(raw_cell_vertex_ids);
+        cell_face_connect[cell_gid] = std::move(raw_cell_face_vertex_ids);
+      }
       else
         throw std::logic_error(fname + ": Unsupported cell dimension ." +
                                std::to_string(vtk_celldim));
-
-      // Map the cell vertex-ids
-      for (uint64_t& vid : raw_cell_vertex_ids)
-        vid = node_map[vid];
-
-      // Map face vertex-ids
-      for (auto& face_vertex_ids : raw_cell_face_vertex_ids)
-        for (uint64_t& vid : face_vertex_ids)
-          vid = node_map[vid];
-
-      raw_cell->block_id = block_id_array->GetValue(c);
-
-      for (auto& f : raw_cell_faces)
-        mesh_faces.emplace_back(f);
-      cells[cell_gid] = std::move(raw_cell);
-      cell_connect[cell_gid] = std::move(raw_cell_vertex_ids);
-      cell_face_connect[cell_gid] = std::move(raw_cell_face_vertex_ids);
     } // for cell c
 
     // Load points
@@ -442,7 +445,8 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     std::vector<Cell> new_cells;
     new_cells.reserve(total_cell_count);
     for (auto& cell : cells)
-      new_cells.emplace_back(cell.value());
+      if (cell.has_value())
+        new_cells.emplace_back(cell.value());
     mesh->SetCells(std::move(new_cells), cell_connect);
     mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
   } // If global-ids available
@@ -479,16 +483,19 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       else if (vtk_celldim == 0)
         std::tie(cell, cell_vertex_ids, cell_faces, cell_face_vertex_ids) =
           CreateCellFromVTKVertex(vtk_cell);
+
+      if (cell.has_value())
+      {
+        cell->block_id = block_id_array->GetValue(c);
+
+        for (auto& f : cell_faces)
+          mesh_faces.emplace_back(f);
+        raw_cells.emplace_back(*cell);
+        cell_connect.emplace_back(cell_vertex_ids);
+        cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
+      }
       else
         throw std::logic_error(fname + ": Unsupported cell dimension.");
-
-      cell->block_id = block_id_array->GetValue(c);
-
-      for (auto& f : cell_faces)
-        mesh_faces.emplace_back(f);
-      raw_cells.emplace_back(*cell);
-      cell_connect.emplace_back(cell_vertex_ids);
-      cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
     }
 
     // Push points
