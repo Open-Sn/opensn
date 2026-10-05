@@ -4,7 +4,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/point_source/point_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/spatial_weight_function.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/functions/function.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
@@ -82,7 +82,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   }
 
   // Get info from solver
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
   const auto& ghost_unit_cell_matrices = lbs_problem.GetUnitGhostCellMatrices();
@@ -94,13 +94,14 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   // An explicit face check makes the subscriber set work for sources on faces and
   // vertices, and keeps the uncollided treatment consistent with the collided
   // point-source treatment.
-  auto PointIsInCellOrOnBoundary = [&grid](const Cell& cell, const Vector3& point)
+  auto PointIsInCellOrOnBoundary = [&grid](std::uint32_t cell_local_id, const Vector3& point)
   {
-    if (grid->CheckPointInsideCell(cell, point))
+    if (grid->CheckPointInsideCell(cell_local_id, point))
       return true;
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
-      if (grid->CheckPointInsideCellFace(cell, f, point))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    for (size_t f = 0; f < grid->GetCellFaceCount(cell_local_id); ++f)
+      if (grid->CheckPointInsideCellFace(cell_local_id, f, point))
         return true;
 
     return false;
@@ -109,12 +110,13 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   // Find local subscribers
   double total_volume = 0.0;
   std::vector<Subscriber> subscribers;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    if (PointIsInCellOrOnBoundary(*cell, location_))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    if (PointIsInCellOrOnBoundary(cell_local_id, location_))
     {
-      const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      const auto& fe_values = unit_cell_matrices[cell->local_id];
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+      const auto& fe_values = unit_cell_matrices[cell_local_id];
 
       // Map the point source to the finite element space
       Vector<double> shape_vals;
@@ -129,7 +131,7 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
       total_volume += cell_volume;
 
       // Add to subscribers
-      subscribers.push_back(Subscriber{cell_volume, cell->local_id, shape_vals, node_wgts});
+      subscribers.push_back(Subscriber{cell_volume, cell_local_id, shape_vals, node_wgts});
     }
   }
 
@@ -138,10 +140,10 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
   auto ghost_global_ids = grid->GetGhostGlobalIDs();
   for (uint64_t global_id : ghost_global_ids)
   {
-    const auto& nbr_cell = grid->GetGlobalCell(global_id);
-    if (PointIsInCellOrOnBoundary(nbr_cell, location_))
+    auto nbr_cell_local_id = grid->MapCellGlobalID2LocalID(global_id);
+    if (PointIsInCellOrOnBoundary(nbr_cell_local_id, location_))
     {
-      const auto& fe_values = ghost_unit_cell_matrices.at(nbr_cell.global_id);
+      const auto& fe_values = ghost_unit_cell_matrices.at(global_id);
       total_volume +=
         std::accumulate(fe_values.intV_shapeI.begin(), fe_values.intV_shapeI.end(), 0.0);
     }

@@ -8,7 +8,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 class Cell;
 struct Vector3;
 class SpatialDiscretization;
@@ -74,11 +74,11 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const Cell& cell, unsigned int f);
+  double HPerpendicular(std::uint32_t cell_local_id, unsigned int f);
 
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
-  int MapFaceNodeDisc(const Cell& cur_cell,
-                      const Cell& adj_cell,
+  int MapFaceNodeDisc(std::uint32_t cur_cell_local_id,
+                      std::uint32_t adj_cell_local_id,
                       const std::vector<Vector3>& cc_node_locs,
                       const std::vector<Vector3>& ac_node_locs,
                       size_t ccf,

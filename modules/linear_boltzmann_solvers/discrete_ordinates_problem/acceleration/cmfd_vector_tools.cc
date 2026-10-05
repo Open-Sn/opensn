@@ -5,7 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
@@ -108,15 +108,17 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
   std::map<int, std::vector<uint64_t>> pid_keys;
   std::map<int, std::vector<double>> pid_values;
 
+  const auto& mesh = do_problem.GetMesh();
   for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
   {
     std::vector<double> group_integrals(num_coarse_groups, 0.0);
-    const auto& fine_cell = do_problem.GetGrid()->GetGlobalCell(membership.fine_cell_id);
+    const auto fine_cell_local_id = mesh->MapCellGlobalID2LocalID(membership.fine_cell_id);
+    const auto& fine_cell = mesh->GetLocalCell(fine_cell_local_id);
     OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
                             "CMFD restriction fine-cell membership is not locally owned.");
 
-    const auto& transport_view = transport_views[fine_cell.local_id];
-    const auto& cell_matrices = unit_cell_matrices[fine_cell.local_id];
+    const auto& transport_view = transport_views[fine_cell_local_id];
+    const auto& cell_matrices = unit_cell_matrices[fine_cell_local_id];
 
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
@@ -254,11 +256,13 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                          "Missing CMFD prolongation ratios for local fine-cell membership.");
     const auto& ratios = ratios_it->second;
 
-    const auto& fine_cell = do_problem.GetGrid()->GetGlobalCell(membership.fine_cell_id);
+    const auto fine_cell_local_id =
+      do_problem.GetMesh()->MapCellGlobalID2LocalID(membership.fine_cell_id);
+    const auto& fine_cell = do_problem.GetMesh()->GetLocalCell(fine_cell_local_id);
     OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
                             "CMFD prolongation fine-cell membership is not locally owned.");
 
-    const auto& transport_view = transport_views[fine_cell.local_id];
+    const auto& transport_view = transport_views[fine_cell_local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto phi_map = transport_view.MapDOF(i, 0, first_group);

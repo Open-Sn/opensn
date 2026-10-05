@@ -3,8 +3,8 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_continuum/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <map>
 #include <array>
 #include <set>
@@ -16,29 +16,6 @@ namespace opensn
 class UnpartitionedMesh
 {
 public:
-  struct LightWeightFace
-  {
-    std::vector<uint64_t> vertex_ids;
-    bool has_neighbor = false;
-    uint64_t neighbor = std::numeric_limits<uint64_t>::max();
-
-    LightWeightFace() = default;
-    explicit LightWeightFace(std::vector<uint64_t> vertex_ids) : vertex_ids(std::move(vertex_ids))
-    {
-    }
-  };
-  struct LightWeightCell
-  {
-    const CellType type;
-    const CellType sub_type;
-    Vector3 centroid;
-    unsigned int block_id = std::numeric_limits<unsigned int>::max();
-    std::vector<uint64_t> vertex_ids;
-    std::vector<LightWeightFace> faces;
-
-    explicit LightWeightCell(CellType type, CellType sub_type) : type(type), sub_type(sub_type) {}
-  };
-
   struct Options
   {
     std::string file_name;
@@ -85,20 +62,33 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(const std::shared_ptr<LightWeightCell>& cell) { raw_cells_.push_back(cell); }
-  size_t GetNumberOfCells() const { return raw_cells_.size(); }
+  size_t GetNumberOfCells() const { return cells_.size(); }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() { return raw_cells_; }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() const { return raw_cells_; }
+  std::vector<Cell>& GetCells() { return cells_; }
+  const std::vector<Cell>& GetCells() const { return cells_; }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells()
+  void SetCells(std::vector<Cell>&& cells,
+                const std::vector<std::vector<std::uint64_t>>& cell_connectivity);
+
+  void
+  SetCellFaces(std::vector<CellFace>&& faces,
+               const std::vector<std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+
+  const std::vector<std::vector<std::vector<std::uint64_t>>>& GetCellFaceConnectivity() const
   {
-    return raw_boundary_cells_;
+    return cell_face_connectivity_;
   }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells() const
-  {
-    return raw_boundary_cells_;
-  }
+
+  std::span<const CellFace> GetCellFaces(std::uint32_t cell_global_id) const;
+  std::span<CellFace> GetCellFaces(std::uint32_t cell_global_id);
+
+  std::uint64_t GetCellFaceCount(std::uint32_t cell_global_id) const;
+
+  const CellFace& GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx) const;
+
+  CellFace& GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx);
+
+  std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_global_id) const;
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
@@ -130,8 +120,18 @@ protected:
   std::map<std::string, uint64_t> boundary_name_map_;
 
   std::vector<Vector3> vertices_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_cells_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_boundary_cells_;
+  std::vector<Cell> cells_;
+  /// Offsets into `connect_ids_`
+  std::vector<std::size_t> connect_ofst_;
+  /// Cell connectivity: [`connect_ofst_[i]` .. `connect_ofst_[i+1]`]
+  std::vector<uint64_t> connect_ids_;
+  ///
+  std::vector<CellFace> faces_;
+  /// Offset into `faces_`
+  std::vector<std::size_t> face_connect_ofst_;
+  ///
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connectivity_;
+
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

@@ -3,7 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 
@@ -48,11 +48,12 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
   // Apply all nodal sources
-  const auto& grid = lbs_problem_.GetGrid();
+  const auto& grid = lbs_problem_.GetMesh();
   const auto& discretization = lbs_problem_.GetSpatialDiscretization();
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
     cell_volume_ = transport_view.GetVolume();
 
     // Obtain xs
@@ -67,7 +68,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto node_id = discretization.MapDOFLocal(*cell, i);
+      const auto node_id = discretization.MapDOFLocal(cell_local_id, i);
       // Loop over moments
       for (unsigned int m = 0; m < num_moments; ++m)
       {
@@ -219,7 +220,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
 
-  const auto& grid = lbs_problem_.GetGrid();
+  const auto& grid = lbs_problem_.GetMesh();
   const auto& discretization = lbs_problem_.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_problem_.GetCellTransportViews();
   const auto num_groups = lbs_problem_.GetNumGroups();
@@ -238,16 +239,15 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
 
       for (const auto local_id : volumetric_source->GetSubscribers())
       {
-        const auto& cell = grid->GetLocalCell(local_id);
         const auto& transport_view = cell_transport_views[local_id];
-        const auto nodes = discretization.GetCellNodeLocations(cell);
-        const auto num_cell_nodes = discretization.GetCellNumNodes(cell);
+        const auto nodes = discretization.GetCellNodeLocations(local_id);
+        const auto num_cell_nodes = discretization.GetCellNumNodes(local_id);
 
         // Go through each of the cell nodes
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           // Compute group-wise values for this node
-          const auto src = volumetric_source->Evaluate(cell, nodes[i], num_groups, source_time);
+          const auto src = volumetric_source->Evaluate(local_id, nodes[i], num_groups, source_time);
 
           // Contribute to the source moments
           const auto dof_map = transport_view.MapDOF(i, 0, 0);

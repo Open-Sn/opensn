@@ -3,14 +3,14 @@
 
 #pragma once
 
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/vector3.h"
 
 namespace opensn
 {
 
 class Cell;
-class MeshContinuum;
+class Mesh;
 
 /// Data structure to hold output info from the raytracer.
 struct RayTracerOutputInformation
@@ -27,7 +27,7 @@ struct RayTracerOutputInformation
 class RayTracer
 {
 private:
-  const std::shared_ptr<MeshContinuum> reference_grid_;
+  const std::shared_ptr<Mesh> reference_grid_;
   const std::vector<double>* cell_sizes_ = nullptr;
   double epsilon_nudge_ = 1.0e-10;
   double backward_tolerance_ = 1.0e-10;
@@ -35,7 +35,7 @@ private:
   bool perform_concavity_checks_ = true;
 
 public:
-  explicit RayTracer(const std::shared_ptr<MeshContinuum> grid,
+  explicit RayTracer(const std::shared_ptr<Mesh> grid,
                      const std::vector<double>* cell_sizes = nullptr,
                      bool perform_concavity_checks = true)
     : reference_grid_(grid),
@@ -49,14 +49,14 @@ public:
    * marked as lost.
    */
   RayTracerOutputInformation
-  TraceRay(const Cell& cell, Vector3& pos_i, Vector3& omega_i, int function_depth = 0);
+  TraceRay(std::uint32_t cell_local_id, Vector3& pos_i, Vector3& omega_i, int function_depth = 0);
 
   /// Traces a ray with an initial position, presumed to be outside the cell, to an incident face.
   RayTracerOutputInformation
-  TraceIncidentRay(const Cell& cell, const Vector3& pos_i, const Vector3& omega_i);
+  TraceIncidentRay(std::uint32_t cell_local_id, const Vector3& pos_i, const Vector3& omega_i);
 
 private:
-  std::shared_ptr<MeshContinuum> Grid() const;
+  std::shared_ptr<Mesh> Grid() const;
 
   void SetTolerancesFromCellSize(double cell_size)
   {
@@ -66,7 +66,7 @@ private:
   }
 
   /// Performs raytracing within a 1D-slab.
-  void TraceSlab(const Cell& cell,
+  void TraceSlab(std::uint32_t cell_local_id,
                  Vector3& pos_i,
                  Vector3& omega_i,
                  bool& intersection_found,
@@ -74,7 +74,7 @@ private:
                  RayTracerOutputInformation& oi);
 
   /// Performs raytracing within a 2D Polygon.
-  void TracePolygon(const Cell& cell,
+  void TracePolygon(std::uint32_t cell_local_id,
                     Vector3& pos_i,
                     Vector3& omega_i,
                     bool& intersection_found,
@@ -82,7 +82,7 @@ private:
                     RayTracerOutputInformation& oi);
 
   /// Performs raytracing within a 3D Polyhedron.
-  void TracePolyhedron(const Cell& cell,
+  void TracePolyhedron(std::uint32_t cell_local_id,
                        Vector3& pos_i,
                        Vector3& omega_i,
                        bool& intersection_found,
@@ -165,7 +165,7 @@ bool CheckPlaneTetIntersect(const Vector3& plane_normal,
                             const std::vector<Vector3>& tet_points);
 
 /// Populates segment lengths along a ray. Sorted along the direction.
-void PopulateRaySegmentLengths(std::shared_ptr<MeshContinuum> grid,
+void PopulateRaySegmentLengths(std::shared_ptr<Mesh> grid,
                                const Cell& cell,
                                const Vector3& line_point0,
                                const Vector3& line_point1,

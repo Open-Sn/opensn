@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/aah.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
@@ -38,7 +38,7 @@ LevelizeTopologicalOrder(const Graph& graph,
 
 AAH_SPDS::AAH_SPDS(int id,
                    const Vector3& omega,
-                   const std::shared_ptr<MeshContinuum> grid,
+                   const std::shared_ptr<Mesh> grid,
                    const SPDSFaceNeighborInfoVec& face_neighbor_info,
                    bool allow_cycles,
                    bool use_gpus)
@@ -199,11 +199,13 @@ AAH_SPDS::ComputeLocalLocationEdgeWeights() const
   std::map<int, double> row;
   constexpr double tolerance = FACE_ORIENTATION_TOLERANCE;
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& face_orientations = cell_face_orientations_[cell->local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& face_orientations = cell_face_orientations_[cell_local_id];
     std::size_t f = 0;
-    for (const auto& face : cell->faces)
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
     {
       if (face.has_neighbor and not face.IsNeighborLocal(grid_.get()) and
           face_orientations[f] == FaceOrientation::OUTGOING)

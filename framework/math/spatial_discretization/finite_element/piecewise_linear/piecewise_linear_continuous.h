@@ -22,26 +22,26 @@ public:
                             std::vector<int64_t>& nodal_nnz_off_diag,
                             const UnknownManager& unknown_manager) const override;
 
-  uint64_t MapDOF(const Cell& cell,
+  uint64_t MapDOF(std::uint32_t cell_global_id,
                   unsigned int node,
                   const UnknownManager& unknown_manager,
                   unsigned int unknown_id,
                   unsigned int component) const override;
 
-  uint64_t MapDOFLocal(const Cell& cell,
+  uint64_t MapDOFLocal(std::uint32_t cell_local_id,
                        unsigned int node,
                        const UnknownManager& unknown_manager,
                        unsigned int unknown_id,
                        unsigned int component) const override;
 
-  uint64_t MapDOF(const Cell& cell, unsigned int node) const override
+  uint64_t MapDOF(std::uint32_t cell_global_id, unsigned int node) const override
   {
-    return MapDOF(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
+    return MapDOF(cell_global_id, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
 
-  uint64_t MapDOFLocal(const Cell& cell, unsigned int node) const override
+  uint64_t MapDOFLocal(std::uint32_t cell_local_id, unsigned int node) const override
   {
-    return MapDOFLocal(cell, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
+    return MapDOFLocal(cell_local_id, node, UNITARY_UNKNOWN_MANAGER, 0, 0);
   }
 
   std::uint64_t GetNumGhostDOFs(const UnknownManager& unknown_manager) const override;
@@ -56,12 +56,12 @@ protected:
   std::map<uint64_t, int64_t> ghost_node_mapping_;
 
 private:
-  explicit PieceWiseLinearContinuous(std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order);
+  explicit PieceWiseLinearContinuous(std::shared_ptr<Mesh> grid, QuadratureOrder q_order);
 
 public:
   /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearContinuous>
-  New(std::shared_ptr<MeshContinuum> grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
+  New(std::shared_ptr<Mesh> grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
 };
 
 } // namespace opensn

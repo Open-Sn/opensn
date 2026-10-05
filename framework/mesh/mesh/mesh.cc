@@ -1,12 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
-#include "framework/mesh/mesh_continuum/grid_face_histogram.h"
-#include "framework/mesh/mesh_continuum/grid_vtk_utils.h"
+#include "framework/mesh/mesh/grid_face_histogram.h"
+#include "framework/mesh/mesh/grid_vtk_utils.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/utils/timer.h"
 #include "framework/logging/log.h"
@@ -18,7 +18,7 @@
 namespace opensn
 {
 
-MeshContinuum::MeshContinuum()
+Mesh::Mesh()
   : dim_(0),
     mesh_type_(UNSTRUCTURED),
     coord_sys_(CoordinateSystemType::UNDEFINED),
@@ -29,7 +29,7 @@ MeshContinuum::MeshContinuum()
 }
 
 GeometryType
-MeshContinuum::GetGeometryType() const
+Mesh::GetGeometryType() const
 {
   switch (coord_sys_)
   {
@@ -80,7 +80,7 @@ MeshContinuum::GetGeometryType() const
 }
 
 std::array<size_t, 3>
-MeshContinuum::GetIJKInfo() const
+Mesh::GetIJKInfo() const
 {
   const std::string fname = "GetIJKInfo";
   if (GetType() != ORTHOGONAL)
@@ -90,7 +90,7 @@ MeshContinuum::GetIJKInfo() const
 }
 
 size_t
-MeshContinuum::GetGlobalNumberOfCells() const
+Mesh::GetGlobalNumberOfCells() const
 {
   size_t num_cells = local_cells_.size();
   mpi_comm.all_reduce(num_cells, mpi::op::sum<size_t>());
@@ -98,17 +98,20 @@ MeshContinuum::GetGlobalNumberOfCells() const
 }
 
 std::vector<uint64_t>
-MeshContinuum::GetUniqueBoundaryIDs() const
+Mesh::GetUniqueBoundaryIDs() const
 {
   mpi_comm.barrier();
   log.LogAllVerbose1() << "Identifying unique boundary-ids.";
 
   // Develop local bndry-id set
   std::set<uint64_t> local_bndry_ids_set;
-  for (const auto& cell : local_cells_)
-    for (const auto& face : cell->faces)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
+  {
+    auto cell_faces = GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
       if (not face.has_neighbor)
         local_bndry_ids_set.insert(face.neighbor_id);
+  }
 
   // Vectorify it
   const std::vector<uint64_t> local_bndry_ids(local_bndry_ids_set.begin(),
@@ -123,27 +126,30 @@ MeshContinuum::GetUniqueBoundaryIDs() const
 }
 
 void
-MeshContinuum::ComputeGeometricInfo()
+Mesh::ComputeGeometricInfo()
 {
   for (auto& cell : local_cells_)
-    cell->ComputeGeometricInfo(this);
+    cell.ComputeGeometricInfo(*this);
+  for (auto& cell : ghost_cells_)
+    cell.ComputeGeometricInfo(*this);
 
-  for (const auto& ghost_id : GetGhostGlobalIDs())
-    GetGlobalCell(ghost_id).ComputeGeometricInfo(this);
+  for (auto& cell : local_cells_)
+    cell.ComputeVolume(*this);
+  for (auto& cell : ghost_cells_)
+    cell.ComputeVolume(*this);
 }
 
 void
-MeshContinuum::ClearCellReferences()
+Mesh::ClearCellReferences()
 {
   local_cells_.clear();
   ghost_cells_.clear();
-  global_cell_id_to_local_id_map_.clear();
-  global_cell_id_to_nonlocal_id_map_.clear();
+  global_to_local_cell_id_map_.clear();
   global_vertex_id_map_.clear();
 }
 
 uint64_t
-MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
+Mesh::MakeBoundaryID(const std::string& boundary_name) const
 {
   if (boundary_id_map_.empty())
     return 0;
@@ -160,14 +166,14 @@ MeshContinuum::MakeBoundaryID(const std::string& boundary_name) const
 }
 
 void
-MeshContinuum::SetBoundaryName(std::uint64_t id, const std::string& name)
+Mesh::SetBoundaryName(std::uint64_t id, const std::string& name)
 {
   boundary_id_map_[id] = name;
   boundary_name_map_[name] = id;
 }
 
 void
-MeshContinuum::SetOrthogonalBoundaries()
+Mesh::SetOrthogonalBoundaries()
 {
   log.Log() << program_timer.GetTimeString() << " Setting orthogonal boundaries.";
 
@@ -201,9 +207,10 @@ MeshContinuum::SetOrthogonalBoundaries()
   const Vector3 jhat(0.0, 1.0, 0.0);
   const Vector3 khat(0.0, 0.0, 1.0);
 
-  for (auto& cell : local_cells_)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    for (auto& face : cell->faces)
+    auto cell_faces = GetCellFaces(cell_local_id);
+    for (auto& face : cell_faces)
     {
       if (not face.has_neighbor)
       {
@@ -233,118 +240,213 @@ MeshContinuum::SetOrthogonalBoundaries()
 }
 
 void
-MeshContinuum::AddGlobalCell(std::shared_ptr<Cell> new_cell)
+Mesh::SetCellConnectivity(const std::vector<std::vector<std::uint64_t>>& connectivity)
 {
-  if (new_cell->partition_id == opensn::mpi_comm.rank())
+  std::size_t total_len = 0;
+  for (const auto& cell : connectivity)
+    total_len += cell.size();
+  connect_ids_.reserve(total_len);
+
+  connect_ofst_.reserve(connectivity.size() + 1);
+  for (const auto& cell : connectivity)
   {
-    new_cell->local_id = local_cells_.size();
-    local_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_local_id_map_[local_cells_.back()->global_id] = local_cells_.size() - 1;
+    connect_ofst_.push_back(connect_ids_.size());
+    std::copy(cell.begin(), cell.end(), connect_ids_.end());
   }
-  else
+  connect_ofst_.push_back(total_len);
+}
+
+void
+Mesh::SetCells(std::vector<Cell>&& local_cells,
+               std::vector<Cell>&& ghost_cells,
+               const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity)
+{
+  local_cells_ = std::move(local_cells);
+  ghost_cells_ = std::move(ghost_cells);
+
+  std::size_t local_id = 0;
+  for (auto& cell : local_cells_)
   {
-    ghost_cells_.push_back(std::move(new_cell));
-    global_cell_id_to_nonlocal_id_map_[ghost_cells_.back()->global_id] = ghost_cells_.size() - 1;
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
   }
+  for (auto& cell : ghost_cells_)
+  {
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
+  }
+
+  std::size_t total_len = 0;
+  for (const auto& [id, cell] : cell_connectivity)
+    total_len += cell.size();
+  connect_ids_.reserve(total_len);
+
+  connect_ofst_.reserve(cell_connectivity.size() + 1);
+  for (auto& cell : local_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  for (auto& cell : ghost_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  connect_ofst_.push_back(total_len);
+}
+
+void
+Mesh::SetCellFaces(
+  const std::map<std::uint64_t, std::vector<CellFace>>& cell_faces,
+  const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity)
+{
+  faces_.clear();
+  face_connect_ofst_.clear();
+  face_vertex_ofst_.clear();
+  face_vertex_ids_.clear();
+
+  face_connect_ofst_.push_back(0);
+  for (const auto& cell : local_cells_)
+  {
+    assert(cell_faces.at(cell.global_id).size() ==
+           cell_face_connectivity.at(cell.global_id).size());
+    for (const auto& face : cell_faces.at(cell.global_id))
+      faces_.emplace_back(face);
+    const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
+    face_connect_ofst_.push_back(face_connect_ofst_.back() + cell_face_vids.size());
+    for (const auto& face_vids : cell_face_vids)
+    {
+      face_vertex_ofst_.push_back(face_vertex_ids_.size());
+      for (const auto vid : face_vids)
+        face_vertex_ids_.push_back(vid);
+    }
+  }
+
+  for (const auto& cell : ghost_cells_)
+  {
+    assert(cell_faces.at(cell.global_id).size() ==
+           cell_face_connectivity.at(cell.global_id).size());
+    for (const auto& face : cell_faces.at(cell.global_id))
+      faces_.emplace_back(face);
+    const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
+    face_connect_ofst_.push_back(face_connect_ofst_.back() + cell_face_vids.size());
+    for (const auto& face_vids : cell_face_vids)
+    {
+      face_vertex_ofst_.push_back(face_vertex_ids_.size());
+      for (const auto vid : face_vids)
+        face_vertex_ids_.push_back(vid);
+    }
+  }
+  face_vertex_ofst_.push_back(face_vertex_ids_.size());
 }
 
 Cell&
-MeshContinuum::GetGlobalCell(uint64_t cell_global_index)
+Mesh::GetGlobalCell(uint64_t cell_global_index)
 {
-  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
-  if (local_it != global_cell_id_to_local_id_map_.end())
-    return *local_cells_[local_it->second];
-
-  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return *ghost_cells_[ghost_it->second];
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
+  auto it = global_to_local_cell_id_map_.find(cell_global_index);
+  if (it != global_to_local_cell_id_map_.end())
+  {
+    auto local_id = it->second;
+    if (local_id < local_cells_.size())
+      return local_cells_[local_id];
+    else
+      return ghost_cells_[local_id - local_cells_.size()];
+  }
+  else
+    throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                            " not found.");
 }
 
 const Cell&
-MeshContinuum::GetGlobalCell(uint64_t cell_global_index) const
+Mesh::GetGlobalCell(uint64_t cell_global_index) const
 {
-  auto local_it = global_cell_id_to_local_id_map_.find(cell_global_index);
-  if (local_it != global_cell_id_to_local_id_map_.end())
-    return *local_cells_[local_it->second];
-
-  auto ghost_it = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-  if (ghost_it != global_cell_id_to_nonlocal_id_map_.end())
-    return *ghost_cells_[ghost_it->second];
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
+  auto it = global_to_local_cell_id_map_.find(cell_global_index);
+  if (it != global_to_local_cell_id_map_.end())
+  {
+    auto local_id = it->second;
+    if (local_id < local_cells_.size())
+      return local_cells_[local_id];
+    else
+      return ghost_cells_[local_id - local_cells_.size()];
+  }
+  else
+    throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
+                            " not found.");
 }
 
 std::vector<uint64_t>
-MeshContinuum::GetGhostGlobalIDs() const
+Mesh::GetGhostGlobalIDs() const
 {
   std::vector<uint64_t> ids;
   ids.reserve(GhostCellCount());
 
   for (const auto& cell : ghost_cells_)
-    ids.push_back(cell->global_id);
+    ids.push_back(cell.global_id);
 
   return ids;
 }
 
-uint64_t
-MeshContinuum::GetGhostLocalID(uint64_t cell_global_index) const
-{
-  auto foreign_location = global_cell_id_to_nonlocal_id_map_.find(cell_global_index);
-
-  if (foreign_location != global_cell_id_to_nonlocal_id_map_.end())
-    return foreign_location->second;
-
-  throw std::out_of_range("Cell with global ID " + std::to_string(cell_global_index) +
-                          " not found.");
-}
-
 std::size_t
-MeshContinuum::GetLocalCellCount() const
+Mesh::GetLocalCellCount() const
 {
   return local_cells_.size();
 }
 
 Cell&
-MeshContinuum::GetLocalCell(uint64_t id)
+Mesh::GetLocalCell(uint64_t id)
 {
-  assert(not local_cells_.empty());
-  assert(id < local_cells_.size());
-  return *local_cells_[id];
+  if (id < local_cells_.size())
+    return local_cells_[id];
+  else
+  {
+    auto idx = id - local_cells_.size();
+    return ghost_cells_[idx];
+  }
 }
 
 const Cell&
-MeshContinuum::GetLocalCell(uint64_t id) const
+Mesh::GetLocalCell(uint64_t id) const
 {
-  assert(not local_cells_.empty());
-  assert(id < local_cells_.size());
-  return *local_cells_[id];
+  if (id < local_cells_.size())
+    return local_cells_[id];
+  else
+  {
+    auto idx = id - local_cells_.size();
+    return ghost_cells_[idx];
+  }
 }
 
-std::vector<std::shared_ptr<Cell>>&
-MeshContinuum::GetLocalCells()
+std::vector<Cell>&
+Mesh::GetLocalCells()
 {
   return local_cells_;
 }
 
-const std::vector<std::shared_ptr<Cell>>&
-MeshContinuum::GetLocalCells() const
+const std::vector<Cell>&
+Mesh::GetLocalCells() const
 {
   return local_cells_;
 }
 
 std::shared_ptr<GridFaceHistogram>
-MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) const
+Mesh::MakeGridFaceHistogram(double master_tolerance, double slave_tolerance) const
 {
   std::vector<std::pair<size_t, size_t>> face_categories_list;
   // Fill histogram
   std::vector<size_t> face_size_histogram;
-  for (const auto& cell : local_cells_)
-    for (const auto& face : cell->faces)
-      face_size_histogram.push_back(face.vertex_ids.size());
+  for (std::uint64_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
+  {
+    auto cell_faces = GetCellFaces(cell_local_id);
+    for (std::uint32_t face = 0; face < cell_faces.size(); ++face)
+    {
+      auto n_face_vtxs = GetCellFaceVertexCount(cell_local_id, face);
+      face_size_histogram.push_back(n_face_vtxs);
+    }
+  }
 
   std::stable_sort(face_size_histogram.begin(), face_size_histogram.end());
 
@@ -421,27 +523,30 @@ MeshContinuum::MakeGridFaceHistogram(double master_tolerance, double slave_toler
 }
 
 void
-MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
-                                      std::vector<short>& dof_mapping) const
+Mesh::FindAssociatedVertices(std::uint32_t cell_local_id,
+                             std::uint32_t face_idx,
+                             std::vector<short>& dof_mapping) const
 {
-  const int adj_face_idx = cur_face.GetNeighborAdjacentFaceIndex(this);
+  const auto& cur_face = GetCellFace(cell_local_id, face_idx);
+  const auto adj_face_idx = GetNeighborAdjacentFaceIndex(cell_local_id, face_idx);
   // Check face validity
   OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
-                       "MeshContinuum::FindAssociatedVertices. Index "
+                       "Mesh::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  const auto& adj_cell = GetGlobalCell(cur_face.neighbor_id);
+  auto adj_cell_local_id = MapCellGlobalID2LocalID(cur_face.neighbor_id);
+  auto cur_face_vertex_ids = GetCellFaceConnectivity(cell_local_id, face_idx);
 
-  dof_mapping.reserve(cur_face.vertex_ids.size());
+  dof_mapping.reserve(cur_face_vertex_ids.size());
 
-  const auto& adj_face = adj_cell.faces[adj_face_idx];
+  auto adj_face_vertex_ids = GetCellFaceConnectivity(adj_cell_local_id, adj_face_idx);
 
-  for (auto cfvid : cur_face.vertex_ids)
+  for (auto cfvid : cur_face_vertex_ids)
   {
     bool found = false;
     short afv = 0;
-    for (auto afvid : adj_face.vertex_ids)
+    for (auto afvid : adj_face_vertex_ids)
     {
       if (cfvid == afvid)
       {
@@ -453,32 +558,36 @@ MeshContinuum::FindAssociatedVertices(const CellFace& cur_face,
     }
 
     if (not found)
-      throw std::runtime_error(
-        "Face DOF mapping failed in call to MeshContinuum::FindAssociatedVertices. "
-        "Could not find a matching node. Neighbor ID: " +
-        std::to_string(cur_face.neighbor_id) + " Centroid: " + cur_face.centroid.PrintStr());
+      throw std::runtime_error("Face DOF mapping failed in call to Mesh::FindAssociatedVertices. "
+                               "Could not find a matching node. Neighbor ID: " +
+                               std::to_string(cur_face.neighbor_id) +
+                               " Centroid: " + cur_face.centroid.PrintStr());
   }
 }
 
 void
-MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
-                                          std::vector<short>& dof_mapping) const
+Mesh::FindAssociatedCellVertices(std::uint32_t cell_local_id,
+                                 std::uint32_t face_idx,
+                                 std::vector<short>& dof_mapping) const
 {
+  const auto& cur_face = GetCellFace(cell_local_id, face_idx);
   // Check face validity
   OpenSnLogicalErrorIf(not cur_face.has_neighbor,
                        "Invalid cell index encountered in call to "
-                       "MeshContinuum::FindAssociatedVertices. Index "
+                       "Mesh::FindAssociatedVertices. Index "
                        "points to a boundary");
 
-  const auto& adj_cell = GetGlobalCell(cur_face.neighbor_id);
+  const auto adj_cell_local_id = MapCellGlobalID2LocalID(cur_face.neighbor_id);
+  auto adj_cell_vertex_ids = GetCellConnectivity(adj_cell_local_id);
 
-  dof_mapping.reserve(cur_face.vertex_ids.size());
+  auto cur_face_vertex_ids = GetCellFaceConnectivity(cell_local_id, face_idx);
+  dof_mapping.reserve(cur_face_vertex_ids.size());
 
-  for (auto cfvid : cur_face.vertex_ids)
+  for (auto cfvid : cur_face_vertex_ids)
   {
     bool found = false;
     short acv = 0;
-    for (auto acvid : adj_cell.vertex_ids)
+    for (auto acvid : adj_cell_vertex_ids)
     {
       if (cfvid == acvid)
       {
@@ -490,41 +599,99 @@ MeshContinuum::FindAssociatedCellVertices(const CellFace& cur_face,
     }
 
     if (not found)
-      throw std::runtime_error(
-        "Face DOF mapping failed in call to MeshContinuum::FindAssociatedVertices. "
-        "Could not find a matching node. Neighbor ID: " +
-        std::to_string(cur_face.neighbor_id) + ", Centroid: " + cur_face.centroid.PrintStr());
+      throw std::runtime_error("Face DOF mapping failed in call to Mesh::FindAssociatedVertices. "
+                               "Could not find a matching node. Neighbor ID: " +
+                               std::to_string(cur_face.neighbor_id) +
+                               ", Centroid: " + cur_face.centroid.PrintStr());
   }
 }
 
-size_t
-MeshContinuum::MapCellGlobalID2LocalID(const uint64_t global_id) const
+std::uint32_t
+Mesh::GetNeighborAdjacentFaceIndex(std::uint32_t cell_local_id, std::uint32_t face_idx) const
 {
-  return global_cell_id_to_local_id_map_.at(global_id);
+  const auto& cur_face = GetCellFace(cell_local_id, face_idx);
+  // Check index validity
+  if (not cur_face.has_neighbor)
+  {
+    std::stringstream outstr;
+    outstr << "Invalid cell index encountered in call to "
+           << "CellFace::GetNeighborAssociatedFace. Index points "
+           << "to a boundary";
+    throw std::logic_error(outstr.str());
+  }
+
+  const auto adj_cell_local_id = MapCellGlobalID2LocalID(cur_face.neighbor_id);
+  const auto& adj_cell = GetLocalCell(adj_cell_local_id);
+
+  auto cur_face_vertex_ids = GetCellFaceConnectivity(cell_local_id, face_idx);
+  std::optional<std::uint32_t> adj_face_idx;
+  std::set<uint64_t> cfvids(cur_face_vertex_ids.begin(),
+                            cur_face_vertex_ids.end()); // cur_face vertex ids
+
+  // Loop over adj cell faces
+  for (std::uint32_t afi = 0; afi < GetCellFaceCount(adj_cell_local_id); ++afi)
+  {
+    auto adj_face_vertex_ids = GetCellFaceConnectivity(adj_cell_local_id, afi);
+    std::set<uint64_t> afvids(adj_face_vertex_ids.begin(),
+                              adj_face_vertex_ids.end()); // adj_face vertex ids
+
+    if (afvids == cfvids)
+    {
+      adj_face_idx = afi;
+      break;
+    }
+  }
+
+  // Check associated face validity
+  if (not adj_face_idx.has_value())
+  {
+    std::stringstream outstr;
+    outstr << "Could not find associated face in call to "
+           << "CellFace::GetNeighborAssociatedFace.\n"
+           << "Reference face with centroid at: " << cur_face.centroid.PrintStr() << "\n"
+           << "Adjacent cell: " << adj_cell.global_id << "\n";
+    for (size_t afi = 0; afi < GetCellFaceCount(adj_cell_local_id); ++afi)
+    {
+      const auto& adj_cell_face = GetCellFace(adj_cell_local_id, afi);
+      outstr << "Adjacent cell face " << afi << " centroid " << adj_cell_face.centroid.PrintStr();
+    }
+    throw std::runtime_error(outstr.str());
+  }
+
+  return adj_face_idx.value();
 }
 
 size_t
-MeshContinuum::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
+Mesh::MapCellGlobalID2LocalID(const uint64_t global_id) const
+{
+  assert(global_to_local_cell_id_map_.contains(global_id));
+  auto lid = global_to_local_cell_id_map_.at(global_id);
+  return lid;
+}
+
+size_t
+Mesh::CountCellsInLogicalVolume(const LogicalVolume& log_vol) const
 {
   size_t count = 0;
   for (const auto& cell : local_cells_)
-    if (log_vol.Inside(cell->centroid))
+    if (log_vol.Inside(cell.centroid))
       ++count;
   mpi_comm.all_reduce(count, mpi::op::sum<size_t>());
   return count;
 }
 
 bool
-MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
+Mesh::CheckPointInsideCell(std::uint32_t cell_local_id, const Vector3& point) const
 {
   const auto& grid_ref = *this;
-
+  const auto cell = GetLocalCell(cell_local_id);
   // Check each cell edge. A point inside the cell will return a negative value. A point on either
   // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.GetType() == CellType::SLAB)
   {
-    const auto& v0 = grid_ref.GlobalVertex(cell.vertex_ids[0]);
-    const auto& v1 = grid_ref.GlobalVertex(cell.vertex_ids[1]);
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    const auto& v0 = grid_ref.GlobalVertex(cell_vertex_ids[0]);
+    const auto& v1 = grid_ref.GlobalVertex(cell_vertex_ids[1]);
     return (v0.z - point.z) * (v1.z - point.z) <= 0.0;
   }
 
@@ -533,7 +700,8 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
   // If the point is inside all faces, it is inside the polygon.
   if (cell.GetType() == CellType::POLYGON)
   {
-    for (const auto& face : cell.faces)
+    const auto cell_faces = GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
       if ((point - face.centroid).Dot(face.normal) > 0.0)
         return false;
     return true;
@@ -562,13 +730,15 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
       return pc.Dot(n) > -1.e-12;
     };
 
-    for (const auto& face : cell.faces)
+    const auto& cell_faces = GetCellFaces(cell_local_id);
+    for (std::uint32_t face_idx = 0; face_idx < cell_faces.size(); ++face_idx)
     {
-      const size_t num_sides = face.vertex_ids.size();
+      const auto& face = cell_faces[face_idx];
+      const size_t num_sides = GetCellFaceVertexCount(cell_local_id, face_idx);
       for (size_t side = 0; side < num_sides; ++side)
       {
         // Vertices to each of the four tetrahedral faces on this side
-        const auto tet_face_vertices = GetTetrahedralFaceVertices(cell, face, side);
+        const auto tet_face_vertices = GetTetrahedralFaceVertices(cell_local_id, face_idx, side);
 
         // Considered within the tet if within all four tri face planes
         bool within_tet = true;
@@ -585,29 +755,30 @@ MeshContinuum::CheckPointInsideCell(const Cell& cell, const Vector3& point) cons
     }
     return false;
   }
-  throw std::logic_error("MeshContinuum::CheckPointInsideCell: Unsupported cell-type.");
+  throw std::logic_error("Mesh::CheckPointInsideCell: Unsupported cell-type.");
 }
 
 bool
-MeshContinuum::CheckPointInsideCellFace(const Cell& cell,
-                                        const std::size_t face_i,
-                                        const Vector3& point) const
+Mesh::CheckPointInsideCellFace(std::uint32_t cell_local_id,
+                               std::uint32_t face_i,
+                               const Vector3& point) const
 {
   // Tolerance for testing; we should really use a relative tolerance
   // here based on some characteristic size of the face
   const double tol = 1.e-6;
 
-  const auto& face = cell.faces[face_i];
+  const auto& face = GetCellFace(cell_local_id, face_i);
+  auto face_vertex_ids = GetCellFaceConnectivity(cell_local_id, face_i);
 
   // 1D, face is a point; simple equality check (could we just check z here?)
-  if (face.vertex_ids.size() == 1)
-    return GlobalVertex(face.vertex_ids[0]).AbsoluteEquals(point, tol);
+  if (face_vertex_ids.size() == 1)
+    return GlobalVertex(face_vertex_ids[0]).AbsoluteEquals(point, tol);
 
   // 2D, face is a line; equal if len(ap) + len(bp) == len(ap) where a=v0, b=v1
-  if (face.vertex_ids.size() == 2)
+  if (face_vertex_ids.size() == 2)
   {
-    const auto& a = GlobalVertex(face.vertex_ids[0]);
-    const auto& b = GlobalVertex(face.vertex_ids[1]);
+    const auto& a = GlobalVertex(face_vertex_ids[0]);
+    const auto& b = GlobalVertex(face_vertex_ids[1]);
     const auto ap = (a - point).Norm();
     const auto bp = (b - point).Norm();
     const auto ab = (a - b).Norm();
@@ -621,24 +792,24 @@ MeshContinuum::CheckPointInsideCellFace(const Cell& cell,
   // Helper for computing if the point is on the inside of an edge defined by
   // the face vertices v1 and v2 where inside is opposite the outward normal
   // of the edge (outward normal points from face centroid -> edge)
-  const auto InsideEdge = [this, &point, &face](const auto vi1, const auto vi2)
+  const auto InsideEdge = [this, &point, &face, &face_vertex_ids](const auto vi1, const auto vi2)
   {
     const auto edge_centroid =
-      (GlobalVertex(face.vertex_ids[vi1]) + GlobalVertex(face.vertex_ids[vi2])) / 2.0;
+      (GlobalVertex(face_vertex_ids[vi1]) + GlobalVertex(face_vertex_ids[vi2])) / 2.0;
     const auto normal = (edge_centroid - face.centroid).Normalized();
     return (point - edge_centroid).Dot(normal) <= 0.0;
   };
 
   // Check all of the way around the polygon
-  for (size_t i = 0; i < (face.vertex_ids.size() - 1); ++i)
+  for (size_t i = 0; i < (face_vertex_ids.size() - 1); ++i)
     if (!InsideEdge(i, i + 1))
       return false;
   // Last vertex is checked with the first vertex
-  return InsideEdge(face.vertex_ids.size() - 1, 0);
+  return InsideEdge(face_vertex_ids.size() - 1, 0);
 }
 
 NDArray<uint64_t, 3>
-MeshContinuum::MakeIJKToGlobalIDMapping() const
+Mesh::MakeIJKToGlobalIDMapping() const
 {
   const std::string fname = "MakeIJKToGlobalIDMapping";
   if (GetType() != ORTHOGONAL)
@@ -659,15 +830,17 @@ MeshContinuum::MakeIJKToGlobalIDMapping() const
 }
 
 std::vector<Vector3>
-MeshContinuum::MakeCellOrthoSizes() const
+Mesh::MakeCellOrthoSizes() const
 {
   std::vector<Vector3> cell_ortho_sizes(local_cells_.size());
-  for (const auto& cell : local_cells_)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    Vector3 vmin = GlobalVertex(cell->vertex_ids.front());
+    const auto& cell = local_cells_[cell_local_id];
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    Vector3 vmin = GlobalVertex(cell_vertex_ids.front());
     Vector3 vmax = vmin;
 
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       vmin.x = std::min(vertex.x, vmin.x);
@@ -679,14 +852,14 @@ MeshContinuum::MakeCellOrthoSizes() const
       vmax.z = std::max(vertex.z, vmax.z);
     }
 
-    cell_ortho_sizes[cell->local_id] = vmax - vmin;
+    cell_ortho_sizes[cell_local_id] = vmax - vmin;
   } // for cell
 
   return cell_ortho_sizes;
 }
 
 std::pair<Vector3, Vector3>
-MeshContinuum::GetLocalBoundingBox() const
+Mesh::GetLocalBoundingBox() const
 {
   Vector3 xyz_min;
   Vector3 xyz_max;
@@ -703,9 +876,10 @@ MeshContinuum::GetLocalBoundingBox() const
   };
 
   bool initialized = false;
-  for (const auto& cell : local_cells_)
+  for (std::size_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    for (const uint64_t vid : cell->vertex_ids)
+    auto cell_vertex_ids = GetCellConnectivity(cell_local_id);
+    for (const uint64_t vid : cell_vertex_ids)
     {
       const auto& vertex = GlobalVertex(vid);
       if (not initialized)
@@ -722,10 +896,10 @@ MeshContinuum::GetLocalBoundingBox() const
 }
 
 void
-MeshContinuum::SetUniformBlockID(const unsigned int blk_id)
+Mesh::SetUniformBlockID(const unsigned int blk_id)
 {
   for (auto& cell : local_cells_)
-    cell->block_id = blk_id;
+    cell.block_id = blk_id;
 
   const auto& ghost_ids = GetGhostGlobalIDs();
   for (uint64_t ghost_id : ghost_ids)
@@ -737,16 +911,14 @@ MeshContinuum::SetUniformBlockID(const unsigned int blk_id)
 }
 
 void
-MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
-                                           unsigned int blk_id,
-                                           bool sense)
+Mesh::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol, unsigned int blk_id, bool sense)
 {
   int num_cells_modified = 0;
   for (auto& cell : local_cells_)
   {
-    if (log_vol.Inside(cell->centroid) and sense)
+    if (log_vol.Inside(cell.centroid) and sense)
     {
-      cell->block_id = blk_id;
+      cell.block_id = blk_id;
       ++num_cells_modified;
     }
   }
@@ -768,12 +940,13 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
 }
 
 void
-MeshContinuum::SetUniformBoundaryID(const std::string& boundary_name)
+Mesh::SetUniformBoundaryID(const std::string& boundary_name)
 {
   auto bndry_id = MakeBoundaryID(boundary_name);
-  for (auto& cell : local_cells_)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    for (auto& face : cell->faces)
+    const auto cell_faces = GetCellFaces(cell_local_id);
+    for (auto& face : cell_faces)
     {
       if (face.has_neighbor)
         continue;
@@ -784,18 +957,19 @@ MeshContinuum::SetUniformBoundaryID(const std::string& boundary_name)
 }
 
 void
-MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
-                                              const std::string& boundary_name,
-                                              const bool sense)
+Mesh::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
+                                     const std::string& boundary_name,
+                                     const bool sense)
 {
   // Check if name already has id
   uint64_t bndry_id = MakeBoundaryID(boundary_name);
 
   // Loop over cells
   int num_faces_modified = 0;
-  for (auto& cell : local_cells_)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
   {
-    for (auto& face : cell->faces)
+    const auto cell_faces = GetCellFaces(cell_local_id);
+    for (auto& face : cell_faces)
     {
       if (face.has_neighbor)
         continue;
@@ -817,7 +991,7 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
 }
 
 Vector3
-MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const
+Mesh::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list) const
 {
   if (list.empty())
     throw std::logic_error("ComputeCentroidFromListOfNodes: the provided list of nodes is empty.");
@@ -830,23 +1004,26 @@ MeshContinuum::ComputeCentroidFromListOfNodes(const std::vector<uint64_t>& list)
 }
 
 std::array<std::array<Vector3, 3>, 4>
-MeshContinuum::GetTetrahedralFaceVertices(const Cell& cell,
-                                          const CellFace& face,
-                                          const size_t side) const
+Mesh::GetTetrahedralFaceVertices(std::uint32_t cell_local_id,
+                                 std::uint32_t face_idx,
+                                 const size_t side) const
 {
+  const auto& cell = GetLocalCell(cell_local_id);
   assert(cell.GetType() == CellType::POLYHEDRON);
-  const auto num_sides = face.vertex_ids.size();
+  auto face_vertex_ids = GetCellFaceConnectivity(cell_local_id, face_idx);
+  const auto num_sides = face_vertex_ids.size();
   assert(side < num_sides);
   const size_t sp1 = (side < (num_sides - 1)) ? side + 1 : 0;
-  const auto& v0 = GlobalVertex(face.vertex_ids[side]);
+  const auto& v0 = GlobalVertex(face_vertex_ids[side]);
+  const auto& face = GetCellFace(cell_local_id, face_idx);
   const auto& v1 = face.centroid;
-  const auto& v2 = GlobalVertex(face.vertex_ids[sp1]);
+  const auto& v2 = GlobalVertex(face_vertex_ids[sp1]);
   const auto& v3 = cell.centroid;
   return {{{{v0, v1, v2}}, {{v0, v2, v3}}, {{v1, v3, v2}}, {{v0, v3, v1}}}};
 }
 
 int
-MeshContinuum::GetCellDimension(const Cell& cell)
+Mesh::GetCellDimension(const Cell& cell)
 {
   switch (cell.GetType())
   {
@@ -860,41 +1037,48 @@ MeshContinuum::GetCellDimension(const Cell& cell)
     case CellType::POLYHEDRON:
       return 3;
     default:
-      throw std::logic_error("MeshContinuum::GetCellDimension: "
+      throw std::logic_error("Mesh::GetCellDimension: "
                              "Dimension mapping unavailable for cell type.");
   }
 }
 
 size_t
-MeshContinuum::MapCellFace(const Cell& cur_cell, const Cell& adj_cell, const unsigned int f)
+Mesh::MapCellFace(std::uint32_t cur_cell_local_id,
+                  std::uint32_t adj_cell_local_id,
+                  const unsigned int f)
 {
-  const auto& ccface = cur_cell.faces[f]; // current cell face
+  // const auto& ccface = cur_cell.faces[f]; // current cell face
+  auto ccface_vertex_ids = GetCellFaceConnectivity(cur_cell_local_id, f);
   std::set<uint64_t> ccface_vids;
-  for (auto vid : ccface.vertex_ids)
+  for (auto vid : ccface_vertex_ids)
     ccface_vids.insert(vid);
 
-  for (size_t af = 0; af < adj_cell.faces.size(); ++af)
+  const auto& adj_cell = GetLocalCell(adj_cell_local_id);
+  for (size_t af = 0; af < GetCellFaceCount(adj_cell_local_id); ++af)
   {
-    const auto& acface = adj_cell.faces[af]; // adjacent cell face
+    auto acface_vertex_ids = GetCellFaceConnectivity(adj_cell_local_id, af);
 
     std::set<uint64_t> acface_vids;
-    for (auto vid : acface.vertex_ids)
+    for (auto vid : acface_vertex_ids)
       acface_vids.insert(vid);
 
     if (acface_vids == ccface_vids)
       return af;
   } // for adj faces
 
-  throw std::logic_error("MeshContinuum::MapCellFace: Mapping failure.");
+  throw std::logic_error("Mesh::MapCellFace: Mapping failure.");
 }
 
 std::map<unsigned int, double>
-MeshContinuum::ComputeVolumePerBlockID() const
+Mesh::ComputeVolumePerBlockID() const
 {
   // Create a map to hold local volume with local block as key
   std::map<unsigned int, double> block_volumes;
-  for (const auto& cell : this->local_cells_)
-    block_volumes[cell->block_id] += cell->volume;
+  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
+  {
+    const auto& cell = this->local_cells_[cell_local_id];
+    block_volumes[cell.block_id] += cell.volume;
+  }
 
   // Collect all local block IDs
   std::set<unsigned int> unique_block_ids;
@@ -945,6 +1129,125 @@ MeshContinuum::ComputeVolumePerBlockID() const
   }
 
   return global_block_volumes;
+}
+
+int
+Mesh::GetCellPartition(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < local_cells_.size())
+  {
+    return local_cells_[cell_local_id].partition_id;
+  }
+  else if (cell_local_id - local_cells_.size() < ghost_cells_.size())
+  {
+    return ghost_cells_[cell_local_id - local_cells_.size()].partition_id;
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::span<const uint64_t>
+Mesh::GetCellConnectivity(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < connect_ofst_.size() - 1)
+  {
+    auto first = connect_ofst_[cell_local_id];
+    auto last = connect_ofst_[cell_local_id + 1];
+    return std::span{connect_ids_.data() + first, connect_ids_.data() + last};
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::uint64_t
+Mesh::GetCellFaceCount(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto first = face_connect_ofst_[cell_local_id];
+    auto last = face_connect_ofst_[cell_local_id + 1];
+    return last - first;
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+const CellFace&
+Mesh::GetCellFace(std::uint32_t cell_local_id, std::uint32_t face_idx) const
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto ofst = face_connect_ofst_[cell_local_id] + face_idx;
+    return faces_[ofst];
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+CellFace&
+Mesh::GetCellFace(std::uint32_t cell_local_id, std::uint32_t face_idx)
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto ofst = face_connect_ofst_[cell_local_id] + face_idx;
+    return faces_[ofst];
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::span<const CellFace>
+Mesh::GetCellFaces(std::uint32_t cell_local_id) const
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto first = face_connect_ofst_[cell_local_id];
+    auto last = face_connect_ofst_[cell_local_id + 1];
+    return std::span{faces_.data() + first, faces_.data() + last};
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::span<CellFace>
+Mesh::GetCellFaces(std::uint32_t cell_local_id)
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto first = face_connect_ofst_[cell_local_id];
+    auto last = face_connect_ofst_[cell_local_id + 1];
+    return std::span{faces_.data() + first, faces_.data() + last};
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::uint64_t
+Mesh::GetCellFaceVertexCount(std::uint32_t cell_local_id, std::uint32_t face_idx) const
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto fv_ofst = face_connect_ofst_[cell_local_id] + face_idx;
+    auto first = face_vertex_ofst_[fv_ofst];
+    auto last = face_vertex_ofst_[fv_ofst + 1];
+    return last - first;
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
+}
+
+std::span<const uint64_t>
+Mesh::GetCellFaceConnectivity(std::uint32_t cell_local_id, std::uint32_t face_idx) const
+{
+  if (cell_local_id < face_connect_ofst_.size() - 1)
+  {
+    auto fv_ofst = face_connect_ofst_[cell_local_id] + face_idx;
+    auto first = face_vertex_ofst_[fv_ofst];
+    auto last = face_vertex_ofst_[fv_ofst + 1];
+    return std::span{face_vertex_ids_.data() + first, face_vertex_ids_.data() + last};
+  }
+  else
+    throw std::out_of_range("Cell local id out of range");
 }
 
 } // namespace opensn

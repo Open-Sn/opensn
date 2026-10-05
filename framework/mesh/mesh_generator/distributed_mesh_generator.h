@@ -33,7 +33,7 @@ public:
    * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,
    * and set up the local mesh.
    */
-  std::shared_ptr<MeshContinuum> Execute() override;
+  std::shared_ptr<Mesh> Execute() override;
 
 private:
   /**
@@ -56,7 +56,13 @@ private:
     OrthoMeshAttributes ortho_attributes;
 
     /// Map of cells (partition ID, cell global ID).
-    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+    std::map<std::pair<int, uint64_t>, Cell> cells;
+    /// Cell connectivity
+    std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
+    /// Cell face connectivity
+    std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+    /// Cell faces
+    std::map<std::uint64_t, std::vector<CellFace>> cell_faces;
     /// Map of vertices by global vertex ID.
     std::map<uint64_t, Vector3> vertices;
     /// Map of boundary IDs to boundary names.
@@ -113,7 +119,7 @@ private:
    * boundaries.
    * \return A shared pointer to the local mesh.
    */
-  static std::shared_ptr<MeshContinuum> SetupLocalMesh(DistributedMeshData& mesh_info);
+  static std::shared_ptr<Mesh> SetupLocalMesh(DistributedMeshData& mesh_info);
 };
 
 } // namespace opensn

@@ -3,28 +3,30 @@
 
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_slab_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
 
-PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(
-  const Cell& slab_cell,
-  const std::shared_ptr<MeshContinuum> ref_grid,
-  const LineQuadrature& volume_quadrature)
-  : PieceWiseLinearBaseMapping(ref_grid, slab_cell, 2, MakeFaceNodeMapping(slab_cell)),
-    v0i_(slab_cell.vertex_ids[0]),
-    v1i_(slab_cell.vertex_ids[1]),
+PieceWiseLinearSlabMapping::PieceWiseLinearSlabMapping(std::uint32_t cell_local_id,
+                                                       const std::shared_ptr<Mesh> ref_grid,
+                                                       const LineQuadrature& volume_quadrature)
+  : PieceWiseLinearBaseMapping(
+      ref_grid, cell_local_id, 2, MakeFaceNodeMapping(ref_grid, cell_local_id)),
     volume_quadrature_(volume_quadrature)
 {
+  auto slab_cell_vertex_ids = ref_grid->GetCellConnectivity(cell_local_id);
+  v0i_ = slab_cell_vertex_ids[0];
+  v1i_ = slab_cell_vertex_ids[1];
   v0_ = grid_->GlobalVertex(v0i_);
   const auto& v1 = grid_->GlobalVertex(v1i_);
 
   Vector3 v01 = v1 - v0_;
   h_ = v01.Norm();
 
-  normals_[0] = slab_cell.faces[0].normal;
-  normals_[1] = slab_cell.faces[1].normal;
+  const auto slab_cell_faces = grid_->GetCellFaces(cell_local_id);
+  normals_[0] = slab_cell_faces[0].normal;
+  normals_[1] = slab_cell_faces[1].normal;
 }
 
 double

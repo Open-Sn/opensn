@@ -46,17 +46,19 @@ public:
    * \param as_ss_idx Angle-set subset index.
    * \return Local upwind cell psi for the specified node and angle subset.
    */
-  double* UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std::size_t as_ss_idx);
+  double* UpwindPsi(std::uint32_t face_neighbor_local_id,
+                    unsigned int adj_cell_node,
+                    std::size_t as_ss_idx);
 
   /**
    * Return writable outgoing cell psi for a cell node.
    *
-   * \param cell Local cell.
+   * \param cell_local_id Local cell ID.
    * \param cell_node Local cell node.
    * \param as_ss_idx Angle-set subset index.
    * \return Local outgoing cell psi for the specified node and angle subset.
    */
-  double* OutgoingPsi(const Cell& cell, unsigned int cell_node, std::size_t as_ss_idx);
+  double* OutgoingPsi(std::uint32_t cell_local_id, unsigned int cell_node, std::size_t as_ss_idx);
 
   /**
    * Return received nonlocal upwind face psi for a mapped face node.

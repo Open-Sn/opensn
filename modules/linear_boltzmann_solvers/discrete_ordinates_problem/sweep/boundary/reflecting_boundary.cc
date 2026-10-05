@@ -6,7 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <cmath>
 #include <span>
@@ -77,7 +77,7 @@ ReflectingBoundary::ForEachDelayedAngularFlux(int groupset_id, Fn&& fn) const
 
 ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
                                        std::uint64_t bid,
-                                       const std::shared_ptr<MeshContinuum>& grid,
+                                       const std::shared_ptr<Mesh>& grid,
                                        const std::vector<LBSGroupset>& groupsets,
                                        const Vector3& normal,
                                        CoordinateSystemType coord_type)
@@ -87,18 +87,18 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
   extra_data_.resize(groupsets.size());
 
   std::uint64_t face_node_counter = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_id = cell->local_id;
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell_faces[f];
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
-        const auto num_face_nodes = face.vertex_ids.size();
+        const auto num_face_nodes = grid->GetCellFaceVertexCount(cell_local_id, f);
         for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
         {
-          FaceNode fn(cell_id, f, fnode);
+          FaceNode fn(cell_local_id, f, fnode);
           facenode_to_index_[fn] = face_node_counter++;
         }
       }

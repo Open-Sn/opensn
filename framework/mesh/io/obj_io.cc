@@ -81,7 +81,10 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   struct BlockData
   {
     std::string name;
-    std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> cells;
+    std::vector<Cell> cells;
+    std::vector<std::vector<std::uint64_t>> cell_connect;
+    std::vector<CellFace> mesh_faces;
+    std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
     std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
 
@@ -146,29 +149,32 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       else if (number_of_verts == 4)
         sub_type = CellType::QUADRILATERAL;
 
-      auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON, sub_type);
-      cell->block_id = material_id.value_or(std::numeric_limits<unsigned int>::max());
+      Cell cell(CellType::POLYGON, sub_type);
+      cell.block_id = material_id.value_or(std::numeric_limits<unsigned int>::max());
 
       // Populate vertex-ids
+      std::vector<std::uint64_t> cell_vertex_ids;
       for (size_t k = 1; k <= number_of_verts; ++k)
       {
         // Extract the vertex ID
         auto vert_word = ExtractFirstPart(parts[k]);
         auto num_value = ConvertToInt(vert_word, options.file_name, line_no);
-        cell->vertex_ids.push_back(num_value - 1);
+        cell_vertex_ids.push_back(num_value - 1);
       }
 
       // Build faces
-      const size_t num_verts = cell->vertex_ids.size();
+      const size_t num_verts = cell_vertex_ids.size();
+      std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
       for (size_t v = 0; v < num_verts; ++v)
       {
-        UnpartitionedMesh::LightWeightFace face;
+        CellFace face;
+        block_data.back().mesh_faces.emplace_back(face);
 
-        face.vertex_ids.resize(2);
-        face.vertex_ids[0] = cell->vertex_ids[v];
-        face.vertex_ids[1] = (v < (num_verts - 1)) ? cell->vertex_ids[v + 1] : cell->vertex_ids[0];
+        std::vector<std::uint64_t> lwf_vertex_ids(2);
+        lwf_vertex_ids[0] = cell_vertex_ids[v];
+        lwf_vertex_ids[1] = (v < (num_verts - 1)) ? cell_vertex_ids[v + 1] : cell_vertex_ids[0];
 
-        cell->faces.push_back(std::move(face));
+        cell_face_vertex_ids.push_back(std::move(lwf_vertex_ids));
       }
 
       if (block_data.empty())
@@ -176,7 +182,9 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
                                        "This normally indicates that the file does not have the "
                                        "\"o Object Name\" entry.");
 
-      block_data.back().cells.push_back(cell);
+      block_data.back().cells.emplace_back(cell);
+      block_data.back().cell_connect.emplace_back(cell_vertex_ids);
+      block_data.back().cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
     } // if (first_word == "f")
     else if (first_word == "l")
     {
@@ -207,8 +215,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
   // Error checks
   for (const auto& block : block_data)
-    for (const auto& cell : block.cells)
-      for (const auto vid : cell->vertex_ids)
+    for (const auto& cell : block.cell_connect)
+      for (const auto vid : cell)
       {
         OpenSnLogicalErrorIf(
           vid >= file_vertices.size(),
@@ -249,8 +257,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
     // Build set of cell vertices
     std::set<uint64_t> cell_vertex_id_set;
-    for (const auto& cell_ptr : block_data.at(main_block_id).cells)
-      for (auto vid : cell_ptr->vertex_ids)
+    for (const auto& cell : block_data.at(main_block_id).cell_connect)
+      for (auto vid : cell)
         cell_vertex_id_set.insert(vid);
 
     // Make cell_vertices and edit map
@@ -300,13 +308,16 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
 
     // Change cell and face vertex ids to cell vertex ids
     // using vertex map
-    for (auto& cell_ptr : block_data.at(main_block_id).cells)
+    for (auto& cell : block_data.at(main_block_id).cell_connect)
     {
-      for (uint64_t& vid : cell_ptr->vertex_ids)
+      for (uint64_t& vid : cell)
         vid = vertex_map[vid];
+    }
 
-      for (auto& face : cell_ptr->faces)
-        for (uint64_t& vid : face.vertex_ids)
+    for (auto& cell_face_vertex_ids : block_data.at(main_block_id).cell_face_connect)
+    {
+      for (auto& face_vertex_ids : cell_face_vertex_ids)
+        for (uint64_t& vid : face_vertex_ids)
           vid = vertex_map[vid];
     }
 
@@ -320,12 +331,13 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       }
   }
   mesh->GetVertices() = cell_vertices;
-  mesh->GetRawCells() = block_data[main_block_id].cells;
-
   // Always do this
   mesh->SetDimension(2);
   mesh->SetType(UNSTRUCTURED);
-
+  mesh->SetCells(std::move(block_data[main_block_id].cells),
+                 block_data[main_block_id].cell_connect);
+  mesh->SetCellFaces(std::move(block_data[main_block_id].mesh_faces),
+                     block_data[main_block_id].cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -333,11 +345,23 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   // Set boundary ids
   if (not bndry_block_ids.empty())
   {
-    std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
-    for (auto& cell_ptr : mesh->GetRawCells())
-      for (auto& face : cell_ptr->faces)
+    std::vector<CellFace*> bndry_faces;
+    std::vector<std::pair<size_t, size_t>> bndry_face_indices; // cell_idx, face_idx
+    size_t cell_idx = 0;
+    for (auto& cell : mesh->GetCells())
+    {
+      const auto cell_faces = mesh->GetCellFaces(cell_idx);
+      for (size_t f = 0; f < cell_faces.size(); ++f)
+      {
+        auto& face = cell_faces[f];
         if (not face.has_neighbor)
+        {
           bndry_faces.push_back(&face);
+          bndry_face_indices.emplace_back(cell_idx, f);
+        }
+      }
+      ++cell_idx;
+    }
 
     size_t bndry_id = 0;
     for (size_t bid : bndry_block_ids)
@@ -349,14 +373,16 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       {
         std::set<uint64_t> edge_vert_id_set({edge.first, edge.second});
 
-        for (auto& face_ptr : bndry_faces)
+        for (size_t i = 0; i < bndry_faces.size(); ++i)
         {
-          const auto& vert_ids = face_ptr->vertex_ids;
+          auto* face_ptr = bndry_faces[i];
+          const auto [c_idx, f_idx] = bndry_face_indices[i];
+          const auto& vert_ids = block_data[main_block_id].cell_face_connect[c_idx][f_idx];
           std::set<uint64_t> face_vert_id_set(vert_ids.begin(), vert_ids.end());
 
           if (face_vert_id_set == edge_vert_id_set)
           {
-            face_ptr->neighbor = bndry_id;
+            face_ptr->neighbor_id = bndry_id;
             ++num_faces_boundarified;
             break;
           }
