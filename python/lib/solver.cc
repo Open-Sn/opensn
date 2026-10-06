@@ -1250,6 +1250,10 @@ WrapLBS(py::module& slv)
         fission, and uncollided-flux inputs are not supported on this path.
         Cell-local scalar and stored angular flux entries represent edge values.
         No negative-flux fixup is applied on optically thick cells.
+    apply_1d_dsa : bool, default=False
+        Apply consistent edge-based multigroup DSA after each diamond-difference
+        sweep. This requires ``transport_discretization='diamond_difference'`` and
+        no lagged fluxes, and it cannot be used with WGDSA or TGDSA.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True`` and

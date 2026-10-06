@@ -61,6 +61,10 @@ DiscreteOrdinatesProblem::GetInputParameters()
     "prescribed incoming boundaries, and one classic Richardson groupset.");
   params.ConstrainParameterRange("transport_discretization",
                                  AllowableRangeList::New({"pwld", "diamond_difference"}));
+  params.AddOptionalParameter("apply_1d_dsa",
+                              false,
+                              "Apply the consistent diamond-difference multigroup DSA correction. "
+                              "Requires transport_discretization=diamond_difference.");
   params.AddOptionalParameter("time_dependent",
                               false,
                               "If true, initializes the problem in time-dependent mode. "
@@ -119,7 +123,8 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
   : LBSProblem(params),
     sweep_type_(params.GetParamValue<std::string>("sweep_type")),
-    transport_discretization_(params.GetParamValue<std::string>("transport_discretization"))
+    transport_discretization_(params.GetParamValue<std::string>("transport_discretization")),
+    apply_1d_dsa_(params.GetParamValue<bool>("apply_1d_dsa"))
 {
   // The configuration (time-dependent mode, adjoint, uncollided flux, ...) is validated by
   // ValidateConfiguration() in BuildRuntime(), once the object is fully constructed. The rules are
@@ -549,6 +554,8 @@ DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& 
 void
 DiscreteOrdinatesProblem::CheckDiamondDifference(std::vector<std::string>& errors) const
 {
+  if (apply_1d_dsa_ and not UsesDiamondDifference())
+    errors.emplace_back("One-dimensional DSA requires diamond-difference transport.");
   if (not UsesDiamondDifference())
     return;
 

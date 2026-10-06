@@ -99,6 +99,9 @@ public:
   /// If the steady-state CBC slab sweep uses diamond difference.
   bool UsesDiamondDifference() const { return transport_discretization_ == "diamond_difference"; }
 
+  /// If classic Richardson applies the consistent multigroup slab DSA correction.
+  bool ApplyOneDimensionalDSA() const { return apply_1d_dsa_; }
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
@@ -382,6 +385,7 @@ protected:
 
   const std::string sweep_type_;
   const std::string transport_discretization_;
+  const bool apply_1d_dsa_;
   /// Time-absorption scale 1/(theta dt) of the current DSA operators (0 when steady).
   double dsa_time_absorption_scale_ = 0.0;
   /** @} */
