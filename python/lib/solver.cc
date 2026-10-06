@@ -1241,6 +1241,15 @@ WrapLBS(py::module& slv)
     sweep_type : str, default="AAH"
         The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
         Both sweep types support time-dependent (transient) mode.
+    transport_discretization : {'pwld', 'diamond_difference'}, default='pwld'
+        Cell transport discretization. The experimental ``diamond_difference``
+        path supports only steady-state host CBC Cartesian slabs, Gauss-Legendre
+        slab quadrature, isotropic self-scattering and adjacent downscatter,
+        prescribed incoming boundaries, and one classic Richardson groupset
+        containing all groups. Reflecting boundaries, GPU execution, adjoint,
+        fission, and uncollided-flux inputs are not supported on this path.
+        Cell-local scalar and stored angular flux entries represent edge values.
+        No negative-flux fixup is applied on optically thick cells.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
         steady-state mode. Requires ``options.save_angular_flux=True`` and

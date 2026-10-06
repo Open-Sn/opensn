@@ -30,6 +30,7 @@ protected:
 
   CBC_FLUDS* fluds_ = nullptr;
   CBC_AsynchronousCommunicator* async_comm_ = nullptr;
+  const bool diamond_difference_;
 
   unsigned int group_block_size_ = 0;
   CBCSweepWorkspace workspace_;

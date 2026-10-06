@@ -338,6 +338,27 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         source[i] = temp_src;
       }
 
+      if constexpr (not time_dependent)
+      {
+        if (sweep_chunk.diamond_difference_)
+        {
+          const std::size_t incoming_face =
+            face_orientations[0] == FaceOrientation::INCOMING ? 0 : 1;
+          const auto incoming_node = cell_mapping.MapFaceNode(incoming_face, 0);
+          const auto outgoing_node = 1 - incoming_node;
+          const auto& nodes = cell_mapping.GetNodeLocations();
+          const double h = (nodes[1] - nodes[0]).Norm();
+          const double abs_mu = std::fabs(face_mu_values[incoming_face]);
+          const double psi_in = b[gsg](incoming_node) / abs_mu;
+          const double half_tau = 0.5 * sigma_tg * h;
+          b[gsg](incoming_node) = psi_in;
+          b[gsg](outgoing_node) =
+            ((abs_mu - half_tau) * psi_in + 0.5 * h * (source[0] + source[1])) /
+            (abs_mu + half_tau);
+          continue;
+        }
+      }
+
       for (std::size_t i = 0; i < cell_num_nodes; ++i)
       {
         double temp = 0.0;
