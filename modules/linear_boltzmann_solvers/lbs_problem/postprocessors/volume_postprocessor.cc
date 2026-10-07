@@ -5,6 +5,7 @@
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/runtime.h"
+#include "framework/utils/error.h"
 #include <cstdint>
 #include <limits>
 #include <memory>
@@ -134,8 +135,17 @@ VolumePostprocessor::CreateSpatialRestriction()
       cell_local_ids_[i] = GetLogicalVolumeCellIDs(logical_volumes_[i]);
   }
 
-  OpenSnLogicalErrorIf(cell_local_ids_.empty(),
-                       "No mesh cells were selected by a VolumePostprocessor.");
+  // An empty selection would silently report zero (or +/- infinity for min/max).
+  for (std::size_t i = 0; i < cell_local_ids_.size(); ++i)
+  {
+    auto count = cell_local_ids_[i].size();
+    mpi_comm.all_reduce(count, mpi::op::sum<std::size_t>());
+    OpenSnInvalidArgumentIf(count == 0,
+                            "VolumePostprocessor: " +
+                              (logical_volumes_.empty() ? std::string("the block restriction")
+                                                        : "logical volume " + std::to_string(i)) +
+                              " selects no mesh cells.");
+  }
 }
 
 void
@@ -167,7 +177,8 @@ VolumePostprocessor::CreateMultipliers()
     // computation
   }
   else
-    throw std::logic_error("Can specify either 'multiplier' or 'group_multipliers', not both.");
+    throw std::invalid_argument(
+      "Specify at most one of 'multiplier', 'group_multipliers', and 'xs_multiplier'.");
 }
 
 std::vector<std::uint32_t>
@@ -224,6 +235,38 @@ VolumePostprocessor::CreateEnergyRestriction()
 void
 VolumePostprocessor::Execute()
 {
+  if (xs_multiplier_.has_value())
+  {
+    // The cross sections can change after construction, so check them on each execution. Every
+    // rank holds the same block-to-XS map, so every rank reaches the same result.
+    const auto num_groups = lbs_problem_->GetNumGroups();
+    bool any_block_has_xs = false;
+    for (const auto& [block_id, xs] : lbs_problem_->GetBlockID2XSMap())
+    {
+      const std::vector<double>* coeffs = nullptr;
+      try
+      {
+        coeffs = xs->GetByName(xs_multiplier_.value());
+      }
+      catch (const std::logic_error& error)
+      {
+        // An unknown name is invalid input.
+        throw std::invalid_argument("VolumePostprocessor: " + std::string(error.what()));
+      }
+      OpenSnInvalidArgumentIf(coeffs != nullptr and coeffs->size() != num_groups,
+                              "VolumePostprocessor: cross section \"" + xs_multiplier_.value() +
+                                "\" on block " + std::to_string(block_id) +
+                                " does not have one value per group.");
+      any_block_has_xs = any_block_has_xs or coeffs != nullptr;
+    }
+    // A material without the cross section contributes zero, but a problem without it would
+    // silently report zero.
+    OpenSnInvalidArgumentIf(not any_block_has_xs,
+                            "VolumePostprocessor: no material in the problem has cross section \"" +
+                              xs_multiplier_.value() + "\".");
+    zero_coefficients_.assign(num_groups, 0.0);
+  }
+
   for (unsigned int i = 0; i < cell_local_ids_.size(); ++i)
   {
     switch (value_type_)
@@ -250,12 +293,10 @@ VolumePostprocessor::GetCoefficients(const Cell& cell)
   if (xs_multiplier_.has_value())
   {
     const auto blk_id = cell.block_id;
-    const auto xs_map = lbs_problem_->GetBlockID2XSMap();
-    const auto& xs = xs_map.at(blk_id);
+    const auto& xs = lbs_problem_->GetBlockID2XSMap().at(blk_id);
+    // A material without this cross section (e.g. sigma_f of a non-fissile one) contributes zero.
     const auto* coeffs = xs->GetByName(xs_multiplier_.value());
-    if (coeffs == nullptr)
-      throw std::runtime_error("Requested cross-section name does not exist.");
-    return *coeffs;
+    return coeffs != nullptr ? *coeffs : zero_coefficients_;
   }
   else
   {
@@ -269,7 +310,7 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   std::vector<double> local_integral(groups_.size(), 0.0);
@@ -303,8 +344,10 @@ VolumePostprocessor::ComputeIntegral(const std::vector<uint32_t>& cell_local_ids
   }
 
   std::vector<double> global_integral(groups_.size(), 0.0);
-  for (std::size_t i = 0; i < local_integral.size(); ++i)
-    mpi_comm.all_reduce(local_integral[i], global_integral[i], mpi::op::sum<double>());
+  mpi_comm.all_reduce(local_integral.data(),
+                      static_cast<int>(local_integral.size()),
+                      global_integral.data(),
+                      mpi::op::sum<double>());
 
   return global_integral;
 }
@@ -315,7 +358,7 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_max(groups_.size(), -std::numeric_limits<double>::infinity());
   for (const auto cell_id : cell_local_ids)
@@ -336,8 +379,10 @@ VolumePostprocessor::ComputeMax(const std::vector<uint32_t>& cell_local_ids)
   }
 
   std::vector<double> global_max(groups_.size(), -std::numeric_limits<double>::infinity());
-  for (std::size_t i = 0; i < local_max.size(); ++i)
-    mpi_comm.all_reduce(local_max[i], global_max[i], mpi::op::max<double>());
+  mpi_comm.all_reduce(local_max.data(),
+                      static_cast<int>(local_max.size()),
+                      global_max.data(),
+                      mpi::op::max<double>());
 
   return global_max;
 }
@@ -348,7 +393,7 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
 
   std::vector<double> local_min(groups_.size(), std::numeric_limits<double>::infinity());
   for (const auto cell_id : cell_local_ids)
@@ -369,8 +414,10 @@ VolumePostprocessor::ComputeMin(const std::vector<uint32_t>& cell_local_ids)
   }
 
   std::vector<double> global_min(groups_.size(), std::numeric_limits<double>::infinity());
-  for (std::size_t i = 0; i < local_min.size(); ++i)
-    mpi_comm.all_reduce(local_min[i], global_min[i], mpi::op::min<double>());
+  mpi_comm.all_reduce(local_min.data(),
+                      static_cast<int>(local_min.size()),
+                      global_min.data(),
+                      mpi::op::min<double>());
 
   return global_min;
 }
@@ -381,7 +428,7 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto phi = lbs_problem_->GetPhiNewLocal();
+  const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   double local_weighted_volume = 0.0;
@@ -390,7 +437,6 @@ VolumePostprocessor::ComputeVolumeWeightedAverage(const std::vector<uint32_t>& c
     const auto& cell = grid->GetLocalCell(cell_id);
     const auto& cell_mapping = sdm.GetCellMapping(cell);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
-    const auto& coeffs = GetCoefficients(cell);
 
     for (const std::size_t qp : fe_vol_data.GetQuadraturePointIndices())
       local_weighted_volume += coord(fe_vol_data.QPointXYZ(qp)) * fe_vol_data.JxW(qp);

@@ -11,9 +11,43 @@
 #include "framework/utils/caliper_scopes.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
+#include <algorithm>
+#include <cmath>
+#include <memory>
+#include <stdexcept>
+#include <string>
 
 namespace opensn
 {
+
+namespace
+{
+
+/// Throws on all ranks if the scalar flux contains a non-finite value after a groupset solve.
+void
+ValidateFiniteScalarFlux(const LBSProblem& lbs_problem, const std::shared_ptr<LinearSolver>& solver)
+{
+  const auto& phi = lbs_problem.GetPhiNewLocal();
+  const int local_nonfinite =
+    std::all_of(phi.begin(), phi.end(), [](const double value) { return std::isfinite(value); })
+      ? 0
+      : 1;
+  int global_nonfinite = 0;
+  mpi_comm.all_reduce(local_nonfinite, global_nonfinite, mpi::op::max<int>());
+  if (global_nonfinite == 0)
+    return;
+
+  std::string groups;
+  if (const auto context = std::dynamic_pointer_cast<WGSContext>(solver->GetContext()))
+    groups = " for groups [" + std::to_string(context->groupset.first_group) + "-" +
+             std::to_string(context->groupset.last_group) + "]";
+  throw std::runtime_error(
+    "The within-group solve" + groups +
+    " produced a non-finite scalar flux. Check the cross sections, sources, and boundary "
+    "conditions for invalid values or regions without interaction.");
+}
+
+} // namespace
 
 void
 AGSLinearSolver::Solve()
@@ -47,6 +81,7 @@ AGSLinearSolver::Solve()
     {
       solver->Setup();
       solver->Solve();
+      ValidateFiniteScalarFlux(lbs_problem_, solver);
     }
 
     std::vector<IterationSummary> wgs_summaries;

@@ -262,7 +262,8 @@ WrapFieldFunctionInterpolation(py::module& ffunc)
     Get the most recently computed point value.
 
     Call ``Execute()`` after changing the point or field function to refresh
-    the stored result.
+    the stored result. For a point on a face of a discontinuous field, the value
+    is taken from the containing cell with the smallest global id. Collective.
     )"
   );
 

@@ -42,7 +42,7 @@ struct BalanceTable
 };
 
 /**
- * Compute the global particle balance table.
+ * Compute the global particle balance table. Does not log; ComputeBalance prints the table.
  *
  * In time-dependent mode, the initial and final inventories are computed from the angular flux
  * unless initial_phi and final_phi are given, in which case they are computed from those scalar
@@ -53,7 +53,13 @@ BalanceTable ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
                                  const std::vector<double>* initial_phi = nullptr,
                                  const std::vector<double>* final_phi = nullptr);
 
-/// Compute balance
+/**
+ * Print a balance table on rank 0. A table with inventory data is printed as a timestep balance
+ * for a step of size dt.
+ */
+void LogBalanceTable(const BalanceTable& table, double dt = 0.0);
+
+/// Compute and print the balance table.
 void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor = 1.0);
 
 /**

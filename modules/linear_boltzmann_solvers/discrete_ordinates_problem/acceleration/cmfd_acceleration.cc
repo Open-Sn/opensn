@@ -24,12 +24,17 @@
 #include <sstream>
 #include <set>
 #include <stdexcept>
+#include <string>
 #include <utility>
+#include <vector>
 
 namespace opensn
 {
 namespace
 {
+
+/// Consecutive skipped corrections after which CMFD warns that it is not accelerating.
+constexpr unsigned int persistent_skip_warning_count = 5;
 
 double
 ProjectedDistanceToFace(const Vector3& cell_centroid,
@@ -128,11 +133,10 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "current_closure",
     "partial",
-    "CMFD face-current closure. Valid choices are partial, net, and auto. partial (the "
-    "default) is the partial-current CMFD (pCMFD) closure; it is typically stable unrelaxed on "
-    "both optically thin and thick coarse cells, whereas the net closure can oscillate or "
-    "diverge on optically thick coarse cells. auto probes the early CMFD operator behavior and "
-    "may use net, partial, or a blend.");
+    "CMFD face-current closure. Valid choices are partial and net. partial (the default) is the "
+    "partial-current CMFD (pCMFD) closure; it is typically stable unrelaxed on both optically "
+    "thin and thick coarse cells, whereas the net closure can oscillate or diverge on optically "
+    "thick coarse cells.");
   params.AddOptionalParameter(
     "aggregation_size",
     32,
@@ -200,7 +204,8 @@ CMFDAcceleration::GetInputParameters()
     "coarse_solver_policy",
     "auto",
     "[developer/debug] CMFD coarse solver policy. auto chooses direct PETSc LU below "
-    "coarse_direct_solve_threshold global unknowns and iterative GMRES/Jacobi otherwise. "
+    "coarse_direct_solve_threshold global unknowns and iterative GMRES with hypre BoomerAMG "
+    "otherwise. "
     "direct, iterative, and petsc_options force a specific path. CMFD corrections from "
     "unconverged coarse linear solves are always skipped.");
   params.AddOptionalParameter("coarse_direct_solve_threshold",
@@ -213,8 +218,7 @@ CMFDAcceleration::GetInputParameters()
   params.ConstrainParameterRange(
     "coarse_mesh",
     AllowableRangeList::New({"identity", "local_aggregation", "global_aggregation"}));
-  params.ConstrainParameterRange("current_closure",
-                                 AllowableRangeList::New({"auto", "net", "partial"}));
+  params.ConstrainParameterRange("current_closure", AllowableRangeList::New({"net", "partial"}));
   params.ConstrainParameterRange(
     "coarse_solver_policy",
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
@@ -233,6 +237,12 @@ CMFDAcceleration::GetInputParameters()
   params.ChangeExistingParamToOptional("name", "CMFDAcceleration");
   params.ChangeExistingParamToOptional(
     "l_abs_tol", 1.0e-7, "[developer/debug] Absolute residual tolerance for CMFD coarse solves.");
+  params.AddOptionalParameter("l_rel_tol",
+                              1.0e-8,
+                              "[developer/debug] Relative residual tolerance for iterative CMFD "
+                              "coarse solves. An iterative solve converges when either l_rel_tol "
+                              "or l_abs_tol is met.");
+  params.ConstrainParameterRange("l_rel_tol", AllowableRangeLowLimit::New(0.0));
   params.ChangeExistingParamToOptional(
     "max_iters",
     100,
@@ -266,7 +276,6 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
   : DiscreteOrdinatesKEigenAcceleration(params),
     coarse_mesh_type_(params.GetParamValue<std::string>("coarse_mesh")),
     current_closure_(params.GetParamValue<std::string>("current_closure")),
-    automatic_closure_(current_closure_ == "auto"),
     aggregation_size_(params.GetParamValue<int>("aggregation_size")),
     group_aggregation_size_(
       static_cast<unsigned int>(params.GetParamValue<int>("group_aggregation_size"))),
@@ -278,14 +287,13 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     update_wgs_max_its_(params.GetParamValue<unsigned int>("update_wgs_max_its")),
     update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
     balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
+    l_rel_tol_(params.GetParamValue<double>("l_rel_tol")),
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
     coarse_direct_solve_threshold_(
       static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
     num_groups_(do_problem_.GetNumGroups()),
-    num_coarse_groups_((num_groups_ + group_aggregation_size_ - 1) / group_aggregation_size_),
-    current_closure_blend_(current_closure_ == "partial" ? 1.0 : 0.0)
+    num_coarse_groups_((num_groups_ + group_aggregation_size_ - 1) / group_aggregation_size_)
 {
-  active_current_closure_ = automatic_closure_ ? "net" : current_closure_;
 }
 
 CMFDAcceleration::~CMFDAcceleration()
@@ -313,8 +321,6 @@ void
 CMFDAcceleration::Initialize()
 {
   do_problem_.ConfigureOutflowStorage(true);
-  active_current_closure_ = automatic_closure_ ? "net" : current_closure_;
-  current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
 
   if (coarse_mesh_type_ == "identity")
     coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetGrid());
@@ -323,6 +329,13 @@ CMFDAcceleration::Initialize()
   else if (coarse_mesh_type_ == "global_aggregation")
     coarse_mesh_ =
       CMFDCoarseMesh::BuildGlobalAggregation(*do_problem_.GetGrid(), aggregation_size_);
+
+  if (update_wgs_max_its_ > 1 and update_wgs_abs_tol_ > balance_residual_tolerance_)
+    log.Log0Warning() << "CMFD update_wgs_abs_tol (" << update_wgs_abs_tol_
+                      << ") is looser than balance_residual_tolerance ("
+                      << balance_residual_tolerance_
+                      << "). Transport updates that stop at this tolerance can keep the balance "
+                         "residual from reaching its tolerance.";
 
   // update_wgs_max_its_/update_wgs_abs_tol_ are NOT applied here. PrePowerIteration applies them
   // for the first time exactly when outer_iteration_ reaches inactive_iterations_. Until then,
@@ -394,133 +407,6 @@ CMFDAcceleration::Initialize()
   }
 }
 
-void
-CMFDAcceleration::ProbeAutomaticClosure(const double k_eff,
-                                        const std::vector<double>& coarse_phi,
-                                        const std::vector<double>& coarse_source_phi)
-{
-  if (not automatic_closure_ or automatic_closure_probed_)
-    return;
-  if (automatic_closure_probe_iterations_ >= 8)
-  {
-    automatic_closure_probed_ = true;
-    return;
-  }
-
-  const auto previous_closure = active_current_closure_;
-  const double previous_blend = current_closure_blend_;
-  const auto SolveCoarseK = [this, k_eff, &coarse_phi]()
-  {
-    auto coarse_phi_m = coarse_phi;
-    auto coarse_phi_candidate = coarse_phi;
-    double coarse_k_eff = k_eff;
-    double coarse_production_old = ComputeCoarseFissionProduction(coarse_phi_m);
-    OpenSnLogicalErrorIf(coarse_production_old == 0.0,
-                         "CMFDAcceleration cannot probe with zero coarse production.");
-
-    const int max_probe_iterations = std::min<int>(pi_max_its_, 8);
-    for (int m = 0; m < max_probe_iterations; ++m)
-    {
-      coarse_phi_candidate = SolveCoarseSystem(coarse_k_eff, coarse_phi_m);
-      const double coarse_production_new = ComputeCoarseFissionProduction(coarse_phi_candidate);
-      OpenSnLogicalErrorIf(coarse_production_new == 0.0,
-                           "CMFDAcceleration cannot update probed k with zero production.");
-      const double coarse_k_eff_new = coarse_production_new / coarse_production_old * coarse_k_eff;
-      const double k_change = std::fabs(coarse_k_eff_new / coarse_k_eff - 1.0);
-      coarse_k_eff = coarse_k_eff_new;
-      coarse_phi_m = coarse_phi_candidate;
-      coarse_production_old = coarse_production_new;
-      if (k_change < pi_k_tol_)
-        break;
-    }
-    return coarse_k_eff;
-  };
-
-  active_current_closure_ = "net";
-  current_closure_blend_ = 0.0;
-  AssembleOperator();
-  const auto net_residual = ComputeBalanceResidual(k_eff, coarse_phi, coarse_source_phi);
-  const double net_coarse_k_eff = SolveCoarseK();
-
-  active_current_closure_ = "partial";
-  current_closure_blend_ = 1.0;
-  AssembleOperator();
-  const auto partial_residual = ComputeBalanceResidual(k_eff, coarse_phi, coarse_source_phi);
-  const double partial_coarse_k_eff = SolveCoarseK();
-
-  const double net_l2 = net_residual.relative_l2;
-  const double partial_l2 = partial_residual.relative_l2;
-  const double net_k_change =
-    std::fabs(net_coarse_k_eff - k_eff) / std::max(std::fabs(k_eff), 1.0e-30);
-  const double partial_k_change =
-    std::fabs(partial_coarse_k_eff - k_eff) / std::max(std::fabs(k_eff), 1.0e-30);
-  const double materiality = std::max(1.0e-3, 5.0 * balance_residual_tolerance_);
-  const double residual_ratio = net_l2 > materiality ? net_l2 / std::max(partial_l2, 1.0e-30) : 1.0;
-  const double k_ratio =
-    net_k_change > 1.0e-2 ? net_k_change / std::max(partial_k_change, 1.0e-30) : 1.0;
-  const double quality_ratio = std::max(residual_ratio, k_ratio);
-  const double selected_blend =
-    quality_ratio <= 1.1 ? 0.0 : std::clamp((quality_ratio - 1.1) / 0.9, 0.0, 1.0);
-
-  active_current_closure_ =
-    selected_blend >= 1.0 ? "partial" : (selected_blend > 0.0 ? "blend" : previous_closure);
-  current_closure_blend_ = selected_blend > 0.0 ? selected_blend : previous_blend;
-  automatic_closure_probe_iterations_ += 1;
-  automatic_closure_probed_ = selected_blend > 0.0;
-
-  if (selected_blend > 0.0)
-  {
-    log.Log0() << no_wrap << program_timer.GetTimeString() << " CMFD auto closure selected "
-               << active_current_closure_ << ": partial fraction = " << selected_blend
-               << ", net residual = " << net_l2 << ", partial residual = " << partial_l2
-               << ", net coarse k = " << net_coarse_k_eff
-               << ", partial coarse k = " << partial_coarse_k_eff << ".";
-  }
-  else if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
-    log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD auto closure probe kept net"
-              << ": net residual = " << net_l2 << ", partial residual = " << partial_l2
-              << ", net coarse k = " << net_coarse_k_eff
-              << ", partial coarse k = " << partial_coarse_k_eff
-              << ", selected blend = " << selected_blend
-              << ", probe = " << automatic_closure_probe_iterations_ << ".";
-}
-
-void
-CMFDAcceleration::UpdateAutomaticClosure(const BalanceResidual operator_residual,
-                                         const BalanceResidual transport_current_residual,
-                                         const double transport_k_eff,
-                                         const double coarse_k_eff,
-                                         const double applied_damping,
-                                         const bool skipped_correction)
-{
-  if (not automatic_closure_ or active_current_closure_ != "net")
-    return;
-
-  const double residual_ratio =
-    operator_residual.relative_l2 / std::max(transport_current_residual.relative_l2, 1.0e-30);
-  const double coarse_k_change =
-    std::fabs(coarse_k_eff - transport_k_eff) / std::max(std::fabs(transport_k_eff), 1.0e-30);
-  const double expected_damping = std::max(relaxation_, 1.0e-30);
-  const bool strongly_damped = applied_damping < 0.25 * expected_damping;
-  const bool startup_iteration = outer_iteration_ < 8;
-  const bool bad_balance =
-    startup_iteration and residual_ratio > 5.0 and
-    operator_residual.relative_l2 > std::max(1.0e-3, 5.0 * balance_residual_tolerance_);
-  const bool bad_coarse_k = startup_iteration and coarse_k_change > 0.02;
-  const bool bad_correction = skipped_correction or strongly_damped;
-
-  if (bad_balance and (bad_coarse_k or bad_correction or residual_ratio > 25.0))
-  {
-    active_current_closure_ = "partial";
-
-    log.Log0() << no_wrap << program_timer.GetTimeString()
-               << " CMFD auto closure switched from net to partial"
-               << ": operator/current residual ratio = " << residual_ratio
-               << ", coarse_k_change = " << coarse_k_change
-               << ", applied_damping = " << applied_damping << ".";
-  }
-}
-
 bool
 CMFDAcceleration::EvaluateBalanceConvergence(
   const BalanceResidual& transport_current_balance_residual, const bool skipped_correction) const
@@ -539,10 +425,10 @@ CMFDAcceleration::PreExecute()
   coarse_phi_cache_.clear();
   face_current_cache_.clear();
   outer_iteration_ = 0;
-  active_current_closure_ = automatic_closure_ ? "net" : current_closure_;
-  current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
-  automatic_closure_probed_ = false;
-  automatic_closure_probe_iterations_ = 0;
+  num_applied_corrections_ = 0;
+  num_skipped_corrections_ = 0;
+  consecutive_skipped_corrections_ = 0;
+  warned_persistent_skips_ = false;
   // The owning solver starts each Execute() with the caller's WGS settings and restores them
   // afterward, so the inactive phase leaves them untouched. PrePowerIteration switches to
   // update_wgs_max_its_/update_wgs_abs_tol_ when the active phase begins.
@@ -639,8 +525,6 @@ CMFDAcceleration::PostPowerIteration()
     ++outer_iteration_;
     return raw_transport_k_eff;
   }
-
-  ProbeAutomaticClosure(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
 
   t0 = NowSeconds();
   AssembleOperator();
@@ -739,16 +623,28 @@ CMFDAcceleration::PostPowerIteration()
   if (skipped_correction)
     k_eff = raw_transport_k_eff;
   last_correction_skipped_ = skipped_correction;
+  ++(skipped_correction ? num_skipped_corrections_ : num_applied_corrections_);
+  consecutive_skipped_corrections_ = skipped_correction ? consecutive_skipped_corrections_ + 1 : 0;
+  if (consecutive_skipped_corrections_ >= persistent_skip_warning_count and
+      not warned_persistent_skips_)
+  {
+    warned_persistent_skips_ = true;
+    std::ostringstream warning;
+    warning << "CMFD skipped the last " << consecutive_skipped_corrections_
+            << " corrections (last reason: " << correction_skip_reason
+            << "); power iteration is proceeding without CMFD acceleration.";
+    if (correction_skip_reason == "coarse_linear_solve_not_converged")
+      warning << " Use coarse_solver_policy=\"direct\" for moderate coarse systems, increase "
+                 "max_iters, or reduce the coarse system with aggregation_size or "
+                 "group_aggregation_size.";
+    else
+      warning << " Reduce relaxation or use smaller aggregates.";
+    log.Log0Warning() << no_wrap << warning.str();
+  }
   last_correction_skip_reason_ = skipped_correction ? correction_skip_reason : std::string();
   const double accelerated_k_change = std::fabs(k_eff - solver_->GetEigenvalue()) / k_eff;
   last_update_allows_convergence_ =
     EvaluateBalanceConvergence(transport_current_balance_residual, skipped_correction);
-  UpdateAutomaticClosure(transport_balance_residual,
-                         transport_current_balance_residual,
-                         transport_k_eff,
-                         coarse_k_eff,
-                         applied_damping,
-                         skipped_correction);
   for (const auto& groupset : groupsets_)
     LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, groupset, phi_new_local_, phi_old_local_);
   const double update_time = NowSeconds() - t0;
@@ -1057,7 +953,7 @@ CMFDAcceleration::InitializeLinearSystem()
     (coarse_solver_policy_ == "auto" and GlobalUnknownCount() <= coarse_direct_solve_threshold_);
   if (not petsc_options_policy)
     ConfigureCoarseLinearSolver(using_direct_coarse_solver_);
-  OpenSnPETScCall(KSPSetTolerances(ksp_, 1.0e-50, l_abs_tol_, PETSC_DEFAULT, max_iters_));
+  OpenSnPETScCall(KSPSetTolerances(ksp_, l_rel_tol_, l_abs_tol_, PETSC_DEFAULT, max_iters_));
   if ((petsc_options_policy or petsc_options_ != "ssss") and not petsc_options_.empty())
     OpenSnPETScCall(PetscOptionsInsertString(nullptr, petsc_options_.c_str()));
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
@@ -1075,8 +971,17 @@ CMFDAcceleration::ConfigureCoarseLinearSolver(const bool direct)
   }
   else
   {
+    // Jacobi-preconditioned GMRES rarely converges within max_iters for realistic coarse
+    // systems, which makes every correction be skipped. Algebraic multigrid handles the
+    // diffusion-like coarse operator.
     OpenSnPETScCall(KSPSetType(ksp_, KSPGMRES));
-    OpenSnPETScCall(PCSetType(pc, PCJACOBI));
+    OpenSnPETScCall(PCSetType(pc, PCHYPRE));
+    OpenSnPETScCall(PCHYPRESetType(pc, "boomeramg"));
+    const std::vector<std::string> pc_options = {"pc_hypre_boomeramg_coarsen_type HMIS",
+                                                 "pc_hypre_boomeramg_interp_type ext+i",
+                                                 "pc_hypre_boomeramg_strong_threshold 0.5"};
+    for (const auto& option : pc_options)
+      OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + GetName() + option).c_str()));
   }
 }
 
@@ -1338,7 +1243,7 @@ CMFDAcceleration::AssembleOperator()
             owner_distance_to_face,
             neighbor_distance_to_face,
             face.area);
-          const double blend = std::clamp(current_closure_blend_, 0.0, 1.0);
+          const bool partial_closure = current_closure_ == "partial";
           bool partial_current_closure_available = false;
           double partial_diag = 0.0;
           double partial_offdiag = 0.0;
@@ -1356,10 +1261,7 @@ CMFDAcceleration::AssembleOperator()
               // J+ = D/2 (phi_owner - phi_neighbor) + Dhat+ phi_owner and
               // J- = D/2 (phi_neighbor - phi_owner) + Dhat- phi_neighbor, with Dhat+- chosen so
               // that J+- reproduce the transport partial currents.
-              const bool needs_partial_closure =
-                active_current_closure_ == "partial" or
-                (active_current_closure_ == "blend" and blend > 0.0);
-              if (needs_partial_closure and std::fabs(phi_owner) > 1.0e-14 and
+              if (partial_closure and std::fabs(phi_owner) > 1.0e-14 and
                   std::fabs(phi_neighbor) > 1.0e-14)
               {
                 const auto [owner_partial_current, neighbor_partial_current] =
@@ -1378,8 +1280,7 @@ CMFDAcceleration::AssembleOperator()
                 }
               }
 
-              if ((active_current_closure_ == "net" or active_current_closure_ == "blend") and
-                  blend < 1.0)
+              if (not partial_closure)
               {
                 const auto phi_sum = phi_owner + phi_neighbor;
                 if (std::fabs(phi_sum) > 1.0e-14)
@@ -1396,15 +1297,10 @@ CMFDAcceleration::AssembleOperator()
           const double net_offdiag = -coeff + current_correction;
           double face_diag = net_diag;
           double face_offdiag = net_offdiag;
-          if (active_current_closure_ == "partial" and partial_current_closure_available)
+          if (partial_current_closure_available)
           {
             face_diag = partial_diag;
             face_offdiag = partial_offdiag;
-          }
-          else if (active_current_closure_ == "blend" and partial_current_closure_available)
-          {
-            face_diag = (1.0 - blend) * net_diag + blend * partial_diag;
-            face_offdiag = (1.0 - blend) * net_offdiag + blend * partial_offdiag;
           }
 
           diag += face_diag;

@@ -120,16 +120,14 @@ These are the options most users should tune.
 
 ``current_closure``
   Face-current closure used in the CMFD operator. Valid choices are
-  ``"partial"``, ``"net"``, and ``"auto"``. The default is ``"partial"``.
+  ``"partial"`` and ``"net"``. The default is ``"partial"``.
 
   ``"partial"`` is the partial-current CMFD (pCMFD) closure: each outgoing
   partial current on the two sides of a coarse face is modeled with half of the
   diffusion coupling plus its own nonlinear correction, so both one-sided
   transport partial currents are reproduced. ``"net"`` matches the signed
   transport current across each coarse face using a single current-correction
-  term in the coarse diffusion operator. ``"auto"`` probes the early
-  coarse-balance behavior and may choose the net-current closure, the
-  partial-current closure, or a blend. All three closures reproduce the
+  term in the coarse diffusion operator. Both closures reproduce the
   transport currents at convergence, so they have the same fixed point; they
   differ in convergence rate and stability.
 
@@ -137,12 +135,9 @@ These are the options most users should tune.
   with an unrelaxed correction (``relaxation=1.0``) on both optically thin and
   optically thick coarse cells. The net-current closure, like standard CMFD in
   general, can oscillate or diverge when coarse cells are optically thick, and
-  it is not always stabilized by ``relaxation``. ``"net"`` or ``"auto"`` can
-  converge in fewer iterations on some problems, but ``"auto"`` judges the
-  closures from the early iterations only and can keep an unstable net closure,
-  for example when the power iteration starts from a nearly converged flux
-  (such as a restart). Use a fixed ``"net"`` or ``"auto"`` mainly for method
-  comparisons or benchmark reproduction. On a face where an adjacent coarse
+  it is not always stabilized by ``relaxation``. ``"net"`` can converge in
+  fewer iterations on some problems with optically thin coarse cells; use it
+  mainly for method comparisons or benchmark reproduction. On a face where an adjacent coarse
   flux is essentially zero, so that the partial-current coefficients cannot be
   formed, the partial-current closure uses the plain diffusion coupling for
   that face.
@@ -265,10 +260,13 @@ defaults.
   damping can hide instability; changing these should be accompanied by checks
   of final k and scalar-flux behavior.
 
-``l_abs_tol`` and ``max_iters``
-  Coarse linear solver tolerance and maximum iterations. Defaults are
-  ``1.0e-7`` and ``100``. These control the CMFD coarse linear solves, not the
-  outer transport convergence. CMFD corrections are not applied when a coarse
+``l_abs_tol``, ``l_rel_tol``, and ``max_iters``
+  Coarse linear solver tolerances and maximum iterations. Defaults are
+  ``1.0e-7``, ``1.0e-8``, and ``100``. An iterative coarse solve converges when
+  either the absolute or the relative residual tolerance is met; the relative
+  tolerance does not depend on the arbitrary normalization of the coarse flux.
+  These control the CMFD coarse linear solves, not the outer transport
+  convergence. CMFD corrections are not applied when a coarse
   linear solve fails to converge, because an unconverged low-order solve can
   produce a misleading correction. If this occurs with an iterative coarse
   solver, use a direct coarse solve for modest coarse systems, increase
@@ -287,14 +285,19 @@ defaults.
 ``coarse_solver_policy`` and ``coarse_direct_solve_threshold``
   PETSc coarse-solver selection controls. ``"auto"`` uses a direct PETSc LU
   solve for coarse systems below ``coarse_direct_solve_threshold`` global
-  unknowns and an iterative GMRES/Jacobi solve otherwise. The default threshold
+  unknowns and an iterative GMRES solve preconditioned with hypre BoomerAMG
+  otherwise. The default threshold
   is ``20000`` global unknowns. Force ``"direct"`` only for small or moderate
   coarse systems that fit comfortably in host memory. Use ``"iterative"`` when
   direct factorization is too expensive. If an iterative coarse KSP does not
   converge, CMFD skips the correction for that power iteration; increase
   ``max_iters``, use ``"petsc_options"`` with a stronger PETSc configuration,
   reduce coarse-system stiffness with finer aggregation, or switch to
-  ``"direct"`` when memory permits.
+  ``"direct"`` when memory permits. If several consecutive corrections are
+  skipped, CMFD logs a warning that the power iteration is proceeding without
+  acceleration. After a solve, ``PowerIterationKEigenSolver.IsConverged()`` and
+  ``CMFDAcceleration.GetNumSkippedCorrections()`` report whether the solve
+  converged and how many corrections were skipped.
 
 ``petsc_options``
   Additional PETSc options for developer experiments. This is normally empty.

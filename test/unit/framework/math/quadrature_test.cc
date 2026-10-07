@@ -9,6 +9,8 @@
 #include "framework/math/quadratures/angular/triangular_quadrature.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include <gtest/gtest.h>
+#include <algorithm>
+#include <cmath>
 #include <numeric>
 
 using namespace opensn;
@@ -555,6 +557,46 @@ TEST(QuadratureTest, CurvilinearQuadratureWeightsSumToOne)
   EXPECT_NEAR(rz.GetWeightSum(), 1.0, 1.0e-12);
   const GLProductQuadrature1DSpherical spherical(8, 0);
   EXPECT_NEAR(spherical.GetWeightSum(), 1.0, 1.0e-12);
+}
+
+namespace
+{
+
+/// Max |D^T M - I| over the moment space of a quadrature built with the standard operators.
+double
+MomentOperatorDeviation(const AngularQuadrature& quad)
+{
+  const auto& d2m = quad.GetDiscreteToMomentOperator();
+  const auto& m2d = quad.GetMomentToDiscreteOperator();
+  const auto num_angles = quad.GetNumAngles();
+  const auto num_moments = quad.GetNumMoments();
+  double deviation = 0.0;
+  for (size_t i = 0; i < num_moments; ++i)
+    for (size_t j = 0; j < num_moments; ++j)
+    {
+      double value = 0.0;
+      for (size_t n = 0; n < num_angles; ++n)
+        value += d2m(n, i) * m2d(n, j);
+      deviation = std::max(deviation, std::fabs(value - (i == j ? 1.0 : 0.0)));
+    }
+  return deviation;
+}
+
+} // namespace
+
+TEST(QuadratureTest, StandardMomentOperatorsAreInverse)
+{
+  // Sets that integrate the harmonic products through scattering order 3 exactly.
+  EXPECT_LT(MomentOperatorDeviation(GLProductQuadrature1DSlab(8, 3)), 1.0e-12);
+  EXPECT_LT(MomentOperatorDeviation(GLCProductQuadrature2DXY(4, 8, 3)), 1.0e-12);
+  EXPECT_LT(MomentOperatorDeviation(GLCProductQuadrature3DXYZ(4, 8, 3)), 1.0e-12);
+  EXPECT_LT(MomentOperatorDeviation(GLCProductQuadrature2DRZ(4, 8, 3)), 1.0e-12);
+  EXPECT_LT(MomentOperatorDeviation(LebedevQuadrature3DXYZ(11, 3)), 1.0e-12);
+  EXPECT_LT(MomentOperatorDeviation(LebedevQuadrature2DXY(11, 3)), 1.0e-12);
+
+  // Four azimuthal angles put every direction at cos(2 phi) = 0, so a scattering-order-2
+  // moment is lost and D^T M deviates from the identity by O(1).
+  EXPECT_GT(MomentOperatorDeviation(GLCProductQuadrature3DXYZ(2, 4, 2)), 0.5);
 }
 
 TEST(QuadratureTest, MapOppositeDirectionsMissingDirectionThrows)

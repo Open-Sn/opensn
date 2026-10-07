@@ -76,6 +76,8 @@ private:
   size_t num_global_subscribers_ = 0;
 
   std::vector<std::uint32_t> subscribers_;
+  /// Subscription flag per local cell, indexed by local id.
+  std::vector<bool> is_subscriber_;
 
 public:
   static InputParameters GetInputParameters();

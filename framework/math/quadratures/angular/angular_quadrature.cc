@@ -287,6 +287,8 @@ AngularQuadrature::BuildDiscreteToMomentOperator()
       break;
     }
   }
+
+  CheckMomentOperatorConsistency();
 }
 
 void
@@ -441,6 +443,40 @@ AngularQuadrature::BuildMomentToDiscreteOperator()
       break;
     }
   }
+
+  CheckMomentOperatorConsistency();
+}
+
+void
+AngularQuadrature::CheckMomentOperatorConsistency() const
+{
+  // With the standard construction, D and M are inverse on the moment space only if the
+  // quadrature integrates the products of the retained harmonics exactly. Otherwise the
+  // higher scattering moments are aliased.
+  const size_t num_angles = GetNumAngles();
+  const auto num_moms = m_to_ell_em_map_.size();
+  const auto has_shape = [num_angles, num_moms](const NDArray<double, 2>& op)
+  { return not op.empty() and op.dimension()[0] == num_angles and op.dimension()[1] == num_moms; };
+  if (construction_method_ != OperatorConstructionMethod::STANDARD or not has_shape(d2m_op_) or
+      not has_shape(m2d_op_))
+    return;
+
+  double max_deviation = 0.0;
+  for (size_t i = 0; i < num_moms; ++i)
+    for (size_t j = 0; j < num_moms; ++j)
+    {
+      double value = 0.0;
+      for (size_t n = 0; n < num_angles; ++n)
+        value += d2m_op_(n, i) * m2d_op_(n, j);
+      max_deviation = std::max(max_deviation, std::fabs(value - (i == j ? 1.0 : 0.0)));
+    }
+  if (max_deviation > 1.0e-6)
+    log.Log0Warning() << "Angular quadrature with " << num_angles
+                      << " directions does not integrate the spherical-harmonic products "
+                         "through scattering order "
+                      << scattering_order_ << " exactly (max |D^T M - I| = " << max_deviation
+                      << "). Higher-order scattering moments are aliased by the quadrature; "
+                         "increase the quadrature order or reduce the scattering order.";
 }
 
 NDArray<double, 2> const&

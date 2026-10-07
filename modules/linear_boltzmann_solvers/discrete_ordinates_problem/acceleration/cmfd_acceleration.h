@@ -33,6 +33,10 @@ public:
   std::string GetPowerIterationConvergenceInfo() const final;
 
   const CMFDCoarseMesh& GetCoarseMesh() const { return coarse_mesh_; }
+  /// Number of active CMFD corrections applied during the last power-iteration solve.
+  unsigned int GetNumAppliedCorrections() const { return num_applied_corrections_; }
+  /// Number of active CMFD corrections skipped during the last power-iteration solve.
+  unsigned int GetNumSkippedCorrections() const { return num_skipped_corrections_; }
 
 private:
   struct BalanceResidual
@@ -64,17 +68,8 @@ private:
     bool has_invalid_k = false;
   };
 
-  void UpdateAutomaticClosure(BalanceResidual operator_residual,
-                              BalanceResidual transport_current_residual,
-                              double transport_k_eff,
-                              double coarse_k_eff,
-                              double applied_damping,
-                              bool skipped_correction);
   bool EvaluateBalanceConvergence(const BalanceResidual& transport_current_balance_residual,
                                   bool skipped_correction) const;
-  void ProbeAutomaticClosure(double k_eff,
-                             const std::vector<double>& coarse_phi,
-                             const std::vector<double>& coarse_source_phi);
   void InitializeLinearSystem();
   void ConfigureCoarseLinearSolver(bool direct);
   void ConfigureTransportSolve(unsigned int max_iterations, double residual_tolerance);
@@ -134,7 +129,6 @@ private:
 
   const std::string coarse_mesh_type_;
   const std::string current_closure_;
-  const bool automatic_closure_;
   const int aggregation_size_;
   const unsigned int group_aggregation_size_;
   const double relaxation_;
@@ -145,6 +139,7 @@ private:
   const unsigned int update_wgs_max_its_;
   const double update_wgs_abs_tol_;
   const double balance_residual_tolerance_;
+  const double l_rel_tol_;
   const std::string coarse_solver_policy_;
   const std::size_t coarse_direct_solve_threshold_;
   const unsigned int first_group_ = 0;
@@ -154,12 +149,12 @@ private:
   bool last_update_allows_convergence_ = true;
   bool last_balance_residual_known_ = false;
   bool last_correction_skipped_ = false;
+  unsigned int num_applied_corrections_ = 0;
+  unsigned int num_skipped_corrections_ = 0;
+  unsigned int consecutive_skipped_corrections_ = 0;
+  bool warned_persistent_skips_ = false;
   std::string last_correction_skip_reason_;
   double last_transport_current_balance_relative_l2_ = std::numeric_limits<double>::infinity();
-  std::string active_current_closure_;
-  bool automatic_closure_probed_ = false;
-  unsigned int automatic_closure_probe_iterations_ = 0;
-  double current_closure_blend_ = 0.0;
   double last_restrict_old_time_ = 0.0;
   double transport_start_time_ = 0.0;
   double old_fission_production_ = 0.0;

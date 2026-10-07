@@ -89,6 +89,8 @@ if __name__ == "__main__":
     k = k_solver.GetEigenvalue()
     if rank == 0:
         print(f"Python k-eigenvalue: {k}")
+        print(f"Python converged: {int(k_solver.IsConverged())}")
+        print(f"Python CMFD skipped corrections: {cmfd.GetNumSkippedCorrections()}")
 
     if abs(k - 0.9293377) > 5.0e-6:
         raise RuntimeError(f"Expected k near 0.9293377, got {k}")

@@ -61,6 +61,8 @@ private:
   std::optional<std::string> xs_multiplier_;
   /// Multiplier applied group-wise
   std::vector<double> multipliers_;
+  /// Coefficients for materials that do not have the xs_multiplier cross section
+  std::vector<double> zero_coefficients_;
 
   // Helper functions for different computation types
   std::vector<double> ComputeIntegral(const std::vector<uint32_t>& cell_local_ids);

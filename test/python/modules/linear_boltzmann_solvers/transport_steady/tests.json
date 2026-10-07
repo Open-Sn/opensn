@@ -1986,5 +1986,226 @@
         "abs_tol": 1e-12
       }
     ]
+  },
+  {
+    "file": "transport_nonfinite_flux_check.py",
+    "comment": "A NaN source must stop the solve after the within-group solve (Krylov and Richardson) and NaN source strengths must be rejected",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "NONFINITE_GMRES_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_RICHARDSON_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_STRENGTH_REJECTED", "goldvalue": 1, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "transport_fixed_source_verification.py",
+    "comment": "Fixed-source verification: isotropic slab inflow/absorption/outflow vs discrete-ordinates exponentials with PWLD order, 1D/2D/3D two-group infinite medium, arbitrary vs isotropic boundary, and point-source balance",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "FSV_SLAB_IN_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ERR", "goldvalue": 0, "abs_tol": 5e-05},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_ARBITRARY_DIFF", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_1D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_3D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D_AGS", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_POINT_BALANCE", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "transport_anisotropic_scattering_verification.py",
+    "comment": "P3 anisotropic scattering in a slab vs an independent diamond-difference reference (Richardson-extrapolated), with PWLD order and a 3D reflecting-sides slab matching 1D",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "ANISO_QUAD_DIFF", "goldvalue": 0, "abs_tol": 1e-13},
+      {"type": "KeyValuePair", "key": "ANISO_REF_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ANISO_R_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_T_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_A_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "ANISO_R_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_T_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_3D_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_nonfinite_flux_check.py",
+    "comment": "A NaN source must stop the solve after the within-group solve (Krylov and Richardson) and NaN source strengths must be rejected (CBC sweeps)",
+    "outfileprefix": "transport_nonfinite_flux_check_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "NONFINITE_GMRES_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_RICHARDSON_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_STRENGTH_REJECTED", "goldvalue": 1, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "transport_nonfinite_flux_check.py",
+    "comment": "A NaN source must stop the solve after the within-group solve (Krylov and Richardson) and NaN source strengths must be rejected (GPU AAH sweeps)",
+    "outfileprefix": "transport_nonfinite_flux_check_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "NONFINITE_GMRES_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_RICHARDSON_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_STRENGTH_REJECTED", "goldvalue": 1, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "transport_nonfinite_flux_check.py",
+    "comment": "A NaN source must stop the solve after the within-group solve (Krylov and Richardson) and NaN source strengths must be rejected (GPU CBC sweeps)",
+    "outfileprefix": "transport_nonfinite_flux_check_cbc_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "NONFINITE_GMRES_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_RICHARDSON_CAUGHT", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "NONFINITE_STRENGTH_REJECTED", "goldvalue": 1, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "transport_fixed_source_verification.py",
+    "comment": "Fixed-source verification: isotropic slab inflow/absorption/outflow vs discrete-ordinates exponentials with PWLD order, 1D/2D/3D two-group infinite medium, arbitrary vs isotropic boundary, and point-source balance (CBC sweeps)",
+    "outfileprefix": "transport_fixed_source_verification_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "FSV_SLAB_IN_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ERR", "goldvalue": 0, "abs_tol": 5e-05},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_ARBITRARY_DIFF", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_1D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_3D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D_AGS", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_POINT_BALANCE", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "transport_fixed_source_verification.py",
+    "comment": "Fixed-source verification: isotropic slab inflow/absorption/outflow vs discrete-ordinates exponentials with PWLD order, 1D/2D/3D two-group infinite medium, arbitrary vs isotropic boundary, and point-source balance (GPU AAH sweeps)",
+    "outfileprefix": "transport_fixed_source_verification_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "FSV_SLAB_IN_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ERR", "goldvalue": 0, "abs_tol": 5e-05},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_ARBITRARY_DIFF", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_1D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_3D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D_AGS", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_POINT_BALANCE", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "transport_fixed_source_verification.py",
+    "comment": "Fixed-source verification: isotropic slab inflow/absorption/outflow vs discrete-ordinates exponentials with PWLD order, 1D/2D/3D two-group infinite medium, arbitrary vs isotropic boundary, and point-source balance (GPU CBC sweeps)",
+    "outfileprefix": "transport_fixed_source_verification_cbc_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "FSV_SLAB_IN_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ERR", "goldvalue": 0, "abs_tol": 5e-05},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_ABS_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_SLAB_OUT_ORDER", "goldvalue": 2.95, "abs_tol": 0.25},
+      {"type": "KeyValuePair", "key": "FSV_ARBITRARY_DIFF", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_1D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_3D", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_INF_MAX_ERR_2D_AGS", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "FSV_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "FSV_POINT_BALANCE", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "transport_anisotropic_scattering_verification.py",
+    "comment": "P3 anisotropic scattering in a slab vs an independent diamond-difference reference (Richardson-extrapolated), with PWLD order and a 3D reflecting-sides slab matching 1D (CBC sweeps)",
+    "outfileprefix": "transport_anisotropic_scattering_verification_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "ANISO_QUAD_DIFF", "goldvalue": 0, "abs_tol": 1e-13},
+      {"type": "KeyValuePair", "key": "ANISO_REF_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ANISO_R_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_T_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_A_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "ANISO_R_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_T_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_3D_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_anisotropic_scattering_verification.py",
+    "comment": "P3 anisotropic scattering in a slab vs an independent diamond-difference reference (Richardson-extrapolated), with PWLD order and a 3D reflecting-sides slab matching 1D (GPU AAH sweeps)",
+    "outfileprefix": "transport_anisotropic_scattering_verification_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "ANISO_QUAD_DIFF", "goldvalue": 0, "abs_tol": 1e-13},
+      {"type": "KeyValuePair", "key": "ANISO_REF_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ANISO_R_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_T_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_A_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "ANISO_R_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_T_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_3D_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_anisotropic_scattering_verification.py",
+    "comment": "P3 anisotropic scattering in a slab vs an independent diamond-difference reference (Richardson-extrapolated), with PWLD order and a 3D reflecting-sides slab matching 1D (GPU CBC sweeps)",
+    "outfileprefix": "transport_anisotropic_scattering_verification_cbc_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "ANISO_QUAD_DIFF", "goldvalue": 0, "abs_tol": 1e-13},
+      {"type": "KeyValuePair", "key": "ANISO_REF_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ANISO_R_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_T_ERR", "goldvalue": 0, "abs_tol": 3e-06},
+      {"type": "KeyValuePair", "key": "ANISO_A_ERR", "goldvalue": 0, "abs_tol": 5e-06},
+      {"type": "KeyValuePair", "key": "ANISO_R_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_T_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "ANISO_3D_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
   }
 ]

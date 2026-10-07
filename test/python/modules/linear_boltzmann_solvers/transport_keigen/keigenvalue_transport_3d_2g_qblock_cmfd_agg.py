@@ -108,6 +108,7 @@ if __name__ == "__main__":
         balance_residual_tolerance=float(
             get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
         ),
+        coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "auto"),
         verbose=get_bool_option("cmfd_verbose", False),
     )
     k_solver = PowerIterationKEigenSolver(
@@ -123,6 +124,8 @@ if __name__ == "__main__":
     sweeps = k_solver.GetNumSweeps()
     if rank == 0:
         print(f"Python k-eigenvalue: {k}")
+        print(f"Python converged: {int(k_solver.IsConverged())}")
+        print(f"Python CMFD skipped corrections: {cmfd.GetNumSkippedCorrections()}")
         print(f"Python sweeps: {sweeps}")
 
     expected_k = 0.5028015

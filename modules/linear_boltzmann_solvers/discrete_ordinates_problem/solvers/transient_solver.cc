@@ -483,6 +483,12 @@ TransientSolver::AdvanceSolver()
   do_problem_->SetTime(current_time_);
   do_problem_->UpdatePsiOld();
   ++step_;
+
+  if (IsBalanceEnabled())
+  {
+    CALI_CXX_MARK_SCOPE("Balance");
+    LogBalanceTable(ComputeBalanceTable(), last_dt_);
+  }
 }
 
 void

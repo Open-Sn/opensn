@@ -75,7 +75,10 @@ public:
   /// Sets the callback used to refresh this field function.
   void SetUpdateCallback(UpdateCallback callback, CanUpdateCallback can_update_callback = nullptr);
 
-  /// Returns the component values at requested point.
+  /**
+   * Returns the component values at the requested point. A point on a face of a discontinuous
+   * field gets the average over all cells containing it. Collective.
+   */
   virtual std::vector<double> GetPointValue(const Vector3& point) const;
 
   /// Evaluates the field function, on a cell, at the specified point, for the given component.

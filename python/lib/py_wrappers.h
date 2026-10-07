@@ -6,6 +6,7 @@
 #include "framework/parameters/parameter_block.h"
 #include "framework/data_types/vector.h"
 #include <pybind11/pybind11.h>
+#include <cstddef>
 #include <unordered_set>
 #include <unordered_map>
 #include <vector>
@@ -17,12 +18,24 @@ namespace opensn
 
 // Converter
 
+/// Wrap `size` elements at `data` in a read-only Python memoryview (the const overload).
+template <typename T>
+py::memoryview
+make_readonly_memoryview(const T* data, std::size_t size)
+{
+  // A memoryview rejects a null buffer, which an empty vector may have; point an empty view at a
+  // dummy element instead.
+  static const T empty_element{};
+  const T* buffer = size == 0 ? &empty_element : data;
+  return py::memoryview::from_buffer(buffer, {size}, {sizeof(T)});
+}
+
 /// Convert a C++ vector to a Python memoryview.
 template <typename T>
 py::memoryview
 convert_vector(const std::vector<T>& vec)
 {
-  return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
+  return make_readonly_memoryview(vec.data(), vec.size());
 }
 
 /// Convert an OpenSn vector to a Python memoryview.
@@ -30,7 +43,7 @@ template <typename T>
 py::memoryview
 convert_vector(const Vector<T>& vec)
 {
-  return py::memoryview::from_buffer(const_cast<T*>(vec.data()), {vec.size()}, {sizeof(T)}, true);
+  return make_readonly_memoryview(vec.data(), vec.size());
 }
 
 // Cast kwargs to ParameterBlock

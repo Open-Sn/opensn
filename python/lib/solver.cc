@@ -354,7 +354,8 @@ WrapLBS(py::module& slv)
     Returns
     -------
     float
-        The total fission rate.
+        The total fission rate, integrated over the physical volume. In RZ and 1D spherical
+        geometry the integral covers the full revolution (factors of 2*pi and 4*pi).
 
     Raises
     ------
@@ -395,7 +396,8 @@ WrapLBS(py::module& slv)
     Returns
     -------
     float
-        The total fission production.
+        The total fission production, integrated over the physical volume. In RZ and 1D spherical
+        geometry the integral covers the full revolution (factors of 2*pi and 4*pi).
 
     Raises
     ------
@@ -1567,16 +1569,14 @@ WrapLBS(py::module& slv)
     -------
     Dict[str, numpy.ndarray]
         A dictionary mapping boundary names to group-wise leakage vectors.
-        Each array contains the outflow (the outgoing partial current, per group) integrated over
-        the corresponding boundary surface. Incoming flux is not subtracted, so on boundaries
-        with inflow (sources or reflection) this is not the net leakage. In RZ geometry the
-        surface integral covers the full revolution.
+        Each array contains the net leakage (per group): the outgoing partial current minus the
+        incoming partial current, integrated over the corresponding boundary surface. On a
+        vacuum boundary this equals the outgoing current; on a boundary with an incident flux it
+        is reduced by the inflow and can be negative; on a reflecting boundary it vanishes at
+        convergence. In RZ geometry the surface integral covers the full revolution.
 
     Raises
     ------
-    RuntimeError
-        If `save_angular_flux` option was not enabled during problem setup.
-
     ValueError
         If one or more boundary ids are not present on the current mesh.
     )",
@@ -1870,6 +1870,8 @@ WrapSteadyState(py::module& slv)
     ----------
     problem : pyopensn.solver.DiscreteOrdinatesProblem
         Existing discrete ordinates problem instance.
+    compute_balance : bool, optional, default=False
+        If true, print the balance table after :meth:`Execute` completes.
 
     Notes
     -----
@@ -1906,10 +1908,12 @@ WrapSteadyState(py::module& slv)
           approximately ``integral Q dV`` summed over groups and the full domain.
         - ``inflow_rate``:
           Global incoming boundary contribution integrated over incoming
-          angular flux on boundaries.
+          angular flux on boundaries. On reflecting boundaries the outgoing partial
+          current is counted as the incoming one, so reflecting faces add equal
+          amounts to ``inflow_rate`` and ``outflow_rate`` and cancel in ``balance``.
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
-          tallies.
+          tallies, including reflecting boundaries (see ``inflow_rate``).
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -1994,6 +1998,9 @@ WrapTransient(py::module& slv)
         (``read_initial_condition_path``) take precedence.
     verbose : bool, optional, default=True
         Enable verbose logging.
+    compute_balance : bool, optional, default=False
+        If true, print the timestep balance table (the one :meth:`ComputeBalanceTable`
+        returns) after every timestep, whether taken by :meth:`Execute` or :meth:`Advance`.
 
     Notes
     -----
@@ -2111,10 +2118,12 @@ WrapTransient(py::module& slv)
           approximately ``integral Q dV`` summed over groups and the full domain.
         - ``inflow_rate``:
           Global incoming boundary contribution integrated over incoming
-          angular flux on boundaries.
+          angular flux on boundaries. On reflecting boundaries the outgoing partial
+          current is counted as the incoming one, so reflecting faces add equal
+          amounts to ``inflow_rate`` and ``outflow_rate`` and cancel in ``balance``.
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
-          tallies.
+          tallies, including reflecting boundaries (see ``inflow_rate``).
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2166,6 +2175,10 @@ WrapNLKEigen(py::module& slv)
     Supports one or more groupsets when the groupsets run without WGDSA/TGDSA.
     If WGDSA or TGDSA is enabled on any groupset, the nonlinear k-eigen solve
     must use a single groupset; otherwise ``Initialize()`` raises a ``ValueError``.
+
+    The eigenvector is returned with an arbitrary scale that depends on the solver, the
+    acceleration method, and the starting flux. Normalize absolute quantities (power, reaction
+    rates, leakage, balance rates) explicitly, e.g. with ``power_normalization_target``.
     )"
   );
   non_linear_k_eigen_solver.def(
@@ -2210,6 +2223,9 @@ WrapNLKEigen(py::module& slv)
         If true, reinitializes scalar fluxes to 1.0.
     num_initial_power_iterations: int, default=0
         Number of initial power iterations before the non-linear solve.
+    compute_balance: bool, default=False
+        If true, print the balance table, with production scaled by ``1/k_eff``, after
+        :meth:`Execute` completes.
 
     Notes
     -----
@@ -2249,10 +2265,12 @@ WrapNLKEigen(py::module& slv)
           approximately ``integral Q dV`` summed over groups and the full domain.
         - ``inflow_rate``:
           Global incoming boundary contribution integrated over incoming
-          angular flux on boundaries.
+          angular flux on boundaries. On reflecting boundaries the outgoing partial
+          current is counted as the incoming one, so reflecting faces add equal
+          amounts to ``inflow_rate`` and ``outflow_rate`` and cancel in ``balance``.
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
-          tallies.
+          tallies, including reflecting boundaries (see ``inflow_rate``).
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2280,6 +2298,10 @@ WrapPIteration(py::module& slv)
     Power iteration k-eigenvalue solver.
 
     Wrapper of :cpp:class:`opensn::PowerIterationKEigenSolver`.
+
+    The eigenvector is returned with an arbitrary scale that depends on the solver, the
+    acceleration method, and the starting flux. Normalize absolute quantities (power, reaction
+    rates, leakage, balance rates) explicitly, e.g. with ``power_normalization_target``.
     )"
   );
   pi_k_eigen_solver.def(
@@ -2309,6 +2331,9 @@ WrapPIteration(py::module& slv)
         Values below ``1.0e-12`` are treated as ``1.0e-12``.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
+    compute_balance: bool, default=False
+        If true, print the balance table, with production scaled by ``1/k_eff``, after
+        :meth:`Execute` completes.
 
     Notes
     -----
@@ -2341,6 +2366,17 @@ WrapPIteration(py::module& slv)
     )"
   );
   pi_k_eigen_solver.def(
+    "IsConverged",
+    &PowerIterationKEigenSolver::IsConverged,
+    R"(
+    Return True if the last :meth:`Execute` met the convergence criteria.
+
+    Convergence requires the k-eigenvalue change to fall below ``k_tol`` and, when an
+    acceleration method is attached, its own convergence check (for CMFD, the balance
+    residual) to pass. Returns False if ``max_iters`` was reached first.
+    )"
+  );
+  pi_k_eigen_solver.def(
     "ComputeBalanceTable",
     [](const PowerIterationKEigenSolver& self)
     {
@@ -2363,10 +2399,12 @@ WrapPIteration(py::module& slv)
           approximately ``integral Q dV`` summed over groups and the full domain.
         - ``inflow_rate``:
           Global incoming boundary contribution integrated over incoming
-          angular flux on boundaries.
+          angular flux on boundaries. On reflecting boundaries the outgoing partial
+          current is counted as the incoming one, so reflecting faces add equal
+          amounts to ``inflow_rate`` and ``outflow_rate`` and cancel in ``balance``.
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
-          tallies.
+          tallies, including reflecting boundaries (see ``inflow_rate``).
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2557,15 +2595,12 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'partial' : partial-current CMFD (pCMFD); each one-sided partial current carries
               half of the diffusion coupling plus its own transport correction
             - 'net' : match the signed transport current across each coarse face
-            - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
 
         ``"partial"`` is the default and is recommended for production use: it is typically
         stable with an unrelaxed correction on both optically thin and thick coarse cells,
         whereas the net-current closure can oscillate or diverge on optically thick coarse
-        cells. All closures share the same fixed point. ``"net"`` and ``"auto"`` can
-        converge in fewer iterations on some problems,
-        but ``"auto"`` judges the closures only from early iterations and can keep an
-        unstable net closure, for example when starting from a nearly converged flux.
+        cells. Both closures share the same fixed point. ``"net"`` can converge in fewer
+        iterations on some problems with optically thin coarse cells.
     aggregation_size: int, default=32
         Common option. Target number of fine cells per aggregated coarse cell for
         ``coarse_mesh="local_aggregation"`` or ``coarse_mesh="global_aggregation"``.
@@ -2605,6 +2640,11 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     l_abs_tol: float, default=1.0e-7
         Developer/debug. Absolute residual tolerance for each CMFD coarse linear solve.
         This affects the low-order linear solve, not the outer transport convergence.
+    l_rel_tol: float, default=1.0e-8
+        Developer/debug. Relative residual tolerance for each iterative CMFD coarse
+        linear solve. The solve converges when either ``l_rel_tol`` or ``l_abs_tol`` is
+        met. Unlike the absolute tolerance, it does not depend on the coarse flux
+        normalization.
     max_iters: int, default=100
         Developer/debug. Maximum iterations for each CMFD coarse linear solve. Increase
         only if the coarse KSP solve is reaching its iteration limit. CMFD skips a
@@ -2647,9 +2687,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     coarse_solver_policy: str, default="auto"
         Developer/debug. Coarse solver policy. Valid choices are:
             - 'auto' : PETSc preonly+LU below ``coarse_direct_solve_threshold``
-              global unknowns, GMRES+Jacobi otherwise
+              global unknowns, GMRES with hypre BoomerAMG otherwise
             - 'direct' : PETSc preonly+LU
-            - 'iterative' : GMRES+Jacobi
+            - 'iterative' : GMRES with hypre BoomerAMG
             - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
 
         CMFD corrections from unconverged coarse linear solves are always skipped.
@@ -2661,6 +2701,27 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
         direct solves for larger coarse systems; choose values based on available host
         memory and acceptable factorization cost.
+    )"
+  );
+  cmfd_acceleration.def(
+    "GetNumAppliedCorrections",
+    &CMFDAcceleration::GetNumAppliedCorrections,
+    R"(
+    Return the number of CMFD corrections applied during the last power-iteration solve.
+
+    Inactive iterations are not counted. The count is reset at the start of each solve.
+    )"
+  );
+  cmfd_acceleration.def(
+    "GetNumSkippedCorrections",
+    &CMFDAcceleration::GetNumSkippedCorrections,
+    R"(
+    Return the number of CMFD corrections skipped during the last power-iteration solve.
+
+    A correction is skipped when a coarse linear solve does not converge or when every
+    damping attempt is rejected; the power iteration then uses the unaccelerated transport
+    update. Inactive iterations are not counted. The count is reset at the start of each
+    solve.
     )"
   );
   // clang-format on
