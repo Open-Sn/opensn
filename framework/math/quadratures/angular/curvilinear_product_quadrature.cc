@@ -121,14 +121,15 @@ GLProductQuadrature1DSpherical::Initialize(unsigned int Npolar, const bool verbo
   abscissae_.shrink_to_fit();
   omegas_.shrink_to_fit();
 
-  // Map of direction indices
+  // Map of direction indices. The angular derivative couples all directions in order of
+  // increasing mu, from the starting direction mu = -1 to the final direction mu = +1, so they
+  // form a single angular sequence.
   map_directions_.clear();
+  std::vector<unsigned int> vec_directions;
+  vec_directions.reserve(polar_quad.weights.size());
   for (size_t p = 0; p < polar_quad.weights.size(); ++p)
-  {
-    std::vector<unsigned int> vec_directions_p;
-    vec_directions_p.emplace_back(p);
-    map_directions_.emplace(p, vec_directions_p);
-  }
+    vec_directions.emplace_back(p);
+  map_directions_.emplace(0, vec_directions);
 
   // Curvilinear product quadrature
   // Compute additional parametrising factors
@@ -168,27 +169,32 @@ GLProductQuadrature1DSpherical::InitializeParameters()
   fac_diamond_difference_.resize(weights_.size(), 1);
   fac_streaming_operator_.resize(weights_.size(), 0);
 
-  // Interface quantities initialised to starting direction values
+  // The weights sum to one here. Angular cell edges satisfy mu_{p+1/2} = mu_{p-1/2} + 2 w_p, so
+  // they span [-1, 1], and the redistribution coefficients alpha_{p+1/2} = alpha_{p-1/2} -
+  // 2 w_p mu_p preserve an isotropic flux (alpha_{1/2} = alpha_{P+1/2} = 0).
+  const auto& directions = map_directions_.at(0);
   double alpha_interface = 0;
-  std::vector<double> mu_interface(2, omegas_[map_directions_[0].front()].z);
+  std::vector<double> mu_interface(2, omegas_[directions.front()].z);
 
-  // Initialization permits to forego start direction and final direction
-  for (size_t p = 1; p < map_directions_.size() - 1; ++p)
+  // The zero-weight starting (mu = -1) and final (mu = +1) directions keep the defaults: they
+  // have no angular-derivative term.
+  for (size_t p = 1; p + 1 < directions.size(); ++p)
   {
-    const auto k = map_directions_[p][0];
+    const auto k = directions[p];
     const auto w_p = weights_[k];
     const auto mu_p = omegas_[k].z;
 
-    alpha_interface -= w_p * mu_p;
+    alpha_interface -= 2.0 * w_p * mu_p;
 
     mu_interface[0] = mu_interface[1];
-    mu_interface[1] += w_p;
+    mu_interface[1] += 2.0 * w_p;
 
     const auto tau = (mu_p - mu_interface[0]) / (mu_interface[1] - mu_interface[0]);
 
     fac_diamond_difference_[k] = tau;
-    fac_streaming_operator_[k] = alpha_interface / (w_p * tau) + mu_p;
-    fac_streaming_operator_[k] *= 2;
+    // Angular redistribution plus the 2 mu / r term of the conservative radial streaming
+    // operator, both multiplying (psi_p - psi_{p-1/2}) / r.
+    fac_streaming_operator_[k] = alpha_interface / (w_p * tau) + 2.0 * mu_p;
   }
 }
 

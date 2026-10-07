@@ -383,7 +383,9 @@ DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
   if (options_.adjoint)
     throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
   if (not SupportsTimeDependentMode())
-    throw std::runtime_error(GetName() + ": Time-dependent RZ problems are not yet supported.");
+    throw std::runtime_error(
+      GetName() +
+      ": Time-dependent curvilinear (RZ and 1D spherical) problems are not yet supported.");
   OpenSnInvalidArgumentIf(not options_.save_angular_flux,
                           GetName() +
                             ": Time-dependent mode requires `options.save_angular_flux=true`.");

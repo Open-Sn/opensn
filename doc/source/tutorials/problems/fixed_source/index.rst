@@ -16,3 +16,4 @@ and postprocess their scalar fluxes.
    Shielding with Void and Scattering Regions <shielding_with_void>
    A Striped Fixed-Source Problem <striped_source>
    A 3D Volumetric-Source Example <volumetric_source_3d>
+   A Spherical Barrier Benchmark <spherical_barrier>

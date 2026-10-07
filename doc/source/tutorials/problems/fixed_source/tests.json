@@ -168,5 +168,27 @@
         "abs_tol": 1e-10
       }
     ]
+  },
+  {
+    "file": "spherical_barrier.py",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BARRIER_MAX_REL_ERR_S64=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.6e-4
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BARRIER_ANGULAR_ORDER=",
+        "goldvalue": 1.90,
+        "abs_tol": 0.25
+      }
+    ]
   }
 ]

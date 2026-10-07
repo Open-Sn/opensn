@@ -512,6 +512,41 @@ TEST(QuadratureTest, MapOppositeDirections)
   ExpectOppositeDirections(GLCProductQuadrature2DRZ(4, 8, 0));
 }
 
+TEST(QuadratureTest, GLProductQuadrature1DSphericalAngularSequence)
+{
+  // The angular-redistribution recursion needs one direction sequence in increasing mu, bracketed
+  // by zero-weight directions at mu = -1 and mu = +1, with angular cell edges
+  // mu_{n+1/2} = mu_{n-1/2} + 2 w_n spanning [-1, 1] and diamond weights tau_n in (0, 1].
+  const GLProductQuadrature1DSpherical quad(8, 0);
+  const auto& omegas = quad.GetOmegas();
+  const auto& weights = quad.GetWeights();
+  const auto& map = quad.GetDirectionMap();
+  ASSERT_EQ(map.size(), 1U);
+  const auto& sequence = map.begin()->second;
+  ASSERT_EQ(sequence.size(), 10U);
+
+  EXPECT_NEAR(omegas[sequence.front()].z, -1.0, 1.0e-14);
+  EXPECT_NEAR(omegas[sequence.back()].z, 1.0, 1.0e-14);
+  EXPECT_EQ(weights[sequence.front()], 0.0);
+  EXPECT_EQ(weights[sequence.back()], 0.0);
+
+  const auto& tau = quad.GetDiamondDifferenceFactor();
+  double mu_edge = -1.0;
+  double alpha = 0.0;
+  for (size_t p = 0; p < sequence.size(); ++p)
+  {
+    const auto n = sequence[p];
+    if (p > 0)
+      EXPECT_GT(omegas[n].z, omegas[sequence[p - 1]].z);
+    EXPECT_GT(tau[n], 0.0);
+    EXPECT_LE(tau[n], 1.0);
+    mu_edge += 2.0 * weights[n];
+    alpha -= 2.0 * weights[n] * omegas[n].z;
+  }
+  EXPECT_NEAR(mu_edge, 1.0, 1.0e-13);
+  EXPECT_NEAR(alpha, 0.0, 1.0e-13);
+}
+
 TEST(QuadratureTest, CurvilinearQuadratureWeightsSumToOne)
 {
   // All OpenSn quadratures normalize their weights to one, so boundary angular-flux inputs mean

@@ -176,7 +176,8 @@ ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& grou
       switch (coord_type_)
       {
         case CoordinateSystemType::SPHERICAL:
-          omega_reflected = -1.0 * omega_n;
+          // 1D spherical directions are (sqrt(1 - mu^2), 0, mu); reflection maps mu to -mu.
+          omega_reflected = Vector3(omega_n.x, omega_n.y, -omega_n.z);
           break;
         case CoordinateSystemType::CYLINDRICAL:
         {
@@ -304,6 +305,15 @@ ReflectingBoundary::SetOpposingReflected(
   std::uint64_t boundary_id,
   const std::map<std::uint64_t, std::shared_ptr<SweepBoundary>>& boundaries)
 {
+  // In 1D spherical geometry the inward directions must be swept before the outward ones. A
+  // reflecting outer surface feeds outward flux back into the inward directions, so it is always
+  // treated as delayed (lagged by one sweep) to keep the sweep acyclic.
+  if (coord_type_ == CoordinateSystemType::SPHERICAL and normal_.z > 0.5)
+  {
+    opposing_reflected_ = true;
+    return;
+  }
+
   for (const auto& [otherbid, otherbndry] : boundaries)
   {
     if (boundary_id == otherbid)

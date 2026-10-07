@@ -161,7 +161,8 @@ AssociateSOsAndDirections(const std::string& problem_name,
   {
     case AngleAggregationType::SINGLE:
     {
-      if (geometry_type == GeometryType::TWOD_CYLINDRICAL)
+      if (geometry_type == GeometryType::TWOD_CYLINDRICAL or
+          geometry_type == GeometryType::ONED_SPHERICAL)
       {
         const auto* product_quad = dynamic_cast<const ProductQuadrature*>(&quadrature);
         if (product_quad)
@@ -248,28 +249,35 @@ AssociateSOsAndDirections(const std::string& problem_name,
       if (geometry_type != GeometryType::ONED_SPHERICAL and
           geometry_type != GeometryType::TWOD_CYLINDRICAL)
         throw std::logic_error(problem_name +
-                               ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL "
-                               "geometry");
+                               ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL and "
+                               "ONED_SPHERICAL geometries");
 
       const auto quad_type = quadrature.GetType();
       if (quad_type != AngularQuadratureType::PRODUCT_QUADRATURE)
         throw std::logic_error(problem_name +
-                               ": AZIMUTHAL aggregation is only valid for TWOD_CYLINDRICAL "
-                               "geometry.");
+                               ": AZIMUTHAL aggregation requires a product quadrature.");
 
       try
       {
         const auto& product_quad = dynamic_cast<const ProductQuadrature&>(quadrature);
 
+        // Each direction set is an ordered angular sequence. Split it into the directions that
+        // stream toward and away from the axis (RZ) or center (1D spherical); each part keeps the
+        // sequence order required by the angular-derivative recursion.
+        const bool spherical = geometry_type == GeometryType::ONED_SPHERICAL;
         for (const auto& dir_set : product_quad.GetDirectionMap())
         {
           std::vector<unsigned int> group1;
           std::vector<unsigned int> group2;
           for (const auto& dir_id : dir_set.second)
-            if (quadrature.GetAbscissa(dir_id).phi > M_PI_2)
+          {
+            const bool inward = spherical ? quadrature.GetOmega(dir_id).z < 0.0
+                                          : quadrature.GetAbscissa(dir_id).phi > M_PI_2;
+            if (inward)
               group1.push_back(dir_id);
             else
               group2.push_back(dir_id);
+          }
 
           AppendNonEmptyGrouping(unique_so_groupings, {group1.begin(), group1.end()});
           AppendNonEmptyGrouping(unique_so_groupings, {group2.begin(), group2.end()});

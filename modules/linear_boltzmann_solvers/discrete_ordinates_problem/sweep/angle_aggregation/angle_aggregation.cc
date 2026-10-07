@@ -115,36 +115,33 @@ AngleAggregation::SetupAngleSetDependencies()
 
   ResetAngleSetDependencies();
 
-  // Build angleset dependencies for RZ
+  // In curvilinear geometry (RZ and 1D spherical) the angular-derivative term couples the
+  // directions of each direction set in sequence order, so every cell must see them in that
+  // order: in RZ the azimuthal sequence of each polar level, in 1D spherical geometry the
+  // directions in order of increasing mu. Chain consecutive angle sets along each sequence, for
+  // any aggregation, so the ordering holds on every rank regardless of the boundary conditions
+  // (for example, an RZ annulus or a hollow sphere, which have no reflecting axis or center).
   const auto* curvi_quad = dynamic_cast<const CurvilinearProductQuadrature*>(quadrature_.get());
   const auto* product_quad = dynamic_cast<const ProductQuadrature*>(quadrature_.get());
-  if (curvi_quad && product_quad && quadrature_->GetDimension() == 2 &&
-      GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL)
+  const bool curvilinear_sequence = curvi_quad and product_quad and
+                                    ((quadrature_->GetDimension() == 2 and
+                                      GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL) or
+                                     (quadrature_->GetDimension() == 1 and
+                                      GetCoordinateSystem() == CoordinateSystemType::SPHERICAL));
+  if (curvilinear_sequence)
   {
-    bool single_angle_sets = true;
-    for (const auto& angle_set : angle_set_groups_)
+    for (const auto& dir_set : product_quad->GetDirectionMap())
     {
-      if (angle_set->GetAngleIndices().size() != 1)
+      AngleSet* prev = nullptr;
+      for (const auto dir_id : dir_set.second)
       {
-        single_angle_sets = false;
-        break;
-      }
-    }
-    if (single_angle_sets)
-    {
-      for (const auto& dir_set : product_quad->GetDirectionMap())
-      {
-        AngleSet* prev = nullptr;
-        for (const auto dir_id : dir_set.second)
-        {
-          auto it = dir_to_angleset_.find(dir_id);
-          if (it == dir_to_angleset_.end())
-            continue;
-          AngleSet* current = it->second;
-          if (prev && prev != current)
-            following_angle_sets_map_[prev].insert(current);
-          prev = current;
-        }
+        auto it = dir_to_angleset_.find(dir_id);
+        if (it == dir_to_angleset_.end())
+          continue;
+        AngleSet* current = it->second;
+        if (prev && prev != current)
+          following_angle_sets_map_[prev].insert(current);
+        prev = current;
       }
     }
   }

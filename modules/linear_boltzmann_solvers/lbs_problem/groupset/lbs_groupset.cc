@@ -24,7 +24,7 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter<std::shared_ptr<AngularQuadrature>>(
     "angular_quadrature", nullptr, "A handle to an angular quadrature");
   params.AddOptionalParameter(
-    "angle_aggregation_type", "polar", "The angle aggregation method to use during sweeping");
+    "angle_aggregation_type", "single", "The angle aggregation method to use during sweeping");
 
   // Iterative method
   params.AddOptionalParameter("inner_linear_method",
@@ -116,7 +116,7 @@ LBSGroupset::Init(int aid)
   quadrature = nullptr;
   angle_agg = nullptr;
   iterative_method = LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON;
-  angleagg_method = AngleAggregationType::POLAR;
+  angleagg_method = AngleAggregationType::SINGLE;
   residual_tolerance = 1.0e-6;
   max_iterations = 200;
   gmres_restart_intvl = 30;

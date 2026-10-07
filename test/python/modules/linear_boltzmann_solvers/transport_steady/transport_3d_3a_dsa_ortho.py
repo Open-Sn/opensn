@@ -71,6 +71,9 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature3DXYZ(n_polar=4, n_azimuthal=8, scattering_order=1)
 
+    # The default partition has rank-level sweep cycles, which are broken by lagging fluxes. The
+    # lagged set depends on how directions are grouped into angle sets, so the iteration history
+    # checked by this test (not the converged solution) depends on the angle aggregation.
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
@@ -78,6 +81,7 @@ if __name__ == "__main__":
             {
                 "groups_from_to": [0, 62],
                 "angular_quadrature": pquad,
+                "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 1000,
@@ -88,6 +92,7 @@ if __name__ == "__main__":
             {
                 "groups_from_to": [63, num_groups - 1],
                 "angular_quadrature": pquad,
+                "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
                 "l_max_its": 1000,

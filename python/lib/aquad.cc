@@ -547,6 +547,50 @@ WrapCurvilinearProductQuadrature(py::module& aquad)
         Verbosity.
     )"
   );
+
+  // 1D spherical
+  auto curvilinear_quadrature_gl_1d_spherical = py::class_<GLProductQuadrature1DSpherical,
+                                                           std::shared_ptr<GLProductQuadrature1DSpherical>,
+                                                           CurvilinearProductQuadrature>(
+    aquad,
+    "GLProductQuadrature1DSpherical",
+    R"(
+    Gauss-Legendre quadrature for 1D spherical geometry.
+
+    Wrapper of :cpp:class:`opensn::GLProductQuadrature1DSpherical`.
+
+    The ``n_polar`` Gauss-Legendre directions are ordered by increasing direction cosine
+    :math:`\mu` and bracketed by zero-weight starting (:math:`\mu=-1`) and final
+    (:math:`\mu=+1`) directions, which start and end the angular-derivative recursion. The
+    weights sum to one. Use with :class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`
+    on a 1D mesh with ``coord_sys="spherical"``.
+    )"
+  );
+  curvilinear_quadrature_gl_1d_spherical.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        auto scattering_order = GetScatteringOrder(params);
+        static const std::vector<std::string> required_keys = {"n_polar"};
+        const std::vector<std::pair<std::string, py::object>> optional_keys = {{"verbose", py::bool_(false)}};
+        auto [n_polar, verbose] = extract_args_tuple<unsigned int, bool>(params, required_keys, optional_keys);
+        return std::make_shared<GLProductQuadrature1DSpherical>(n_polar, scattering_order, verbose);
+      }
+    ),
+    R"(
+    Construct a Gauss-Legendre quadrature for 1D spherical geometry.
+
+    Parameters
+    ----------
+    n_polar: int
+        Number of Gauss-Legendre directions (even).
+    scattering_order: int
+        Maximum Legendre scattering order supported by the angular quadrature. The standard
+        moment operators are used.
+    verbose: bool, default=False
+        Verbosity.
+    )"
+  );
   // clang-format on
 }
 
