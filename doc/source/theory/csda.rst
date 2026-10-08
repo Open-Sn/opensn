@@ -31,11 +31,11 @@ groups with nonzero stopping power is called a *charged-particle block*.
 
 The symbols used below are:
 
-* :math:`i`, :math:`m`, and :math:`g` for cell, discrete direction, and energy
+* :math:`i`, :math:`d`, and :math:`g` for cell, discrete direction, and energy
   group;
 * :math:`B_n(\mathbf r)` for spatial basis function :math:`n`;
-* :math:`\Psi_{n,g,m}` for the group-integrated nodal angular flux;
-* :math:`\psi^E_{i,g,m}` for the cellwise within-group energy-slope unknown;
+* :math:`\Psi_{n,g,d}` for the group-integrated nodal angular flux;
+* :math:`\psi^E_{i,g,d}` for the cellwise within-group energy-slope unknown;
 * :math:`\Phi_g` and :math:`\varphi^E_{i,g}` for their angular moments; and
 * :math:`V_i` for the cell volume.
 
@@ -77,14 +77,14 @@ OpenSn uses a linear-discontinuous representation in energy:
 .. math::
    :label: csda-energy-ansatz
 
-   \psi_{i,g,m}(\mathbf r,E)
+   \psi_{i,g,d}(\mathbf r,E)
    =
    \frac{1}{\Delta E_g}
-   \sum_{n=1}^{N_i}\Psi_{n,g,m}B_n(\mathbf r)
+   \sum_{n=1}^{N_i}\Psi_{n,g,d}B_n(\mathbf r)
    +
-   \psi^E_{i,g,m}\frac{2(E-E_g)}{\Delta E_g}.
+   \psi^E_{i,g,d}\frac{2(E-E_g)}{\Delta E_g}.
 
-The energy basis has zero mean, so :math:`\Psi_{n,g,m}` retains its usual
+The energy basis has zero mean, so :math:`\Psi_{n,g,d}` retains its usual
 group-integrated normalization. The slope test function
 
 .. math::
@@ -107,9 +107,9 @@ After angular integration, the scalar flux and slope moment are
 
 .. math::
 
-   \Phi_g(\mathbf r)=\sum_m w_m\Psi_{g,m}(\mathbf r),
+   \Phi_g(\mathbf r)=\sum_d w_d\Psi_{g,d}(\mathbf r),
    \qquad
-   \varphi^E_{i,g}=\sum_m w_m\psi^E_{i,g,m}.
+   \varphi^E_{i,g}=\sum_d w_d\psi^E_{i,g,d}.
 
 Because the slope is cellwise constant, CSDA-derived responses use the
 cell-average scalar flux
@@ -132,11 +132,11 @@ the angular slowing-down density is
 
 .. math::
 
-   J^E_{i,g,m}
+   J^E_{i,g,d}
    =S_{i,g}
    \left(
-   \frac{1}{\Delta E_g V_i}\mathbf v^T\boldsymbol{\Psi}_{i,g,m}
-   -\psi^E_{i,g,m}
+   \frac{1}{\Delta E_g V_i}\mathbf v^T\boldsymbol{\Psi}_{i,g,d}
+   -\psi^E_{i,g,d}
    \right),
 
 and its angular integral, the slowing-down density, is
