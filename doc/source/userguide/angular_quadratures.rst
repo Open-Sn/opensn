@@ -220,6 +220,33 @@ Example:
        scattering_order=0,
    )
 
+``GLProductQuadrature1DSpherical``
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For 1D spherical problems in
+:py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem` on a 1D mesh
+built with ``coord_sys="spherical"``.
+
+The ``n_polar`` Gauss-Legendre directions are ordered by increasing direction
+cosine :math:`\mu` and bracketed by zero-weight starting (:math:`\mu=-1`) and
+final (:math:`\mu=+1`) directions, which start and end the recursion of the
+angular-redistribution term. The weights sum to one. Only the standard moment
+operators are available.
+
+Parameters:
+
+- ``n_polar``: required, must be even.
+- ``scattering_order``: required (Legendre order of scattering).
+- ``verbose``: optional.
+
+Example:
+
+.. code-block:: python
+
+   from pyopensn.aquad import GLProductQuadrature1DSpherical
+
+   quad = GLProductQuadrature1DSpherical(n_polar=16, scattering_order=0)
+
 Triangular quadratures
 ----------------------
 
@@ -567,7 +594,8 @@ The available aggregation types are:
 - ``'single'``
 - ``'azimuthal'``
 
-The default groupset aggregation is ``'polar'``.
+The default groupset aggregation is ``'single'``, which is compatible with
+every quadrature, mesh, and geometry.
 
 This matters because not every quadrature family supports every aggregation
 mode, and not every mesh type supports every aggregation mode.
@@ -597,8 +625,8 @@ It is not appropriate for:
 - SLDFE quadratures
 - fully unstructured 3D (non-extruded) meshes
 
-For those quadratures, and for fully unstructured 3D meshes, set
-``angle_aggregation_type='single'`` explicitly.
+For those quadratures, and for fully unstructured 3D meshes, use the default
+``'single'`` aggregation.
 
 ``single``
 ----------
@@ -638,10 +666,10 @@ Example:
 ``azimuthal``
 -------------
 
-``azimuthal`` aggregation is only valid for product quadratures on 2D RZ
-geometry; it is not available for Cartesian problems.
+``azimuthal`` aggregation is only valid for product quadratures on 2D RZ and
+1D spherical geometry; it is not available for Cartesian problems.
 
-For 2D RZ problems, the curvilinear solver accepts:
+For curvilinear problems, the solver accepts:
 
 - ``'azimuthal'``
 - ``'single'``
@@ -759,9 +787,11 @@ Recommendations
 - For standard 1D slab problems, start with ``GLProductQuadrature1DSlab``.
 - For standard Cartesian 2D and 3D problems, start with
   ``GLCProductQuadrature2DXY`` or ``GLCProductQuadrature3DXYZ``.
-- For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, set
-  ``angle_aggregation_type='single'`` explicitly.
+- For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, keep
+  the default ``angle_aggregation_type='single'``.
 - For 2D RZ problems, use ``GLCProductQuadrature2DRZ`` with
+  ``DiscreteOrdinatesCurvilinearProblem``.
+- For 1D spherical problems, use ``GLProductQuadrature1DSpherical`` with
   ``DiscreteOrdinatesCurvilinearProblem``.
 - When increasing ``scattering_order``, also revisit the angular quadrature
   resolution. Do not assume that a quadrature that was adequate for

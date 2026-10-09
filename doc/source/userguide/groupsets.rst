@@ -170,7 +170,7 @@ The angle-aggregation keyword is:
 Supported aggregation types exposed in OpenSn are:
 
 * ``"polar"``
-* ``"single"``
+* ``"single"`` (default)
 * ``"azimuthal"``
 
 Example:
@@ -194,8 +194,8 @@ Practical interpretation:
 
    Angle aggregation is not just a performance knob. It is a sweep-organization
    choice that must remain compatible with both the mesh and the quadrature.
-   In particular, unstructured meshes require
-   ``angle_aggregation_type="single"``.
+   In particular, fully unstructured 3D meshes require
+   ``angle_aggregation_type="single"``, the default.
 
    See :doc:`angular_quadratures` for the detailed compatibility rules between
    quadrature family, mesh type, and aggregation type.

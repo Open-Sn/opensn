@@ -874,45 +874,89 @@ DiscreteOrdinatesCurvilinearProblem
 ===================================
 
 :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem` is the
-curvilinear companion to the Cartesian problem class.
+curvilinear companion to the Cartesian problem class. It supports two
+geometries, selected by the ``coord_sys`` argument of the mesh generator (the
+problem class has no coordinate-system parameter of its own):
 
-It uses the same general construction pattern, but currently requires:
+* 2D cylindrical (``r-z``) geometry: a 2D mesh with ``coord_sys="cylindrical"``
+  and :py:class:`pyopensn.aquad.GLCProductQuadrature2DRZ`. The boundaries are
+  ``rmin``, ``rmax``, ``zmin``, and ``zmax``.
+* 1D spherical geometry: a 1D mesh along the radius with
+  ``coord_sys="spherical"`` and
+  :py:class:`pyopensn.aquad.GLProductQuadrature1DSpherical`. The boundaries are
+  ``zmin`` (inner) and ``zmax`` (outer). A mesh that starts at :math:`r = 0` is
+  a solid sphere; its center has zero area and needs no boundary condition. A
+  mesh that starts at :math:`r > 0` is a hollow sphere, and ``zmin`` is its inner
+  surface.
 
-* a suitable curvilinear mesh,
-* ``coord_system=2`` for cylindrical coordinates,
-* a compatible quadrature and solver setup.
+Both geometries discretize the angular-derivative (redistribution) term with a
+weighted diamond difference along an ordered angular sequence: the azimuthal
+sequence of each polar level in ``r-z``, and the directions in order of
+increasing :math:`\mu`, starting from the zero-weight direction
+:math:`\mu = -1`, in 1D spherical geometry. Every cell must see the directions of
+a sequence in that order, so the angle sets of a sequence are swept in order on
+every rank.
 
-Important current limitations:
+Requirements and current limitations:
 
-* the curvilinear solver only supports cylindrical geometries,
-* reflecting boundaries are supported only on the symmetry axis (``rmin``) and on
-  constant-``z`` boundaries,
-* GPU acceleration is not supported,
-* users should treat it as a more specialized path than the standard Cartesian
-  problem.
+* ``angle_aggregation_type`` must be ``"single"`` (the default) or
+  ``"azimuthal"``. In 1D spherical geometry ``"azimuthal"`` forms one inward and
+  one outward angle set.
+* ``sweep_type`` must be ``"AAH"``.
+* In ``r-z``, reflecting boundaries are supported only on the symmetry axis
+  (``rmin`` at :math:`r = 0`) and on constant-``z`` boundaries. An inner radial
+  boundary at :math:`r > 0` (an annulus) may be vacuum or isotropic.
+* In 1D spherical geometry the outer surface may be reflecting
+  (:math:`\mu \to -\mu`); it is lagged by one sweep, so the inner iteration
+  resolves it.
+* Time-dependent problems and GPU acceleration are not supported.
 
-Integrated quantities are reported in physical units for the full revolution:
+Integrated quantities are reported in physical units over the full geometry:
 the balance table, :py:meth:`ComputeLeakage`, response evaluation, power
-normalization, volume postprocessors, and volume field-function integrals all use
-the volume element :math:`2\pi r\,dr\,dz` and the corresponding surface element,
-so they can be compared directly with an equivalent three-dimensional model.
-Volumetric source strengths are per unit volume. A point source at
-:math:`(r, z)` represents a ring, and its strength is the total emission rate of
-that ring. See :ref:`normalization_conventions` for the conventions in all
-geometries.
+normalization, volume postprocessors, and volume field-function integrals use
+the volume element :math:`2\pi r\,dr\,dz` in ``r-z`` and :math:`4\pi r^2\,dr` in
+1D spherical geometry, and the corresponding surface elements, so they can be
+compared directly with an equivalent three-dimensional model. Volumetric source
+strengths are per unit volume. A point source at :math:`(r, z)` in ``r-z``
+represents a ring, and its strength is the total emission rate of that ring. See
+:ref:`normalization_conventions` for the conventions in all geometries.
 
-Example:
+Example (``r-z``):
 
 .. code-block:: python
 
+   grid = OrthogonalMeshGenerator(node_sets=[r_nodes, z_nodes],
+                                  coord_sys="cylindrical").Execute()
    phys = DiscreteOrdinatesCurvilinearProblem(
-       mesh=mesh,
-       coord_system=2,
+       mesh=grid,
        num_groups=num_groups,
-       groupsets=groupsets,
+       groupsets=[{"groups_from_to": (0, num_groups - 1),
+                   "angular_quadrature": GLCProductQuadrature2DRZ(
+                       n_polar=8, n_azimuthal=16, scattering_order=0),
+                   "angle_aggregation_type": "azimuthal"}],
        xs_map=xs_map,
-       sweep_type="AAH",
+       boundary_conditions=[{"name": "rmin", "type": "reflecting"}],
    )
+
+Example (solid sphere):
+
+.. code-block:: python
+
+   grid = OrthogonalMeshGenerator(node_sets=[r_nodes],
+                                  coord_sys="spherical").Execute()
+   phys = DiscreteOrdinatesCurvilinearProblem(
+       mesh=grid,
+       num_groups=num_groups,
+       groupsets=[{"groups_from_to": (0, num_groups - 1),
+                   "angular_quadrature": GLProductQuadrature1DSpherical(
+                       n_polar=16, scattering_order=0),
+                   "angle_aggregation_type": "azimuthal"}],
+       xs_map=xs_map,
+       boundary_conditions=[{"name": "zmax", "type": "vacuum"}],
+   )
+
+:doc:`../tutorials/problems/fixed_source/spherical_barrier` solves a complete
+1D spherical benchmark and verifies it against the exact solution.
 
 Typical Construction Patterns
 =============================

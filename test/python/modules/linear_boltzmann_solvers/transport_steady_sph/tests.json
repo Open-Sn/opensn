@@ -1,0 +1,61 @@
+[
+  {
+    "file": "transport_1d_sph_verification.py",
+    "comment": "1D spherical: void/hollow/uniform exact solutions, isotropic-flux preservation (reflecting, SINGLE, P1), escape-probability convergence, groupset consistency, reflecting-sphere k",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "SPH_VOID_DEV", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_HOLLOW_DEV", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_UNIFORM_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_PRODUCTION_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_REFLECTING_DEV", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_REFLECTING_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_SINGLE_AGG_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_P1_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ERR_S8", "goldvalue": 0.00183, "abs_tol": 0.0003},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ERR_S32", "goldvalue": 0, "abs_tol": 0.00025},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ORDER", "goldvalue": 1.93, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "SPH_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_GROUPSET_DIFF", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_KINF_ERR", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_1d_sph_verification.py",
+    "comment": "1D spherical verification on 4 ranks: the radial sweeps cross three rank boundaries in each direction",
+    "outfileprefix": "transport_1d_sph_verification_4rank",
+    "num_procs": 4,
+    "args": [
+      "rank_count=\"4\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "SPH_VOID_DEV", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_HOLLOW_DEV", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_UNIFORM_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_PRODUCTION_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_REFLECTING_DEV", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_REFLECTING_BALANCE", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_SINGLE_AGG_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_P1_DEV", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ERR_S8", "goldvalue": 0.00183, "abs_tol": 0.0003},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ERR_S32", "goldvalue": 0, "abs_tol": 0.00025},
+      {"type": "KeyValuePair", "key": "SPH_ESCAPE_ORDER", "goldvalue": 1.93, "abs_tol": 0.3},
+      {"type": "KeyValuePair", "key": "SPH_POINT_PROD_ERR", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "SPH_GROUPSET_DIFF", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SPH_KINF_ERR", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_1d_sph_chang_benchmarks.py",
+    "comment": "Chang (LLNL-TR-819680) six 1-group spherical benchmarks: shell-average errors against the exact solutions",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P1_ERR_S256", "goldvalue": 1.9912e-05, "abs_tol": 2.0e-07},
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P2_ERR_S256", "goldvalue": 4.6918e-05, "abs_tol": 4.7e-07},
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P3_ERR_S256", "goldvalue": 3.3737e-05, "abs_tol": 3.4e-07},
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P4_ERR_S256", "goldvalue": 7.7987e-06, "abs_tol": 7.8e-08},
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P5_ERR_S256", "goldvalue": 7.8094e-06, "abs_tol": 7.8e-08},
+      {"type": "KeyValuePair", "key": "SPH_CHANG_P6_ERR_S256", "goldvalue": 4.4279e-05, "abs_tol": 4.4e-07}
+    ]
+  }
+]

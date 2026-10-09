@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_spherical.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -78,14 +79,18 @@ DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
 void
 DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 {
-  if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL)
+  if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL and
+      geometry_type_ != GeometryType::ONED_SPHERICAL)
   {
     std::stringstream oss;
     oss << GetName() << ":\n"
         << "Invalid geometry type " << ToString(geometry_type_) << ".\n"
-        << "Only TWOD_CYLINDRICAL geometry type is supported.";
+        << "Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.";
     throw std::runtime_error(oss.str());
   }
+  if (sweep_type_ != "AAH")
+    throw std::runtime_error(GetName() +
+                             ": Curvilinear geometries support only sweep_type=\"AAH\".");
   if (use_gpus_)
   {
     throw std::runtime_error(
@@ -168,12 +173,14 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       }
       case CoordinateSystemType::SPHERICAL:
       {
-        if (angleagg_method != AngleAggregationType::POLAR)
+        if (angleagg_method != AngleAggregationType::AZIMUTHAL and
+            angleagg_method != AngleAggregationType::SINGLE)
         {
           std::ostringstream oss;
           oss << GetName() << ":\n"
-              << "Invalid angle aggregation (type = " << static_cast<int>(angleagg_method)
-              << ") for groupsset " << gs;
+              << "Groupset " << gs
+              << ": 1D spherical geometry requires angle_aggregation_type \"azimuthal\" (one "
+                 "inward and one outward angle set) or \"single\".";
           throw std::runtime_error(oss.str());
         }
         break;
@@ -227,6 +234,10 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
 void
 DiscreteOrdinatesCurvilinearProblem::ValidateBoundaryConfiguration() const
 {
+  // A reflecting outer surface is valid in 1D spherical geometry (mu -> -mu); in RZ the outer
+  // radial boundary has no mirror direction in the quadrature.
+  if (grid_->GetCoordinateSystem() != CoordinateSystemType::CYLINDRICAL)
+    return;
   const auto& bndry_map = grid_->GetBoundaryNameMap();
   const auto it = bndry_map.find("xmax");
   if (it != bndry_map.end())
@@ -290,13 +301,14 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
 void
 DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
 {
-  log.Log() << "Computing RZ secondary unit integrals.\n";
+  log.Log() << "Computing curvilinear secondary unit integrals.\n";
   const auto& sdm = *discretization_;
 
-  // Secondary matrices are used for the azimuthal streaming term in RZ.
-  // That term carries a 1/r factor, so use unweighted volume integrals
-  // here.
-  const auto swf = [](const Vector3&) { return 1.0; };
+  // Secondary matrices are used for the angular-derivative terms, which carry a 1/r factor. The
+  // primary integrals use the radial weight (r in RZ, r^2 in 1D spherical geometry), so these use
+  // one power of r less: 1 in RZ and r = z in 1D spherical geometry.
+  const bool spherical = grid_->GetCoordinateSystem() == CoordinateSystemType::SPHERICAL;
+  const auto swf = [spherical](const Vector3& pt) { return spherical ? pt.z : 1.0; };
 
   // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
@@ -351,9 +363,9 @@ DiscreteOrdinatesCurvilinearProblem::GetSecondaryUnitCellMatrices() const
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  auto sweep_chunk = std::make_shared<AAHSweepChunkRZ>(*this, groupset);
-
-  return sweep_chunk;
+  if (geometry_type_ == GeometryType::ONED_SPHERICAL)
+    return std::make_shared<AAHSweepChunkSpherical>(*this, groupset);
+  return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
 }
 
 } // namespace opensn

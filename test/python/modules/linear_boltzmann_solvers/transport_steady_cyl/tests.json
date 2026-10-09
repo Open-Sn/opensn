@@ -363,5 +363,15 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "transport_2d_cyl_annulus_groupsets.py",
+    "comment": "RZ annulus: inner radial boundary inflow and azimuthal sweep ordering without a reflecting axis (AZIMUTHAL and SINGLE), and one vs multiple groupsets",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "RZ_ANNULUS_DEV_AZIMUTHAL", "goldvalue": 0, "abs_tol": 3e-8},
+      {"type": "KeyValuePair", "key": "RZ_ANNULUS_DEV_SINGLE", "goldvalue": 0, "abs_tol": 3e-8},
+      {"type": "KeyValuePair", "key": "RZ_GROUPSET_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
   }
 ]

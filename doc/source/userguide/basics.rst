@@ -109,7 +109,7 @@ Good starting habits are:
 
 * use one groupset unless you know why you need more,
 * use ``petsc_gmres`` as the default difficult-problem inner method,
-* use ``angle_aggregation_type="single"`` on unstructured meshes,
+* keep the default ``angle_aggregation_type="single"`` on unstructured meshes,
 * keep inner tolerances tighter than outer tolerances,
 * create power field functions only when you need them,
 * inspect exported field functions or interpolated values early in a new model.

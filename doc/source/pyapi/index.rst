@@ -98,6 +98,7 @@ Product quadratures
    :template: python.rst
 
    aquad.GLCProductQuadrature2DRZ
+   aquad.GLProductQuadrature1DSpherical
 
 Triangular quadrature
 ^^^^^^^^^^^^^^^^^^^^^

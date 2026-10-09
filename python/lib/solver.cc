@@ -1012,7 +1012,7 @@ WrapLBS(py::module& slv)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
           - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
               Handle to an angular quadrature.
-          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
+          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='single'
               Angle aggregation method to use during sweeping.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
@@ -1502,6 +1502,16 @@ WrapLBS(py::module& slv)
     R"(
     Construct a discrete ordinates problem for curvilinear geometry.
 
+    Two geometries are supported: 2D cylindrical (``r-z``, a 2D mesh with
+    ``coord_sys="cylindrical"`` and :class:`pyopensn.aquad.GLCProductQuadrature2DRZ`) and 1D
+    spherical (a 1D radial mesh with ``coord_sys="spherical"`` and
+    :class:`pyopensn.aquad.GLProductQuadrature1DSpherical`; boundaries ``zmin`` (inner) and
+    ``zmax`` (outer), and a mesh starting at r = 0 is a solid sphere whose center needs no
+    boundary condition). Groupsets must use ``angle_aggregation_type`` ``'azimuthal'`` or
+    ``'single'``, ``sweep_type`` must be ``'AAH'``, and time-dependent problems and GPU
+    acceleration are not supported. Integrated quantities are reported for the full revolution
+    (``r-z``) or the full sphere.
+
     Warnings
     --------
        DiscreteOrdinatesCurvilinearProblem is **experimental** and should be used with caution!
@@ -1522,8 +1532,9 @@ WrapLBS(py::module& slv)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
           - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
               Handle to an angular quadrature.
-          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='polar'
-              Angle aggregation method to use during sweeping.
+          - angle_aggregation_type: {'single', 'azimuthal'}, default='single'
+              Angle aggregation method to use during sweeping. Curvilinear problems do not
+              support ``'polar'``.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
               Iterative method used for inner linear solves.
@@ -1653,8 +1664,7 @@ WrapLBS(py::module& slv)
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
     sweep_type : str, optional
-        The sweep type to use. Must be one of `AAH` or `CBC`. Defaults to `AAH`.
-        If ``time_dependent=True``, ``options.save_angular_flux=True`` is required.
+        The sweep type to use. Curvilinear problems support only `AAH`, the default.
     )"
   );
 }
