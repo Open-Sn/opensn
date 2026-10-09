@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad54a8352f9989a7c2b18a6b6a509acd7:
+
+Function opensn::FindCSDAProblemChargedGroupRanges
+==================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FindCSDAProblemChargedGroupRanges(const BlockID2XSMap&, const unsigned int)
+   :project: opensn

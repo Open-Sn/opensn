@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9731a8a7f6206d07410e8ee69674b020:
+
+Function opensn::IsCSDAActive
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::IsCSDAActive(const CSDAMaterialData&, const size_t)
+   :project: opensn

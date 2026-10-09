@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_c_s_d_a_local_solve_context:
+
+Struct CSDALocalSolveContext
+============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::CSDALocalSolveContext
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

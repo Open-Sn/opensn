@@ -146,7 +146,33 @@ Global outgoing boundary contribution accumulated from face outflow
 tallies.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">balance</span></code>:
 Rate balance,
-<code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.</p></li>
+<code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.
+Omitted when CSDA is enabled, because it does not include CSDA
+particle deposition; use <code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code> instead.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_particle_deposition_rate</span></code>:
+Present only when CSDA is enabled. Rate at which particles slow down
+out of the lowest-energy group of each charged-particle block. Electron
+and positron contributions are both counted as positive.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code>:
+Present only when CSDA is enabled. Signed relative particle residual:
+<code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span> <span class="pre">-</span>
+<span class="pre">csda_particle_deposition_rate</span></code>, divided by
+<code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span></code>. Zero gain gives zero for a zero
+residual and signed infinity otherwise.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">csda_energy_inflow_rate</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">csda_energy_outflow_rate</span></code>:
+Present only when CSDA is enabled. Production, boundary inflow, and
+boundary outflow rates, each weighted by group-midpoint energy. For a
+converged solve, <code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span> <span class="pre">+</span>
+<span class="pre">csda_energy_inflow_rate</span> <span class="pre">-</span> <span class="pre">csda_energy_outflow_rate</span></code> equals the
+integral of the <code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code> field function.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_energy_balance</span></code>:
+Present only when CSDA is enabled. Signed relative energy residual:
+energy production plus boundary inflow, minus boundary outflow,
+collision energy loss, and CSDA continuous energy loss, all weighted by
+group-midpoint energy, divided by
+<code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span> <span class="pre">+</span> <span class="pre">csda_energy_inflow_rate</span></code>. Zero gain
+gives zero for a zero residual and signed infinity otherwise.</p></li>
 </ul>
 </p>
 </dd>
@@ -155,7 +181,9 @@ Rate balance,
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>This solver applies no extra normalization to the balance table.</p>
+<p>This solver applies no extra normalization to the balance table.
+CSDA balance entries are convergence-sensitive and should be interpreted only
+after the linear solve has converged to the requested tolerance.</p>
 </dd></dl>
 
 <dl class="py method">

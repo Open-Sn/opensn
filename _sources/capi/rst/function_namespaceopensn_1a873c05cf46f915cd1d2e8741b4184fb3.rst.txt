@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a873c05cf46f915cd1d2e8741b4184fb3:
+
+Template Function opensn::SolveCSDALocalSystem
+==============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SolveCSDALocalSystem(const CSDALocalSolveContext&, SourceAt, FluxAt, FluxSet, UpwindSlopeAt)
+   :project: opensn

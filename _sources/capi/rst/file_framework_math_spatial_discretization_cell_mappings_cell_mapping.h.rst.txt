@@ -52,6 +52,8 @@ Included By
 
 - :ref:`file_framework_math_spatial_discretization_spatial_discretization.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
 
 
 

@@ -1,0 +1,72 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h:
+
+File csda_utils.h
+=================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h``)
+-----------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``algorithm``
+
+- ``cstddef``
+
+- ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_csda_sweep_chunk.h`
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a34657daa74f2affab488b2165b560c58`
+
+- :ref:`exhale_function_namespaceopensn_1ad54a8352f9989a7c2b18a6b6a509acd7`
+

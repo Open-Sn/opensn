@@ -109,6 +109,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -166,6 +167,13 @@
 
 <span class="w">  </span><span class="c1">/// Returns true if the problem is currently in time-dependent mode.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Throws if the problem cannot be switched to adjoint mode. The base class requires Cartesian</span>
+<span class="cm">   * geometry and standard quadrature operators; derived problems extend this to reject</span>
+<span class="cm">   * unsupported features and must call the base implementation.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAdjointModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Set the problem to time-dependent mode.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">();</span>
@@ -441,6 +449,8 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateDerivedFieldFunction</span><span class="p">(</span><span class="n">FieldFunctionGridBased</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ff</span><span class="p">,</span>
 <span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_name</span><span class="p">,</span>
 <span class="w">                                  </span><span class="kt">double</span><span class="w"> </span><span class="n">power_normalization_target</span><span class="p">);</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span>
+<span class="w">  </span><span class="n">ComputeDerivedFieldFunctionData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">,</span>
 <span class="w">                                      </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_transient_initialization_from_steady</span><span class="p">);</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -505,7 +515,6 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeRuntimeCore</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAdjointModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateRuntimeModeConfiguration</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Initializes parallel arrays.</span>

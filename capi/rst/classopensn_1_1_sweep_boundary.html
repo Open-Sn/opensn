@@ -144,6 +144,16 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary29SetDelayedAngularSlopeEnabledEb">
+<span class="target" id="classopensn_1_1_sweep_boundary_1ad5395ce08f8af21942eb483f2d1e3b1b"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDelayedAngularSlopeEnabled</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">enabled</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary29SetDelayedAngularSlopeEnabledEb" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13SweepBoundary26DelayedAngularSlopeEnabledEv">
+<span class="target" id="classopensn_1_1_sweep_boundary_1a508b97397eb9f45823a1cac663fac34f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelayedAngularSlopeEnabled</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13SweepBoundary26DelayedAngularSlopeEnabledEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn13SweepBoundary21HasDelayedAngularFluxEv">
 <span class="target" id="classopensn_1_1_sweep_boundary_1a359f2484d5cb41bc9c8fc2619dfe7e61"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasDelayedAngularFlux</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13SweepBoundary21HasDelayedAngularFluxEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -242,9 +252,21 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary12PsiIncomingEENSt8uint32_tEjjjij">
+<span class="target" id="classopensn_1_1_sweep_boundary_1af1cb402776fbe996626fb23cd8ff47f9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PsiIncomingE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_local_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_num</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fi</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_num</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">group_num</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary12PsiIncomingEENSt8uint32_tEjjjij" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a pointer to the location of the incoming slope data. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary11PsiOutgoingE8uint64_tjjji">
 <span class="target" id="classopensn_1_1_sweep_boundary_1a847c441feaf0a7bf6d479e51c0af52d0"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PsiOutgoing</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_local_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_num</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fi</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_num</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary11PsiOutgoingE8uint64_tjjji" title="Link to this definition"></a><br /></dt>
-<dd><p>Return a pointer to the location of the outgoing flux. </p>
+<dd><p>Returns a pointer to the location of the outgoing flux. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary12PsiOutgoingEE8uint64_tjjji">
+<span class="target" id="classopensn_1_1_sweep_boundary_1ae97aaa016a4f6a67837b7ffbd64e4d2d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">PsiOutgoingE</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_local_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face_num</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fi</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_num</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary12PsiOutgoingEE8uint64_tjjji" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns a pointer to the location of the outgoing slope data. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -313,6 +335,11 @@
 <span class="target" id="classopensn_1_1_sweep_boundary_1af137b357567bb7bc9cc05f2625185c1c"></span><a class="reference internal" href="enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2.html#_CPPv4N6opensn15LBSBoundaryTypeE" title="opensn::LBSBoundaryType"><span class="n"><span class="pre">LBSBoundaryType</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">type_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary5type_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Boundary type. </p>
 </dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary30delayed_angular_slope_enabled_E">
+<span class="target" id="classopensn_1_1_sweep_boundary_1a950c48047e8d0067b5fa8678469f3dcf"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">delayed_angular_slope_enabled_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn13SweepBoundary30delayed_angular_slope_enabled_E" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13SweepBoundary16evaluation_time_E">

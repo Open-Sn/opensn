@@ -154,7 +154,7 @@
 <span class="cm">   * Zero the portion of the output flux moments vector corresponding to the groupset for this</span>
 <span class="cm">   * sweep chunk.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPhi</span><span class="p">();</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPhi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Sets all elements of the output angular flux vector to zero.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPsi</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">(</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">assign</span><span class="p">((</span><span class="n">destination_psi_</span><span class="p">).</span><span class="n">size</span><span class="p">(),</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>

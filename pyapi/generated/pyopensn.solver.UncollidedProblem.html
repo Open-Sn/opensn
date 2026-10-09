@@ -217,7 +217,15 @@ without needing a field function.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>name</strong> (<em>str</em>) – Name to assign to the returned field function.</p></li>
-<li><p><strong>xs_name</strong> (<em>str</em>) – Built-in 1D XS name, custom XS name, or the special value <code class="docutils literal notranslate"><span class="pre">power</span></code>.</p></li>
+<li><p><strong>xs_name</strong> (<em>str</em>) – Built-in 1D XS name, custom XS name, or the special value <code class="docutils literal notranslate"><span class="pre">power</span></code>.
+CSDA-enabled discrete-ordinates problems also support
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code>, <code class="docutils literal notranslate"><span class="pre">cepxs_energy_deposition</span></code>,
+<code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code>,
+<code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term_cellavg</span></code>. When CSDA is enabled,
+<code class="docutils literal notranslate"><span class="pre">energy_deposition</span></code> is an alias for the conservative
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code>. <code class="docutils literal notranslate"><span class="pre">cepxs_energy_deposition</span></code> preserves the
+imported CEPXS response plus the CSDA energy-space contribution.</p></li>
 <li><p><strong>power_normalization_target</strong> (<em>float</em><em>, </em><em>default=-1.0</em>) – If positive, scale the derived field function so that the raw power field would
 integrate to this total power.</p></li>
 </ul>
@@ -232,6 +240,9 @@ refreshed automatically if the solver state changes. It supports <code class="do
 recomputes the same field function from the solver’s latest state.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">xs_name</span> <span class="pre">==</span> <span class="pre">&quot;power&quot;</span></code>, the same power-generation formula used elsewhere by the solver
 is applied on demand.</p>
+<p>CSDA deposition fields are derived from the current scalar flux and terminal
+charged-particle current information. They should normally be created after the
+CSDA solve has converged.</p>
 <p>If <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>, the returned field function is scaled using the power
 implied by the current scalar flux. This scaling affects only the returned field function;
 it does not mutate the solver’s internal <code class="docutils literal notranslate"><span class="pre">phi</span></code> vectors.</p>
@@ -418,6 +429,11 @@ partitioning.</p>
 supported only for Cartesian geometries with standard quadrature operators
 (<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>).</p>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">adjoint=True</span></code> and the problem is time-dependent, has
+    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code>, or was constructed with an
+    <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file. The problem is left unchanged.</p>
+</dd>
 </dl>
 <p class="rubric">Notes</p>
 <dl class="simple">
@@ -507,6 +523,20 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 </dd>
 </dl>
 </p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the problem was constructed with an <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file, or if
+    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code> and the new cross sections split a
+    charged-particle group block across groupsets, contain more than two
+    charged-particle blocks, have negative or non-finite stopping powers or
+    non-positive energy-group widths, or have stopping power or energy
+    bounds that do not match the problem’s group count. CSDA also rejects
+    conflicting supplied energy structures or a map with no energy structure.
+    Individual materials may omit bounds and use the shared structure.</p></li>
+<li><p><strong>The new map is checked before it is installed</strong><strong>, </strong><strong>so a rejected map leaves the</strong> – </p></li>
+<li><p><strong>problem unchanged.</strong> – </p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

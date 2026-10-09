@@ -208,6 +208,12 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem16phi_e_new_local_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1d4bfedbad363ae4538d1d8d4fb6346f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">phi_e_new_local_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem16phi_e_new_local_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Max level size. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem17sweep_chunk_mode_E">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ae747acce86aaec3fc64e5678eaf47cd8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkModeE" title="opensn::DiscreteOrdinatesProblem::SweepChunkMode"><span class="n"><span class="pre">SweepChunkMode</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">sweep_chunk_mode_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem17sweep_chunk_mode_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Max level size. </p>
@@ -311,34 +317,50 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem12GetSweepTypeEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ac40f3c24f2e280b09d2631cab8bbef29"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetSweepType</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem12GetSweepTypeEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem15ValidateOptionsENSt8optionalI14SweepChunkModeEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a0d9540cd6e0a53ace32b7a7a359beec3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateOptions</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem14SweepChunkModeE" title="opensn::DiscreteOrdinatesProblem::SweepChunkMode"><span class="n"><span class="pre">SweepChunkMode</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">mode</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">nullopt</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem15ValidateOptionsENSt8optionalI14SweepChunkModeEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem26ValidateAdjointModeAllowedEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1a7655fd8e65d6998fdc559df55b7bbb"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateAdjointModeAllowed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem26ValidateAdjointModeAllowedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem26GetNumPhiIterativeUnknownsEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a4a1d5adbc3b73d3a5ec33419f7fc0741"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumPhiIterativeUnknowns</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem26GetNumPhiIterativeUnknownsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Gets the local and global number of iterative unknowns. </p>
-<p>This is typically only the flux moments, however, the sweep based solvers might include delayed angular fluxes in this number. </p>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem12GetAGSSolverEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ac96ca4626b88188bb3682954a94a992c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_a_g_s_linear_solver.html#_CPPv4N6opensn15AGSLinearSolverE" title="opensn::AGSLinearSolver"><span class="n"><span class="pre">AGSLinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetAGSSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem12GetAGSSolverEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem12GetWGSSolverE6size_t">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aeaba7ce9f4c525274657386030a4eb04"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_linear_solver.html#_CPPv4N6opensn12LinearSolverE" title="opensn::LinearSolver"><span class="n"><span class="pre">LinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetWGSSolver</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem12GetWGSSolverE6size_t" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem16GetNumWGSSolversEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a2f78b7552fdda564a2504e6c5891f701"></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumWGSSolvers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem16GetNumWGSSolversEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem13GetWGSContextEi">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a08648434aab117d8dbc5e697143751a4"></span><a class="reference internal" href="structopensn_1_1_w_g_s_context.html#_CPPv4N6opensn10WGSContextE" title="opensn::WGSContext"><span class="n"><span class="pre">WGSContext</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetWGSContext</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem13GetWGSContextEi" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Rejects adjoint mode for CSDA problems and problems with an uncollided flux file. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -560,6 +582,11 @@
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a197357e87044011d25f4f450022d239b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RebuildBoundaryRuntimeData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem26RebuildBoundaryRuntimeDataEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem31ComputeDerivedFieldFunctionDataERKNSt6stringE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1af80850e1c45babc827a76eb34bc6656b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeDerivedFieldFunctionData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem31ComputeDerivedFieldFunctionDataERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-factory-interface">Factory interface</p>
@@ -636,8 +663,25 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem15GetPhiENewLocalEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a159989099e0632a585bde7ef0f3e2dc5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetPhiENewLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem15GetPhiENewLocalEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Read/write access to cellwise scalar CSDA slope moments \phi_{E,g}. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem15GetPhiENewLocalEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ae89b41fe9332a7074417322a9c97c121"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetPhiENewLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem15GetPhiENewLocalEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Read access to cellwise scalar CSDA slope moments \phi_{E,g}. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem7ZeroPsiEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a49e0a763fb9cce921be0f7511900f256"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem7ZeroPsiEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem8ZeroPhiEEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a6f4fb2d169765e706b5865a5b8fb70e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ZeroPhiE</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem8ZeroPhiEEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">

@@ -42,6 +42,8 @@ Includes
 
 - ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
 
+- ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_discrete_ordinates_problem.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aah_fluds.h`)

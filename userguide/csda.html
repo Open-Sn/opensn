@@ -1,0 +1,424 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>12. CSDA Charged-Particle Transport &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="13. Solvers" href="solvers.html" />
+    <link rel="prev" title="11. Discrete-Ordinates Problems" href="discrete_ordinates_problems.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="index.html">OpenSn User Guide (Draft)</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="overview.html">1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="installation.html">2. Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html">3. OpenSn Basics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geometry_mesh.html">4. Geometry and Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="materials_xs.html">5. Materials and Cross-Section Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
+<li class="toctree-l2"><a class="reference internal" href="groupsets.html">7. Groupsets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_methods.html">8. Iterative Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">9. CMFD Acceleration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
+<li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">12. CSDA Charged-Particle Transport</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#basic-workflow">12.1. Basic Workflow</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cepxs-csda-data">12.2. CEPXS CSDA Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#problem-requirements">12.3. Problem Requirements</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#derived-field-functions">12.4. Derived Field Functions</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#energy-deposition">12.4.1. <code class="docutils literal notranslate"><span class="pre">energy_deposition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csda-energy-deposition">12.4.2. <code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cepxs-energy-deposition">12.4.3. <code class="docutils literal notranslate"><span class="pre">cepxs_energy_deposition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#charge-deposition">12.4.4. <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csda-charge-deposition">12.4.5. <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csda-charge-deposition-term">12.4.6. <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#csda-charge-deposition-term-cellavg">12.4.7. <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term_cellavg</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#balance-table-entries">12.5. Balance Table Entries</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence-and-verification">12.6. Convergence and Verification</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="index.html">OpenSn User Guide (Draft)</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">12. </span>CSDA Charged-Particle Transport</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="csda-charged-particle-transport">
+<h1><span class="section-number">12. </span>CSDA Charged-Particle Transport<a class="headerlink" href="#csda-charged-particle-transport" title="Link to this heading"></a></h1>
+<p>OpenSn’s CSDA mode adds continuous-slowing-down charged-particle transport to a
+steady-state discrete-ordinates solve. It is intended for electron and positron
+CEPXS-BFP data that includes stopping power, charge deposition, and energy
+deposition data.</p>
+<p>The CSDA implementation augments the angular sweep with a groupwise energy-loss
+term. It also carries enough terminal charged-particle information to report
+particle balance and CSDA-adjusted deposition field functions.</p>
+<p>See <a class="reference internal" href="../theory/csda.html#theory-csda"><span class="std std-ref">Continuous Slowing-Down Approximation</span></a> for the continuous model, implemented energy
+discretization, augmented local sweep system, and conservation derivations.</p>
+<section id="basic-workflow">
+<h2><span class="section-number">12.1. </span>Basic Workflow<a class="headerlink" href="#basic-workflow" title="Link to this heading"></a></h2>
+<p>The usual CSDA workflow is:</p>
+<ol class="arabic simple">
+<li><p>Load CEPXS data with <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>.</p></li>
+<li><p>Enable CSDA on a Cartesian <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a>.</p></li>
+<li><p>Put each contiguous charged-particle group block in a single groupset.</p></li>
+<li><p>Solve the problem to a tight enough convergence tolerance for balance work.</p></li>
+<li><p>Use CSDA field functions and <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> to verify the
+result.</p></li>
+</ol>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+
+<span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromCEPXS</span><span class="p">(</span><span class="s2">&quot;plastic_csda.bxslib&quot;</span><span class="p">,</span> <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">csda_format</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-10</span><span class="p">,</span>
+        <span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="n">volumetric_sources</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;csda_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+    <span class="n">sweep_type</span><span class="o">=</span><span class="s2">&quot;AAH&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+
+<span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">compute_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+<span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+<span class="n">balance</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">ComputeBalanceTable</span><span class="p">()</span>
+<span class="n">edep</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;edep&quot;</span><span class="p">,</span> <span class="s2">&quot;csda_energy_deposition&quot;</span><span class="p">)</span>
+<span class="n">cdep</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">CreateFieldFunction</span><span class="p">(</span><span class="s2">&quot;cdep&quot;</span><span class="p">,</span> <span class="s2">&quot;csda_charge_deposition&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="cepxs-csda-data">
+<h2><span class="section-number">12.2. </span>CEPXS CSDA Data<a class="headerlink" href="#cepxs-csda-data" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromCEPXS" title="pyopensn.xs.MultiGroupXS.LoadFromCEPXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromCEPXS()</span></code></a> for CEPXS-BFP binary
+libraries:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span><span class="o">.</span><span class="n">LoadFromCEPXS</span><span class="p">(</span><span class="s2">&quot;material.bxslib&quot;</span><span class="p">,</span> <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">csda_format</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>CSDA cross sections are not the same as standard CEPXS cross sections. They
+include the stopping power and row layout that OpenSn’s CSDA solver needs,
+and generating them requires a modified version of CEPXS. If you’re
+interested in running CSDA problems, contact the OpenSn developers on the
+<a class="reference external" href="https://github.com/Open-Sn/openSn/discussions">OpenSn Discussions page</a>
+for more information.</p>
+</div>
+<p>The <code class="docutils literal notranslate"><span class="pre">csda_format</span></code> flag selects the CEPXS row convention used by OpenSn’s CSDA
+import path. With <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>, OpenSn imports:</p>
+<ul class="simple">
+<li><p>transfer data for the transport solve,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> as a named custom one-dimensional cross section,</p></li>
+<li><p>energy deposition data,</p></li>
+<li><p>stopping power data used by the CSDA sweep.</p></li>
+</ul>
+<p>Materials without stopping power remain ordinary transport materials. Materials
+with stopping power must provide one stopping-power value per energy group.</p>
+<p>Every material must supply the same energy-group structure or omit it entirely.
+At least one material must supply a complete structure. OpenSn validates that
+all supplied per-group upper and lower bounds match exactly, including particle
+species resets in coupled CEPXS data. The resulting problem-level energies and
+widths are used by all materials for CSDA transport, balances, and derived fields.
+Thus an ordinary void or absorber may omit bounds without preventing energy
+balance evaluation. Conflicting structures are rejected during setup and before
+a replacement cross-section map is installed.</p>
+<p>In a coupled CEPXS library, each particle species restarts at the common
+maximum energy. OpenSn uses that upper bound for the first group of each
+species when computing group widths and midpoint energies; the preceding
+species’ low-energy cutoff is not the new group’s upper bound.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Scale</span></code> and <code class="docutils literal notranslate"><span class="pre">Combine</span></code> support CEPXS data, including stopping power, energy
+deposition, charge deposition, and scattering transfer matrices. <code class="docutils literal notranslate"><span class="pre">Scale(f)</span></code>
+always multiplies the original data by <code class="docutils literal notranslate"><span class="pre">f</span></code>; repeated calls do not compound.
+<code class="docutils literal notranslate"><span class="pre">Combine</span></code> forms weighted sums of the current data and requires identical
+energy structures. Its weights must be consistent with the input data’s
+normalization: already macroscopic material data should not be multiplied by
+number density a second time. Group energies are preserved by both operations.</p>
+<p>The legacy custom responses <code class="docutils literal notranslate"><span class="pre">cepxs_charge_deposition</span></code> and
+<code class="docutils literal notranslate"><span class="pre">cepxs_secondary_production</span></code> remain available. <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> is an
+additional name for the imported charge response.</p>
+</section>
+<section id="problem-requirements">
+<h2><span class="section-number">12.3. </span>Problem Requirements<a class="headerlink" href="#problem-requirements" title="Link to this heading"></a></h2>
+<p>CSDA is enabled with the problem option <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;csda_enabled&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Current restrictions are:</p>
+<ul class="simple">
+<li><p>CSDA is supported only for Cartesian
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> problems solved with
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a>.</p></li>
+<li><p>It is not supported for adjoint mode.</p></li>
+<li><p>It is not supported for time-dependent mode.</p></li>
+<li><p>It is not supported with k-eigenvalue solvers.</p></li>
+<li><p>It is not supported with a precomputed uncollided flux.</p></li>
+<li><p>It is not supported with GPU sweeps.</p></li>
+<li><p>It is not supported with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;CBC&quot;</span></code>.</p></li>
+<li><p>It is not supported by
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p></li>
+<li><p>Each contiguous charged-particle group range, identified by nonzero stopping
+power, must be wholly contained in one groupset.</p></li>
+</ul>
+<p>The last restriction is important. For example, if nonzero stopping power occurs
+in groups 20 through 90, a groupset boundary may not split that range. Neutral
+or photon groups outside the charged range may be placed in separate groupsets.</p>
+</section>
+<section id="derived-field-functions">
+<h2><span class="section-number">12.4. </span>Derived Field Functions<a class="headerlink" href="#derived-field-functions" title="Link to this heading"></a></h2>
+<p>CSDA adds several names to
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a>.</p>
+<section id="energy-deposition">
+<h3><span class="section-number">12.4.1. </span><code class="docutils literal notranslate"><span class="pre">energy_deposition</span></code><a class="headerlink" href="#energy-deposition" title="Link to this heading"></a></h3>
+<p>When CSDA is disabled, this is the raw imported energy-deposition cross section
+weighted by scalar flux. When <code class="docutils literal notranslate"><span class="pre">csda_enabled=True</span></code>, this name is an alias for
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code>.</p>
+</section>
+<section id="csda-energy-deposition">
+<h3><span class="section-number">12.4.2. </span><code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code><a class="headerlink" href="#csda-energy-deposition" title="Link to this heading"></a></h3>
+<p>This is the conservative deposited-energy field. Its collision contribution uses
+the group-midpoint coefficient</p>
+<div class="math notranslate nohighlight">
+\[c_g = E_g\sigma_{t,g} - \sum_{g'} E_{g'}\sigma_{s,g\rightarrow g'},\]</div>
+<p>weighted by scalar flux. The field also includes the CSDA stopping-power
+energy-loss contribution from charged groups and the terminal cutoff-energy
+contribution associated with the terminal charged-particle current.</p>
+</section>
+<section id="cepxs-energy-deposition">
+<h3><span class="section-number">12.4.3. </span><code class="docutils literal notranslate"><span class="pre">cepxs_energy_deposition</span></code><a class="headerlink" href="#cepxs-energy-deposition" title="Link to this heading"></a></h3>
+<p>This field preserves the previous CSDA deposition quantity: the imported CEPXS
+energy-deposition response weighted by scalar flux, plus the same CSDA
+stopping-power and terminal cutoff contributions used by
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code>. Use it when comparing with CEPXS response-based
+deposition benchmarks.</p>
+</section>
+<section id="charge-deposition">
+<h3><span class="section-number">12.4.4. </span><code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code><a class="headerlink" href="#charge-deposition" title="Link to this heading"></a></h3>
+<p>This is the raw CEPXS <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> custom cross section weighted by
+scalar flux.</p>
+</section>
+<section id="csda-charge-deposition">
+<h3><span class="section-number">12.4.5. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code><a class="headerlink" href="#csda-charge-deposition" title="Link to this heading"></a></h3>
+<p>This field includes the raw <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> response plus the CSDA
+terminal charge-deposition correction.</p>
+</section>
+<section id="csda-charge-deposition-term">
+<h3><span class="section-number">12.4.6. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term</span></code><a class="headerlink" href="#csda-charge-deposition-term" title="Link to this heading"></a></h3>
+<p>This field contains only the terminal CSDA charge-deposition correction,
+projected as a normal derived nodal field.</p>
+</section>
+<section id="csda-charge-deposition-term-cellavg">
+<h3><span class="section-number">12.4.7. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term_cellavg</span></code><a class="headerlink" href="#csda-charge-deposition-term-cellavg" title="Link to this heading"></a></h3>
+<p>This field contains only the terminal CSDA charge-deposition correction as a
+piecewise cell-average field.</p>
+</section>
+</section>
+<section id="balance-table-entries">
+<h2><span class="section-number">12.5. </span>Balance Table Entries<a class="headerlink" href="#balance-table-entries" title="Link to this heading"></a></h2>
+<p>With CSDA enabled, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> returns:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">absorption_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">production_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code>: the standard particle rates. <code class="docutils literal notranslate"><span class="pre">production_rate</span></code> is the
+volumetric particle source rate integrated over the problem volume.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_particle_deposition_rate</span></code>: the rate at which particles slow down out
+of the lowest-energy group of each charged-particle block. Those particles are
+deposited, so this is the CSDA loss term the standard rates don’t include.
+Electrons and positrons both count as positive.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code>: the signed relative particle residual,</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>(production_rate + inflow_rate
+ - absorption_rate - outflow_rate - csda_particle_deposition_rate)
+/ (production_rate + inflow_rate)
+</pre></div>
+</div>
+<p>so you can reproduce it from the other entries.</p>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span></code>, <code class="docutils literal notranslate"><span class="pre">csda_energy_inflow_rate</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">csda_energy_outflow_rate</span></code>: the volumetric source, boundary inflow, and
+boundary outflow rates, each weighted by the group’s midpoint energy. These
+are the energy coming in and going out through the problem’s sources and
+boundaries.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_energy_balance</span></code>: the signed relative energy residual. It weights each
+group’s rates by the group’s midpoint energy, then compares the energy coming
+in (volumetric source plus boundary inflow) with the energy going out (boundary
+outflow, collision loss, and continuous slowing-down loss). The continuous
+loss includes the energy left behind when particles slow down out of the
+bottom of a charged-particle block. See <a class="reference internal" href="../theory/csda.html#theory-csda"><span class="std std-ref">Continuous Slowing-Down Approximation</span></a> for the exact
+definitions.</p></li>
+</ul>
+<p>The standard <code class="docutils literal notranslate"><span class="pre">balance</span></code> entry is not returned for CSDA runs. It leaves out
+CSDA particle deposition, so it would show a large imbalance even for a fully
+converged solve. Use <code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code> instead.</p>
+<p>Both balances should be close to zero for a converged solve. A positive value
+means more particles or energy came in than went out, and a negative value
+means the opposite. If the gain (the denominator) is zero, the balance is zero
+when the residual is also zero and signed infinity otherwise. Rates are summed
+across all MPI ranks before normalizing.</p>
+<p>The console balance summary prints only <code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code> and
+<code class="docutils literal notranslate"><span class="pre">csda_energy_balance</span></code>. The other entries are available only from
+<code class="docutils literal notranslate"><span class="pre">ComputeBalanceTable</span></code>.</p>
+<p>To get the total deposited energy or charge, integrate the
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code> or <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field function.
+<code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code> uses the same definitions as the energy balance, so
+for a converged solve its integral equals
+<code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span> <span class="pre">+</span> <span class="pre">csda_energy_inflow_rate</span> <span class="pre">-</span>
+<span class="pre">csda_energy_outflow_rate</span></code>.</p>
+</section>
+<section id="convergence-and-verification">
+<h2><span class="section-number">12.6. </span>Convergence and Verification<a class="headerlink" href="#convergence-and-verification" title="Link to this heading"></a></h2>
+<p>CSDA balance is convergence-sensitive. The reported <code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code>
+should decrease in magnitude as the transport solve is converged more tightly.
+If the balance does not improve when the linear tolerance is tightened, check that:</p>
+<ul class="simple">
+<li><p>the charged-particle group block is not split across groupsets,</p></li>
+<li><p>the solve actually converged to the requested tolerance,</p></li>
+<li><p>angular fluxes and balance tallies are computed after the final scalar
+iterate has been rebuilt,</p></li>
+<li><p>the CEPXS library was loaded with <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>.</p></li>
+</ul>
+<p>For charged-particle CEPXS problems, GMRES or BiCGSTAB is usually the safer
+inner linear method. Classic Richardson can be used when its pointwise iteration
+is known to converge for the case being run, but a non-contracting Richardson
+iteration can produce a poor solution even if the input data and CSDA balance
+formulas are otherwise correct.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="discrete_ordinates_problems.html" class="btn btn-neutral float-left" title="11. Discrete-Ordinates Problems" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="solvers.html" class="btn btn-neutral float-right" title="13. Solvers" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -66,6 +66,8 @@ Includes
 
 - ``modules/problem.h`` (:ref:`file_modules_problem.h`)
 
+- ``optional``
+
 - ``petscksp.h``
 
 

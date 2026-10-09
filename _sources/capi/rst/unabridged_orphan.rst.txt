@@ -205,6 +205,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_c_s_d_a_local_solve_context.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_s_d_a_material_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_cylindrical_spatial_weight_function.rst
 
 .. toctree::
@@ -256,6 +266,11 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_empirical_harmonic_rules_1_1_harmonic_set.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_energy_group_structure.rst
 
 .. toctree::
    :maxdepth: 1
@@ -801,6 +816,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_a_a_h___s_p_d_s.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_a_a_h_c_s_d_a_sweep_chunk.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2472,6 +2492,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_csda_sweep_chunk.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aah_fluds.h.rst
 
 .. toctree::
@@ -2738,6 +2763,16 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_lbs_problem_postprocessors_cross_section_sensitivity_postprocessor.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h.rst
 
 .. toctree::
    :maxdepth: 1

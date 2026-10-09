@@ -188,6 +188,13 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem26ValidateAdjointModeAllowedEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ad0650c8e06f5c85e031a869a644b1ba2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateAdjointModeAllowed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem26ValidateAdjointModeAllowedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Throws if the problem cannot be switched to adjoint mode. </p>
+<p>The base class requires Cartesian geometry and standard quadrature operators; derived problems extend this to reject unsupported features and must call the base implementation. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20SetTimeDependentModeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a5cdf047e9d24f2160258498626770128"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20SetTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Set the problem to time-dependent mode. </p>
@@ -773,6 +780,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26UpdateDerivedFieldFunctionER22FieldFunctionGridBasedRKNSt6stringEd">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ac098c032da3fe1a046987652b8b5e11e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UpdateDerivedFieldFunction</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_field_function_grid_based.html#_CPPv4N6opensn22FieldFunctionGridBasedE" title="opensn::FieldFunctionGridBased"><span class="n"><span class="pre">FieldFunctionGridBased</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">ff</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_name</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">power_normalization_target</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26UpdateDerivedFieldFunctionER22FieldFunctionGridBasedRKNSt6stringEd" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem31ComputeDerivedFieldFunctionDataERKNSt6stringE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a921ca37e03de5d443a822e47975008e8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">optional</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeDerivedFieldFunctionData</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_name</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem31ComputeDerivedFieldFunctionDataERKNSt6stringE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">

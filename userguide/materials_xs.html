@@ -72,12 +72,13 @@
 <li class="toctree-l4"><a class="reference internal" href="#what-openmc-import-expects">5.6.1. What OpenMC Import Expects</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#custom-cross-sections">5.7. Custom Cross Sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#combining-cross-sections">5.8. Combining Cross Sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#scaling-cross-sections">5.9. Scaling Cross Sections</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#choosing-between-opensn-and-openmc-inputs">5.10. Choosing Between OpenSn and OpenMC Inputs</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#practical-example">5.11. Practical Example</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cautions-and-best-practices">5.12. Cautions and Best Practices</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#loading-cepxs-bfp-files">5.7. Loading CEPXS-BFP Files</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#custom-cross-sections">5.8. Custom Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#combining-cross-sections">5.9. Combining Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#scaling-cross-sections">5.10. Scaling Cross Sections</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#choosing-between-opensn-and-openmc-inputs">5.11. Choosing Between OpenSn and OpenMC Inputs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#practical-example">5.12. Practical Example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cautions-and-best-practices">5.13. Cautions and Best Practices</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="angular_quadratures.html">6. Angular Quadratures</a></li>
@@ -86,24 +87,25 @@
 <li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">9. CMFD Acceleration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">12. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">13. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">14. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">15. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">16. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">17. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">18. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">19. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">20. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">21. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">22. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">23. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">24. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">25. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">26. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">27. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">28. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">29. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html">12. CSDA Charged-Particle Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">13. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">14. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">15. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">16. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">17. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">18. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">19. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">20. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">21. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">22. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">23. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">24. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">25. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">26. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">27. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">28. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">29. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">30. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -170,6 +172,7 @@ use with OpenSn. See <a class="reference internal" href="../tutorials/modeling/c
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenSn" title="pyopensn.xs.MultiGroupXS.LoadFromOpenSn"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenSn()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a></p></li>
+<li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromCEPXS" title="pyopensn.xs.MultiGroupXS.LoadFromCEPXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromCEPXS()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a></p></li>
 <li><p><a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a></p></li>
 </ul>
@@ -476,13 +479,45 @@ small inconsistencies or statistical noise.</p>
 error.</p>
 </section>
 </section>
+<section id="loading-cepxs-bfp-files">
+<h2><span class="section-number">5.7. </span>Loading CEPXS-BFP Files<a class="headerlink" href="#loading-cepxs-bfp-files" title="Link to this heading"></a></h2>
+<p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromCEPXS" title="pyopensn.xs.MultiGroupXS.LoadFromCEPXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromCEPXS()</span></code></a> to load a material from a
+Fortran-record binary CEPXS-BFP library:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromCEPXS</span><span class="p">(</span><span class="s2">&quot;plastic.bxslib&quot;</span><span class="p">,</span> <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: the CEPXS binary library</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">material_id</span></code>: the material id to load from the library</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">csda_format</span></code>: whether to use OpenSn’s CSDA CEPXS row convention</p></li>
+</ul>
+<p>For ordinary CEPXS transport data, leave <code class="docutils literal notranslate"><span class="pre">csda_format</span></code> at its default value of
+<code class="docutils literal notranslate"><span class="pre">False</span></code>. For charged-particle CSDA transport, load the library with:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span><span class="o">.</span><span class="n">LoadFromCEPXS</span><span class="p">(</span><span class="s2">&quot;plastic_csda.bxslib&quot;</span><span class="p">,</span> <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">csda_format</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>, OpenSn also imports stopping power. Both formats import
+energy deposition and the named custom cross section <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code>, which
+the <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field function uses.</p>
+<p>See <a class="reference internal" href="csda.html"><span class="doc">CSDA Charged-Particle Transport</span></a> for the full CSDA workflow and solver restrictions.</p>
+</section>
 <section id="custom-cross-sections">
-<h2><span class="section-number">5.7. </span>Custom Cross Sections<a class="headerlink" href="#custom-cross-sections" title="Link to this heading"></a></h2>
-<p>OpenSn’s Python API supports named custom one-dimensional cross sections through
-OpenMC import. These are useful when a dataset should be carried alongside the
-standard transport data for later inspection, combination, scaling, or use in
-derived field functions.</p>
-<p>Load them by name with <code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code>:</p>
+<h2><span class="section-number">5.8. </span>Custom Cross Sections<a class="headerlink" href="#custom-cross-sections" title="Link to this heading"></a></h2>
+<p>OpenSn supports named custom one-dimensional cross sections. These are useful
+when a dataset should be carried alongside the standard transport data for later
+inspection, combination, scaling, or use in derived field functions.</p>
+<p>They enter a cross-section object in one of two ways:</p>
+<ul class="simple">
+<li><p><strong>OpenMC import</strong> loads only the datasets you name in <code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code>.</p></li>
+<li><p><strong>CEPXS import</strong> always adds a fixed set of responses taken from the library:
+<code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code>, <code class="docutils literal notranslate"><span class="pre">cepxs_charge_deposition</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">cepxs_secondary_production</span></code>. You do not select these by name. The
+<code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field function uses <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> (see
+<a class="reference internal" href="#loading-cepxs-bfp-files">Loading CEPXS-BFP Files</a>).</p></li>
+</ul>
+<p>To load OpenMC datasets by name, use <code class="docutils literal notranslate"><span class="pre">extra_xs_names</span></code>:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenMC</span><span class="p">(</span>
     <span class="s2">&quot;HDPE.h5&quot;</span><span class="p">,</span>
@@ -513,7 +548,7 @@ full custom-data authoring interface.</p>
 </div>
 </section>
 <section id="combining-cross-sections">
-<h2><span class="section-number">5.8. </span>Combining Cross Sections<a class="headerlink" href="#combining-cross-sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.9. </span>Combining Cross Sections<a class="headerlink" href="#combining-cross-sections" title="Link to this heading"></a></h2>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a> to build a new cross section by
 combining existing ones with density weights.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs_1</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
@@ -555,7 +590,7 @@ the final material back to unit density.</p>
 be built from two pre-existing macroscopic states.</p>
 </section>
 <section id="scaling-cross-sections">
-<h2><span class="section-number">5.9. </span>Scaling Cross Sections<a class="headerlink" href="#scaling-cross-sections" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.10. </span>Scaling Cross Sections<a class="headerlink" href="#scaling-cross-sections" title="Link to this heading"></a></h2>
 <p>Use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Scale" title="pyopensn.xs.MultiGroupXS.Scale"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Scale()</span></code></a> to scale the current cross
 section in place:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span><span class="mf">2.5</span><span class="p">)</span>
@@ -577,7 +612,7 @@ state again.”</p>
 </div>
 </section>
 <section id="choosing-between-opensn-and-openmc-inputs">
-<h2><span class="section-number">5.10. </span>Choosing Between OpenSn and OpenMC Inputs<a class="headerlink" href="#choosing-between-opensn-and-openmc-inputs" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.11. </span>Choosing Between OpenSn and OpenMC Inputs<a class="headerlink" href="#choosing-between-opensn-and-openmc-inputs" title="Link to this heading"></a></h2>
 <p>As a practical guideline:</p>
 <ul class="simple">
 <li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup" title="pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.CreateSimpleOneGroup()</span></code></a> for very small
@@ -586,12 +621,14 @@ analytic or regression-style problems</p></li>
 readable, hand-maintained transport file</p></li>
 <li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromOpenMC" title="pyopensn.xs.MultiGroupXS.LoadFromOpenMC"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromOpenMC()</span></code></a> when the source data
 already exists in an OpenMC MGXS library</p></li>
+<li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.LoadFromCEPXS" title="pyopensn.xs.MultiGroupXS.LoadFromCEPXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.LoadFromCEPXS()</span></code></a> when the source data is
+a CEPXS-BFP binary library, including CSDA charged-particle data</p></li>
 <li><p>use <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS.Combine" title="pyopensn.xs.MultiGroupXS.Combine"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS.Combine()</span></code></a> when you need a new
 macroscopic material formed from existing macroscopic materials</p></li>
 </ul>
 </section>
 <section id="practical-example">
-<h2><span class="section-number">5.11. </span>Practical Example<a class="headerlink" href="#practical-example" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.12. </span>Practical Example<a class="headerlink" href="#practical-example" title="Link to this heading"></a></h2>
 <p>The following example shows a common pattern with two materials and two mesh
 regions:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
@@ -636,7 +673,7 @@ combined/simple source</p></li>
 </ul>
 </section>
 <section id="cautions-and-best-practices">
-<h2><span class="section-number">5.12. </span>Cautions and Best Practices<a class="headerlink" href="#cautions-and-best-practices" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.13. </span>Cautions and Best Practices<a class="headerlink" href="#cautions-and-best-practices" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Reuse the same <a class="reference internal" href="../pyapi/generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.xs.MultiGroupXS</span></code></a> object for multiple block
 ids when the material is truly identical.</p></li>
@@ -648,6 +685,8 @@ with the solver setup.</p></li>
 exactly if they are present.</p></li>
 <li><p>When importing from OpenMC, request only the extra named datasets that you
 actually need as custom XS.</p></li>
+<li><p>When importing CEPXS data for CSDA, use <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code> and keep each
+contiguous charged-particle group range inside one groupset.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

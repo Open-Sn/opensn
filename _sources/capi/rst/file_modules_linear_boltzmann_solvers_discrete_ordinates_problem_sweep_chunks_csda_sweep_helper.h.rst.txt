@@ -1,0 +1,83 @@
+
+.. _file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h:
+
+File csda_sweep_helper.h
+========================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h``)
+-------------------------------------------------------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/dense_matrix.h`` (:ref:`file_framework_data_types_dense_matrix.h`)
+
+- ``framework/data_types/vector.h`` (:ref:`file_framework_data_types_vector.h`)
+
+- ``framework/materials/multi_group_xs/multi_group_xs.h`` (:ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`)
+
+- ``framework/math/spatial_discretization/cell_mappings/cell_mapping.h`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
+- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_angle_set.h`)
+
+- ``modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_view.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_c_s_d_a_local_solve_context`
+
+- :ref:`exhale_struct_structopensn_1_1_c_s_d_a_material_data`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9731a8a7f6206d07410e8ee69674b020`
+
+- :ref:`exhale_function_namespaceopensn_1aa2d5e4d08f7f01abffd4bdf18675a721`
+
+- :ref:`exhale_function_namespaceopensn_1a873c05cf46f915cd1d2e8741b4184fb3`
+
+- :ref:`exhale_function_namespaceopensn_1adf6998c5db652f7a8bd031be67a40a1c`
+

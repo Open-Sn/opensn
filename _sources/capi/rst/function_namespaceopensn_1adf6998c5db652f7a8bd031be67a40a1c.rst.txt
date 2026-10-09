@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1adf6998c5db652f7a8bd031be67a40a1c:
+
+Template Function opensn::StoreOutgoingCSDASlope
+================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_csda_sweep_helper.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::StoreOutgoingCSDASlope(const bool, const std::vector<double>&, PsiEPtrAt)
+   :project: opensn

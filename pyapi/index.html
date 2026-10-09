@@ -645,6 +645,11 @@ called; no separate initialization step is required.</p>
 </section>
 <section id="cross-section">
 <h2>Cross section<a class="headerlink" href="#cross-section" title="Link to this heading"></a></h2>
+<p>CEPXS-BFP charged-particle CSDA data is loaded through
+<code class="docutils literal notranslate"><span class="pre">xs.MultiGroupXS.LoadFromCEPXS(...,</span> <span class="pre">csda_format=True)</span></code> and enabled for
+<code class="docutils literal notranslate"><span class="pre">solver.DiscreteOrdinatesProblem</span></code> with <code class="docutils literal notranslate"><span class="pre">options={&quot;csda_enabled&quot;:</span> <span class="pre">True}</span></code>.
+See <a class="reference internal" href="../userguide/csda.html"><span class="doc">CSDA Charged-Particle Transport</span></a> for the supported workflow, restrictions, and
+balance/output names.</p>
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="generated/pyopensn.xs.MultiGroupXS.html#pyopensn.xs.MultiGroupXS" title="pyopensn.xs.MultiGroupXS"><code class="xref py py-obj docutils literal notranslate"><span class="pre">xs.MultiGroupXS</span></code></a></p></td>

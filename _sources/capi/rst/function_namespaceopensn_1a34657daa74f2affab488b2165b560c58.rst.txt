@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a34657daa74f2affab488b2165b560c58:
+
+Function opensn::CSDAChargeSign
+===============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::CSDAChargeSign(const std::vector<std::pair<unsigned int, unsigned int>>&, const unsigned int)
+   :project: opensn
