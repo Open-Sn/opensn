@@ -15,7 +15,7 @@ back to the transport solution.
 
 With CMFD, each power iteration performs a configured number of high-order WGS
 transport update iterations, then applies a bounded low-order scalar-flux
-correction. The defaults use one WGS update iteration, automatic current
+correction. The defaults use one WGS update iteration, the partial-current
 closure, fixed correction relaxation, and a transport-current balance check
 before outer power iteration is allowed to converge, against a fixed
 tolerance (``balance_residual_tolerance``). See the description of
@@ -55,10 +55,10 @@ energy aggregation:
 
    cmfd = CMFDAcceleration(
        problem=phys,
-       current_closure="auto",
+       current_closure="partial",
        aggregation_size=32,
        group_aggregation_size=(num_groups + 3) // 4,  # about 4 CMFD energy groups
-       relaxation=0.5,
+       relaxation=1.0,
        update_wgs_max_its=1,
        update_wgs_abs_tol=1.0e-12,
        # balance_residual_tolerance left at its default (1.0e-6); pass it explicitly only
@@ -119,20 +119,33 @@ These are the options most users should tune.
   increase setup memory and communication compared with ``"local_aggregation"``.
 
 ``current_closure``
-  Face-current closure used in the CMFD operator. Valid choices are ``"auto"``,
-  ``"net"``, and ``"partial"``. The default is ``"auto"``. The automatic mode
-  probes the early coarse-balance behavior and may choose net-current closure,
-  partial-current closure, or a blend.
+  Face-current closure used in the CMFD operator. Valid choices are
+  ``"partial"``, ``"net"``, and ``"auto"``. The default is ``"partial"``.
 
-  ``"net"`` matches the signed transport current across each coarse face using
-  a current-correction term in the coarse diffusion operator. ``"partial"``
-  builds the face coupling from the outgoing partial currents on the two sides
-  of the coarse face, normalized by the adjacent coarse scalar fluxes. The
-  partial-current form can provide a stronger correction, but it is more
-  sensitive to noisy or very small coarse fluxes. The automatic mode is the
-  recommended starting point, but a fixed value is useful when comparing
-  methods, reproducing a benchmark setting, or diagnosing a case where auto
-  selection is not robust.
+  ``"partial"`` is the partial-current CMFD (pCMFD) closure: each outgoing
+  partial current on the two sides of a coarse face is modeled with half of the
+  diffusion coupling plus its own nonlinear correction, so both one-sided
+  transport partial currents are reproduced. ``"net"`` matches the signed
+  transport current across each coarse face using a single current-correction
+  term in the coarse diffusion operator. ``"auto"`` probes the early
+  coarse-balance behavior and may choose the net-current closure, the
+  partial-current closure, or a blend. All three closures reproduce the
+  transport currents at convergence, so they have the same fixed point; they
+  differ in convergence rate and stability.
+
+  The partial-current closure is the recommended choice. It is typically stable
+  with an unrelaxed correction (``relaxation=1.0``) on both optically thin and
+  optically thick coarse cells. The net-current closure, like standard CMFD in
+  general, can oscillate or diverge when coarse cells are optically thick, and
+  it is not always stabilized by ``relaxation``. ``"net"`` or ``"auto"`` can
+  converge in fewer iterations on some problems, but ``"auto"`` judges the
+  closures from the early iterations only and can keep an unstable net closure,
+  for example when the power iteration starts from a nearly converged flux
+  (such as a restart). Use a fixed ``"net"`` or ``"auto"`` mainly for method
+  comparisons or benchmark reproduction. On a face where an adjacent coarse
+  flux is essentially zero, so that the partial-current coefficients cannot be
+  formed, the partial-current closure uses the plain diffusion coupling for
+  that face.
 
 ``aggregation_size``
   Target number of fine cells per aggregated CMFD coarse cell for
@@ -141,7 +154,20 @@ These are the options most users should tune.
   correction less detailed. Smaller values increase coarse-system cost but can
   improve robustness. For lattice problems, values from roughly 8 to 64 are
   typical exploration points. Use wall time and final k agreement, not only the
-  number of power iterations, when comparing values.
+  number of power iterations, when comparing values. An aggregate that spans
+  many mean free paths cannot represent the slowly converging spatial modes
+  inside it, so in optically thick regions large aggregates accelerate little;
+  use smaller aggregates (or ``coarse_mesh="identity"``) there.
+
+  Aggregates never cross mesh-block boundaries, so on finely divided
+  heterogeneous geometry (for example, pin cells with separate fuel, clad, and
+  moderator blocks) many aggregates are smaller than the target, and the
+  realized number of fine cells per coarse cell (printed at initialization) can
+  be well below ``aggregation_size``. When the error that remains after a few
+  transport sweeps varies within each aggregate, the outer convergence rate
+  stalls at roughly the unaccelerated sweep rate. Smaller aggregates remove
+  this limit; combining them with ``group_aggregation_size`` keeps the direct
+  coarse solve affordable.
 
 ``group_aggregation_size``
   Number of transport energy groups per CMFD coarse energy group. This is not
@@ -155,13 +181,23 @@ These are the options most users should tune.
   coarse group. By contrast, ``(num_groups + 15) // 16`` chooses an aggregation
   size that gives about 16 total CMFD coarse groups.
 
+  A few coarse energy groups usually retain most of the acceleration while
+  reducing the coarse-system size, which can reduce the cost of each direct
+  factorization. Collapsing to a single coarse group gives up the spectral
+  coupling and can noticeably slow convergence when there is significant
+  upscattering.
+
 ``relaxation``
   Strictly positive relaxation factor for the scalar-flux correction. The default is
-  ``0.5``. The correction limiter may reduce the damping for a single update or
+  ``1.0``, the full correction, which the partial-current closure usually
+  tolerates. The correction limiter may reduce the damping for a single update or
   skip that update if the correction would produce non-finite values, an invalid
-  k-eigenvalue, or an unacceptable scalar-flux undershoot. Smaller values are
-  more conservative and can reduce oscillation; larger values can accelerate
-  well-behaved cases but may trigger more damping or rejected corrections.
+  k-eigenvalue, or an unacceptable scalar-flux undershoot. A relaxation factor
+  :math:`\omega < 1` is more conservative and can reduce oscillation, but even an
+  ideal correction then leaves about a fraction :math:`1-\omega` of the error,
+  which increases the number of outer iterations.
+  Reduce it when the log shows repeatedly damped or skipped corrections, or when
+  using the net-current closure on optically thick coarse cells.
 
 ``update_wgs_max_its``
   Maximum WGS iterations used for each transport update. The default is ``1``.
@@ -170,12 +206,22 @@ These are the options most users should tune.
   the outer acceleration. For a tightly converged-transport workflow, increase
   this value and set a tight ``update_wgs_abs_tol``.
 
+  The cost of an update also depends on the groupset ``inner_linear_method``.
+  Each ``"classic_richardson"`` iteration is one sweep, while a Krylov update
+  adds a few sweeps of fixed overhead to its iterations. Because CMFD provides the outer
+  acceleration, a few Richardson sweeps per update (for example
+  ``inner_linear_method="classic_richardson"`` with ``update_wgs_max_its`` of
+  about 4) are often the cheapest choice.
+
 ``update_wgs_abs_tol``
   WGS absolute tolerance used for each transport update. The default is
   ``1.0e-12``. When ``update_wgs_max_its=1``, this tolerance is normally not the
   stopping criterion because only one WGS iteration is allowed. It matters when
   ``update_wgs_max_its`` is large enough for the WGS solve to stop by residual
-  tolerance before reaching the iteration limit.
+  tolerance before reaching the iteration limit. Keep it well below
+  ``balance_residual_tolerance``: a transport update stopped at a loose
+  tolerance leaves an error that the correction cannot remove, and the balance
+  residual then stalls near that tolerance while the eigenvalue oscillates.
 
 ``balance_residual_tolerance``
   Restricted transport-current balance residual required before CMFD permits the

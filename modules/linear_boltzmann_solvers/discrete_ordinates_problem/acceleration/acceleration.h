@@ -68,16 +68,60 @@ struct TwoGridCollapsedInfo
   std::vector<double> spectrum;
 };
 
-TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs, EnergyCollapseScheme scheme);
+/**
+ * Computes the two-grid collapsed diffusion data for a material over the groups
+ * [first_group, last_group] of the accelerated groupset. The returned spectrum is indexed by global
+ * group and is zero outside that range.
+ *
+ * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
+ * absorption 1/(v theta dt) that the theta scheme adds to the total cross section is included in
+ * the collapse so that the diffusion operator matches the transport operator being accelerated.
+ */
+TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
+                                              EnergyCollapseScheme scheme,
+                                              unsigned int first_group,
+                                              unsigned int last_group,
+                                              double time_absorption_scale = 0.0);
 
 /// Translates sweep boundary conditions to that used in diffusion acceleration methods.
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
              bool vacuum_bcs_are_dirichlet = true);
 
-/// Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.
+/**
+ * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.
+ *
+ * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
+ * absorption tau_g = 1/(v_g theta dt) is added to the removal cross section and to the transport
+ * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)).
+ */
 std::map<unsigned int, Multigroup_D_and_sigR> PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
                                                              unsigned int first_grp_index,
-                                                             unsigned int last_group_index);
+                                                             unsigned int last_group_index,
+                                                             double time_absorption_scale = 0.0);
+
+class DiscreteOrdinatesProblem;
+class LBSGroupset;
+
+/**
+ * Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular
+ * fluxes of opposing reflecting boundaries, as the isotropic angular correction
+ * delta psi = delta phi (quadrature weights sum to one).
+ *
+ * Source iteration carries the lagged boundary angular fluxes as unknowns alongside phi. A DSA
+ * update that corrects phi but not these fluxes leaves the boundary error to re-enter on the next
+ * sweep, which can make source iteration with DSA diverge.
+ *
+ * `delta_phi_local` has the layout of the local flux-moment vector.
+ */
+void ApplyDSACorrectionToDelayedBoundaryFlux(DiscreteOrdinatesProblem& do_problem,
+                                             const LBSGroupset& groupset,
+                                             const std::vector<double>& delta_phi_local);
+
+/**
+ * Returns D / (1 + 3 D tau), the diffusion coefficient with time absorption tau added to
+ * the transport cross section of D = 1/(3 sigma_tr).
+ */
+double AddTimeAbsorptionToDiffusionCoefficient(double D, double tau);
 
 } // namespace opensn

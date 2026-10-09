@@ -202,10 +202,13 @@ rank count and compatible problem definition used when writing them.
 The ``use_precursors`` setting is treated as user intent and persists across later
 :py:meth:`SetXSMap` calls, even if the current cross-section map temporarily has
 no precursor-bearing material. If cross sections are swapped, existing
-precursor concentrations are remapped by local cell and precursor-family index;
-new families start at zero and removed families are discarded. If a cell passes
-through a material with zero precursors, its precursor history is dropped and
-any later reintroduced precursor families restart from zero.
+precursor concentrations are remapped by spatial node and precursor-family
+index, and the decay constants, yields, and emission spectra of the new material
+apply from the next step on. New families start at zero and removed families are
+discarded. The warning reports the global sum of the absolute discarded nodal
+concentrations. If a swap assigns a cell a material without precursors, that
+cell's precursor concentrations are discarded, and precursor families
+reintroduced by a later swap start from zero.
 
 If any fissionable material in the active map contains precursor data and
 ``use_precursors=True``, then all fissionable materials in that map must
@@ -496,10 +499,12 @@ Use it when:
 * you want backward Euler, Crank-Nicolson, or another theta-scheme transient
   update
 
-GPU support
------------
+Supported problems
+------------------
 
-Transient solves do not currently support GPU acceleration.
+Transient solves do not currently support GPU acceleration, curvilinear (RZ)
+geometry, or adjoint mode. A problem with any of these is rejected when it is
+created with ``time_dependent=True`` or switched with ``SetTimeDependentMode()``.
 
 Constructor
 -----------

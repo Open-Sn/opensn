@@ -1011,6 +1011,9 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode, double reconstru
 
     ReinitializeSolverSchemes();
   }
+
+  // Diffusion acceleration operators carry the time absorption only in time-dependent mode.
+  UpdateDSATimeAbsorption();
 }
 
 void
@@ -1063,6 +1066,25 @@ void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::UpdateDSATimeAbsorption()
+{
+  const double scale = IsTimeDependent() ? 1.0 / (GetTheta() * GetTimeStep()) : 0.0;
+  if (scale == dsa_time_absorption_scale_)
+    return;
+  dsa_time_absorption_scale_ = scale;
+
+  for (auto& groupset : groupsets_)
+  {
+    if (not(groupset.apply_wgdsa or groupset.apply_tgdsa))
+      continue;
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
+  }
 }
 
 void

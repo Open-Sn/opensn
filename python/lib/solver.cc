@@ -1098,16 +1098,19 @@ WrapLBS(py::module& slv)
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
-              Include delayed sweep angular-flux buffers. Full continuation restarts require
-              these buffers whenever the problem has delayed sweep angular state, including
-              partitioned parallel, reflected-boundary, and cyclic-sweep cases. These buffers
-              are optional when a steady-state restart is used only as a transient initial
-              condition because the transient initialization can reconstruct angular state
-              from the flux moments.
+              Include delayed sweep angular-flux buffers in steady-state restart dumps. These
+              buffers are optional when a steady-state restart is used only as a transient
+              initial condition because the transient initialization can reconstruct angular
+              state from the flux moments. Time-dependent restart dumps always include them,
+              regardless of this option, because continuing a transient requires them whenever
+              the problem has delayed sweep angular state, including partitioned parallel,
+              reflected-boundary, and cyclic-sweep cases.
           - write_angular_flux_to_restart: bool, default=True
-              Include stored angular fluxes in restart dumps when ``save_angular_flux=True``.
-              This is required for continuing a time-dependent restart, but optional when a
-              steady-state restart is used only as a transient initial condition.
+              Include stored angular fluxes in steady-state restart dumps when
+              ``save_angular_flux=True``. They are optional when a steady-state restart is used
+              only as a transient initial condition. Time-dependent restart dumps always
+              include them, regardless of this option, because continuing a transient requires
+              them.
           - read_restart_path: str, default=''
               File stem for reading a full restart. The number of MPI ranks and partitioned
               state layout must match the run that wrote the restart files.
@@ -1608,16 +1611,19 @@ WrapLBS(py::module& slv)
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
-              Include delayed sweep angular-flux buffers. Full continuation restarts require
-              these buffers whenever the problem has delayed sweep angular state, including
-              partitioned parallel, reflected-boundary, and cyclic-sweep cases. These buffers
-              are optional when a steady-state restart is used only as a transient initial
-              condition because the transient initialization can reconstruct angular state
-              from the flux moments.
+              Include delayed sweep angular-flux buffers in steady-state restart dumps. These
+              buffers are optional when a steady-state restart is used only as a transient
+              initial condition because the transient initialization can reconstruct angular
+              state from the flux moments. Time-dependent restart dumps always include them,
+              regardless of this option, because continuing a transient requires them whenever
+              the problem has delayed sweep angular state, including partitioned parallel,
+              reflected-boundary, and cyclic-sweep cases.
           - write_angular_flux_to_restart: bool, default=True
-              Include stored angular fluxes in restart dumps when ``save_angular_flux=True``.
-              This is required for continuing a time-dependent restart, but optional when a
-              steady-state restart is used only as a transient initial condition.
+              Include stored angular fluxes in steady-state restart dumps when
+              ``save_angular_flux=True``. They are optional when a steady-state restart is used
+              only as a transient initial condition. Time-dependent restart dumps always
+              include them, regardless of this option, because continuing a transient requires
+              them.
           - read_restart_path: str, default=''
               File stem for reading a full restart. The number of MPI ranks and partitioned
               state layout must match the run that wrote the restart files.
@@ -2062,7 +2068,8 @@ WrapNLKEigen(py::module& slv)
     nl_max_its: int, default=50
         Non-linear algorithm maximum iterations.
     l_abs_tol: float, default=1.0e-8
-        Linear absolute tolerance.
+        Linear absolute tolerance. The value used is ``min(l_abs_tol, nl_abs_tol)``, so
+        that the linear solves can reduce the nonlinear residual below ``nl_abs_tol``.
     l_rel_tol: float, default=1.0e-8
         Linear relative tolerance.
     l_div_tol: float, default=1.0e6
@@ -2169,8 +2176,6 @@ WrapPIteration(py::module& slv)
         Maximum power iterations allowed.
     k_tol: float, default = 1.0e-10
         Tolerance on the k-eigenvalue.
-    reset_solution: bool, default=True
-        If true, initialize flux moments to 1.0.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
 
@@ -2377,7 +2382,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     With CMFD, each power iteration performs a configured number of high-order WGS
     transport update iterations, then applies a bounded low-order scalar-flux correction.
-    The defaults use one WGS update iteration, automatic current closure, fixed
+    The defaults use one WGS update iteration, the partial-current closure, fixed
     correction relaxation, and a transport-current balance gate before outer power
     iteration is allowed to converge.
 
@@ -2405,15 +2410,20 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Aggregates are connected by face adjacency, remain within one mesh block, and may be
         smaller than ``aggregation_size`` near boundaries or disconnected regions. ``"identity"``
         is primarily for debugging and method comparisons.
-    current_closure: str, default="auto"
+    current_closure: str, default="partial"
         Common option. CMFD face-current closure. Valid choices are:
-            - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
+            - 'partial' : partial-current CMFD (pCMFD); each one-sided partial current carries
+              half of the diffusion coupling plus its own transport correction
             - 'net' : match the signed transport current across each coarse face
-            - 'partial' : build face coupling from outgoing partial currents on both sides
+            - 'auto' : choose net, partial, or a blend from early coarse-balance behavior
 
-        ``"auto"`` is recommended for production use. A fixed closure is useful when
-        comparing methods, reproducing a benchmark setting, or diagnosing a case where
-        automatic selection is not robust.
+        ``"partial"`` is the default and is recommended for production use: it is typically
+        stable with an unrelaxed correction on both optically thin and thick coarse cells,
+        whereas the net-current closure can oscillate or diverge on optically thick coarse
+        cells. All closures share the same fixed point. ``"net"`` and ``"auto"`` can
+        converge in fewer iterations on some problems,
+        but ``"auto"`` judges the closures only from early iterations and can keep an
+        unstable net closure, for example when starting from a nearly converged flux.
     aggregation_size: int, default=32
         Common option. Target number of fine cells per aggregated coarse cell for
         ``coarse_mesh="local_aggregation"`` or ``coarse_mesh="global_aggregation"``.
@@ -2425,11 +2435,14 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         final number of coarse groups. A value of 1 preserves the full transport group
         structure in the low-order system. To target ``N`` total coarse groups, use
         ``(num_groups + N - 1) // N``.
-    relaxation: float, default=0.5
+    relaxation: float, default=1.0
         Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
         This is the requested correction strength. The correction limiter may damp or
         skip an individual correction if the requested update would produce an invalid
-        k-eigenvalue, non-finite flux, or excessive negative scalar flux.
+        k-eigenvalue, non-finite flux, or excessive negative scalar flux. The default
+        applies the full correction. A value below 1 is more conservative, but even an
+        ideal correction then leaves about ``1 - relaxation`` of the error; reduce it when
+        corrections are repeatedly damped or skipped.
     update_wgs_max_its: int, default=1
         Common option. Maximum WGS iterations used before each CMFD correction. The
         default performs one transport update iteration per power iteration; larger

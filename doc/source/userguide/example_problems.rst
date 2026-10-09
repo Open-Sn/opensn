@@ -454,7 +454,6 @@ Power iteration is the usual first choice for a standard k-eigenvalue solve.
        problem=phys,
        max_iters=1000,
        k_tol=1.0e-10,
-       reset_solution=True,
        reset_phi0=True,
    )
    solver.Initialize()
@@ -832,13 +831,10 @@ Important points:
   initial condition first, then switches the problem to time-dependent mode.
 * ``save_angular_flux=True`` is still required on the transient problem because
   time-dependent transport stores angular fluxes.
-* Full transient continuation restarts are different. If a transient run will
-  later be continued with ``read_restart_path``, keep
-  ``write_angular_flux_to_restart=True`` so the restart contains the angular
-  flux state required for continuation. If the problem has delayed sweep
-  angular state, including partitioned parallel, reflected-boundary, or
-  cyclic-sweep cases, ``write_delayed_psi_to_restart=True`` is also required so
-  delayed sweep buffers are carried into the continuation run.
+* Full transient restarts are different. Time-dependent restart dumps always
+  include the angular fluxes and delayed sweep buffers. The
+  ``write_angular_flux_to_restart`` and ``write_delayed_psi_to_restart`` options
+  control only steady-state restart dumps.
 * Reflected-boundary and delayed-neutron precursor cases are supported by this
   workflow. If the steady restart omits angular-flux payloads, the transient
   initialization reconstructs the needed angular state before the first time

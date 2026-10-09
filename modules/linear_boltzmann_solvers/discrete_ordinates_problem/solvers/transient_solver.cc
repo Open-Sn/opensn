@@ -345,6 +345,10 @@ TransientSolver::Advance()
   }
   CheckPrecursorStatus();
 
+  // The diffusion acceleration operators must include the time absorption 1/(v theta dt) of this
+  // step; they are rebuilt only when dt or theta changes.
+  do_problem_->UpdateDSATimeAbsorption();
+
   const double dt = do_problem_->GetTimeStep();
   const double theta = do_problem_->GetTheta();
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
