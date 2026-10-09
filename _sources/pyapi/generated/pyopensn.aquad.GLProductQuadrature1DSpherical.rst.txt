@@ -1,0 +1,9 @@
+﻿pyopensn.aquad.GLProductQuadrature1DSpherical
+=============================================
+
+.. currentmodule:: pyopensn.aquad
+
+.. autoclass:: GLProductQuadrature1DSpherical
+   :special-members: __init__
+   :members:
+   :inherited-members:

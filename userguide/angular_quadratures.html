@@ -346,6 +346,29 @@ normal starting point.</p>
 </pre></div>
 </div>
 </section>
+<section id="glproductquadrature1dspherical">
+<h4><span class="section-number">6.3.4.2. </span><code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSpherical</span></code><a class="headerlink" href="#glproductquadrature1dspherical" title="Link to this heading"></a></h4>
+<p>For 1D spherical problems in
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> on a 1D mesh
+built with <code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;spherical&quot;</span></code>.</p>
+<p>The <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> Gauss-Legendre directions are ordered by increasing direction
+cosine <span class="math notranslate nohighlight">\(\mu\)</span> and bracketed by zero-weight starting (<span class="math notranslate nohighlight">\(\mu=-1\)</span>) and
+final (<span class="math notranslate nohighlight">\(\mu=+1\)</span>) directions, which start and end the recursion of the
+angular-redistribution term. The weights sum to one. Only the standard moment
+operators are available.</p>
+<p>Parameters:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">n_polar</span></code>: required, must be even.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>: required (Legendre order of scattering).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">verbose</span></code>: optional.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSpherical</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
 </section>
 <section id="triangular-quadratures">
 <h3><span class="section-number">6.3.5. </span>Triangular quadratures<a class="headerlink" href="#triangular-quadratures" title="Link to this heading"></a></h3>
@@ -649,7 +672,8 @@ Aggregation compatibility depends on both:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">'single'</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>
 </ul>
-<p>The default groupset aggregation is <code class="docutils literal notranslate"><span class="pre">'polar'</span></code>.</p>
+<p>The default groupset aggregation is <code class="docutils literal notranslate"><span class="pre">'single'</span></code>, which is compatible with
+every quadrature, mesh, and geometry.</p>
 <p>This matters because not every quadrature family supports every aggregation
 mode, and not every mesh type supports every aggregation mode.</p>
 <p>When a solver fails during setup with an angle-aggregation error, this is one of
@@ -674,8 +698,8 @@ supported on a fully unstructured 3D (non-extruded) mesh.</p>
 <li><p>SLDFE quadratures</p></li>
 <li><p>fully unstructured 3D (non-extruded) meshes</p></li>
 </ul>
-<p>For those quadratures, and for fully unstructured 3D meshes, set
-<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p>
+<p>For those quadratures, and for fully unstructured 3D meshes, use the default
+<code class="docutils literal notranslate"><span class="pre">'single'</span></code> aggregation.</p>
 </section>
 <section id="single">
 <h3><span class="section-number">6.5.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
@@ -711,9 +735,9 @@ unstructured 3D (non-extruded) meshes.</p>
 </section>
 <section id="azimuthal">
 <h3><span class="section-number">6.5.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
-<p><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product quadratures on 2D RZ
-geometry; it is not available for Cartesian problems.</p>
-<p>For 2D RZ problems, the curvilinear solver accepts:</p>
+<p><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product quadratures on 2D RZ and
+1D spherical geometry; it is not available for Cartesian problems.</p>
+<p>For curvilinear problems, the solver accepts:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'single'</span></code></p></li>
@@ -822,9 +846,11 @@ angles, the first few weights, and the operator sizes after changing
 <li><p>For standard 1D slab problems, start with <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code>.</p></li>
 <li><p>For standard Cartesian 2D and 3D problems, start with
 <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code> or <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code>.</p></li>
-<li><p>For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, set
-<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code> explicitly.</p></li>
+<li><p>For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, keep
+the default <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code>.</p></li>
 <li><p>For 2D RZ problems, use <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DRZ</span></code> with
+<code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code>.</p></li>
+<li><p>For 1D spherical problems, use <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSpherical</span></code> with
 <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code>.</p></li>
 <li><p>When increasing <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code>, also revisit the angular quadrature
 resolution. Do not assume that a quadrature that was adequate for

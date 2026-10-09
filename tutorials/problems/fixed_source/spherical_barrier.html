@@ -1,0 +1,470 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>3.1.9. A Spherical Barrier: Chang’s Problem 5 &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="3.2. Eigenvalue Problems" href="../eigenvalue/index.html" />
+    <link rel="prev" title="3.1.8. A Three-Dimensional Volumetric-Source Problem" href="volumetric_source_3d.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../foundations/index.html">1. Foundations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modeling/index.html">2. Modeling</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">3. Problems</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">3.1. Fixed-Source Problems</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="forward_example.html">3.1.1. A Simple Example</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reed_problem.html">3.1.2. The One-Dimensional Reed Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="reed_problem_2d.html">3.1.3. The Two-Dimensional Reed Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="checkerboard.html">3.1.4. A Two-Dimensional Checkerboard Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="nested_square_source.html">3.1.5. A Nested-Square Fixed-Source Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="shielding_with_void.html">3.1.6. Shielding with Void and Scattering Regions</a></li>
+<li class="toctree-l4"><a class="reference internal" href="striped_source.html">3.1.7. A Striped Fixed-Source Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="volumetric_source_3d.html">3.1.8. A 3D Volumetric-Source Example</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">3.1.9. A Spherical Barrier Benchmark</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="../eigenvalue/index.html">3.2. Eigenvalue Problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../adjoint/index.html">3.3. Adjoint Problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../transient/index.html">3.4. Transient Problems</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../workflows/index.html">4. Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../numerical_methods/index.html">5. Numerical Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">3. </span>Problems</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">3.1. </span>Fixed-Source Problems</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">3.1.9. </span>A Spherical Barrier: Chang’s Problem 5</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="A-Spherical-Barrier:-Chang's-Problem-5">
+<h1><span class="section-number">3.1.9. </span>A Spherical Barrier: Chang’s Problem 5<a class="headerlink" href="#A-Spherical-Barrier:-Chang's-Problem-5" title="Link to this heading"></a></h1>
+<p>Chang’s barrier problem is one of six spherical transport benchmarks published by Lawrence Livermore National Laboratory [1]. A sphere of radius 1 cm is illuminated by an isotropic incident flux on its surface. Particles must cross a purely absorbing shell, <span class="math notranslate nohighlight">\(1/3 &lt; r &lt; 2/3\)</span> cm, to reach the void core, so the shell casts a “shadow” whose depth depends on the direction of travel. Because nothing scatters, the exact solution is the uncollided flux, and it can be written as a one-dimensional
+integral over direction.</p>
+<p>OpenSn solves this problem directly in one-dimensional spherical geometry, where the only spatial coordinate is the radius <span class="math notranslate nohighlight">\(r\)</span>. This tutorial sets up the 1D spherical problem, computes the exact solution independently of OpenSn, and shows that the remaining error comes from the angular discretization and decreases at second order as directions are added. The OpenSn regression suite checks all six of Chang’s problems the same way.</p>
+<p><strong>Audience:</strong> Users who want to model spherically symmetric problems.</p>
+<p><strong>Prerequisites:</strong> <a class="reference internal" href="reed_problem.html"><span class="doc">The One-Dimensional Reed Problem</span></a>, which introduces 1D meshes, block IDs, and volume postprocessing.</p>
+<section id="Learning-objectives">
+<h2><span class="section-number">3.1.9.1. </span>Learning objectives<a class="headerlink" href="#Learning-objectives" title="Link to this heading"></a></h2>
+<p>By the end of this tutorial, you will be able to:</p>
+<ul class="simple">
+<li><p>build a 1D spherical mesh and assign materials by radius;</p></li>
+<li><p>set up a <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code> with a <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSpherical</span></code> quadrature and an isotropic surface source;</p></li>
+<li><p>compute shell-averaged scalar fluxes, which OpenSn weights by the spherical volume element <span class="math notranslate nohighlight">\(4\pi r^2\,dr\)</span>; and</p></li>
+<li><p>verify the solution against an exact reference and measure the angular convergence rate.</p></li>
+</ul>
+</section>
+<section id="Import-the-OpenSn-objects">
+<h2><span class="section-number">3.1.9.2. </span>Import the OpenSn objects<a class="headerlink" href="#Import-the-OpenSn-objects" title="Link to this heading"></a></h2>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSpherical</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span><span class="p">,</span> <span class="n">UseColor</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionInterpolationVolume</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+    <span class="n">rank</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span><span class="o">.</span><span class="n">rank</span>
+    <span class="n">UseColor</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Create-the-radial-mesh">
+<h2><span class="section-number">3.1.9.3. </span>Create the radial mesh<a class="headerlink" href="#Create-the-radial-mesh" title="Link to this heading"></a></h2>
+<p>A 1D spherical mesh is an ordinary 1D orthogonal mesh created with <code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;spherical&quot;</span></code>. The node coordinates are radii, stored along the <span class="math notranslate nohighlight">\(z\)</span> axis, so the boundaries are named <code class="docutils literal notranslate"><span class="pre">zmin</span></code> (inner) and <code class="docutils literal notranslate"><span class="pre">zmax</span></code> (outer). A mesh that starts at <span class="math notranslate nohighlight">\(r = 0\)</span> is a solid sphere: the center is not a boundary and needs no boundary condition.</p>
+<p>The problem has three regions, and the results below are averaged over 12 equal-width shells. Using 8 cells per shell (96 cells in total) puts mesh nodes at both material interfaces and at every shell edge.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">radius</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="mf">3.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">/</span> <span class="mf">3.0</span>
+<span class="n">num_shells</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">cells_per_shell</span> <span class="o">=</span> <span class="mi">8</span>
+
+<span class="n">nodes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">num_shells</span> <span class="o">*</span> <span class="n">cells_per_shell</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
+<span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">],</span> <span class="n">coord_sys</span><span class="o">=</span><span class="s2">&quot;spherical&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Define-the-materials">
+<h2><span class="section-number">3.1.9.4. </span>Define the materials<a class="headerlink" href="#Define-the-materials" title="Link to this heading"></a></h2>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Block ID</p></th>
+<th class="head"><p>Radius (cm)</p></th>
+<th class="head"><p>Region</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\sigma_t\)</span> (cm<span class="math notranslate nohighlight">\(^{-1}\)</span>)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0</p></td>
+<td><p><span class="math notranslate nohighlight">\([0, 1/3]\)</span></p></td>
+<td><p>void core</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>1</p></td>
+<td><p><span class="math notranslate nohighlight">\([1/3, 2/3]\)</span></p></td>
+<td><p>absorbing barrier</p></td>
+<td><p>1</p></td>
+</tr>
+<tr class="row-even"><td><p>2</p></td>
+<td><p><span class="math notranslate nohighlight">\([2/3, 1]\)</span></p></td>
+<td><p>void</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>The radius is the <span class="math notranslate nohighlight">\(z\)</span> coordinate, so an <code class="docutils literal notranslate"><span class="pre">RPPLogicalVolume</span></code> that is infinite in <span class="math notranslate nohighlight">\(x\)</span> and <span class="math notranslate nohighlight">\(y\)</span> selects cells by radius.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">radial_range</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span><span class="n">infx</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">infy</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">zmin</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">r0</span><span class="p">),</span> <span class="n">zmax</span><span class="o">=</span><span class="nb">float</span><span class="p">(</span><span class="n">r1</span><span class="p">))</span>
+
+
+<span class="n">sigma_t</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">void</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">void</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+<span class="n">absorber</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+<span class="n">absorber</span><span class="o">.</span><span class="n">CreateSimpleOneGroup</span><span class="p">(</span><span class="n">sigma_t</span><span class="o">=</span><span class="n">sigma_t</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="mf">0.0</span><span class="p">)</span>
+
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">radial_range</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">radial_range</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">radius</span><span class="p">),</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+<span class="n">xs_map</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">void</span><span class="p">},</span>
+    <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">absorber</span><span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Assemble-and-solve-the-transport-problem">
+<h2><span class="section-number">3.1.9.5. </span>Assemble and solve the transport problem<a class="headerlink" href="#Assemble-and-solve-the-transport-problem" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSpherical</span></code> places <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> Gauss–Legendre directions in the direction cosine <span class="math notranslate nohighlight">\(\mu = \boldsymbol{\Omega}\cdot\hat{\mathbf r}\)</span>. Streaming in spherical geometry also redistributes particles in <span class="math notranslate nohighlight">\(\mu\)</span>, so the quadrature includes two zero-weight starting and final directions that close the angular recursion. The groupset uses the default <code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> angle aggregation, which sweeps each direction separately.</p>
+<p>The incident angular flux on the surface is <span class="math notranslate nohighlight">\(\psi_0 = 1\)</span> particle/(cm<span class="math notranslate nohighlight">\(^2\)</span> s sr). An isotropic boundary condition is specified by its scalar flux, <span class="math notranslate nohighlight">\(4\pi\psi_0\)</span>. With no scattering, a single sweep gives the solution, so a Richardson iteration converges immediately.</p>
+<p>The function below solves the problem for a given number of directions and returns the shell-averaged scalar flux. The <code class="docutils literal notranslate"><span class="pre">&quot;avg&quot;</span></code> operation of <code class="docutils literal notranslate"><span class="pre">FieldFunctionInterpolationVolume</span></code> weights by the physical volume <span class="math notranslate nohighlight">\(4\pi r^2\,dr\)</span>, so each value is a true spherical-shell average.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">psi_0</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="n">shell_edges</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">radius</span><span class="p">,</span> <span class="n">num_shells</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">solve_shell_averages</span><span class="p">(</span><span class="n">n_polar</span><span class="p">):</span>
+    <span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="n">n_polar</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
+        <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
+        <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+        <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+                <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;classic_richardson&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-12</span><span class="p">,</span>
+                <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">],</span>
+        <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+        <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;isotropic&quot;</span><span class="p">,</span> <span class="s2">&quot;group_strength&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mf">4.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">psi_0</span><span class="p">]},</span>
+        <span class="p">],</span>
+        <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+    <span class="p">)</span>
+    <span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">)</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+
+    <span class="n">scalar_flux</span> <span class="o">=</span> <span class="n">problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">averages</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shell_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">shell_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="n">average</span> <span class="o">=</span> <span class="n">FieldFunctionInterpolationVolume</span><span class="p">()</span>
+        <span class="n">average</span><span class="o">.</span><span class="n">SetOperationType</span><span class="p">(</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+        <span class="n">average</span><span class="o">.</span><span class="n">SetLogicalVolume</span><span class="p">(</span><span class="n">radial_range</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">))</span>
+        <span class="n">average</span><span class="o">.</span><span class="n">AddFieldFunction</span><span class="p">(</span><span class="n">scalar_flux</span><span class="p">)</span>
+        <span class="n">average</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+        <span class="n">averages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">average</span><span class="o">.</span><span class="n">GetValue</span><span class="p">())</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">averages</span><span class="p">)</span>
+
+
+<span class="n">angular_orders</span> <span class="o">=</span> <span class="p">[</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">]</span>
+<span class="n">opensn_averages</span> <span class="o">=</span> <span class="p">{</span><span class="n">n</span><span class="p">:</span> <span class="n">solve_shell_averages</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">angular_orders</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Compute-the-exact-solution">
+<h2><span class="section-number">3.1.9.6. </span>Compute the exact solution<a class="headerlink" href="#Compute-the-exact-solution" title="Link to this heading"></a></h2>
+<p>Without scattering, the angular flux at radius <span class="math notranslate nohighlight">\(r\)</span> in direction cosine <span class="math notranslate nohighlight">\(\mu\)</span> is the incident flux attenuated along the path back to the surface:</p>
+<div class="math notranslate nohighlight">
+\[\psi(r, \mu) = \psi_0\, e^{-\sigma_t \ell(r, \mu)},\]</div>
+<p>where <span class="math notranslate nohighlight">\(\ell\)</span> is the path length inside the barrier. Let <span class="math notranslate nohighlight">\(L_R(r, \mu)\)</span> be the length of the backward ray (from <span class="math notranslate nohighlight">\(r\)</span>, in direction <span class="math notranslate nohighlight">\(-\boldsymbol{\Omega}\)</span>) that lies inside a sphere of radius <span class="math notranslate nohighlight">\(R\)</span>. With impact parameter <span class="math notranslate nohighlight">\(p = r\sqrt{1 - \mu^2}\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}L_R(r, \mu) =
+\begin{cases}
+r\mu + \sqrt{R^2 - p^2}, &amp; r &lt; R, \\
+2\sqrt{R^2 - p^2}, &amp; r \ge R \text{ and } \mu &gt; \sqrt{1 - R^2/r^2}, \\
+0, &amp; \text{otherwise},
+\end{cases}\end{split}\]</div>
+<p>and the path length through the barrier is <span class="math notranslate nohighlight">\(\ell = L_b - L_a\)</span>. The scalar flux is</p>
+<div class="math notranslate nohighlight">
+\[\phi(r) = 2\pi\psi_0 \int_{-1}^{1} e^{-\sigma_t \ell(r, \mu)}\, d\mu .\]</div>
+<p>The integrand has square-root behavior at the cosines where the ray is tangent to an interface, <span class="math notranslate nohighlight">\(\mu = \sqrt{1 - R^2/r^2}\)</span>. The integral is therefore split at those cosines, and the substitution <span class="math notranslate nohighlight">\(\mu = \mu_0 + (\mu_1 - \mu_0)t^2\)</span> makes each piece smooth for Gauss–Legendre quadrature. The shell averages use the same <span class="math notranslate nohighlight">\(r^2\)</span> weighting as OpenSn. This reference agrees with Chang’s published expressions to round-off and is accurate to better than <span class="math notranslate nohighlight">\(10^{-8}\)</span>, far below the
+discretization error being measured.</p>
+<p>The center provides a quick check: every ray reaching it crosses the full barrier thickness, so <span class="math notranslate nohighlight">\(\phi(0) = 4\pi\psi_0 e^{-\sigma_t (b - a)}\)</span>.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gl_x</span><span class="p">,</span> <span class="n">gl_w</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">polynomial</span><span class="o">.</span><span class="n">legendre</span><span class="o">.</span><span class="n">leggauss</span><span class="p">(</span><span class="mi">48</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">chord</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">mu</span><span class="p">):</span>
+    <span class="n">disc</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">maximum</span><span class="p">(</span><span class="n">R</span> <span class="o">*</span> <span class="n">R</span> <span class="o">-</span> <span class="n">r</span> <span class="o">*</span> <span class="n">r</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="n">mu</span> <span class="o">*</span> <span class="n">mu</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">r</span> <span class="o">&lt;</span> <span class="n">R</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">r</span> <span class="o">*</span> <span class="n">mu</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">disc</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">((</span><span class="n">mu</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">disc</span> <span class="o">&gt;</span> <span class="mf">0.0</span><span class="p">),</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">disc</span><span class="p">),</span> <span class="mf">0.0</span><span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">exact_phi</span><span class="p">(</span><span class="n">r</span><span class="p">):</span>
+    <span class="n">breaks</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mf">1.0</span> <span class="o">-</span> <span class="p">(</span><span class="n">R</span> <span class="o">/</span> <span class="n">r</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">R</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="k">if</span> <span class="n">R</span> <span class="o">&lt;</span> <span class="n">r</span><span class="p">]</span>
+    <span class="n">breaks</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">breaks</span><span class="p">)</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">gl_x</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+    <span class="k">for</span> <span class="n">mu_0</span><span class="p">,</span> <span class="n">mu_1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">breaks</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">breaks</span><span class="p">[</span><span class="mi">1</span><span class="p">:]):</span>
+        <span class="n">mu</span> <span class="o">=</span> <span class="n">mu_0</span> <span class="o">+</span> <span class="p">(</span><span class="n">mu_1</span> <span class="o">-</span> <span class="n">mu_0</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span> <span class="o">*</span> <span class="n">t</span>
+        <span class="n">weights</span> <span class="o">=</span> <span class="n">gl_w</span> <span class="o">*</span> <span class="p">(</span><span class="n">mu_1</span> <span class="o">-</span> <span class="n">mu_0</span><span class="p">)</span> <span class="o">*</span> <span class="n">t</span>
+        <span class="n">total</span> <span class="o">+=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">weights</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">sigma_t</span> <span class="o">*</span> <span class="p">(</span><span class="n">chord</span><span class="p">(</span><span class="n">b</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">mu</span><span class="p">)</span> <span class="o">-</span> <span class="n">chord</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">mu</span><span class="p">))))</span>
+    <span class="k">return</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="n">psi_0</span> <span class="o">*</span> <span class="n">total</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">exact_shell_average</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">r0</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">r1</span> <span class="o">-</span> <span class="n">r0</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">gl_x</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span>
+    <span class="n">integral</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="p">(</span><span class="n">r1</span> <span class="o">-</span> <span class="n">r0</span><span class="p">)</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">gl_w</span><span class="p">,</span> <span class="p">[</span><span class="n">ri</span> <span class="o">*</span> <span class="n">ri</span> <span class="o">*</span> <span class="n">exact_phi</span><span class="p">(</span><span class="n">ri</span><span class="p">)</span> <span class="k">for</span> <span class="n">ri</span> <span class="ow">in</span> <span class="n">r</span><span class="p">])</span>
+    <span class="k">return</span> <span class="mf">3.0</span> <span class="o">*</span> <span class="n">integral</span> <span class="o">/</span> <span class="p">(</span><span class="n">r1</span><span class="o">**</span><span class="mi">3</span> <span class="o">-</span> <span class="n">r0</span><span class="o">**</span><span class="mi">3</span><span class="p">)</span>
+
+
+<span class="n">exact_averages</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span><span class="n">exact_shell_average</span><span class="p">(</span><span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">)</span> <span class="k">for</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">shell_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">shell_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:])]</span>
+<span class="p">)</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;phi(0) from quadrature: </span><span class="si">{</span><span class="n">exact_phi</span><span class="p">(</span><span class="mf">1.0e-8</span><span class="p">)</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;4 pi exp(-(b - a)):     </span><span class="si">{</span><span class="mf">4.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="n">sigma_t</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">(</span><span class="n">b</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">a</span><span class="p">))</span><span class="si">:</span><span class="s2">.10f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Verify-the-solution">
+<h2><span class="section-number">3.1.9.7. </span>Verify the solution<a class="headerlink" href="#Verify-the-solution" title="Link to this heading"></a></h2>
+<p>The table compares the S<span class="math notranslate nohighlight">\(_{64}\)</span> shell averages with the exact values. The flux is highest near the surface, where inward-moving particles arrive unattenuated, and falls through the barrier to a minimum at its inner edge. Particles reaching the inner edge nearly tangent to it have crossed the barrier along oblique chords up to <span class="math notranslate nohighlight">\(\sqrt{b^2 - a^2} \approx 0.58\)</span> cm long. Toward the center of the void core these chords shorten to the radial thickness <span class="math notranslate nohighlight">\(b - a = 1/3\)</span> cm, so the flux
+rises to the center value <span class="math notranslate nohighlight">\(4\pi\psi_0 e^{-1/3} \approx 9.004\)</span>.</p>
+<p>For each quadrature the largest relative shell-average error is reported. Refining the mesh changes these errors by less than 2%, so they measure the angular discretization error. Doubling the number of directions should reduce the error by about a factor of four.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">errors</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="n">n</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opensn_averages</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="n">exact_averages</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">))</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">angular_orders</span>
+<span class="p">}</span>
+<span class="n">order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">errors</span><span class="p">[</span><span class="mi">16</span><span class="p">]</span> <span class="o">/</span> <span class="n">errors</span><span class="p">[</span><span class="mi">64</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="mf">4.0</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;shell (cm)&#39;</span><span class="si">:</span><span class="s2">&gt;16</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;OpenSn S64&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;exact&#39;</span><span class="si">:</span><span class="s2">&gt;12</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;rel. error&#39;</span><span class="si">:</span><span class="s2">&gt;11</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">r0</span><span class="p">,</span> <span class="n">r1</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">exact</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span>
+        <span class="n">shell_edges</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">shell_edges</span><span class="p">[</span><span class="mi">1</span><span class="p">:],</span> <span class="n">opensn_averages</span><span class="p">[</span><span class="mi">64</span><span class="p">],</span> <span class="n">exact_averages</span>
+    <span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">r0</span><span class="si">:</span><span class="s2">7.4f</span><span class="si">}</span><span class="s2">-</span><span class="si">{</span><span class="n">r1</span><span class="si">:</span><span class="s2">7.4f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="si">:</span><span class="s2">12.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">exact</span><span class="si">:</span><span class="s2">12.6f</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">value</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">exact</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mf">1.0</span><span class="si">:</span><span class="s2">11.2e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">angular_orders</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="n">n</span><span class="si">:</span><span class="s2">&lt;3d</span><span class="si">}</span><span class="s2"> maximum relative error: </span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="n">n</span><span class="p">]</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Observed angular convergence order: </span><span class="si">{</span><span class="n">order</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">errors</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">2.0e-4</span>
+    <span class="k">assert</span> <span class="mf">1.6</span> <span class="o">&lt;</span> <span class="n">order</span> <span class="o">&lt;</span> <span class="mf">2.2</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BARRIER_MAX_REL_ERR_S64=</span><span class="si">{</span><span class="n">errors</span><span class="p">[</span><span class="mi">64</span><span class="p">]</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;BARRIER_ANGULAR_ORDER=</span><span class="si">{</span><span class="n">order</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Plot-the-radial-flux">
+<h2><span class="section-number">3.1.9.8. </span>Plot the radial flux<a class="headerlink" href="#Plot-the-radial-flux" title="Link to this heading"></a></h2>
+<p>The following optional plotting code is kept non-executable so regression tests do not create output files. Run it in a new code cell to regenerate the figure. The upper panel shows the exact scalar flux and the S<span class="math notranslate nohighlight">\(_{64}\)</span> shell averages. The lower panel shows the relative error in each shell, which falls by about a factor of four each time the number of directions doubles.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">matplotlib.pyplot</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">plt</span>
+
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">r_fine</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mf">1.0e-3</span><span class="p">,</span> <span class="n">radius</span> <span class="o">-</span> <span class="mf">1.0e-3</span><span class="p">,</span> <span class="mi">400</span><span class="p">)</span>
+    <span class="n">fig</span><span class="p">,</span> <span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">bottom</span><span class="p">)</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">subplots</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">sharex</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mf">6.0</span><span class="p">,</span> <span class="mf">5.4</span><span class="p">))</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">r_fine</span><span class="p">,</span> <span class="p">[</span><span class="n">exact_phi</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">r_fine</span><span class="p">],</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;Exact $</span><span class="se">\\</span><span class="s2">phi(r)$&quot;</span><span class="p">)</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">opensn_averages</span><span class="p">[</span><span class="mi">64</span><span class="p">],</span> <span class="n">shell_edges</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;#7b2cbf&quot;</span><span class="p">,</span>
+               <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="s2">&quot;OpenSn S64 shell average&quot;</span><span class="p">)</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">r</span><span class="s2">&quot;Scalar flux, $\phi(r)$&quot;</span><span class="p">)</span>
+    <span class="n">top</span><span class="o">.</span><span class="n">legend</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">color</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">angular_orders</span><span class="p">,</span> <span class="p">[</span><span class="s2">&quot;#c77dff&quot;</span><span class="p">,</span> <span class="s2">&quot;#7b2cbf&quot;</span><span class="p">,</span> <span class="s2">&quot;#3c096c&quot;</span><span class="p">]):</span>
+        <span class="n">relative_error</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">opensn_averages</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">/</span> <span class="n">exact_averages</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">bottom</span><span class="o">.</span><span class="n">stairs</span><span class="p">(</span><span class="n">relative_error</span><span class="p">,</span> <span class="n">shell_edges</span><span class="p">,</span> <span class="n">baseline</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="n">color</span><span class="p">,</span> <span class="n">label</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;S</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">bottom</span><span class="o">.</span><span class="n">set_yscale</span><span class="p">(</span><span class="s2">&quot;log&quot;</span><span class="p">)</span>
+    <span class="n">bottom</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;Radius, $r$ (cm)&quot;</span><span class="p">)</span>
+    <span class="n">bottom</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;Relative error&quot;</span><span class="p">)</span>
+    <span class="n">bottom</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">ncol</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">axis</span> <span class="ow">in</span> <span class="p">(</span><span class="n">top</span><span class="p">,</span> <span class="n">bottom</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">interface</span> <span class="ow">in</span> <span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">):</span>
+            <span class="n">axis</span><span class="o">.</span><span class="n">axvline</span><span class="p">(</span><span class="n">interface</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;0.75&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mf">0.8</span><span class="p">)</span>
+        <span class="n">axis</span><span class="o">.</span><span class="n">grid</span><span class="p">(</span><span class="n">alpha</span><span class="o">=</span><span class="mf">0.25</span><span class="p">)</span>
+    <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<p><img alt="Upper panel: exact scalar flux and OpenSn S64 shell averages for Chang's barrier problem. Lower panel: shell-average relative errors for S16, S32, and S64 on a logarithmic scale, decreasing about fourfold per doubling. The flux falls through the absorbing shell between 1/3 and 2/3 cm to a minimum at its inner edge, rises toward the center of the void core, and increases toward the surface." src="../../../_images/spherical_barrier.png" /></p>
+</section>
+<section id="Next-steps">
+<h2><span class="section-number">3.1.9.9. </span>Next steps<a class="headerlink" href="#Next-steps" title="Link to this heading"></a></h2>
+<p>The OpenSn regression test <code class="docutils literal notranslate"><span class="pre">transport_1d_sph_chang_benchmarks.py</span></code> solves all six of Chang’s problems: an absorbing sphere with an incident flux, radiating balls and shells in void, an absorber surrounded by void, and an absorbing source. Try replacing the barrier with a volumetric source (<code class="docutils literal notranslate"><span class="pre">pyopensn.source.VolumetricSource</span></code>) and a <code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code> surface to reproduce the radiating-shell problem. The angular error is largest at the source edges, where the exact flux has a logarithmic singularity.</p>
+</section>
+<section id="References">
+<h2><span class="section-number">3.1.9.10. </span>References<a class="headerlink" href="#References" title="Link to this heading"></a></h2>
+<ol class="arabic simple">
+<li><ol class="upperalpha simple" start="2">
+<li><p>Chang, <em>Six 1D Polar Transport Test Problems for the Deterministic and Monte-Carlo Method</em>, LLNL-TR-819680, Lawrence Livermore National Laboratory (2021). <a class="reference external" href="https://www.osti.gov/servlets/purl/1769096">https://www.osti.gov/servlets/purl/1769096</a></p></li>
+</ol>
+</li>
+</ol>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+    <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Finalize</span><span class="p">()</span>
+        <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="volumetric_source_3d.html" class="btn btn-neutral float-left" title="3.1.8. A Three-Dimensional Volumetric-Source Problem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../eigenvalue/index.html" class="btn btn-neutral float-right" title="3.2. Eigenvalue Problems" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

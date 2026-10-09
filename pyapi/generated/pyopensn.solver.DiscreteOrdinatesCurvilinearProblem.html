@@ -804,6 +804,15 @@ same direction.</p>
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a discrete ordinates problem for curvilinear geometry.</p>
+<p>Two geometries are supported: 2D cylindrical (<code class="docutils literal notranslate"><span class="pre">r-z</span></code>, a 2D mesh with
+<code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;cylindrical&quot;</span></code> and <a class="reference internal" href="pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLCProductQuadrature2DRZ</span></code></a>) and 1D
+spherical (a 1D radial mesh with <code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;spherical&quot;</span></code> and
+<a class="reference internal" href="pyopensn.aquad.GLProductQuadrature1DSpherical.html#pyopensn.aquad.GLProductQuadrature1DSpherical" title="pyopensn.aquad.GLProductQuadrature1DSpherical"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLProductQuadrature1DSpherical</span></code></a>; boundaries <code class="docutils literal notranslate"><span class="pre">zmin</span></code> (inner) and
+<code class="docutils literal notranslate"><span class="pre">zmax</span></code> (outer), and a mesh starting at r = 0 is a solid sphere whose center needs no
+boundary condition). Groupsets must use <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code> <code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'single'</span></code>, <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code> must be <code class="docutils literal notranslate"><span class="pre">'AAH'</span></code>, and time-dependent problems and GPU
+acceleration are not supported. Integrated quantities are reported for the full revolution
+(<code class="docutils literal notranslate"><span class="pre">r-z</span></code>) or the full sphere.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>DiscreteOrdinatesCurvilinearProblem is <strong>experimental</strong> and should be used with caution!</p>
@@ -831,7 +840,8 @@ groupset. Each dictionary supports:</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>angle_aggregation_type: {‘polar’, ‘single’, ‘azimuthal’}, default=’polar’</dt><dd><p>Angle aggregation method to use during sweeping.</p>
+<dt>angle_aggregation_type: {‘single’, ‘azimuthal’}, default=’single’</dt><dd><p>Angle aggregation method to use during sweeping. Curvilinear problems do not
+support <code class="docutils literal notranslate"><span class="pre">'polar'</span></code>.</p>
 </dd>
 </dl>
 </li>
@@ -1077,8 +1087,7 @@ Print outer solver progress, including PI/NLKE iterations and transient steps.</
 </dd>
 </dl>
 </p></li>
-<li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The sweep type to use. Must be one of <cite>AAH</cite> or <cite>CBC</cite>. Defaults to <cite>AAH</cite>.
-If <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code>, <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code> is required.</p></li>
+<li><p><strong>sweep_type</strong> (<em>str</em><em>, </em><em>optional</em>) – The sweep type to use. Curvilinear problems support only <cite>AAH</cite>, the default.</p></li>
 </ul>
 </dd>
 </dl>

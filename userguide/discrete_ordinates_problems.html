@@ -958,42 +958,83 @@ replaced without rebuilding the entire problem object.</p>
 <section id="discreteordinatescurvilinearproblem">
 <h2><span class="section-number">11.14. </span>DiscreteOrdinatesCurvilinearProblem<a class="headerlink" href="#discreteordinatescurvilinearproblem" title="Link to this heading"></a></h2>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a> is the
-curvilinear companion to the Cartesian problem class.</p>
-<p>It uses the same general construction pattern, but currently requires:</p>
+curvilinear companion to the Cartesian problem class. It supports two
+geometries, selected by the <code class="docutils literal notranslate"><span class="pre">coord_sys</span></code> argument of the mesh generator (the
+problem class has no coordinate-system parameter of its own):</p>
 <ul class="simple">
-<li><p>a suitable curvilinear mesh,</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">coord_system=2</span></code> for cylindrical coordinates,</p></li>
-<li><p>a compatible quadrature and solver setup.</p></li>
+<li><p>2D cylindrical (<code class="docutils literal notranslate"><span class="pre">r-z</span></code>) geometry: a 2D mesh with <code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;cylindrical&quot;</span></code>
+and <a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLCProductQuadrature2DRZ.html#pyopensn.aquad.GLCProductQuadrature2DRZ" title="pyopensn.aquad.GLCProductQuadrature2DRZ"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLCProductQuadrature2DRZ</span></code></a>. The boundaries are
+<code class="docutils literal notranslate"><span class="pre">rmin</span></code>, <code class="docutils literal notranslate"><span class="pre">rmax</span></code>, <code class="docutils literal notranslate"><span class="pre">zmin</span></code>, and <code class="docutils literal notranslate"><span class="pre">zmax</span></code>.</p></li>
+<li><p>1D spherical geometry: a 1D mesh along the radius with
+<code class="docutils literal notranslate"><span class="pre">coord_sys=&quot;spherical&quot;</span></code> and
+<a class="reference internal" href="../pyapi/generated/pyopensn.aquad.GLProductQuadrature1DSpherical.html#pyopensn.aquad.GLProductQuadrature1DSpherical" title="pyopensn.aquad.GLProductQuadrature1DSpherical"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.aquad.GLProductQuadrature1DSpherical</span></code></a>. The boundaries are
+<code class="docutils literal notranslate"><span class="pre">zmin</span></code> (inner) and <code class="docutils literal notranslate"><span class="pre">zmax</span></code> (outer). A mesh that starts at <span class="math notranslate nohighlight">\(r = 0\)</span> is
+a solid sphere; its center has zero area and needs no boundary condition. A
+mesh that starts at <span class="math notranslate nohighlight">\(r &gt; 0\)</span> is a hollow sphere, and <code class="docutils literal notranslate"><span class="pre">zmin</span></code> is its inner
+surface.</p></li>
 </ul>
-<p>Important current limitations:</p>
+<p>Both geometries discretize the angular-derivative (redistribution) term with a
+weighted diamond difference along an ordered angular sequence: the azimuthal
+sequence of each polar level in <code class="docutils literal notranslate"><span class="pre">r-z</span></code>, and the directions in order of
+increasing <span class="math notranslate nohighlight">\(\mu\)</span>, starting from the zero-weight direction
+<span class="math notranslate nohighlight">\(\mu = -1\)</span>, in 1D spherical geometry. Every cell must see the directions of
+a sequence in that order, so the angle sets of a sequence are swept in order on
+every rank.</p>
+<p>Requirements and current limitations:</p>
 <ul class="simple">
-<li><p>the curvilinear solver only supports cylindrical geometries,</p></li>
-<li><p>reflecting boundaries are supported only on the symmetry axis (<code class="docutils literal notranslate"><span class="pre">rmin</span></code>) and on
-constant-<code class="docutils literal notranslate"><span class="pre">z</span></code> boundaries,</p></li>
-<li><p>GPU acceleration is not supported,</p></li>
-<li><p>users should treat it as a more specialized path than the standard Cartesian
-problem.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">angle_aggregation_type</span></code> must be <code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> (the default) or
+<code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code>. In 1D spherical geometry <code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code> forms one inward and
+one outward angle set.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">sweep_type</span></code> must be <code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code>.</p></li>
+<li><p>In <code class="docutils literal notranslate"><span class="pre">r-z</span></code>, reflecting boundaries are supported only on the symmetry axis
+(<code class="docutils literal notranslate"><span class="pre">rmin</span></code> at <span class="math notranslate nohighlight">\(r = 0\)</span>) and on constant-<code class="docutils literal notranslate"><span class="pre">z</span></code> boundaries. An inner radial
+boundary at <span class="math notranslate nohighlight">\(r &gt; 0\)</span> (an annulus) may be vacuum or isotropic.</p></li>
+<li><p>In 1D spherical geometry the outer surface may be reflecting
+(<span class="math notranslate nohighlight">\(\mu \to -\mu\)</span>); it is lagged by one sweep, so the inner iteration
+resolves it.</p></li>
+<li><p>Time-dependent problems and GPU acceleration are not supported.</p></li>
 </ul>
-<p>Integrated quantities are reported in physical units for the full revolution:
+<p>Integrated quantities are reported in physical units over the full geometry:
 the balance table, <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code>, response evaluation, power
-normalization, volume postprocessors, and volume field-function integrals all use
-the volume element <span class="math notranslate nohighlight">\(2\pi r\,dr\,dz\)</span> and the corresponding surface element,
-so they can be compared directly with an equivalent three-dimensional model.
-Volumetric source strengths are per unit volume. A point source at
-<span class="math notranslate nohighlight">\((r, z)\)</span> represents a ring, and its strength is the total emission rate of
-that ring. See <a class="reference internal" href="boundary_conditions_sources.html#normalization-conventions"><span class="std std-ref">Normalization and Units</span></a> for the conventions in all
-geometries.</p>
-<p>Example:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
-    <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
-    <span class="n">coord_system</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+normalization, volume postprocessors, and volume field-function integrals use
+the volume element <span class="math notranslate nohighlight">\(2\pi r\,dr\,dz\)</span> in <code class="docutils literal notranslate"><span class="pre">r-z</span></code> and <span class="math notranslate nohighlight">\(4\pi r^2\,dr\)</span> in
+1D spherical geometry, and the corresponding surface elements, so they can be
+compared directly with an equivalent three-dimensional model. Volumetric source
+strengths are per unit volume. A point source at <span class="math notranslate nohighlight">\((r, z)\)</span> in <code class="docutils literal notranslate"><span class="pre">r-z</span></code>
+represents a ring, and its strength is the total emission rate of that ring. See
+<a class="reference internal" href="boundary_conditions_sources.html#normalization-conventions"><span class="std std-ref">Normalization and Units</span></a> for the conventions in all geometries.</p>
+<p>Example (<code class="docutils literal notranslate"><span class="pre">r-z</span></code>):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">r_nodes</span><span class="p">,</span> <span class="n">z_nodes</span><span class="p">],</span>
+                               <span class="n">coord_sys</span><span class="o">=</span><span class="s2">&quot;cylindrical&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
     <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
-    <span class="n">groupsets</span><span class="o">=</span><span class="n">groupsets</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature2DRZ</span><span class="p">(</span>
+                    <span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;azimuthal&quot;</span><span class="p">}],</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
-    <span class="n">sweep_type</span><span class="o">=</span><span class="s2">&quot;AAH&quot;</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;rmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">}],</span>
 <span class="p">)</span>
 </pre></div>
 </div>
+<p>Example (solid sphere):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">grid</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">r_nodes</span><span class="p">],</span>
+                               <span class="n">coord_sys</span><span class="o">=</span><span class="s2">&quot;spherical&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesCurvilinearProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+                <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLProductQuadrature1DSpherical</span><span class="p">(</span>
+                    <span class="n">n_polar</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span>
+                <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;azimuthal&quot;</span><span class="p">}],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">}],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="../tutorials/problems/fixed_source/spherical_barrier.html"><span class="doc">A Spherical Barrier: Chang’s Problem 5</span></a> solves a complete
+1D spherical benchmark and verifies it against the exact solution.</p>
 </section>
 <section id="typical-construction-patterns">
 <h2><span class="section-number">11.15. </span>Typical Construction Patterns<a class="headerlink" href="#typical-construction-patterns" title="Link to this heading"></a></h2>

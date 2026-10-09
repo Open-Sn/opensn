@@ -300,7 +300,7 @@ for the groupset.</p>
 <p>Supported aggregation types exposed in OpenSn are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;polar&quot;</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> (default)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code></p></li>
 </ul>
 <p>Example:</p>
@@ -322,8 +322,8 @@ chosen structured workflow.</p></li>
 <p class="admonition-title">Note</p>
 <p>Angle aggregation is not just a performance knob. It is a sweep-organization
 choice that must remain compatible with both the mesh and the quadrature.
-In particular, unstructured meshes require
-<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code>.</p>
+In particular, fully unstructured 3D meshes require
+<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code>, the default.</p>
 <p>See <a class="reference internal" href="angular_quadratures.html"><span class="doc">Angular Quadratures</span></a> for the detailed compatibility rules between
 quadrature family, mesh type, and aggregation type.</p>
 </div>

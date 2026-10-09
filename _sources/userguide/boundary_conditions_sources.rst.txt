@@ -864,6 +864,9 @@ Source strengths are angle-integrated emission rates:
      * - RZ
        - a ring about the axis
        - total emission rate of the ring
+     * - 1D spherical
+       - a spherical shell of radius :math:`r`
+       - total emission rate of the shell
 
 Integrated quantities
 ---------------------
@@ -892,8 +895,12 @@ reported per unit length or area:
    * - RZ
      - :math:`2\pi r\,dr\,dz`
      - totals for the full revolution
+   * - 1D spherical
+     - :math:`4\pi r^2\,dr`
+     - totals for the full sphere
 
-RZ results can therefore be compared directly with an equivalent 3D model, and
+RZ and 1D spherical results can therefore be compared directly with an
+equivalent 3D model, and
 2D or 1D results with a 3D model of unit depth or unit cross-sectional area.
 
 Best Practices

@@ -870,6 +870,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_a_a_h_sweep_chunk_spherical.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_a_a_h_sweep_chunk_t_d.rst
 
 .. toctree::
@@ -2518,6 +2523,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_sweep_chunks_aah_sweep_chunk_rz.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_curvilinear_problem_sweep_chunks_aah_sweep_chunk_spherical.h.rst
 
 .. toctree::
    :maxdepth: 1
