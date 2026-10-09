@@ -45,6 +45,9 @@ public:
 
   void SetEvaluationTime(double time) { evaluation_time_ = time; }
 
+  void SetDelayedAngularSlopeEnabled(bool enabled) { delayed_angular_slope_enabled_ = enabled; }
+  bool DelayedAngularSlopeEnabled() const { return delayed_angular_slope_enabled_; }
+
   virtual bool HasDelayedAngularFlux() const { return false; }
 
   /**
@@ -131,12 +134,33 @@ public:
                               int groupset_id,
                               unsigned int group_idx);
 
-  /// Return a pointer to the location of the outgoing flux.
+  /// Returns a pointer to the location of the incoming slope data.
+  virtual double* PsiIncomingE(std::uint32_t cell_local_id,
+                               unsigned int face_num,
+                               unsigned int fi,
+                               unsigned int angle_num,
+                               int groupset_id,
+                               unsigned int group_num)
+  {
+    return ZeroFlux(groupset_id, group_num);
+  }
+
+  /// Returns a pointer to the location of the outgoing flux.
   virtual double* PsiOutgoing(uint64_t cell_local_id,
                               unsigned int face_num,
                               unsigned int fi,
                               unsigned int angle_num,
                               int groupset_id);
+
+  /// Returns a pointer to the location of the outgoing slope data.
+  virtual double* PsiOutgoingE(uint64_t cell_local_id,
+                               unsigned int face_num,
+                               unsigned int fi,
+                               unsigned int angle_num,
+                               int groupset_id)
+  {
+    return ZeroFlux(groupset_id, 0);
+  }
 
   virtual void Setup(const std::shared_ptr<MeshContinuum>& grid,
                      const AngularQuadrature& quadrature)
@@ -192,6 +216,7 @@ protected:
   std::vector<std::uint64_t> offset_;
   /// Boundary type.
   LBSBoundaryType type_;
+  bool delayed_angular_slope_enabled_ = false;
   /// Time value passed to boundary functions.
   double evaluation_time_ = 0.0;
 };

@@ -153,9 +153,11 @@ SweepWGSContext::PostSolveCallback()
 {
 
   // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
-  // Krylov methods to recover the actual solution (this includes all of the PETSc methods
-  // currently used in OpenSn).
-  if (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
+  // Krylov methods to recover the actual solution. CSDA problems also need it with classic
+  // Richardson to refresh angular, energy-slope, and outflow data from the final scalar iterate.
+  if ((groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON and
+       do_problem.GetOptions().csda_enabled) or
+      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
       groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB or
       (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
        groupset.max_iterations > 1))

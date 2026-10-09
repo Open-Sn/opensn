@@ -16,6 +16,7 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::vector<size_t>& angle_indices,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            int maximum_message_size,
+                           bool csda_enabled,
                            const SweepCommunicator& sweep_communicator)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds,
@@ -24,6 +25,7 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                 num_groups_,
                 angle_indices.size(),
                 maximum_message_size,
+                csda_enabled,
                 sweep_communicator)
 {
 }

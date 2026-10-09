@@ -96,8 +96,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   InitializeGroupsets(params);
 
+  // Call this class's implementation directly. Virtual dispatch cannot reach a derived-class
+  // override during construction; derived classes validate their own adjoint restrictions.
   if (options_.adjoint)
-    ValidateAdjointModeAllowed();
+    LBSProblem::ValidateAdjointModeAllowed();
 
   InitializeSources(params);
   InitializeXSMap(params);
@@ -594,6 +596,8 @@ LBSProblem::GetOptionsBlock()
                               "Default `kappa` value (Energy released per fission) to use for "
                               "power generation when cross sections do not have `kappa` values. "
                               "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
+  params.AddOptionalParameter(
+    "csda_enabled", false, "Enable CSDA charged-particle transport with energy-slope solve.");
   params.AddOptionalParameter("field_function_prefix_option",
                               "prefix",
                               "Prefix option on field function names. Default: `\"prefix\"`. Can "
@@ -691,6 +695,8 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {"power_default_kappa",
      [this](const ParameterBlock& spec)
      { options_.power_default_kappa = spec.GetValue<double>(); }},
+    {"csda_enabled",
+     [this](const ParameterBlock& spec) { options_.csda_enabled = spec.GetValue<bool>(); }},
     {"field_function_prefix_option",
      [this](const ParameterBlock& spec)
      { options_.field_function_prefix_option = spec.GetValue<std::string>(); }},
