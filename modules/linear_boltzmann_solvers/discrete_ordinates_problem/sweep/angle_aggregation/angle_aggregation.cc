@@ -199,6 +199,8 @@ AngleAggregation::AppendNewDelayedAngularDOFsToArray(int64_t& index, double* x_r
 {
 
   for (auto& [bid, bndry] : boundaries_)
+    bndry->PrepareNewDelayedAngularFlux(groupset_id_);
+  for (auto& [bid, bndry] : boundaries_)
     bndry->AppendNewDelayedAngularDOFsToArray(groupset_id_, index, x_ref);
 
   // Intra-cell cycles
@@ -363,6 +365,8 @@ AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()
   auto psi_size = GetNumDelayedAngularDOFs();
   psi_vector.reserve(psi_size.first);
 
+  for (auto& [bid, bndry] : boundaries_)
+    bndry->PrepareNewDelayedAngularFlux(groupset_id_);
   for (auto& [bid, bndry] : boundaries_)
     bndry->AppendNewDelayedAngularDOFsToVector(groupset_id_, psi_vector);
 

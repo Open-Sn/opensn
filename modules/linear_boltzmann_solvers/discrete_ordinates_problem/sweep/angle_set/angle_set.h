@@ -107,7 +107,7 @@ public:
                             bool surface_source_active)
   {
     const auto& boundary = boundaries_[boundary_id];
-    if (boundary->IsReflecting() || surface_source_active)
+    if (boundary->IsFluxCoupled() || surface_source_active)
       return boundary->PsiIncoming(cell_local_id, face_num, fi, angle_num, groupset_id_, g);
     return boundary->ZeroFlux(groupset_id_, g);
   }

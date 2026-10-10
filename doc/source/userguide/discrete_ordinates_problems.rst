@@ -150,6 +150,23 @@ Every block id used in the transport region should be assigned an XS object.
 This is the list of transport boundary-condition dictionaries. The names used
 here must match the boundary ids on the mesh.
 
+For an orthogonal Cartesian mesh, ``"periodic"`` pairs ``xmin`` with ``xmax``,
+``ymin`` with ``ymax``, and ``zmin`` with ``zmax``. Specify both faces of every
+periodic pair. A particle's outgoing angular flux on one face becomes incoming
+angular flux at the translated point on its partner face, with the same
+direction and energy group. In a one-dimensional slab, for example::
+
+   boundary_conditions = [
+       {"name": "zmin", "type": "periodic"},
+       {"name": "zmax", "type": "periodic"},
+   ]
+
+Periodic faces must have matching face nodes under translation. The coupling is
+included among the delayed angular-flux unknowns in the AAH and CBC CPU
+sweeps, including when the opposite face belongs to another MPI rank. GPU
+sweeps and nonorthogonal or curvilinear meshes do not support periodic
+boundaries.
+
 ``point_sources`` and ``volumetric_sources``
 --------------------------------------------
 
