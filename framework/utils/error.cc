@@ -5,9 +5,20 @@
 #include "mpicpp-lite/mpicpp-lite.h"
 #include <petscsys.h>
 #include <sstream>
+#include <type_traits>
 
 namespace opensn
 {
+
+namespace
+{
+
+template <typename Return, typename Arg0, typename Arg1, typename Arg2>
+Arg2 ThirdArgument(Return (*)(Arg0, Arg1, Arg2));
+
+using PetscErrorMessageString = std::remove_pointer_t<decltype(ThirdArgument(&PetscErrorMessage))>;
+
+} // namespace
 
 [[noreturn]] void
 ThrowMPIError(int ierr, const char* expr, const char* file, int line)
@@ -23,7 +34,7 @@ ThrowMPIError(int ierr, const char* expr, const char* file, int line)
 ThrowPETScError(int ierr, const char* expr, const char* file, int line)
 {
   const char* ierr_desc = nullptr;
-  char* ierr_desc_specific = nullptr;
+  PetscErrorMessageString ierr_desc_specific = nullptr;
   PetscErrorMessage(static_cast<PetscErrorCode>(ierr), &ierr_desc, &ierr_desc_specific);
 
   std::stringstream ss;

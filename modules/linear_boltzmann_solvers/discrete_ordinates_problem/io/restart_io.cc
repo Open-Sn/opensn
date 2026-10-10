@@ -36,7 +36,8 @@ ReadSizedDoubleVector(hid_t file_id,
 bool
 DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem,
                                             hid_t file_id,
-                                            bool allow_transient_initialization_from_steady)
+                                            bool allow_transient_initialization_from_steady,
+                                            bool repartitioned)
 {
   bool success = true;
 
@@ -53,6 +54,15 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
                           do_problem.GetName() +
                             ": restart time-dependent mode does not match the configured "
                             "problem mode.");
+
+  OpenSnInvalidArgumentIf(
+    repartitioned and file_time_dependent,
+    do_problem.GetName() +
+      ": repartitioning a transient restart is not supported because delayed and local angular "
+      "flux state depends on the original decomposition.");
+
+  if (repartitioned)
+    return success;
 
   int gs_id = 0;
   const bool full_time_dependent_restart =

@@ -32,7 +32,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
@@ -41,7 +41,12 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
     # Mesh
-    meshgen = FromFileMeshGenerator(filename="../../../../assets/mesh/disk.msh")
+    meshgen = FromFileMeshGenerator(
+        filename="../../../../assets/mesh/disk.msh",
+        partitioner=KBAGraphPartitioner(
+            nx=2, ny=2, nz=2, xcuts=[0.5], ycuts=[0.5], zcuts=[0.05]
+        ),
+    )
     grid = meshgen.Execute()
 
     # Materials
@@ -62,8 +67,8 @@ if __name__ == "__main__":
             "angular_quadrature": pquad,
             "angle_aggregation_type": "single",
             "inner_linear_method": "petsc_gmres",
-            "l_abs_tol": 1.0e-6,
-            "l_max_its": 30,
+            "l_abs_tol": 1.0e-10,
+            "l_max_its": 120,
             "gmres_restart_interval": 10,
         },
     ]
@@ -83,7 +88,7 @@ if __name__ == "__main__":
     )
 
     # Execute
-    ss_solver = SteadyStateSourceSolver(problem=phys)
+    ss_solver = SteadyStateSourceSolver(problem=phys, compute_balance=True)
     ss_solver.Initialize()
     ss_solver.Execute()
 
@@ -93,9 +98,11 @@ if __name__ == "__main__":
     lkg_outer = leakage['Outer']
     lkg_top = leakage['Top']
     lkg_bottom = leakage['Bottom']
+    balance = ss_solver.ComputeBalanceTable()
 
     if rank == 0:
         print(f"Top leakage={(lkg_top).item()}")
         print(f"Bottom leakage={(lkg_bottom).item()}")
         print(f"Side leakage={(lkg_outer).item()}")
         print(f"Total leakage={(lkg_outer + lkg_top + lkg_bottom).item()}")
+        print(f"Particle balance={balance['balance']}")

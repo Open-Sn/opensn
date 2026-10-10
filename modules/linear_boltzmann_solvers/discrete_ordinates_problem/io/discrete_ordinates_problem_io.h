@@ -37,7 +37,8 @@ public:
 
   static bool ReadRestartData(DiscreteOrdinatesProblem& do_problem,
                               hid_t file_id,
-                              bool allow_transient_initialization_from_steady);
+                              bool allow_transient_initialization_from_steady,
+                              bool repartitioned);
 
   static bool WriteRestartData(const DiscreteOrdinatesProblem& do_problem, hid_t file_id);
 

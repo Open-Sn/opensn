@@ -1008,6 +1008,7 @@ WrapLBS(py::module& slv)
     groupsets : List[Dict], default=[]
         A list of input parameter blocks, each block provides the iterative properties for a
         groupset. Each dictionary supports:
+
           - groups_from_to: List[int] (required)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
           - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
@@ -1016,6 +1017,7 @@ WrapLBS(py::module& slv)
               Angle aggregation method to use during sweeping.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+
               Iterative method used for inner linear solves.
           - l_abs_tol: float, default=1.0e-6
               Inner linear solver absolute residual tolerance.
@@ -1109,8 +1111,9 @@ WrapLBS(py::module& slv)
               This is required for continuing a time-dependent restart, but optional when a
               steady-state restart is used only as a transient initial condition.
           - read_restart_path: str, default=''
-              File stem for reading a full restart. The number of MPI ranks and partitioned
-              state layout must match the run that wrote the restart files.
+              File stem for reading a full restart. Scalar flux and precursor data can be
+              remapped when the MPI rank count or mesh partition changes. Full transient
+              continuation still requires the original partitioned angular state layout.
           - read_initial_condition_path: str, default=''
               File stem for reading restart data as an initial condition. A steady-state
               restart may be used by ``TransientSolver`` through this option.
@@ -1528,6 +1531,7 @@ WrapLBS(py::module& slv)
     groupsets : list of dict
         A list of input parameter blocks, each block provides the iterative properties for a
         groupset. Each dictionary supports:
+
           - groups_from_to: List[int] (required)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
           - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
@@ -1537,6 +1541,7 @@ WrapLBS(py::module& slv)
               support ``'polar'``.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+
               Iterative method used for inner linear solves.
           - l_abs_tol: float, default=1.0e-6
               Inner linear solver absolute residual tolerance.
@@ -1630,8 +1635,9 @@ WrapLBS(py::module& slv)
               This is required for continuing a time-dependent restart, but optional when a
               steady-state restart is used only as a transient initial condition.
           - read_restart_path: str, default=''
-              File stem for reading a full restart. The number of MPI ranks and partitioned
-              state layout must match the run that wrote the restart files.
+              File stem for reading a full restart. Scalar flux and precursor data can be
+              remapped when the MPI rank count or mesh partition changes. Full transient
+              continuation still requires the original partitioned angular state layout.
           - read_initial_condition_path: str, default=''
               File stem for reading restart data as an initial condition. A steady-state
               restart may be used by ``TransientSolver`` through this option.

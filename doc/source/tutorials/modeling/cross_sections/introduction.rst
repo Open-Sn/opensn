@@ -3,7 +3,7 @@ Introduction to Cross Sections
 
 OpenSn does not provide a cross-section library. Users must supply cross-section data or
 generate it with a tool such as NJOY, Dragon, or
-`OpenMC <https://docs.openmc.org/en/stable/>`_. In Python, multigroup cross-section data is
+`OpenMC <https://docs.openmc.org/en/stable/>`__. In Python, multigroup cross-section data is
 represented by :py:class:`~pyopensn.xs.MultiGroupXS`.
 
 The tutorials in this section demonstrate three creation and input paths:

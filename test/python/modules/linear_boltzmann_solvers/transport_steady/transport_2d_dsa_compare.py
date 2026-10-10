@@ -9,7 +9,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import KBAGraphPartitioner, OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
@@ -24,7 +24,8 @@ def make_grid():
     xmin = -0.5 * length
     dx = length / n
     nodes = [xmin + i * dx for i in range(n + 1)]
-    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()
+    partitioner = KBAGraphPartitioner(nx=2, ny=2, nz=1, xcuts=[0.0], ycuts=[0.0])
+    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes], partitioner=partitioner).Execute()
     grid.SetUniformBlockID(0)
     cavity = RPPLogicalVolume(xmin=-10.0, xmax=10.0, ymin=-10.0, ymax=10.0, infz=True)
     grid.SetBlockIDFromLogicalVolume(cavity, 1, True)
@@ -35,6 +36,14 @@ def solve(mode):
     num_groups = 168
     use_wgdsa = mode in ("wgdsa", "wgdsa_tgdsa")
     use_tgdsa = mode == "wgdsa_tgdsa"
+    # These ceilings leave headroom above the accelerated iteration counts while remaining
+    # below the corresponding unaccelerated counts. Consequently, the solution comparison
+    # also fails if either acceleration path stops reducing the iteration count.
+    iteration_limits = {
+        "none": (1000, 1000),
+        "wgdsa": (52, 100),
+        "wgdsa_tgdsa": (52, 65),
+    }[mode]
 
     xs_graphite = MultiGroupXS()
     xs_graphite.LoadFromOpenSn("../../../../assets/xs/xs_graphite_pure.xs")
@@ -50,7 +59,6 @@ def solve(mode):
         "angular_quadrature": quad,
         "inner_linear_method": "petsc_gmres",
         "l_abs_tol": 1.0e-8,
-        "l_max_its": 1000,
         "gmres_restart_interval": 30,
         "apply_wgdsa": use_wgdsa,
         "wgdsa_l_abs_tol": 1.0e-8,
@@ -62,11 +70,12 @@ def solve(mode):
         mesh=make_grid(),
         num_groups=num_groups,
         groupsets=[
-            dict(common, **{"groups_from_to": [0, 62]}),
+            dict(common, **{"groups_from_to": [0, 62], "l_max_its": iteration_limits[0]}),
             dict(
                 common,
                 **{
                     "groups_from_to": [63, num_groups - 1],
+                    "l_max_its": iteration_limits[1],
                     "apply_tgdsa": use_tgdsa,
                     "tgdsa_l_abs_tol": 1.0e-8,
                     "tgdsa_l_max_its": 200,
@@ -83,9 +92,9 @@ def solve(mode):
             VolumetricSource(block_ids=[1], group_strength=air_source),
         ],
         options={
-            "max_ags_iterations": 100,
-            "ags_tolerance": 1.0e-8,
-            "ags_convergence_check": "pointwise",
+            # The graphite data downscatter from the first groupset into the second, so one
+            # ordered groupset pass is the complete block solve.
+            "max_ags_iterations": 1,
             "verbose_inner_iterations": False,
         },
     )
