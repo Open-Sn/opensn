@@ -45,7 +45,7 @@ if __name__ == "__main__":
             {
                 "groups_from_to": (0, 0),
                 "angular_quadrature": quad,
-                "angle_aggregation_type": "azimuthal",
+                "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-12,
                 "l_max_its": 100,

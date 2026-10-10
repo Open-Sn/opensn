@@ -823,5 +823,72 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "uncollided_mode_rejections.py",
+    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorTimeDependentRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetTimeDependentRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetXSMapRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedLaterSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedNearSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedRejectedStateUnchanged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedRejectedMaxDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

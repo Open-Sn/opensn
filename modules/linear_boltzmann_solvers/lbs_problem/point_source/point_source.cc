@@ -12,6 +12,7 @@
 #include "framework/runtime.h"
 #include "framework/math/math_time_stepping.h"
 #include <numeric>
+#include <stdexcept>
 #include <limits>
 
 namespace opensn
@@ -74,11 +75,11 @@ PointSource::Initialize(const LBSProblem& lbs_problem)
 {
   if (not strength_function_)
   {
-    OpenSnLogicalErrorIf(strength_.size() != lbs_problem.GetNumGroups(),
-                         "Incompatible point source strength vector at location " +
-                           location_.PrintStr() + ". " + "There are " +
-                           std::to_string(lbs_problem.GetNumGroups()) + " energy groups, but " +
-                           std::to_string(strength_.size()) + " source strength values.");
+    if (strength_.size() != lbs_problem.GetNumGroups())
+      throw std::invalid_argument("Point source at " + location_.PrintStr() + " has " +
+                                  std::to_string(strength_.size()) +
+                                  " strength values, but the problem has " +
+                                  std::to_string(lbs_problem.GetNumGroups()) + " groups.");
   }
 
   // Get info from solver

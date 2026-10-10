@@ -26,11 +26,9 @@ namespace opensn
 InputParameters
 PowerIterationKEigenSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.ChangeExistingParamToOptional("name", "PowerIterationKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
-                                                        "An existing discrete ordinates problem");
   params.AddOptionalParameter<std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     "acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
@@ -46,8 +44,7 @@ PowerIterationKEigenSolver::Create(const ParameterBlock& params)
 }
 
 PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
+  : DiscreteOrdinatesSolver(params),
     acceleration_(
       params.GetSharedPtrParam<DiscreteOrdinatesKEigenAcceleration>("acceleration", false)),
     max_iters_(params.GetParamValue<unsigned int>("max_iters")),
@@ -63,38 +60,16 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
 }
 
 void
-PowerIterationKEigenSolver::Initialize()
+PowerIterationKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
-  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
-  CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
-  CALI_CXX_MARK_SCOPE("Initialize");
+  CheckKEigenRequirements(errors);
+}
 
-  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
-
-  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
-                          GetName() + ": Problem is in time-dependent mode. Call problem."
-                                      "SetSteadyStateMode() before initializing this solver.");
-  OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
-                          GetName() + ": uncollided flux is only supported by the steady-state "
-                                      "fixed-source solver.");
-
+ScopedSourceScopes
+PowerIterationKEigenSolver::PrepareProblem()
+{
   const auto& options = do_problem_->GetOptions();
-  OpenSnInvalidArgumentIf(options.csda_enabled,
-                          GetName() + ": CSDA is only supported by the steady-state fixed-source "
-                                      "solver.");
   active_set_source_function_ = do_problem_->GetActiveSetSourceFunction();
-
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-
-    OpenSnLogicalErrorIf(not wgs_context, ": Cast failed");
-
-    wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES); // lhs_scope
-    wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES); // rhs_scope
-  }
 
   const bool print_ags_iters =
     options.verbose_inner_iterations and do_problem_->GetNumGroupsets() > 1;
@@ -102,6 +77,25 @@ PowerIterationKEigenSolver::Initialize()
   OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
   ags_solver->SetVerbosity(print_ags_iters);
 
+  return WGSContext::OverrideSourceScopes(*do_problem_,
+                                          [](SourceFlags& lhs_scope, SourceFlags& rhs_scope)
+                                          {
+                                            lhs_scope.Unset(APPLY_WGS_FISSION_SOURCES);
+                                            rhs_scope.Unset(APPLY_AGS_FISSION_SOURCES);
+                                          });
+}
+
+void
+PowerIterationKEigenSolver::InitializeSolver()
+{
+  CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
+  CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
+  CALI_CXX_MARK_SCOPE("Initialize");
+
+  log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
+
+  const auto scopes = PrepareProblem();
+  const auto& options = do_problem_->GetOptions();
   bool restart_successful = false;
   if (not options.restart.read_path.empty())
     restart_successful = ReadRestartData();
@@ -116,18 +110,17 @@ PowerIterationKEigenSolver::Initialize()
     CALI_CXX_MARK_SCOPE("Acceleration");
     acceleration_->Initialize(*this);
   }
-  initialized_ = true;
 }
 
 void
-PowerIterationKEigenSolver::Execute()
+PowerIterationKEigenSolver::ExecuteSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
 
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
+  const auto scopes = PrepareProblem();
 
   if (acceleration_)
   {

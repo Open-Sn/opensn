@@ -933,5 +933,19 @@
         "abs_tol": 1e-06
       }
     ]
+  },
+  {
+    "file": "keigen_requires_fissionable_material.py",
+    "comment": "k-eigenvalue solvers reject a problem without fissionable material on every rank, and accept one whose fissionable cells are on one rank only (the requirement is reduced across ranks)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "KEIGEN_FISSION_REQUIREMENT_PASSED",
+        "wordnum": 1,
+        "gold": 4,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

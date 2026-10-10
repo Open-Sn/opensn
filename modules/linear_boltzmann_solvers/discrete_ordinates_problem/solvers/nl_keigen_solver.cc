@@ -21,10 +21,9 @@ namespace opensn
 InputParameters
 NonLinearKEigenSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.ChangeExistingParamToOptional("name", "NonLinearKEigenSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem", "An existing lbs problem");
 
   // Non-linear solver parameters
   params.AddOptionalParameter("nl_abs_tol", 1.0e-8, "Non-linear absolute tolerance");
@@ -56,8 +55,7 @@ NonLinearKEigenSolver::Create(const ParameterBlock& params)
 }
 
 NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem")),
+  : DiscreteOrdinatesSolver(params),
     nl_context_(std::make_shared<NLKEigenAGSContext>(do_problem_)),
     nl_solver_(nl_context_),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
@@ -79,35 +77,28 @@ NonLinearKEigenSolver::NonLinearKEigenSolver(const InputParameters& params)
 }
 
 void
-NonLinearKEigenSolver::Initialize()
+NonLinearKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
+{
+  CheckKEigenRequirements(errors);
+}
+
+void
+NonLinearKEigenSolver::InitializeSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
   CALI_CXX_MARK_SCOPE("Initialize");
 
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
-
-  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
-                          GetName() + ": Problem is in time-dependent mode. Call problem."
-                                      "SetSteadyStateMode() before initializing this solver.");
-  OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
-                          GetName() + ": uncollided flux is only supported by the steady-state "
-                                      "fixed-source solver.");
-  OpenSnInvalidArgumentIf(do_problem_->GetOptions().csda_enabled,
-                          GetName() + ": CSDA is only supported by the steady-state fixed-source "
-                                      "solver.");
-  initialized_ = true;
 }
 
 void
-NonLinearKEigenSolver::Execute()
+NonLinearKEigenSolver::ExecuteSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
-
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
@@ -117,10 +108,10 @@ NonLinearKEigenSolver::Execute()
   {
     CALI_CXX_MARK_SCOPE("InitialPowerIteration");
 
-    PowerIterationKEigenSolver(*do_problem_,
-                               nl_solver_.GetToleranceOptions().nl_abs_tol,
-                               num_initial_power_its_,
-                               initial_k_eff);
+    PowerIterationKEigen(*do_problem_,
+                         nl_solver_.GetToleranceOptions().nl_abs_tol,
+                         num_initial_power_its_,
+                         initial_k_eff);
   }
 
   const double production = ComputeFissionProduction(*do_problem_, do_problem_->GetPhiOldLocal());

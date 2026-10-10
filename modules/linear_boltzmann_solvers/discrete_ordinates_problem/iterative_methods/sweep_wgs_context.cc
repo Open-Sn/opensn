@@ -66,7 +66,7 @@ SweepWGSContext::RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term,
 {
   CALI_CXX_MARK_SCOPE("AngularFluxReconstruction");
 
-  auto scope = lhs_src_scope | rhs_src_scope;
+  auto scope = GetLHSSourceScope() | GetRHSSourceScope();
   if (zero_incoming_delayed_psi)
     scope |= ZERO_INCOMING_DELAYED_PSI;
   {

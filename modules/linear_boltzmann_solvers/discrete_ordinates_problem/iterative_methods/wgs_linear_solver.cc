@@ -178,7 +178,7 @@ WGSLinearSolver::SetRHS()
 
   if (not single_richardson)
   {
-    const auto scope = gs_context_ptr->rhs_src_scope | ZERO_INCOMING_DELAYED_PSI;
+    const auto scope = gs_context_ptr->GetRHSSourceScope() | ZERO_INCOMING_DELAYED_PSI;
     {
       CALI_CXX_MARK_SCOPE("Source");
       gs_context_ptr->set_source_function(
@@ -212,7 +212,7 @@ WGSLinearSolver::SetRHS()
   // RHS, and just suppress the kspsolve part.
   else
   {
-    const auto scope = gs_context_ptr->rhs_src_scope | gs_context_ptr->lhs_src_scope;
+    const auto scope = gs_context_ptr->GetRHSSourceScope() | gs_context_ptr->GetLHSSourceScope();
     {
       CALI_CXX_MARK_SCOPE("Source");
       gs_context_ptr->set_source_function(

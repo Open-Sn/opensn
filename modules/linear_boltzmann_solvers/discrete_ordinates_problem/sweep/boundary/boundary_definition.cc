@@ -4,6 +4,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_definition.h"
 #include <map>
 #include <sstream>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -57,7 +58,8 @@ CheckForbiddenParams(const InputParameters& params,
                      const std::string& param_name)
 {
   if (params.IsParameterValid(param_name))
-    throw std::runtime_error(UnsupportedParameterMessage(boundary_name, boundary_type, param_name));
+    throw std::invalid_argument(
+      UnsupportedParameterMessage(boundary_name, boundary_type, param_name));
 }
 
 void
@@ -67,7 +69,7 @@ CheckRequiredParams(const InputParameters& params,
                     const std::string& param_name)
 {
   if (not params.IsParameterValid(param_name))
-    throw std::runtime_error(MissingParameterMessage(boundary_name, boundary_type, param_name));
+    throw std::invalid_argument(MissingParameterMessage(boundary_name, boundary_type, param_name));
 }
 
 void
@@ -79,7 +81,7 @@ CheckRequiredParams(const InputParameters& params,
 {
   bool is_valid = (params.IsParameterValid(param_name1) xor params.IsParameterValid(param_name2));
   if (not is_valid)
-    throw std::runtime_error(
+    throw std::invalid_argument(
       MissingEitherParameterMessage(boundary_name, boundary_type, param_name1, param_name2));
 }
 
@@ -92,8 +94,8 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
   auto it = type_map.find(boundary_type);
   if (it == type_map.end())
   {
-    throw std::runtime_error("Boundary \"" + boundary_name + "\" has unknown type \"" +
-                             boundary_type + "\".");
+    throw std::invalid_argument("Boundary \"" + boundary_name + "\" has unknown type \"" +
+                                boundary_type + "\".");
   }
   type = it->second;
 
@@ -113,7 +115,7 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
                 << R"(' with type="isotropic" expected "group_strength" to contain )" << num_groups
                 << " entries, one for each solver group, but received "
                 << param_group_strength.size() << ".";
-        throw std::runtime_error(message.str());
+        throw std::invalid_argument(message.str());
       }
       group_strength = std::move(param_group_strength);
       if (params.IsParameterValid("start_time"))
@@ -127,7 +129,7 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
                 << "' with type=\"isotropic\" expected \"start_time\" to be less than or "
                    "equal to \"end_time\", but received start_time="
                 << start_time << " and end_time=" << end_time << ".";
-        throw std::runtime_error(message.str());
+        throw std::invalid_argument(message.str());
       }
       break;
     }
@@ -147,7 +149,7 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
           message << "Boundary '" << boundary_name
                   << "' with type=\"arbitrary\" expected parameter \"function\" to hold a "
                      "non-null AngularFluxFunction.";
-          throw std::runtime_error(message.str());
+          throw std::invalid_argument(message.str());
         }
         time_angular_flux_function = std::make_shared<AngularFluxTimeFunction>(
           [angular_flux_function =
@@ -164,7 +166,7 @@ BoundaryDefinition::BoundaryDefinition(const InputParameters& params, unsigned i
           message << "Boundary '" << boundary_name
                   << "' with type=\"arbitrary\" expected parameter \"time_function\" to hold a "
                      "non-null AngularFluxFunction.";
-          throw std::runtime_error(message.str());
+          throw std::invalid_argument(message.str());
         }
         time_angular_flux_function = std::move(param_angular_flux_function);
       }

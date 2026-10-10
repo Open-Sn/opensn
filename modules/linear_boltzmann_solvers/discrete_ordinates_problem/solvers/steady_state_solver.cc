@@ -19,11 +19,9 @@ namespace opensn
 InputParameters
 SteadyStateSourceSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
 
   params.ChangeExistingParamToOptional("name", "SteadyStateSourceSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
-                                                        "An existing discrete ordinates problem");
 
   return params;
 }
@@ -35,36 +33,34 @@ SteadyStateSourceSolver::Create(const ParameterBlock& params)
 }
 
 SteadyStateSourceSolver::SteadyStateSourceSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem"))
+  : DiscreteOrdinatesSolver(params)
 {
 }
 
 void
-SteadyStateSourceSolver::Initialize()
+SteadyStateSourceSolver::CheckRequirements(std::vector<std::string>& errors) const
+{
+  RequireSteadyState(errors);
+}
+
+void
+SteadyStateSourceSolver::InitializeSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_steady_state("SteadyState", CaliperSteadyStateScopeDepth());
   CALI_CXX_MARK_SCOPE("Initialize");
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
-  OpenSnInvalidArgumentIf(do_problem_->IsTimeDependent(),
-                          GetName() + ": Problem is in time-dependent mode. Call problem."
-                                      "SetSteadyStateMode() before initializing this solver.");
-  initialized_ = true;
-
   if (not do_problem_->GetOptions().restart.read_path.empty())
     do_problem_->ReadRestartData();
 }
 
 void
-SteadyStateSourceSolver::Execute()
+SteadyStateSourceSolver::ExecuteSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_steady_state("SteadyState", CaliperSteadyStateScopeDepth());
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
-
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   const auto& options = do_problem_->GetOptions();
 
@@ -78,6 +74,10 @@ SteadyStateSourceSolver::Execute()
     // separate and combined only for output and postprocessing.
     do_problem_->RemoveUncollidedFlux();
   }
+
+  // The within-group solvers add the right-hand-side sources to the source moments they are given,
+  // which other solvers use to pass their own sources. A fixed-source solve has none.
+  do_problem_->ZeroQMoments();
 
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();

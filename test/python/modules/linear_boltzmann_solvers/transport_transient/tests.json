@@ -1642,5 +1642,117 @@
         "abs_tol": 1e-09
       }
     ]
+  },
+  {
+    "file": "transient_xs_velocity_rejections.py",
+    "comment": "Time-dependent mode rejects cross sections without velocities (construction, mode switch, XS swap mid-transient); the rejected swap leaves the exact infinite-medium backward Euler update unchanged",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "XS_VELOCITY_SWAP_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "XS_VELOCITY_CTOR_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "XS_VELOCITY_MODE_SWITCH_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "XS_VELOCITY_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "solver_problem_changes_after_initialize.py",
+    "comment": "Solvers revalidate and reconfigure when the problem changes after Initialize: PI after an XS swap (k_inf exact), PI rejected in time-dependent mode, transient Advance rejected in steady-state mode (exact backward Euler step after switching back)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PI_SWAP_K_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "PI_TIME_DEPENDENT_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "PI_MODE_K_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TRANSIENT_STEADY_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "TRANSIENT_STEP_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "solvers_sharing_problem.py",
+    "comment": "Solvers sharing a problem do not affect each other: fixed source / PI / NLKE sequence (exact infinite-medium phi and k_inf), eigenvalue solvers reject external sources, two transient solvers with different dt (exact backward Euler steps)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "SHARED_EIGEN_SOURCE_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "SHARED_FIXED_SOURCE_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "SHARED_K_MAX_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "SHARED_TRANSIENT_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
   }
 ]

@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 
@@ -13,13 +13,10 @@ namespace opensn
 class DiscreteOrdinatesProblem;
 class DiscreteOrdinatesKEigenAcceleration;
 
-class PowerIterationKEigenSolver : public Solver
+class PowerIterationKEigenSolver : public DiscreteOrdinatesSolver
 {
 public:
   explicit PowerIterationKEigenSolver(const InputParameters& params);
-
-  void Initialize() override;
-  void Execute() override;
   /// Return the current k-eigenvalue.
   double GetEigenvalue() const { return k_eff_; }
   /// Return the k-eigenvalue convergence tolerance.
@@ -40,7 +37,10 @@ public:
                            bool suppress_wg_scat = false);
 
 protected:
-  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
+  void CheckRequirements(std::vector<std::string>& errors) const override;
+  void InitializeSolver() override;
+  void ExecuteSolver() override;
+
   const std::shared_ptr<DiscreteOrdinatesKEigenAcceleration> acceleration_;
 
   unsigned int max_iters_;
@@ -57,9 +57,11 @@ protected:
   const std::vector<LBSGroupset>& groupsets_;
   SetSourceFunction active_set_source_function_;
 
-  bool initialized_ = false;
-
 private:
+  /// Refreshes the problem objects the solver uses and removes fission from the WGS operators
+  /// until the returned guard is destroyed.
+  [[nodiscard]] ScopedSourceScopes PrepareProblem();
+
   bool WriteRestartData();
 
   bool ReadRestartData();

@@ -11,6 +11,7 @@
 #include "framework/parameters/parameter_block.h"
 #include <memory>
 #include <optional>
+#include <set>
 #include <string>
 #include <tuple>
 #include <vector>
@@ -74,10 +75,6 @@ public:
    * @{
    */
   const std::string& GetSweepType() const { return sweep_type_; }
-
-  void ValidateOptions(std::optional<SweepChunkMode> mode = std::nullopt) const;
-  /// Rejects adjoint mode for CSDA problems and problems with an uncollided flux file.
-  void ValidateAdjointModeAllowed() const override;
 
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
@@ -177,8 +174,6 @@ public:
    */
   void SetSaveAngularFlux(bool save);
 
-  void SetBlockID2XSMap(const BlockID2XSMap& xs_map) override;
-
   void SetBoundaryOptions(const std::vector<InputParameters>& boundary_params, bool clear_existing);
   void ClearBoundaries() override;
   BoundaryCarrier* GetBoundaryCarrier() { return boundary_carrier_.get(); }
@@ -195,6 +190,10 @@ public:
   void TransferDeviceBoundaryData(int groupset_id, bool host_to_device, bool force = false);
 
   bool HasUncollidedFlux() const { return not uncollided_flux_file_.empty(); }
+
+  /// Appends an error, ending with `reason`, for each external source: volumetric and point sources
+  /// and incoming-flux boundaries.
+  void CheckNoExternalSources(const std::string& reason, std::vector<std::string>& errors) const;
 
   const std::vector<double>& GetFirstCollisionSourceMoments() const
   {
@@ -220,25 +219,36 @@ protected:
   /// Factory-only constructor.
   explicit DiscreteOrdinatesProblem(const InputParameters& params);
 
-  /// Internal factory step: build sweep/runtime data once base runtime data is available.
-  void BuildRuntime();
+  /// Creates the piecewise-linear discontinuous discretization.
+  void InitializeSpatialDiscretization() override;
+
+  /// Builds the sweep, acceleration, and solver data once the base runtime data is available.
+  void BuildRuntimeData() override;
+
+  /// Also rebuilds the angular-flux storage, source function, boundaries, acceleration, and
+  /// solver schemes. Construction-fixed data (discretization, sweep orderings, FLUDS) is kept.
+  void RebuildRuntimeObjects() override;
+
+  /// Sets the source function of the current (steady-state or time-dependent) mode.
+  void InitializeSourceFunction();
 
   void InitializeBoundaries() override;
 
   /// Returns false if this geometry does not support time-dependent mode.
   virtual bool SupportsTimeDependentMode() const { return true; }
 
-  /// Hook for geometry-specific boundary-configuration checks, called from
-  /// `InitializeBoundaries()`.
-  virtual void ValidateBoundaryConfiguration() const {}
+  /// Returns true for problem types that discretize the curvilinear angular-derivative terms and
+  /// therefore accept cylindrical and spherical meshes.
+  virtual bool IsCurvilinear() const { return false; }
 
-  /// Validates that time-dependent mode may be enabled, given the current GPU, adjoint,
-  /// geometry, and angular-flux-storage configuration.
-  void ValidateTimeDependentModeAllowed() const;
+  /// Discrete-ordinates rules. See LBSProblem::CheckConfigurationErrors.
+  void CheckConfigurationErrors(std::vector<std::string>& errors) const override;
 
-  /// Rejects sigma_t <= 0 in groupsets whose XY quadrature has a direction with no in-plane
-  /// component.
-  void ValidateNonStreamingDirections(const BlockID2XSMap& xs_map) const;
+  /// CSDA rules; does nothing for problems without CSDA.
+  void CheckCSDA(std::vector<std::string>& errors) const;
+
+  /// Rejects sigma_t <= 0 where an XY quadrature has a direction with no in-plane component.
+  void CheckNonStreamingDirections(std::vector<std::string>& errors) const;
   /** @} */
 
   void PrintSimHeader() override;
@@ -251,7 +261,6 @@ protected:
   void InitializeSolverSchemes();
   /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
   void ReinitializeSolverSchemes();
-  void ConfigureTransientSourceScopes();
 
   void SetSweepChunkMode(SweepChunkMode mode);
   void ResetSweepChunkMode() { sweep_chunk_mode_.reset(); }
@@ -308,7 +317,9 @@ protected:
                               bool allow_transient_initialization_from_steady) override;
   bool WriteProblemRestartData(hid_t file_id) const override;
   void ResetDerivedSolutionVectors() override;
-  void UpdateBoundaryDefinition(const InputParameters& params);
+  /// Parses one boundary-condition block into `definitions`.
+  void ParseBoundaryDefinition(const InputParameters& params,
+                               std::map<uint64_t, BoundaryDefinition>& definitions) const;
   void RebuildBoundaryRuntimeData();
   std::optional<std::vector<double>>
   ComputeDerivedFieldFunctionData(const std::string& xs_name) const override;
@@ -335,10 +346,11 @@ protected:
   std::map<uint64_t, std::shared_ptr<SweepBoundary>> sweep_boundaries_;
   std::map<uint64_t, BoundaryDefinition> boundary_definitions_;
   std::shared_ptr<BoundaryCarrier> boundary_carrier_ = nullptr;
-  std::optional<ParameterBlock> boundary_conditions_block_;
   bool boundary_runtime_data_initialized_ = false;
   bool has_reflecting_boundaries_ = false;
   bool has_time_dependent_boundaries_ = false;
+  /// Boundary IDs of the mesh on all ranks; fixed by the mesh, so computed once.
+  std::set<std::uint64_t> global_boundary_ids_;
   /** @} */
 
   /**
@@ -356,6 +368,8 @@ protected:
   std::vector<double> phi_e_new_local_;
   std::optional<SweepChunkMode> sweep_chunk_mode_;
   std::string uncollided_flux_file_;
+  /// Cross sections the uncollided flux was computed with.
+  BlockID2XSMap uncollided_xs_map_;
   std::vector<double> uncollided_flux_moments_local_;
   std::vector<double> first_collision_source_moments_local_;
   double uncollided_source_rate_ = 0.0;
@@ -379,11 +393,9 @@ private:
   std::vector<double>
   ComputeAngularFieldFunctionData(size_t groupset_id, unsigned int group, size_t angle) const;
 
-  /**
-   * Determines the outward face normal for a reflecting boundary, verifying that it is
-   * consistent (within tolerance) across all local faces and all MPI ranks.
-   */
-  Vector3 ComputeReflectingBoundaryNormal(uint64_t bid) const;
+  /// Returns the outward normal of boundary `bid`, or std::nullopt if its faces on all ranks do not
+  /// share one normal. Collective.
+  std::optional<Vector3> ComputeReflectingBoundaryNormal(uint64_t bid) const;
 
   void UpdateAAHD_FLUDSCommonDataWithBoundary();
   std::shared_ptr<FLUDS> CreateAAHD_FLUDS(unsigned int num_groups,
@@ -423,9 +435,6 @@ private:
                                       size_t groupset_id,
                                       unsigned int group,
                                       size_t angle);
-  /// Validate common energy bounds and charged blocks before installing an XS map.
-  /// Materials may omit bounds; at least one complete structure must be supplied.
-  void ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const;
   /** @} */
 
 public:

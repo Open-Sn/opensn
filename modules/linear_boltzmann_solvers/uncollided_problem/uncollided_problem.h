@@ -33,14 +33,22 @@ struct UncollidedMatrices
 class UncollidedProblem : public LBSProblem
 {
 public:
-  explicit UncollidedProblem(const InputParameters& params);
-
   ~UncollidedProblem() override;
 
   void ClearBoundaries() override {}
 
+  /// Generation steps run by UncollidedSolver: locate the point sources, add their images in the
+  /// reflecting planes, and compute and write the uncollided flux moments.
+  void BuildSourcePoints();
+  void AddReflectedSourcePoints();
+  void Execute(const std::string& file_name, unsigned int progress_interval);
+
 protected:
-  friend class UncollidedSolver;
+  /// Factory-only constructor.
+  explicit UncollidedProblem(const InputParameters& params);
+
+  /// Uncollided-generation rules.
+  void CheckConfigurationErrors(std::vector<std::string>& errors) const override;
 
   struct ReflectionPlane
   {
@@ -88,13 +96,12 @@ protected:
 
   void BuildSweepOrdering(const SourcePoint& source_point);
 
-  void InitializeNearSourceRegions(const InputParameters& params);
+  /// Returns the planes of the reflecting boundaries and appends an error for each invalid
+  /// boundary condition.
+  std::vector<ReflectionPlane> ComputeReflectionPlanes(std::vector<std::string>& errors) const;
 
-  void InitializeReflectingBoundaries(const InputParameters& params);
-
-  void BuildSourcePoints();
-
-  void AddReflectedSourcePoints();
+  /// Stores the reflection planes once the configuration has been validated.
+  void BuildRuntimeData() override;
 
   void RaytraceNearSourceRegion(const SourcePoint& source_point);
 
@@ -123,8 +130,6 @@ protected:
 
   UncollidedMatrices ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc);
 
-  void Execute(const std::string& file_name, unsigned int progress_interval);
-
   void UpdateBalance(const SourcePoint& source_point);
 
   void AccumulateMoments(const Vector3& pt_loc);
@@ -142,6 +147,8 @@ protected:
   std::vector<std::shared_ptr<LogicalVolume>> near_source_logvols_;
   std::vector<SourcePoint> source_points_;
   std::vector<SourcePoint> reflected_source_points_;
+  /// Boundary conditions as (name, type).
+  std::vector<std::pair<std::string, std::string>> boundary_conditions_;
   std::vector<ReflectionPlane> reflection_planes_;
   std::set<std::uint64_t> reflecting_boundary_ids_;
   /// Cell face orientations for the cells in the local cell graph.

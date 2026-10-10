@@ -8,14 +8,15 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/arbitrary_boundary.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_aggregation/angle_aggregation.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/utils/caliper_scopes.h"
+#include "framework/utils/error.h"
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <limits>
 #include <list>
 #include <memory>
 #include <set>
@@ -113,17 +114,15 @@ void
 DiscreteOrdinatesProblem::SetBoundaryOptions(const std::vector<InputParameters>& boundary_params,
                                              bool clear_existing)
 {
-  if (clear_existing)
-    boundary_definitions_.clear();
-
+  auto new_definitions =
+    clear_existing ? std::map<uint64_t, BoundaryDefinition>{} : boundary_definitions_;
   for (const auto& params : boundary_params)
-    UpdateBoundaryDefinition(params);
+    ParseBoundaryDefinition(params, new_definitions);
 
+  ValidateChange(boundary_definitions_, new_definitions);
+  boundary_definitions_ = std::move(new_definitions);
   if (clear_existing or not boundary_params.empty())
-  {
-    InitializeBoundaries();
-    RebuildBoundaryRuntimeData();
-  }
+    RebuildRuntimeObjects();
 }
 
 namespace
@@ -161,27 +160,29 @@ DiscreteOrdinatesProblem::FindBoundaryID(const std::string& name) const
 }
 
 void
-DiscreteOrdinatesProblem::UpdateBoundaryDefinition(const InputParameters& params)
+DiscreteOrdinatesProblem::ParseBoundaryDefinition(
+  const InputParameters& params, std::map<uint64_t, BoundaryDefinition>& definitions) const
 {
   const auto boundary_name = params.GetParamValue<std::string>("name");
   const auto bid = FindBoundaryID(boundary_name);
   if (not bid.has_value())
   {
     if (UsesRZBoundaryNames(*grid_))
-      throw std::runtime_error(GetName() + ": Boundary name '" + boundary_name +
-                               "' is invalid for cylindrical orthogonal meshes. "
-                               "Use rmin, rmax, zmin, zmax.");
-    throw std::runtime_error("Boundary name \"" + boundary_name + "\" not found in mesh.");
+      throw std::invalid_argument(GetName() + ": Boundary name '" + boundary_name +
+                                  "' is invalid for cylindrical orthogonal meshes. "
+                                  "Use rmin, rmax, zmin, zmax.");
+    throw std::invalid_argument(GetName() + ": Boundary name \"" + boundary_name +
+                                "\" not found in mesh.");
   }
-  boundary_definitions_[*bid] = BoundaryDefinition(params, GetNumGroups());
+  definitions[*bid] = BoundaryDefinition(params, GetNumGroups());
 }
 
 void
 DiscreteOrdinatesProblem::ClearBoundaries()
 {
+  ValidateChange(boundary_definitions_, {});
   boundary_definitions_.clear();
-  InitializeBoundaries();
-  RebuildBoundaryRuntimeData();
+  RebuildRuntimeObjects();
 }
 
 void
@@ -189,9 +190,6 @@ DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData()
 {
   if (boundary_runtime_data_initialized_)
     return;
-
-  const bool solver_schemes_initialized =
-    ags_solver_ or (not wgs_solvers_.empty()) or (not wgs_contexts_.empty());
 
   for (auto& [bid, boundary] : sweep_boundaries_)
     boundary->InitializeReflectingMap(groupsets_);
@@ -207,72 +205,54 @@ DiscreteOrdinatesProblem::RebuildBoundaryRuntimeData()
   for (auto& groupset : groupsets_)
     groupset.angle_agg->SetupAngleSetDependencies();
 
-  if (solver_schemes_initialized)
-  {
-    for (auto& groupset : groupsets_)
-    {
-      WGDSA::CleanUp(groupset);
-      TGDSA::CleanUp(groupset);
-      WGDSA::Init(*this, groupset);
-      TGDSA::Init(*this, groupset);
-    }
-    ReinitializeSolverSchemes();
-  }
-
   boundary_runtime_data_initialized_ = true;
 }
 
-Vector3
+std::optional<Vector3>
 DiscreteOrdinatesProblem::ComputeReflectingBoundaryNormal(uint64_t bid) const
 {
-  const double EPSILON = 1.0e-12;
-  std::unique_ptr<Vector3> n_ptr = nullptr;
+  // Faces are planar if their unit normals agree within this tolerance on |n_a . n_b - 1|.
+  constexpr double tolerance = 1.0e-12;
+  constexpr double inf = std::numeric_limits<double>::infinity();
+
+  // One all_reduce(min) gathers everything needed:
+  //   [0..2]  min of n_x, n_y, n_z over the faces
+  //   [3..5]  min of -n_x, -n_y, -n_z, i.e. minus the max of each component
+  //   [6]     1 if the rank's own faces share one normal, else 0
+  // A rank without faces of this boundary contributes +inf and 1, which do not affect the result.
+  std::array<double, 7> local = {inf, inf, inf, inf, inf, inf, 1.0};
+  std::optional<Vector3> first_normal;
   for (const auto& cell : grid_->GetLocalCells())
-  {
     for (const auto& face : cell->faces)
-    {
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
-        if (not n_ptr)
-          n_ptr = std::make_unique<Vector3>(face.normal);
-        if (std::fabs(face.normal.Dot(*n_ptr) - 1.0) > EPSILON)
-          throw std::logic_error(GetName() +
-                                 ": Not all face normals are, within tolerance, locally the same "
-                                 "for the reflecting boundary condition requested");
+        if (not first_normal)
+          first_normal = face.normal;
+        else if (std::fabs(face.normal.Dot(*first_normal) - 1.0) > tolerance)
+          local[6] = 0.0;
+        for (size_t d = 0; d < 3; ++d)
+        {
+          local[d] = std::min(local[d], face.normal[d]);
+          local[3 + d] = std::min(local[3 + d], -face.normal[d]);
+        }
       }
-    }
-  }
 
-  const int local_has_bid = n_ptr != nullptr ? 1 : 0;
-  const Vector3 local_normal = local_has_bid ? *n_ptr : Vector3(0.0, 0.0, 0.0);
+  std::array<double, 7> global{};
+  mpi_comm.all_reduce(local.data(), 7, global.data(), mpi::op::min<double>());
+  if (global[0] == inf)
+    return Vector3(0.0, 0.0, 0.0);
 
-  std::vector<int> locJ_has_bid(opensn::mpi_comm.size(), 1);
-  std::vector<double> locJ_n_val(opensn::mpi_comm.size() * 3L, 0.0);
-
-  mpi_comm.all_gather(local_has_bid, locJ_has_bid);
-  std::vector<double> lnv = {local_normal.x, local_normal.y, local_normal.z};
-  mpi_comm.all_gather(lnv.data(), 3, locJ_n_val.data(), 3);
-
-  Vector3 global_normal;
-  for (int j = 0; j < opensn::mpi_comm.size(); ++j)
-  {
-    if (locJ_has_bid[j])
-    {
-      int offset = 3 * j;
-      const double* n = &locJ_n_val[offset];
-      const Vector3 locJ_normal(n[0], n[1], n[2]);
-
-      if (local_has_bid)
-        if (std::fabs(local_normal.Dot(locJ_normal) - 1.0) > EPSILON)
-          throw std::logic_error(GetName() +
-                                 ": Not all face normals are, within tolerance, globally the same "
-                                 "for the reflecting boundary condition requested");
-
-      global_normal = locJ_normal;
-    }
-  }
-
-  return global_normal;
+  // Normals n_a, n_b with |n_a . n_b - 1| <= tolerance differ by at most sqrt(2 tolerance) in each
+  // component.
+  const Vector3 n_min(global[0], global[1], global[2]);
+  const Vector3 n_max(-global[3], -global[4], -global[5]);
+  const double max_spread = std::sqrt(2.0 * tolerance);
+  for (size_t d = 0; d < 3; ++d)
+    if (n_max[d] - n_min[d] > max_spread)
+      return std::nullopt;
+  if (global[6] == 0.0)
+    return std::nullopt;
+  return ((n_min + n_max) / 2.0).Normalized();
 }
 
 void
@@ -285,10 +265,10 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
   has_reflecting_boundaries_ = false;
   has_time_dependent_boundaries_ = false;
 
-  ValidateBoundaryConfiguration();
-
   // Determine boundary-ids involved in the problem
-  const auto unique_bids_set = GetGlobalUniqueBoundaryIDs(grid_, mpi_comm);
+  if (global_boundary_ids_.empty())
+    global_boundary_ids_ = GetGlobalUniqueBoundaryIDs(grid_, mpi_comm);
+  const auto& unique_bids_set = global_boundary_ids_;
   for (const auto bid : unique_bids_set)
   {
     if (boundary_definitions_.find(bid) == boundary_definitions_.end())
@@ -328,9 +308,13 @@ DiscreteOrdinatesProblem::InitializeBoundaries()
       }
       case LBSBoundaryType::REFLECTING:
       {
-        const auto global_normal = ComputeReflectingBoundaryNormal(bid);
+        // CheckConfigurationErrors has checked that the boundary is planar. Collective.
+        const auto normal = ComputeReflectingBoundaryNormal(bid);
+        OpenSnLogicalErrorIf(not normal,
+                             GetName() + ": reflecting boundary " + std::to_string(bid) +
+                               " is not planar.");
         sweep_boundaries_[bid] = std::make_shared<ReflectingBoundary>(
-          boundary_bank_, bid, grid_, groupsets_, global_normal, coord_sys);
+          boundary_bank_, bid, grid_, groupsets_, *normal, coord_sys);
         has_reflecting_boundaries_ = true;
         break;
       }

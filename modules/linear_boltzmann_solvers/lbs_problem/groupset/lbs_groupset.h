@@ -21,14 +21,10 @@ class LBSProblem;
 class QuadratureCarrier;
 
 /**
- * Shared groupset state.
+ * Configuration and runtime state for one contiguous energy-group range.
  *
- * This class is not specific to LBSProblem. It is shared infrastructure used across
- * problem implementations, including discrete ordinates, to carry both generic
- * group-iteration settings and groupset-scoped transport data.
- *
- * This class remains the sole groupset representation used by the transport
- * solvers, so method-specific groupset data continues to live here.
+ * LBSProblem owns the ordered groupsets. Together they cover every problem group exactly once,
+ * from zero through `num_groups - 1`. Each groupset holds iteration settings and transport data.
  */
 class LBSGroupset
 {
@@ -53,9 +49,9 @@ public:
   unsigned int GetNumGroups() const;
 
   int id;
-  /// First energy-group index in the groupset.
+  /// First energy-group index in this inclusive range.
   unsigned int first_group;
-  /// Last energy-group index in the groupset.
+  /// Last energy-group index in this inclusive range.
   unsigned int last_group;
   /// Number of groups in the groupset.
   unsigned int size;

@@ -3,6 +3,7 @@
 
 #include "modules/solver.h"
 #include "framework/logging/log.h"
+#include "framework/utils/error.h"
 
 namespace opensn
 {
@@ -41,17 +42,41 @@ Solver::GetName() const
 void
 Solver::Initialize()
 {
-  log.Log() << "\"Initialize()\" method not defined for " << GetName();
+  initialized_ = false;
+  ValidateState();
+  InitializeSolver();
+  initialized_ = true;
+  // Initialization may change what the solver drives (e.g. a transient initial condition switches
+  // the problem to time-dependent mode); check the state that applies once initialized.
+  try
+  {
+    ValidateState();
+  }
+  catch (...)
+  {
+    initialized_ = false;
+    throw;
+  }
 }
 
 void
 Solver::Execute()
 {
-  log.Log() << "\"Execute()\" method not defined for " << GetName();
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
+  ValidateState();
+  ExecuteSolver();
 }
 
 void
 Solver::Advance()
+{
+  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Advance.");
+  ValidateState();
+  AdvanceSolver();
+}
+
+void
+Solver::AdvanceSolver()
 {
   log.Log() << "\"Advance()\" method not defined for " << GetName();
 }

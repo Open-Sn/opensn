@@ -1719,5 +1719,33 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "problem_configuration_rejections.py",
+    "comment": "Problem configuration rules reject incomplete or non-consecutive groupset partitions, missing cross sections on one rank (reduced across ranks), short cross sections, restart options, missing quadratures, combined violations, spherical/RZ meshes on the Cartesian problem, azimuthal aggregation on unstructured RZ meshes, non-planar reflecting boundaries (owned by one rank), and an unusable restart directory (rank 0 only). Rejected RZ and non-planar boundary changes leave the problem unchanged",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_REJECTIONS_PASSED",
+        "wordnum": 1,
+        "gold": 15,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_RZ_REJECTED_MAX_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_NONPLANAR_REJECTED_MAX_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]
