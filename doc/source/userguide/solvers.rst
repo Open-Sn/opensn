@@ -196,8 +196,16 @@ buffers in the restart. The steady-state initial-condition path can reconstruct
 angular state from flux moments if ``write_angular_flux_to_restart`` or
 ``write_delayed_psi_to_restart`` were disabled in the steady run.
 
-Restart files are rank-layout specific. Read restart files with the same MPI
-rank count and compatible problem definition used when writing them.
+Current steady-state restart files store cell IDs, node coordinates, and
+cellwise flux moments and precursor values. They can be read with a different
+MPI rank count or mesh partition, provided the mesh, discretization, groups,
+moments, and adjoint mode are compatible. This also applies when a steady-state
+restart supplies a transient initial condition.
+
+Full transient restarts also contain local and delayed angular-flux state
+whose layout depends on the sweep decomposition. Read such a restart with
+the same MPI rank count and partition used to write it. Restart files in
+the legacy rank-local format have the same restriction.
 
 The ``use_precursors`` setting is treated as user intent and persists across later
 :py:meth:`SetXSMap` calls, even if the current cross-section map temporarily has

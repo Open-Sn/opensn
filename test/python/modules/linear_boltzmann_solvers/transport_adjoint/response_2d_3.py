@@ -27,7 +27,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.Get_rank()
     barrier = MPI.COMM_WORLD.Barrier
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import KBAGraphPartitioner, OrthogonalMeshGenerator
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import PointSource, VolumetricSource
@@ -50,7 +50,12 @@ if __name__ == "__main__":
     L = 5.0
     ds = L / N
     nodes = [i * ds for i in range(N + 1)]
-    meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
+    meshgen = OrthogonalMeshGenerator(
+        node_sets=[nodes, nodes],
+        partitioner=KBAGraphPartitioner(
+            nx=2, ny=2, nz=1, xcuts=[0.5 * L], ycuts=[0.5 * L]
+        ),
+    )
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)
 
@@ -94,7 +99,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, num_groups - 1),
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
                 "gmres_restart_interval": 100,
             }
@@ -159,6 +164,7 @@ if __name__ == "__main__":
             print(f"QoI Value[{g}]= {fwd_qois[g]:.5e}")
         print(f"sum(QoI Values)= {fwd_qoi_sum:.5e}")
         print(f"Inner Product= {response_val:.5e}")
+        print(f"ADJOINT_IDENTITY_DIFF={abs(response_val - fwd_qois[5]):.12e}")
 
     # Cleanup
     barrier()

@@ -768,7 +768,8 @@ LBSProblem::BuildRestartPath(const std::string& path_stem)
 
 bool
 LBSProblem::ReadProblemRestartData(hid_t /*file_id*/,
-                                   bool /*allow_transient_initialization_from_steady*/)
+                                   bool /*allow_transient_initialization_from_steady*/,
+                                   bool /*repartitioned*/)
 {
   return true;
 }

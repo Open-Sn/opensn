@@ -11,7 +11,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import VolumetricSource
     from pyopensn.aquad import GLCProductQuadrature2DXY
@@ -23,6 +23,7 @@ if __name__ == "__main__":
 
     meshgen = FromFileMeshGenerator(
         filename="../../../../assets/mesh/rectangular_2d_2mat_gmsh_v2.msh",
+        partitioner=KBAGraphPartitioner(nx=2, ny=2, nz=1, xcuts=[5.0], ycuts=[2.5]),
     )
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
@@ -52,7 +53,7 @@ if __name__ == "__main__":
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 300,
             },
         ],
