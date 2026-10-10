@@ -8,7 +8,10 @@
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/logging/log.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_definition.h"
 #include "framework/runtime.h"
+#include "framework/utils/error.h"
+#include <algorithm>
 #include <cmath>
 #include <stdexcept>
 
@@ -28,231 +31,99 @@ DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
 std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>
 DiscreteOrdinatesCurvilinearProblem::Create(const ParameterBlock& params)
 {
-  log.Log0Warning()
-    << "The curvilinear discrete-ordinates problem type is experimental. USE WITH CAUTION!"
-    << std::endl;
-
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  const auto geometry_type = grid->GetGeometryType();
-
-  const auto primary_quadrature_order = [](GeometryType g) -> QuadratureOrder
-  {
-    switch (g)
-    {
-      case GeometryType::ONED_SPHERICAL:
-        return QuadratureOrder::FOURTH;
-      case GeometryType::ONED_CYLINDRICAL:
-      case GeometryType::TWOD_CYLINDRICAL:
-        return QuadratureOrder::THIRD;
-      default:
-        return QuadratureOrder::INVALID_ORDER;
-    }
-  };
-
-  const auto quadrature_order = primary_quadrature_order(geometry_type);
-  OpenSnInvalidArgumentIf(
-    quadrature_order == QuadratureOrder::INVALID_ORDER,
-    "DiscreteOrdinatesCurvilinearProblem::Create: Unsupported geometry type " +
-      std::string(ToString(geometry_type)) + " for curvilinear discretization.");
-
-  std::shared_ptr<SpatialDiscretization> discretization =
-    PieceWiseLinearDiscontinuous::New(grid, quadrature_order);
-  auto input_params = GetInputParameters();
-  input_params.SetObjectType("lbs::DiscreteOrdinatesCurvilinearProblem");
-  input_params.SetErrorOriginScope("lbs::DiscreteOrdinatesCurvilinearProblem");
-  input_params.AssignParameters(params);
-
-  auto problem = std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>(
-    new DiscreteOrdinatesCurvilinearProblem(input_params));
-  problem->discretization_ = discretization;
-  problem->BuildRuntime();
-  return problem;
+  return Build(
+    std::shared_ptr<DiscreteOrdinatesCurvilinearProblem>(new DiscreteOrdinatesCurvilinearProblem(
+      MakeInputParameters<DiscreteOrdinatesCurvilinearProblem>(
+        "lbs::DiscreteOrdinatesCurvilinearProblem", params))));
 }
 
 DiscreteOrdinatesCurvilinearProblem::DiscreteOrdinatesCurvilinearProblem(
   const InputParameters& params)
   : DiscreteOrdinatesProblem(params)
 {
-  PerformInputChecks();
 }
 
 void
-DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
+DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
+  std::vector<std::string>& errors) const
 {
+  DiscreteOrdinatesProblem::CheckConfigurationErrors(errors);
+
   if (geometry_type_ != GeometryType::TWOD_CYLINDRICAL and
       geometry_type_ != GeometryType::ONED_SPHERICAL)
-  {
-    std::stringstream oss;
-    oss << GetName() << ":\n"
-        << "Invalid geometry type " << ToString(geometry_type_) << ".\n"
-        << "Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.";
-    throw std::runtime_error(oss.str());
-  }
+    errors.emplace_back("Invalid geometry type " + std::string(ToString(geometry_type_)) +
+                        ". Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.");
   if (sweep_type_ != "AAH")
-    throw std::runtime_error(GetName() +
-                             ": Curvilinear geometries support only sweep_type=\"AAH\".");
+    errors.emplace_back("Curvilinear geometries support only sweep_type=\"AAH\".");
   if (use_gpus_)
+    errors.emplace_back("GPU acceleration is not supported for curvilinear geometries yet.");
+
+  const auto coordinate_system = grid_->GetCoordinateSystem();
+  const bool cylindrical = coordinate_system == CoordinateSystemType::CYLINDRICAL;
+  const bool spherical = coordinate_system == CoordinateSystemType::SPHERICAL;
+  if (not cylindrical and not spherical)
+    errors.emplace_back("Invalid coordinate system (type = " +
+                        std::to_string(static_cast<int>(coordinate_system)) + ").");
+
+  for (const auto& groupset : groupsets_)
   {
-    throw std::runtime_error(
-      "DiscreteOrdinatesCurvilinearProblem: GPU acceleration is not supported for curvilinear "
-      "geometries yet.");
+    const auto gs = std::to_string(groupset.id);
+    // The angular quadrature must match the coordinate system.
+    const auto& quadrature = groupset.quadrature;
+    if (quadrature and
+        ((cylindrical and not std::dynamic_pointer_cast<GLCProductQuadrature2DRZ>(quadrature)) or
+         (spherical and not std::dynamic_pointer_cast<GLProductQuadrature1DSpherical>(quadrature))))
+      errors.emplace_back("Invalid angular quadrature (type = " +
+                          std::to_string(static_cast<int>(quadrature->GetType())) +
+                          ") for groupset " + gs + ".");
+
+    // The angle aggregation must match the coordinate system.
+    const auto aggregation = groupset.angleagg_method;
+    if (cylindrical and aggregation != AngleAggregationType::AZIMUTHAL and
+        aggregation != AngleAggregationType::SINGLE)
+      errors.emplace_back(
+        "Invalid angle aggregation (type = " + std::to_string(static_cast<int>(aggregation)) +
+        ") for groupset " + gs + ". Supported: AZIMUTHAL, SINGLE.");
+    if (cylindrical and grid_->GetType() == MeshType::UNSTRUCTURED and
+        aggregation != AngleAggregationType::SINGLE)
+      errors.emplace_back("Groupset " + gs +
+                          ": unstructured RZ meshes require angle_aggregation_type \"single\".");
+    if (spherical and aggregation != AngleAggregationType::AZIMUTHAL and
+        aggregation != AngleAggregationType::SINGLE)
+      errors.emplace_back("Groupset " + gs +
+                          ": 1D spherical geometry requires angle_aggregation_type \"azimuthal\" "
+                          "(one inward and one outward angle set) or \"single\".");
   }
 
-  for (size_t gs = 0; gs < groupsets_.size(); ++gs)
-  {
-    // angular quadrature type must be compatible with coordinate system
-    const auto angular_quad_ptr = groupsets_[gs].quadrature;
-    switch (grid_->GetCoordinateSystem())
-    {
-      case CoordinateSystemType::CYLINDRICAL:
-      {
-        const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<GLCProductQuadrature2DRZ>(angular_quad_ptr);
-
-        if (curvilinear_angular_quad_ptr == nullptr)
-        {
-          std::ostringstream oss;
-          oss << GetName() << ":\n"
-              << "Invalid angular quadrature (type = "
-              << static_cast<int>(angular_quad_ptr->GetType()) << ")";
-          throw std::runtime_error(oss.str());
-        }
-        break;
-      }
-      case CoordinateSystemType::SPHERICAL:
-      {
-        const auto curvilinear_angular_quad_ptr =
-          std::dynamic_pointer_cast<GLProductQuadrature1DSpherical>(angular_quad_ptr);
-
-        if (curvilinear_angular_quad_ptr == nullptr)
-        {
-          std::ostringstream oss;
-          oss << GetName() << ":\n"
-              << "Invalid angular quadrature (type = "
-              << static_cast<int>(angular_quad_ptr->GetType()) << ")";
-          throw std::runtime_error(oss.str());
-        }
-        break;
-      }
-      default:
-      {
-        std::ostringstream oss;
-        oss << GetName() << ":\n"
-            << "Invalid coordinate system (type = "
-            << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
-        throw std::runtime_error(oss.str());
-      }
-    }
-
-    if (grid_->GetType() == MeshType::UNSTRUCTURED &&
-        grid_->GetCoordinateSystem() == CoordinateSystemType::CYLINDRICAL &&
-        groupsets_[gs].angleagg_method != AngleAggregationType::SINGLE)
-    {
-      log.Log0Warning() << GetName() << ":\n"
-                        << "Forcing SINGLE angle aggregation for unstructured RZ meshes (groupset "
-                        << gs << ").";
-      groupsets_[gs].angleagg_method = AngleAggregationType::SINGLE;
-    }
-
-    // angle aggregation type must be compatible with coordinate system
-    const auto angleagg_method = groupsets_[gs].angleagg_method;
-    switch (grid_->GetCoordinateSystem())
-    {
-      case CoordinateSystemType::CYLINDRICAL:
-      {
-        if (angleagg_method != AngleAggregationType::AZIMUTHAL and
-            angleagg_method != AngleAggregationType::SINGLE)
-        {
-          std::ostringstream oss;
-          oss << GetName() << ":\n"
-              << "Invalid angle aggregation (type = " << static_cast<int>(angleagg_method)
-              << ") for groupsset " << gs << ". Supported: AZIMUTHAL, SINGLE.";
-          throw std::runtime_error(oss.str());
-        }
-        break;
-      }
-      case CoordinateSystemType::SPHERICAL:
-      {
-        if (angleagg_method != AngleAggregationType::AZIMUTHAL and
-            angleagg_method != AngleAggregationType::SINGLE)
-        {
-          std::ostringstream oss;
-          oss << GetName() << ":\n"
-              << "Groupset " << gs
-              << ": 1D spherical geometry requires angle_aggregation_type \"azimuthal\" (one "
-                 "inward and one outward angle set) or \"single\".";
-          throw std::runtime_error(oss.str());
-        }
-        break;
-      }
-      default:
-      {
-        std::ostringstream oss;
-        oss << GetName() << ":\nInvalid coordinate system (type = "
-            << std::to_string(static_cast<int>(grid_->GetCoordinateSystem())) << ")";
-        throw std::runtime_error(oss.str());
-      }
-    }
-  }
-
-  // boundary of mesh must be rectangular with origin at (0, 0, 0)
+  // Every boundary face must be orthogonal to a Cartesian axis. Collective.
   const std::vector<Vector3> unit_normal_vectors = {
-    Vector3(1.0, 0.0, 0.0),
-    Vector3(0.0, 1.0, 0.0),
-    Vector3(0.0, 0.0, 1.0),
-  };
+    Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)};
+  int local_non_orthogonal = 0;
   for (const auto& cell : grid_->GetLocalCells())
-  {
     for (const auto& face : cell->faces)
-    {
-      if (not face.has_neighbor)
-      {
-        bool face_orthogonal = false;
-        for (size_t d = 0; d < unit_normal_vectors.size(); ++d)
-        {
-          const auto n_dot_e = face.normal.Dot(unit_normal_vectors[d]);
-          if (std::fabs(n_dot_e) > 0.999999)
-          {
-            // Allow inner radial boundaries if faces are axis-aligned
-            face_orthogonal = true;
-            break;
-          }
-        }
-        if (not face_orthogonal)
-        {
-          std::ostringstream oss;
-          oss << GetName() << ":\n"
-              << "Mesh contains boundary faces not orthogonal with respect to Cartesian reference "
-              << "frame";
-          throw std::runtime_error(oss.str());
-        }
-      }
-    }
-  }
-}
+      if (not face.has_neighbor and
+          std::none_of(unit_normal_vectors.begin(),
+                       unit_normal_vectors.end(),
+                       [&face](const Vector3& e)
+                       { return std::fabs(face.normal.Dot(e)) > 0.999999; }))
+        local_non_orthogonal = 1;
+  int non_orthogonal = 0;
+  mpi_comm.all_reduce(local_non_orthogonal, non_orthogonal, mpi::op::max<int>());
+  if (non_orthogonal != 0)
+    errors.emplace_back(
+      "Mesh contains boundary faces not orthogonal with respect to Cartesian reference frame.");
 
-void
-DiscreteOrdinatesCurvilinearProblem::ValidateBoundaryConfiguration() const
-{
   // A reflecting outer surface is valid in 1D spherical geometry (mu -> -mu); in RZ the outer
   // radial boundary has no mirror direction in the quadrature.
-  if (grid_->GetCoordinateSystem() != CoordinateSystemType::CYLINDRICAL)
-    return;
-  const auto& bndry_map = grid_->GetBoundaryNameMap();
-  const auto it = bndry_map.find("xmax");
-  if (it != bndry_map.end())
+  const auto& boundary_names = grid_->GetBoundaryNameMap();
+  const auto rmax = boundary_names.find("xmax");
+  if (cylindrical and rmax != boundary_names.end())
   {
-    const uint64_t bid = it->second;
-    const auto bndry_it = boundary_definitions_.find(bid);
-    if (bndry_it != boundary_definitions_.end() &&
-        bndry_it->second.type == LBSBoundaryType::REFLECTING)
-    {
-      std::ostringstream oss;
-      oss << GetName() << ":\n"
-          << "Reflecting boundary on rmax is not supported in RZ.\n"
-          << "Please use vacuum or isotropic on rmax.";
-      throw std::runtime_error(oss.str());
-    }
+    const auto definition = boundary_definitions_.find(rmax->second);
+    if (definition != boundary_definitions_.end() and
+        definition->second.type == LBSBoundaryType::REFLECTING)
+      errors.emplace_back("Reflecting boundary on rmax is not supported in RZ. Please use vacuum "
+                          "or isotropic on rmax.");
   }
 }
 
@@ -261,40 +132,28 @@ DiscreteOrdinatesCurvilinearProblem::InitializeSpatialDiscretization()
 {
   log.Log() << "Initializing spatial discretization.\n";
 
-  const auto secondary_quadrature_order = [](GeometryType g) -> QuadratureOrder
+  // The radial weight raises the polynomial order of the integrands. The secondary integrals (one
+  // power of r less) use the same quadrature, which also integrates them exactly.
+  auto quad_order = QuadratureOrder::INVALID_ORDER;
+  switch (geometry_type_)
   {
-    switch (g)
-    {
-      case GeometryType::ONED_SPHERICAL:
-        return QuadratureOrder::THIRD;
-
-      case GeometryType::ONED_CYLINDRICAL:
-      case GeometryType::TWOD_CYLINDRICAL:
-        return QuadratureOrder::SECOND;
-
-      default:
-        return QuadratureOrder::INVALID_ORDER;
-    }
-  };
-
-  OpenSnLogicalErrorIf(not discretization_,
-                       GetName() + ": Missing primary spatial discretization.");
-
-  const auto quad_secondary = secondary_quadrature_order(geometry_type_);
-  if (quad_secondary == QuadratureOrder::INVALID_ORDER)
-  {
-    std::ostringstream oss;
-    oss << GetName() << "::InitializeSpatialDiscretization:\n"
-        << "Invalid geometry type " << ToString(geometry_type_) << ".\n"
-        << "Only ONED_SPHERICAL, ONED_CYLINDRICAL, or TWOD_CYLINDRICAL geometries are supported.\n";
-    throw std::runtime_error(oss.str());
+    case GeometryType::ONED_SPHERICAL:
+      quad_order = QuadratureOrder::FOURTH;
+      break;
+    case GeometryType::ONED_CYLINDRICAL:
+    case GeometryType::TWOD_CYLINDRICAL:
+      quad_order = QuadratureOrder::THIRD;
+      break;
+    default:
+      break;
   }
+  // CheckConfigurationErrors has rejected other geometries before the build.
+  OpenSnLogicalErrorIf(quad_order == QuadratureOrder::INVALID_ORDER,
+                       GetName() + ": unsupported geometry " +
+                         std::string(ToString(geometry_type_)) + ".");
 
-  // Primary is provided by the factory; compute integrals for it.
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_, quad_order);
   ComputeUnitIntegrals();
-
-  // Secondary
-  discretization_secondary_ = PieceWiseLinearDiscontinuous::New(grid_, quad_secondary);
   ComputeSecondaryUnitIntegrals();
 }
 

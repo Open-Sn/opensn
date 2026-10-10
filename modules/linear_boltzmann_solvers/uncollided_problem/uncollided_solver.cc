@@ -48,29 +48,31 @@ UncollidedSolver::UncollidedSolver(const InputParameters& params)
 }
 
 void
-UncollidedSolver::Initialize()
+UncollidedSolver::ValidateState() const
+{
+  OpenSnLogicalErrorIf(not problem_->IsBuilt(),
+                       GetName() + ": the problem was not created through its Create().");
+  problem_->ValidateConfiguration();
+}
+
+void
+UncollidedSolver::InitializeSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_uncollided("Uncollided", CaliperUncollidedScopeDepth());
   CALI_CXX_MARK_SCOPE("Initialize");
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
 
-  OpenSnInvalidArgumentIf(opensn::mpi_comm.size() != 1,
-                          GetName() +
-                            ": uncollided flux generation must run with exactly one MPI rank.");
-
   problem_->BuildSourcePoints();
   problem_->AddReflectedSourcePoints();
-  initialized_ = true;
 }
 
 void
-UncollidedSolver::Execute()
+UncollidedSolver::ExecuteSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_uncollided("Uncollided", CaliperUncollidedScopeDepth());
   CALI_CXX_MARK_SCOPE("Execute");
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
   problem_->Execute(file_name_, progress_interval_);

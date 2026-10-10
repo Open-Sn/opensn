@@ -674,8 +674,8 @@ For curvilinear problems, the solver accepts:
 - ``'azimuthal'``
 - ``'single'``
 
-For unstructured RZ meshes, the curvilinear problem may force ``'single'`` even
-if another aggregation mode was requested.
+Unstructured RZ meshes require ``'single'``; the curvilinear problem rejects
+other aggregation modes on them.
 
 Examples
 ========

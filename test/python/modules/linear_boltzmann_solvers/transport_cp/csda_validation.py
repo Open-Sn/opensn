@@ -4,8 +4,10 @@
 
 """CSDA restrictions that must hold after construction as well as during it.
 
-Checks that a CSDA problem rejects an uncollided flux file at construction,
-rejects a later switch to adjoint mode, and rejects replacement cross sections
+Checks that a CSDA problem rejects an uncollided flux file, time-dependent mode,
+and CBC sweeps at construction, rejects a later switch to adjoint or
+time-dependent mode, is rejected by the k-eigenvalue solvers, and rejects replacement
+cross sections
 whose charged-particle block would be split across groupsets or whose group
 count does not match the problem. Supplied material energy structures must agree,
 and at least one is required. All rejections must be ValueErrors. Each rejected
@@ -22,7 +24,12 @@ from mpi4py import MPI
 if "opensn_console" not in globals():
     from pyopensn.aquad import GLProductQuadrature1DSlab
     from pyopensn.mesh import OrthogonalMeshGenerator
-    from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
+    from pyopensn.solver import (
+        DiscreteOrdinatesProblem,
+        NonLinearKEigenSolver,
+        PowerIterationKEigenSolver,
+        SteadyStateSourceSolver,
+    )
     from pyopensn.source import VolumetricSource
     from pyopensn.xs import MultiGroupXS
 
@@ -109,6 +116,14 @@ expect_rejected(
     "CSDA is not supported with an uncollided flux file",
     "uncollided flux")
 
+# CSDA is steady-state and AAH only.
+expect_rejected(
+    lambda: DiscreteOrdinatesProblem(**problem_args(time_dependent=True)),
+    "cannot be used in time-dependent mode", "time-dependent construction")
+expect_rejected(
+    lambda: DiscreteOrdinatesProblem(**problem_args(sweep_type="CBC")),
+    "CSDA is not supported with CBC sweeps", "CBC sweeps")
+
 # CSDA requires at least one material to supply energy bounds.
 unbounded = MultiGroupXS()
 unbounded.CreateSimpleOneGroup(sigma_t=0.0, c=0.0)
@@ -133,9 +148,17 @@ problem = DiscreteOrdinatesProblem(**problem_args())
 expect_rejected(lambda: problem.SetXSMap(xs_map=[{"block_ids": [0], "xs": neutral_xs}]),
                 "at least one charged-particle group", "replacement with no charged groups")
 
-# Switching an existing CSDA problem to adjoint mode is rejected.
+# Switching an existing CSDA problem to adjoint or time-dependent mode is rejected.
 expect_rejected(lambda: problem.SetAdjoint(True),
                 "CSDA is not supported for adjoint problems", "adjoint switch")
+expect_rejected(lambda: problem.SetTimeDependentMode(),
+                "cannot be used in time-dependent mode", "time-dependent switch")
+
+# Only the steady-state fixed-source solver supports CSDA.
+for eigen_solver in (PowerIterationKEigenSolver, NonLinearKEigenSolver):
+    expect_rejected(lambda: eigen_solver(problem=problem).Initialize(),
+                    "CSDA is only supported by the steady-state fixed-source solver",
+                    eigen_solver.__name__)
 
 # Replacement cross sections that split a charged block across groupsets are rejected.
 expect_rejected(lambda: problem.SetXSMap(xs_map=[{"block_ids": [0], "xs": split_xs}]),

@@ -8,9 +8,11 @@ namespace opensn
 
 class LBSProblem;
 
-void PowerIterationKEigenSolver(LBSProblem& lbs_problem,
-                                double tolerance,
-                                unsigned int max_iterations,
-                                double& k_eff);
+/// Runs power iterations on `lbs_problem`, starting from k_eff = 1, until k_eff changes by less
+/// than `tolerance` or `max_iterations` is reached, and returns the result in `k_eff`.
+void PowerIterationKEigen(LBSProblem& lbs_problem,
+                          double tolerance,
+                          unsigned int max_iterations,
+                          double& k_eff);
 
 } // namespace opensn

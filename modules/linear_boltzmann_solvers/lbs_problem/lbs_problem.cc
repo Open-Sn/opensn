@@ -70,17 +70,6 @@ LBSProblem::LBSProblem(const InputParameters& params)
     grid_(params.GetSharedPtrParam<MeshContinuum>("mesh")),
     use_gpus_(params.GetParamValue<bool>("use_gpus"))
 {
-  // Check system for GPU acceleration
-  if (use_gpus_)
-  {
-#ifdef __OPENSN_WITH_GPU__
-    CheckCapableDevices();
-#else
-    OpenSnInvalidArgument(
-      GetName() + ": GPU support was requested, but OpenSn was built without CUDA enabled.");
-#endif // __OPENSN_WITH_GPU__
-  }
-
   // Initialize options
   if (params.IsParameterValid("options"))
   {
@@ -91,19 +80,10 @@ LBSProblem::LBSProblem(const InputParameters& params)
 
   // Set geometry type
   geometry_type_ = grid_->GetGeometryType();
-  OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::INVALID,
-                          GetName() + ": Invalid geometry type.");
 
   InitializeGroupsets(params);
-
-  // Call this class's implementation directly. Virtual dispatch cannot reach a derived-class
-  // override during construction; derived classes validate their own adjoint restrictions.
-  if (options_.adjoint)
-    LBSProblem::ValidateAdjointModeAllowed();
-
   InitializeSources(params);
   InitializeXSMap(params);
-  InitializeMaterials();
 }
 
 const LBSOptions&
@@ -160,7 +140,8 @@ LBSProblem::IsTimeDependent() const
 void
 LBSProblem::SetTimeDependentMode()
 {
-  OpenSnLogicalError(GetName() + ": Time-dependent mode is not supported for this problem type.");
+  throw std::invalid_argument(GetName() +
+                              ": Time-dependent mode is not supported for this problem type.");
 }
 
 void
@@ -250,13 +231,18 @@ LBSProblem::GetNumGroupsets() const
 void
 LBSProblem::AddPointSource(std::shared_ptr<PointSource> point_source)
 {
+  // Locate the source in the mesh first; some rules need its location.
+  point_source->Initialize(*this);
+  auto sources = point_sources_;
+  sources.push_back(point_source);
+  ValidateChange(point_sources_, std::move(sources));
   point_sources_.push_back(point_source);
-  point_sources_.back()->Initialize(*this);
 }
 
 void
 LBSProblem::ClearPointSources()
 {
+  ValidateChange(point_sources_, {});
   point_sources_.clear();
 }
 
@@ -269,13 +255,17 @@ LBSProblem::GetPointSources() const
 void
 LBSProblem::AddVolumetricSource(std::shared_ptr<VolumetricSource> volumetric_source)
 {
+  volumetric_source->Initialize(*this);
+  auto sources = volumetric_sources_;
+  sources.push_back(volumetric_source);
+  ValidateChange(volumetric_sources_, std::move(sources));
   volumetric_sources_.push_back(volumetric_source);
-  volumetric_sources_.back()->Initialize(*this);
 }
 
 void
 LBSProblem::ClearVolumetricSources()
 {
+  ValidateChange(volumetric_sources_, {});
   volumetric_sources_.clear();
 }
 
@@ -294,13 +284,15 @@ LBSProblem::GetBlockID2XSMap() const
 void
 LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
 {
+  ValidateChange(block_id_to_xs_map_, xs_map);
+
   const BlockID2XSMap old_xs_map = block_id_to_xs_map_;
   const size_t old_max_precursors_per_material = max_precursors_per_material_;
   const auto old_precursor_new_state = precursor_new_local_;
   const auto old_precursor_old_state = precursor_old_local_;
 
   block_id_to_xs_map_ = xs_map;
-  InitializeMaterials();
+  RebuildRuntimeObjects();
 
   if (options_.use_precursors)
   {
@@ -350,7 +342,12 @@ LBSProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
     precursor_new_local_.clear();
     precursor_old_local_.clear();
   }
+}
 
+void
+LBSProblem::RebuildRuntimeObjects()
+{
+  InitializeMaterials();
   ResetGPUCarriers();
   InitializeGPUExtras();
 }
@@ -712,47 +709,6 @@ LBSProblem::ParseOptions(const InputParameters& input)
     if (setter_it != option_setters.end())
       setter_it->second(spec);
   }
-
-  OpenSnInvalidArgumentIf(options_.restart.write_time_interval > std::chrono::seconds(0) and
-                            not options_.restart.writes_enabled,
-                          GetName() + ": `write_restart_time_interval>0` requires "
-                                      "`restart_writes_enabled=true`.");
-
-  OpenSnInvalidArgumentIf(options_.restart.write_time_interval > std::chrono::seconds(0) and
-                            options_.restart.write_time_interval < std::chrono::seconds(30),
-                          GetName() + ": `write_restart_time_interval` must be 0 (disabled) "
-                                      "or at least 30 seconds.");
-
-  OpenSnInvalidArgumentIf(options_.restart.writes_enabled and options_.restart.write_path.empty(),
-                          GetName() + ": `restart_writes_enabled=true` requires a non-empty "
-                                      "`write_restart_path`.");
-
-  OpenSnInvalidArgumentIf(not options_.field_function_prefix.empty() and
-                            options_.field_function_prefix_option != "prefix",
-                          GetName() + ": non-empty `field_function_prefix` requires "
-                                      "`field_function_prefix_option=\"prefix\"`.");
-
-  if (options_.restart.writes_enabled)
-  {
-    const auto dir = options_.restart.write_path.parent_path();
-
-    // Create restart directory if necessary.
-    // If dir is empty, write path resolves relative to the working directory.
-    if ((not dir.empty()) and opensn::mpi_comm.rank() == 0)
-    {
-      if (not std::filesystem::exists(dir))
-      {
-        OpenSnLogicalErrorIf(not std::filesystem::create_directories(dir),
-                             GetName() + ": Failed to create restart directory " + dir.string());
-      }
-      else
-        OpenSnLogicalErrorIf(not std::filesystem::is_directory(dir),
-                             GetName() + ": Restart path exists but is not a directory " +
-                               dir.string());
-    }
-    opensn::mpi_comm.barrier();
-    options_.restart.MarkWriteComplete();
-  }
 }
 
 std::filesystem::path
@@ -782,12 +738,45 @@ LBSProblem::WriteProblemRestartData(hid_t /*file_id*/) const
 void
 LBSProblem::BuildRuntime()
 {
+  CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
+
+  // Validate the configuration given at construction before building any runtime data.
+  ValidateConfiguration();
+
+  InitializeMaterials();
+
+  if (options_.restart.writes_enabled)
+  {
+    const auto dir = options_.restart.write_path.parent_path();
+
+    // Rank 0 creates the restart directory if necessary; all ranks then report the outcome. If dir
+    // is empty, the write path resolves relative to the working directory.
+    int local_failed = 0;
+    if ((not dir.empty()) and opensn::mpi_comm.rank() == 0)
+    {
+      std::error_code error;
+      if (not std::filesystem::exists(dir, error))
+        std::filesystem::create_directories(dir, error);
+      local_failed = (error or not std::filesystem::is_directory(dir, error)) ? 1 : 0;
+    }
+    int failed = 0;
+    opensn::mpi_comm.all_reduce(local_failed, failed, mpi::op::max<int>());
+    if (failed != 0)
+      throw std::invalid_argument(GetName() + ": could not create the restart directory " +
+                                  dir.string() + ", or it exists and is not a directory.");
+    options_.restart.MarkWriteComplete();
+  }
+
   PrintSimHeader();
   mpi_comm.barrier();
 
   InitializeRuntimeCore();
-  ValidateRuntimeModeConfiguration();
   InitializeSources();
+  BuildRuntimeData();
+
+  // Some rules need built data, e.g. the location of point sources in the mesh.
+  ValidateConfiguration();
+  built_ = true;
 }
 
 void
@@ -802,30 +791,139 @@ LBSProblem::InitializeRuntimeCore()
 }
 
 void
-LBSProblem::ValidateAdjointModeAllowed() const
+LBSProblem::ValidateConfiguration() const
 {
-  OpenSnInvalidArgumentIf(grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN,
-                          GetName() +
-                            ": Adjoint calculations are supported only for Cartesian geometry.");
-
-  // The adjoint is solved with transposed cross sections and the forward M2D/D2M operators. That
-  // is the exact discrete adjoint only when G = W M2D^T diag(w) M2D commutes with the scattering
-  // operator, which does not hold in general for Galerkin operators.
-  for (const auto& groupset : groupsets_)
-    OpenSnInvalidArgumentIf(
-      groupset.quadrature->GetOperatorConstructionMethod() != OperatorConstructionMethod::STANDARD,
-      GetName() + ": Adjoint calculations are not supported with Galerkin quadrature operators " +
-        "(groupset " + std::to_string(groupset.id) + "). Use operator_method='standard'.");
+  std::vector<std::string> errors;
+  CheckConfigurationErrors(errors);
+  ThrowConfigurationErrors(GetName(), errors);
 }
 
 void
-LBSProblem::ValidateRuntimeModeConfiguration() const
+ThrowConfigurationErrors(const std::string& name, const std::vector<std::string>& errors)
 {
+  if (errors.empty())
+    return;
+
+  // Thrown directly: the message names the problem or solver, which is the useful context.
+  if (errors.size() == 1)
+    throw std::invalid_argument(name + ": " + errors.front());
+
+  std::string message = name + ": invalid configuration:";
+  for (const auto& error : errors)
+    message += "\n  - " + error;
+  throw std::invalid_argument(message);
+}
+
+void
+LBSProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
+{
+#ifdef __OPENSN_WITH_GPU__
+  if (use_gpus_ and not HasCapableDevices())
+    errors.emplace_back("GPU support was requested, but no GPU was detected.");
+#else
+  if (use_gpus_)
+    errors.emplace_back("GPU support was requested, but OpenSn was built without GPU support.");
+#endif
+
+  if (geometry_type_ == GeometryType::INVALID)
+    errors.emplace_back("Invalid geometry type.");
+
+  // Groups and groupsets: the groupsets must partition the groups consecutively.
+  if (num_groups_ == 0)
+    errors.emplace_back("Number of groups must be > 0.");
+  if (groupsets_.empty())
+    errors.emplace_back("At least one groupset must be specified.");
+  else if (groupsets_.front().first_group != 0)
+    errors.emplace_back("Groupset " + std::to_string(groupsets_.front().id) + " starts at group " +
+                        std::to_string(groupsets_.front().first_group) +
+                        ", but the first groupset must start at group 0.");
+  for (size_t gs = 0; gs < groupsets_.size(); ++gs)
+  {
+    const auto& groupset = groupsets_[gs];
+    if (groupset.last_group >= num_groups_)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) + " has last group " +
+                          std::to_string(groupset.last_group) + ", but the problem only has " +
+                          std::to_string(num_groups_) + " groups.");
+    if (gs > 0 and groupset.first_group != groupsets_[gs - 1].last_group + 1)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) + " starts at group " +
+                          std::to_string(groupset.first_group) + ", but it should start at group " +
+                          std::to_string(groupsets_[gs - 1].last_group + 1) +
+                          " to be consecutive with groupset " +
+                          std::to_string(groupsets_[gs - 1].id) + ".");
+  }
+  if (not groupsets_.empty() and num_groups_ > 0 and groupsets_.back().last_group < num_groups_ - 1)
+    errors.emplace_back("Groupset " + std::to_string(groupsets_.back().id) + " ends at group " +
+                        std::to_string(groupsets_.back().last_group) +
+                        ", but the last groupset must end at group " +
+                        std::to_string(num_groups_ - 1) + ".");
+
+  // Options
+  const auto& restart = options_.restart;
+  if (restart.write_time_interval > std::chrono::seconds(0) and not restart.writes_enabled)
+    errors.emplace_back("`write_restart_time_interval>0` requires `restart_writes_enabled=true`.");
+  if (restart.write_time_interval > std::chrono::seconds(0) and
+      restart.write_time_interval < std::chrono::seconds(30))
+    errors.emplace_back(
+      "`write_restart_time_interval` must be 0 (disabled) or at least 30 seconds.");
+  if (restart.writes_enabled and restart.write_path.empty())
+    errors.emplace_back("`restart_writes_enabled=true` requires a non-empty `write_restart_path`.");
+  if (not options_.field_function_prefix.empty() and
+      options_.field_function_prefix_option != "prefix")
+    errors.emplace_back("non-empty `field_function_prefix` requires "
+                        "`field_function_prefix_option=\"prefix\"`.");
+
+  // Cross sections. Count only owned cells before the reduction: including ghost copies would
+  // count the same global cell once on its owner and again on every rank that ghosts it.
+  const auto& xs_map = block_id_to_xs_map_;
+  const auto has_xs = [&xs_map](unsigned int block_id)
+  { return block_id != std::numeric_limits<unsigned int>::max() and xs_map.contains(block_id); };
+  std::uint64_t local_cells_without_xs = 0;
+  for (const auto& cell : grid_->GetLocalCells())
+    local_cells_without_xs += has_xs(cell->block_id) ? 0 : 1;
+  std::uint64_t cells_without_xs = 0;
+  mpi_comm.all_reduce(local_cells_without_xs, cells_without_xs, mpi::op::sum<std::uint64_t>());
+  if (cells_without_xs > 0)
+    errors.emplace_back(std::to_string(cells_without_xs) +
+                        " cells encountered with an invalid material id.");
+
+  for (const auto& [block_id, xs] : xs_map)
+    if (xs->GetNumGroups() < num_groups_)
+      errors.emplace_back("Cross-sections for block \"" + std::to_string(block_id) +
+                          "\" have fewer groups (" + std::to_string(xs->GetNumGroups()) +
+                          ") than the simulation (" + std::to_string(num_groups_) +
+                          "). Cross-sections must have at least as many groups as the simulation.");
+
+  // With precursors, delayed-neutron data on one fissionable material requires it on all of them.
+  const bool has_fissionable_precursors = std::any_of(
+    xs_map.begin(),
+    xs_map.end(),
+    [](const auto& entry)
+    { return entry.second->IsFissionable() and not entry.second->GetPrecursors().empty(); });
+  if (options_.use_precursors and has_fissionable_precursors)
+    for (const auto& [block_id, xs] : xs_map)
+      if (xs->IsFissionable() and xs->GetPrecursors().empty())
+        errors.emplace_back(
+          "incompatible cross-section data for material id " + std::to_string(block_id) +
+          ". When options.use_precursors=true and delayed-neutron precursor data is present for "
+          "one fissionable material, it must be present for all fissionable materials.");
+
   if (options_.adjoint)
   {
-    ValidateAdjointModeAllowed();
+    if (grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN)
+      errors.emplace_back("Adjoint calculations are supported only for Cartesian geometry.");
+
+    // The adjoint is solved with transposed cross sections and the forward M2D/D2M operators.
+    // That is the exact discrete adjoint only when G = W M2D^T diag(w) M2D commutes with the
+    // scattering operator, which does not hold in general for Galerkin operators.
+    for (const auto& groupset : groupsets_)
+      if (groupset.quadrature and groupset.quadrature->GetOperatorConstructionMethod() !=
+                                    OperatorConstructionMethod::STANDARD)
+        errors.emplace_back("Adjoint calculations are not supported with Galerkin quadrature "
+                            "operators (groupset " +
+                            std::to_string(groupset.id) + "). Use operator_method='standard'.");
+
     if (IsTimeDependent())
-      OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
+      errors.emplace_back("Time-dependent adjoint problems are not supported.");
   }
 }
 
@@ -897,13 +995,8 @@ LBSProblem::InitializeSources(const InputParameters& params)
 void
 LBSProblem::InitializeGroupsets(const InputParameters& params)
 {
-  // Initialize groups
-  OpenSnInvalidArgumentIf(num_groups_ == 0, GetName() + ": Number of groups must be > 0.");
-
-  // Initialize groupsets
   const auto& groupsets_array = params.GetParam("groupsets");
   const size_t num_gs = groupsets_array.GetNumParameters();
-  OpenSnInvalidArgumentIf(num_gs == 0, GetName() + ": At least one groupset must be specified.");
   for (size_t gs = 0; gs < num_gs; ++gs)
   {
     const auto& groupset_params = groupsets_array.GetParam(gs);
@@ -911,37 +1004,6 @@ LBSProblem::InitializeGroupsets(const InputParameters& params)
     gs_input_params.SetObjectType("LBSProblem:LBSGroupset");
     gs_input_params.AssignParameters(groupset_params);
     groupsets_.emplace_back(gs_input_params, gs, *this);
-    if (groupsets_.back().GetNumGroups() == 0)
-    {
-      std::stringstream oss;
-      oss << GetName() << ": No groups added to groupset " << groupsets_.back().id;
-      OpenSnInvalidArgument(oss.str());
-    }
-
-    if (groupsets_.back().last_group >= num_groups_)
-    {
-      std::stringstream oss;
-      oss << GetName() << ": Groupset " << groupsets_.back().id << " has last group "
-          << groupsets_.back().last_group << ", but the problem only has " << num_groups_
-          << " groups.";
-      OpenSnInvalidArgument(oss.str());
-    }
-
-    if (gs > 0)
-    {
-      const auto& previous_groupset = groupsets_[gs - 1];
-      const auto& current_groupset = groupsets_.back();
-      const auto expected_first_group = previous_groupset.last_group + 1;
-      if (current_groupset.first_group != expected_first_group)
-      {
-        std::stringstream oss;
-        oss << GetName() << ": Groupset " << current_groupset.id << " starts at group "
-            << current_groupset.first_group << ", but it should start at group "
-            << expected_first_group << " to be consecutive with groupset " << previous_groupset.id
-            << ".";
-        OpenSnInvalidArgument(oss.str());
-      }
-    }
   }
 }
 
@@ -974,40 +1036,9 @@ LBSProblem::InitializeMaterials()
 
   log.Log0Verbose1() << "Initializing Materials";
 
-  // Create set of material ids locally relevant
-  int invalid_mat_cell_count = 0;
-  std::set<unsigned int> unique_block_ids;
-  for (const auto& cell : grid_->GetLocalCells())
-  {
-    unique_block_ids.insert(cell->block_id);
-    if (cell->block_id == std::numeric_limits<unsigned int>::max() or
-        (block_id_to_xs_map_.find(cell->block_id) == block_id_to_xs_map_.end()))
-      ++invalid_mat_cell_count;
-  }
-  const auto& ghost_cell_ids = grid_->GetGhostGlobalIDs();
-  for (uint64_t cell_id : ghost_cell_ids)
-  {
-    const auto& cell = grid_->GetGlobalCell(cell_id);
-    unique_block_ids.insert(cell.block_id);
-    if (cell.block_id == std::numeric_limits<unsigned int>::max() or
-        (block_id_to_xs_map_.find(cell.block_id) == block_id_to_xs_map_.end()))
-      ++invalid_mat_cell_count;
-  }
-  OpenSnLogicalErrorIf(invalid_mat_cell_count > 0,
-                       std::to_string(invalid_mat_cell_count) +
-                         " cells encountered with an invalid material id.");
-
-  // Get ready for processing
+  // The cross-section map has been validated (see CheckConfigurationErrors).
   for (const auto& [blk_id, mat] : block_id_to_xs_map_)
-  {
     mat->SetAdjointMode(options_.adjoint);
-
-    OpenSnLogicalErrorIf(mat->GetNumGroups() < num_groups_,
-                         "Cross-sections for block \"" + std::to_string(blk_id) +
-                           "\" have fewer groups (" + std::to_string(mat->GetNumGroups()) +
-                           ") than the simulation (" + std::to_string(num_groups_) + "). " +
-                           "Cross-sections must have at least as many groups as the simulation.");
-  }
 
   // Initialize precursor properties
   num_precursors_ = 0;
@@ -1023,14 +1054,6 @@ LBSProblem::InitializeMaterials()
     }
   }
 
-  const bool has_fissionable_precursors =
-    std::any_of(block_id_to_xs_map_.begin(),
-                block_id_to_xs_map_.end(),
-                [](const auto& mat_id_xs)
-                {
-                  const auto& xs = mat_id_xs.second;
-                  return xs->IsFissionable() and not xs->GetPrecursors().empty();
-                });
   const bool has_fissionable_material =
     std::any_of(block_id_to_xs_map_.begin(),
                 block_id_to_xs_map_.end(),
@@ -1051,20 +1074,6 @@ LBSProblem::InitializeMaterials()
                       << ": options.use_precursors is enabled, but no precursor data was found "
                          "in the active cross-section map. Running without delayed-neutron "
                          "precursor coupling.";
-  }
-
-  // check compatibility when at least one fissionable material has delayed-neutron data
-  if (options_.use_precursors and has_fissionable_precursors)
-  {
-    for (const auto& [mat_id, xs] : block_id_to_xs_map_)
-    {
-      OpenSnInvalidArgumentIf(xs->IsFissionable() and xs->GetPrecursors().empty(),
-                              GetName() + ": incompatible cross-section data for material id " +
-                                std::to_string(mat_id) +
-                                ". When options.use_precursors=true and "
-                                "delayed-neutron precursor data is present for one fissionable "
-                                "material, it must be present for all fissionable materials.");
-    }
   }
 
   // Update transport views if available
@@ -1276,9 +1285,10 @@ LBSProblem::RebuildOutflowDependentGPUCarriers()
 {
 }
 
-void
-LBSProblem::CheckCapableDevices()
+bool
+LBSProblem::HasCapableDevices()
 {
+  return false;
 }
 #endif // __OPENSN_WITH_GPU__
 
@@ -1408,12 +1418,7 @@ LBSProblem::ScaleExtSrcMoments(double factor)
 void
 LBSProblem::SetAdjoint(bool adjoint)
 {
-  if (adjoint)
-  {
-    ValidateAdjointModeAllowed();
-    if (IsTimeDependent())
-      OpenSnInvalidArgument(GetName() + ": Time-dependent adjoint problems are not supported.");
-  }
+  ValidateChange(options_.adjoint, adjoint);
 
   const bool mode_changed = (adjoint != options_.adjoint);
   if (not mode_changed)
@@ -1421,13 +1426,13 @@ LBSProblem::SetAdjoint(bool adjoint)
 
   options_.adjoint = adjoint;
 
-  // Reinitialize materials to obtain the proper forward/adjoint cross sections.
-  InitializeMaterials();
-
   // Forward and adjoint sources are fundamentally different.
   point_sources_.clear();
   volumetric_sources_.clear();
   ClearBoundaries();
+
+  // Rebuild the materials, and everything that depends on them, in the new mode.
+  RebuildRuntimeObjects();
 
   // Reset all solution vectors.
   ZeroPhi();

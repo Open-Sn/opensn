@@ -19,6 +19,39 @@
 
 namespace opensn
 {
+
+namespace
+{
+
+/// Includes the RHS time term in the sweeps of `problem` until destroyed.
+class ScopedRHSTimeTerm
+{
+public:
+  explicit ScopedRHSTimeTerm(DiscreteOrdinatesProblem& problem)
+  {
+    for (size_t gsid = 0; gsid < problem.GetNumWGSSolvers(); ++gsid)
+      if (auto context =
+            std::dynamic_pointer_cast<SweepWGSContext>(problem.GetWGSSolver(gsid)->GetContext()))
+      {
+        context->sweep_chunk->IncludeRHSTimeTerm(true);
+        contexts_.push_back(std::move(context));
+      }
+  }
+  ScopedRHSTimeTerm(const ScopedRHSTimeTerm&) = delete;
+  ScopedRHSTimeTerm& operator=(const ScopedRHSTimeTerm&) = delete;
+  ScopedRHSTimeTerm(ScopedRHSTimeTerm&&) = delete;
+  ScopedRHSTimeTerm& operator=(ScopedRHSTimeTerm&&) = delete;
+  ~ScopedRHSTimeTerm()
+  {
+    for (const auto& context : contexts_)
+      context->sweep_chunk->IncludeRHSTimeTerm(false);
+  }
+
+private:
+  std::vector<std::shared_ptr<SweepWGSContext>> contexts_;
+};
+
+} // namespace
 namespace
 {
 
@@ -47,10 +80,8 @@ HasPrecursorData(const DiscreteOrdinatesProblem& do_problem)
 InputParameters
 TransientSolver::GetInputParameters()
 {
-  InputParameters params = Solver::GetInputParameters();
+  InputParameters params = DiscreteOrdinatesSolver::GetInputParameters();
   params.ChangeExistingParamToOptional("name", "TransientSolver");
-  params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
-                                                        "An existing discrete ordinates problem");
   params.AddOptionalParameter<double>("dt", 2.0e-3, "Time step");
   params.ConstrainParameterRange("dt", AllowableRangeLowLimit::New(1.0e-18));
   params.AddOptionalParameter<double>("stop_time", 0.1, "Time duration to run the solver");
@@ -70,12 +101,21 @@ void
 TransientSolver::SetTimeStep(double dt)
 {
   do_problem_->SetTimeStep(dt);
+  dt_ = dt;
 }
 
 void
 TransientSolver::SetTheta(double theta)
 {
   do_problem_->SetTheta(theta);
+  theta_ = theta;
+}
+
+void
+TransientSolver::ApplyTimeParameters()
+{
+  do_problem_->SetTimeStep(dt_);
+  do_problem_->SetTheta(theta_);
 }
 
 BalanceTable
@@ -127,15 +167,15 @@ TransientSolver::Create(const ParameterBlock& params)
   return CreateObject<TransientSolver>("lbs::TransientSolver", params);
 }
 
-TransientSolver::TransientSolver(const InputParameters& params)
-  : Solver(params),
-    do_problem_(params.GetSharedPtrParam<Problem, DiscreteOrdinatesProblem>("problem"))
+TransientSolver::TransientSolver(const InputParameters& params) : DiscreteOrdinatesSolver(params)
 {
   stop_time_ = params.GetParamValue<double>("stop_time");
   verbose_ = params.GetParamValue<bool>("verbose");
   initial_state_ = params.GetParamValue<std::string>("initial_state");
-  do_problem_->SetTimeStep(params.GetParamValue<double>("dt"));
-  do_problem_->SetTheta(params.GetParamValue<double>("theta"));
+  // Applied to the problem by Initialize() and before each step, not here, so that constructing
+  // a solver does not change a problem that another solver may be using.
+  dt_ = params.GetParamValue<double>("dt");
+  theta_ = params.GetParamValue<double>("theta");
 }
 
 void
@@ -177,7 +217,27 @@ TransientSolver::CheckPrecursorStatus()
 }
 
 void
-TransientSolver::Initialize()
+TransientSolver::CheckRequirements(std::vector<std::string>& errors) const
+{
+  const auto& restart = do_problem_->GetOptions().restart;
+  const bool loads_steady_initial_condition = not IsInitialized() and restart.read_path.empty() and
+                                              not restart.read_initial_condition_path.empty();
+
+  if (loads_steady_initial_condition)
+  {
+    if (do_problem_->IsTimeDependent())
+      errors.emplace_back(
+        "`read_initial_condition_path` must be used with a problem that has not already been "
+        "placed in time-dependent mode. The transient solver loads the initial condition and "
+        "then switches the problem to time-dependent mode.");
+  }
+  else if (not do_problem_->IsTimeDependent())
+    errors.emplace_back("Problem is in steady-state mode. Call problem.SetTimeDependentMode() "
+                        "before using this solver.");
+}
+
+void
+TransientSolver::InitializeSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
@@ -185,13 +245,13 @@ TransientSolver::Initialize()
 
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
   enforce_stop_time_ = false;
+  ApplyTimeParameters();
 
   const auto& options = do_problem_->GetOptions();
   bool restart_successful = false;
   bool initial_condition_successful = false;
   do_problem_->SetTime(current_time_);
 
-  const std::string& init_state = initial_state_;
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
   auto& psi_new_local = do_problem_->GetPsiNewLocal();
@@ -204,17 +264,7 @@ TransientSolver::Initialize()
   else if (not options.restart.read_initial_condition_path.empty())
     initial_condition_successful = ReadInitialConditionData();
 
-  OpenSnInvalidArgumentIf(not do_problem_->IsTimeDependent(),
-                          GetName() + ": Problem is in steady-state mode. Call problem."
-                                      "SetTimeDependentMode() before initializing this solver.");
-
-  for (const auto& [block_id, xs] : do_problem_->GetBlockID2XSMap())
-    OpenSnInvalidArgumentIf(
-      xs->GetInverseVelocity().size() != do_problem_->GetNumGroups(),
-      GetName() + ": Cross section assigned to block ID " + std::to_string(block_id) +
-        " has no group velocity data. Transient solves require VELOCITY or INV_VELOCITY data "
-        "for every group in every assigned cross section (for MultiGroupXS::"
-        "CreateSimpleOneGroup, pass a positive `velocity`).");
+  // The problem's configuration rules require inverse velocities in time-dependent mode.
 
   if (not restart_successful and not initial_condition_successful)
     do_problem_->SetTime(current_time_);
@@ -243,23 +293,20 @@ TransientSolver::Initialize()
   current_time_ = do_problem_->GetTime();
   phi_prev_local_ = phi_new_local;
   precursor_prev_local_ = precursor_new_local;
-
-  initialized_ = true;
 }
 
 void
-TransientSolver::Execute()
+TransientSolver::ExecuteSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Execute.");
 
   const auto& options = do_problem_->GetOptions();
   const double t0 = current_time_;
   const double tf = stop_time_;
-  const double dt_nominal = do_problem_->GetTimeStep();
+  const double dt_nominal = dt_;
 
   OpenSnInvalidArgumentIf(tf < t0, GetName() + ": stop_time must be >= current_time");
 
@@ -268,7 +315,6 @@ TransientSolver::Execute()
 
   enforce_stop_time_ = true;
   CALI_CXX_MARK_LOOP_BEGIN(time_step, "TimeStep");
-  bool time_step_loop_open = true;
   try
   {
     while (true)
@@ -287,12 +333,14 @@ TransientSolver::Execute()
       if (pre_advance_callback_)
         pre_advance_callback_();
 
-      const double dt = do_problem_->GetTimeStep();
+      const double dt = dt_;
       OpenSnLogicalErrorIf(dt <= 0.0, GetName() + ": dt must be positive");
       const double step_dt = (remaining < dt) ? remaining : dt;
       do_problem_->SetTimeStep(step_dt);
+      do_problem_->SetTheta(theta_);
       do_problem_->SetTime(current_time_);
 
+      // The public Advance() revalidates the problem if the callback changed it.
       Advance();
 
       if (post_advance_callback_)
@@ -310,16 +358,14 @@ TransientSolver::Execute()
   }
   catch (...)
   {
-    if (time_step_loop_open)
-      CALI_CXX_MARK_LOOP_END(time_step);
-    do_problem_->SetTimeStep(dt_nominal);
+    CALI_CXX_MARK_LOOP_END(time_step);
+    SetTimeStep(dt_nominal);
     enforce_stop_time_ = false;
     throw;
   }
   CALI_CXX_MARK_LOOP_END(time_step);
-  time_step_loop_open = false;
 
-  do_problem_->SetTimeStep(dt_nominal);
+  SetTimeStep(dt_nominal);
   enforce_stop_time_ = false;
 
   if (options.restart.writes_enabled)
@@ -329,14 +375,16 @@ TransientSolver::Execute()
 }
 
 void
-TransientSolver::Advance()
+TransientSolver::AdvanceSolver()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_transient("Transient", CaliperTransientScopeDepth());
   CALI_CXX_MARK_SCOPE("Advance");
 
   const auto& options = do_problem_->GetOptions();
-  OpenSnLogicalErrorIf(not initialized_, GetName() + ": Initialize must be called before Advance.");
+  // Execute() applies the (possibly shortened) step itself.
+  if (not enforce_stop_time_)
+    ApplyTimeParameters();
   if (enforce_stop_time_ and stop_time_ <= current_time_)
   {
     if (verbose_)
@@ -359,23 +407,10 @@ TransientSolver::Advance()
   auto ags_solver = do_problem_->GetAGSSolver();
   OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
 
-  // Ensure RHS time term is enabled for transient sweeps
-  std::vector<std::shared_ptr<SweepWGSContext>> transient_sweep_contexts;
-  transient_sweep_contexts.reserve(do_problem_->GetNumWGSSolvers());
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto sweep_context = std::dynamic_pointer_cast<SweepWGSContext>(context);
-    if (sweep_context)
-    {
-      transient_sweep_contexts.push_back(sweep_context);
-      sweep_context->sweep_chunk->IncludeRHSTimeTerm(true);
-    }
-  }
-
   try
   {
+    const ScopedRHSTimeTerm rhs_time_term(*do_problem_);
+
     // The theta scheme solves for the state at t^{n+theta}; evaluate time-dependent sources and
     // boundaries there.
     do_problem_->SetTime(current_time_ + theta * dt);
@@ -391,14 +426,12 @@ TransientSolver::Advance()
   }
   catch (...)
   {
-    for (const auto& sweep_context : transient_sweep_contexts)
-      sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
+    // Leave the problem at the start of the step: a failed solve leaves a partial phi and psi.
+    phi_new_local = phi_prev_local_;
+    do_problem_->GetPsiNewLocal() = do_problem_->GetPsiOldLocal();
     do_problem_->SetTime(current_time_);
     throw;
   }
-
-  for (const auto& sweep_context : transient_sweep_contexts)
-    sweep_context->sweep_chunk->IncludeRHSTimeTerm(false);
 
   if (verbose_)
   {
@@ -491,15 +524,7 @@ TransientSolver::StepPrecursors()
 bool
 TransientSolver::ReadInitialConditionData()
 {
-  OpenSnInvalidArgumentIf(
-    do_problem_->IsTimeDependent(),
-    GetName() +
-      ": `read_initial_condition_path` must be used with a problem that has not already been "
-      "placed in time-dependent mode. The transient solver loads the initial condition and "
-      "then switches the problem to time-dependent mode.");
-
-  const double requested_dt = do_problem_->GetTimeStep();
-  const double requested_theta = do_problem_->GetTheta();
+  // CheckRequirements has checked that the problem is still in steady-state mode.
 
   double reconstruction_keff = 1.0;
   bool success = do_problem_->ReadRestartData(
@@ -510,8 +535,8 @@ TransientSolver::ReadInitialConditionData()
   OpenSnInvalidArgumentIf(
     not success, GetName() + ": failed to read transient initial condition from restart data.");
 
-  do_problem_->SetTimeStep(requested_dt);
-  do_problem_->SetTheta(requested_theta);
+  // The restart data holds the steady-state time parameters; use this solver's.
+  ApplyTimeParameters();
   current_time_ = do_problem_->GetTime();
   step_ = 0;
 
@@ -532,7 +557,12 @@ TransientSolver::ReadRestartData()
     });
 
   if (success)
+  {
     current_time_ = do_problem_->GetTime();
+    // A resumed transient continues with the time step and theta stored in the restart data.
+    dt_ = do_problem_->GetTimeStep();
+    theta_ = do_problem_->GetTheta();
+  }
 
   return success;
 }

@@ -22,6 +22,7 @@
 #include <utility>
 #include <unordered_map>
 #include <cmath>
+#include <exception>
 #include <algorithm>
 #include <limits>
 
@@ -72,42 +73,64 @@ UncollidedProblem::GetInputParameters()
 std::shared_ptr<UncollidedProblem>
 UncollidedProblem::Create(const ParameterBlock& params)
 {
-  auto input_params = GetInputParameters();
-  input_params.SetObjectType("lbs::UncollidedProblem");
-  input_params.SetErrorOriginScope("lbs::UncollidedProblem");
-  input_params.AssignParameters(params);
+  return Build(std::shared_ptr<UncollidedProblem>(new UncollidedProblem(
+    MakeInputParameters<UncollidedProblem>("lbs::UncollidedProblem", params))));
+}
 
-  auto problem = std::make_shared<UncollidedProblem>(input_params);
-  problem->BuildRuntime();
+void
+UncollidedProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
+{
+  LBSProblem::CheckConfigurationErrors(errors);
 
-  OpenSnInvalidArgumentIf(opensn::mpi_comm.size() != 1,
-                          problem->GetName() +
-                            ": uncollided flux generation must run with exactly one MPI rank.");
-  OpenSnInvalidArgumentIf(problem->grid_->GetDimension() < 2 or problem->grid_->GetDimension() > 3,
-                          problem->GetName() +
-                            ": only two- and three-dimensional meshes are supported.");
-  OpenSnInvalidArgumentIf(problem->grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN,
-                          problem->GetName() + ": only Cartesian meshes are supported.");
-  OpenSnInvalidArgumentIf(not problem->GetVolumetricSources().empty(),
-                          problem->GetName() + ": only point sources are supported.");
-  OpenSnInvalidArgumentIf(problem->GetPointSources().empty(),
-                          problem->GetName() + ": at least one point source is required.");
-  for (const auto& point_source : problem->GetPointSources())
-    OpenSnInvalidArgumentIf(
-      point_source->GetNumGlobalSubscribers() != 1,
-      problem->GetName() +
-        ": point sources on faces, edges, or vertices are not currently supported for "
-        "uncollided generation.");
+  if (opensn::mpi_comm.size() != 1)
+    errors.emplace_back("uncollided flux generation must run with exactly one MPI rank.");
+  if (grid_->GetDimension() < 2 or grid_->GetDimension() > 3)
+    errors.emplace_back("only two- and three-dimensional meshes are supported.");
+  if (grid_->GetCoordinateSystem() != CoordinateSystemType::CARTESIAN)
+    errors.emplace_back("only Cartesian meshes are supported.");
+  if (not GetVolumetricSources().empty())
+    errors.emplace_back("only point sources are supported.");
+  if (GetPointSources().empty())
+    errors.emplace_back("at least one point source is required.");
+  // The near-source list is indexed one-to-one with the point-source list.
+  ComputeReflectionPlanes(errors);
+  if (near_source_logvols_.size() != GetPointSources().size())
+    errors.emplace_back(
+      "the number of near-source logical volumes must match the number of point sources.");
+  else
+    for (size_t i = 0; i < near_source_logvols_.size(); ++i)
+      if (near_source_logvols_[i] and
+          not near_source_logvols_[i]->Inside(GetPointSources()[i]->GetLocation()))
+        errors.emplace_back("point source " + std::to_string(i) +
+                            " lies outside its near-source logical volume.");
 
-  problem->InitializeNearSourceRegions(input_params);
-  problem->InitializeReflectingBoundaries(input_params);
-  return problem;
+  // Point sources are located in the mesh when the problem is built.
+  if (discretization_)
+    for (const auto& point_source : GetPointSources())
+      if (point_source->GetNumGlobalSubscribers() != 1)
+      {
+        errors.emplace_back("point sources on faces, edges, or vertices are not currently "
+                            "supported for uncollided generation.");
+        break;
+      }
 }
 
 UncollidedProblem::UncollidedProblem(const InputParameters& params)
   : LBSProblem(params), ell_max_(params.GetParamValue<size_t>("scattering_order"))
 {
   num_moments_ = 1;
+
+  const auto& near_source_param = params.GetParam("near_source");
+  near_source_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+  for (const auto& log_vol : near_source_param)
+    near_source_logvols_.push_back(log_vol.GetValue<std::shared_ptr<LogicalVolume>>());
+
+  // ComputeReflectionPlanes() interprets the boundary conditions.
+  const auto& boundary_conditions = params.GetParam("boundary_conditions");
+  boundary_conditions.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+  for (const auto& boundary : boundary_conditions)
+    boundary_conditions_.emplace_back(boundary.GetParamValue<std::string>("name"),
+                                      boundary.GetParamValue<std::string>("type"));
 }
 
 void
@@ -228,51 +251,35 @@ UncollidedProblem::InitializeSpatialDiscretization()
   }
 }
 
-void
-UncollidedProblem::InitializeNearSourceRegions(const InputParameters& params)
-{
-  const auto& near_source_param = params.GetParam("near_source");
-  near_source_param.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-
-  for (const auto& log_vol : near_source_param)
-    near_source_logvols_.push_back(log_vol.GetValue<std::shared_ptr<LogicalVolume>>());
-
-  // The near-source list is indexed one-to-one with the point-source list.
-  // Enforce that during initialization so later source-specific indexing
-  // cannot silently use the wrong logical volume or run past the end
-  // of the near-source vector.
-  OpenSnInvalidArgumentIf(near_source_logvols_.size() != GetPointSources().size(),
-                          "UncollidedProblem: the number of near-source logical volumes must "
-                          "match the number of point sources.");
-}
-
-void
-UncollidedProblem::InitializeReflectingBoundaries(const InputParameters& params)
+std::vector<UncollidedProblem::ReflectionPlane>
+UncollidedProblem::ComputeReflectionPlanes(std::vector<std::string>& errors) const
 {
   constexpr double tolerance = 1.0e-12;
-  const auto& boundary_conditions = params.GetParam("boundary_conditions");
-  boundary_conditions.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-
-  for (const auto& boundary : boundary_conditions)
+  std::vector<ReflectionPlane> planes;
+  for (const auto& [name, type] : boundary_conditions_)
   {
-    const auto name = boundary.GetParamValue<std::string>("name");
-    const auto type = boundary.GetParamValue<std::string>("type");
-    OpenSnInvalidArgumentIf(type != "vacuum" and type != "reflecting",
-                            GetName() + ": uncollided transport supports only vacuum and "
-                                        "reflecting boundary conditions.");
+    if (type != "vacuum" and type != "reflecting")
+    {
+      errors.emplace_back("uncollided transport supports only vacuum and reflecting boundary "
+                          "conditions.");
+      continue;
+    }
     if (type == "vacuum")
       continue;
 
     const auto boundary_it = grid_->GetBoundaryNameMap().find(name);
-    OpenSnInvalidArgumentIf(boundary_it == grid_->GetBoundaryNameMap().end(),
-                            GetName() + ": boundary name \"" + name + "\" was not found.");
+    if (boundary_it == grid_->GetBoundaryNameMap().end())
+    {
+      errors.emplace_back("boundary name \"" + name + "\" was not found.");
+      continue;
+    }
     const auto boundary_id = boundary_it->second;
 
     bool found_face = false;
+    bool planar = true;
     Vector3 normal;
     double offset = 0.0;
     for (const auto& cell : grid_->GetLocalCells())
-    {
       for (const auto& face : cell->faces)
         if (not face.has_neighbor and face.neighbor_id == boundary_id)
         {
@@ -282,34 +289,36 @@ UncollidedProblem::InitializeReflectingBoundaries(const InputParameters& params)
             offset = normal.Dot(face.centroid);
             found_face = true;
           }
-          else
-          {
-            OpenSnInvalidArgumentIf(
-              std::abs(normal.Dot(face.normal.Normalized()) - 1.0) > tolerance or
-                std::abs(normal.Dot(face.centroid) - offset) > tolerance,
-              GetName() + ": reflecting boundary \"" + name + "\" is not planar.");
-          }
+          else if (std::abs(normal.Dot(face.normal.Normalized()) - 1.0) > tolerance or
+                   std::abs(normal.Dot(face.centroid) - offset) > tolerance)
+            planar = false;
         }
-    }
 
-    OpenSnInvalidArgumentIf(not found_face,
-                            GetName() + ": reflecting boundary \"" + name + "\" has no faces.");
-    reflecting_boundary_ids_.insert(boundary_id);
-    reflection_planes_.push_back({boundary_id, normal, offset});
+    if (not found_face)
+      errors.emplace_back("reflecting boundary \"" + name + "\" has no faces.");
+    else if (not planar)
+      errors.emplace_back("reflecting boundary \"" + name + "\" is not planar.");
+    else
+      planes.push_back({boundary_id, normal, offset});
   }
 
-  for (size_t i = 0; i < reflection_planes_.size(); ++i)
-    for (size_t j = i + 1; j < reflection_planes_.size(); ++j)
-    {
-      const double normal_dot =
-        std::abs(reflection_planes_[i].normal.Dot(reflection_planes_[j].normal));
-      OpenSnInvalidArgumentIf(
-        normal_dot > tolerance,
-        GetName() +
-          ": reflecting boundaries must be mutually orthogonal symmetry planes. Opposing or "
-          "oblique reflecting planes require an unbounded image-source series and are not "
-          "supported.");
-    }
+  for (size_t i = 0; i < planes.size(); ++i)
+    for (size_t j = i + 1; j < planes.size(); ++j)
+      if (std::abs(planes[i].normal.Dot(planes[j].normal)) > tolerance)
+        errors.emplace_back(
+          "reflecting boundaries must be mutually orthogonal symmetry planes. Opposing or oblique "
+          "reflecting planes require an unbounded image-source series and are not supported.");
+  return planes;
+}
+
+void
+UncollidedProblem::BuildRuntimeData()
+{
+  LBSProblem::BuildRuntimeData();
+  std::vector<std::string> errors;
+  reflection_planes_ = ComputeReflectionPlanes(errors);
+  for (const auto& plane : reflection_planes_)
+    reflecting_boundary_ids_.insert(plane.boundary_id);
 }
 
 void
@@ -676,9 +685,6 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
       log.Log() << "Uncollided progress: processing source point 1 / " << num_source_points << ".";
 
     const auto& pt_loc = source_point.location;
-    if (source_point.near_source_logvol and not source_point.near_source_logvol->Inside(pt_loc))
-      throw std::runtime_error(GetName() +
-                               ": one or more source points lies outside its near-source region.");
 
     // Initialize uncollided flux and moment vector
     destination_phi_.assign(num_loc_unknowns, 0.);
@@ -1676,15 +1682,34 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
     }
   };
 
+  // An exception escaping a worker thread would terminate the process; rethrow it after the join.
+  std::exception_ptr worker_exception;
+  std::mutex exception_mutex;
+  const auto SweepGroupsCapturingExceptions = [&](const size_t thread_id)
+  {
+    try
+    {
+      SweepGroups(thread_id);
+    }
+    catch (...)
+    {
+      std::scoped_lock lock(exception_mutex);
+      if (not worker_exception)
+        worker_exception = std::current_exception();
+    }
+  };
+
   std::vector<std::thread> workers;
   workers.reserve(num_group_threads > 0 ? num_group_threads - 1 : 0);
   for (size_t thread_id = 1; thread_id < num_group_threads; ++thread_id)
-    workers.emplace_back(SweepGroups, thread_id);
+    workers.emplace_back(SweepGroupsCapturingExceptions, thread_id);
 
-  SweepGroups(0);
+  SweepGroupsCapturingExceptions(0);
 
   for (auto& worker : workers)
     worker.join();
+  if (worker_exception)
+    std::rethrow_exception(worker_exception);
 }
 
 UncollidedMatrices

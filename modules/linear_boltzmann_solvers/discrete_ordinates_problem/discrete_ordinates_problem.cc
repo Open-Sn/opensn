@@ -101,75 +101,48 @@ DiscreteOrdinatesProblem::GetBoundaryOptionsBlock()
 std::shared_ptr<DiscreteOrdinatesProblem>
 DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 {
-  const auto grid = params.GetParamValue<std::shared_ptr<MeshContinuum>>("mesh");
-  std::shared_ptr<SpatialDiscretization> discretization = PieceWiseLinearDiscontinuous::New(grid);
-
-  auto input_params = GetInputParameters();
-  input_params.SetObjectType("lbs::DiscreteOrdinatesProblem");
-  input_params.SetErrorOriginScope("lbs::DiscreteOrdinatesProblem");
-  input_params.AssignParameters(params);
-
-  std::shared_ptr<DiscreteOrdinatesProblem> problem;
-  {
-    CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
-    problem = std::shared_ptr<DiscreteOrdinatesProblem>(new DiscreteOrdinatesProblem(input_params));
-  }
-  problem->discretization_ = discretization;
-  problem->BuildRuntime();
-  return problem;
+  return Build(std::shared_ptr<DiscreteOrdinatesProblem>(new DiscreteOrdinatesProblem(
+    MakeInputParameters<DiscreteOrdinatesProblem>("lbs::DiscreteOrdinatesProblem", params))));
 }
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
   : LBSProblem(params), sweep_type_(params.GetParamValue<std::string>("sweep_type"))
 {
-  // Time-dependent mode (GPU/adjoint/geometry/save_angular_flux) is checked in
-  // BuildRuntime(), once the object is fully constructed. SupportsTimeDependentMode() is
-  // virtual, and virtual dispatch to a derived override is not available from within the
-  // base-class constructor.
+  // The configuration (time-dependent mode, adjoint, uncollided flux, ...) is validated by
+  // ValidateConfiguration() in BuildRuntime(), once the object is fully constructed. The rules are
+  // virtual, and virtual dispatch to a derived override is not available from a constructor.
   if (params.GetParamValue<bool>("time_dependent"))
     SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
   else
     SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
 
   uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
-  ValidateOptions();
+  if (HasUncollidedFlux())
+    uncollided_xs_map_ = block_id_to_xs_map_;
 
   if (params.Has("boundary_conditions"))
   {
     const auto& bcs = params.GetParam("boundary_conditions");
     bcs.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    boundary_conditions_block_ = bcs;
-  }
-
-  if (HasUncollidedFlux())
-  {
-    OpenSnInvalidArgumentIf(params.GetParamValue<bool>("time_dependent"),
-                            GetName() + ": uncollided flux is only supported for steady-state "
-                                        "fixed-source calculations.");
-  }
-
-  // Check for consistency between quadrature sets
-  auto& groupset0 = groupsets_[0];
-  for (auto& groupset : groupsets_)
-  {
-    if (not groupset.quadrature)
+    for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
     {
-      std::stringstream oss;
-      oss << GetName() << ":\nGroupset " << groupset.id
-          << " does not have an associated quadrature set";
-      throw std::runtime_error(oss.str());
-    }
-
-    if (groupset.quadrature->GetScatteringOrder() != groupset0.quadrature->GetScatteringOrder())
-    {
-      throw std::logic_error(GetName() +
-                             ": Number of scattering moments differs between groupsets");
+      auto bndry_params = GetBoundaryOptionsBlock();
+      bndry_params.AssignParameters(bcs.GetParam(b));
+      ParseBoundaryDefinition(bndry_params, boundary_definitions_);
     }
   }
 
-  // Set scattering order and number of flux moments
-  scattering_order_ = groupset0.quadrature->GetScatteringOrder();
-  num_moments_ = groupset0.quadrature->GetNumMoments();
+  // Set scattering order and number of flux moments from the first groupset. The rules require
+  // every groupset to have a quadrature with the same scattering order.
+  const auto first_quadrature =
+    std::find_if(groupsets_.begin(),
+                 groupsets_.end(),
+                 [](const auto& groupset) { return groupset.quadrature != nullptr; });
+  if (first_quadrature != groupsets_.end())
+  {
+    scattering_order_ = first_quadrature->quadrature->GetScatteringOrder();
+    num_moments_ = first_quadrature->quadrature->GetNumMoments();
+  }
   for (const auto& [blk_id, mat] : block_id_to_xs_map_)
   {
     auto lxs = block_id_to_xs_map_[blk_id]->GetScatteringOrder();
@@ -188,9 +161,11 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     }
   }
 
-  // Build groupset angular flux unknown manager and initialize GPU state
+  // Build groupset angular flux unknown manager
   for (auto& groupset : groupsets_)
   {
+    if (not groupset.quadrature)
+      continue;
     groupset.psi_uk_man_.unknowns.clear();
     size_t num_angles = groupset.quadrature->GetNumAngles();
     auto gs_num_groups = groupset.GetNumGroups();
@@ -198,9 +173,6 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
     const auto VarVecN = UnknownType::VECTOR_N;
     for (unsigned int n = 0; n < num_angles; ++n)
       grpset_psi_uk_man.AddUnknown(VarVecN, gs_num_groups);
-
-    if (use_gpus_)
-      groupset.InitializeQuadratureCarrier();
   }
 }
 
@@ -376,23 +348,126 @@ DiscreteOrdinatesProblem::PrintSimHeader()
 }
 
 void
-DiscreteOrdinatesProblem::ValidateTimeDependentModeAllowed() const
+DiscreteOrdinatesProblem::CheckNoExternalSources(const std::string& reason,
+                                                 std::vector<std::string>& errors) const
 {
-  if (UseGPUs())
-    throw std::runtime_error(GetName() + ": Time-dependent problems are not supported on GPUs.");
-  if (options_.adjoint)
-    throw std::runtime_error(GetName() + ": Time-dependent adjoint problems are not supported.");
-  if (not SupportsTimeDependentMode())
-    throw std::runtime_error(
-      GetName() +
-      ": Time-dependent curvilinear (RZ and 1D spherical) problems are not yet supported.");
-  OpenSnInvalidArgumentIf(not options_.save_angular_flux,
-                          GetName() +
-                            ": Time-dependent mode requires `options.save_angular_flux=true`.");
+  if (not GetVolumetricSources().empty())
+    errors.emplace_back("the problem has volumetric sources. " + reason);
+  if (not GetPointSources().empty())
+    errors.emplace_back("the problem has point sources. " + reason);
+  for (const auto& [boundary_id, definition] : boundary_definitions_)
+  {
+    const bool incoming_flux = definition.type == LBSBoundaryType::ARBITRARY or
+                               (definition.type == LBSBoundaryType::ISOTROPIC and
+                                std::any_of(definition.group_strength.begin(),
+                                            definition.group_strength.end(),
+                                            [](double strength) { return strength != 0.0; }));
+    if (incoming_flux)
+      errors.emplace_back("boundary " + std::to_string(boundary_id) +
+                          " has an incoming-flux (isotropic or arbitrary) condition. " + reason);
+  }
 }
 
 void
-DiscreteOrdinatesProblem::ValidateNonStreamingDirections(const BlockID2XSMap& xs_map) const
+DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
+{
+  LBSProblem::CheckConfigurationErrors(errors);
+
+  if (IsTimeDependent())
+  {
+    if (UseGPUs())
+      errors.emplace_back("Time-dependent problems are not supported on GPUs.");
+    if (not SupportsTimeDependentMode())
+      errors.emplace_back(
+        "Time-dependent curvilinear (RZ and 1D spherical) problems are not yet supported.");
+    if (not options_.save_angular_flux)
+      errors.emplace_back("Time-dependent mode requires `options.save_angular_flux=true`.");
+
+    // The time-dependent sweep reads the inverse velocity of every group.
+    for (const auto& [block_id, xs] : block_id_to_xs_map_)
+      if (xs->GetInverseVelocity().size() < GetNumGroups())
+        errors.emplace_back(
+          "Time-dependent mode requires VELOCITY or INV_VELOCITY data for every group, but the "
+          "cross section assigned to block ID " +
+          std::to_string(block_id) +
+          " has none (for MultiGroupXS::CreateSimpleOneGroup, pass a positive `velocity`).");
+  }
+
+  if (HasUncollidedFlux())
+  {
+    if (IsTimeDependent())
+      errors.emplace_back(
+        "uncollided flux is only supported for steady-state fixed-source calculations.");
+    if (options_.adjoint)
+      errors.emplace_back("uncollided flux is not supported for adjoint calculations.");
+    // The first-collision source was computed from the cross sections the problem was built with.
+    if (block_id_to_xs_map_ != uncollided_xs_map_)
+      errors.emplace_back(
+        "cross sections cannot be replaced after loading an uncollided flux file.");
+    // The first-collision source replaces the fixed sources, which would be silently ignored.
+    CheckNoExternalSources("An uncollided flux file replaces fixed sources; remove them.", errors);
+  }
+
+  // A reflecting boundary mirrors directions in one plane. The loop is the same on all ranks.
+  for (const auto& [boundary_id, definition] : boundary_definitions_)
+    if (definition.type == LBSBoundaryType::REFLECTING and
+        not ComputeReflectingBoundaryNormal(boundary_id))
+    {
+      std::string boundary_name = std::to_string(boundary_id);
+      for (const auto& [name, id] : grid_->GetBoundaryNameMap())
+        if (id == boundary_id)
+          boundary_name = "\"" + name + "\"";
+      errors.emplace_back("reflecting boundary " + boundary_name +
+                          " is not planar; all of its faces must have the same outward normal.");
+    }
+
+  // Cylindrical and spherical meshes need the angular-derivative terms of the curvilinear problem;
+  // the Cartesian sweep would silently omit them.
+  const auto coordinate_system = grid_->GetCoordinateSystem();
+  if (coordinate_system != CoordinateSystemType::CARTESIAN and not IsCurvilinear())
+    errors.emplace_back(
+      std::string(coordinate_system == CoordinateSystemType::SPHERICAL ? "Spherical"
+                                                                       : "Cylindrical") +
+      " meshes require DiscreteOrdinatesCurvilinearProblem; DiscreteOrdinatesProblem supports "
+      "only Cartesian meshes.");
+
+  // Azimuthal angle aggregation orders the directions of the curvilinear angular-derivative term.
+  for (const auto& groupset : groupsets_)
+    if (groupset.angleagg_method == AngleAggregationType::AZIMUTHAL and
+        geometry_type_ != GeometryType::TWOD_CYLINDRICAL and
+        geometry_type_ != GeometryType::ONED_SPHERICAL)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": AZIMUTHAL angle aggregation is only valid for TWOD_CYLINDRICAL and "
+                          "ONED_SPHERICAL geometries.");
+
+  // Quadratures: every groupset needs one, with a common scattering order and the mesh dimension.
+  const auto grid_dim = grid_->GetDimension();
+  for (const auto& groupset : groupsets_)
+  {
+    if (not groupset.quadrature)
+    {
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          " does not have an associated quadrature set.");
+      continue;
+    }
+    if (groupset.quadrature->GetScatteringOrder() != scattering_order_)
+      errors.emplace_back("Number of scattering moments differs between groupsets.");
+    const auto quad_dim = groupset.quadrature->GetDimension();
+    if (grid_dim != quad_dim)
+      errors.emplace_back("Dimensionality of quadrature set (" + std::to_string(quad_dim) +
+                          ") for groupset #" + std::to_string(groupset.id) +
+                          " does not match dimensionality of mesh (" + std::to_string(grid_dim) +
+                          ").");
+  }
+
+  CheckCSDA(errors);
+
+  // Collective. Check all ranks before any sweep can propagate NaNs.
+  CheckNonStreamingDirections(errors);
+}
+
+void
+DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& errors) const
 {
   // Same in-plane tolerance that LebedevQuadrature2DXY uses to report its pole.
   if (geometry_type_ != GeometryType::TWOD_CARTESIAN)
@@ -400,6 +475,8 @@ DiscreteOrdinatesProblem::ValidateNonStreamingDirections(const BlockID2XSMap& xs
   constexpr double tol = 1.0e-12;
   for (const auto& groupset : groupsets_)
   {
+    if (not groupset.quadrature)
+      continue;
     const auto& omegas = groupset.quadrature->GetOmegas();
     if (std::none_of(omegas.begin(),
                      omegas.end(),
@@ -410,8 +487,8 @@ DiscreteOrdinatesProblem::ValidateNonStreamingDirections(const BlockID2XSMap& xs
     auto invalid_block = std::numeric_limits<unsigned int>::max();
     for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto xs = xs_map.find(cell->block_id);
-      if (xs == xs_map.end())
+      const auto xs = block_id_to_xs_map_.find(cell->block_id);
+      if (xs == block_id_to_xs_map_.end())
         continue;
       const auto& sigma_t = xs->second->GetSigmaTotal();
       for (auto g = groupset.first_group; g <= groupset.last_group and g < sigma_t.size(); ++g)
@@ -420,57 +497,44 @@ DiscreteOrdinatesProblem::ValidateNonStreamingDirections(const BlockID2XSMap& xs
     }
     unsigned int global_invalid_block = 0;
     mpi_comm.all_reduce(invalid_block, global_invalid_block, mpi::op::min<unsigned int>());
-    OpenSnInvalidArgumentIf(global_invalid_block != std::numeric_limits<unsigned int>::max(),
-                            GetName() + ": block " + std::to_string(global_invalid_block) +
-                              " has sigma_t <= 0, but the XY quadrature of groupset " +
-                              std::to_string(groupset.id) +
-                              " has a direction with no in-plane component, which requires a "
-                              "positive sigma_t.");
+    if (global_invalid_block != std::numeric_limits<unsigned int>::max())
+      errors.emplace_back("block " + std::to_string(global_invalid_block) +
+                          " has sigma_t <= 0, but the XY quadrature of groupset " +
+                          std::to_string(groupset.id) +
+                          " has a direction with no in-plane component, which requires a "
+                          "positive sigma_t.");
   }
 }
 
 void
-DiscreteOrdinatesProblem::ValidateOptions(std::optional<SweepChunkMode> mode) const
+DiscreteOrdinatesProblem::CheckCSDA(std::vector<std::string>& errors) const
 {
-  // Call this class's implementation directly. ValidateOptions() is called from
-  // the constructor, where virtual dispatch cannot reach a derived-class override.
+  if (not options_.csda_enabled)
+    return;
+
+  if (IsTimeDependent())
+    errors.emplace_back("CSDA is only supported for steady-state source problems and cannot be "
+                        "used in time-dependent mode.");
   if (options_.adjoint)
-    DiscreteOrdinatesProblem::ValidateAdjointModeAllowed();
+    errors.emplace_back("CSDA is not supported for adjoint problems.");
+  if (use_gpus_)
+    errors.emplace_back("CSDA is not supported on GPUs.");
+  if (sweep_type_ == "CBC")
+    errors.emplace_back("CSDA is not supported with CBC sweeps.");
+  if (geometry_type_ == GeometryType::TWOD_CYLINDRICAL)
+    errors.emplace_back("CSDA is not supported for RZ problems.");
+  if (HasUncollidedFlux())
+    errors.emplace_back("CSDA is not supported with an uncollided flux file.");
 
-  if (not options_.csda_enabled)
-    return;
-
-  const auto validation_mode = mode.value_or(sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT));
-  OpenSnInvalidArgumentIf(validation_mode == SweepChunkMode::TIME_DEPENDENT,
-                          GetName() + ": CSDA is only supported for steady-state source "
-                                      "problems and cannot be used in time-dependent mode.");
-  OpenSnInvalidArgumentIf(use_gpus_, GetName() + ": CSDA is not supported on GPUs.");
-  OpenSnInvalidArgumentIf(sweep_type_ == "CBC",
-                          GetName() + ": CSDA is not supported with CBC sweeps.");
-  OpenSnInvalidArgumentIf(geometry_type_ == GeometryType::TWOD_CYLINDRICAL,
-                          GetName() + ": CSDA is not supported for RZ problems.");
-  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
-                          GetName() + ": CSDA is not supported with an uncollided flux file.");
-}
-
-void
-DiscreteOrdinatesProblem::ValidateAdjointModeAllowed() const
-{
-  LBSProblem::ValidateAdjointModeAllowed();
-  OpenSnInvalidArgumentIf(options_.csda_enabled,
-                          GetName() + ": CSDA is not supported for adjoint problems.");
-  OpenSnInvalidArgumentIf(HasUncollidedFlux(),
-                          GetName() + ": uncollided flux is not supported for adjoint "
-                                      "calculations.");
-}
-
-void
-DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs_map) const
-{
-  if (not options_.csda_enabled)
-    return;
-
-  MultiGroupXS::ResolveEnergyGroupStructure(xs_map, num_groups_);
+  const auto& xs_map = block_id_to_xs_map_;
+  try
+  {
+    MultiGroupXS::ResolveEnergyGroupStructure(xs_map, num_groups_);
+  }
+  catch (const std::invalid_argument& error)
+  {
+    errors.emplace_back(error.what());
+  }
 
   for (const auto& [_, xs] : xs_map)
   {
@@ -478,112 +542,66 @@ DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs
     if (stopping_power.empty())
       continue;
 
-    OpenSnInvalidArgumentIf(stopping_power.size() != num_groups_,
-                            GetName() +
-                              ": CSDA stopping power data is incompatible with the configured "
-                              "number of groups.");
-    OpenSnInvalidArgumentIf(
-      std::any_of(stopping_power.begin(),
-                  stopping_power.end(),
-                  [](const double value) { return not std::isfinite(value) or value < 0.0; }),
-      GetName() + ": CSDA stopping power must contain finite, nonnegative values.");
-    OpenSnInvalidArgumentIf(
-      xs->GetStoppingPowerGroupRanges().size() > 2,
-      GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron).");
+    if (stopping_power.size() != num_groups_)
+      errors.emplace_back(
+        "CSDA stopping power data is incompatible with the configured number of groups.");
+    if (std::any_of(stopping_power.begin(),
+                    stopping_power.end(),
+                    [](const double value) { return not std::isfinite(value) or value < 0.0; }))
+      errors.emplace_back("CSDA stopping power must contain finite, nonnegative values.");
+    if (xs->GetStoppingPowerGroupRanges().size() > 2)
+      errors.emplace_back(
+        "CSDA supports at most two charged-particle blocks (electron then positron).");
   }
 
   // Blocks are defined across all materials; the charge sign of deposition depends on it.
   const auto charged_ranges = FindCSDAProblemChargedGroupRanges(xs_map, num_groups_);
-  OpenSnInvalidArgumentIf(
-    charged_ranges.empty(),
-    GetName() + ": CSDA requires at least one charged-particle group with nonzero stopping "
-                "power. Load CSDA-format cross sections with LoadFromCEPXS(..., "
-                "csda_format=True).");
-  OpenSnInvalidArgumentIf(
-    charged_ranges.size() > 2,
-    GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron) "
-                "across all materials.");
+  if (charged_ranges.empty())
+    errors.emplace_back("CSDA requires at least one charged-particle group with nonzero stopping "
+                        "power. Load CSDA-format cross sections with LoadFromCEPXS(..., "
+                        "csda_format=True).");
+  if (charged_ranges.size() > 2)
+    errors.emplace_back("CSDA supports at most two charged-particle blocks (electron then "
+                        "positron) across all materials.");
 
   for (const auto& [g_begin, g_end] : charged_ranges)
   {
-    bool covered_by_one_groupset = false;
-    for (const auto& groupset : groupsets_)
-    {
-      if (groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end)
-      {
-        covered_by_one_groupset = true;
-        break;
-      }
-    }
-
-    OpenSnInvalidArgumentIf(
-      not covered_by_one_groupset,
-      GetName() + ": CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
-        std::to_string(g_end - 1) +
-        "] is split across groupsets. Current CSDA implementation requires each contiguous "
-        "charged-particle block to be fully contained within a single groupset.");
+    const bool covered_by_one_groupset =
+      std::any_of(groupsets_.begin(),
+                  groupsets_.end(),
+                  [g_begin, g_end](const auto& groupset)
+                  { return groupset.first_group <= g_begin and groupset.last_group + 1 >= g_end; });
+    if (not covered_by_one_groupset)
+      errors.emplace_back("CSDA charged-particle group range [" + std::to_string(g_begin) + ", " +
+                          std::to_string(g_end - 1) +
+                          "] is split across groupsets. Current CSDA implementation requires each "
+                          "contiguous charged-particle block to be fully contained within a "
+                          "single groupset.");
   }
 }
 
 void
-DiscreteOrdinatesProblem::BuildRuntime()
+DiscreteOrdinatesProblem::InitializeSpatialDiscretization()
 {
-  CaliperPhaseScope cali_setup_phase("Setup", CaliperSetupPhaseDepth());
+  discretization_ = PieceWiseLinearDiscontinuous::New(grid_);
+  LBSProblem::InitializeSpatialDiscretization();
+}
 
-  if (IsTimeDependent())
-    ValidateTimeDependentModeAllowed();
-
-  if (boundary_conditions_block_)
-  {
-    const auto& bcs = *boundary_conditions_block_;
-    for (size_t b = 0; b < bcs.GetNumParameters(); ++b)
-    {
-      auto bndry_params = GetBoundaryOptionsBlock();
-      bndry_params.AssignParameters(bcs.GetParam(b));
-      UpdateBoundaryDefinition(bndry_params);
-    }
-  }
-
-  LBSProblem::BuildRuntime();
+void
+DiscreteOrdinatesProblem::BuildRuntimeData()
+{
+  LBSProblem::BuildRuntimeData();
+  if (use_gpus_)
+    for (auto& groupset : groupsets_)
+      groupset.InitializeQuadratureCarrier();
   if (options_.csda_enabled)
     phi_e_new_local_.assign(grid_->GetLocalCellCount() * static_cast<size_t>(num_groups_), 0.0);
   else
     phi_e_new_local_.clear();
   InitializeFCS();
 
-  ValidateOptions();
-  ValidateCSDAGroupConfiguration(block_id_to_xs_map_);
-
   UpdateAngularFluxStorage();
-
-  const auto grid_dim = grid_->GetDimension();
-  for (auto& groupset : groupsets_)
-  {
-    const auto quad_dim = groupset.quadrature->GetDimension();
-    OpenSnInvalidArgumentIf(grid_dim != quad_dim,
-                            "Dimensionality of quadrature set (" + std::to_string(quad_dim) +
-                              ") for groupset #" + std::to_string(groupset.id) +
-                              " does not match dimensionality of mesh (" +
-                              std::to_string(grid_dim) + ").");
-  }
-
-  // Check all ranks before any sweep can propagate NaNs.
-  ValidateNonStreamingDirections(block_id_to_xs_map_);
-
-  // Initialize source function according to problem mode.
-  using namespace std::placeholders;
-  if (IsTimeDependent())
-  {
-    auto src_function = std::make_shared<TransientSourceFunction>(*this);
-    active_set_source_function_ =
-      std::bind(&TransientSourceFunction::operator(), src_function, _1, _2, _3, _4); // NOLINT
-  }
-  else
-  {
-    auto src_function = std::make_shared<SourceFunction>(*this);
-    active_set_source_function_ =
-      std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4); // NOLINT
-  }
+  InitializeSourceFunction();
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
@@ -602,6 +620,42 @@ DiscreteOrdinatesProblem::BuildRuntime()
   RebuildBoundaryRuntimeData();
 
   InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::RebuildRuntimeObjects()
+{
+  LBSProblem::RebuildRuntimeObjects();
+  UpdateAngularFluxStorage();
+  InitializeSourceFunction();
+  InitializeBoundaries();
+  RebuildBoundaryRuntimeData();
+  for (auto& groupset : groupsets_)
+  {
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
+  }
+  InitializeSolverSchemes();
+}
+
+void
+DiscreteOrdinatesProblem::InitializeSourceFunction()
+{
+  using namespace std::placeholders;
+  if (IsTimeDependent())
+  {
+    auto src_function = std::make_shared<TransientSourceFunction>(*this);
+    SetActiveSetSourceFunction(
+      std::bind(&TransientSourceFunction::operator(), src_function, _1, _2, _3, _4)); // NOLINT
+  }
+  else
+  {
+    auto src_function = std::make_shared<SourceFunction>(*this);
+    SetActiveSetSourceFunction(
+      std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4)); // NOLINT
+  }
 }
 
 void
@@ -729,9 +783,6 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   max_groupset_size_ = solver_scheme.max_groupset_size;
   max_level_size_ = solver_scheme.max_level_size;
   max_angleset_size_ = solver_scheme.max_angleset_size;
-
-  if (IsTimeDependent())
-    ConfigureTransientSourceScopes();
 }
 
 void
@@ -824,35 +875,38 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
       ZeroQMoments();
       GetPhiOldLocal() = phi_new_ref;
       // Add the 1/k-scaled fission source here if necessary and exclude fission below.
-      const auto lhs_scope = wgs_context->lhs_src_scope;
-      const auto rhs_scope = wgs_context->rhs_src_scope;
-      if (reconstruction_keff != 1.0)
+      const bool scale_fission = reconstruction_keff != 1.0;
+      if (scale_fission)
       {
         active_set_source_function_(wgs_context->groupset,
                                     GetQMomentsLocal(),
                                     phi_new_ref,
                                     APPLY_WGS_FISSION_SOURCES | APPLY_AGS_FISSION_SOURCES);
         ScaleQMoments(1.0 / reconstruction_keff);
-        wgs_context->lhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
-        wgs_context->lhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES);
-        wgs_context->rhs_src_scope.Unset(APPLY_WGS_FISSION_SOURCES);
-        wgs_context->rhs_src_scope.Unset(APPLY_AGS_FISSION_SOURCES);
       }
       try
       {
+        const auto scopes =
+          WGSContext::OverrideSourceScopes(*this,
+                                           [scale_fission](SourceFlags& lhs, SourceFlags& rhs)
+                                           {
+                                             if (not scale_fission)
+                                               return;
+                                             for (auto* scope : {&lhs, &rhs})
+                                             {
+                                               scope->Unset(APPLY_WGS_FISSION_SOURCES);
+                                               scope->Unset(APPLY_AGS_FISSION_SOURCES);
+                                             }
+                                           });
         wgs_context->RebuildAngularFluxFromConvergedPhi(false, false);
       }
       catch (...)
       {
-        wgs_context->lhs_src_scope = lhs_scope;
-        wgs_context->rhs_src_scope = rhs_scope;
         GetQMomentsLocal() = q_moments_ref;
         GetPhiNewLocal() = phi_new_ref;
         GetPhiOldLocal() = phi_old_ref;
         throw;
       }
-      wgs_context->lhs_src_scope = lhs_scope;
-      wgs_context->rhs_src_scope = rhs_scope;
 
       const auto delayed_psi_new =
         wgs_context->groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
@@ -954,92 +1008,27 @@ DiscreteOrdinatesProblem::ResetMode(SweepChunkMode target_mode, double reconstru
   // Current configured sweep mode (or Default if no explicit mode has been selected yet).
   const auto active_mode = sweep_chunk_mode_.value_or(SweepChunkMode::DEFAULT);
 
-  // True only when changing between steady-state and time-dependent (in either direction).
-  const bool switching_modes =
-    (active_mode == SweepChunkMode::STEADY_STATE and
-     target_mode == SweepChunkMode::TIME_DEPENDENT) or
-    (active_mode == SweepChunkMode::TIME_DEPENDENT and target_mode == SweepChunkMode::STEADY_STATE);
+  ValidateChange(sweep_chunk_mode_, std::optional<SweepChunkMode>(target_mode));
 
-  // True when no explicit mode has been adopted yet.
-  const bool has_no_active_mode = (active_mode == SweepChunkMode::DEFAULT);
+  if (active_mode == target_mode)
+    return;
 
-  // True when the requested target mode is time-dependent.
-  const bool switching_to_transient = target_mode == SweepChunkMode::TIME_DEPENDENT;
-  ValidateOptions(target_mode);
+  if (target_mode == SweepChunkMode::TIME_DEPENDENT)
+    ReconstructAngularFluxFromSteadyState(reconstruction_keff);
 
-  if (switching_to_transient)
-    ValidateTimeDependentModeAllowed();
+  SetSweepChunkMode(target_mode);
 
-  const bool default_to_transient = has_no_active_mode and switching_to_transient;
-
-  if (has_no_active_mode)
-  {
-    if (switching_to_transient)
-      ReconstructAngularFluxFromSteadyState(reconstruction_keff);
-
-    SetSweepChunkMode(target_mode);
-
-    if (not switching_to_transient)
-      return;
-  }
-
-  if (switching_modes)
-  {
-    if (switching_to_transient)
-    {
-      ReconstructAngularFluxFromSteadyState(reconstruction_keff);
-      SetSweepChunkMode(SweepChunkMode::TIME_DEPENDENT);
-    }
-    else
-      SetSweepChunkMode(SweepChunkMode::STEADY_STATE);
-  }
-
-  if (switching_modes or default_to_transient)
-  {
-    // Preserve user boundary/source setup and only reset mode-dependent internals.
-    using namespace std::placeholders;
-    if (switching_to_transient)
-    {
-      auto src_function = std::make_shared<TransientSourceFunction>(*this);
-      SetActiveSetSourceFunction(
-        std::bind(&TransientSourceFunction::operator(), src_function, _1, _2, _3, _4)); // NOLINT
-    }
-    else
-    {
-      auto src_function = std::make_shared<SourceFunction>(*this);
-      SetActiveSetSourceFunction(
-        std::bind(&SourceFunction::operator(), src_function, _1, _2, _3, _4)); // NOLINT
-    }
-
-    ReinitializeSolverSchemes();
-  }
-}
-
-void
-DiscreteOrdinatesProblem::ConfigureTransientSourceScopes()
-{
-  for (size_t gsid = 0; gsid < GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = GetWGSSolver(gsid);
-    OpenSnLogicalErrorIf(not wgs_solver,
-                         GetName() + ": Null WGS solver while enabling transient source scopes.");
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(wgs_solver->GetContext());
-    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    // Flux-dependent fission (prompt and implicit delayed) stays in the operator so the WGS solve
-    // converges it; decay of the previous step's precursors is right-hand side only.
-    wgs_context->lhs_src_scope.Unset(APPLY_PREVIOUS_PRECURSOR_SOURCES);
-    wgs_context->rhs_src_scope |= APPLY_AGS_FISSION_SOURCES;
-    wgs_context->rhs_src_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
-  }
+  // The user's boundaries and sources are kept.
+  if (active_mode != SweepChunkMode::DEFAULT or target_mode == SweepChunkMode::TIME_DEPENDENT)
+    RebuildRuntimeObjects();
 }
 
 void
 DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
 {
+  ValidateChange(options_.save_angular_flux, save);
   options_.save_angular_flux = save;
-
-  if (discretization_)
-    UpdateAngularFluxStorage();
+  RebuildRuntimeObjects();
 }
 
 void
@@ -1065,28 +1054,6 @@ void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
-}
-
-void
-DiscreteOrdinatesProblem::SetBlockID2XSMap(const BlockID2XSMap& xs_map)
-{
-  OpenSnInvalidArgumentIf(
-    HasUncollidedFlux(),
-    GetName() + ": cross sections cannot be replaced after loading an uncollided flux file.");
-  // Validate before installing so a rejected map leaves the problem unchanged.
-  ValidateNonStreamingDirections(xs_map);
-  ValidateCSDAGroupConfiguration(xs_map);
-  LBSProblem::SetBlockID2XSMap(xs_map);
-
-  for (auto& groupset : groupsets_)
-  {
-    WGDSA::CleanUp(groupset);
-    TGDSA::CleanUp(groupset);
-    WGDSA::Init(*this, groupset);
-    TGDSA::Init(*this, groupset);
-  }
-
-  ReinitializeSolverSchemes();
 }
 
 void

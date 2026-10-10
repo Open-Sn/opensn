@@ -19,6 +19,7 @@
 #include "framework/math/geometry.h"
 #include "framework/utils/hdf_utils.h"
 #include <memory>
+#include <utility>
 #include <petscksp.h>
 #include <chrono>
 #include <functional>
@@ -36,13 +37,17 @@ class MeshCarrier;
 template <typename T>
 class DeviceVectorMirror;
 
+/// Throws std::invalid_argument listing `errors`, if there are any, prefixed by `name`.
+void ThrowConfigurationErrors(const std::string& name, const std::vector<std::string>& errors);
+
 /**
  * Base class for all Linear Boltzmann Solvers.
  *
- * Problems are created through derived-class factory functions. The factory
- * function performs all constructor-time parsing and calls BuildRuntime
- * before returning the shared pointer, so public methods operate on a fully
- * built problem.
+ * Problems are created only through their static Create(), which constructs the problem (the
+ * constructor only parses input) and passes it to Build(), so public methods operate on a fully
+ * built and validated problem:
+ *
+ *   return Build(std::shared_ptr<T>(new T(MakeInputParameters<T>("lbs::T", params))));
  */
 class LBSProblem : public Problem, public std::enable_shared_from_this<LBSProblem>
 {
@@ -81,13 +86,6 @@ public:
   /// Returns true if the problem is currently in time-dependent mode.
   virtual bool IsTimeDependent() const;
 
-  /**
-   * Throws if the problem cannot be switched to adjoint mode. The base class requires Cartesian
-   * geometry and standard quadrature operators; derived problems extend this to reject
-   * unsupported features and must call the base implementation.
-   */
-  virtual void ValidateAdjointModeAllowed() const;
-
   /// Set the problem to time-dependent mode.
   virtual void SetTimeDependentMode();
 
@@ -109,6 +107,13 @@ public:
 
   /// Returns true if the problem is in adjoint mode.
   bool IsAdjoint() const;
+
+  /// Throws std::invalid_argument listing every rule the problem violates. Collective; not callable
+  /// from a constructor.
+  void ValidateConfiguration() const;
+
+  /// Returns true once Create() has built the problem.
+  bool IsBuilt() const { return built_; }
 
   /// Supported solution-vector operations.
   void ZeroPhi();
@@ -158,10 +163,8 @@ public:
   /**
    * Problem runtime reconfiguration.
    *
-   * These methods are the public mutators available after construction.
-   * They refresh the runtime data owned by the problem where needed.
-   * Other mutable state accessors below are exposed for solvers and
-   * low-level I/O, not as general user-facing methods.
+   * These collective methods validate changes and refresh dependent runtime data. Other mutable
+   * accessors support solvers and low-level I/O, not general reconfiguration.
    */
   /// Adds a point source to the solver.
   void AddPointSource(std::shared_ptr<PointSource> point_source);
@@ -188,7 +191,7 @@ public:
   const BlockID2XSMap& GetBlockID2XSMap() const;
 
   /// Replaces the map of block ids to XSs and refreshes material data.
-  virtual void SetBlockID2XSMap(const BlockID2XSMap& xs_map);
+  void SetBlockID2XSMap(const BlockID2XSMap& xs_map);
 
   /// Obtains a reference to the grid.
   std::shared_ptr<MeshContinuum> GetGrid() const;
@@ -340,8 +343,67 @@ protected:
   /// Input parameters based construction.
   explicit LBSProblem(const InputParameters& params);
 
-  /// Internal factory step: build runtime data after constructor-time configuration is complete.
+  /// Assigns `params` to T's input parameters for constructing a T.
+  template <typename T>
+  static InputParameters MakeInputParameters(const std::string& object_type,
+                                             const ParameterBlock& params)
+  {
+    auto input_params = T::GetInputParameters();
+    input_params.SetObjectType(object_type);
+    input_params.SetErrorOriginScope(object_type);
+    input_params.AssignParameters(params);
+    return input_params;
+  }
+
+  /// Completes the creation of a newly constructed problem with BuildRuntime() and returns it.
+  template <typename T>
+  static std::shared_ptr<T> Build(std::shared_ptr<T> problem)
+  {
+    problem->BuildRuntime();
+    return problem;
+  }
+
+  /**
+   * Validates parsed configuration, builds common and derived runtime data, validates the built
+   * state, and finally marks the problem built. Collective.
+   */
   void BuildRuntime();
+
+  /// Builds the runtime data of a derived problem type. Overrides must call the base version.
+  virtual void BuildRuntimeData() {}
+
+  /// Appends a message for each problem rule the problem violates. Call the base implementation,
+  /// read only input settings (not data derived from them), and keep collective operations
+  /// unconditional.
+  virtual void CheckConfigurationErrors(std::vector<std::string>& errors) const;
+
+  /**
+   * Validates the problem as if `member` had `value`, then restores `member`.
+   *
+   * A rule rejection leaves `member` unchanged. This does not roll back other objects or a later
+   * rebuild failure. Collective.
+   */
+  template <typename T>
+  void ValidateChange(T& member, T value)
+  {
+    T old = std::exchange(member, std::move(value));
+    try
+    {
+      ValidateConfiguration();
+    }
+    catch (...)
+    {
+      member = std::move(old);
+      throw;
+    }
+    member = std::move(old);
+  }
+
+  /**
+   * Rebuilds objects that depend on mutable configuration. Setters call this after committing a
+   * value. Overrides call the base version first. Rebuild failure is not transactional.
+   */
+  virtual void RebuildRuntimeObjects();
 
   virtual void PrintSimHeader();
 
@@ -427,8 +489,9 @@ protected:
   bool use_gpus_;
 
 private:
+  bool built_ = false;
+
   void InitializeRuntimeCore();
-  void ValidateRuntimeModeConfiguration() const;
   void InitializeSources();
   /// Initializes parallel arrays.
   void InitializeParrays();
@@ -465,8 +528,8 @@ private:
 
   static std::filesystem::path BuildRestartPath(const std::string& path_stem);
 
-  /// Checks if the current CPU is associated with any GPU.
-  static void CheckCapableDevices();
+  /// Returns true if the current CPU is associated with any GPU.
+  static bool HasCapableDevices();
 
 public:
   /// Max number of DOFs per cell that the sweep kernel on GPU can handle.
