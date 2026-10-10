@@ -22,19 +22,16 @@ public:
   operator=(const DiscreteOrdinatesCurvilinearProblem&) = delete;
 
 protected:
-  void PerformInputChecks();
+  /// Curvilinear-geometry rules.
+  void CheckConfigurationErrors(std::vector<std::string>& errors) const override;
   void InitializeSpatialDiscretization() override;
   void ComputeSecondaryUnitIntegrals();
   bool SupportsTimeDependentMode() const override { return false; }
-  void ValidateBoundaryConfiguration() const override;
+  bool IsCurvilinear() const override { return true; }
   std::shared_ptr<SweepChunk> SetSweepChunk(LBSGroupset& groupset) override;
 
 private:
-  /**
-   * Discretization pointer to matrices of the secondary cell view (matrices of the primary cell
-   * view forwarded to the base class).
-   */
-  std::shared_ptr<opensn::SpatialDiscretization> discretization_secondary_;
+  /// Cell matrices of the angular-derivative terms (one power of r less than the primary ones).
   std::vector<UnitCellMatrices> secondary_unit_cell_matrices_;
 
 public:

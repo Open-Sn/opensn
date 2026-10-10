@@ -135,7 +135,9 @@ inner iteration, angle aggregation, and optional DSA configuration.
 
 Groupsets are detailed separately in :doc:`groupsets`, but from the problem
 perspective they define how the energy range is partitioned for transport
-iterations.
+iterations. The ranges are inclusive and must cover every group exactly once:
+the first range starts at group 0, adjacent ranges have no gap or overlap, and
+the final range ends at ``num_groups - 1``.
 
 ``xs_map``
 ----------
@@ -240,6 +242,7 @@ Restart-related options include:
 * ``read_initial_condition_path``: file stem used when reading restart data as
   an initial condition. :py:class:`pyopensn.solver.TransientSolver` can use a
   steady-state restart this way, then switch the problem to time-dependent mode.
+  It cannot be combined with ``read_restart_path``.
 * ``write_angular_flux_to_restart``: include stored angular fluxes in restart
   dumps when ``save_angular_flux=True``. This is required for full transient
   continuation restarts, but optional when a steady-state restart is used only
@@ -291,6 +294,13 @@ have dedicated post-construction setters are covered elsewhere in this guide:
 :py:meth:`SetPointSources`, :py:meth:`SetVolumetricSources`,
 :py:meth:`SetBoundaryOptions`, :py:meth:`SetAdjoint`, and
 :py:meth:`SetTimeDependentMode` / :py:meth:`SetSteadyStateMode`.
+
+These setters validate a value before committing it. A validation error leaves that
+setting unchanged. A later failure while rebuilding dependent runtime objects may
+leave partial changes.
+
+Problem setters are collective. Call them on every rank in the same order with
+equivalent input.
 
 ``sweep_type``
 ==============
@@ -504,8 +514,8 @@ reflected-image projection and to the bulk-sweep group solve.
 
 Do not also attach ``point_source`` to the collided problem. Its contribution
 is already represented by the uncollided flux and the generated
-first-collision source. Independent sources that are not represented in the
-uncollided file may still be attached normally.
+first-collision source. The collided problem rejects any volumetric or point
+source and any incoming-flux boundary; see `Supported problem mode`_.
 
 Source support
 --------------
@@ -517,6 +527,9 @@ The uncollided generator supports:
 The group-wise point-source strengths are total angle-integrated emission
 rates. Angular distributions are not currently supported by the uncollided
 problem.
+
+Uncollided generation is forward only. The generator rejects adjoint mode, both
+``options={'adjoint': True}`` at construction and a later ``SetAdjoint(True)``.
 
 Every point source requires a corresponding entry in ``near_source``. The two
 lists are matched by position, so ``near_source`` is required whenever
@@ -686,6 +699,11 @@ fixed-source calculations. It is not supported for:
 * time-dependent calculations,
 * adjoint calculations,
 * k-eigenvalue solvers.
+
+The first-collision source replaces the fixed sources of the collided problem.
+The problem is therefore rejected if it also has volumetric or point sources or
+incoming-flux (isotropic or arbitrary) boundaries, including sources added after
+construction, and its cross sections cannot be replaced with ``SetXSMap``.
 
 Flux and balance interpretation
 -------------------------------
@@ -895,6 +913,9 @@ problem class has no coordinate-system parameter of its own):
   a solid sphere; its center has zero area and needs no boundary condition. A
   mesh that starts at :math:`r > 0` is a hollow sphere, and ``zmin`` is its inner
   surface.
+
+:py:class:`pyopensn.solver.DiscreteOrdinatesProblem` accepts only Cartesian meshes. It
+rejects cylindrical and spherical meshes.
 
 Both geometries discretize the angular-derivative (redistribution) term with a
 weighted diamond difference along an ordered angular sequence: the azimuthal

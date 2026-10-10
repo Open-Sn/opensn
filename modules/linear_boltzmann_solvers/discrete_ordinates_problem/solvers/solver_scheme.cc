@@ -42,12 +42,18 @@ MakeWGSContext(DiscreteOrdinatesProblem& problem,
                const SweepChunkFactory& sweep_chunk_factory)
 {
   const auto& options = problem.GetOptions();
+  // Flux-dependent fission (prompt and implicit delayed) stays in the operator so the WGS solve
+  // converges it. In time-dependent mode the decay of the previous step's precursors is a
+  // right-hand-side source.
+  SourceFlags rhs_scope =
+    APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES;
+  if (problem.IsTimeDependent())
+    rhs_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
   return std::make_shared<SweepWGSContext>(problem,
                                            groupset,
                                            set_source_function,
                                            APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,
-                                           APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES |
-                                             APPLY_AGS_FISSION_SOURCES,
+                                           rhs_scope,
                                            options.verbose_inner_iterations,
                                            sweep_chunk_factory(groupset));
 }

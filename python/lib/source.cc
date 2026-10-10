@@ -48,6 +48,10 @@ WrapPointSource(py::module& src)
     R"(
     Point sources, defined by its location and a group-wise strength vector.
 
+    A source object stores the cells it applies to on the mesh of the problem (or response
+    evaluator) it was most recently added to. Sharing it between problems on the same mesh is safe;
+    for problems on different meshes, create a separate source object for each mesh.
+
     Wrapper of :cpp:class:`opensn::PointSource`.
     )"
   );
@@ -102,6 +106,10 @@ WrapVolumetricSource(py::module& src)
     "VolumetricSource",
     R"(
       Multi-group isotropic volumetric sources.
+
+      A source object stores the cells it applies to on the mesh of the problem (or response
+      evaluator) it was most recently added to. Sharing it between problems on the same mesh is
+      safe; for problems on different meshes, create a separate source object for each mesh.
 
       Wrapper of :cpp:class:`opensn::VolumetricSource`.
     )"
