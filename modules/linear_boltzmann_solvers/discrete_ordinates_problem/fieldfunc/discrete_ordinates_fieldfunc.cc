@@ -197,10 +197,8 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
   const auto& unit_cell_matrices = GetUnitCellMatrices();
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
-  // The charge sign depends on the problem-level block a group belongs to, not on the
-  // ranges of an individual material.
-  const auto problem_charged_ranges =
-    FindCSDAProblemChargedGroupRanges(block_id_to_xs_map_, num_groups_);
+  const auto problem_particle_types =
+    ResolveCSDAProblemParticleTypes(block_id_to_xs_map_, num_groups_);
 
   const auto energy = MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map_, num_groups_);
 
@@ -282,7 +280,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
           const double slowing_down_density =
             stopping_power[g] *
             (phi_new_local_[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
-          nodal_value += CSDAChargeSign(problem_charged_ranges, g) * slowing_down_density;
+          nodal_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
         data_vector_local[sdm.MapDOFLocal(*cell, i)] = nodal_value;
       }
@@ -324,9 +322,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
         }
         else if (is_terminal_group)
         {
-          // Particles leaving the terminal group are deposited, carrying the charge of
-          // their problem-level block.
-          csda_value += CSDAChargeSign(problem_charged_ranges, g) * slowing_down_density;
+          csda_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
       }
     }

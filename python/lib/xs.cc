@@ -194,9 +194,13 @@ WrapMultiGroupXS(py::module& xs)
   );
   multigroup_xs.def(
     "LoadFromCEPXS",
-    [](MultiGroupXS& self, const std::string& file_name, int material_id, bool csda_format)
+    [](MultiGroupXS& self,
+       const std::string& file_name,
+       int material_id,
+       bool csda_format,
+       const std::vector<std::string>& particle_order)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format);
+      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format, particle_order);
     },
     R"(
     Load multi-group cross sections from a CEPXS-BFP binary cross-section file.
@@ -212,6 +216,14 @@ WrapMultiGroupXS(py::module& xs)
         This also imports stopping power. Both formats import energy deposition
         and the custom 1D XS ``charge_deposition`` used by the
         ``csda_charge_deposition`` field function.
+    particle_order : List[str], default=[]
+        Particle species for each energy block in BXSLIB order. Valid entries
+        are ``"photon"``, ``"electron"``, and ``"positron"``. OpenSn obtains
+        block sizes from the energy resets in the file and supports at most one
+        block of each type. For a single-block CSDA library, a block with
+        nonzero stopping power is inferred as electrons. A single block with
+        zero stopping power remains unknown so that void materials can inherit
+        the problem species. Multi-block CSDA libraries require this argument.
 
     Notes
     -----
@@ -227,7 +239,8 @@ WrapMultiGroupXS(py::module& xs)
     )",
     py::arg("file_name"),
     py::arg("material_id") = 0,
-    py::arg("csda_format") = false
+    py::arg("csda_format") = false,
+    py::arg("particle_order") = std::vector<std::string>()
   );
   multigroup_xs.def(
     "Scale",

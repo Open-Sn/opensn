@@ -63,7 +63,12 @@ def make_xs(stopping):
             record(struct.pack(f"<{11 * NUM_GROUPS}d", *table))
     path = comm.bcast(path, root=0)
     xs = MultiGroupXS()
-    xs.LoadFromCEPXS(path, material_id=0, csda_format=True)
+    xs.LoadFromCEPXS(
+        path,
+        material_id=0,
+        csda_format=True,
+        particle_order=["electron", "photon", "positron"],
+    )
     comm.Barrier()
     if comm.rank == 0:
         os.remove(path)

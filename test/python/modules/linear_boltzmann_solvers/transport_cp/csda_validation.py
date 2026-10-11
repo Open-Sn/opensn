@@ -29,7 +29,7 @@ if "opensn_console" not in globals():
 comm = MPI.COMM_WORLD
 
 
-def make_xs(stopping, bounds=None):
+def make_xs(stopping, bounds=None, particle_order=None):
     """Write a CEPXS CSDA fixture with len(stopping) groups, shared by ranks."""
     num_groups = len(stopping)
     path = None
@@ -43,10 +43,10 @@ def make_xs(stopping, bounds=None):
 
             table = [0.0] * (11 * num_groups)
             for g in range(num_groups):
-                table[11 * g + 1] = [0.05, 0.03, 0.01, 0.005][g]
-                table[11 * g + 2] = [0.5, 0.35, 0.2, 0.1][g]
+                table[11 * g + 1] = [0.05, 0.03, 0.01, 0.005, 0.0025][g]
+                table[11 * g + 2] = [0.5, 0.35, 0.2, 0.1, 0.05][g]
                 table[11 * g + 4] = stopping[g]
-                table[11 * g + 7] = [1.0, 1.2, 1.5, 1.8][g]
+                table[11 * g + 7] = [1.0, 1.2, 1.5, 1.8, 2.0][g]
             if bounds is None:
                 bounds = [float(num_groups - i) for i in range(num_groups + 1)]
             record(b"CSDA VALIDATION REGRESSION")
@@ -55,10 +55,17 @@ def make_xs(stopping, bounds=None):
             record(struct.pack(f"<{11 * num_groups}d", *table))
     path = comm.bcast(path, root=0)
     xs = MultiGroupXS()
-    xs.LoadFromCEPXS(path, material_id=0, csda_format=True)
-    comm.Barrier()
-    if comm.rank == 0:
-        os.remove(path)
+    try:
+        xs.LoadFromCEPXS(
+            path,
+            material_id=0,
+            csda_format=True,
+            particle_order=[] if particle_order is None else particle_order,
+        )
+    finally:
+        comm.Barrier()
+        if comm.rank == 0:
+            os.remove(path)
     return xs
 
 
@@ -75,8 +82,11 @@ def expect_rejected(action, message, label):
 grid = OrthogonalMeshGenerator(node_sets=[[i / 8 for i in range(9)]]).Execute()
 grid.SetUniformBlockID(0)
 
-# Groups 1 and 2 are charged, and both sit in the second groupset.
-split_safe_xs = make_xs([0.0, 0.3, 0.2])
+# Group 0 is a photon block. Groups 1 and 2 form an explicitly identified
+# electron block, and both sit in the second groupset.
+split_safe_xs = make_xs(
+    [0.0, 0.3, 0.2], bounds=[3.0, 1.0, 2.0, 1.0],
+    particle_order=["photon", "electron"])
 # Groups 0-2 are all charged, so this block would span both groupsets.
 split_xs = make_xs([0.4, 0.3, 0.2])
 # A fourth group: more groups than the problem, which CSDA does not allow.
@@ -127,6 +137,30 @@ expect_rejected(
     lambda: DiscreteOrdinatesProblem(**problem_args(
         xs_map=[{"block_ids": [0], "xs": neutral_xs}], volumetric_sources=[])),
     "at least one charged-particle group", "no charged groups")
+
+# Multi-block CSDA libraries must supply the CEPXS ordering explicitly.
+multi_species_bounds = [3.0, 2.0, 1.0, 2.0, 1.0]
+expect_rejected(
+    lambda: make_xs([0.8, 0.8, 0.0, 0.0], bounds=multi_species_bounds),
+    "requires particle_order", "missing multi-block particle order")
+four_group_quad = GLProductQuadrature1DSlab(n_polar=4, scattering_order=0)
+four_group_args = problem_args(
+    num_groups=4,
+    groupsets=[{"groups_from_to": (0, 3), "angular_quadrature": four_group_quad}],
+    xs_map=[],
+    volumetric_sources=[],
+)
+
+# The same structure is accepted when its CEPXS block ordering is supplied.
+explicit_species_xs = make_xs(
+    [0.8, 0.8, 0.0, 0.0],
+    bounds=multi_species_bounds,
+    particle_order=["electron", "photon"],
+)
+DiscreteOrdinatesProblem(**{
+    **four_group_args,
+    "xs_map": [{"block_ids": [0], "xs": explicit_species_xs}],
+})
 
 problem = DiscreteOrdinatesProblem(**problem_args())
 

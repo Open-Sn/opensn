@@ -93,7 +93,7 @@
   },
   {
     "file": "csda_charge_sign.py",
-    "comment": "CSDA charge-deposition sign follows problem-level charged blocks",
+    "comment": "CSDA charge-deposition sign follows explicit particle metadata",
     "num_procs": 1,
     "outfileprefix": "csda_charge_sign_np1",
     "checks": [
@@ -113,7 +113,7 @@
   },
   {
     "file": "csda_charge_sign.py",
-    "comment": "CSDA charge-deposition sign follows problem-level charged blocks",
+    "comment": "CSDA charge-deposition sign follows explicit particle metadata",
     "num_procs": 2,
     "outfileprefix": "csda_charge_sign_np2",
     "checks": [
@@ -493,6 +493,27 @@
         "key": "III1A_CSDA_AUG_NORM_AT_0p5_GCM2=",
         "goldvalue": 5.177471452489e-02,
         "abs_tol": 1e-7
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_cepxs_iv1a.py",
+    "comment": "SAND89-2211 IV.1.A, 130-group electron-photon-positron tungsten benchmark",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "outfileprefix": "transport_1d_cepxs_iv1a",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "IV1A_REVERSE_PHOTONS=",
+        "goldvalue": 0.84,
+        "abs_tol": 0.01
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "IV1A_FORWARD_PHOTONS=",
+        "goldvalue": 8.20,
+        "abs_tol": 0.05
       }
     ]
   }

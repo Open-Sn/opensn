@@ -382,6 +382,9 @@ Parameters:
 * ``file_name``: the CEPXS binary library
 * ``material_id``: the material id to load from the library
 * ``csda_format``: whether to use OpenSn's CSDA CEPXS row convention
+* ``particle_order``: optional particle names for the energy-reset blocks, in
+  the order reported by CEPXS. Valid names are ``"electron"``, ``"photon"``,
+  and ``"positron"``, with at most one block of each type
 
 For ordinary CEPXS transport data, leave ``csda_format`` at its default value of
 ``False``. For charged-particle CSDA transport, load the library with:
@@ -392,7 +395,10 @@ For ordinary CEPXS transport data, leave ``csda_format`` at its default value of
 
 With ``csda_format=True``, OpenSn also imports stopping power. Both formats import
 energy deposition and the named custom cross section ``charge_deposition``, which
-the ``csda_charge_deposition`` field function uses.
+the ``csda_charge_deposition`` field function uses. OpenSn infers a single block
+with nonzero stopping power as electrons. A single zero-stopping-power material
+remains unspecified and can inherit its species from another material.
+Multi-block CSDA libraries require ``particle_order``.
 
 See :doc:`csda` for the full CSDA workflow and solver restrictions.
 

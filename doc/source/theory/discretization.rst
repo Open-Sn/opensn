@@ -218,9 +218,10 @@ OpenSn, we have:
    the unit sphere and provides high-order accuracy for spherical
    integration, available in both 2D and 3D geometries.
 
-| For charged-particle transport, not yet covered in OpenSn, Galerkin
-  variants of the traditional quadrature rules must be employed
-  :cite:t:`morel1989hybrid`, :cite:t:`ragusagalerkin2011`.
+| For charged-particle transport, Galerkin variants of the traditional
+  quadrature rules can improve the treatment of strongly forward-peaked
+  scattering :cite:t:`morel1989hybrid`, :cite:t:`ragusagalerkin2011`. See
+  :doc:`csda` for OpenSn's continuous-slowing-down implementation.
 | Note that any discrete-ordinate :math:`S_n` method can produce “**ray
   effects**” due to angular discretization errors
   :cite:t:`lathrop1968ray`, :cite:t:`lathrop1971remedies`, :cite:t:`morel_rayeffects`, :cite:t:`miller1977ray`.
