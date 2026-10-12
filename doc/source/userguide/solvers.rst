@@ -185,6 +185,16 @@ prompt-only model. With ``use_precursors=False``, delayed neutrons are omitted
 from steady-state and k-eigenvalue solves as well as from transients, which
 lowers :math:`k_\text{eff}` by approximately the delayed fraction.
 
+OpenSn also reads the environment variable ``OPENSN_NUM_THREADS`` once at
+startup. If it is unset or cannot be parsed as a positive integer, the
+runtime default is ``1``. The threaded portions of the uncollided solver and
+the CPU sweep scheduling setup apply this default directly. The ``AAH`` GPU
+all-at-once sweep scheduler thread pool is the exception: it sizes its pool
+to the number of angle sets and only falls back to the runtime default when
+``OPENSN_NUM_THREADS`` is present but invalid or ``0``; if the variable is
+left unset entirely, the ``AAH`` pool keeps its full requested worker count
+instead. See :doc:`discrete_ordinates_problems` for details.
+
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
 ``read_initial_condition_path`` reads restart data as an initial condition; this
 is the option to use when a :py:class:`pyopensn.solver.TransientSolver` should
