@@ -5,14 +5,14 @@
 #include "framework/math/quadratures/spatial/line_quadrature.h"
 #include "framework/math/quadratures/spatial/triangle_quadrature.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {
 
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
   const Cell& poly_cell,
-  std::shared_ptr<MeshContinuum> ref_grid,
+  std::shared_ptr<Mesh> ref_grid,
   const TriangleQuadrature& volume_quadrature,
   const LineQuadrature& surface_quadrature)
   : PieceWiseLinearBaseMapping(

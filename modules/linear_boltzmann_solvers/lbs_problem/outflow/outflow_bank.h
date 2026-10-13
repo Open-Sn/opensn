@@ -9,7 +9,7 @@
 namespace opensn
 {
 
-class MeshContinuum;
+class Mesh;
 
 /**
  * Contiguous storage manager for local face outflow tallies.
@@ -29,7 +29,7 @@ public:
    * \param include_internal_faces If true, allocate storage for internal faces in addition to
    * physical boundary faces.
    */
-  OutflowBank(const MeshContinuum& grid, unsigned int num_groups, bool include_internal_faces);
+  OutflowBank(const Mesh& grid, unsigned int num_groups, bool include_internal_faces);
 
   /**
    * Transfer cell-local outflow views to the caller.

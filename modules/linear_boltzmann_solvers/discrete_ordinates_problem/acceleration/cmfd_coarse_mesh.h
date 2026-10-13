@@ -12,7 +12,7 @@
 
 namespace opensn
 {
-class MeshContinuum;
+class Mesh;
 
 struct CMFDFineFace
 {
@@ -79,7 +79,7 @@ private:
   void AddLocalFineCellMembership(uint64_t fine_cell_id,
                                   uint64_t coarse_cell_id,
                                   int coarse_cell_partition_id);
-  void BuildExteriorFaces(const MeshContinuum& grid);
+  void BuildExteriorFaces(const Mesh& grid);
 
   std::vector<CMFDCoarseCell> local_cells_;
   std::vector<CMFDLocalFineCellMembership> local_fine_cell_memberships_;
@@ -88,10 +88,10 @@ private:
   std::size_t num_global_cells_ = 0;
 
 public:
-  static CMFDCoarseMesh BuildIdentity(const MeshContinuum& grid);
-  static CMFDCoarseMesh BuildLocalAggregation(const MeshContinuum& grid,
+  static CMFDCoarseMesh BuildIdentity(const Mesh& grid);
+  static CMFDCoarseMesh BuildLocalAggregation(const Mesh& grid,
                                               std::size_t target_fine_cells_per_coarse_cell);
-  static CMFDCoarseMesh BuildGlobalAggregation(const MeshContinuum& grid,
+  static CMFDCoarseMesh BuildGlobalAggregation(const Mesh& grid,
                                                std::size_t target_fine_cells_per_coarse_cell);
 };
 

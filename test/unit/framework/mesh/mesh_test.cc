@@ -1,6 +1,6 @@
 #include "gtest/gtest.h"
 #include "test/unit/common/mesh_builders.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/runtime.h"
@@ -10,7 +10,7 @@ using namespace opensn;
 
 /// Helper for the PointInsideCellXD tests
 void
-TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
+TestPointInsideCell(const std::shared_ptr<Mesh> grid)
 {
   // Centroid is contained within cell whose centroid it is
   for (const auto& cell : grid->GetLocalCells())
@@ -102,19 +102,19 @@ TestPointInsideCell(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST(MeshContinuumTest, PointInsideCell1D)
+TEST(MeshTest, PointInsideCell1D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0, 2.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCell2D)
+TEST(MeshTest, PointInsideCell2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCell(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCell3D)
+TEST(MeshTest, PointInsideCell3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCell(grid_ptr);
@@ -122,7 +122,7 @@ TEST(MeshContinuumTest, PointInsideCell3D)
 
 /// Helper for the PointInsideCellFaceXD tests
 void
-TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
+TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
 {
   // Vertices contained within faces that have those vertices
   for (uint64_t vi = 0; vi < grid->GetGlobalVertexCount(); ++vi)
@@ -190,7 +190,7 @@ TestPointInsideCellFace(const std::shared_ptr<MeshContinuum> grid)
   }
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace1D)
+TEST(MeshTest, PointInsideCellFace1D)
 {
   if (opensn::mpi_comm.size() != 1)
     return;
@@ -199,13 +199,13 @@ TEST(MeshContinuumTest, PointInsideCellFace1D)
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace2D)
+TEST(MeshTest, PointInsideCellFace2D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0}, {0.0, 0.5, 1.0}});
   TestPointInsideCellFace(grid_ptr);
 }
 
-TEST(MeshContinuumTest, PointInsideCellFace3D)
+TEST(MeshTest, PointInsideCellFace3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);
@@ -230,7 +230,7 @@ MakeZSlabVolume(double zmin, double zmax)
 
 /// Global number of boundary faces with their centroid at z that are named `name`.
 int
-CountNamedBoundaryFaces(const MeshContinuum& grid, const std::string& name, double z)
+CountNamedBoundaryFaces(const Mesh& grid, const std::string& name, double z)
 {
   int local_count = 0;
   const auto& id_map = grid.GetBoundaryIDMap();
@@ -251,7 +251,7 @@ CountNamedBoundaryFaces(const MeshContinuum& grid, const std::string& name, doub
 /// Checks that each ghost cell has `outside_id` if its centroid has z > 1 and `inside_id`
 /// otherwise. Returns the global number of ghost cells with z > 1.
 int
-CheckGhostBlockIDs(const MeshContinuum& grid, unsigned int outside_id, unsigned int inside_id)
+CheckGhostBlockIDs(const Mesh& grid, unsigned int outside_id, unsigned int inside_id)
 {
   int local_count = 0;
   for (const auto ghost_id : grid.GetGhostGlobalIDs())
@@ -268,7 +268,7 @@ CheckGhostBlockIDs(const MeshContinuum& grid, unsigned int outside_id, unsigned 
 
 } // namespace
 
-TEST(MeshContinuumTest, SetBlockIDFromLogicalVolumeSense)
+TEST(MeshTest, SetBlockIDFromLogicalVolumeSense)
 {
   // Eight cells of length 0.5 on [0, 4]; the volume holds the centroids of the first two.
   const auto grid = BuildLineMesh(4.0, 8, 0.0);
@@ -293,7 +293,7 @@ TEST(MeshContinuumTest, SetBlockIDFromLogicalVolumeSense)
   EXPECT_EQ(CheckGhostBlockIDs(*grid, 7, 3) > 0, mpi_comm.size() > 1);
 }
 
-TEST(MeshContinuumTest, SetBoundaryIDFromLogicalVolumeSense)
+TEST(MeshTest, SetBoundaryIDFromLogicalVolumeSense)
 {
   // The boundary faces of the line mesh are at z = 0 and z = 4; the volume holds z = 0 only.
   const auto grid = BuildLineMesh(4.0, 8, 0.0);
@@ -310,7 +310,7 @@ TEST(MeshContinuumTest, SetBoundaryIDFromLogicalVolumeSense)
   EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outside_face", 4.0), 1);
 }
 
-TEST(MeshContinuumTest, SetBoundaryIDFromInteriorLogicalVolumeSense)
+TEST(MeshTest, SetBoundaryIDFromInteriorLogicalVolumeSense)
 {
   // The volume holds no boundary face, so sense = false selects both and sense = true none.
   const auto grid = BuildLineMesh(4.0, 8, 0.0);

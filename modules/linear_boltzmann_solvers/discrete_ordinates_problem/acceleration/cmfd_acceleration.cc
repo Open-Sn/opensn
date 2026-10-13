@@ -7,7 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
