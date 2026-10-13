@@ -33,7 +33,7 @@ public:
    * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,
    * and set up the local mesh.
    */
-  std::shared_ptr<MeshContinuum> Execute() override;
+  std::shared_ptr<Mesh> Execute() override;
 
 private:
   /**
@@ -113,7 +113,7 @@ private:
    * boundaries.
    * \return A shared pointer to the local mesh.
    */
-  static std::shared_ptr<MeshContinuum> SetupLocalMesh(DistributedMeshData& mesh_info);
+  static std::shared_ptr<Mesh> SetupLocalMesh(DistributedMeshData& mesh_info);
 };
 
 } // namespace opensn

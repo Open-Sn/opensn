@@ -4,8 +4,8 @@
 #include "framework/mesh/mesh_mapping/mesh_mapping.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
-#include "framework/mesh/mesh_continuum/cell.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
 #include <sstream>
 
@@ -25,8 +25,7 @@ MeshMapping::FineMapping::FineMapping(const Cell& fine_cell)
 }
 
 void
-MeshMapping::Build(const std::shared_ptr<MeshContinuum>& fine_grid,
-                   const std::shared_ptr<MeshContinuum>& coarse_grid)
+MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr<Mesh>& coarse_grid)
 
 {
   if (mpi_comm.size() > 1)

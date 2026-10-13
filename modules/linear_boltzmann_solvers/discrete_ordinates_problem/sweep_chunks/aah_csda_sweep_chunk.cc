@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/error.h"
 #include "caliper/cali.h"
 #include <algorithm>

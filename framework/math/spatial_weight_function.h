@@ -4,7 +4,7 @@
 #pragma once
 
 #include "framework/data_types/vector3.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 
 namespace opensn
 {

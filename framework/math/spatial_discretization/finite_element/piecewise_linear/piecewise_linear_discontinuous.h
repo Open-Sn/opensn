@@ -56,14 +56,12 @@ protected:
   std::vector<std::pair<uint64_t, int64_t>> neighbor_cell_block_address_;
 
 private:
-  explicit PieceWiseLinearDiscontinuous(const std::shared_ptr<MeshContinuum>& grid,
-                                        QuadratureOrder q_order);
+  explicit PieceWiseLinearDiscontinuous(const std::shared_ptr<Mesh>& grid, QuadratureOrder q_order);
 
 public:
   /// Construct a shared object using the protected constructor.
   static std::shared_ptr<PieceWiseLinearDiscontinuous>
-  New(const std::shared_ptr<MeshContinuum>& grid,
-      QuadratureOrder q_order = QuadratureOrder::SECOND);
+  New(const std::shared_ptr<Mesh>& grid, QuadratureOrder q_order = QuadratureOrder::SECOND);
 };
 
 } // namespace opensn
