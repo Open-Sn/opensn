@@ -4,6 +4,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/discrete_ordinates_curvilinear_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_spherical.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/cbc_sweep_chunk_rz.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
@@ -88,9 +90,8 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
         << "Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.";
     throw std::runtime_error(oss.str());
   }
-  if (sweep_type_ != "AAH")
-    throw std::runtime_error(GetName() +
-                             ": Curvilinear geometries support only sweep_type=\"AAH\".");
+  if (geometry_type_ == GeometryType::ONED_SPHERICAL and sweep_type_ != "AAH")
+    throw std::runtime_error(GetName() + ": Spherical geometry supports only sweep_type=\"AAH\".");
   if (use_gpus_)
   {
     throw std::runtime_error(
@@ -98,7 +99,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       "geometries yet.");
   }
 
-  for (size_t gs = 0; gs < groupsets_.size(); ++gs)
+  for (std::size_t gs = 0; gs < groupsets_.size(); ++gs)
   {
     // angular quadrature type must be compatible with coordinate system
     const auto angular_quad_ptr = groupsets_[gs].quadrature;
@@ -208,7 +209,7 @@ DiscreteOrdinatesCurvilinearProblem::PerformInputChecks()
       if (not face.has_neighbor)
       {
         bool face_orthogonal = false;
-        for (size_t d = 0; d < unit_normal_vectors.size(); ++d)
+        for (std::size_t d = 0; d < unit_normal_vectors.size(); ++d)
         {
           const auto n_dot_e = face.normal.Dot(unit_normal_vectors[d]);
           if (std::fabs(n_dot_e) > 0.999999)
@@ -314,8 +315,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
     const auto& cell_mapping = sdm.GetCellMapping(cell);
-    //    const size_t cell_num_faces = cell.faces.size();
-    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
+    const std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     DenseMatrix<double> IntV_shapeI_shapeJ(cell_num_nodes, cell_num_nodes, 0.0);
@@ -344,7 +344,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
                             {}};
   };
 
-  const size_t num_local_cells = grid_->GetLocalCellCount();
+  const std::size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_->GetLocalCells())
@@ -365,7 +365,15 @@ DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
   if (geometry_type_ == GeometryType::ONED_SPHERICAL)
     return std::make_shared<AAHSweepChunkSpherical>(*this, groupset);
-  return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
+  switch (ParseSweepKind(sweep_type_, GetName()))
+  {
+    case SweepKind::AAH:
+      return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
+    case SweepKind::CBC:
+      return std::make_shared<CBCSweepChunkRZ>(*this, groupset);
+  }
+
+  OpenSnLogicalError("Unreachable: unknown SweepKind.");
 }
 
 } // namespace opensn

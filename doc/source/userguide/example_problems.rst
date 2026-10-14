@@ -510,7 +510,8 @@ Example 8: Curvilinear Problem
 ==============================
 
 Curvilinear problems follow the same general pattern, but use the curvilinear
-problem type and a compatible quadrature.
+problem type and a compatible quadrature. Generate ``mesh`` with
+``coord_sys="cylindrical"``.
 
 .. code-block:: python
 
@@ -528,7 +529,6 @@ problem type and a compatible quadrature.
 
    phys = DiscreteOrdinatesCurvilinearProblem(
        mesh=mesh,
-       coord_system=2,
        num_groups=2,
        groupsets=[
            {
@@ -542,6 +542,11 @@ problem type and a compatible quadrature.
    solver = SteadyStateSourceSolver(problem=phys)
    solver.Initialize()
    solver.Execute()
+
+The curvilinear problem supports CPU ``AAH`` and ``CBC`` sweep types. Use
+``AAH`` as the default, particularly when cyclic sweep dependencies are
+possible, and choose ``CBC`` only when the sweep graph satisfies CBC's acyclicity
+requirements.
 
 Example 9: Updating a Problem In Place
 ======================================
