@@ -1248,10 +1248,11 @@ DiscreteOrdinatesProblem::UpdatePsiOld()
 
 bool
 DiscreteOrdinatesProblem::ReadProblemRestartData(hid_t file_id,
-                                                 bool allow_transient_initialization_from_steady)
+                                                 bool allow_transient_initialization_from_steady,
+                                                 bool repartitioned)
 {
   return DiscreteOrdinatesProblemIO::ReadRestartData(
-    *this, file_id, allow_transient_initialization_from_steady);
+    *this, file_id, allow_transient_initialization_from_steady, repartitioned);
 }
 
 bool

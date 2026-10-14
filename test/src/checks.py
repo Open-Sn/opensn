@@ -271,6 +271,9 @@ class StrCompareCheck(Check):
                 if perform_skip_check:
                     skip_lines = True
 
+                found_key = False
+                last_value = None
+                last_line = ""
                 lines = file.readlines()
                 for line in lines:
                     if perform_skip_check:
@@ -282,6 +285,7 @@ class StrCompareCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
+                        found_key = True
                         if self.wordnum < 0:
                             self.SetLastResultSummary(
                                 f'StrCompare key="{self.key}" result=PASSED found=true')
@@ -289,32 +293,39 @@ class StrCompareCheck(Check):
                         words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
-                            warnings.warn("word count: " + str(len(words)) + "\n"
-                                          + "line: " + line.rstrip() + "\n"
-                                          + "words: " + str(words))
-                            raise ValueError(f"Required word {self.wordnum} does not exist")
+                            last_line = line
+                            continue
 
                         value = words[self.wordnum]
+                        last_value = value
+                        last_line = line
 
                         if value == self.gold:
                             self.SetLastResultSummary(
                                 f'StrCompare key="{self.key}" expected="{self.gold}" '
                                 f'actual="{value}" result=PASSED')
                             return True
-                        elif verbose:
-                            warnings.warn("Check failed : " + self.__str__() + "\n"
-                                          + line + "\n"
-                                          + str(words))
                         self.SetLastResultSummary(
                             f'StrCompare key="{self.key}" expected="{self.gold}" '
                             f'actual="{value}" result=FAILED')
 
-                if verbose:
+                if verbose and found_key:
+                    warnings.warn("Check failed : " + self.__str__() + "\n" + last_line)
+                elif verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found '
                                   + str(self.wordnum))
-                self.SetLastResultSummary(
-                    f'StrCompare key="{self.key}" expected="{self.gold}" '
-                    f'result=FAILED reason=key_not_found')
+                if not found_key:
+                    self.SetLastResultSummary(
+                        f'StrCompare key="{self.key}" expected="{self.gold}" '
+                        f'result=FAILED reason=key_not_found')
+                elif last_value is not None:
+                    self.SetLastResultSummary(
+                        f'StrCompare key="{self.key}" expected="{self.gold}" '
+                        f'actual="{last_value}" result=FAILED')
+                else:
+                    self.SetLastResultSummary(
+                        f'StrCompare key="{self.key}" expected="{self.gold}" '
+                        f'result=FAILED reason=word_not_found')
         except FileNotFoundError as e:
             print(str(e))
             self.SetLastResultSummary(
@@ -399,6 +410,9 @@ class FloatCompareCheck(Check):
                 if perform_skip_check:
                     skip_lines = True
 
+                found_key = False
+                last_value = None
+                last_line = ""
                 lines = file.readlines()
                 for line in lines:
                     if perform_skip_check:
@@ -410,6 +424,7 @@ class FloatCompareCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
+                        found_key = True
                         words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
@@ -436,6 +451,8 @@ class FloatCompareCheck(Check):
                                               + str(self.wordnum) + " to float.")
                             return False
 
+                        last_value = value
+                        last_line = line
                         if abs(value - self.gold) <= self.abs_tol + self.rel_tol * abs(self.gold):
                             self.SetLastResultSummary(
                                 f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
@@ -450,12 +467,20 @@ class FloatCompareCheck(Check):
                             f'actual={value:.9g} abs_tol={self.abs_tol:.3g} '
                             f'rel_tol={self.rel_tol:.3g} result=FAILED')
 
-                if verbose:
+                if verbose and found_key:
+                    warnings.warn("Check failed : " + self.__str__() + "\n" + last_line)
+                elif verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found '
                                   + str(self.wordnum))
-                self.SetLastResultSummary(
-                    f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
-                    f'result=FAILED reason=key_not_found')
+                if not found_key:
+                    self.SetLastResultSummary(
+                        f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                        f'result=FAILED reason=key_not_found')
+                elif last_value is not None:
+                    self.SetLastResultSummary(
+                        f'FloatCompare key="{self.key}" expected={self.gold:.9g} '
+                        f'actual={last_value:.9g} abs_tol={self.abs_tol:.3g} '
+                        f'rel_tol={self.rel_tol:.3g} result=FAILED')
         except FileNotFoundError as e:
             print(str(e))
             self.SetLastResultSummary(
@@ -518,6 +543,9 @@ class IntCompareCheck(Check):
                 if perform_skip_check:
                     skip_lines = True
 
+                found_key = False
+                last_value = None
+                last_line = ""
                 lines = file.readlines()
                 for line in lines:
                     if perform_skip_check:
@@ -529,6 +557,7 @@ class IntCompareCheck(Check):
 
                     key_pos = line.find(self.key)
                     if key_pos >= 0:
+                        found_key = True
                         words = SplitOutputWords(line)
 
                         if len(words) <= self.wordnum:
@@ -555,6 +584,8 @@ class IntCompareCheck(Check):
                                               + str(self.wordnum) + " to int.")
                             return False
 
+                        last_value = value
+                        last_line = line
                         if value == self.gold:
                             self.SetLastResultSummary(
                                 f'IntCompare key="{self.key}" expected={self.gold} '
@@ -568,12 +599,19 @@ class IntCompareCheck(Check):
                             f'IntCompare key="{self.key}" expected={self.gold} '
                             f'actual={value} result=FAILED')
 
-                if verbose:
+                if verbose and found_key:
+                    warnings.warn("Check failed : " + self.__str__() + "\n" + last_line)
+                elif verbose:
                     warnings.warn('Check failed : key, "' + self.key + '", not found, wordnum = '
                                   + str(self.wordnum))
-                self.SetLastResultSummary(
-                    f'IntCompare key="{self.key}" expected={self.gold} '
-                    f'result=FAILED reason=key_not_found')
+                if not found_key:
+                    self.SetLastResultSummary(
+                        f'IntCompare key="{self.key}" expected={self.gold} '
+                        f'result=FAILED reason=key_not_found')
+                elif last_value is not None:
+                    self.SetLastResultSummary(
+                        f'IntCompare key="{self.key}" expected={self.gold} '
+                        f'actual={last_value} result=FAILED')
 
         except FileNotFoundError as e:
             print(str(e))

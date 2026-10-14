@@ -30,7 +30,7 @@ if "opensn_console" not in globals():
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import OrthogonalMeshGenerator
+    from pyopensn.mesh import KBAGraphPartitioner, OrthogonalMeshGenerator
     from pyopensn.response import ResponseEvaluator
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.source import VolumetricSource
@@ -50,7 +50,10 @@ if __name__ == "__main__":
     length = 10.0
     cell_size = length / num_cells
     nodes = [i * cell_size for i in range(num_cells + 1)]
-    meshgen = OrthogonalMeshGenerator(node_sets=[nodes, nodes])
+    meshgen = OrthogonalMeshGenerator(
+        node_sets=[nodes, nodes],
+        partitioner=KBAGraphPartitioner(nx=1, ny=2, nz=1, ycuts=[length / 2.0]),
+    )
     grid = meshgen.Execute()
     grid.SetOrthogonalBoundaries()
     grid.SetUniformBlockID(0)

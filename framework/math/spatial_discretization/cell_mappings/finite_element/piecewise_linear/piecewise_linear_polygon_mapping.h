@@ -6,6 +6,7 @@
 #include "framework/math/spatial_discretization/cell_mappings/finite_element/piecewise_linear/piecewise_linear_base_mapping.h"
 #include "framework/data_types/matrix3x3.h"
 #include <array>
+#include <cstdint>
 
 namespace opensn
 {

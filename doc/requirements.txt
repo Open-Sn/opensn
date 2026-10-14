@@ -1,8 +1,10 @@
-Sphinx
+Sphinx<8
 sphinx_design
 sphinx-rtd-theme
 sphinxcontrib-bibtex
 nbsphinx
 ipython
+nbconvert
+nbformat
 breathe
 exhale

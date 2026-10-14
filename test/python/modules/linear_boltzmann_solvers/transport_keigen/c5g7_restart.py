@@ -18,6 +18,9 @@ if "opensn_console" not in globals():
 
 if __name__ == "__main__":
 
+    restart_stem = globals().get("restart_stem", "c5g7_restart/c5g7")
+    generate_restart = globals().get("generate_restart", False)
+
     # Setup mesh
     meshgen = FromFileMeshGenerator(
         filename="../../../../assets/mesh/c5g7/2d_c5g7_coarse.msh",
@@ -49,6 +52,16 @@ if __name__ == "__main__":
     pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
     # Solver
+    restart_options = (
+        {
+            "restart_writes_enabled": True,
+            "write_delayed_psi_to_restart": False,
+            "write_restart_path": restart_stem,
+        }
+        if generate_restart
+        else {"read_restart_path": restart_stem}
+    )
+
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
@@ -71,11 +84,7 @@ if __name__ == "__main__":
             "verbose_outer_iterations": True,
             "verbose_inner_iterations": True,
             "power_default_kappa": 1.0,
-            "read_restart_path": "c5g7_restart/c5g7",
-            # "restart_writes_enabled": True,
-            # "write_delayed_psi_to_restart": True,
-            # "write_restart_time_interval": 60,
-            # "write_restart_path": "c5g7_restart/c5g7",
+            **restart_options,
         },
         sweep_type="CBC",
     )

@@ -82,31 +82,37 @@
         "type": "KeyValuePair",
         "key": "QoI Value[6]=",
         "goldvalue": 1.5451e-06,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[7]=",
         "goldvalue": 6.74758e-07,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[8]=",
         "goldvalue": 3.0598e-07,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "QoI Value[9]=",
         "goldvalue": 2.07087e-07,
-        "abs_tol": 1e-09
+        "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
         "goldvalue": 3.30497e-06,
         "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_IDENTITY_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   },

@@ -15,7 +15,12 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import SplitFileMeshGenerator, OrthogonalMeshGenerator, ExtruderMeshGenerator
+    from pyopensn.mesh import (
+        ExtruderMeshGenerator,
+        KBAGraphPartitioner,
+        OrthogonalMeshGenerator,
+        SplitFileMeshGenerator,
+    )
     from pyopensn.xs import MultiGroupXS
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
@@ -65,6 +70,7 @@ if __name__ == "__main__":
                 layers=[{"z": Lz, "n": Nz}],  # layers
             ),
         ],
+        partitioner=KBAGraphPartitioner(nx=2, ny=2, nz=1, xcuts=[5.0], ycuts=[5.0]),
     )
     grid = meshgen.Execute()
     grid.SetUniformBlockID(0)

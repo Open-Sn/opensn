@@ -250,12 +250,19 @@ Restart-related options include:
   reflected-boundary, and cyclic-sweep cases. These buffers are optional for
   the steady-state-restart-as-transient-initial-condition workflow.
 
+Restart files written by current OpenSn versions identify cells globally and
+store nodal flux moments and precursor values in a partition-independent
+layout. Steady-state restarts, including those used to initialize a transient,
+can therefore be read with a different MPI rank count or mesh partition. The
+mesh, discretization, groups, moments, and adjoint mode must still be
+compatible; nodal values are matched by global cell ID and node coordinates.
+
 .. warning::
 
-   Restart files are rank-layout specific. A restart written with one MPI rank
-   count should be read with the same rank count and a compatible problem
-   definition. Changing from serial to parallel, or from one partition count to
-   another, is not a supported restart workflow.
+   Full transient restarts also contain local and delayed angular-flux state
+   whose layout depends on the sweep decomposition. Read such a restart with
+   the same MPI rank count and partition used to write it. Restart files in
+   the legacy rank-local format have the same restriction.
 
 .. note::
 

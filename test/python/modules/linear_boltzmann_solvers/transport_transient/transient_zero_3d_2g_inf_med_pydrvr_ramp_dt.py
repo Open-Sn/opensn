@@ -16,6 +16,8 @@
 #           [ v1 * sigma_s(0->1) * integral_0^t exp(v1 * sigma_t1 * s) * phi0(s) ds ]
 # phi0(1s) ~= 3.235,  phi1(1s) ~= 0.458
 # phi0(2s) ~= 3.672,  phi1(2s) ~= 1.036
+# Applying the independent Crank-Nicolson matrix recurrence to the ramped step
+# sequence below gives [phi0(2s), phi1(2s)] = [3.67500600, 1.03554588].
 
 import os
 import sys
@@ -73,7 +75,7 @@ if __name__ == "__main__":
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_richardson",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
             },
         ],

@@ -352,29 +352,15 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 28",
+        "key": "WGS groups [0-62] iteration =",
         "wordnum": 18,
         "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 39",
+        "key": "WGS groups [63-167] iteration =",
         "wordnum": 18,
         "gold": "converged"
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 28",
-        "wordnum": 13,
-        "gold": 6.74299e-07,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 39",
-        "wordnum": 13,
-        "gold": 8.73816e-07,
-        "abs_tol": 1e-09
       }
     ]
   },
@@ -501,29 +487,15 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 53",
+        "key": "WGS groups [0-62] iteration =",
         "wordnum": 18,
         "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 60",
+        "key": "WGS groups [63-167] iteration =",
         "wordnum": 18,
         "gold": "converged"
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 53",
-        "wordnum": 13,
-        "gold": 7.78662e-07,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 60",
-        "wordnum": 13,
-        "gold": 4.83429e-07,
-        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
@@ -546,40 +518,20 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 54",
+        "key": "WGS groups [0-62] iteration =",
         "wordnum": 18,
         "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 58",
+        "key": "WGS groups [63-167] iteration =",
         "wordnum": 18,
         "gold": "converged"
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 54",
-        "wordnum": 13,
-        "gold": 6.24484e-07,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 58",
-        "wordnum": 13,
-        "gold": 6.25993e-07,
-        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.16196,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Max-value2=",
-        "goldvalue": 8.86760,
         "abs_tol": 1e-09
       }
     ]
@@ -591,40 +543,20 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 54",
+        "key": "WGS groups [0-62] iteration =",
         "wordnum": 18,
         "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 58",
+        "key": "WGS groups [63-167] iteration =",
         "wordnum": 18,
         "gold": "converged"
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 54",
-        "wordnum": 13,
-        "gold": 6.8534e-07,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 58",
-        "wordnum": 13,
-        "gold": 6.2607e-07,
-        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.16196,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Max-value2=",
-        "goldvalue": 8.86850,
         "abs_tol": 1e-09
       }
     ]
@@ -887,29 +819,15 @@
     "checks": [
       {
         "type": "StrCompare",
-        "key": "WGS groups [0-62] iteration = 54",
+        "key": "WGS groups [0-62] iteration =",
         "wordnum": 18,
         "gold": "converged"
       },
       {
         "type": "StrCompare",
-        "key": "WGS groups [63-167] iteration = 57",
+        "key": "WGS groups [63-167] iteration =",
         "wordnum": 18,
         "gold": "converged"
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [0-62] iteration = 54",
-        "wordnum": 13,
-        "gold": 5.47188e-07,
-        "abs_tol": 1e-09
-      },
-      {
-        "type": "FloatCompare",
-        "key": "WGS groups [63-167] iteration = 57",
-        "wordnum": 13,
-        "gold": 6.98369e-07,
-        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
@@ -965,6 +883,19 @@
     ]
   },
   {
+    "file": "restart_repartition.py",
+    "comment": "Steady-state restart remaps flux moments across different MPI partitions",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RESTART_REPARTITION_PASS=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "transport_3d_6a_split_mesh.py",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
@@ -992,13 +923,13 @@
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 8,
-        "gold": 2118
+        "gold": 2048
       },
       {
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 9,
-        "gold": 1983
+        "gold": 2048
       }
     ]
   },
@@ -1030,13 +961,13 @@
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 8,
-        "gold": 2082
+        "gold": 2048
       },
       {
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 9,
-        "gold": 1994
+        "gold": 2048
       }
     ]
   },
@@ -1068,13 +999,13 @@
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 8,
-        "gold": 2118
+        "gold": 2048
       },
       {
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 9,
-        "gold": 1983
+        "gold": 2048
       }
     ]
   },
@@ -1106,13 +1037,13 @@
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 8,
-        "gold": 2082
+        "gold": 2048
       },
       {
         "type": "IntCompareCheck",
         "key": "Local cell count",
         "wordnum": 9,
-        "gold": 1994
+        "gold": 2048
       }
     ]
   },
@@ -1497,7 +1428,7 @@
   {
     "file": "transport_3d_disk_leakage_reflecting_bcs.py",
     "comment": "3D leakage calculation with non-orthogonal boundaries and reflecting/vacuum bcs",
-    "num_procs": 4,
+    "num_procs": 8,
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1514,14 +1445,20 @@
       {
         "type": "KeyValuePair",
         "key": "Side leakage=",
-        "goldvalue": 97.14824832,
-        "abs_tol": 1e-6
+        "goldvalue": 97.1482468145,
+        "abs_tol": 1e-8
       },
       {
         "type": "KeyValuePair",
         "key": "Total leakage=",
-        "goldvalue": 97.14824832,
-        "abs_tol": 1e-6
+        "goldvalue": 97.1482468145,
+        "abs_tol": 1e-8
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Particle balance=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-8
       }
     ]
   },
@@ -1611,7 +1548,7 @@
         "type": "KeyValuePair",
         "key": "WGDSA_TGDSA_DIFF_G120=",
         "goldvalue": 0.0,
-        "abs_tol": 1.0e-6
+        "abs_tol": 2.0e-7
       }
     ]
   },

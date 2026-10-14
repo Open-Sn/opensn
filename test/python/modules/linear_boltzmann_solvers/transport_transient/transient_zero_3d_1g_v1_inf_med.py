@@ -63,7 +63,7 @@ if __name__ == "__main__":
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_richardson",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
             },
         ],

@@ -3,15 +3,12 @@
 
 # 1-group, infinite-medium, transient in a 3.2 cm cube (all reflecting).
 # The cube is a pure absorber with sigma_t = 1.0 cm^-1, sigma_s = 0, v = 1.0 cm/s
-# and a total Q_tot = 122.58 particles/s on for t=[0, 1] s, then 0 for t>1 s.
+# and a constant total Q_tot = 122.58 particles/s.
 # At t = 0.5 s, cross sections are swapped to sigma_t = 2.0 cm^-1.
 # V = 3.2^3 cm^3, so volumetric Q = Q_tot / V ~= 3.7408 cm^-3 s^-1.
 #
-# For 0 <= t <= 1: phi(t) = Q * (1 - e^{-t})
-# For t >= 1:      phi(t) = phi(1) * e^{-2 (t - 1)}
-# With backward Euler,  dt = 0.05:
-# phi(1s) ~= 1.706
-# phi(2s) ~= 0.233
+# Backward Euler applies sigma_t=1 for ten steps through t=0.5 and sigma_t=2 for
+# the ten remaining steps. Its independent scalar recurrence gives phi(1s)=1.706130.
 
 import os
 import sys
@@ -62,7 +59,7 @@ if __name__ == "__main__":
                 "angular_quadrature": pquad,
                 "angle_aggregation_type": "single",
                 "inner_linear_method": "petsc_richardson",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
             },
         ],
@@ -109,7 +106,7 @@ if __name__ == "__main__":
 
         solver.Advance()
 
-        if (not swapped) and target_time >= swap_time:
+        if (not swapped) and target_time >= swap_time - 1.0e-12:
             phys.SetXSMap(xs_map=[{"block_ids": [0], "xs": xs_diag_swap}])
             swapped = True
 

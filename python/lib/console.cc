@@ -47,6 +47,24 @@ Console::BindAllReduce(const mpi::Communicator& comm)
   // clang-format off
   py::module main = py::module::import("__main__");
 
+  // Register integers before floating point because Python integers are also convertible to double.
+  // Scalar int — op: "sum" (default), "max", "min", "bor"
+  main.def(
+    "MPIAllReduce",
+    [comm](int value, const std::string& op) -> int
+    {
+      int out = 0;
+      if (op == "sum")       comm.all_reduce(value, out, mpi::op::sum<int>());
+      else if (op == "max")  comm.all_reduce(value, out, mpi::op::max<int>());
+      else if (op == "min")  comm.all_reduce(value, out, mpi::op::min<int>());
+      else if (op == "bor")  MPI_Allreduce(&value, &out, 1, MPI_INT, MPI_BOR, comm);
+      else throw std::invalid_argument("MPIAllReduce: unknown op '" + op + "'");
+      return out;
+    },
+    py::arg("value"), py::arg("op") = "sum",
+    "MPI all-reduce for a scalar integer."
+  );
+
   // Scalar double — op: "sum" (default), "max", "min"
   main.def(
     "MPIAllReduce",
@@ -83,22 +101,6 @@ Console::BindAllReduce(const mpi::Communicator& comm)
     "MPI all-reduce for a list of doubles."
   );
 
-  // Scalar int — op: "sum" (default), "max", "min", "bor"
-  main.def(
-    "MPIAllReduce",
-    [comm](int value, const std::string& op) -> int
-    {
-      int out = 0;
-      if (op == "sum")       comm.all_reduce(value, out, mpi::op::sum<int>());
-      else if (op == "max")  comm.all_reduce(value, out, mpi::op::max<int>());
-      else if (op == "min")  comm.all_reduce(value, out, mpi::op::min<int>());
-      else if (op == "bor")  MPI_Allreduce(&value, &out, 1, MPI_INT, MPI_BOR, comm);
-      else throw std::invalid_argument("MPIAllReduce: unknown op '" + op + "'");
-      return out;
-    },
-    py::arg("value"), py::arg("op") = "sum",
-    "MPI all-reduce for a scalar integer."
-  );
   // clang-format on
 }
 

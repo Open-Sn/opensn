@@ -365,7 +365,8 @@ protected:
   virtual std::optional<std::vector<double>>
   ComputeDerivedFieldFunctionData(const std::string& xs_name) const;
   virtual bool ReadProblemRestartData(hid_t file_id,
-                                      bool allow_transient_initialization_from_steady);
+                                      bool allow_transient_initialization_from_steady,
+                                      bool repartitioned);
   virtual bool WriteProblemRestartData(hid_t file_id) const;
 
   LBSOptions options_;

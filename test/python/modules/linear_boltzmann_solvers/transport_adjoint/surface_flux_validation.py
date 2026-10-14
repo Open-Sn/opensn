@@ -24,7 +24,7 @@ if "opensn_console" not in globals():
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import FromFileMeshGenerator, OrthogonalMeshGenerator
+    from pyopensn.mesh import FromFileMeshGenerator, KBAGraphPartitioner, OrthogonalMeshGenerator
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.source import VolumetricSource
     from pyopensn.xs import MultiGroupXS
@@ -143,7 +143,12 @@ if __name__ == "__main__":
     scale = 1.0e-8
     origin = 1000.0
     micro_nodes = [origin + scale * i for i in range(9)]
-    micro_grid = OrthogonalMeshGenerator(node_sets=[micro_nodes, micro_nodes]).Execute()
+    micro_grid = OrthogonalMeshGenerator(
+        node_sets=[micro_nodes, micro_nodes],
+        partitioner=KBAGraphPartitioner(
+            nx=1, ny=2, nz=1, ycuts=[origin + 4.0 * scale]
+        ),
+    ).Execute()
     micro_grid.SetOrthogonalBoundaries()
     micro_grid.SetUniformBlockID(0)
     micro_problem = make_problem(micro_grid, ["xmin", "xmax", "ymin", "ymax"])
