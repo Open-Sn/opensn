@@ -13,7 +13,7 @@
 #include "framework/math/functions/function.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 
 #include <array>
@@ -41,7 +41,7 @@ MMS_q(const Vector3& pt)
 }
 
 std::pair<double, double>
-SimTest_IP_MMS_L2error(std::shared_ptr<MeshContinuum> grid)
+SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid)
 {
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
 

@@ -5,10 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/raytrace/raytracer.h"
-#include "framework/mesh/mesh_continuum/cell.h"
+#include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
 #include "framework/data_types/vector3.h"

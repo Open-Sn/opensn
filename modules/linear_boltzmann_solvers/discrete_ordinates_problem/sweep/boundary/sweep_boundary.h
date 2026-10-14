@@ -17,7 +17,7 @@ namespace opensn
 class AngleSet;
 class AngleAggregation;
 class FaceNode;
-class MeshContinuum;
+class Mesh;
 class LBSGroupset;
 
 /// Base class for sweep related boundaries.
@@ -162,10 +162,7 @@ public:
     return ZeroFlux(groupset_id, 0);
   }
 
-  virtual void Setup(const std::shared_ptr<MeshContinuum>& grid,
-                     const AngularQuadrature& quadrature)
-  {
-  }
+  virtual void Setup(const std::shared_ptr<Mesh>& grid, const AngularQuadrature& quadrature) {}
 
   virtual void InitializeReflectingMap(const std::vector<LBSGroupset>& groupsets) {}
 
