@@ -1027,8 +1027,9 @@ steady-state restart is used only as a transient initial condition.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>read_restart_path: str, default=’’</dt><dd><p>File stem for reading a full restart. The number of MPI ranks and partitioned
-state layout must match the run that wrote the restart files.</p>
+<dt>read_restart_path: str, default=’’</dt><dd><p>File stem for reading a full restart. Scalar flux and precursor data can be
+remapped when the MPI rank count or mesh partition changes. Full transient
+continuation still requires the original partitioned angular state layout.</p>
 </dd>
 </dl>
 </li>
