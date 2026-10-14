@@ -19,6 +19,8 @@ Program Listing for File csda_utils.h
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
    #include <algorithm>
    #include <cstddef>
+   #include <stdexcept>
+   #include <string>
    #include <utility>
    #include <vector>
    
@@ -26,9 +28,8 @@ Program Listing for File csda_utils.h
    {
    
    /**
-    * Returns the problem's charged-particle blocks: contiguous ranges of groups whose
-    * stopping power is nonzero in at least one material, as half-open [begin, end) ranges
-    * ordered from high to low energy.
+    * Returns contiguous ranges of groups whose stopping power is nonzero in at least one material,
+    * as half-open [begin, end) ranges ordered from high to low energy.
     */
    inline std::vector<std::pair<unsigned int, unsigned int>>
    FindCSDAProblemChargedGroupRanges(const BlockID2XSMap& xs_map, const unsigned int num_groups)
@@ -57,15 +58,48 @@ Program Listing for File csda_utils.h
    }
    
    /**
-    * Returns the charge sign of particles in group g: +1 in the first problem-level
-    * charged-particle block (electrons) and -1 in the second (positrons). Validation
-    * limits a problem to at most two blocks.
+    * Resolves particle species supplied by the problem's material cross sections.
+    * Unknown entries do not override known species, but conflicting known species are rejected.
     */
-   inline double
-   CSDAChargeSign(const std::vector<std::pair<unsigned int, unsigned int>>& problem_ranges,
-                  const unsigned int g)
+   inline std::vector<ParticleType>
+   ResolveCSDAProblemParticleTypes(const BlockID2XSMap& xs_map, const unsigned int num_groups)
    {
-     return (problem_ranges.empty() or g < problem_ranges.front().second) ? 1.0 : -1.0;
+     std::vector<ParticleType> resolved(num_groups, ParticleType::UNKNOWN);
+     for (const auto& [_, xs] : xs_map)
+     {
+       const auto& types = xs->GetParticleTypes();
+       if (types.empty())
+         continue;
+       if (types.size() != num_groups)
+         throw std::invalid_argument("CSDA particle metadata is incompatible with the configured "
+                                     "number of groups.");
+   
+       for (unsigned int g = 0; g < num_groups; ++g)
+       {
+         if (types[g] == ParticleType::UNKNOWN)
+           continue;
+         if (resolved[g] != ParticleType::UNKNOWN and resolved[g] != types[g])
+           throw std::invalid_argument("CSDA materials assign conflicting particle species to group " +
+                                       std::to_string(g) + ".");
+         resolved[g] = types[g];
+       }
+     }
+     return resolved;
+   }
+   
+   /// Returns +1 for electrons and -1 for positrons. Other species are invalid here.
+   inline double
+   CSDAChargeSign(const std::vector<ParticleType>& particle_types, const unsigned int g)
+   {
+     if (g >= particle_types.size() or particle_types[g] == ParticleType::UNKNOWN)
+       throw std::invalid_argument("CSDA charged-particle species is unknown for group " +
+                                   std::to_string(g) +
+                                   "; supply particle_order when loading the CEPXS library.");
+     if (particle_types[g] == ParticleType::ELECTRON)
+       return 1.0;
+     if (particle_types[g] == ParticleType::POSITRON)
+       return -1.0;
+     throw std::invalid_argument("CSDA stopping power is assigned to a photon group.");
    }
    
    } // namespace opensn

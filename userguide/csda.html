@@ -217,6 +217,23 @@ import path. With <code class="docutils literal notranslate"><span class="pre">c
 <li><p>energy deposition data,</p></li>
 <li><p>stopping power data used by the CSDA sweep.</p></li>
 </ul>
+<p>BXSLIB stores each particle’s energy structure but does not name the particle
+blocks. OpenSn identifies a single block with nonzero stopping power as
+electrons. A single block with zero stopping power remains unspecified so that a
+void material can inherit the species used by the other materials. For a
+multi-block CSDA library, provide the order reported in the CEPXS output file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">xs</span><span class="o">.</span><span class="n">LoadFromCEPXS</span><span class="p">(</span>
+    <span class="s2">&quot;material.bxslib&quot;</span><span class="p">,</span>
+    <span class="n">material_id</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+    <span class="n">csda_format</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">particle_order</span><span class="o">=</span><span class="p">[</span><span class="s2">&quot;electron&quot;</span><span class="p">,</span> <span class="s2">&quot;photon&quot;</span><span class="p">],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Specify one of <code class="docutils literal notranslate"><span class="pre">&quot;photon&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;electron&quot;</span></code>, or <code class="docutils literal notranslate"><span class="pre">&quot;positron&quot;</span></code> for each
+energy-reset block. OpenSn obtains the group counts from BXSLIB and validates
+the supplied names against the stopping-power data. At most one block of each
+type is supported.</p>
 <p>Materials without stopping power remain ordinary transport materials. Materials
 with stopping power must provide one stopping-power value per energy group.</p>
 <p>Every material must supply the same energy-group structure or omit it entirely.
@@ -307,17 +324,20 @@ scalar flux.</p>
 <section id="csda-charge-deposition">
 <h3><span class="section-number">12.4.5. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code><a class="headerlink" href="#csda-charge-deposition" title="Link to this heading"></a></h3>
 <p>This field includes the raw <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> response plus the CSDA
-terminal charge-deposition correction.</p>
+terminal charge-deposition correction. Electron terminal contributions are
+positive and positron terminal contributions are negative, according to the
+explicit <code class="docutils literal notranslate"><span class="pre">particle_order</span></code> metadata.</p>
 </section>
 <section id="csda-charge-deposition-term">
 <h3><span class="section-number">12.4.6. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term</span></code><a class="headerlink" href="#csda-charge-deposition-term" title="Link to this heading"></a></h3>
 <p>This field contains only the terminal CSDA charge-deposition correction,
-projected as a normal derived nodal field.</p>
+projected as a normal derived nodal field. It uses the same electron-positive,
+positron-negative convention.</p>
 </section>
 <section id="csda-charge-deposition-term-cellavg">
 <h3><span class="section-number">12.4.7. </span><code class="docutils literal notranslate"><span class="pre">csda_charge_deposition_term_cellavg</span></code><a class="headerlink" href="#csda-charge-deposition-term-cellavg" title="Link to this heading"></a></h3>
 <p>This field contains only the terminal CSDA charge-deposition correction as a
-piecewise cell-average field.</p>
+piecewise cell-average field, with the same species-dependent sign convention.</p>
 </section>
 </section>
 <section id="balance-table-entries">

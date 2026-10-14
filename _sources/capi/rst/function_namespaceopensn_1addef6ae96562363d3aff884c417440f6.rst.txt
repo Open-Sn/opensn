@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a34657daa74f2affab488b2165b560c58:
+.. _exhale_function_namespaceopensn_1addef6ae96562363d3aff884c417440f6:
 
 Function opensn::CSDAChargeSign
 ===============================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::CSDAChargeSign(const std::vector<std::pair<unsigned int, unsigned int>>&, const unsigned int)
+.. doxygenfunction:: opensn::CSDAChargeSign(const std::vector<ParticleType>&, const unsigned int)
    :project: opensn

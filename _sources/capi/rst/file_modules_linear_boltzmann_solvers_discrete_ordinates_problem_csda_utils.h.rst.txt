@@ -38,6 +38,10 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
 - ``utility``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
@@ -66,7 +70,9 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a34657daa74f2affab488b2165b560c58`
+- :ref:`exhale_function_namespaceopensn_1addef6ae96562363d3aff884c417440f6`
 
 - :ref:`exhale_function_namespaceopensn_1ad54a8352f9989a7c2b18a6b6a509acd7`
+
+- :ref:`exhale_function_namespaceopensn_1a10e325f57903a54cb707924c913e7f17`
 

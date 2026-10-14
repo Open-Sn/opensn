@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a9f381eddd729f629830bcfccf0013f75:
+
+Enum ParticleType
+=================
+
+- Defined in :ref:`file_framework_materials_multi_group_xs_multi_group_xs.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::ParticleType
+   :project: opensn

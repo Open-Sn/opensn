@@ -36,6 +36,8 @@ Includes
 
 - ``memory`` (:ref:`file_framework_utils_memory.h`)
 
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
 - ``utility``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
@@ -77,4 +79,11 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_multi_group_x_s_1_1_precursor`
 
 - :ref:`exhale_class_classopensn_1_1_multi_group_x_s`
+
+
+Enums
+-----
+
+
+- :ref:`exhale_enum_namespaceopensn_1a9f381eddd729f629830bcfccf0013f75`
 

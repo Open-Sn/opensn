@@ -293,7 +293,7 @@ E_g, &amp; g\text{ is terminal in its charged-particle block}.
 =\sum_{g\in\mathrm{charged}}
 \delta E_g^{\mathrm{edge}}J^E_{i,g}.\]</div>
 <p>The terminal definition deposits the remaining group-midpoint energy when a
-particle leaves the last group in a charged block.</p>
+particle leaves the last group in a charged-particle block.</p>
 <section id="conservative-definition">
 <h3><span class="section-number">9.6.1. </span>Conservative definition<a class="headerlink" href="#conservative-definition" title="Link to this heading"></a></h3>
 <p>Multiplying the multigroup transport equation by midpoint energy and summing
@@ -340,9 +340,12 @@ q_b=
 +1,&amp;\text{electron block},\\
 -1,&amp;\text{positron block}.
 \end{cases}\end{split}\]</div>
+<p>The block identity comes from the CEPXS <code class="docutils literal notranslate"><span class="pre">particle_order</span></code> metadata supplied at
+import, or from the single-block electron inference. It is not inferred from the
+position of a charged block in the group array.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field adds this term to the imported CEPXS
-<code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> response. Multiplication by the physical electron charge
-converts the reported particle-rate convention to electric-charge deposition.</p>
+<code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> response. Multiplication by the elementary charge
+converts the signed particle-rate convention to electric-charge deposition.</p>
 </section>
 <section id="particle-balance">
 <h2><span class="section-number">9.8. </span>Particle balance<a class="headerlink" href="#particle-balance" title="Link to this heading"></a></h2>

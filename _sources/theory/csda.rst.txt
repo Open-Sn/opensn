@@ -236,7 +236,7 @@ The cellwise continuous-loss density is then
    \delta E_g^{\mathrm{edge}}J^E_{i,g}.
 
 The terminal definition deposits the remaining group-midpoint energy when a
-particle leaves the last group in a charged block.
+particle leaves the last group in a charged-particle block.
 
 Conservative definition
 ^^^^^^^^^^^^^^^^^^^^^^^
@@ -301,9 +301,13 @@ charged-particle block. For block :math:`b` with terminal group
    -1,&\text{positron block}.
    \end{cases}
 
+The block identity comes from the CEPXS ``particle_order`` metadata supplied at
+import, or from the single-block electron inference. It is not inferred from the
+position of a charged block in the group array.
+
 The ``csda_charge_deposition`` field adds this term to the imported CEPXS
-``charge_deposition`` response. Multiplication by the physical electron charge
-converts the reported particle-rate convention to electric-charge deposition.
+``charge_deposition`` response. Multiplication by the elementary charge
+converts the signed particle-rate convention to electric-charge deposition.
 
 Particle balance
 ----------------

@@ -492,6 +492,9 @@ Fortran-record binary CEPXS-BFP library:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">file_name</span></code>: the CEPXS binary library</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">material_id</span></code>: the material id to load from the library</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">csda_format</span></code>: whether to use OpenSn’s CSDA CEPXS row convention</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">particle_order</span></code>: optional particle names for the energy-reset blocks, in
+the order reported by CEPXS. Valid names are <code class="docutils literal notranslate"><span class="pre">&quot;electron&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;photon&quot;</span></code>,
+and <code class="docutils literal notranslate"><span class="pre">&quot;positron&quot;</span></code>, with at most one block of each type</p></li>
 </ul>
 <p>For ordinary CEPXS transport data, leave <code class="docutils literal notranslate"><span class="pre">csda_format</span></code> at its default value of
 <code class="docutils literal notranslate"><span class="pre">False</span></code>. For charged-particle CSDA transport, load the library with:</p>
@@ -500,7 +503,10 @@ Fortran-record binary CEPXS-BFP library:</p>
 </div>
 <p>With <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>, OpenSn also imports stopping power. Both formats import
 energy deposition and the named custom cross section <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code>, which
-the <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field function uses.</p>
+the <code class="docutils literal notranslate"><span class="pre">csda_charge_deposition</span></code> field function uses. OpenSn infers a single block
+with nonzero stopping power as electrons. A single zero-stopping-power material
+remains unspecified and can inherit its species from another material.
+Multi-block CSDA libraries require <code class="docutils literal notranslate"><span class="pre">particle_order</span></code>.</p>
 <p>See <a class="reference internal" href="csda.html"><span class="doc">CSDA Charged-Particle Transport</span></a> for the full CSDA workflow and solver restrictions.</p>
 </section>
 <section id="custom-cross-sections">

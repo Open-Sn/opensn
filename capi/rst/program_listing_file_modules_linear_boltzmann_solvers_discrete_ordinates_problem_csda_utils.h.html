@@ -94,6 +94,8 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stdexcept&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
@@ -101,9 +103,8 @@
 <span class="p">{</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Returns the problem&#39;s charged-particle blocks: contiguous ranges of groups whose</span>
-<span class="cm"> * stopping power is nonzero in at least one material, as half-open [begin, end) ranges</span>
-<span class="cm"> * ordered from high to low energy.</span>
+<span class="cm"> * Returns contiguous ranges of groups whose stopping power is nonzero in at least one material,</span>
+<span class="cm"> * as half-open [begin, end) ranges ordered from high to low energy.</span>
 <span class="cm"> */</span>
 <span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span>
 <span class="n">FindCSDAProblemChargedGroupRanges</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">)</span>
@@ -132,15 +133,48 @@
 <span class="p">}</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Returns the charge sign of particles in group g: +1 in the first problem-level</span>
-<span class="cm"> * charged-particle block (electrons) and -1 in the second (positrons). Validation</span>
-<span class="cm"> * limits a problem to at most two blocks.</span>
+<span class="cm"> * Resolves particle species supplied by the problem&#39;s material cross sections.</span>
+<span class="cm"> * Unknown entries do not override known species, but conflicting known species are rejected.</span>
 <span class="cm"> */</span>
-<span class="kr">inline</span><span class="w"> </span><span class="kt">double</span>
-<span class="n">CSDAChargeSign</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">problem_ranges</span><span class="p">,</span>
-<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="p">)</span>
+<span class="kr">inline</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParticleType</span><span class="o">&gt;</span>
+<span class="n">ResolveCSDAProblemParticleTypes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">)</span>
 <span class="p">{</span>
-<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">problem_ranges</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">problem_ranges</span><span class="p">.</span><span class="n">front</span><span class="p">().</span><span class="n">second</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParticleType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">resolved</span><span class="p">(</span><span class="n">num_groups</span><span class="p">,</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">UNKNOWN</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="p">[</span><span class="n">_</span><span class="p">,</span><span class="w"> </span><span class="n">xs</span><span class="p">]</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">xs_map</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="k">auto</span><span class="o">&amp;</span><span class="w"> </span><span class="n">types</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">xs</span><span class="o">-&gt;</span><span class="n">GetParticleTypes</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">types</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span>
+<span class="w">      </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">types</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">num_groups</span><span class="p">)</span>
+<span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;CSDA particle metadata is incompatible with the configured &quot;</span>
+<span class="w">                                  </span><span class="s">&quot;number of groups.&quot;</span><span class="p">);</span>
+
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_groups</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">g</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">types</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">UNKNOWN</span><span class="p">)</span>
+<span class="w">        </span><span class="k">continue</span><span class="p">;</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">resolved</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">UNKNOWN</span><span class="w"> </span><span class="k">and</span><span class="w"> </span><span class="n">resolved</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="n">types</span><span class="p">[</span><span class="n">g</span><span class="p">])</span>
+<span class="w">        </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;CSDA materials assign conflicting particle species to group &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                    </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="s">&quot;.&quot;</span><span class="p">);</span>
+<span class="w">      </span><span class="n">resolved</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">types</span><span class="p">[</span><span class="n">g</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">resolved</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="c1">/// Returns +1 for electrons and -1 for positrons. Other species are invalid here.</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">double</span>
+<span class="n">CSDAChargeSign</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParticleType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">particle_types</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">g</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">g</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">particle_types</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="k">or</span><span class="w"> </span><span class="n">particle_types</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">UNKNOWN</span><span class="p">)</span>
+<span class="w">    </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;CSDA charged-particle species is unknown for group &quot;</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                </span><span class="n">std</span><span class="o">::</span><span class="n">to_string</span><span class="p">(</span><span class="n">g</span><span class="p">)</span><span class="w"> </span><span class="o">+</span>
+<span class="w">                                </span><span class="s">&quot;; supply particle_order when loading the CEPXS library.&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">particle_types</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">ELECTRON</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">1.0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">particle_types</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">ParticleType</span><span class="o">::</span><span class="n">POSITRON</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mf">-1.0</span><span class="p">;</span>
+<span class="w">  </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;CSDA stopping power is assigned to a photon group.&quot;</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

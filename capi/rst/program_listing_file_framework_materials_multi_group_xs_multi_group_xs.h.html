@@ -93,6 +93,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/sparse_matrix/sparse_matrix.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
@@ -104,6 +105,15 @@
 <span class="p">{</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">centers</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">widths</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Particle species associated with an imported energy group.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">ParticleType</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">UNKNOWN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">PHOTON</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ELECTRON</span><span class="p">,</span>
+<span class="w">  </span><span class="n">POSITRON</span>
 <span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">MultiGroupXS</span>
@@ -173,6 +183,7 @@
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetEnergyDeposition</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">energy_deposition_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetStoppingPower</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">stopping_power_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParticleType</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetParticleTypes</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">particle_types_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns contiguous half-open ranges of groups with nonzero stopping power.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">GetStoppingPowerGroupRanges</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -275,6 +286,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e_bounds_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Per-group upper bounds for CEPXS libraries; empty for an ordinary group structure.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">e_upper_bounds_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Per-group CEPXS particle species. Unknown entries represent blocks that could not be inferred.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ParticleType</span><span class="o">&gt;</span><span class="w"> </span><span class="n">particle_types_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Total cross section</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sigma_t_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Absorption cross section</span>
@@ -354,9 +367,17 @@
 <span class="cm">   * \param csda_format When true, reads the CSDA row layout produced by the modified CEPXS, which</span>
 <span class="cm">   *        adds stopping power and requires physical energy group bounds. When false, reads the</span>
 <span class="cm">   *        standard CEPXS row layout and imports no stopping power.</span>
+<span class="cm">   * \param particle_order Optional particle species for each energy block, in BXSLIB order.</span>
+<span class="cm">   *        Accepted values are ``photon``, ``electron``, and ``positron``, with at most one block</span>
+<span class="cm">   *        of each type. When omitted for CSDA data, a single block with nonzero stopping power is</span>
+<span class="cm">   *        inferred as electrons. A single zero-stopping-power block remains unknown so that void</span>
+<span class="cm">   *        materials can inherit the species from other materials. Multi-block CSDA libraries</span>
+<span class="cm">   *        require this argument.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">MultiGroupXS</span>
-<span class="w">  </span><span class="nf">LoadFromCEPXS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">material_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">csda_format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="w"> </span><span class="nf">LoadFromCEPXS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">filename</span><span class="p">,</span>
+<span class="w">                                    </span><span class="kt">int</span><span class="w"> </span><span class="n">material_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">                                    </span><span class="kt">bool</span><span class="w"> </span><span class="n">csda_format</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">,</span>
+<span class="w">                                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">particle_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
 <span class="w">  </span><span class="c1">/// This method populates transport cross sections from an OpenMC cross-section file.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="w"> </span><span class="nf">LoadFromOpenMC</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">,</span>
 <span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">dataset_name</span><span class="p">,</span>

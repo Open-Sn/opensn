@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a10e325f57903a54cb707924c913e7f17:
+
+Function opensn::ResolveCSDAProblemParticleTypes
+================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_csda_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ResolveCSDAProblemParticleTypes(const BlockID2XSMap&, const unsigned int)
+   :project: opensn
