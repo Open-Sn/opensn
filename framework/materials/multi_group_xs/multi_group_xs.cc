@@ -104,6 +104,25 @@ MultiGroupXS::Combine(
             "All cross sections being combined must have the same group energy bounds.");
     }
 
+    if (xs->particle_types_.size() == n_grps)
+    {
+      if (mgxs.particle_types_.empty())
+        mgxs.particle_types_ = xs->particle_types_;
+      else
+        for (unsigned int g = 0; g < n_grps; ++g)
+        {
+          const auto input_type = xs->particle_types_[g];
+          auto& combined_type = mgxs.particle_types_[g];
+          OpenSnLogicalErrorIf(input_type != ParticleType::UNKNOWN and
+                                 combined_type != ParticleType::UNKNOWN and
+                                 input_type != combined_type,
+                               "All cross sections being combined must have compatible particle "
+                               "species.");
+          if (combined_type == ParticleType::UNKNOWN)
+            combined_type = input_type;
+        }
+    }
+
     // Increment number of precursors
     if (xs->IsFissionable())
       n_precs += xs->GetPrecursors().size();
@@ -323,6 +342,7 @@ MultiGroupXS::Reset()
   inv_velocity_.clear();
   e_bounds_.clear();
   e_upper_bounds_.clear();
+  particle_types_.clear();
 
   // Diffusion quantities
   diffusion_initialized_ = false;

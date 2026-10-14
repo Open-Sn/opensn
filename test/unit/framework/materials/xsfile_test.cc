@@ -153,8 +153,9 @@ TEST(CEPXS, CoupledEnergyBounds)
 {
   // In this 40-electron/40-photon library both species share the upper energy.
   // The first photon group must not start at the electron cutoff (0.01 MeV).
-  const auto xs = MultiGroupXS::LoadFromCEPXS(
-    std::string(OPENSN_TEST_ROOT) + "/assets/xs/Cu_40ge_40gp_p15_CEPXS_CSDA.bxslib", 0, true);
+  const auto path = std::string(OPENSN_TEST_ROOT) + "/assets/xs/Cu_40ge_40gp_p15_CEPXS_CSDA.bxslib";
+  EXPECT_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true), std::invalid_argument);
+  const auto xs = MultiGroupXS::LoadFromCEPXS(path, 0, true, {"electron", "photon"});
   EXPECT_TRUE(xs.HasEnergyGroupBounds());
   const auto [upper_e, lower_e] = xs.GetEnergyGroupBounds(0);
   const auto [upper_p, lower_p] = xs.GetEnergyGroupBounds(40);
@@ -164,6 +165,24 @@ TEST(CEPXS, CoupledEnergyBounds)
   EXPECT_NEAR(xs.GetDeltaE()[40], upper_e - lower_p, 1.e-14);
   EXPECT_GT(upper_e, lower_e);
   EXPECT_THROW(xs.GetEnergyGroupBounds(xs.GetNumGroups()), std::out_of_range);
+
+  const auto& particle_types = xs.GetParticleTypes();
+  ASSERT_EQ(particle_types.size(), 80);
+  EXPECT_TRUE(std::all_of(particle_types.begin(),
+                          particle_types.begin() + 40,
+                          [](const auto type) { return type == ParticleType::ELECTRON; }));
+  EXPECT_TRUE(std::all_of(particle_types.begin() + 40,
+                          particle_types.end(),
+                          [](const auto type) { return type == ParticleType::PHOTON; }));
+
+  EXPECT_NO_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true, {"electron", "photon"}));
+  EXPECT_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true, {"electron"}), std::invalid_argument);
+  EXPECT_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true, {"photon", "electron"}),
+               std::invalid_argument);
+  EXPECT_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true, {"electron", "electron"}),
+               std::invalid_argument);
+  EXPECT_THROW(MultiGroupXS::LoadFromCEPXS(path, 0, true, {"electron", "muon"}),
+               std::invalid_argument);
 }
 
 TEST(CEPXS, RejectsMalformedFortranRecords)
@@ -200,7 +219,10 @@ TEST(CEPXS, ScaleAndCombine)
   {
     SCOPED_TRACE(csda);
     const auto original = MultiGroupXS::LoadFromCEPXS(
-      std::string(OPENSN_TEST_ROOT) + "/assets/xs/Cu_40ge_40gp_p15_CEPXS_CSDA.bxslib", 0, csda);
+      std::string(OPENSN_TEST_ROOT) + "/assets/xs/Cu_40ge_40gp_p15_CEPXS_CSDA.bxslib",
+      0,
+      csda,
+      csda ? std::vector<std::string>{"electron", "photon"} : std::vector<std::string>{});
     // Only the CSDA row layout carries stopping power; legacy imports leave it absent.
     EXPECT_EQ(original.GetStoppingPower().empty(), not csda);
     EXPECT_EQ(original.GetByName("stopping_power") == nullptr, not csda);

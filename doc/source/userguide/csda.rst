@@ -89,6 +89,26 @@ import path. With ``csda_format=True``, OpenSn imports:
 * energy deposition data,
 * stopping power data used by the CSDA sweep.
 
+BXSLIB stores each particle's energy structure but does not name the particle
+blocks. OpenSn identifies a single block with nonzero stopping power as
+electrons. A single block with zero stopping power remains unspecified so that a
+void material can inherit the species used by the other materials. For a
+multi-block CSDA library, provide the order reported in the CEPXS output file:
+
+.. code-block:: python
+
+   xs.LoadFromCEPXS(
+       "material.bxslib",
+       material_id=0,
+       csda_format=True,
+       particle_order=["electron", "photon"],
+   )
+
+Specify one of ``"photon"``, ``"electron"``, or ``"positron"`` for each
+energy-reset block. OpenSn obtains the group counts from BXSLIB and validates
+the supplied names against the stopping-power data. At most one block of each
+type is supported.
+
 Materials without stopping power remain ordinary transport materials. Materials
 with stopping power must provide one stopping-power value per energy group.
 
@@ -196,19 +216,22 @@ scalar flux.
 --------------------------
 
 This field includes the raw ``charge_deposition`` response plus the CSDA
-terminal charge-deposition correction.
+terminal charge-deposition correction. Electron terminal contributions are
+positive and positron terminal contributions are negative, according to the
+explicit ``particle_order`` metadata.
 
 ``csda_charge_deposition_term``
 -------------------------------
 
 This field contains only the terminal CSDA charge-deposition correction,
-projected as a normal derived nodal field.
+projected as a normal derived nodal field. It uses the same electron-positive,
+positron-negative convention.
 
 ``csda_charge_deposition_term_cellavg``
 ---------------------------------------
 
 This field contains only the terminal CSDA charge-deposition correction as a
-piecewise cell-average field.
+piecewise cell-average field, with the same species-dependent sign convention.
 
 Balance Table Entries
 =====================

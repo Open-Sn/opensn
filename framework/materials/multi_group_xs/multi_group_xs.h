@@ -6,6 +6,7 @@
 #include "framework/data_types/sparse_matrix/sparse_matrix.h"
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -17,6 +18,15 @@ struct EnergyGroupStructure
 {
   std::vector<double> centers;
   std::vector<double> widths;
+};
+
+/// Particle species associated with an imported energy group.
+enum class ParticleType
+{
+  UNKNOWN = 0,
+  PHOTON,
+  ELECTRON,
+  POSITRON
 };
 
 class MultiGroupXS
@@ -86,6 +96,7 @@ public:
 
   const std::vector<double>& GetEnergyDeposition() const { return energy_deposition_; }
   const std::vector<double>& GetStoppingPower() const { return stopping_power_; }
+  const std::vector<ParticleType>& GetParticleTypes() const { return particle_types_; }
 
   /// Returns contiguous half-open ranges of groups with nonzero stopping power.
   std::vector<std::pair<unsigned int, unsigned int>> GetStoppingPowerGroupRanges() const;
@@ -188,6 +199,8 @@ private:
   std::vector<double> e_bounds_;
   /// Per-group upper bounds for CEPXS libraries; empty for an ordinary group structure.
   std::vector<double> e_upper_bounds_;
+  /// Per-group CEPXS particle species. Unknown entries represent blocks that could not be inferred.
+  std::vector<ParticleType> particle_types_;
   /// Total cross section
   std::vector<double> sigma_t_;
   /// Absorption cross section
@@ -267,9 +280,17 @@ public:
    * \param csda_format When true, reads the CSDA row layout produced by the modified CEPXS, which
    *        adds stopping power and requires physical energy group bounds. When false, reads the
    *        standard CEPXS row layout and imports no stopping power.
+   * \param particle_order Optional particle species for each energy block, in BXSLIB order.
+   *        Accepted values are ``photon``, ``electron``, and ``positron``, with at most one block
+   *        of each type. When omitted for CSDA data, a single block with nonzero stopping power is
+   *        inferred as electrons. A single zero-stopping-power block remains unknown so that void
+   *        materials can inherit the species from other materials. Multi-block CSDA libraries
+   *        require this argument.
    */
-  static MultiGroupXS
-  LoadFromCEPXS(const std::string& filename, int material_id = 0, bool csda_format = false);
+  static MultiGroupXS LoadFromCEPXS(const std::string& filename,
+                                    int material_id = 0,
+                                    bool csda_format = false,
+                                    const std::vector<std::string>& particle_order = {});
   /// This method populates transport cross sections from an OpenMC cross-section file.
   static MultiGroupXS LoadFromOpenMC(const std::string& file_name,
                                      const std::string& dataset_name,

@@ -764,10 +764,11 @@ WrapLBS(py::module& slv)
         If the problem was constructed with an ``uncollided_flux`` file, or if
         ``options.csda_enabled=True`` and the new cross sections split a
         charged-particle group block across groupsets, contain more than two
-        charged-particle blocks, have negative or non-finite stopping powers or
+        charged-particle group ranges, have negative or non-finite stopping powers or
         non-positive energy-group widths, or have stopping power or energy
         bounds that do not match the problem's group count. CSDA also rejects
-        conflicting supplied energy structures or a map with no energy structure.
+        conflicting supplied energy structures, unknown or conflicting charged-particle
+        species, or a map with no energy structure.
         Individual materials may omit bounds and use the shared structure.
 
     The new map is checked before it is installed, so a rejected map leaves the

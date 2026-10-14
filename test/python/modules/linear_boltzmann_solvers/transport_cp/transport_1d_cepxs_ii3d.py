@@ -122,7 +122,12 @@ def sample_field_function(problem, label, base_name, xs_name, length_cm, rho_g_c
 
 def run_case(label, xs_filename, csda_enabled, grid, length_cm, rho_g_cm3, num_cells):
     xs = MultiGroupXS()
-    xs.LoadFromCEPXS(resolve_xs_filename(xs_filename), material_id=0, csda_format=csda_enabled)
+    xs.LoadFromCEPXS(
+        resolve_xs_filename(xs_filename),
+        material_id=0,
+        csda_format=csda_enabled,
+        particle_order=["electron", "photon"] if csda_enabled else [],
+    )
     num_groups = xs.num_groups
 
     pquad = GLProductQuadrature1DSlab(n_polar=16, scattering_order=xs.scattering_order)

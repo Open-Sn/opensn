@@ -26,11 +26,13 @@
 #include <fstream>
 #include <array>
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
 #include <cstring>
 #include <limits>
+#include <stdexcept>
 #include <vector>
 
 namespace opensn
@@ -102,6 +104,98 @@ struct ParsedCEPXSData
   std::vector<double> stopping_power;
   std::vector<SparseMatrix> transfer_matrices;
 };
+
+using GroupRange = std::pair<std::size_t, std::size_t>;
+
+std::vector<GroupRange>
+FindParticleGroupRanges(const std::vector<double>& bounds)
+{
+  OpenSnLogicalErrorIf(bounds.size() < 2, "CEPXS energy group structure is incomplete.");
+
+  std::vector<GroupRange> ranges;
+  std::size_t begin = 0;
+  const std::size_t num_groups = bounds.size() - 1;
+  for (std::size_t g = 1; g < num_groups; ++g)
+    if (bounds[g] <= bounds[g + 1])
+    {
+      ranges.emplace_back(begin, g);
+      begin = g;
+    }
+  ranges.emplace_back(begin, num_groups);
+  return ranges;
+}
+
+ParticleType
+ParseParticleType(std::string name)
+{
+  std::transform(name.begin(),
+                 name.end(),
+                 name.begin(),
+                 [](const unsigned char c) { return static_cast<char>(std::tolower(c)); });
+  if (name == "photon")
+    return ParticleType::PHOTON;
+  if (name == "electron")
+    return ParticleType::ELECTRON;
+  if (name == "positron")
+    return ParticleType::POSITRON;
+  throw std::invalid_argument("Invalid CEPXS particle type \"" + name +
+                              "\". Expected photon, electron, or positron.");
+}
+
+std::vector<ParticleType>
+ResolveParticleTypes(const std::vector<GroupRange>& ranges,
+                     const std::vector<double>& stopping_power,
+                     const std::vector<std::string>& particle_order)
+{
+  std::vector<ParticleType> block_types(ranges.size(), ParticleType::UNKNOWN);
+  const bool has_stopping_power = not stopping_power.empty();
+  const auto has_nonzero_stopping = [&stopping_power](const GroupRange& range)
+  {
+    for (std::size_t g = range.first; g < range.second; ++g)
+      if (stopping_power[g] > MultiGroupXS::STOPPING_POWER_TOLERANCE)
+        return true;
+    return false;
+  };
+
+  if (not particle_order.empty())
+  {
+    OpenSnInvalidArgumentIf(particle_order.size() != ranges.size(),
+                            "CEPXS particle_order must contain one entry for each of the " +
+                              std::to_string(ranges.size()) +
+                              " particle blocks found in the BXSLIB energy structure.");
+    std::transform(
+      particle_order.begin(), particle_order.end(), block_types.begin(), ParseParticleType);
+    for (std::size_t i = 0; i < block_types.size(); ++i)
+      for (std::size_t j = i + 1; j < block_types.size(); ++j)
+        OpenSnInvalidArgumentIf(block_types[i] == block_types[j],
+                                "CEPXS particle_order supports at most one block of each particle "
+                                "type.");
+  }
+  else if (has_stopping_power and ranges.size() == 1)
+  {
+    if (has_nonzero_stopping(ranges.front()))
+      block_types.front() = ParticleType::ELECTRON;
+  }
+
+  OpenSnInvalidArgumentIf(has_stopping_power and ranges.size() > 1 and particle_order.empty(),
+                          "A multi-block CEPXS CSDA library requires particle_order.");
+
+  std::vector<ParticleType> particle_types(ranges.back().second, ParticleType::UNKNOWN);
+  for (std::size_t b = 0; b < ranges.size(); ++b)
+  {
+    const auto [begin, end] = ranges[b];
+    if (has_stopping_power and block_types[b] != ParticleType::UNKNOWN)
+    {
+      OpenSnInvalidArgumentIf(block_types[b] == ParticleType::PHOTON and
+                                has_nonzero_stopping(ranges[b]),
+                              "CEPXS particle_order labels a block with nonzero stopping power as "
+                              "photon.");
+    }
+    for (std::size_t g = begin; g < end; ++g)
+      particle_types[g] = block_types[b];
+  }
+  return particle_types;
+}
 
 std::vector<std::int32_t>
 BytesToInt32(const std::vector<char>& bytes)
@@ -290,6 +384,7 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
 
   xs.num_groups = static_cast<unsigned int>(n_groups);
   xs.e_bounds = ExtractEnergyGroupStructure(rec, n_groups, row_format == CEPXSRowFormat::CSDA);
+  const auto particle_ranges = FindParticleGroupRanges(xs.e_bounds);
 
   xs.sigma_t.assign(xs.num_groups, 0.0);
   xs.charge_deposition.assign(xs.num_groups, 0.0);
@@ -408,44 +503,20 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
   OpenSnLogicalErrorIf(not xs.stopping_power.empty() and not IsNonNegative(xs.stopping_power),
                        "CEPXS binary stopping power contains negative values.");
 
-  if (not xs.stopping_power.empty())
+  for (const auto& [g_begin, g_end] : particle_ranges)
   {
-    constexpr double tol = 1.0e-12;
-    std::vector<std::pair<size_t, size_t>> charged_ranges;
-
-    size_t g = 0;
-    while (g < xs.stopping_power.size())
+    OpenSnLogicalErrorIf(g_begin >= g_end or g_end >= xs.e_bounds.size(),
+                         "CEPXS particle group range exceeds energy-bound storage.");
+    for (size_t g = g_begin; g < g_end; ++g)
     {
-      while (g < xs.stopping_power.size() and std::abs(xs.stopping_power[g]) <= tol)
-        ++g;
-      if (g >= xs.stopping_power.size())
-        break;
-
-      const size_t g_begin = g;
-      while (g < xs.stopping_power.size() and std::abs(xs.stopping_power[g]) > tol)
-        ++g;
-      charged_ranges.emplace_back(g_begin, g);
-    }
-
-    for (const auto& [g_begin, g_end] : charged_ranges)
-    {
-      OpenSnLogicalErrorIf(g_end >= xs.e_bounds.size(),
-                           "CEPXS charged-particle group range exceeds energy-bound storage.");
-
-      for (size_t gg = g_begin; gg < g_end; ++gg)
-      {
-        const double lower = xs.e_bounds[gg + 1];
-        // BXSLIB stores the common upper energy implicitly when a new species starts.
-        // A reset is valid only for the first group in this charged block.
-        const bool species_reset = gg == g_begin and xs.e_bounds[gg] <= lower;
-        const double upper = species_reset ? xs.e_bounds.front() : xs.e_bounds[gg];
-        const double pair_tol = 1.0e-12 * std::max(1.0, std::abs(upper));
-        OpenSnLogicalErrorIf(upper <= lower + pair_tol,
-                             "CEPXS charged-particle groups must be strictly decreasing in energy. "
-                             "First non-decreasing pair in charged block at global index " +
-                               std::to_string(gg) + " -> " + std::to_string(gg + 1) + " : " +
-                               std::to_string(upper) + " <= " + std::to_string(lower) + ".");
-      }
+      const double upper = g == g_begin ? xs.e_bounds.front() : xs.e_bounds[g];
+      const double lower = xs.e_bounds[g + 1];
+      const double pair_tol = 1.0e-12 * std::max(1.0, std::abs(upper));
+      OpenSnLogicalErrorIf(upper <= lower + pair_tol,
+                           "CEPXS particle groups must be strictly decreasing in energy. First "
+                           "invalid pair in particle block at global index " +
+                             std::to_string(g) + " -> " + std::to_string(g + 1) + " : " +
+                             std::to_string(upper) + " <= " + std::to_string(lower) + ".");
     }
   }
 
@@ -455,7 +526,10 @@ ParseCEPXSBFPBinary(const std::string& filename, int material_id, CEPXSRowFormat
 } // namespace
 
 MultiGroupXS
-MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id, bool csda_format)
+MultiGroupXS::LoadFromCEPXS(const std::string& filename,
+                            int material_id,
+                            bool csda_format,
+                            const std::vector<std::string>& particle_order)
 {
   MultiGroupXS mgxs;
   OpenSnLogicalErrorIf(not LooksLikeFortranBinary(filename),
@@ -477,6 +551,8 @@ MultiGroupXS::LoadFromCEPXS(const std::string& filename, int material_id, bool c
   for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
     mgxs.e_upper_bounds_.push_back(
       parsed.e_bounds[g] <= parsed.e_bounds[g + 1] ? parsed.e_bounds.front() : parsed.e_bounds[g]);
+  mgxs.particle_types_ = ResolveParticleTypes(
+    FindParticleGroupRanges(parsed.e_bounds), parsed.stopping_power, particle_order);
   mgxs.sigma_t_ = parsed.sigma_t;
   // Derive absorption from total and transfer matrices
   mgxs.sigma_a_.clear();

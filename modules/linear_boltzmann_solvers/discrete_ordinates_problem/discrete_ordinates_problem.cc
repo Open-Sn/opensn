@@ -489,10 +489,9 @@ DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs
       GetName() + ": CSDA stopping power must contain finite, nonnegative values.");
     OpenSnInvalidArgumentIf(
       xs->GetStoppingPowerGroupRanges().size() > 2,
-      GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron).");
+      GetName() + ": CSDA supports at most two disjoint nonzero-stopping-power ranges.");
   }
 
-  // Blocks are defined across all materials; the charge sign of deposition depends on it.
   const auto charged_ranges = FindCSDAProblemChargedGroupRanges(xs_map, num_groups_);
   OpenSnInvalidArgumentIf(
     charged_ranges.empty(),
@@ -501,8 +500,17 @@ DiscreteOrdinatesProblem::ValidateCSDAGroupConfiguration(const BlockID2XSMap& xs
                 "csda_format=True).");
   OpenSnInvalidArgumentIf(
     charged_ranges.size() > 2,
-    GetName() + ": CSDA supports at most two charged-particle blocks (electron then positron) "
-                "across all materials.");
+    GetName() +
+      ": CSDA supports at most two disjoint nonzero-stopping-power ranges across all materials.");
+
+  const auto particle_types = ResolveCSDAProblemParticleTypes(xs_map, num_groups_);
+  for (const auto& [g_begin, g_end] : charged_ranges)
+    for (unsigned int g = g_begin; g < g_end; ++g)
+      OpenSnInvalidArgumentIf(
+        particle_types[g] != ParticleType::ELECTRON and particle_types[g] != ParticleType::POSITRON,
+        GetName() + ": charged group " + std::to_string(g) +
+          " has no electron or positron identity. Supply particle_order when loading the CEPXS "
+          "library.");
 
   for (const auto& [g_begin, g_end] : charged_ranges)
   {
