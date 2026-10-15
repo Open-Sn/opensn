@@ -89,7 +89,8 @@ if __name__ == "__main__":
 
     phi_n = max_phi(phys)
 
-    solver = TransientSolver(problem=phys, dt=dt, theta=1.0, stop_time=dt, initial_state="existing")
+    solver = TransientSolver(
+        problem=phys, dt=dt, theta=1.0, stop_time=2.0 * dt, initial_state="existing")
     solver.Initialize()
     solver.Execute()
 

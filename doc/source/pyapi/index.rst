@@ -303,6 +303,12 @@ Source
    source.PointSource
    source.VolumetricSource
 
+.. note::
+
+   A source caches cell data for the problem that most recently initialized it. Reusing it with a
+   different mesh replaces that data and can break the earlier problem. Prefer a separate source
+   object for each problem. Share one only when both problems use the same mesh and partitioning.
+
 
 Post-processors
 ----------------

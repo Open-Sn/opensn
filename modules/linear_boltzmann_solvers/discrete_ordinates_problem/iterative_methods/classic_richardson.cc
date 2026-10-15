@@ -54,7 +54,7 @@ ClassicRichardson::Solve()
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
   gs_context_ptr->last_solve = {};
-  const auto scope = gs_context_ptr->lhs_src_scope | gs_context_ptr->rhs_src_scope;
+  const auto scope = gs_context_ptr->GetLHSSourceScope() | gs_context_ptr->GetRHSSourceScope();
   saved_q_moments_local_ = do_problem.GetQMomentsLocal();
   psi_old_ = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
 

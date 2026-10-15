@@ -86,7 +86,7 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
     for (const auto& groupset : lbs_problem->GetGroupsets())
     {
       auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-      const bool supress_wgs = wgs_context.lhs_src_scope & SUPPRESS_WG_SCATTER;
+      const bool supress_wgs = wgs_context.GetLHSSourceScope() & SUPPRESS_WG_SCATTER;
       SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
       if (supress_wgs)
         source_flags |= SUPPRESS_WG_SCATTER;

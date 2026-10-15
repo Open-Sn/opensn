@@ -1656,5 +1656,96 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "problem_configuration_rejections.py",
+    "comment": "Problem configuration rules reject incomplete or non-consecutive groupset partitions, missing cross sections on one rank (reduced across ranks), short cross sections, restart options, missing quadratures, combined violations, spherical/RZ meshes on the Cartesian problem, azimuthal aggregation on unstructured RZ meshes, non-planar reflecting boundaries (owned by one rank), and an unusable restart directory (rank 0 only). Rejected RZ and non-planar boundary changes leave the problem unchanged",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_REJECTIONS_PASSED",
+        "wordnum": 1,
+        "gold": 16,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_RZ_REJECTED_MAX_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CONFIG_NONPLANAR_REJECTED_MAX_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "source_setters_keyword_order.py",
+    "comment": "Source setters clear before adding regardless of keyword order and replace atomically (infinite medium, balance)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "VOLUMETRIC_DEVIATION",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "POINT_BALANCE_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "VOLUMETRIC_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "VOLUMETRIC_ATOMIC_DEVIATION",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "POINT_REJECTED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "POINT_ATOMIC_BALANCE_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "source_moments_required.py",
+    "comment": "use_source_moments requires loaded source moments before a steady solve, transient step, or psi reconstruction (rejected on every rank, no out-of-bounds read)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "SOURCE_MOMENTS_REQUIRED_PASSED",
+        "wordnum": 1,
+        "gold": 4,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

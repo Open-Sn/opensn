@@ -830,6 +830,8 @@ Important points:
 * The transient problem should not be constructed with ``time_dependent=True``
   when using ``read_initial_condition_path``. The transient solver reads the
   initial condition first, then switches the problem to time-dependent mode.
+  It does this once per problem: a later ``Initialize()`` of the same or another
+  transient solver continues from the problem's current state.
 * ``save_angular_flux=True`` is still required on the transient problem because
   time-dependent transport stores angular fluxes.
 * Full transient continuation restarts are different. If a transient run will

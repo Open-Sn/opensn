@@ -823,5 +823,121 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "uncollided_mode_rejections.py",
+    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorTimeDependentRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetTimeDependentRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSetXSMapRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedLaterSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedNearSourceRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedRejectedStateUnchanged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedRejectedMaxDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedCtorBoundaryRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedLaterBoundaryRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedGeneratorCtorAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedGeneratorSetAdjointRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedGeneratorUnchanged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_source_replaced_after_initialize.py",
+    "comment": "UncollidedSolver.Execute uses the point source replaced after Initialize (linearity in source strength)",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReplacedSourceRelErr=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedUnitFluxNonzero=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

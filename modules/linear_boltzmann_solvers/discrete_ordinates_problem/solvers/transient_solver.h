@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "modules/solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include <memory>
 #include <string>
@@ -15,16 +15,13 @@ namespace opensn
 
 class DiscreteOrdinatesProblem;
 
-class TransientSolver : public Solver
+class TransientSolver : public DiscreteOrdinatesSolver
 {
 public:
   explicit TransientSolver(const InputParameters& params);
 
   ~TransientSolver() override = default;
 
-  void Initialize() override;
-  void Execute() override;
-  void Advance() override;
   void SetTimeStep(double dt);
   void SetTheta(double theta);
   void StepPrecursors();
@@ -36,7 +33,19 @@ public:
   unsigned int GetStep() const { return step_; }
   BalanceTable ComputeBalanceTable() const;
 
+protected:
+  /// Requires time-dependent mode, except while the problem's steady-state initial condition
+  /// (`read_initial_condition_path`) is still pending: Initialize() loads it once and switches the
+  /// mode itself. Later initializations, by this or another solver, use the current state.
+  void CheckRequirements(std::vector<std::string>& errors) const override;
+  void InitializeSolver() override;
+  void ExecuteSolver() override;
+  void AdvanceSolver() override;
+
 private:
+  /// Sets this solver's time step and theta on the problem.
+  void ApplyTimeParameters();
+
   bool ReadRestartData();
   bool ReadInitialConditionData();
   bool WriteRestartData();
@@ -50,8 +59,6 @@ private:
    */
   void CheckPrecursorStatus();
 
-  std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
-
   /// Previous time step vectors
   std::vector<double> phi_prev_local_;
   std::vector<double> precursor_prev_local_;
@@ -62,7 +69,10 @@ private:
   bool last_has_fissionable_material_ = false;
   bool last_has_precursor_data_ = false;
 
-  /// Time discretization values and methods
+  /// Time discretization values and methods. dt_ and theta_ are this solver's settings; the
+  /// problem holds the values of the step being taken.
+  double dt_ = 0.0;
+  double theta_ = 0.0;
   double stop_time_ = 0.1;
   double current_time_ = 0.0;
   /// Time-discretization parameters used by the most recent completed Advance.
@@ -70,7 +80,6 @@ private:
   double last_theta_ = 0.0;
   unsigned int step_ = 0;
   bool verbose_ = true;
-  bool initialized_ = false;
   bool enforce_stop_time_ = false;
   std::string initial_state_;
   std::function<void()> pre_advance_callback_;

@@ -66,11 +66,10 @@ LBSProblem::RebuildOutflowDependentGPUCarriers()
   mesh_carrier_ = std::make_shared<MeshCarrier>(*this, *total_xs_carrier_, *outflow_carrier_);
 }
 
-void
-LBSProblem::CheckCapableDevices()
+bool
+LBSProblem::HasCapableDevices()
 {
-  std::uint32_t num_gpus = crb::get_num_gpus();
-  OpenSnLogicalErrorIf(num_gpus == 0, "LBSProblem::CheckCapableDevices: No GPU detected.");
+  return crb::get_num_gpus() > 0;
 }
 
 } // namespace opensn

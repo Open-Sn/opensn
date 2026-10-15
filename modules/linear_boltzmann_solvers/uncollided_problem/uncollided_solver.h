@@ -18,15 +18,15 @@ class UncollidedSolver : public Solver
 public:
   explicit UncollidedSolver(const InputParameters& params);
 
-  void Initialize() override;
-
-  void Execute() override;
-
 protected:
+  /// Validates the problem's configuration; the solver has no further requirements.
+  void ValidateState() const override;
+  void InitializeSolver() override;
+  void ExecuteSolver() override;
+
   std::shared_ptr<UncollidedProblem> problem_;
   std::string file_name_;
   unsigned int progress_interval_ = 5;
-  bool initialized_ = false;
 
 public:
   static InputParameters GetInputParameters();

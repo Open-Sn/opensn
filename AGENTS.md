@@ -213,6 +213,38 @@ times, peak memory, and communication. Compare equivalent converged solutions;
 do not infer scalability from one small run or use fragile wall-clock gates in
 routine correctness tests.
 
+### Problem and solver validation
+
+Follow "Problem and solver validation" in `doc/source/devguide/coding_standard.rst`:
+
+- Constructors enforce the input schema while parsing. They do not check whether parsed settings
+  are valid together or compatible with the mesh or solver. Put problem rules in
+  `CheckConfigurationErrors` and discrete-ordinates solver requirements in `CheckRequirements`.
+  These append errors.
+  `ValidateConfiguration` / `ValidateState` run them and throw. Keep single-argument checks
+  (`dt > 0`) and failures discovered while doing work (I/O, computed data, internal invariants) at
+  their point of use.
+- A problem class has a non-public constructor and a static `Create()` that returns
+  `Build(std::shared_ptr<T>(new T(MakeInputParameters<T>(...))))`. Runtime setup belongs in the
+  `InitializeSpatialDiscretization` and `BuildRuntimeData` hooks, not in the constructor.
+- Rules read members. A setter of a setting that rules read first calls
+  `ValidateChange(member, value)`, which tries the value against the rules and restores the member,
+  then commits the change and calls `RebuildRuntimeObjects()`. A rule rejection leaves that member
+  unchanged, but the helper does not roll back caller-owned objects or a later rebuild failure.
+  Rebuild shared dependent runtime objects there, not in individual setters.
+- A solver leaves its results (flux, precursors) in the problem for the next solver, but not its
+  settings: apply temporary settings on problem-owned solver objects with a guard such as the one
+  `WGSContext::OverrideSourceScopes` returns, and set the scratch inputs it relies on rather than
+  assuming them.
+- Problem construction, validation, supported setters, and discrete-ordinates solver lifecycle
+  calls are collective. Count owned cells, not ghost copies, in global diagnostic totals.
+
+### Access control
+
+Do not add `friend` declarations. When another class or function needs access, give the owning
+class a narrow public member (an accessor, or a static member that performs the operation, such
+as `WGSContext::OverrideSourceScopes`), or use the access a derived class already has.
+
 ### Compatibility, files, and diagnostics
 
 Treat documented APIs, defaults, enum/string values, output keys, restart data,

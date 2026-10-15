@@ -46,9 +46,12 @@ public:
   explicit PointSource(const InputParameters& params);
 
   /**
-   * Initializes the cell subscriber info from the given solver.
+   * Recomputes cell subscribers and finite-element weights for `lbs_problem`.
    *
-   * @note Uninitialized point sources will not contribute to sources.
+   * This replaces data from any previous mesh. Share a PointSource only between problems with the
+   * same mesh and compatible spatial discretizations. Collective.
+   *
+   * @note An uninitialized point source does not contribute to a problem.
    */
   void Initialize(const LBSProblem& lbs_problem);
 

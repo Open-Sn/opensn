@@ -18,31 +18,27 @@ namespace opensn
 {
 
 void
-PowerIterationKEigenSolver(LBSProblem& lbs_problem,
-                           double tolerance,
-                           unsigned int max_iterations,
-                           double& k_eff)
+PowerIterationKEigen(LBSProblem& lbs_problem,
+                     double tolerance,
+                     unsigned int max_iterations,
+                     double& k_eff)
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
 
-  const std::string fname = "PowerIterationKEigenSolver";
+  const std::string fname = "PowerIterationKEigen";
   auto* do_problem = dynamic_cast<DiscreteOrdinatesProblem*>(&lbs_problem);
   if (not do_problem)
     throw std::logic_error(fname + ": requires a DiscreteOrdinatesProblem.");
 
-  for (size_t gsid = 0; gsid < do_problem->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-
-    if (not wgs_context)
-      throw std::logic_error(fname + ": Cast failed.");
-
-    wgs_context->lhs_src_scope = APPLY_WGS_SCATTER_SOURCES;
-    wgs_context->rhs_src_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
-  }
+  // Fission is the power-iteration source, not part of the WGS operator. Restored on return.
+  const auto scopes =
+    WGSContext::OverrideSourceScopes(*do_problem,
+                                     [](SourceFlags& lhs_scope, SourceFlags& rhs_scope)
+                                     {
+                                       lhs_scope = APPLY_WGS_SCATTER_SOURCES;
+                                       rhs_scope = APPLY_AGS_SCATTER_SOURCES | APPLY_FIXED_SOURCES;
+                                     });
 
   const auto& phi_old_local = lbs_problem.GetPhiOldLocal();
   const auto& phi_new_local = lbs_problem.GetPhiNewLocal();

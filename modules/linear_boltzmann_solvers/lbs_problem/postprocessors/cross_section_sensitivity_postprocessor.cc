@@ -98,7 +98,7 @@ CrossSectionSensitivityPostprocessor::CrossSectionSensitivityPostprocessor(
     OpenSnInvalidArgument("Unsupported sensitivity_type \"" + type + "\".");
 
   // Adjoint solves require the standard angular operators (see
-  // LBSProblem::ValidateAdjointModeAllowed), so sensitivities are only defined for them.
+  // LBSProblem::CheckConfigurationErrors), so sensitivities are only defined for them.
   for (const auto& groupset : do_problem_->GetGroupsets())
     OpenSnInvalidArgumentIf(
       groupset.quadrature->GetOperatorConstructionMethod() != OperatorConstructionMethod::STANDARD,

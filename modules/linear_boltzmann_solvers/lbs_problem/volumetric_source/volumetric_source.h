@@ -32,6 +32,12 @@ class VolumetricSource
 public:
   explicit VolumetricSource(const InputParameters& params);
 
+  /**
+   * Recomputes the local subscriber cells for `lbs_problem`.
+   *
+   * This replaces data from any previous mesh. Share a VolumetricSource only between problems
+   * with the same mesh and compatible spatial layouts. Collective.
+   */
   void Initialize(const LBSProblem& lbs_problem);
 
   /**

@@ -114,17 +114,42 @@ WrapSolver(py::module& slv)
   solver.def(
     "Initialize",
     &Solver::Initialize,
-    "Initialize the solver."
+    R"(
+    Initialize the solver.
+
+    Solvers check that the problem is in a supported state (for example, steady-state mode
+    without external sources for the k-eigenvalue solvers) and raise ``ValueError``
+    otherwise. Setup and post-setup validation must both succeed. Calling ``Initialize``
+    again clears the previous initialized state first.
+
+    For MPI transport solvers, this is a collective operation and must be called on all ranks.
+    )"
   );
   solver.def(
     "Execute",
     &Solver::Execute,
-    "Execute the solver."
+    R"(
+    Execute the solver.
+
+    The problem's current state and the solver's requirements are checked first, so changes
+    made to the problem after ``Initialize`` (for example a mode switch or ``SetXSMap``) are
+    validated before they are used. ``Initialize`` must be called before ``Execute``.
+
+    For MPI transport solvers, this is a collective operation and must be called on all ranks.
+    )"
   );
   solver.def(
     "Advance",
     &Solver::Advance,
-    "Advance time values function."
+    R"(
+    Advance the solver by one step.
+
+    Changes made to the problem since the last step are checked as in ``Execute``.
+    ``Initialize`` must be called first. Solver classes that do not implement stepping
+    leave the state unchanged and log that ``Advance`` is unsupported.
+
+    For MPI transport solvers, this is a collective operation and must be called on all ranks.
+    )"
   );
   // clang-format on
 }
@@ -659,22 +684,25 @@ WrapLBS(py::module& slv)
     "SetPointSources",
     [](LBSProblem& self, py::kwargs& params)
     {
+      // Collect the arguments first so that keyword order does not matter. The problem replaces
+      // or extends its sources in one validated step.
+      bool clear = false;
+      std::vector<std::shared_ptr<PointSource>> sources;
       for (auto [key, value] : params)
       {
         auto c_key = key.cast<std::string>();
         if (c_key == "clear_point_sources")
-          self.ClearPointSources();
+          clear = value.cast<bool>();
         else if (c_key == "point_sources")
         {
-          auto sources = value.cast<py::list>();
-          for (auto source : sources)
-          {
-            self.AddPointSource(source.cast<std::shared_ptr<PointSource>>());
-          }
+          for (auto source : value.cast<py::list>())
+            sources.push_back(source.cast<std::shared_ptr<PointSource>>());
         }
         else
-          throw std::runtime_error("Invalid argument provided to SetPointSources.\n");
+          throw std::invalid_argument("SetPointSources: unknown argument '" + c_key +
+                                      "'; expected 'point_sources' or 'clear_point_sources'.");
       }
+      self.SetPointSources(sources, clear);
     },
     R"(
     Set or clear point sources.
@@ -684,29 +712,41 @@ WrapLBS(py::module& slv)
     clear_point_sources: bool, default=False
         If true, all current the point sources of the problem are deleted.
     point_sources: List[pyopensn.source.PointSource]
-        List of new point sources to be added to the problem.
+        List of new point sources to be added to the problem. When both arguments are given,
+        the current sources are cleared before the new ones are added, regardless of keyword
+        order. The new list is validated as a whole: a rejected call leaves the problem's
+        sources unchanged.
+
+    Notes
+    -----
+    This is collective. A source caches mesh data when added. Prefer a separate source object for
+    each problem. Share one only when both problems use the same mesh and spatial layout.
     )"
   );
   lbs_problem.def(
     "SetVolumetricSources",
     [](LBSProblem& self, py::kwargs& params)
     {
+      // Collect the arguments first so that keyword order does not matter. The problem replaces
+      // or extends its sources in one validated step.
+      bool clear = false;
+      std::vector<std::shared_ptr<VolumetricSource>> sources;
       for (auto [key, value] : params)
       {
         auto c_key = key.cast<std::string>();
         if (c_key == "clear_volumetric_sources")
-          self.ClearVolumetricSources();
+          clear = value.cast<bool>();
         else if (c_key == "volumetric_sources")
         {
-          auto sources = value.cast<py::list>();
-          for (auto source : sources)
-          {
-            self.AddVolumetricSource(source.cast<std::shared_ptr<VolumetricSource>>());
-          }
+          for (auto source : value.cast<py::list>())
+            sources.push_back(source.cast<std::shared_ptr<VolumetricSource>>());
         }
         else
-          throw std::runtime_error("Invalid argument provided to SetVolumetricSources.\n");
+          throw std::invalid_argument("SetVolumetricSources: unknown argument '" + c_key +
+                                      "'; expected 'volumetric_sources' or "
+                                      "'clear_volumetric_sources'.");
       }
+      self.SetVolumetricSources(sources, clear);
     },
     R"(
     Set or clear volumetric sources.
@@ -716,7 +756,15 @@ WrapLBS(py::module& slv)
     clear_volumetric_sources: bool, default=False
         If true, all current the volumetric sources of the problem are deleted.
     volumetric_sources: List[pyopensn.source.VolumetricSource]
-        List of new volumetric sources to be added to the problem.
+        List of new volumetric sources to be added to the problem. When both arguments are given,
+        the current sources are cleared before the new ones are added, regardless of keyword
+        order. The new list is validated as a whole: a rejected call leaves the problem's
+        sources unchanged.
+
+    Notes
+    -----
+    This is collective. A source caches mesh data when added. Prefer a separate source object for
+    each problem. Share one only when both problems use the same mesh and spatial layout.
     )"
   );
   lbs_problem.def(
@@ -742,7 +790,8 @@ WrapLBS(py::module& slv)
           }
         }
         else
-          throw std::runtime_error("Invalid argument provided to SetXSMap.\n");
+          throw std::invalid_argument("SetXSMap: unknown argument '" + c_key +
+                                      "'; expected 'xs_map'.");
       }
       self.SetBlockID2XSMap(xs_map);
     },
@@ -771,11 +820,10 @@ WrapLBS(py::module& slv)
         species, or a map with no energy structure.
         Individual materials may omit bounds and use the shared structure.
 
-    The new map is checked before it is installed, so a rejected map leaves the
-    problem unchanged.
-
     Notes
     -----
+    This is collective.
+
     The problem is refreshed immediately after replacing the map. Material metadata,
     precursor storage, GPU carriers, and derived solver state owned by the concrete
     problem are rebuilt for the new cross sections.
@@ -795,6 +843,10 @@ WrapLBS(py::module& slv)
     If any fissionable material in the new map contains delayed-neutron precursor
     data and ``options.use_precursors=True``, all fissionable materials in the map
     must contain precursor data. Non-fissionable materials may have zero precursors.
+
+    The new map is validated before it is committed. A validation error leaves the map unchanged.
+    A later rebuild failure may leave partial changes. In time-dependent mode, every cross section
+    must provide ``VELOCITY`` or ``INV_VELOCITY`` data.
 
     Forward/adjoint mode toggles via :meth:`LBSProblem.SetAdjoint` do not change this map.
     The ``MultiGroupXS`` objects themselves are mutable and shared by pointer. If the same
@@ -827,14 +879,18 @@ WrapLBS(py::module& slv)
     adjoint: bool, default=True
         ``True`` enables adjoint mode and ``False`` enables forward mode. Adjoint mode is
         supported only for Cartesian geometries with standard quadrature operators
-        (``operator_method='standard'``).
+        (``operator_method='standard'``), in steady-state mode, and without an
+        uncollided flux. Uncollided flux generation (:class:`UncollidedProblem`) is
+        forward only. An unsupported request raises ``ValueError`` before any state
+        changes.
 
     Raises
     ------
     ValueError
         If ``adjoint=True`` and the problem is time-dependent, has
-        ``options.csda_enabled=True``, or was constructed with an
-        ``uncollided_flux`` file. The problem is left unchanged.
+        ``options.csda_enabled=True``, was constructed with an
+        ``uncollided_flux`` file, or is an :class:`UncollidedProblem`. The problem
+        is left unchanged.
 
     Notes
     -----
@@ -861,6 +917,8 @@ WrapLBS(py::module& slv)
 
     This routine is intentionally destructive with respect to source/boundary/flux state
     to avoid hidden coupling between forward and adjoint setups.
+
+    This is a collective operation and must be called on all ranks.
     )"
   );
   lbs_problem.def(
@@ -963,9 +1021,10 @@ WrapLBS(py::module& slv)
     quadrature and mesh together so that those points lie well inside their
     cells, and verify convergence with respect to both discretizations.
 
-    The ``options`` and ``use_gpus`` parameters are inherited from the base
-    class interface but have no effect on uncollided generation and should be
-    omitted.
+    Uncollided generation is forward only: ``options={'adjoint': True}`` and
+    ``SetAdjoint(True)`` are rejected. The other ``options`` and ``use_gpus`` are
+    inherited from the base class interface but have no effect on uncollided
+    generation and should be omitted.
 
     The uncollided file generated by :class:`UncollidedSolver` is
     partition-independent and may be consumed by a serial or parallel collided
@@ -1006,9 +1065,10 @@ WrapLBS(py::module& slv)
         The spatial mesh.
     num_groups : int
         The total number of energy groups.
-    groupsets : List[Dict], default=[]
+    groupsets : List[Dict]
         A list of input parameter blocks, each block provides the iterative properties for a
-        groupset. Each dictionary supports:
+        groupset. The inclusive ranges must partition all groups in order, starting at group 0
+        and ending at ``num_groups - 1``, without gaps or overlaps. Each dictionary supports:
 
           - groups_from_to: List[int] (required)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
@@ -1062,7 +1122,7 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
-    xs_map : List[Dict], default=[]
+    xs_map : List[Dict]
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
           - block_ids: List[int] (required)
               Mesh block IDs to associate with the cross section.
@@ -1116,8 +1176,10 @@ WrapLBS(py::module& slv)
               remapped when the MPI rank count or mesh partition changes. Full transient
               continuation still requires the original partitioned angular state layout.
           - read_initial_condition_path: str, default=''
-              File stem for reading restart data as an initial condition. A steady-state
-              restart may be used by ``TransientSolver`` through this option.
+              File stem for reading restart data as an initial condition. Cannot be combined
+              with ``read_restart_path``. A steady-state restart may be used by
+              ``TransientSolver`` through this option. The first ``TransientSolver.Initialize()``
+              loads it once; later initializations continue from the problem's current state.
           - write_restart_path: str, default=''
               File stem for restart dump writes. OpenSn appends the MPI rank and
               ``.restart.h5`` to this stem.
@@ -1132,6 +1194,11 @@ WrapLBS(py::module& slv)
             has precursor data and ``use_precursors=True``, all fissionable materials in that map
             must have precursor data. Non-fissionable materials may have zero precursors.
           - use_source_moments: bool, default=False
+            Use the problem's source moments as the fixed source instead of its
+            volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)
+            after creating the problem and before solving; a solve without them raises
+            ``ValueError``. They are an external source, so the k-eigenvalue solvers
+            reject a problem with this option.
           - save_angular_flux: bool, default=False
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
@@ -1160,7 +1227,8 @@ WrapLBS(py::module& slv)
         Both sweep types support time-dependent (transient) mode.
     time_dependent : bool, default=False
         If true, the problem starts in time-dependent mode. Otherwise it starts in
-        steady-state mode. Requires ``options.save_angular_flux=True``.
+        steady-state mode. Requires ``options.save_angular_flux=True`` and
+        ``VELOCITY`` or ``INV_VELOCITY`` data in every cross section.
         Both ``AAH`` and ``CBC`` sweep types support time-dependent mode.
     uncollided_flux : str, default=""
         HDF5 file generated by :class:`UncollidedSolver`. For steady-state
@@ -1171,10 +1239,18 @@ WrapLBS(py::module& slv)
         cell IDs, cell-node layout and coordinates, total cross sections, and
         reflecting boundary set. Its maximum moment order must be at least
         this problem's scattering order. The same serial file may be read by
-        any MPI partitioning of the matching mesh.
+        any MPI partitioning of the matching mesh. The first-collision source
+        replaces the fixed sources, so the problem must not also have volumetric
+        or point sources or incoming-flux (isotropic or arbitrary) boundaries,
+        and its cross sections cannot be replaced.
     use_gpus : bool, default=False
         A flag specifying whether GPU acceleration is used for the sweep. Both
         ```AAH``` and ```CBC``` sweep types support GPU acceleration.
+
+    Notes
+    -----
+    Construction validates and builds the runtime problem. It is collective. Use equivalent input
+    on every MPI rank.
     )"
   );
   do_problem.def(
@@ -1189,7 +1265,12 @@ WrapLBS(py::module& slv)
     internals (sweep chunk mode and source-function) while preserving user boundary
     conditions and fixed sources.
 
-    Requires ``options.save_angular_flux=True`` at problem creation.
+    Requires ``options.save_angular_flux=True`` at problem creation and ``VELOCITY`` or
+    ``INV_VELOCITY`` data in every cross section. Not supported for adjoint, GPU,
+    curvilinear, or uncollided-flux problems. An unsupported request raises
+    ``ValueError`` before any state changes.
+
+    This is a collective operation and must be called on all ranks.
     )"
   );
   do_problem.def(
@@ -1203,6 +1284,8 @@ WrapLBS(py::module& slv)
     Switch problem from time-dependent to steady-state mode. This updates problem
     internals (sweep chunk mode and source-function) while preserving user boundary
     conditions and fixed sources.
+
+    This is a collective operation and must be called on all ranks.
     )"
   );
   do_problem.def(
@@ -1234,7 +1317,9 @@ WrapLBS(py::module& slv)
           }
         }
         else
-          throw std::runtime_error("Invalid argument provided to SetBoundaryOptions.\n");
+          throw std::invalid_argument("SetBoundaryOptions: unknown argument '" + c_key +
+                                      "'; expected 'boundary_conditions' or "
+                                      "'clear_boundary_conditions'.");
       }
       if (clear_boundary_conditions or not boundary_params.empty())
         self.SetBoundaryOptions(boundary_params, clear_boundary_conditions);
@@ -1274,6 +1359,8 @@ WrapLBS(py::module& slv)
     -----
     Mode transitions via :meth:`LBSProblem.SetAdjoint` clear all boundary conditions.
     Reapply boundaries with this method before solving in the new mode.
+
+    This is a collective operation and must be called on all ranks.
     )"
   );
   do_problem.def(
@@ -1640,8 +1727,10 @@ WrapLBS(py::module& slv)
               remapped when the MPI rank count or mesh partition changes. Full transient
               continuation still requires the original partitioned angular state layout.
           - read_initial_condition_path: str, default=''
-              File stem for reading restart data as an initial condition. A steady-state
-              restart may be used by ``TransientSolver`` through this option.
+              File stem for reading restart data as an initial condition. Cannot be combined
+              with ``read_restart_path``. A steady-state restart may be used by
+              ``TransientSolver`` through this option. The first ``TransientSolver.Initialize()``
+              loads it once; later initializations continue from the problem's current state.
           - write_restart_path: str, default=''
               File stem for restart dump writes. OpenSn appends the MPI rank and
               ``.restart.h5`` to this stem.
@@ -1653,6 +1742,11 @@ WrapLBS(py::module& slv)
             precursor-family index; newly introduced families start at zero and removed families
             are discarded.
           - use_source_moments: bool, default=False
+            Use the problem's source moments as the fixed source instead of its
+            volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)
+            after creating the problem and before solving; a solve without them raises
+            ``ValueError``. They are an external source, so the k-eigenvalue solvers
+            reject a problem with this option.
           - save_angular_flux: bool, default=False
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
@@ -1672,6 +1766,7 @@ WrapLBS(py::module& slv)
           - field_function_prefix: str, default=''
     sweep_type : str, optional
         The sweep type to use. Curvilinear problems support only `AAH`, the default.
+        Time-dependent mode is not supported for curvilinear problems.
     )"
   );
 }
@@ -1718,7 +1813,8 @@ WrapUncollidedSolver(py::module& slv)
     -----
     :meth:`Initialize` requires exactly one MPI rank. The generated HDF5 file
     may then be reused by a serial or parallel collided calculation on the
-    same mesh.
+    same mesh. :meth:`Execute` uses the problem's point sources as they are when
+    it runs, including sources replaced after :meth:`Initialize`.
 
     Internal threading in the current uncollided implementation is capped by
     the ``OPENSN_NUM_THREADS`` environment variable and defaults to ``1`` when
@@ -1871,12 +1967,16 @@ WrapTransient(py::module& slv)
     dt : float, optional, default=2.0e-3
         Time step size used during the simulation.
     stop_time : float, optional, default=0.1
-        Simulation end time.
+        Absolute end time of the transient, not a duration. A solver that starts after
+        another one on the same problem continues from that problem's time.
     theta : float, optional, default=0.5
         Time differencing scheme parameter.
     initial_state : str, optional, default="existing"
         Initial state for the transient solve. Allowed values: existing, zero.
-        In "zero" mode, scalar flux vectors are reset to zero.
+        "existing" continues from the problem's current solution and time. "zero"
+        resets the scalar flux, precursors, and stored angular fluxes to zero and starts
+        at time 0. Restart data and a pending initial condition
+        (``read_initial_condition_path``) take precedence.
     verbose : bool, optional, default=True
         Enable verbose logging.
 
