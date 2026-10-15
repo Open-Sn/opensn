@@ -13,42 +13,82 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
-// Fused AAHD sweep kernel. Each grid-z slice (blockIdx.z / SYCL dimension 0) is a different
-// angle set's current level, so one launch covers many angle sets' worth of work instead of
-// one. Separate from `SweepKernel` in main.h (used by the default, non-fused scheduler); the
-// per-thread compute below is the same `SweepDispatch`/solver.h logic, just fed an
-// `Arguments<AAH>` assembled from the shared launch data plus this thread's batch slot.
-__CRB_GLOBAL_FUNC__ void
-AAHDFusedSweepKernel(Arguments<SweepKind::AAH> shared_args,
-                     const AAHD_BatchSlot* batch_slots,
-                     bool cells_on_fast_axis)
+/// Calls `f` with the cell DOF count as a compile-time constant. With `fixed_ndofs > 0` only that
+/// count is compiled, which keeps register and stack use at what that cell type needs; the caller
+/// guarantees that every cell has that count. With `fixed_ndofs == 0` every count up to
+/// LBSProblem::max_dofs_gpu is compiled and selected at run time.
+template <std::uint32_t fixed_ndofs, class F>
+__CRB_DEVICE_FUNC__ void
+DispatchCellDOFs(std::uint32_t num_nodes, F& f)
 {
-#if defined(__NVCC__) || defined(__HIPCC__)
-  unsigned int slot_idx = blockIdx.z;
-  unsigned int fast_idx = threadIdx.x + blockDim.x * blockIdx.x;
-  unsigned int slow_idx = threadIdx.y + blockDim.y * blockIdx.y;
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
-  unsigned int slot_idx = work_index.get_global_id(0);
-  unsigned int fast_idx = work_index.get_global_id(2);
-  unsigned int slow_idx = work_index.get_global_id(1);
-#endif
-  const AAHD_BatchSlot& slot = batch_slots[slot_idx];
-  unsigned int cell_idx = cells_on_fast_axis ? fast_idx : slow_idx;
-  unsigned int angle_group_idx = cells_on_fast_axis ? slow_idx : fast_idx;
-  if (cell_idx >= slot.num_cells ||
-      angle_group_idx >= shared_args.groupset_size * slot.angleset_size)
-    return;
+  if constexpr (fixed_ndofs > 0)
+  {
+    if (num_nodes == fixed_ndofs)
+      f(std::integral_constant<std::uint32_t, fixed_ndofs>{});
+  }
+  else
+  {
+    bool done = false;
+    auto dispatch = [&](auto dof_c)
+    {
+      if (!done && num_nodes == decltype(dof_c)::value)
+      {
+        f(dof_c);
+        done = true;
+      }
+    };
+    ForDOFs1ToMax(dispatch);
+  }
+}
 
-  // Assemble this thread's Arguments<AAH> from the shared launch data plus this slot's
-  // per-angle-set fields.
+/// Assembles this thread's Arguments<AAH> from the shared launch data and its batch slot.
+__CRB_DEVICE_FUNC__ Arguments<SweepKind::AAH>
+SlotArguments(const Arguments<SweepKind::AAH>& shared_args, const AAHD_BatchSlot& slot)
+{
   Arguments<SweepKind::AAH> args = shared_args;
   args.directions = slot.directions;
   args.boundary_offset = slot.boundary_offset;
   args.angleset_size = slot.angleset_size;
   args.flud_index = slot.flud_index;
   args.flud_data = slot.flud_data;
+  return args;
+}
 
+/**
+ * Fused AAHD sweep kernel: one thread per (cell, angle-group) of every batch slot's current level.
+ * Each grid-z slice (blockIdx.z / SYCL dimension 0) is a different angle set's current level, so
+ * one launch covers many angle sets instead of one. The per-thread work is the same solver.h Sweep
+ * as `SweepKernel` in main.h, fed an `Arguments<AAH>` assembled from the shared launch data and the
+ * thread's batch slot.
+ * With `linear_mapping`, x enumerates the slot's (cell, angle-group) pairs cell by cell, so a warp
+ * covers consecutive cells' angle-groups with no idle lanes. Otherwise x is the angle-group and y
+ * the cell, which spreads a small level over more warps. `fixed_ndofs` selects a single compiled
+ * cell DOF count (see DispatchCellDOFs).
+ */
+template <std::uint32_t fixed_ndofs>
+__CRB_GLOBAL_FUNC__ void
+AAHDFusedSweepKernel(Arguments<SweepKind::AAH> shared_args,
+                     const AAHD_BatchSlot* batch_slots,
+                     bool linear_mapping)
+{
+#if defined(__NVCC__) || defined(__HIPCC__)
+  unsigned int slot_idx = blockIdx.z;
+  unsigned int x_idx = threadIdx.x + blockDim.x * blockIdx.x;
+  unsigned int y_idx = threadIdx.y + blockDim.y * blockIdx.y;
+#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+  auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
+  unsigned int slot_idx = work_index.get_global_id(0);
+  unsigned int x_idx = work_index.get_global_id(2);
+  unsigned int y_idx = work_index.get_global_id(1);
+#endif
+  const AAHD_BatchSlot& slot = batch_slots[slot_idx];
+  const unsigned int slot_stride = shared_args.groupset_size * slot.angleset_size;
+  unsigned int cell_idx = linear_mapping ? x_idx / slot_stride : y_idx;
+  unsigned int angle_group_idx = linear_mapping ? x_idx - cell_idx * slot_stride : x_idx;
+  if (cell_idx >= slot.num_cells || angle_group_idx >= slot_stride)
+    return;
+
+  const Arguments<SweepKind::AAH> args = SlotArguments(shared_args, slot);
   unsigned int angle_idx = angle_group_idx / args.groupset_size;
   unsigned int group_idx = angle_group_idx - angle_idx * args.groupset_size;
   const std::uint32_t cell_local_idx = slot.cells_to_sweep[cell_idx];
@@ -58,22 +98,24 @@ AAHDFusedSweepKernel(Arguments<SweepKind::AAH> shared_args,
     return;
   auto [cell_edge_data, _] = GetCellDataIndex(args.flud_index, cell_local_idx);
   std::uint32_t num_moments;
-  std::uint32_t direction_num = args.directions[angle_idx];
   DirectionView direction;
   {
     QuadratureView quadrature(args.quad_data);
     num_moments = quadrature.num_moments;
-    quadrature.GetDirectionView(direction, direction_num);
+    quadrature.GetDirectionView(direction, args.directions[angle_idx]);
   }
-  opensn::gpu_kernel::SweepDispatch<SweepKind::AAH>(cell.num_nodes,
-                                                    args,
-                                                    cell,
-                                                    direction,
-                                                    cell_edge_data,
-                                                    angle_group_idx,
-                                                    group_idx,
-                                                    num_moments,
-                                                    slot.saved_psi);
+  auto sweep = [&](auto dof_c)
+  {
+    Sweep<decltype(dof_c)::value, SweepKind::AAH>(args,
+                                                  cell,
+                                                  direction,
+                                                  cell_edge_data,
+                                                  angle_group_idx,
+                                                  group_idx,
+                                                  num_moments,
+                                                  slot.saved_psi);
+  };
+  DispatchCellDOFs<fixed_ndofs>(cell.num_nodes, sweep);
 }
 
 } // namespace opensn::gpu_kernel

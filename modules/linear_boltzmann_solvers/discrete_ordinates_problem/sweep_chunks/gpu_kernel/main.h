@@ -53,22 +53,16 @@ __CRB_GLOBAL_FUNC__ void
 SweepKernel(Arguments<k> args,
             const std::uint32_t* cells_to_sweep,
             unsigned int num_cells,
-            double* saved_psi,
-            bool cells_on_fast_axis)
+            double* saved_psi)
 {
-  // Whichever of {num_cells, stride_size} is larger drives the warp-contiguous fast axis,
-  // so warps stay full whether the level or the groupset is the small one. The host side
-  // picks `cells_on_fast_axis` and sizes the block/grid to match.
 #if defined(__NVCC__) || defined(__HIPCC__)
-  unsigned int fast_idx = threadIdx.x + blockDim.x * blockIdx.x;
-  unsigned int slow_idx = threadIdx.y + blockDim.y * blockIdx.y;
+  unsigned int cell_idx = threadIdx.y + blockDim.y * blockIdx.y;
+  unsigned int angle_group_idx = threadIdx.x + blockDim.x * blockIdx.x;
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
   auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
-  unsigned int fast_idx = work_index.get_global_id(2);
-  unsigned int slow_idx = work_index.get_global_id(1);
+  unsigned int cell_idx = work_index.get_global_id(1);
+  unsigned int angle_group_idx = work_index.get_global_id(2);
 #endif
-  unsigned int cell_idx = cells_on_fast_axis ? fast_idx : slow_idx;
-  unsigned int angle_group_idx = cells_on_fast_axis ? slow_idx : fast_idx;
   if (cell_idx >= num_cells || angle_group_idx >= args.flud_data.stride_size)
     return;
   unsigned int angle_idx = angle_group_idx / args.groupset_size;

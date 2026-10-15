@@ -25,6 +25,9 @@ Parameters (pass with -p name=value):
   sweeps_per_outer  timing mode: source-iteration sweeps per power iteration (default 10)
   num_outers        timing mode: power iterations (default 3; the first is warm-up)
   mesh_file         default: c5g7_griffin.msh next to this script
+  vacuum_boundaries replace the reflecting xmin/ymin boundaries with vacuum (default False).
+                    Diagnostic only: removes the reflecting dependencies between angle sets,
+                    so every angle set can sweep at once, without changing the sweep work.
   extra_problem_params  dict merged into the DiscreteOrdinatesProblem arguments
 
 Timing mode does not save the angular flux. The paper's GPU sweeper stored the full angular
@@ -68,6 +71,7 @@ if __name__ == "__main__":
     sweeps_per_outer = int(get_option("sweeps_per_outer", 10))
     num_outers = int(get_option("num_outers", 3))
     mesh_file = get_option("mesh_file", os.path.join(script_dir, "c5g7_griffin.msh"))
+    vacuum_boundaries = bool(get_option("vacuum_boundaries", False))
     extra_problem_params = dict(get_option("extra_problem_params", {}))
 
     if mode not in ("timing", "keff"):
@@ -112,8 +116,9 @@ if __name__ == "__main__":
                     "angle_aggregation_type": angle_agg,
                     **groupset_tol}],
         xs_map=xs_map,
-        boundary_conditions=[{"name": "xmin", "type": "reflecting"},
-                             {"name": "ymin", "type": "reflecting"}],
+        boundary_conditions=[] if vacuum_boundaries else [
+            {"name": "xmin", "type": "reflecting"},
+            {"name": "ymin", "type": "reflecting"}],
         options={"verbose_inner_iterations": True,
                  "verbose_outer_iterations": True,
                  "save_angular_flux": False,
@@ -126,7 +131,8 @@ if __name__ == "__main__":
     if rank == 0:
         print(f"GRIFFIN_C5G7 config: mode={mode} num_dirs={num_dirs} n_polar={n_polar} "
               f"n_azimuthal={n_azimuthal} sweep_type={sweep_type} angle_agg={angle_agg} "
-              f"use_gpus={use_gpus} ranks={size} sweeps_per_outer={sweeps_per_outer} "
+              f"use_gpus={use_gpus} vacuum_boundaries={vacuum_boundaries} ranks={size} "
+              f"sweeps_per_outer={sweeps_per_outer} "
               f"num_outers={num_outers} extra={extra_problem_params}")
 
     phys = DiscreteOrdinatesProblem(**problem_params)
