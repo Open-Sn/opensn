@@ -53,6 +53,7 @@ def run_case(args, num_dirs: int, sweep_type: str, log_dir: Path) -> dict:
         "sweeps_per_outer": args.sweeps_per_outer,
         "num_outers": args.num_outers,
         "mesh_file": str(args.mesh_file.resolve()),
+        "vacuum_boundaries": args.vacuum,
     }
     cmd = args.launcher.split() + ["-n", str(args.ranks)] if args.launcher else []
     cmd += [str(args.exe), "-i", str(INPUT), "--suppress-color"]
@@ -98,6 +99,8 @@ def main() -> int:
     parser.add_argument("--extra", default="",
                         help="Python dict literal merged into the problem parameters")
     parser.add_argument("--cpu", action="store_true", help="run without use_gpus")
+    parser.add_argument("--vacuum", action="store_true",
+                        help="diagnostic: vacuum instead of reflecting xmin/ymin boundaries")
     parser.add_argument("--label", default="opensn")
     parser.add_argument("--log-dir", type=Path, default=Path.cwd() / "griffin_c5g7_logs")
     args = parser.parse_args()

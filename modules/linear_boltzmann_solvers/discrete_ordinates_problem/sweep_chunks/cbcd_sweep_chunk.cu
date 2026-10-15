@@ -37,6 +37,13 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
     gpu_kernel::Arguments<SweepKind::CBC> args(
       problem_, groupset_, *angle_set, *fluds, surface_source_active_);
     kernel_args_list_.push_back(args);
+    unsigned int stride_size =
+      gpu_kernel::RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
+    unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
+    unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
+    unsigned int grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
+    block_sizes_.emplace_back(block_size_x, block_size_y);
+    grid_size_x_list_.push_back(grid_size_x);
   }
 }
 
@@ -49,32 +56,23 @@ CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, std::siz
   auto& host_cell_local_ids = fluds->GetLocalCellIDs();
   std::copy(cell_local_ids.begin(), cell_local_ids.end(), host_cell_local_ids.begin());
   const auto& args = kernel_args_list_[angle_set_id];
+  crb::Dim3 block_size = block_sizes_[angle_set_id];
   auto num_ready_cells = static_cast<unsigned int>(cell_local_ids.size());
-  auto stride_size = static_cast<unsigned int>(args.flud_data.stride_size);
-  // Whichever of {num_ready_cells, stride_size} is larger drives the fast axis, so warps
-  // stay full whichever one is small. Recomputed each call since num_ready_cells varies.
-  bool cells_on_fast_axis = num_ready_cells >= stride_size;
-  unsigned int fast_value = std::max(cells_on_fast_axis ? num_ready_cells : stride_size, 1U);
-  unsigned int slow_value = cells_on_fast_axis ? stride_size : num_ready_cells;
-  unsigned int block_size_x = std::min(gpu_kernel::RoundUp(fast_value), gpu_kernel::threshold);
-  unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
-  unsigned int grid_size_x = (fast_value + block_size_x - 1) / block_size_x;
-  unsigned int grid_size_y = (slow_value + block_size_y - 1) / block_size_y;
-  crb::Dim3 block_size(block_size_x, block_size_y);
+  unsigned int grid_size_x = grid_size_x_list_[angle_set_id];
+  unsigned int grid_size_y = (num_ready_cells + block_size.y - 1) / block_size.y;
   crb::Dim3 grid_size(grid_size_x, grid_size_y);
   auto* host_cell_local_ids_data = host_cell_local_ids.data();
 #if defined(__NVCC__) || defined(__HIPCC__)
   gpu_kernel::SweepKernel<SweepKind::CBC><<<grid_size, block_size, 0, stream>>>(
-    args, host_cell_local_ids_data, num_ready_cells, device_saved_psi, cells_on_fast_axis);
+    args, host_cell_local_ids_data, num_ready_cells, device_saved_psi);
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
   stream.synchronize();
-  stream.parallel_for(
-    sycl::nd_range<3>(grid_size * block_size, block_size),
-    [=](sycl::nd_item<3> work_index)
-    {
-      gpu_kernel::SweepKernel<SweepKind::CBC>(
-        args, host_cell_local_ids_data, num_ready_cells, device_saved_psi, cells_on_fast_axis);
-    });
+  stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
+                      [=](sycl::nd_item<3> work_index)
+                      {
+                        gpu_kernel::SweepKernel<SweepKind::CBC>(
+                          args, host_cell_local_ids_data, num_ready_cells, device_saved_psi);
+                      });
 #endif
 }
 
