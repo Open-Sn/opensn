@@ -92,10 +92,7 @@
 <section id="derived-types">
 <h3>Derived Types<a class="headerlink" href="#derived-types" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::NonLinearKEigenSolver</span></code> (<a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#exhale-class-classopensn-1-1-non-linear-k-eigen-solver"><span class="std std-ref">Class NonLinearKEigenSolver</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::PowerIterationKEigenSolver</span></code> (<a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#exhale-class-classopensn-1-1-power-iteration-k-eigen-solver"><span class="std std-ref">Class PowerIterationKEigenSolver</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::SteadyStateSourceSolver</span></code> (<a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#exhale-class-classopensn-1-1-steady-state-source-solver"><span class="std std-ref">Class SteadyStateSourceSolver</span></a>)</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::TransientSolver</span></code> (<a class="reference internal" href="classopensn_1_1_transient_solver.html#exhale-class-classopensn-1-1-transient-solver"><span class="std std-ref">Class TransientSolver</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::DiscreteOrdinatesSolver</span></code> (<a class="reference internal" href="classopensn_1_1_discrete_ordinates_solver.html#exhale-class-classopensn-1-1-discrete-ordinates-solver"><span class="std std-ref">Class DiscreteOrdinatesSolver</span></a>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::UncollidedSolver</span></code> (<a class="reference internal" href="classopensn_1_1_uncollided_solver.html#exhale-class-classopensn-1-1-uncollided-solver"><span class="std std-ref">Class UncollidedSolver</span></a>)</p></li>
 </ul>
 </section>
@@ -105,7 +102,9 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6SolverE">
 <span class="target" id="classopensn_1_1_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Solver</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6SolverE" title="Link to this definition"></a><br /></dt>
-<dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#classopensn_1_1_non_linear_k_eigen_solver"><span class="std std-ref">opensn::NonLinearKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#classopensn_1_1_power_iteration_k_eigen_solver"><span class="std std-ref">opensn::PowerIterationKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#classopensn_1_1_steady_state_source_solver"><span class="std std-ref">opensn::SteadyStateSourceSolver</span></a>, <a class="reference internal" href="classopensn_1_1_transient_solver.html#classopensn_1_1_transient_solver"><span class="std std-ref">opensn::TransientSolver</span></a>, <a class="reference internal" href="classopensn_1_1_uncollided_solver.html#classopensn_1_1_uncollided_solver"><span class="std std-ref">opensn::UncollidedSolver</span></a></p>
+<dd><p>Base class for solver lifecycle management. </p>
+<p>Public lifecycle functions validate state before calling protected derived-class hooks. <a class="reference internal" href="#classopensn_1_1_solver_1abc2b51f52e99085df8c0382476eb5ce4"><span class="std std-ref">Execute()</span></a> and <a class="reference internal" href="#classopensn_1_1_solver_1a7d51dc2ef484d58a11b2b6b3dde912bc"><span class="std std-ref">Advance()</span></a> also require successful initialization. </p>
+<p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_solver.html#classopensn_1_1_discrete_ordinates_solver"><span class="std std-ref">opensn::DiscreteOrdinatesSolver</span></a>, <a class="reference internal" href="classopensn_1_1_uncollided_solver.html#classopensn_1_1_uncollided_solver"><span class="std std-ref">opensn::UncollidedSolver</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -130,20 +129,21 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver10InitializeEv">
-<span class="target" id="classopensn_1_1_solver_1a41441738ddd38e8ac6b5e317d55b9ea2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initialize function. </p>
+<span class="target" id="classopensn_1_1_solver_1a52e2995d6ed81007a92745d34cb3c2e9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver10InitializeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates and initializes the solver. </p>
+<p>The solver is marked initialized only after <a class="reference internal" href="#classopensn_1_1_solver_1a95470a05256d9879a1b796e32959c009"><span class="std std-ref">InitializeSolver()</span></a> and post-initialization validation succeed. Calling this again clears the previous initialized state first. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver7ExecuteEv">
-<span class="target" id="classopensn_1_1_solver_1a3590576e0cc8bbf0ce4de64e14529451"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver7ExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Execution function. </p>
+<span class="target" id="classopensn_1_1_solver_1abc2b51f52e99085df8c0382476eb5ce4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver7ExecuteEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates the current state and executes the solver. Requires successful <a class="reference internal" href="#classopensn_1_1_solver_1a52e2995d6ed81007a92745d34cb3c2e9"><span class="std std-ref">Initialize()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver7AdvanceEv">
-<span class="target" id="classopensn_1_1_solver_1a0ebf30be98ab78760990ccb9523e930e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Advance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver7AdvanceEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Advance time values function. </p>
+<span class="target" id="classopensn_1_1_solver_1a7d51dc2ef484d58a11b2b6b3dde912bc"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Advance</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver7AdvanceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates the current state and advances one step. Requires successful <a class="reference internal" href="#classopensn_1_1_solver_1a52e2995d6ed81007a92745d34cb3c2e9"><span class="std std-ref">Initialize()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -170,6 +170,34 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver18GetInputParametersEv">
 <span class="target" id="classopensn_1_1_solver_1a637674d752ba36d85848e4e3aeb79230"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the input parameters. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn6Solver13ValidateStateEv">
+<span class="target" id="classopensn_1_1_solver_1a91f503dcc4fdabb8de004da86899a00a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4NK6opensn6Solver13ValidateStateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates the solver’s options and the object it drives. </p>
+<p>Called before each lifecycle hook and again after <a class="reference internal" href="#classopensn_1_1_solver_1a95470a05256d9879a1b796e32959c009"><span class="std std-ref">InitializeSolver()</span></a>. Implementations throw std::invalid_argument for unsupported configurations. MPI implementations are collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver16InitializeSolverEv">
+<span class="target" id="classopensn_1_1_solver_1a95470a05256d9879a1b796e32959c009"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn6Solver16InitializeSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class initialization after <a class="reference internal" href="#classopensn_1_1_solver_1a91f503dcc4fdabb8de004da86899a00a"><span class="std std-ref">ValidateState()</span></a> succeeds. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver13ExecuteSolverEv">
+<span class="target" id="classopensn_1_1_solver_1aefb209a3b56fbe3c1811c9e3f1e99c8c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn6Solver13ExecuteSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class execution after initialization and validation succeed. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6Solver13AdvanceSolverEv">
+<span class="target" id="classopensn_1_1_solver_1ab12f536e9f3edbb8afc843651ab90a51"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AdvanceSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn6Solver13AdvanceSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs one derived-class step. The default logs that <a class="reference internal" href="#classopensn_1_1_solver_1a7d51dc2ef484d58a11b2b6b3dde912bc"><span class="std std-ref">Advance()</span></a> is unsupported. </p>
 </dd></dl>
 
 </div>

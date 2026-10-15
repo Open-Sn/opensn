@@ -70,6 +70,8 @@ Includes
 
 - ``petscksp.h``
 
+- ``utility``
+
 
 
 Included By
@@ -109,4 +111,11 @@ Classes
 
 
 - :ref:`exhale_class_classopensn_1_1_l_b_s_problem`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1ac5f3cd9b97b1a18969688c279fa229e3`
 

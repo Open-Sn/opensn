@@ -136,9 +136,10 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn35DiscreteOrdinatesCurvilinearProblem18PerformInputChecksEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_curvilinear_problem_1a62caa4726ca3d9ad7ea605e1cc5f60d5"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PerformInputChecks</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn35DiscreteOrdinatesCurvilinearProblem18PerformInputChecksEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_curvilinear_problem_1abce1bfc02dd6f6012edac5f34519460a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckConfigurationErrors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Curvilinear-geometry rules. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn35DiscreteOrdinatesCurvilinearProblem31InitializeSpatialDiscretizationEv">
@@ -157,9 +158,9 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem29ValidateBoundaryConfigurationEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_curvilinear_problem_1ad9f2724202ce2e96dd84bbd4013ec890"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateBoundaryConfiguration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem29ValidateBoundaryConfigurationEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Hook for geometry-specific boundary-configuration checks, called from <code class="docutils literal notranslate"><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem_1a838087294f60b0ecba481e8033001ac5"><span class="std std-ref"><span class="pre">InitializeBoundaries()</span></span></a></code>. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem13IsCurvilinearEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_curvilinear_problem_1a977b2edd2aea2472caf4c1b431a744a5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsCurvilinear</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesCurvilinearProblem13IsCurvilinearEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true for problem types that discretize the curvilinear angular-derivative terms and therefore accept cylindrical and spherical meshes. </p>
 </dd></dl>
 
 <dl class="cpp function">

@@ -90,7 +90,7 @@
 
 <span class="cp">#pragma once</span>
 
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/solver.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/discrete_ordinates_solver.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h&quot;</span>
 
@@ -100,13 +100,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesKEigenAcceleration</span><span class="p">;</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">PowerIterationKEigenSolver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Solver</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PowerIterationKEigenSolver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">DiscreteOrdinatesSolver</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">PowerIterationKEigenSolver</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Return the current k-eigenvalue.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetEigenvalue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">k_eff_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="c1">/// Return the k-eigenvalue convergence tolerance.</span>
@@ -127,7 +124,10 @@
 <span class="w">                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">suppress_wg_scat</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckRequirements</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolver</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ExecuteSolver</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesKEigenAcceleration</span><span class="o">&gt;</span><span class="w"> </span><span class="n">acceleration_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iters_</span><span class="p">;</span>
@@ -144,10 +144,12 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">LBSGroupset</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">groupsets_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">SetSourceFunction</span><span class="w"> </span><span class="n">active_set_source_function_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
-
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">WriteRestartData</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Refreshes the problem objects the solver uses and removes fission from the WGS operators</span>
+<span class="w">  </span><span class="c1">/// until the returned guard is destroyed.</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">ScopedSourceScopes</span><span class="w"> </span><span class="n">PrepareProblem</span><span class="p">();</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReadRestartData</span><span class="p">();</span>
 

@@ -421,12 +421,16 @@ partitioning.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode. Adjoint mode is
 supported only for Cartesian geometries with standard quadrature operators
-(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>).</p>
+(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>), in steady-state mode, and without an
+uncollided flux. Uncollided flux generation (<a class="reference internal" href="pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedProblem</span></code></a>) is
+forward only. An unsupported request raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before any state
+changes.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">adjoint=True</span></code> and the problem is time-dependent, has
-    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code>, or was constructed with an
-    <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file. The problem is left unchanged.</p>
+    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code>, was constructed with an
+    <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file, or is an <a class="reference internal" href="pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedProblem</span></code></a>. The problem
+    is left unchanged.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
@@ -458,6 +462,7 @@ If those objects are shared with other problems, they observe the same mode togg
 </dl>
 <p>This routine is intentionally destructive with respect to source/boundary/flux state
 to avoid hidden coupling between forward and adjoint setups.</p>
+<p>This is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -475,10 +480,16 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>clear_point_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the point sources of the problem are deleted.</p></li>
-<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em>) – List of new point sources to be added to the problem.</p></li>
+<li><p><strong>point_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em>) – List of new point sources to be added to the problem. When both arguments are given,
+the current sources are cleared before the new ones are added, regardless of keyword
+order. The new list is validated as a whole: a rejected call leaves the problem’s
+sources unchanged.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This is collective. A source caches mesh data when added. Prefer a separate source object for
+each problem. Share one only when both problems use the same mesh and spatial layout.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -489,10 +500,16 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>clear_volumetric_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, all current the volumetric sources of the problem are deleted.</p></li>
-<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em>) – List of new volumetric sources to be added to the problem.</p></li>
+<li><p><strong>volumetric_sources</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em>) – List of new volumetric sources to be added to the problem. When both arguments are given,
+the current sources are cleared before the new ones are added, regardless of keyword
+order. The new list is validated as a whole: a rejected call leaves the problem’s
+sources unchanged.</p></li>
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>This is collective. A source caches mesh data when added. Prefer a separate source object for
+each problem. Share one only when both problems use the same mesh and spatial layout.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -519,8 +536,7 @@ to avoid hidden coupling between forward and adjoint setups.</p>
 </p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>ValueError</strong> – If the problem was constructed with an <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file, or if
+<dd class="field-even"><p><strong>ValueError</strong> – If the problem was constructed with an <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file, or if
     <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code> and the new cross sections split a
     charged-particle group block across groupsets, contain more than two
     charged-particle group ranges, have negative or non-finite stopping powers or
@@ -528,13 +544,11 @@ to avoid hidden coupling between forward and adjoint setups.</p>
     bounds that do not match the problem’s group count. CSDA also rejects
     conflicting supplied energy structures, unknown or conflicting charged-particle
     species, or a map with no energy structure.
-    Individual materials may omit bounds and use the shared structure.</p></li>
-<li><p><strong>The new map is checked before it is installed</strong><strong>, </strong><strong>so a rejected map leaves the</strong> – </p></li>
-<li><p><strong>problem unchanged.</strong> – </p></li>
-</ul>
+    Individual materials may omit bounds and use the shared structure.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>This is collective.</p>
 <p>The problem is refreshed immediately after replacing the map. Material metadata,
 precursor storage, GPU carriers, and derived solver state owned by the concrete
 problem are rebuilt for the new cross sections.</p>
@@ -551,6 +565,9 @@ precursor families start from zero.</p>
 <p>If any fissionable material in the new map contains delayed-neutron precursor
 data and <code class="docutils literal notranslate"><span class="pre">options.use_precursors=True</span></code>, all fissionable materials in the map
 must contain precursor data. Non-fissionable materials may have zero precursors.</p>
+<p>The new map is validated before it is committed. A validation error leaves the map unchanged.
+A later rebuild failure may leave partial changes. In time-dependent mode, every cross section
+must provide <code class="docutils literal notranslate"><span class="pre">VELOCITY</span></code> or <code class="docutils literal notranslate"><span class="pre">INV_VELOCITY</span></code> data.</p>
 <p>Forward/adjoint mode toggles via <a class="reference internal" href="#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code></a> do not change this map.
 The <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves are mutable and shared by pointer. If the same
 <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> handle is shared across multiple problems, toggling adjoint mode in one

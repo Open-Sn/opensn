@@ -12,7 +12,7 @@ Inheritance Relationships
 Base Type
 *********
 
-- ``public opensn::Solver`` (:ref:`exhale_class_classopensn_1_1_solver`)
+- ``public opensn::DiscreteOrdinatesSolver`` (:ref:`exhale_class_classopensn_1_1_discrete_ordinates_solver`)
 
 
 Class Documentation

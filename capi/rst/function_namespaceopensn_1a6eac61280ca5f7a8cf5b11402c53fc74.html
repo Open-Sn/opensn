@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::PowerIterationKEigenSolver &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::PowerIterationKEigen &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -259,7 +259,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7ffcdf7f77a323b46e84a61fdcdcc6a6.html">Function opensn::PETScSolverStatusToIterationStatus</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a22094640b32abe9b9b936991c578aef9.html">Function opensn::PopulateRaySegmentLengths</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ae36300f028cd3cfe090d42aa14566545.html">Template Function opensn::PowerIteration</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::PowerIterationKEigenSolver</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::PowerIterationKEigen</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aea0875e79fa1c52b9ad73b19a74c78e0.html">Function opensn::PrepareNonlocalOutgoingPsi</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9688d61ff656e2e7974e1b8553913cd4.html">Function opensn::PrepareVtkUnstructuredGrid</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7cc9e85017c12c498d06e91d9fe9d6e1.html">Function opensn::PrintIterationProgress</a></li>
@@ -297,6 +297,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a9703a3c5ab99e86885289ed9122e096d.html">Template Function opensn::Subtract(const DenseMatrix&lt;TYPE&gt;&amp;, const DenseMatrix&lt;TYPE&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad0c00d88888a00738dc5fa25ba3e15b1.html">Template Function opensn::Subtract(const Vector&lt;TYPE&gt;&amp;, const Vector&lt;TYPE&gt;&amp;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813.html">Template Function opensn::SwapRows</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ac5f3cd9b97b1a18969688c279fa229e3.html">Function opensn::ThrowConfigurationErrors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab7514403170a9ae32c06e22bcbf85ba2.html">Function opensn::ThrowMPIError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a8a5a0b764bafcabf550979995200d07b.html">Function opensn::ThrowPETScError</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7b4142ead4ff28d43f260fb0b0766837.html">Function opensn::ToString(GeometryType)</a></li>
@@ -353,7 +354,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::PowerIterationKEigenSolver</li>
+      <li class="breadcrumb-item active">Function opensn::PowerIterationKEigen</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -362,17 +363,18 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-poweriterationkeigensolver">
-<span id="exhale-function-namespaceopensn-1ab417388b7303220280cdc5b909321247"></span><h1>Function opensn::PowerIterationKEigenSolver<a class="headerlink" href="#function-opensn-poweriterationkeigensolver" title="Link to this heading"></a></h1>
+  <section id="function-opensn-poweriterationkeigen">
+<span id="exhale-function-namespaceopensn-1a6eac61280ca5f7a8cf5b11402c53fc74"></span><h1>Function opensn::PowerIterationKEigen<a class="headerlink" href="#function-opensn-poweriterationkeigen" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-iterative-methods-power-iteration-keigen-h"><span class="std std-ref">File power_iteration_keigen.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26PowerIterationKEigenSolverER10LBSProblemdjRd">
-<span class="target" id="namespaceopensn_1ab417388b7303220280cdc5b909321247"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PowerIterationKEigenSolver</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_iterations</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">k_eff</span></span><span class="sig-paren">)</span><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn20PowerIterationKEigenER10LBSProblemdjRd">
+<span class="target" id="namespaceopensn_1a6eac61280ca5f7a8cf5b11402c53fc74"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">PowerIterationKEigen</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">tolerance</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_iterations</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">k_eff</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn20PowerIterationKEigenER10LBSProblemdjRd" title="Link to this definition"></a><br /></dt>
+<dd><p>Runs power iterations on <code class="docutils literal notranslate"><span class="pre">lbs_problem</span></code>, starting from k_eff = 1, until k_eff changes by less than <code class="docutils literal notranslate"><span class="pre">tolerance</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iterations</span></code> is reached, and returns the result in <code class="docutils literal notranslate"><span class="pre">k_eff</span></code>. </p>
+</dd></dl>
 
 </section>
 </section>

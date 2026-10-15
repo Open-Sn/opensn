@@ -133,9 +133,12 @@
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">PointSource</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Initializes the cell subscriber info from the given solver.</span>
+<span class="cm">   * Recomputes cell subscribers and finite-element weights for `lbs_problem`.</span>
 <span class="cm">   *</span>
-<span class="cm">   * @note Uninitialized point sources will not contribute to sources.</span>
+<span class="cm">   * This replaces data from any previous mesh. Share a PointSource only between problems with the</span>
+<span class="cm">   * same mesh and compatible spatial discretizations. Collective.</span>
+<span class="cm">   *</span>
+<span class="cm">   * @note An uninitialized point source does not contribute to a problem.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">);</span>
 

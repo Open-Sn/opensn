@@ -110,7 +110,8 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblemE">
 <span class="target" id="classopensn_1_1_l_b_s_problem"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBSProblem</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_problem.html#_CPPv4N6opensn7ProblemE" title="opensn::Problem"><span class="n"><span class="pre">Problem</span></span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">enable_shared_from_this</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblemE" title="Link to this definition"></a><br /></dt>
 <dd><p>Base class for all Linear Boltzmann Solvers. </p>
-<p>Problems are created through derived-class factory functions. The factory function performs all constructor-time parsing and calls BuildRuntime before returning the shared pointer, so public methods operate on a fully built problem. </p>
+<p>Problems are created only through their static Create(), which constructs the problem (the constructor only parses input) and passes it to <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a9726ff613d1dfa4afd976b48d43aaedc"><span class="std std-ref">Build()</span></a>, so public methods operate on a fully built and validated problem:</p>
+<p>return Build(std::shared_ptr&lt;T&gt;(new T(MakeInputParameters&lt;T&gt;(“lbs::T”, params)))); </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem"><span class="std std-ref">opensn::DiscreteOrdinatesProblem</span></a>, <a class="reference internal" href="classopensn_1_1_uncollided_problem.html#classopensn_1_1_uncollided_problem"><span class="std std-ref">opensn::UncollidedProblem</span></a></p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
@@ -188,13 +189,6 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem26ValidateAdjointModeAllowedEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ad0650c8e06f5c85e031a869a644b1ba2"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateAdjointModeAllowed</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem26ValidateAdjointModeAllowedEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Throws if the problem cannot be switched to adjoint mode. </p>
-<p>The base class requires Cartesian geometry and standard quadrature operators; derived problems extend this to reject unsupported features and must call the base implementation. </p>
-</dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20SetTimeDependentModeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a5cdf047e9d24f2160258498626770128"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetTimeDependentMode</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20SetTimeDependentModeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Set the problem to time-dependent mode. </p>
@@ -223,6 +217,19 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem9IsAdjointEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a9ce7d88d5c2d9b46cd811931a970021d"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAdjoint</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem9IsAdjointEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns true if the problem is in adjoint mode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem21ValidateConfigurationEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ae9be6e1756f6a4e9d36841b9fcdae91d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateConfiguration</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem21ValidateConfigurationEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Throws std::invalid_argument listing every rule the problem violates. </p>
+<p>Collective; not callable from a constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem7IsBuiltEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a3ae23066609df9686accb583c74a82be"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsBuilt</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem7IsBuiltEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true once Create() has built the problem. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -368,16 +375,23 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15SetPointSourcesERKNSt6vectorINSt10shared_ptrI11PointSourceEEEEb">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a7530350d21d023fead259a3df80f4e65"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetPointSources</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_point_source.html#_CPPv4N6opensn11PointSourceE" title="opensn::PointSource"><span class="n"><span class="pre">PointSource</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sources</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear_existing</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15SetPointSourcesERKNSt6vectorINSt10shared_ptrI11PointSourceEEEEb" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="classopensn_1_1_problem.html#classopensn_1_1_problem"><span class="std std-ref">Problem</span></a> runtime reconfiguration. </p>
+<p>These collective methods validate changes and refresh dependent runtime data. Other mutable accessors support solvers and low-level I/O, not general reconfiguration. Replaces (<code class="docutils literal notranslate"><span class="pre">clear_existing</span></code>) or extends the point sources with <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<p>Every new source is initialized for this problem, the resulting list is validated, and only then is it committed, so a rejected call leaves the problem’s sources unchanged. The source objects themselves stay initialized for this problem. Collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem14AddPointSourceENSt10shared_ptrI11PointSourceEE">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1100d357006b4741400316a957e3c9e4"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddPointSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_point_source.html#_CPPv4N6opensn11PointSourceE" title="opensn::PointSource"><span class="n"><span class="pre">PointSource</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">point_source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem14AddPointSourceENSt10shared_ptrI11PointSourceEE" title="Link to this definition"></a><br /></dt>
-<dd><p><a class="reference internal" href="classopensn_1_1_problem.html#classopensn_1_1_problem"><span class="std std-ref">Problem</span></a> runtime reconfiguration. </p>
-<p>These methods are the public mutators available after construction. They refresh the runtime data owned by the problem where needed. Other mutable state accessors below are exposed for solvers and low-level I/O, not as general user-facing methods. Adds a point source to the solver. </p>
+<dd><p>Adds a point source to the solver. See <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a7530350d21d023fead259a3df80f4e65"><span class="std std-ref">SetPointSources()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem17ClearPointSourcesEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1adb3d3f9c396d1736517e0a229bb35ac7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearPointSources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17ClearPointSourcesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Clears all the point sources from the solver. </p>
+<dd><p>Clears all the point sources from the solver. See <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a7530350d21d023fead259a3df80f4e65"><span class="std std-ref">SetPointSources()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -387,15 +401,22 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20SetVolumetricSourcesERKNSt6vectorINSt10shared_ptrI16VolumetricSourceEEEEb">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a362d171c33037732c003a022ce2fe177"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetVolumetricSources</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_volumetric_source.html#_CPPv4N6opensn16VolumetricSourceE" title="opensn::VolumetricSource"><span class="n"><span class="pre">VolumetricSource</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sources</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">clear_existing</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20SetVolumetricSourcesERKNSt6vectorINSt10shared_ptrI16VolumetricSourceEEEEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Replaces (<code class="docutils literal notranslate"><span class="pre">clear_existing</span></code>) or extends the volumetric sources with <code class="docutils literal notranslate"><span class="pre">sources</span></code>, as <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a7530350d21d023fead259a3df80f4e65"><span class="std std-ref">SetPointSources()</span></a> does for point sources. </p>
+<p>Collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19AddVolumetricSourceENSt10shared_ptrI16VolumetricSourceEE">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1ab7b05b361ceb3443a6467ffc8a75a789"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddVolumetricSource</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_volumetric_source.html#_CPPv4N6opensn16VolumetricSourceE" title="opensn::VolumetricSource"><span class="n"><span class="pre">VolumetricSource</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">volumetric_source</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19AddVolumetricSourceENSt10shared_ptrI16VolumetricSourceEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Adds a volumetric source to the solver. </p>
+<dd><p>Adds a volumetric source to the solver. See <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a362d171c33037732c003a022ce2fe177"><span class="std std-ref">SetVolumetricSources()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem22ClearVolumetricSourcesEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1c9d7435334ed4d133a23d619da835be"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearVolumetricSources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem22ClearVolumetricSourcesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Clears all the volumetric sources from the solver. </p>
+<dd><p>Clears all the volumetric sources from the solver. See <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a362d171c33037732c003a022ce2fe177"><span class="std std-ref">SetVolumetricSources()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -418,7 +439,7 @@
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem16SetBlockID2XSMapERK13BlockID2XSMap">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1ad481bd29bad2738710d3cba36b541220"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBlockID2XSMap</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559.html#_CPPv4N6opensn13BlockID2XSMapE" title="opensn::BlockID2XSMap"><span class="n"><span class="pre">BlockID2XSMap</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16SetBlockID2XSMapERK13BlockID2XSMap" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a7ae69fdb30b4ec9e67cdc278137a5e97"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBlockID2XSMap</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_namespaceopensn_1ac6a4d4e987d2f043095ee58e65866559.html#_CPPv4N6opensn13BlockID2XSMapE" title="opensn::BlockID2XSMap"><span class="n"><span class="pre">BlockID2XSMap</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">xs_map</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16SetBlockID2XSMapERK13BlockID2XSMap" title="Link to this definition"></a><br /></dt>
 <dd><p>Replaces the map of block ids to XSs and refreshes material data. </p>
 </dd></dl>
 
@@ -572,6 +593,13 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem20RequireSourceMomentsEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a48cc712f7c47c70e3626fb6f960bf9ac"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RequireSourceMoments</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem20RequireSourceMomentsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>With <code class="docutils literal notranslate"><span class="pre">use_source_moments=true</span></code>, throws std::invalid_argument unless source moments matching the flux-moment layout have been provided (e.g. </p>
+<p>with ReadSourceMoments). Called before a solve that reads them, not at construction, because they are provided after the problem is created. Collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem14GetPhiOldLocalEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a657adbf35f82f5480e48440db3bb1b09"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetPhiOldLocal</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem14GetPhiOldLocalEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Read/write access to last updated flux vector. </p>
@@ -663,6 +691,19 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem26HasPendingInitialConditionEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a2ba20f6afdab55f16d103eb6ffb35f26"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasPendingInitialCondition</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem26HasPendingInitialConditionEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns true while <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> is set and no solver has loaded it yet. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem26MarkInitialConditionLoadedEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a5058c3f089e19fdf65e821d38ce6f0e3"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MarkInitialConditionLoaded</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem26MarkInitialConditionLoadedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Records that a solver has loaded the initial condition from <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code>. </p>
+<p>Later solver initializations continue from the problem’s current state. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a74f8f4b277298ec42d2d0fe624f8619c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">TriggerRestartDump</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem18TriggerRestartDumpEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -728,7 +769,35 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem12BuildRuntimeEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a9b153ce5b6c4d9bf46ed89abb519e593"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildRuntime</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem12BuildRuntimeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Internal factory step: build runtime data after constructor-time configuration is complete. </p>
+<dd><p>Validates parsed configuration, builds common and derived runtime data, validates the built state, and finally marks the problem built. </p>
+<p>Collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem16BuildRuntimeDataEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1ae87f4fd67f552c362eb680cb328181ff"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildRuntimeData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem16BuildRuntimeDataEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Builds the runtime data of a derived problem type. Overrides must call the base version. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a230072b1f97d61d6c2472f0607aff579"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckConfigurationErrors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends a message for each problem rule the problem violates. </p>
+<p>Call the base implementation, read only input settings (not data derived from them), and keep collective operations unconditional. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn10LBSProblem14ValidateChangeEvR1T1T">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_l_b_s_problem_1a66ce3092d9a1ad3f7e4eb773c07dd801"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateChange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4I0EN6opensn10LBSProblem14ValidateChangeEvR1T1T" title="opensn::LBSProblem::ValidateChange::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">member</span></span>, <a class="reference internal" href="#_CPPv4I0EN6opensn10LBSProblem14ValidateChangeEvR1T1T" title="opensn::LBSProblem::ValidateChange::T"><span class="n"><span class="pre">T</span></span></a><span class="w"> </span><span class="n sig-param"><span class="pre">value</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn10LBSProblem14ValidateChangeEvR1T1T" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates the problem as if <code class="docutils literal notranslate"><span class="pre">member</span></code> had <code class="docutils literal notranslate"><span class="pre">value</span></code>, then restores <code class="docutils literal notranslate"><span class="pre">member</span></code>. </p>
+<p>A rule rejection leaves <code class="docutils literal notranslate"><span class="pre">member</span></code> unchanged. This does not roll back other objects or a later rebuild failure. Collective. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21RebuildRuntimeObjectsEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a3df06b730e5c49faf39bffd98baf8a7d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RebuildRuntimeObjects</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21RebuildRuntimeObjectsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Rebuilds objects that depend on mutable configuration. </p>
+<p>Setters call this after committing a value. Overrides call the base version first. Rebuild failure is not transactional. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -1011,6 +1080,21 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem9use_gpus_E">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aeef65ee41c90d9af29ff3926a5ea2079"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_gpus_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem9use_gpus_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Flag indicating if GPU acceleration is enabled. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-static-functions">Protected Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn10LBSProblem19MakeInputParametersE15InputParametersRKNSt6stringERK14ParameterBlock">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_l_b_s_problem_1ac3280ad556fdfd625fdfbcc34c625c30"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeInputParameters</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">object_type</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn10LBSProblem19MakeInputParametersE15InputParametersRKNSt6stringERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
+<dd><p>Assigns <code class="docutils literal notranslate"><span class="pre">params</span></code> to T’s input parameters for constructing a T. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4I0EN6opensn10LBSProblem5BuildENSt10shared_ptrI1TEENSt10shared_ptrI1TEE">
+<span class="k"><span class="pre">template</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">typename</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">T</span></span></span><span class="p"><span class="pre">&gt;</span></span><br /><span class="target" id="classopensn_1_1_l_b_s_problem_1a9726ff613d1dfa4afd976b48d43aaedc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6opensn10LBSProblem5BuildENSt10shared_ptrI1TEENSt10shared_ptrI1TEE" title="opensn::LBSProblem::Build::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Build</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4I0EN6opensn10LBSProblem5BuildENSt10shared_ptrI1TEENSt10shared_ptrI1TEE" title="opensn::LBSProblem::Build::T"><span class="n"><span class="pre">T</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">problem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4I0EN6opensn10LBSProblem5BuildENSt10shared_ptrI1TEENSt10shared_ptrI1TEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Completes the creation of a newly constructed problem with <a class="reference internal" href="#classopensn_1_1_l_b_s_problem_1a9b153ce5b6c4d9bf46ed89abb519e593"><span class="std std-ref">BuildRuntime()</span></a> and returns it. </p>
 </dd></dl>
 
 </div>

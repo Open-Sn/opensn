@@ -75,6 +75,7 @@
 <li class="toctree-l4"><a class="reference internal" href="#comments">Comments</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#include-directives">Include directives</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#lambdas">Lambdas</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#problem-and-solver-validation">Problem and solver validation</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#command-line-parameters">Command-line parameters</a></li>
@@ -342,6 +343,105 @@ There is no space inside parentheses. The statement block should not be enclosed
 <div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="k">auto</span><span class="w"> </span><span class="n">MyLambda</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[](...)</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="p">...</span><span class="w"> </span><span class="p">};</span>
 </pre></div>
 </div>
+</section>
+<section id="problem-and-solver-validation">
+<h3>Problem and solver validation<a class="headerlink" href="#problem-and-solver-validation" title="Link to this heading"></a></h3>
+<p>These conventions apply to LBS problems and the solvers that drive them. Groupsets, sources, cross
+sections, and other independent objects validate their own input.</p>
+<section id="kinds-of-validation">
+<h4>Kinds of validation<a class="headerlink" href="#kinds-of-validation" title="Link to this heading"></a></h4>
+<p>A <em>problem rule</em> defines a valid combination of problem options and state. Put these rules in
+<code class="docutils literal notranslate"><span class="pre">CheckConfigurationErrors</span></code>. An override calls the base implementation, then appends one message
+for each additional violation. <code class="docutils literal notranslate"><span class="pre">ValidateConfiguration</span></code> runs all rules and throws one
+<code class="docutils literal notranslate"><span class="pre">std::invalid_argument</span></code> with the complete list.</p>
+<p>A <em>solver requirement</em> defines which valid problems a solver can drive. Put discrete-ordinates
+solver requirements in <code class="docutils literal notranslate"><span class="pre">CheckRequirements</span></code>. For example, a k-eigenvalue solver requires
+steady-state mode, no external source, and a fissionable material. Another solver may accept the
+same problem, so these checks do not belong to the problem.</p>
+<p><code class="docutils literal notranslate"><span class="pre">Check...</span></code> functions append errors without throwing. <code class="docutils literal notranslate"><span class="pre">Validate...</span></code> functions run checks and
+throw. Keep these checks at their point of use:</p>
+<ul class="simple">
+<li><p>Report parse failures where input is read. Examples include a missing parameter or unknown
+boundary name.</p></li>
+<li><p>Validate a single argument where it is used. For example, <code class="docutils literal notranslate"><span class="pre">SetTimeStep</span></code> requires <code class="docutils literal notranslate"><span class="pre">dt</span> <span class="pre">&gt;</span> <span class="pre">0</span></code>.</p></li>
+<li><p>Report failures found during work at that point. Examples include I/O errors and non-finite
+eigenvalues.</p></li>
+</ul>
+<p>Constructors enforce the input schema while parsing. Checks that depend on the meaning or
+combination of settings, the mesh, or the solver run after construction, when virtual dispatch is
+safe.</p>
+</section>
+<section id="problem-construction">
+<h4>Problem construction<a class="headerlink" href="#problem-construction" title="Link to this heading"></a></h4>
+<p>A problem is created through its static <code class="docutils literal notranslate"><span class="pre">Create</span></code> factory. The constructor parses and stores the
+configuration. <code class="docutils literal notranslate"><span class="pre">LBSProblem::Build</span></code> then:</p>
+<ol class="arabic simple">
+<li><p>It validates the parsed configuration.</p></li>
+<li><p>It builds common and derived runtime data.</p></li>
+<li><p>It validates the built state.</p></li>
+<li><p>It marks the problem built after both validation passes succeed.</p></li>
+</ol>
+<p>A new problem class makes its constructor non-public and implements <code class="docutils literal notranslate"><span class="pre">Create</span></code> as follows:</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyProblem</span><span class="o">&gt;</span>
+<span class="n">MyProblem</span><span class="o">::</span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">Build</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MyProblem</span><span class="o">&gt;</span><span class="p">(</span>
+<span class="w">    </span><span class="k">new</span><span class="w"> </span><span class="n">MyProblem</span><span class="p">(</span><span class="n">MakeInputParameters</span><span class="o">&lt;</span><span class="n">MyProblem</span><span class="o">&gt;</span><span class="p">(</span><span class="s">&quot;lbs::MyProblem&quot;</span><span class="p">,</span><span class="w"> </span><span class="n">params</span><span class="p">))));</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>Put runtime setup in <code class="docutils literal notranslate"><span class="pre">InitializeSpatialDiscretization</span></code> and <code class="docutils literal notranslate"><span class="pre">BuildRuntimeData</span></code>, not in the
+constructor. A <code class="docutils literal notranslate"><span class="pre">BuildRuntimeData</span></code> override must call its base implementation.</p>
+</section>
+<section id="solver-lifecycle">
+<h4>Solver lifecycle<a class="headerlink" href="#solver-lifecycle" title="Link to this heading"></a></h4>
+<p><code class="docutils literal notranslate"><span class="pre">Solver::Initialize</span></code>, <code class="docutils literal notranslate"><span class="pre">Execute</span></code>, and <code class="docutils literal notranslate"><span class="pre">Advance</span></code> are non-virtual wrappers. Each calls
+<code class="docutils literal notranslate"><span class="pre">ValidateState</span></code> before its derived-class hook. <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> also validates after its hook
+because initialization may change the problem. A failed initialization leaves the solver
+uninitialized. <code class="docutils literal notranslate"><span class="pre">Execute</span></code> and <code class="docutils literal notranslate"><span class="pre">Advance</span></code> require a successful <code class="docutils literal notranslate"><span class="pre">Initialize</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesSolver::ValidateState</span></code> requires a built problem, runs its rules, then runs the
+solver requirements. Other solver families implement <code class="docutils literal notranslate"><span class="pre">ValidateState</span></code> themselves. Validation
+before every operation catches supported changes made after initialization.</p>
+<p>Derived C++ solvers override <code class="docutils literal notranslate"><span class="pre">InitializeSolver</span></code>, <code class="docutils literal notranslate"><span class="pre">ExecuteSolver</span></code>, and <code class="docutils literal notranslate"><span class="pre">AdvanceSolver</span></code> rather
+than the public lifecycle functions. They must also implement <code class="docutils literal notranslate"><span class="pre">ValidateState</span></code>. Keep the public
+wrappers non-virtual so derived solvers cannot bypass validation.</p>
+</section>
+<section id="runtime-mutation">
+<h4>Runtime mutation<a class="headerlink" href="#runtime-mutation" title="Link to this heading"></a></h4>
+<p>A setter for a value read by problem rules first calls <code class="docutils literal notranslate"><span class="pre">ValidateChange(member,</span> <span class="pre">value)</span></code>. This
+helper validates the candidate, then restores the original member. A rule rejection therefore
+leaves that member unchanged.</p>
+<p>The setter then commits the value and calls <code class="docutils literal notranslate"><span class="pre">RebuildRuntimeObjects</span></code>. That function refreshes
+runtime objects shared by several setters.</p>
+<div class="highlight-c++ notranslate"><div class="highlight"><pre><span></span><span class="kt">void</span><span class="w"> </span><span class="nf">DiscreteOrdinatesProblem::SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">ValidateChange</span><span class="p">(</span><span class="n">options_</span><span class="p">.</span><span class="n">save_angular_flux</span><span class="p">,</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
+<span class="w">  </span><span class="n">options_</span><span class="p">.</span><span class="n">save_angular_flux</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">save</span><span class="p">;</span>
+<span class="w">  </span><span class="n">RebuildRuntimeObjects</span><span class="p">();</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>A setter contains only value-specific work, such as remapping precursors after a cross-section
+change. Source definitions need no runtime rebuild because source assembly reads them directly.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ValidateChange</span></code> is not a full transaction. It does not restore caller-owned objects or roll back
+a later rebuild failure. Do not promise a stronger exception guarantee unless the setter provides
+one.</p>
+</section>
+<section id="solvers-sharing-a-problem">
+<h4>Solvers sharing a problem<a class="headerlink" href="#solvers-sharing-a-problem" title="Link to this heading"></a></h4>
+<p>Several solvers may drive one problem in sequence. Flux, precursors, and time state remain in the
+problem, so the next solver can continue from them.</p>
+<p>A solver must restore temporary settings on problem-owned contexts. Use scoped guards such as
+<code class="docutils literal notranslate"><span class="pre">WGSContext::OverrideSourceScopes</span></code>. Each solver also initializes its scratch data instead of
+relying on a previous solver. Problem setters are persistent and affect every solver that shares
+the problem.</p>
+</section>
+<section id="mpi-collectivity">
+<h4>MPI collectivity<a class="headerlink" href="#mpi-collectivity" title="Link to this heading"></a></h4>
+<p>Problem construction, validation, supported setters, and discrete-ordinates solver calls are
+collective. All ranks call them in the same order with equivalent input. A rule based on local data
+must reduce it before deciding. Global cell counts include owned cells only, not ghost copies.</p>
+</section>
 </section>
 </section>
 <section id="command-line-parameters">

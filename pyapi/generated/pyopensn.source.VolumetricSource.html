@@ -113,6 +113,9 @@
 <dt class="sig sig-object py" id="pyopensn.source.VolumetricSource">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.source.</span></span><span class="sig-name descname"><span class="pre">VolumetricSource</span></span><a class="headerlink" href="#pyopensn.source.VolumetricSource" title="Link to this definition"></a></dt>
 <dd><p>Multi-group isotropic volumetric sources.</p>
+<p>A source object stores the cells it applies to on the mesh of the problem (or response
+evaluator) it was most recently added to. Sharing it between problems on the same mesh is
+safe; for problems on different meshes, create a separate source object for each mesh.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_volumetric_source.html#_CPPv4N6opensn16VolumetricSourceE" title="opensn::VolumetricSource"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::VolumetricSource</span></code></a>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.source.VolumetricSource.__init__">

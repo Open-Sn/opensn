@@ -120,19 +120,32 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.Solver.Advance">
 <span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Advance" title="Link to this definition"></a></dt>
-<dd><p>Advance time values function.</p>
+<dd><p>Advance the solver by one step.</p>
+<p>Changes made to the problem since the last step are checked as in <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.
+<code class="docutils literal notranslate"><span class="pre">Initialize</span></code> must be called first. Solver classes that do not implement stepping
+leave the state unchanged and log that <code class="docutils literal notranslate"><span class="pre">Advance</span></code> is unsupported.</p>
+<p>For MPI transport solvers, this is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.Solver.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Execute" title="Link to this definition"></a></dt>
 <dd><p>Execute the solver.</p>
+<p>The problem’s current state and the solver’s requirements are checked first, so changes
+made to the problem after <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> (for example a mode switch or <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code>) are
+validated before they are used. <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.</p>
+<p>For MPI transport solvers, this is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.Solver.Initialize">
 <span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.Solver.Initialize" title="Link to this definition"></a></dt>
 <dd><p>Initialize the solver.</p>
+<p>Solvers check that the problem is in a supported state (for example, steady-state mode
+without external sources for the k-eigenvalue solvers) and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+otherwise. Setup and post-setup validation must both succeed. Calling <code class="docutils literal notranslate"><span class="pre">Initialize</span></code>
+again clears the previous initialized state first.</p>
+<p>For MPI transport solvers, this is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 </dd></dl>

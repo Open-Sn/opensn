@@ -109,6 +109,14 @@
 <span class="target" id="structopensn_1_1_w_g_s_context"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WGSContext</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="structopensn_1_1_linear_system_context.html#_CPPv4N6opensn19LinearSystemContextE" title="opensn::LinearSystemContext"><span class="n"><span class="pre">LinearSystemContext</span></span></a><a class="headerlink" href="#_CPPv4N6opensn10WGSContextE" title="Link to this definition"></a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="structopensn_1_1_sweep_w_g_s_context.html#structopensn_1_1_sweep_w_g_s_context"><span class="std std-ref">opensn::SweepWGSContext</span></a></p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext19SourceScopeModifierE">
+<span class="target" id="structopensn_1_1_w_g_s_context_1a5aebe765b6aa56ab29a28cd0947f74b8"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SourceScopeModifier</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">void</span></span><span class="p"><span class="pre">(</span></span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">lhs_scope</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n"><span class="pre">rhs_scope</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext19SourceScopeModifierE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext10WGSContextER24DiscreteOrdinatesProblemR11LBSGroupsetRK17SetSourceFunction11SourceFlags11SourceFlagsb">
@@ -156,6 +164,18 @@
 <span class="target" id="structopensn_1_1_w_g_s_context_1a77d94676ad3dd83bbb2877059e5d5e35"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PostSolveCallback</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext17PostSolveCallbackEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10WGSContext17GetLHSSourceScopeEv">
+<span class="target" id="structopensn_1_1_w_g_s_context_1aae636653676d5b85ff5d30de833a87a9"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetLHSSourceScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10WGSContext17GetLHSSourceScopeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Sources treated implicitly (in the operator) by the within-group solve. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10WGSContext17GetRHSSourceScopeEv">
+<span class="target" id="structopensn_1_1_w_g_s_context_1a86188e57901f35697598fd79c218451d"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetRHSSourceScope</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10WGSContext17GetRHSSourceScopeEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Sources treated explicitly (on the right-hand side) by the within-group solve. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
@@ -175,16 +195,6 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext13lhs_src_scopeE">
-<span class="target" id="structopensn_1_1_w_g_s_context_1afec3150e4ef0bd34dd48e7b375947504"></span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">lhs_src_scope</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext13lhs_src_scopeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext13rhs_src_scopeE">
-<span class="target" id="structopensn_1_1_w_g_s_context_1a0bae8729bdfc071e84889fa298efa278"></span><a class="reference internal" href="structopensn_1_1_source_flags.html#_CPPv4N6opensn11SourceFlagsE" title="opensn::SourceFlags"><span class="n"><span class="pre">SourceFlags</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">rhs_src_scope</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext13rhs_src_scopeE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext8log_infoE">
 <span class="target" id="structopensn_1_1_w_g_s_context_1a0073bab30c0e7ac35197aa6fb2861fcb"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">log_info</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext8log_infoE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -198,6 +208,16 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext10last_solveE">
 <span class="target" id="structopensn_1_1_w_g_s_context_1acc6295d106f15a87f5c9f52f5c74d991"></span><a class="reference internal" href="structopensn_1_1_iteration_summary.html#_CPPv4N6opensn16IterationSummaryE" title="opensn::IterationSummary"><span class="n"><span class="pre">IterationSummary</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">last_solve</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext10last_solveE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10WGSContext20OverrideSourceScopesER24DiscreteOrdinatesProblemRK19SourceScopeModifier">
+<span class="target" id="structopensn_1_1_w_g_s_context_1ac0b3a3354f5de4aa9c06dcd18f19a708"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_scoped_source_scopes.html#_CPPv4N6opensn18ScopedSourceScopesE" title="opensn::ScopedSourceScopes"><span class="n"><span class="pre">ScopedSourceScopes</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">OverrideSourceScopes</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn10WGSContext19SourceScopeModifierE" title="opensn::WGSContext::SourceScopeModifier"><span class="n"><span class="pre">SourceScopeModifier</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">modify</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10WGSContext20OverrideSourceScopesER24DiscreteOrdinatesProblemRK19SourceScopeModifier" title="Link to this definition"></a><br /></dt>
+<dd><p>Applies <code class="docutils literal notranslate"><span class="pre">modify</span></code> to the source scopes of every WGS context of <code class="docutils literal notranslate"><span class="pre">do_problem</span></code> until the returned guard is destroyed. </p>
+<p>This is the only way to change the scopes after construction. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

@@ -106,6 +106,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/geometry.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/utils/hdf_utils.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;chrono&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
@@ -123,13 +124,17 @@
 <span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DeviceVectorMirror</span><span class="p">;</span>
 
+<span class="c1">/// Throws std::invalid_argument listing `errors`, if there are any, prefixed by `name`.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ThrowConfigurationErrors</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">);</span>
+
 <span class="cm">/**</span>
 <span class="cm"> * Base class for all Linear Boltzmann Solvers.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Problems are created through derived-class factory functions. The factory</span>
-<span class="cm"> * function performs all constructor-time parsing and calls BuildRuntime</span>
-<span class="cm"> * before returning the shared pointer, so public methods operate on a fully</span>
-<span class="cm"> * built problem.</span>
+<span class="cm"> * Problems are created only through their static Create(), which constructs the problem (the</span>
+<span class="cm"> * constructor only parses input) and passes it to Build(), so public methods operate on a fully</span>
+<span class="cm"> * built and validated problem:</span>
+<span class="cm"> *</span>
+<span class="cm"> *   return Build(std::shared_ptr&lt;T&gt;(new T(MakeInputParameters&lt;T&gt;(&quot;lbs::T&quot;, params))));</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Problem</span><span class="p">,</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">enable_shared_from_this</span><span class="o">&lt;</span><span class="n">LBSProblem</span><span class="o">&gt;</span>
 <span class="p">{</span>
@@ -168,13 +173,6 @@
 <span class="w">  </span><span class="c1">/// Returns true if the problem is currently in time-dependent mode.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsTimeDependent</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Throws if the problem cannot be switched to adjoint mode. The base class requires Cartesian</span>
-<span class="cm">   * geometry and standard quadrature operators; derived problems extend this to reject</span>
-<span class="cm">   * unsupported features and must call the base implementation.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAdjointModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Set the problem to time-dependent mode.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTimeDependentMode</span><span class="p">();</span>
 
@@ -196,6 +194,13 @@
 
 <span class="w">  </span><span class="c1">/// Returns true if the problem is in adjoint mode.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjoint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Throws std::invalid_argument listing every rule the problem violates. Collective; not callable</span>
+<span class="w">  </span><span class="c1">/// from a constructor.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateConfiguration</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns true once Create() has built the problem.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsBuilt</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">built_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Supported solution-vector operations.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroPhi</span><span class="p">();</span>
@@ -245,24 +250,37 @@
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Problem runtime reconfiguration.</span>
 <span class="cm">   *</span>
-<span class="cm">   * These methods are the public mutators available after construction.</span>
-<span class="cm">   * They refresh the runtime data owned by the problem where needed.</span>
-<span class="cm">   * Other mutable state accessors below are exposed for solvers and</span>
-<span class="cm">   * low-level I/O, not as general user-facing methods.</span>
+<span class="cm">   * These collective methods validate changes and refresh dependent runtime data. Other mutable</span>
+<span class="cm">   * accessors support solvers and low-level I/O, not general reconfiguration.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="c1">/// Adds a point source to the solver.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Replaces (`clear_existing`) or extends the point sources with `sources`.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Every new source is initialized for this problem, the resulting list is validated, and only</span>
+<span class="cm">   * then is it committed, so a rejected call leaves the problem&#39;s sources unchanged. The source</span>
+<span class="cm">   * objects themselves stay initialized for this problem. Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPointSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">sources</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_existing</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Adds a point source to the solver. See SetPointSources().</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddPointSource</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">point_source</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Clears all the point sources from the solver.</span>
+<span class="w">  </span><span class="c1">/// Clears all the point sources from the solver. See SetPointSources().</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearPointSources</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Constant accessor to the list of point sources.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">GetPointSources</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Adds a volumetric source to the solver.</span>
+<span class="w">  </span><span class="c1">/// Replaces (`clear_existing`) or extends the volumetric sources with `sources`, as</span>
+<span class="w">  </span><span class="c1">/// SetPointSources() does for point sources. Collective.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetVolumetricSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">sources</span><span class="p">,</span>
+<span class="w">                            </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_existing</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Adds a volumetric source to the solver. See SetVolumetricSources().</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddVolumetricSource</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">VolumetricSource</span><span class="o">&gt;</span><span class="w"> </span><span class="n">volumetric_source</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Clears all the volumetric sources from the solver.</span>
+<span class="w">  </span><span class="c1">/// Clears all the volumetric sources from the solver. See SetVolumetricSources().</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearVolumetricSources</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Constant accessor to the list of volumetric sources.</span>
@@ -275,7 +293,7 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetBlockID2XSMap</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Replaces the map of block ids to XSs and refreshes material data.</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBlockID2XSMap</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBlockID2XSMap</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Obtains a reference to the grid.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -350,6 +368,14 @@
 <span class="w">  </span><span class="c1">/// Replaces exterior source moments vector.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetExtSrcMomentsFrom</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ext_src_moments</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * With `use_source_moments=true`, throws std::invalid_argument unless source moments matching the</span>
+<span class="cm">   * flux-moment layout have been provided (e.g. with ReadSourceMoments). Called before a solve that</span>
+<span class="cm">   * reads them, not at construction, because they are provided after the problem is created.</span>
+<span class="cm">   * Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireSourceMoments</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Read/write access to last updated flux vector.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetPhiOldLocal</span><span class="p">();</span>
 
@@ -409,6 +435,17 @@
 <span class="w">                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_transient_initialization_from_steady</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteRestartData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">RestartDataHook</span><span class="o">&amp;</span><span class="w"> </span><span class="n">extra_writer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{});</span>
 
+<span class="w">  </span><span class="c1">/// Returns true while `read_initial_condition_path` is set and no solver has loaded it yet.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasPendingInitialCondition</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">restart</span><span class="p">.</span><span class="n">read_initial_condition_path</span><span class="p">.</span><span class="n">empty</span><span class="p">()</span><span class="w"> </span><span class="k">and</span>
+<span class="w">           </span><span class="k">not</span><span class="w"> </span><span class="n">initial_condition_loaded_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Records that a solver has loaded the initial condition from `read_initial_condition_path`.</span>
+<span class="w">  </span><span class="c1">/// Later solver initializations continue from the problem&#39;s current state.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">MarkInitialConditionLoaded</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">initial_condition_loaded_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">TriggerRestartDump</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">restart</span><span class="p">.</span><span class="n">IsWriteDue</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateRestartWriteTime</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">options_</span><span class="p">.</span><span class="n">restart</span><span class="p">.</span><span class="n">MarkWriteComplete</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
@@ -427,8 +464,67 @@
 <span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Internal factory step: build runtime data after constructor-time configuration is complete.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Assigns `params` to T&#39;s input parameters for constructing a T.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">MakeInputParameters</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">object_type</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">input_params</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">T</span><span class="o">::</span><span class="n">GetInputParameters</span><span class="p">();</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetObjectType</span><span class="p">(</span><span class="n">object_type</span><span class="p">);</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">SetErrorOriginScope</span><span class="p">(</span><span class="n">object_type</span><span class="p">);</span>
+<span class="w">    </span><span class="n">input_params</span><span class="p">.</span><span class="n">AssignParameters</span><span class="p">(</span><span class="n">params</span><span class="p">);</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">input_params</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Completes the creation of a newly constructed problem with BuildRuntime() and returns it.</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Build</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">T</span><span class="o">&gt;</span><span class="w"> </span><span class="n">problem</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">problem</span><span class="o">-&gt;</span><span class="n">BuildRuntime</span><span class="p">();</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">problem</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Validates parsed configuration, builds common and derived runtime data, validates the built</span>
+<span class="cm">   * state, and finally marks the problem built. Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildRuntime</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Builds the runtime data of a derived problem type. Overrides must call the base version.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntimeData</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="c1">/// Appends a message for each problem rule the problem violates. Call the base implementation,</span>
+<span class="w">  </span><span class="c1">/// read only input settings (not data derived from them), and keep collective operations</span>
+<span class="w">  </span><span class="c1">/// unconditional.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckConfigurationErrors</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Validates the problem as if `member` had `value`, then restores `member`.</span>
+<span class="cm">   *</span>
+<span class="cm">   * A rule rejection leaves `member` unchanged. This does not roll back other objects or a later</span>
+<span class="cm">   * rebuild failure. Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ValidateChange</span><span class="p">(</span><span class="n">T</span><span class="o">&amp;</span><span class="w"> </span><span class="n">member</span><span class="p">,</span><span class="w"> </span><span class="n">T</span><span class="w"> </span><span class="n">value</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">T</span><span class="w"> </span><span class="n">old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">exchange</span><span class="p">(</span><span class="n">member</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">value</span><span class="p">));</span>
+<span class="w">    </span><span class="k">try</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">ValidateConfiguration</span><span class="p">();</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="k">catch</span><span class="w"> </span><span class="p">(...)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">member</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">      </span><span class="k">throw</span><span class="p">;</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">    </span><span class="n">member</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">old</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Rebuilds objects that depend on mutable configuration. Setters call this after committing a</span>
+<span class="cm">   * value. Overrides call the base version first. Rebuild failure is not transactional.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">RebuildRuntimeObjects</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">();</span>
 
@@ -515,8 +611,10 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpus_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">InitializeRuntimeCore</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateRuntimeModeConfiguration</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">built_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">initial_condition_loaded_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeRuntimeCore</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSources</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Initializes parallel arrays.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeParrays</span><span class="p">();</span>
@@ -553,8 +651,8 @@
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">filesystem</span><span class="o">::</span><span class="n">path</span><span class="w"> </span><span class="nf">BuildRestartPath</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">path_stem</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Checks if the current CPU is associated with any GPU.</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckCapableDevices</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Returns true if the current CPU is associated with any GPU.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasCapableDevices</span><span class="p">();</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Max number of DOFs per cell that the sweep kernel on GPU can handle.</span>

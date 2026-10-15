@@ -98,6 +98,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
@@ -161,10 +162,6 @@
 <span class="cm">   * @{</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetSweepType</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sweep_type_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateOptions</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">SweepChunkMode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mode</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Rejects adjoint mode for CSDA problems and problems with an uncollided flux file.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateAdjointModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetNumPhiIterativeUnknowns</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
@@ -264,8 +261,6 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBlockID2XSMap</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">InputParameters</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">boundary_params</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_existing</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="n">BoundaryCarrier</span><span class="o">*</span><span class="w"> </span><span class="nf">GetBoundaryCarrier</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_carrier_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
@@ -282,6 +277,10 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TransferDeviceBoundaryData</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">host_to_device</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">force</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasUncollidedFlux</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">uncollided_flux_file_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Appends an error, ending with `reason`, for each external source: volumetric and point</span>
+<span class="w">  </span><span class="c1">/// sources, external source moments, and incoming-flux boundaries.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckNoExternalSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">reason</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetFirstCollisionSourceMoments</span><span class="p">()</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
@@ -307,25 +306,36 @@
 <span class="w">  </span><span class="c1">/// Factory-only constructor.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Internal factory step: build sweep/runtime data once base runtime data is available.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntime</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Creates the piecewise-linear discontinuous discretization.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSpatialDiscretization</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Builds the sweep, acceleration, and solver data once the base runtime data is available.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntimeData</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Also rebuilds the angular-flux storage, source function, boundaries, acceleration, and</span>
+<span class="w">  </span><span class="c1">/// solver schemes. Construction-fixed data (discretization, sweep orderings, FLUDS) is kept.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RebuildRuntimeObjects</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Sets the source function of the current (steady-state or time-dependent) mode.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSourceFunction</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Returns false if this geometry does not support time-dependent mode.</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">SupportsTimeDependentMode</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Hook for geometry-specific boundary-configuration checks, called from</span>
-<span class="w">  </span><span class="c1">/// `InitializeBoundaries()`.</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateBoundaryConfiguration</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="c1">/// Returns true for problem types that discretize the curvilinear angular-derivative terms and</span>
+<span class="w">  </span><span class="c1">/// therefore accept cylindrical and spherical meshes.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsCurvilinear</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Validates that time-dependent mode may be enabled, given the current GPU, adjoint,</span>
-<span class="w">  </span><span class="c1">/// geometry, and angular-flux-storage configuration.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateTimeDependentModeAllowed</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Discrete-ordinates rules. See LBSProblem::CheckConfigurationErrors.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckConfigurationErrors</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Rejects sigma_t &lt;= 0 in groupsets whose XY quadrature has a direction with no in-plane</span>
-<span class="w">  </span><span class="c1">/// component.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateNonStreamingDirections</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// CSDA rules; does nothing for problems without CSDA.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckCSDA</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Rejects sigma_t &lt;= 0 where an XY quadrature has a direction with no in-plane component.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckNonStreamingDirections</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrintSimHeader</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -338,7 +348,6 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
 <span class="w">  </span><span class="c1">/// Rebuild WGS/AGS solver schemes after runtime configuration changes.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReinitializeSolverSchemes</span><span class="p">();</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ConfigureTransientSourceScopes</span><span class="p">();</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSweepChunkMode</span><span class="p">(</span><span class="n">SweepChunkMode</span><span class="w"> </span><span class="n">mode</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetSweepChunkMode</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">.</span><span class="n">reset</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
@@ -396,7 +405,9 @@
 <span class="w">                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">repartitioned</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">WriteProblemRestartData</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ResetDerivedSolutionVectors</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateBoundaryDefinition</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Parses one boundary-condition block into `definitions`.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ParseBoundaryDefinition</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">definitions</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RebuildBoundaryRuntimeData</span><span class="p">();</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span>
 <span class="w">  </span><span class="n">ComputeDerivedFieldFunctionData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -423,10 +434,11 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">sweep_boundaries_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryDefinition</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_definitions_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">BoundaryCarrier</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_carrier_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ParameterBlock</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_conditions_block_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">boundary_runtime_data_initialized_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_reflecting_boundaries_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_time_dependent_boundaries_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Boundary IDs of the mesh on all ranks; fixed by the mesh, so computed once.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_boundary_ids_</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -444,6 +456,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_e_new_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">SweepChunkMode</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sweep_chunk_mode_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">uncollided_flux_file_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Cross sections the uncollided flux was computed with.</span>
+<span class="w">  </span><span class="n">BlockID2XSMap</span><span class="w"> </span><span class="n">uncollided_xs_map_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">uncollided_flux_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_collision_source_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_source_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
@@ -467,11 +481,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="n">ComputeAngularFieldFunctionData</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Determines the outward face normal for a reflecting boundary, verifying that it is</span>
-<span class="cm">   * consistent (within tolerance) across all local faces and all MPI ranks.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">ComputeReflectingBoundaryNormal</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">bid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Returns the outward normal of boundary `bid`, or std::nullopt if its faces on all ranks do not</span>
+<span class="w">  </span><span class="c1">/// share one normal. Collective.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeReflectingBoundaryNormal</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">bid</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAAHD_FLUDSCommonDataWithBoundary</span><span class="p">();</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">FLUDS</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateAAHD_FLUDS</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups</span><span class="p">,</span>
@@ -511,9 +523,6 @@
 <span class="w">                                      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group</span><span class="p">,</span>
 <span class="w">                                      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">angle</span><span class="p">);</span>
-<span class="w">  </span><span class="c1">/// Validate common energy bounds and charged blocks before installing an XS map.</span>
-<span class="w">  </span><span class="c1">/// Materials may omit bounds; at least one complete structure must be supplied.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateCSDAGroupConfiguration</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs_map</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="k">public</span><span class="o">:</span>

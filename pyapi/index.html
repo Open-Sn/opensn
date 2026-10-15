@@ -633,6 +633,12 @@ called; no separate initialization step is required.</p>
 </tr>
 </tbody>
 </table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>A source caches cell data for the problem that most recently initialized it. Reusing it with a
+different mesh replaces that data and can break the earlier problem. Prefer a separate source
+object for each problem. Share one only when both problems use the same mesh and partitioning.</p>
+</div>
 </section>
 <section id="post-processors">
 <h2>Post-processors<a class="headerlink" href="#post-processors" title="Link to this heading"></a></h2>

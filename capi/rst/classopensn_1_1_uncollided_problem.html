@@ -117,11 +117,6 @@
 <dd><div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters">
-<span class="target" id="classopensn_1_1_uncollided_problem_1ae52597ace9045fa8a86390ae8cd2c781"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UncollidedProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblemD0Ev">
 <span class="target" id="classopensn_1_1_uncollided_problem_1a4c89bdb4fd1687ab7ed912b6a216b839"></span><span class="sig-name descname"><span class="n"><span class="pre">~UncollidedProblem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblemD0Ev" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -131,6 +126,22 @@
 <span class="target" id="classopensn_1_1_uncollided_problem_1a7c3ba6ef2ec9e07064d9a01d3b15e317"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Clears all the boundary conditions from the solver. </p>
 </dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a4d5e18772554384d3c87c1c5ea5309ba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Generation steps run by <a class="reference internal" href="classopensn_1_1_uncollided_solver.html#classopensn_1_1_uncollided_solver"><span class="std std-ref">UncollidedSolver</span></a>: locate the point sources, add their images in the reflecting planes, and compute and write the uncollided flux moments. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a9c93257b384328f3cd91b48c45f2c8ce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddReflectedSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a62b46dc626b2bc881f28c68a2c761c89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file_name</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">progress_interval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -168,6 +179,18 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters">
+<span class="target" id="classopensn_1_1_uncollided_problem_1ae52597ace9045fa8a86390ae8cd2c781"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UncollidedProblem</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17UncollidedProblemERK15InputParameters" title="Link to this definition"></a><br /></dt>
+<dd><p>Factory-only constructor. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UncollidedProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a308aae1859cba1f302c5f6ee7c2720e4"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckConfigurationErrors</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UncollidedProblem24CheckConfigurationErrorsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Uncollided-generation rules. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem14PrintSimHeaderEv">
 <span class="target" id="classopensn_1_1_uncollided_problem_1a4e6ac689f787edee15c3f1d80531861d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrintSimHeader</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem14PrintSimHeaderEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -183,24 +206,16 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem27InitializeNearSourceRegionsERK15InputParameters">
-<span class="target" id="classopensn_1_1_uncollided_problem_1a19a40da7022a464e1576eb069b5da5cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeNearSourceRegions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem27InitializeNearSourceRegionsERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn17UncollidedProblem23ComputeReflectionPlanesERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a39ab9a7ec82e60942af3123d69360af7"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem15ReflectionPlaneE" title="opensn::UncollidedProblem::ReflectionPlane"><span class="n"><span class="pre">ReflectionPlane</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeReflectionPlanes</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn17UncollidedProblem23ComputeReflectionPlanesERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the planes of the reflecting boundaries and appends an error for each invalid boundary condition. </p>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem30InitializeReflectingBoundariesERK15InputParameters">
-<span class="target" id="classopensn_1_1_uncollided_problem_1ad895addadebdcf61e290834082e04d63"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeReflectingBoundaries</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem30InitializeReflectingBoundariesERK15InputParameters" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv">
-<span class="target" id="classopensn_1_1_uncollided_problem_1a4d5e18772554384d3c87c1c5ea5309ba"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem17BuildSourcePointsEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv">
-<span class="target" id="classopensn_1_1_uncollided_problem_1a9c93257b384328f3cd91b48c45f2c8ce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddReflectedSourcePoints</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24AddReflectedSourcePointsEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem16BuildRuntimeDataEv">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a1e2b8f80f1d1e104d4726a0c325d3c10"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildRuntimeData</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem16BuildRuntimeDataEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Stores the reflection planes once the configuration has been validated. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24RaytraceNearSourceRegionERK11SourcePoint">
@@ -232,11 +247,6 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem26ComputeUncollidedIntegralsERK4CellRK7Vector3">
 <span class="target" id="classopensn_1_1_uncollided_problem_1a707c8c677c9f36f99015e9b0229bfc3d"></span><a class="reference internal" href="structopensn_1_1_uncollided_matrices.html#_CPPv4N6opensn18UncollidedMatricesE" title="opensn::UncollidedMatrices"><span class="n"><span class="pre">UncollidedMatrices</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeUncollidedIntegrals</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_cell.html#_CPPv4N6opensn4CellE" title="opensn::Cell"><span class="n"><span class="pre">Cell</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">pt_loc</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem26ComputeUncollidedIntegralsERK4CellRK7Vector3" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj">
-<span class="target" id="classopensn_1_1_uncollided_problem_1a62b46dc626b2bc881f28c68a2c761c89"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">file_name</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">progress_interval</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem7ExecuteERKNSt6stringEj" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -282,6 +292,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem24reflected_source_points_E">
 <span class="target" id="classopensn_1_1_uncollided_problem_1ac7300e0fe2c6e1118bdfb246fed05734"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn17UncollidedProblem11SourcePointE" title="opensn::UncollidedProblem::SourcePoint"><span class="n"><span class="pre">SourcePoint</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">reflected_source_points_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem24reflected_source_points_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem20boundary_conditions_E">
+<span class="target" id="classopensn_1_1_uncollided_problem_1a90bc604fc77e3f2c03cc84104ebd3fb8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_conditions_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem20boundary_conditions_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Boundary conditions as (name, type). </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem18reflection_planes_E">
@@ -407,14 +423,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12ComputeOmegaERK7Vector3RK7Vector3">
 <span class="target" id="classopensn_1_1_uncollided_problem_1a410229792438cc3897ac8d3145f1b9e3"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeOmega</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point0</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">point1</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UncollidedProblem12ComputeOmegaERK7Vector3RK7Vector3" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-friends">Friends</p>
-<dl>
-<dt class="sig sig-object cpp">
-<em class="property"><span class="pre">friend</span> <span class="pre">class</span></em> <span class="pre">UncollidedSolver</span></dt>
-</dl>
 
 </div>
 <dl class="cpp struct">

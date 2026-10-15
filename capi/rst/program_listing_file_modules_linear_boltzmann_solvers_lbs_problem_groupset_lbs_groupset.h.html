@@ -108,14 +108,10 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">QuadratureCarrier</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Shared groupset state.</span>
+<span class="cm"> * Configuration and runtime state for one contiguous energy-group range.</span>
 <span class="cm"> *</span>
-<span class="cm"> * This class is not specific to LBSProblem. It is shared infrastructure used across</span>
-<span class="cm"> * problem implementations, including discrete ordinates, to carry both generic</span>
-<span class="cm"> * group-iteration settings and groupset-scoped transport data.</span>
-<span class="cm"> *</span>
-<span class="cm"> * This class remains the sole groupset representation used by the transport</span>
-<span class="cm"> * solvers, so method-specific groupset data continues to live here.</span>
+<span class="cm"> * LBSProblem owns the ordered groupsets. Together they cover every problem group exactly once,</span>
+<span class="cm"> * from zero through `num_groups - 1`. Each groupset holds iteration settings and transport data.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span>
 <span class="p">{</span>
@@ -140,9 +136,9 @@
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetNumGroups</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">id</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// First energy-group index in the groupset.</span>
+<span class="w">  </span><span class="c1">/// First energy-group index in this inclusive range.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Last energy-group index in the groupset.</span>
+<span class="w">  </span><span class="c1">/// Last energy-group index in this inclusive range.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Number of groups in the groupset.</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">size</span><span class="p">;</span>

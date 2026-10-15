@@ -109,18 +109,6 @@
 <span class="target" id="classopensn_1_1_uncollided_solver_1a280c7fdd141fc197f3231de4628ba29a"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UncollidedSolver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver16UncollidedSolverERK15InputParameters" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver10InitializeEv">
-<span class="target" id="classopensn_1_1_uncollided_solver_1a87110ecb07e6c8277bd555083e45c49d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initialize function. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver7ExecuteEv">
-<span class="target" id="classopensn_1_1_uncollided_solver_1ab077bc4f523a07e2fafd4eb7ad63b956"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver7ExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Execution function. </p>
-</dd></dl>
-
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
@@ -133,6 +121,27 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver6CreateERK14ParameterBlock">
 <span class="target" id="classopensn_1_1_uncollided_solver_1a858731eaddf7fcc8eb563ad1d9a4c64a"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn16UncollidedSolverE" title="opensn::UncollidedSolver"><span class="n"><span class="pre">UncollidedSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Create</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_parameter_block.html#_CPPv4N6opensn14ParameterBlockE" title="opensn::ParameterBlock"><span class="n"><span class="pre">ParameterBlock</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver6CreateERK14ParameterBlock" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16UncollidedSolver13ValidateStateEv">
+<span class="target" id="classopensn_1_1_uncollided_solver_1a57c004327956bc298959ef4559262544"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ValidateState</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn16UncollidedSolver13ValidateStateEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Validates the problem’s configuration; the solver has no further requirements. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver16InitializeSolverEv">
+<span class="target" id="classopensn_1_1_uncollided_solver_1a796dd3971e915614a9874ca99534ed0d"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver16InitializeSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class initialization after <a class="reference internal" href="#classopensn_1_1_uncollided_solver_1a57c004327956bc298959ef4559262544"><span class="std std-ref">ValidateState()</span></a> succeeds. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver13ExecuteSolverEv">
+<span class="target" id="classopensn_1_1_uncollided_solver_1ac71b16b6c5e3f31327c453b5f4fd8056"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver13ExecuteSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class execution after initialization and validation succeed. </p>
+</dd></dl>
 
 </div>
 <div class="breathe-sectiondef docutils container">
@@ -150,11 +159,6 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver18progress_interval_E">
 <span class="target" id="classopensn_1_1_uncollided_solver_1a24c5838db3610cde1aabdc990d098ee9"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">progress_interval_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">5</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver18progress_interval_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn16UncollidedSolver12initialized_E">
-<span class="target" id="classopensn_1_1_uncollided_solver_1acc5b81ea74a29a220a35942cb096a1dc"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialized_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn16UncollidedSolver12initialized_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </div>

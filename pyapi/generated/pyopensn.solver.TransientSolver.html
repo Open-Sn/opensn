@@ -183,12 +183,21 @@ estimate the timestep inventory change.</p>
 <dt class="sig sig-object py" id="pyopensn.solver.TransientSolver.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.TransientSolver.Execute" title="Link to this definition"></a></dt>
 <dd><p>Execute the solver.</p>
+<p>The problem’s current state and the solver’s requirements are checked first, so changes
+made to the problem after <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> (for example a mode switch or <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code>) are
+validated before they are used. <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> must be called before <code class="docutils literal notranslate"><span class="pre">Execute</span></code>.</p>
+<p>For MPI transport solvers, this is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.TransientSolver.Initialize">
 <span class="sig-name descname"><span class="pre">Initialize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.TransientSolver.Initialize" title="Link to this definition"></a></dt>
 <dd><p>Initialize the solver.</p>
+<p>Solvers check that the problem is in a supported state (for example, steady-state mode
+without external sources for the k-eigenvalue solvers) and raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+otherwise. Setup and post-setup validation must both succeed. Calling <code class="docutils literal notranslate"><span class="pre">Initialize</span></code>
+again clears the previous initialized state first.</p>
+<p>For MPI transport solvers, this is a collective operation and must be called on all ranks.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -271,10 +280,14 @@ upcoming step.</p>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>pyopensn.solver.DiscreteOrdinatesProblem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>DiscreteOrdinatesProblem</em></a>) – Existing discrete ordinates problem instance.</p></li>
 <li><p><strong>dt</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=2.0e-3</em>) – Time step size used during the simulation.</p></li>
-<li><p><strong>stop_time</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=0.1</em>) – Simulation end time.</p></li>
+<li><p><strong>stop_time</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=0.1</em>) – Absolute end time of the transient, not a duration. A solver that starts after
+another one on the same problem continues from that problem’s time.</p></li>
 <li><p><strong>theta</strong> (<em>float</em><em>, </em><em>optional</em><em>, </em><em>default=0.5</em>) – Time differencing scheme parameter.</p></li>
 <li><p><strong>initial_state</strong> (<em>str</em><em>, </em><em>optional</em><em>, </em><em>default=&quot;existing&quot;</em>) – Initial state for the transient solve. Allowed values: existing, zero.
-In “zero” mode, scalar flux vectors are reset to zero.</p></li>
+“existing” continues from the problem’s current solution and time. “zero”
+resets the scalar flux, precursors, and stored angular fluxes to zero and starts
+at time 0. Restart data and a pending initial condition
+(<code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code>) take precedence.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default=True</em>) – Enable verbose logging.</p></li>
 </ul>
 </dd>

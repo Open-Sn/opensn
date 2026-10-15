@@ -120,14 +120,22 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">UncollidedProblem</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">LBSProblem</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">UncollidedProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
 <span class="w">  </span><span class="o">~</span><span class="n">UncollidedProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{}</span>
 
+<span class="w">  </span><span class="c1">/// Generation steps run by UncollidedSolver: locate the point sources, add their images in the</span>
+<span class="w">  </span><span class="c1">/// reflecting planes, and compute and write the uncollided flux moments.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildSourcePoints</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddReflectedSourcePoints</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">progress_interval</span><span class="p">);</span>
+
 <span class="k">protected</span><span class="o">:</span>
-<span class="w">  </span><span class="k">friend</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">UncollidedSolver</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Factory-only constructor.</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">UncollidedProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Uncollided-generation rules.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckConfigurationErrors</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">ReflectionPlane</span>
 <span class="w">  </span><span class="p">{</span>
@@ -175,13 +183,12 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildSweepOrdering</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeNearSourceRegions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Returns the planes of the reflecting boundaries and appends an error for each invalid</span>
+<span class="w">  </span><span class="c1">/// boundary condition.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ReflectionPlane</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeReflectionPlanes</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeReflectingBoundaries</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildSourcePoints</span><span class="p">();</span>
-
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddReflectedSourcePoints</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Stores the reflection planes once the configuration has been validated.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">BuildRuntimeData</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RaytraceNearSourceRegion</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
 
@@ -210,8 +217,6 @@
 
 <span class="w">  </span><span class="n">UncollidedMatrices</span><span class="w"> </span><span class="nf">ComputeUncollidedIntegrals</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pt_loc</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">progress_interval</span><span class="p">);</span>
-
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateBalance</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AccumulateMoments</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">pt_loc</span><span class="p">);</span>
@@ -229,6 +234,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LogicalVolume</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">near_source_logvols_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SourcePoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">source_points_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SourcePoint</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reflected_source_points_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Boundary conditions as (name, type).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundary_conditions_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">ReflectionPlane</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reflection_planes_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">set</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">reflecting_boundary_ids_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Cell face orientations for the cells in the local cell graph.</span>

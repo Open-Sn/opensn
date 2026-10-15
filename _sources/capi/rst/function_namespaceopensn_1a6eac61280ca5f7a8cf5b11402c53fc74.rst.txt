@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6eac61280ca5f7a8cf5b11402c53fc74:
+
+Function opensn::PowerIterationKEigen
+=====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_power_iteration_keigen.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PowerIterationKEigen(LBSProblem&, double, unsigned int, double&)
+   :project: opensn

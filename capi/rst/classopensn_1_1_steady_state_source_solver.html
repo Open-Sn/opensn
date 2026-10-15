@@ -92,7 +92,7 @@
 <section id="base-type">
 <h3>Base Type<a class="headerlink" href="#base-type" title="Link to this heading"></a></h3>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::Solver</span></code> (<a class="reference internal" href="classopensn_1_1_solver.html#exhale-class-classopensn-1-1-solver"><span class="std std-ref">Class Solver</span></a>)</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">public</span> <span class="pre">opensn::DiscreteOrdinatesSolver</span></code> (<a class="reference internal" href="classopensn_1_1_discrete_ordinates_solver.html#exhale-class-classopensn-1-1-discrete-ordinates-solver"><span class="std std-ref">Class DiscreteOrdinatesSolver</span></a>)</p></li>
 </ul>
 </section>
 </section>
@@ -100,7 +100,7 @@
 <h2>Class Documentation<a class="headerlink" href="#class-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolverE">
-<span class="target" id="classopensn_1_1_steady_state_source_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SteadyStateSourceSolver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_solver.html#_CPPv4N6opensn6SolverE" title="opensn::Solver"><span class="n"><span class="pre">Solver</span></span></a><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolverE" title="Link to this definition"></a><br /></dt>
+<span class="target" id="classopensn_1_1_steady_state_source_solver"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SteadyStateSourceSolver</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_solver.html#_CPPv4N6opensn23DiscreteOrdinatesSolverE" title="opensn::DiscreteOrdinatesSolver"><span class="n"><span class="pre">DiscreteOrdinatesSolver</span></span></a><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolverE" title="Link to this definition"></a><br /></dt>
 <dd><p>Steady-state source solver that drives the across-groupset (AGS) solver. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
@@ -108,18 +108,6 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver23SteadyStateSourceSolverERK15InputParameters">
 <span class="target" id="classopensn_1_1_steady_state_source_solver_1a147b71ad426b699df01ddf660f47107b"></span><span class="k"><span class="pre">explicit</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SteadyStateSourceSolver</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">params</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver23SteadyStateSourceSolverERK15InputParameters" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver10InitializeEv">
-<span class="target" id="classopensn_1_1_steady_state_source_solver_1afe56b19b17d2db1383bdcb0d1d34e7ec"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver10InitializeEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Initialize function. </p>
-</dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver7ExecuteEv">
-<span class="target" id="classopensn_1_1_steady_state_source_solver_1a446388da661242a46b2dbb87b9378605"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver7ExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Execution function. </p>
-</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn23SteadyStateSourceSolver19ComputeBalanceTableEv">
@@ -141,16 +129,25 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver11do_problem_E">
-<span class="target" id="classopensn_1_1_steady_state_source_solver_1ad3aa836b0fd3a9e6673dacd1f67748fd"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">do_problem_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver11do_problem_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn23SteadyStateSourceSolver17CheckRequirementsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_steady_state_source_solver_1a8013a8e47661cbd64637cb89b9e1aa0a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckRequirements</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn23SteadyStateSourceSolver17CheckRequirementsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends one message for each solver-specific requirement the problem violates. </p>
+<p>Problem-wide rules belong in <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem_1a9eb13dd1d4a127727e8cb048cfdaefba"><span class="std std-ref">DiscreteOrdinatesProblem::CheckConfigurationErrors</span></a>. Requirements based on rank-local state reduce it before appending an error. </p>
+</dd></dl>
 
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver12initialized_E">
-<span class="target" id="classopensn_1_1_steady_state_source_solver_1ab6e2649c84268d52bdef345b7ba838a6"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">initialized_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver12initialized_E" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver16InitializeSolverEv">
+<span class="target" id="classopensn_1_1_steady_state_source_solver_1a2dd4213b4ecf1cc52411d1ec4db72268"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">InitializeSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver16InitializeSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class initialization after <a class="reference internal" href="classopensn_1_1_discrete_ordinates_solver.html#classopensn_1_1_discrete_ordinates_solver_1a8b63be10e9d61332caea495ec28d2df0"><span class="std std-ref">ValidateState()</span></a> succeeds. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn23SteadyStateSourceSolver13ExecuteSolverEv">
+<span class="target" id="classopensn_1_1_steady_state_source_solver_1a9302aa94f8759721c73d7f4c90e56e19"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ExecuteSolver</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn23SteadyStateSourceSolver13ExecuteSolverEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Performs derived-class execution after initialization and validation succeed. </p>
+</dd></dl>
 
 </div>
 </dd></dl>

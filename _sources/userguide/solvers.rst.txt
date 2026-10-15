@@ -65,6 +65,24 @@ Example:
    constructing the solver. That is expected. The problem captures the physics
    model; the solver choice mainly determines how that model is driven.
 
+Validation and lifecycle
+========================
+
+OpenSn validates a problem when it is constructed and revalidates it before every
+solver operation. Solver-specific restrictions are separate. For example, external
+sources are valid on a fixed-source problem, but a k-eigenvalue solver rejects them.
+
+``Initialize`` must succeed before ``Execute`` or ``Advance``. Calling it again
+starts a fresh initialization. A failure leaves the solver uninitialized. Supported
+problem changes are checked immediately and before the next solver operation.
+
+Problem construction, setters, and transport-solver calls are collective. Call them
+on every rank in the same order with equivalent input.
+
+Several solver objects may drive the same problem sequentially. The transport
+state remains in the problem for the next solver. Problem setters affect every
+solver that shares the problem. Temporary solver settings are restored on return.
+
 Base Classes
 ============
 
@@ -148,8 +166,8 @@ Its constructor takes the main transport-model inputs:
 
 The most important constructor inputs are:
 
-* ``groupsets``: defines the angular quadrature and iterative behavior for
-  ranges of energy groups
+* ``groupsets``: partitions all energy groups into ordered, contiguous ranges and
+  defines the angular quadrature and iterative behavior for each range
 * ``xs_map``: maps mesh block ids to cross sections
 * ``boundary_conditions``: defines vacuum, reflecting, isotropic, or arbitrary
   inflow boundaries
@@ -186,9 +204,13 @@ from steady-state and k-eigenvalue solves as well as from transients, which
 lowers :math:`k_\text{eff}` by approximately the delayed fraction.
 
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
-``read_initial_condition_path`` reads restart data as an initial condition; this
+``read_initial_condition_path`` reads restart data as an initial condition (the
+two options are alternatives; setting both is rejected); this
 is the option to use when a :py:class:`pyopensn.solver.TransientSolver` should
-start from a separately written steady-state restart. Full transient
+start from a separately written steady-state restart. The initial condition is
+loaded once per problem, by the first ``TransientSolver.Initialize()``. Calling
+``Initialize()`` again, or initializing another transient solver on the same
+problem, continues from the problem's current state. Full transient
 continuation restarts require angular flux state. If the problem has delayed
 sweep angular state, including partitioned parallel, reflected-boundary, or
 cyclic-sweep cases, continuation also requires delayed sweep angular-flux
@@ -536,9 +558,14 @@ The module also exposes:
 
 Meaning of ``initial_state``:
 
-* ``"existing"``: start from the current problem state
+* ``"existing"``: start from the current problem state and the problem's current
+  time. A second transient solver on the same problem therefore continues where
+  the first one stopped; give it a later (absolute) ``stop_time``.
 * ``"zero"``: zero the scalar flux, precursor state, and stored angular fluxes
-  before beginning the transient
+  and start a new transient at time 0
+
+Restart data (``read_restart_path``) and a pending initial condition
+(``read_initial_condition_path``) set both the state and the time instead.
 
 .. note::
 
@@ -569,8 +596,10 @@ The simplest transient pattern is:
    solver.Initialize()
    solver.Execute()
 
-During :py:meth:`Execute`, the solver repeatedly advances until the current time
-reaches ``stop_time``.
+During :py:meth:`Execute`, the solver repeatedly advances from the problem's
+current time until it reaches ``stop_time``. ``stop_time`` is an absolute time:
+if the problem is already at ``stop_time``, no steps are taken and a warning is
+logged, and a ``stop_time`` earlier than the current time raises an error.
 
 Important behavior:
 
@@ -727,6 +756,16 @@ The constructor takes:
 * ``max_iters``: maximum power iterations
 * ``k_tol``: convergence tolerance on ``k_eff``
 * ``reset_phi0``: whether to reset scalar fluxes to 1.0 before solving
+
+The problem must be in steady-state mode and have no external sources: no
+volumetric or point sources, no external source moments
+(``options={'use_source_moments': True}``), and no isotropic (nonzero) or
+arbitrary boundary conditions. External sources make the problem a fixed-source problem, whose
+solution is not an eigenvector. ``Initialize`` and ``Execute`` raise
+``ValueError`` otherwise. To run a k-eigenvalue and a fixed-source calculation
+on the same problem, clear the sources for the eigenvalue solve, for example
+``problem.SetVolumetricSources(clear_volumetric_sources=True)``. The same
+requirements apply to :py:class:`pyopensn.solver.NonLinearKEigenSolver`.
 
 GPU support
 -----------

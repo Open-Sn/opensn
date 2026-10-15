@@ -125,10 +125,11 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11PointSource10InitializeERK10LBSProblem">
 <span class="target" id="classopensn_1_1_point_source_1a9da34df3367c8f20c05140fb300a83ca"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemE" title="opensn::LBSProblem"><span class="n"><span class="pre">LBSProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lbs_problem</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn11PointSource10InitializeERK10LBSProblem" title="Link to this definition"></a><br /></dt>
-<dd><p>Initializes the cell subscriber info from the given solver. </p>
+<dd><p>Recomputes cell subscribers and finite-element weights for <code class="docutils literal notranslate"><span class="pre">lbs_problem</span></code>. </p>
+<p>This replaces data from any previous mesh. Share a <a class="reference internal" href="#classopensn_1_1_point_source"><span class="std std-ref">PointSource</span></a> only between problems with the same mesh and compatible spatial discretizations. Collective.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>Uninitialized point sources will not contribute to sources. </p>
+<p>An uninitialized point source does not contribute to a problem. </p>
 </div>
 </dd></dl>
 

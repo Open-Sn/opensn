@@ -46,6 +46,8 @@ Includes
 
 - ``optional``
 
+- ``set`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_angle_set_aah_angle_set.h`)
+
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
 - ``tuple``

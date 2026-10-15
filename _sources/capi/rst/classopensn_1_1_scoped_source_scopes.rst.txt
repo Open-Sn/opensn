@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_scoped_source_scopes:
+
+Class ScopedSourceScopes
+========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_wgs_context.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::ScopedSourceScopes
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -101,9 +101,8 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupsetE">
 <span class="target" id="classopensn_1_1_l_b_s_groupset"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">LBSGroupset</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupsetE" title="Link to this definition"></a><br /></dt>
-<dd><p>Shared groupset state. </p>
-<p>This class is not specific to <a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#classopensn_1_1_l_b_s_problem"><span class="std std-ref">LBSProblem</span></a>. It is shared infrastructure used across problem implementations, including discrete ordinates, to carry both generic group-iteration settings and groupset-scoped transport data.</p>
-<p>This class remains the sole groupset representation used by the transport solvers, so method-specific groupset data continues to live here. </p>
+<dd><p>Configuration and runtime state for one contiguous energy-group range. </p>
+<p><a class="reference internal" href="classopensn_1_1_l_b_s_problem.html#classopensn_1_1_l_b_s_problem"><span class="std std-ref">LBSProblem</span></a> owns the ordered groupsets. Together they cover every problem group exactly once, from zero through <code class="docutils literal notranslate"><span class="pre">num_groups</span> <span class="pre">-</span> <span class="pre">1</span></code>. Each groupset holds iteration settings and transport data. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
@@ -160,13 +159,13 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset11first_groupE">
 <span class="target" id="classopensn_1_1_l_b_s_groupset_1a35fffa48b99d1cfd0d115be8cf1a5e4d"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">first_group</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset11first_groupE" title="Link to this definition"></a><br /></dt>
-<dd><p>First energy-group index in the groupset. </p>
+<dd><p>First energy-group index in this inclusive range. </p>
 </dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn11LBSGroupset10last_groupE">
 <span class="target" id="classopensn_1_1_l_b_s_groupset_1a5243c103415d20e83c7cfd3de27f2a11"></span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">last_group</span></span></span><a class="headerlink" href="#_CPPv4N6opensn11LBSGroupset10last_groupE" title="Link to this definition"></a><br /></dt>
-<dd><p>Last energy-group index in the groupset. </p>
+<dd><p>Last energy-group index in this inclusive range. </p>
 </dd></dl>
 
 <dl class="cpp var">

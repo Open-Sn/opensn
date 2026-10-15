@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ac5f3cd9b97b1a18969688c279fa229e3:
+
+Function opensn::ThrowConfigurationErrors
+=========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ThrowConfigurationErrors(const std::string&, const std::vector<std::string>&)
+   :project: opensn

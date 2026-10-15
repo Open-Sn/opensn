@@ -264,6 +264,123 @@ Named lambdas should use `Pascal` style.
 
    auto MyLambda = [](...) { ... };
 
+Problem and solver validation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These conventions apply to LBS problems and the solvers that drive them. Groupsets, sources, cross
+sections, and other independent objects validate their own input.
+
+Kinds of validation
+^^^^^^^^^^^^^^^^^^^
+
+A *problem rule* defines a valid combination of problem options and state. Put these rules in
+``CheckConfigurationErrors``. An override calls the base implementation, then appends one message
+for each additional violation. ``ValidateConfiguration`` runs all rules and throws one
+``std::invalid_argument`` with the complete list.
+
+A *solver requirement* defines which valid problems a solver can drive. Put discrete-ordinates
+solver requirements in ``CheckRequirements``. For example, a k-eigenvalue solver requires
+steady-state mode, no external source, and a fissionable material. Another solver may accept the
+same problem, so these checks do not belong to the problem.
+
+``Check...`` functions append errors without throwing. ``Validate...`` functions run checks and
+throw. Keep these checks at their point of use:
+
+* Report parse failures where input is read. Examples include a missing parameter or unknown
+  boundary name.
+* Validate a single argument where it is used. For example, ``SetTimeStep`` requires ``dt > 0``.
+* Report failures found during work at that point. Examples include I/O errors and non-finite
+  eigenvalues.
+
+Constructors enforce the input schema while parsing. Checks that depend on the meaning or
+combination of settings, the mesh, or the solver run after construction, when virtual dispatch is
+safe.
+
+Problem construction
+^^^^^^^^^^^^^^^^^^^^
+
+A problem is created through its static ``Create`` factory. The constructor parses and stores the
+configuration. ``LBSProblem::Build`` then:
+
+#. It validates the parsed configuration.
+#. It builds common and derived runtime data.
+#. It validates the built state.
+#. It marks the problem built after both validation passes succeed.
+
+A new problem class makes its constructor non-public and implements ``Create`` as follows:
+
+.. code-block:: c++
+
+   std::shared_ptr<MyProblem>
+   MyProblem::Create(const ParameterBlock& params)
+   {
+     return Build(std::shared_ptr<MyProblem>(
+       new MyProblem(MakeInputParameters<MyProblem>("lbs::MyProblem", params))));
+   }
+
+Put runtime setup in ``InitializeSpatialDiscretization`` and ``BuildRuntimeData``, not in the
+constructor. A ``BuildRuntimeData`` override must call its base implementation.
+
+Solver lifecycle
+^^^^^^^^^^^^^^^^
+
+``Solver::Initialize``, ``Execute``, and ``Advance`` are non-virtual wrappers. Each calls
+``ValidateState`` before its derived-class hook. ``Initialize`` also validates after its hook
+because initialization may change the problem. A failed initialization leaves the solver
+uninitialized. ``Execute`` and ``Advance`` require a successful ``Initialize``.
+
+``DiscreteOrdinatesSolver::ValidateState`` requires a built problem, runs its rules, then runs the
+solver requirements. Other solver families implement ``ValidateState`` themselves. Validation
+before every operation catches supported changes made after initialization.
+
+Derived C++ solvers override ``InitializeSolver``, ``ExecuteSolver``, and ``AdvanceSolver`` rather
+than the public lifecycle functions. They must also implement ``ValidateState``. Keep the public
+wrappers non-virtual so derived solvers cannot bypass validation.
+
+Runtime mutation
+^^^^^^^^^^^^^^^^
+
+A setter for a value read by problem rules first calls ``ValidateChange(member, value)``. This
+helper validates the candidate, then restores the original member. A rule rejection therefore
+leaves that member unchanged.
+
+The setter then commits the value and calls ``RebuildRuntimeObjects``. That function refreshes
+runtime objects shared by several setters.
+
+.. code-block:: c++
+
+   void DiscreteOrdinatesProblem::SetSaveAngularFlux(bool save)
+   {
+     ValidateChange(options_.save_angular_flux, save);
+     options_.save_angular_flux = save;
+     RebuildRuntimeObjects();
+   }
+
+A setter contains only value-specific work, such as remapping precursors after a cross-section
+change. Source definitions need no runtime rebuild because source assembly reads them directly.
+
+``ValidateChange`` is not a full transaction. It does not restore caller-owned objects or roll back
+a later rebuild failure. Do not promise a stronger exception guarantee unless the setter provides
+one.
+
+Solvers sharing a problem
+^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Several solvers may drive one problem in sequence. Flux, precursors, and time state remain in the
+problem, so the next solver can continue from them.
+
+A solver must restore temporary settings on problem-owned contexts. Use scoped guards such as
+``WGSContext::OverrideSourceScopes``. Each solver also initializes its scratch data instead of
+relying on a previous solver. Problem setters are persistent and affect every solver that shares
+the problem.
+
+MPI collectivity
+^^^^^^^^^^^^^^^^
+
+Problem construction, validation, supported setters, and discrete-ordinates solver calls are
+collective. All ranks call them in the same order with equivalent input. A rule based on local data
+must reduce it before deciding. Global cell counts include owned cells only, not ghost copies.
+
 
 Command-line parameters
 -----------------------

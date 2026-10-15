@@ -42,6 +42,8 @@ Includes
 
 - ``petscksp.h``
 
+- ``utility``
+
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 
 
@@ -75,4 +77,6 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_w_g_s_context`
+
+- :ref:`exhale_class_classopensn_1_1_scoped_source_scopes`
 

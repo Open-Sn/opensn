@@ -95,10 +95,12 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
 
-<span class="kt">void</span><span class="w"> </span><span class="nf">PowerIterationKEigenSolver</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
-<span class="w">                                </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">,</span>
-<span class="w">                                </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iterations</span><span class="p">,</span>
-<span class="w">                                </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">k_eff</span><span class="p">);</span>
+<span class="c1">/// Runs power iterations on `lbs_problem`, starting from k_eff = 1, until k_eff changes by less</span>
+<span class="c1">/// than `tolerance` or `max_iterations` is reached, and returns the result in `k_eff`.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PowerIterationKEigen</span><span class="p">(</span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iterations</span><span class="p">,</span>
+<span class="w">                          </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">k_eff</span><span class="p">);</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>
