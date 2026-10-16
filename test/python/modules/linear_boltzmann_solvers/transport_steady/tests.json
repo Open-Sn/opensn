@@ -1747,5 +1747,60 @@
         "abs_tol": 1e-12
       }
     ]
+  },
+  {
+    "file": "flux_moments_to_source_moments_1d.py",
+    "comment": "ReadFluxMomentsAndMakeSourceMoments builds the source from the file flux, on a new and on a solved problem, and leaves phi_new and phi_old unchanged; also with two groups, fission and two groupsets (1D infinite medium, exact flat flux)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI1_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI2_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI3_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI4_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI_NEW_UNCHANGED=",
+        "goldvalue": 3,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_PHI_OLD_UNCHANGED=",
+        "goldvalue": 3,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_2G_PHI1_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_2G_PHI2_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]
