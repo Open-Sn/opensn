@@ -11,5 +11,36 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "spherical_harmonics_angles.py",
+    "comment": "Python Ylm takes theta as the polar and varphi as the azimuthal angle (closed forms, l <= 2; quadrature operators, l <= 3); a degree outside unsigned int is refused",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "YLM_MAX_ABS_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "YLM_D2M_MAX_ABS_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "YLM_M2D_MAX_ABS_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "YLM_INVALID_L_REFUSED=",
+        "goldvalue": 2,
+        "abs_tol": 0
+      }
+    ]
   }
 ]
