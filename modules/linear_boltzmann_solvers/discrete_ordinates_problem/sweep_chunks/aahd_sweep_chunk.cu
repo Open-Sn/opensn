@@ -38,17 +38,22 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
 {
   batch_stream_ = crb::Stream();
 
-  // The fused scheduler switches a level to the linear thread mapping once it has enough threads
-  // to give each multiprocessor several warps (about 128 threads each).
+  // Fused-kernel launch parameters in units of the device's warp (wavefront) size and
+  // compute-unit count, so they scale across NVIDIA, AMD, and Intel GPUs.
+  const std::size_t warp_size = crb::get_warp_size();
 #if defined(__NVCC__) || defined(__HIPCC__)
-  const auto num_multiprocessors = static_cast<std::size_t>(crb::impl::get_device_attribute(
+  const auto num_compute_units = static_cast<std::size_t>(crb::impl::get_device_attribute(
     crb::impl::get_current_device(),
     ::CUDA_OR_HIP(DevAttrMultiProcessorCount, DeviceAttributeMultiprocessorCount)));
+#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
+  const auto num_compute_units = static_cast<std::size_t>(
+    batch_stream_.get_device().get_info<::sycl::info::device::max_compute_units>());
 #else
-  // Caribou has no compute-unit query for SYCL; assume a mid-size device.
-  const std::size_t num_multiprocessors = 64;
+  const std::size_t num_compute_units = 1;
 #endif
-  linear_mapping_min_threads_ = 128 * num_multiprocessors;
+  fused_launch_.linear_block_size = static_cast<unsigned int>(2 * warp_size);
+  fused_launch_.min_small_level_stride = static_cast<unsigned int>(warp_size / 4);
+  fused_launch_.linear_mapping_min_threads = 4 * warp_size * num_compute_units;
 }
 
 void
@@ -175,14 +180,13 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
     const unsigned int max_level_size = std::max(max_level_size_per_level[level], 1U);
     const std::size_t level_threads =
       static_cast<std::size_t>(max_level_size) * stride_size * batch_size;
-    constexpr unsigned int min_small_level_stride = 8;
-    const bool linear_mapping =
-      level_threads >= linear_mapping_min_threads_ or stride_size < min_small_level_stride;
+    const bool linear_mapping = level_threads >= fused_launch_.linear_mapping_min_threads or
+                                stride_size < fused_launch_.min_small_level_stride;
     crb::Dim3 block_size;
     crb::Dim3 grid_size;
     if (linear_mapping)
     {
-      constexpr unsigned int linear_block_size = 64;
+      const unsigned int linear_block_size = fused_launch_.linear_block_size;
       block_size = crb::Dim3(linear_block_size, 1);
       grid_size =
         crb::Dim3((max_level_size * stride_size + linear_block_size - 1) / linear_block_size,

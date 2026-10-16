@@ -48,8 +48,19 @@ private:
   crb::Stream batch_stream_ = crb::Stream::get_null_stream();
   /// Reusable device buffer for the per-launch batch-slot array, grown on demand.
   crb::DeviceMemory<gpu_kernel::AAHD_BatchSlot> batch_slots_device_;
-  /// Fewest threads in a fused level for which SweepBatchRun uses the linear thread mapping.
-  std::size_t linear_mapping_min_threads_ = 0;
+  /// Fused-kernel launch parameters, derived once from the device's warp (wavefront) size and
+  /// compute-unit count so the heuristics scale with the hardware. The defaults are the values
+  /// for a 32-lane warp.
+  struct FusedLaunchParameters
+  {
+    /// Threads per block for the linear (cell, angle-group) mapping: two warps.
+    unsigned int linear_block_size = 64;
+    /// Fewest angle-groups per cell for the small-level 2D mapping: a quarter of a warp.
+    unsigned int min_small_level_stride = 8;
+    /// Fewest threads in a level for the linear mapping: four warps per compute unit.
+    std::size_t linear_mapping_min_threads = 0;
+  };
+  FusedLaunchParameters fused_launch_;
 };
 
 } // namespace opensn
