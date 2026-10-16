@@ -41,9 +41,10 @@ WriteU32(std::ostream& out, const std::uint32_t value)
   out.write(bytes.data(), static_cast<std::streamsize>(bytes.size()));
 }
 
-/// Writes a two-group OpenSn cross-section file. Empty bounds omit GROUP_STRUCTURE.
+/// Writes a two-group OpenSn cross-section file. Empty bounds omit GROUP_STRUCTURE. The extra
+/// text is appended verbatim.
 std::string
-MakeTempXSFile(const std::vector<double>& bounds = {1.0, 0.1, 0.01})
+MakeTempXSFile(const std::vector<double>& bounds = {1.0, 0.1, 0.01}, const std::string& extra = "")
 {
   const auto path = MakeTempPath("opensn_xsfile_test", ".xs");
 
@@ -65,6 +66,7 @@ MakeTempXSFile(const std::vector<double>& bounds = {1.0, 0.1, 0.01})
   out << "0 0.5\n";
   out << "1 1.5\n";
   out << "SIGMA_A_END\n";
+  out << extra;
   out.close();
 
   return path.string();
@@ -147,6 +149,145 @@ TEST(MultiGroupXSTest, EnergyBoundsMatchWithinRoundoff)
   EXPECT_NO_THROW(MultiGroupXS::ResolveEnergyGroupStructure({{0, bounded}, {1, nearby}}, 2));
   EXPECT_THROW(MultiGroupXS::ResolveEnergyGroupStructure({{0, bounded}, {1, different}}, 2),
                std::invalid_argument);
+}
+
+TEST(MultiGroupXSTest, AdjointModeWithoutTransferMatrices)
+{
+  // A file without a TRANSFER_MOMENTS block describes a material with no scattering, so it has
+  // no transfer matrices. Its adjoint has no scattering either.
+  const auto fname = MakeTempXSFile();
+  auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+  std::filesystem::remove(fname);
+  ASSERT_TRUE(xs.GetTransferMatrices().empty());
+
+  for (const bool adjoint : {true, false, true})
+  {
+    xs.SetAdjointMode(adjoint);
+    EXPECT_EQ(xs.GetAdjointMode(), adjoint);
+    for (const auto& S_ell : xs.GetTransferMatrices())
+      for (unsigned int g = 0; g < xs.GetNumGroups(); ++g)
+        for (const auto& entry : S_ell.Row(g))
+          EXPECT_EQ(entry.value, 0.0);
+    ASSERT_EQ(xs.GetSigmaTotal().size(), 2U);
+    EXPECT_EQ(xs.GetSigmaTotal()[0], 1.0);
+    EXPECT_EQ(xs.GetSigmaTotal()[1], 2.0);
+  }
+}
+
+TEST(MultiGroupXSTest, AdjointProductionWithoutTransferMatrices)
+{
+  // A fissionable material without scattering has no transfer matrices, but adjoint mode must
+  // still transpose its production matrix, and scaling must scale the transpose. NUM_MOMENTS 2
+  // without a TRANSFER_MOMENTS block gives scattering order 1 and still no transfer matrices.
+  const auto fname = MakeTempXSFile({1.0, 0.1, 0.01},
+                                    "NUM_MOMENTS 2\n"
+                                    "SIGMA_F_BEGIN\n0 0.25\n1 0.5\nSIGMA_F_END\n"
+                                    "NU_BEGIN\n0 2.5\n1 2.0\nNU_END\n"
+                                    "CHI_BEGIN\n0 0.75\n1 0.25\nCHI_END\n");
+  auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+  std::filesystem::remove(fname);
+  ASSERT_TRUE(xs.IsFissionable());
+  ASSERT_TRUE(xs.GetTransferMatrices().empty());
+
+  // F[g][g'] = chi[g] * nu_sigma_f[g'], with chi = (0.75, 0.25) and nu_sigma_f = (0.625, 1.0).
+  // These values and their doubles are exact in binary.
+  using Matrix = std::vector<std::vector<double>>;
+  const Matrix F = {{0.46875, 0.75}, {0.15625, 0.25}};
+  const Matrix F_transpose = {{0.46875, 0.15625}, {0.75, 0.25}};
+  const Matrix twice_F = {{0.9375, 1.5}, {0.3125, 0.5}};
+  const Matrix twice_F_transpose = {{0.9375, 0.3125}, {1.5, 0.5}};
+  EXPECT_EQ(xs.GetProductionMatrix(), F);
+
+  xs.SetAdjointMode(true);
+  EXPECT_TRUE(xs.GetTransferMatrices().empty());
+  EXPECT_EQ(xs.GetProductionMatrix(), F_transpose);
+
+  xs.Scale(2.0);
+  EXPECT_TRUE(xs.GetAdjointMode());
+  EXPECT_TRUE(xs.GetTransferMatrices().empty());
+  EXPECT_EQ(xs.GetNuSigmaF(), (std::vector<double>{1.25, 2.0}));
+  EXPECT_EQ(xs.GetProductionMatrix(), twice_F_transpose);
+
+  xs.SetAdjointMode(false);
+  EXPECT_EQ(xs.GetProductionMatrix(), twice_F);
+  xs.SetAdjointMode(true);
+  EXPECT_EQ(xs.GetProductionMatrix(), twice_F_transpose);
+}
+
+TEST(MultiGroupXSTest, AdjointModeTransposesEveryTransferMoment)
+{
+  // Adjoint mode transposes every transfer matrix that the file defines, here P0 and P1, and
+  // scaling in adjoint mode scales them.
+  const auto fname = MakeTempXSFile({1.0, 0.1, 0.01},
+                                    "NUM_MOMENTS 2\n"
+                                    "TRANSFER_MOMENTS_BEGIN\n"
+                                    "M_GFROM_GTO_VAL 0 0 0 0.25\n"
+                                    "M_GFROM_GTO_VAL 0 0 1 0.125\n"
+                                    "M_GFROM_GTO_VAL 0 1 1 0.375\n"
+                                    "M_GFROM_GTO_VAL 1 0 0 0.0625\n"
+                                    "M_GFROM_GTO_VAL 1 0 1 0.03125\n"
+                                    "M_GFROM_GTO_VAL 1 1 1 0.09375\n"
+                                    "TRANSFER_MOMENTS_END\n");
+  auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+  std::filesystem::remove(fname);
+
+  // S[ell][g][g'] is the moment-ell transfer from group g' to group g.
+  const std::vector<std::vector<std::vector<double>>> S = {{{0.25, 0.0}, {0.125, 0.375}},
+                                                           {{0.0625, 0.0}, {0.03125, 0.09375}}};
+  const auto check = [&](const bool adjoint, const double factor)
+  {
+    ASSERT_EQ(xs.GetTransferMatrices().size(), 2U);
+    for (unsigned int ell = 0; ell < 2; ++ell)
+      for (unsigned int g = 0; g < 2; ++g)
+        for (unsigned int gp = 0; gp < 2; ++gp)
+          EXPECT_EQ(xs.GetTransferMatrix(ell).GetValueIJ(g, gp),
+                    factor * (adjoint ? S[ell][gp][g] : S[ell][g][gp]));
+  };
+
+  check(false, 1.0);
+  xs.SetAdjointMode(true);
+  check(true, 1.0);
+  xs.Scale(2.0);
+  check(true, 2.0);
+  xs.SetAdjointMode(false);
+  check(false, 2.0);
+}
+
+TEST(MultiGroupXSTest, AdjointModeWithNumMomentsAfterTransferMoments)
+{
+  // The reader sizes the TRANSFER_MOMENTS block by the NUM_MOMENTS read before it, or one moment
+  // if none was. With NUM_MOMENTS 2 after the block, the file yields one transfer matrix and
+  // scattering order 1. Adjoint mode must transpose the transfer matrix that exists, and scaling
+  // in adjoint mode must scale it.
+  const auto fname = MakeTempXSFile({1.0, 0.1, 0.01},
+                                    "TRANSFER_MOMENTS_BEGIN\n"
+                                    "M_GFROM_GTO_VAL 0 0 0 0.25\n"
+                                    "M_GFROM_GTO_VAL 0 0 1 0.125\n"
+                                    "M_GFROM_GTO_VAL 0 1 1 0.375\n"
+                                    "TRANSFER_MOMENTS_END\n"
+                                    "NUM_MOMENTS 2\n");
+  auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+  std::filesystem::remove(fname);
+  ASSERT_EQ(xs.GetScatteringOrder(), 1U);
+
+  // S[g][g'] is the P0 transfer from group g' to group g.
+  const std::vector<std::vector<double>> S = {{0.25, 0.0}, {0.125, 0.375}};
+  const auto check = [&](const bool adjoint, const double factor)
+  {
+    ASSERT_EQ(xs.GetTransferMatrices().size(), 1U);
+    for (unsigned int g = 0; g < 2; ++g)
+      for (unsigned int gp = 0; gp < 2; ++gp)
+        EXPECT_EQ(xs.GetTransferMatrix(0).GetValueIJ(g, gp),
+                  factor * (adjoint ? S[gp][g] : S[g][gp]));
+  };
+
+  check(false, 1.0);
+  xs.SetAdjointMode(true);
+  check(true, 1.0);
+  xs.Scale(2.0);
+  check(true, 2.0);
+  xs.SetAdjointMode(false);
+  check(false, 2.0);
 }
 
 TEST(CEPXS, CoupledEnergyBounds)
