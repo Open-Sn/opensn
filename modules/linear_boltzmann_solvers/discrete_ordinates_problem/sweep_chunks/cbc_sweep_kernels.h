@@ -335,7 +335,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
       const bool is_local_face = cell_transport_view.IsFaceLocal(f);
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =
-        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+        (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsFluxCoupled());
       const auto& IntF_shapeI = IntS_shapeI[f];
 
       const std::size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);

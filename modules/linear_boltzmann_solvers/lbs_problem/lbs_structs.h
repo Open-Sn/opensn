@@ -20,7 +20,8 @@ enum class LBSBoundaryType
   VACUUM = 1,     ///< Zero for all angles, space
   ISOTROPIC = 2,  ///< One value for all angles, homogenous in space
   REFLECTING = 3, ///< Reflecting boundary condition about a normal
-  ARBITRARY = 4   ///< Complex different for each angle and face node
+  ARBITRARY = 4,  ///< Complex different for each angle and face node
+  PERIODIC = 5    ///< Incoming angular flux from the opposite Cartesian face
 };
 
 enum class PhiSTLOption
