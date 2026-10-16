@@ -224,5 +224,140 @@
         "abs_tol": 0.0
       }
     ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Adjoint k-eigenvalue with delayed precursors equals the forward one and the infinite-medium k_inf",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Adjoint k-eigenvalue with delayed precursors and one groupset per group equals k_inf",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"two_groupsets\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_two_groupsets",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_GROUPSETS_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_GROUPSETS_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "CMFD-accelerated adjoint k-eigenvalue with delayed precursors equals k_inf within CMFD's accuracy",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"cmfd\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_cmfd",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Fission production of the adjoint flux with delayed precursors uses the transposed delayed term",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"production\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_production",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_PRODUCTION_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_PRODUCTION_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_PRODUCTION_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_PRODUCTION_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "use_precursors=False on delayed data: adjoint k equals forward k, P/R matches the operator forward k selects",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"no_precursors\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_no_precursors",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_ADJ_FWD_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]
