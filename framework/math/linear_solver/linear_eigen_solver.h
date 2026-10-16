@@ -14,7 +14,10 @@ class LinearEigenSolver : public LinearSolver
 public:
   enum class IterativeMethod : int
   {
-    POWER
+    KRYLOV_SCHUR,
+    POWER,
+    ARNOLDI,
+    SUBSPACE
   };
 
   LinearEigenSolver(IterativeMethod method, std::shared_ptr<LinearEigenContext> ctx)
@@ -26,8 +29,14 @@ public:
   {
     switch (method_)
     {
+      case IterativeMethod::KRYLOV_SCHUR:
+        return "KRYLOV-SCHUR";
       case IterativeMethod::POWER:
         return "POWER ITERATION";
+      case IterativeMethod::ARNOLDI:
+        return "ARNOLDI";
+      case IterativeMethod::SUBSPACE:
+        return "SUBSPACE";
       default:
         return "UNKNOWN ITERATIVE METHOD";
     }
