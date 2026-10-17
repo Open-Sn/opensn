@@ -744,7 +744,7 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
   int num_cells_modified = 0;
   for (auto& cell : local_cells_)
   {
-    if (log_vol.Inside(cell->centroid) and sense)
+    if (log_vol.Inside(cell->centroid) == sense)
     {
       cell->block_id = blk_id;
       ++num_cells_modified;
@@ -755,7 +755,7 @@ MeshContinuum::SetBlockIDFromLogicalVolume(const LogicalVolume& log_vol,
   for (uint64_t ghost_id : ghost_ids)
   {
     auto& cell = GetGlobalCell(ghost_id);
-    if (log_vol.Inside(cell.centroid) and sense)
+    if (log_vol.Inside(cell.centroid) == sense)
       cell.block_id = blk_id;
   }
 
@@ -799,7 +799,7 @@ MeshContinuum::SetBoundaryIDFromLogicalVolume(const LogicalVolume& log_vol,
     {
       if (face.has_neighbor)
         continue;
-      if (log_vol.Inside(face.centroid) and sense)
+      if (log_vol.Inside(face.centroid) == sense)
       {
         face.neighbor_id = bndry_id;
         ++num_faces_modified;
