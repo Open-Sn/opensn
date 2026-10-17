@@ -121,7 +121,7 @@ WriteCellwiseDataset(hid_t file_id,
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
-                                                  : problem.GetNumPrecursors();
+                                                  : problem.GetMaxPrecursorsPerMaterial();
   std::vector<double> values;
   values.reserve(source.size());
 
@@ -194,7 +194,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
-                                                  : problem.GetNumPrecursors();
+                                                  : problem.GetMaxPrecursorsPerMaterial();
   std::vector<bool> found(grid->GetLocalCellCount(), false);
   std::fill(destination.begin(), destination.end(), 0.0);
 
