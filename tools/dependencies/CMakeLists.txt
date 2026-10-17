@@ -32,6 +32,7 @@ option(ENABLE_PETSC   "Install PETSc"   ON)
 option(ENABLE_HDF5    "Install HDF5"    ON)
 option(ENABLE_VTK     "Install VTK"     ON)
 option(ENABLE_CALIPER "Install Caliper" ON)
+option(ENABLE_TCMALLOC "Install TCMalloc" ON)
 if(ENABLE_VTK AND NOT ENABLE_HDF5)
   message(STATUS "ENABLE_VTK=ON requires HDF5; enabling HDF5")
   set(ENABLE_HDF5 ON CACHE BOOL "" FORCE)
@@ -253,6 +254,40 @@ if(ENABLE_CALIPER)
       LOG_TEST      1
     )
     list(APPEND ALL_DEP_TARGETS caliper)
+    math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
+  endif()
+endif()
+
+# TCMalloc (gperftools, allocator only)
+if(ENABLE_TCMALLOC)
+  find_library(TCMALLOC_LIBRARY NAMES tcmalloc_minimal)
+  if(TCMALLOC_LIBRARY)
+    message(STATUS "Found TCMalloc: ${TCMALLOC_LIBRARY}")
+    if(NOT TARGET tcmalloc)
+      add_custom_target(tcmalloc)
+    endif()
+    list(APPEND ALL_DEP_TARGETS tcmalloc)
+  else()
+    ExternalProject_Add(tcmalloc
+      URL https://github.com/gperftools/gperftools/releases/download/gperftools-2.16/gperftools-2.16.tar.gz
+      SOURCE_DIR ${CMAKE_BINARY_DIR}/tcmalloc-src
+      CONFIGURE_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> ./configure --prefix=${CMAKE_INSTALL_PREFIX}
+                        --enable-shared --disable-static --enable-minimal
+                        --disable-debugalloc --disable-deprecated-pprof
+                        CC=${CMAKE_C_COMPILER} CXX=${CMAKE_CXX_COMPILER} CFLAGS=-O3 CXXFLAGS=-O3
+      BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make -j${JOBS} libtcmalloc_minimal.la
+      INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install-libLTLIBRARIES
+                      install-perftoolsincludeHEADERS install-nodist_perftoolsincludeHEADERS
+                      install-pkgconfigDATA
+      LOG_DOWNLOAD  1
+      LOG_UPDATE    1
+      LOG_CONFIGURE 1
+      LOG_BUILD     1
+      LOG_INSTALL   1
+      LOG_TEST      1
+      LOG_OUTPUT_ON_FAILURE 1
+    )
+    list(APPEND ALL_DEP_TARGETS tcmalloc)
     math(EXPR INSTALLED_DEP_COUNT "${INSTALLED_DEP_COUNT}+1")
   endif()
 endif()
