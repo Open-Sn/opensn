@@ -60,7 +60,7 @@ protected:
 private:
   /// Refreshes the problem objects the solver uses and removes fission from the WGS operators
   /// until the returned guard is destroyed.
-  [[nodiscard]] ScopedSourceScopes PrepareProblem();
+  [[nodiscard]] ScopedRestore PrepareProblem();
 
   bool WriteRestartData();
 

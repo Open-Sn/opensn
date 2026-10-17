@@ -7,10 +7,30 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/utils/error.h"
+#include "framework/logging/log.h"
 #include "caliper/cali.h"
+#include <exception>
 
 namespace opensn
 {
+
+ScopedRestore::~ScopedRestore()
+{
+  if (not restore_)
+    return;
+  try
+  {
+    restore_();
+  }
+  catch (const std::exception& error)
+  {
+    log.LogAllError() << "Failed to restore solver settings: " << error.what();
+  }
+  catch (...)
+  {
+    log.LogAllError() << "Failed to restore solver settings (unknown error).";
+  }
+}
 
 WGSContext::WGSContext(DiscreteOrdinatesProblem& do_problem,
                        LBSGroupset& groupset,
@@ -74,7 +94,7 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   return 0;
 }
 
-ScopedSourceScopes
+ScopedRestore
 WGSContext::OverrideSourceScopes(DiscreteOrdinatesProblem& do_problem,
                                  const SourceScopeModifier& modify)
 {
@@ -94,7 +114,7 @@ WGSContext::OverrideSourceScopes(DiscreteOrdinatesProblem& do_problem,
   }
 
   // Create the guard first so that the scopes are restored even if `modify` throws.
-  ScopedSourceScopes scopes(
+  ScopedRestore scopes(
     [saved]
     {
       for (const auto& entry : saved)

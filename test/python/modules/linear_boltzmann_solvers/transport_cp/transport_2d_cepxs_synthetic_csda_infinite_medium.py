@@ -12,6 +12,12 @@ This problem is designed to be predictable in serial and MPI:
 
 With no leakage, the solution is spatially uniform. The reference is the exact
 groupwise infinite-medium algebraic system for the same discrete CSDA model.
+
+With `apply_dsa=True` (console argument), the groupset also applies WGDSA and
+TGDSA. The DSA correction of the lagged reflected angular fluxes corrects the
+group-average flux and leaves the CSDA energy slope unchanged, as for the
+volumetric scalar flux. The correction vanishes at convergence, so the solution
+must still equal the same exact reference.
 """
 
 import os
@@ -129,6 +135,7 @@ def volume_value(ff, op_type, logical_volume):
 
 
 if __name__ == "__main__":
+    apply_dsa = bool(globals().get("apply_dsa", False))
     nx = 12
     ny = 12
     x_nodes = [i / nx for i in range(nx + 1)]
@@ -161,6 +168,10 @@ if __name__ == "__main__":
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-10,
                 "l_max_its": 2000,
+                "apply_wgdsa": apply_dsa,
+                "apply_tgdsa": apply_dsa,
+                "wgdsa_l_abs_tol": 1.0e-12,
+                "tgdsa_l_abs_tol": 1.0e-12,
             }
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],

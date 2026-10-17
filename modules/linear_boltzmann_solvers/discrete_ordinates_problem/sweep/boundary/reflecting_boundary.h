@@ -84,6 +84,9 @@ public:
 
   void CopyDelayedAngularFluxNewToOld(int groupset_id) override;
 
+  void AddToNewDelayedAngularFlux(int groupset_id,
+                                  const DelayedFluxCorrection& correction) override;
+
   void GetReflectedMap(int groupset_id,
                        std::vector<std::vector<std::uint32_t>>& reflected_maps) override
   {

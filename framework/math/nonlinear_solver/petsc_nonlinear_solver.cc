@@ -4,6 +4,7 @@
 #include "framework/math/nonlinear_solver/petsc_nonlinear_solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
+#include <algorithm>
 
 namespace opensn
 {
@@ -44,8 +45,13 @@ PETScNonLinearSolver::ApplyToleranceOptions()
   OpenSnPETScCall(SNESSetMaxLinearSolveFailures(nl_solver_, options_.l_max_failed_iterations));
   KSP ksp = nullptr;
   OpenSnPETScCall(SNESGetKSP(nl_solver_, &ksp));
-  OpenSnPETScCall(KSPSetTolerances(
-    ksp, options_.l_rel_tol, options_.l_abs_tol, options_.l_div_tol, options_.l_max_its));
+  // The linear solve starts from a zero step with the nonlinear residual as its initial residual.
+  // If its absolute tolerance were looser than the nonlinear one, it would return a zero step once
+  // the nonlinear residual dropped below l_abs_tol, and SNES would stop on the step-size test
+  // before reaching nl_abs_tol. Clamp it so the requested nonlinear tolerance can be met.
+  const double l_abs_tol = std::min(options_.l_abs_tol, options_.nl_abs_tol);
+  OpenSnPETScCall(
+    KSPSetTolerances(ksp, options_.l_rel_tol, l_abs_tol, options_.l_div_tol, options_.l_max_its));
   if (options_.l_method == "gmres")
   {
     OpenSnPETScCall(KSPGMRESSetRestart(ksp, options_.l_gmres_restart_intvl));

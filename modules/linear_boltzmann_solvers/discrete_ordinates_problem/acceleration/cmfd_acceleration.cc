@@ -6,14 +6,12 @@
 #include "framework/parameters/input_parameters.h"
 #include "framework/logging/log.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
-#include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/classic_richardson.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
@@ -127,12 +125,14 @@ CMFDAcceleration::GetInputParameters()
     "global_aggregation builds connected same-block aggregates that may span MPI ranks. identity "
     "creates one CMFD cell per transport cell and is intended mainly for debugging and method "
     "comparisons.");
-  params.AddOptionalParameter("current_closure",
-                              "auto",
-                              "CMFD face-current closure. Valid choices are auto, net, and "
-                              "partial. auto probes the early CMFD operator behavior and may use "
-                              "net, partial, or a blend; fixed choices are useful for comparison "
-                              "studies or cases where auto is not robust.");
+  params.AddOptionalParameter(
+    "current_closure",
+    "partial",
+    "CMFD face-current closure. Valid choices are partial, net, and auto. partial (the "
+    "default) is the partial-current CMFD (pCMFD) closure; it is typically stable unrelaxed on "
+    "both optically thin and thick coarse cells, whereas the net closure can oscillate or "
+    "diverge on optically thick coarse cells. auto probes the early CMFD operator behavior and "
+    "may use net, partial, or a blend.");
   params.AddOptionalParameter(
     "aggregation_size",
     32,
@@ -147,7 +147,7 @@ CMFDAcceleration::GetInputParameters()
     "a desired number of CMFD energy groups.");
   params.AddOptionalParameter(
     "relaxation",
-    0.5,
+    1.0,
     "Strictly positive relaxation factor for the CMFD scalar-flux correction. The correction "
     "limiter may damp or skip an individual correction if the requested correction is not "
     "admissible.");
@@ -175,7 +175,8 @@ CMFDAcceleration::GetInputParameters()
     "applied -- the groupset WGS solvers keep whatever settings were configured on the "
     "DiscreteOrdinatesProblem directly, size them for genuinely-converged transport updates if "
     "that's the intent of using inactive iterations. CMFD switches the groupsets to "
-    "update_wgs_max_its/update_wgs_abs_tol for good starting with the first active iteration.");
+    "update_wgs_max_its/update_wgs_abs_tol starting with the first active iteration; the power "
+    "iteration solver restores the problem's settings when its Execute() returns.");
   params.AddOptionalParameter(
     "update_wgs_max_its",
     1,
@@ -298,12 +299,19 @@ CMFDAcceleration::~CMFDAcceleration()
 }
 
 void
+CMFDAcceleration::CheckRequirements(std::vector<std::string>& errors) const
+{
+  // The coarse balance uses mesh cell volumes and face areas. In 1D spherical geometry the face
+  // areas are spherical (zero at r = 0) but the volumes are slab lengths, so the coarse system is
+  // inconsistent: aggregated coarse meshes have a degenerate face and identity meshes do not
+  // accelerate.
+  if (do_problem_.GetGeometryType() == GeometryType::ONED_SPHERICAL)
+    errors.emplace_back(GetName() + " is not supported in 1D spherical geometry.");
+}
+
+void
 CMFDAcceleration::Initialize()
 {
-  // Save the original groupset iteration parameters. This must run before anything else touches
-  // the groupsets.
-  SnapshotOriginalTransportSolve();
-
   do_problem_.ConfigureOutflowStorage(true);
   active_current_closure_ = automatic_closure_ ? "net" : current_closure_;
   current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
@@ -535,12 +543,9 @@ CMFDAcceleration::PreExecute()
   current_closure_blend_ = current_closure_ == "partial" ? 1.0 : 0.0;
   automatic_closure_probed_ = false;
   automatic_closure_probe_iterations_ = 0;
-  // Every Execute() call's inactive phase (if any) must see the SAME original WGS settings, not
-  // whatever a previous Execute() call's active phase left the groupsets configured to -- restore
-  // the pristine snapshot Initialize() took before this class ever touched them. PrePowerIteration
-  // switches to update_wgs_max_its_/update_wgs_abs_tol_ again once outer_iteration_ reaches
-  // inactive_iterations_, same as every previous Execute() call.
-  RestoreOriginalTransportSolve();
+  // The owning solver starts each Execute() with the caller's WGS settings and restores them
+  // afterward, so the inactive phase leaves them untouched. PrePowerIteration switches to
+  // update_wgs_max_its_/update_wgs_abs_tol_ when the active phase begins.
   last_restrict_old_time_ = 0.0;
   transport_start_time_ = 0.0;
   old_fission_production_ = 0.0;
@@ -1080,72 +1085,7 @@ CMFDAcceleration::ConfigureTransportSolve(const unsigned int max_iterations,
                                           const double residual_tolerance)
 {
   for (std::size_t gsid = 0; gsid < do_problem_.GetNumGroupsets(); ++gsid)
-  {
-    auto& groupset = do_problem_.GetGroupset(gsid);
-    groupset.max_iterations = max_iterations;
-    groupset.residual_tolerance = residual_tolerance;
-
-    auto wgs_solver = do_problem_.GetWGSSolver(groupset.id);
-    if (auto petsc_solver = std::dynamic_pointer_cast<PETScLinearSolver>(wgs_solver))
-    {
-      auto& tolerance_options = petsc_solver->GetToleranceOptions();
-      tolerance_options.maximum_iterations = static_cast<PetscInt>(max_iterations);
-      tolerance_options.residual_absolute = residual_tolerance;
-      petsc_solver->ApplyToleranceOptions();
-    }
-    else
-    {
-      OpenSnLogicalErrorIf(
-        not std::dynamic_pointer_cast<ClassicRichardson>(wgs_solver),
-        "CMFD transport updates require a PETSc or classic Richardson WGS solver.");
-    }
-  }
-}
-
-void
-CMFDAcceleration::SnapshotOriginalTransportSolve()
-{
-  // Reinitialization must not snapshot the settings left by an earlier active CMFD phase.
-  if (not original_wgs_max_its_.empty())
-    return;
-
-  const auto num_groupsets = do_problem_.GetNumGroupsets();
-  original_wgs_max_its_.resize(num_groupsets);
-  original_wgs_residual_tolerance_.resize(num_groupsets);
-  for (std::size_t gsid = 0; gsid < num_groupsets; ++gsid)
-  {
-    const auto& groupset = do_problem_.GetGroupset(gsid);
-    original_wgs_max_its_[gsid] = groupset.max_iterations;
-    original_wgs_residual_tolerance_[gsid] = groupset.residual_tolerance;
-  }
-}
-
-void
-CMFDAcceleration::RestoreOriginalTransportSolve()
-{
-  for (std::size_t gsid = 0; gsid < do_problem_.GetNumGroupsets(); ++gsid)
-  {
-    auto& groupset = do_problem_.GetGroupset(gsid);
-    const auto max_iterations = original_wgs_max_its_.at(gsid);
-    const auto residual_tolerance = original_wgs_residual_tolerance_.at(gsid);
-    groupset.max_iterations = max_iterations;
-    groupset.residual_tolerance = residual_tolerance;
-
-    auto wgs_solver = do_problem_.GetWGSSolver(groupset.id);
-    if (auto petsc_solver = std::dynamic_pointer_cast<PETScLinearSolver>(wgs_solver))
-    {
-      auto& tolerance_options = petsc_solver->GetToleranceOptions();
-      tolerance_options.maximum_iterations = static_cast<PetscInt>(max_iterations);
-      tolerance_options.residual_absolute = residual_tolerance;
-      petsc_solver->ApplyToleranceOptions();
-    }
-    else
-    {
-      OpenSnLogicalErrorIf(
-        not std::dynamic_pointer_cast<ClassicRichardson>(wgs_solver),
-        "CMFD transport updates require a PETSc or classic Richardson WGS solver.");
-    }
-  }
+    do_problem_.SetWGSSolveSettings(gsid, max_iterations, residual_tolerance);
 }
 
 void
@@ -1412,17 +1352,28 @@ CMFDAcceleration::AssembleOperator()
             if (phi_neighbor_it != coarse_phi_cache_.end())
             {
               const auto phi_neighbor = phi_neighbor_it->second;
-              if (active_current_closure_ == "partial" and std::fabs(phi_owner) > 1.0e-14 and
+              // pCMFD closure: each partial current carries half of the diffusion coupling,
+              // J+ = D/2 (phi_owner - phi_neighbor) + Dhat+ phi_owner and
+              // J- = D/2 (phi_neighbor - phi_owner) + Dhat- phi_neighbor, with Dhat+- chosen so
+              // that J+- reproduce the transport partial currents.
+              const bool needs_partial_closure =
+                active_current_closure_ == "partial" or
+                (active_current_closure_ == "blend" and blend > 0.0);
+              if (needs_partial_closure and std::fabs(phi_owner) > 1.0e-14 and
                   std::fabs(phi_neighbor) > 1.0e-14)
               {
                 const auto [owner_partial_current, neighbor_partial_current] =
                   ComputePartialOutwardCurrents(coarse_cell, f, cg);
-                const double owner_coeff = owner_partial_current / phi_owner;
-                const double neighbor_coeff = neighbor_partial_current / phi_neighbor;
-                if (std::isfinite(owner_coeff) and std::isfinite(neighbor_coeff))
+                const double half_coeff = 0.5 * coeff;
+                const double owner_dhat =
+                  (owner_partial_current - half_coeff * (phi_owner - phi_neighbor)) / phi_owner;
+                const double neighbor_dhat =
+                  (neighbor_partial_current - half_coeff * (phi_neighbor - phi_owner)) /
+                  phi_neighbor;
+                if (std::isfinite(owner_dhat) and std::isfinite(neighbor_dhat))
                 {
-                  partial_diag = owner_coeff;
-                  partial_offdiag = -neighbor_coeff;
+                  partial_diag = coeff + owner_dhat;
+                  partial_offdiag = -coeff - neighbor_dhat;
                   partial_current_closure_available = true;
                 }
               }
@@ -1436,22 +1387,6 @@ CMFDAcceleration::AssembleOperator()
                   const double transport_current = ComputeOutwardCurrent(coarse_cell, f, cg);
                   current_correction =
                     (transport_current - coeff * (phi_owner - phi_neighbor)) / phi_sum;
-                }
-              }
-
-              if (active_current_closure_ == "blend" and blend > 0.0 and
-                  not partial_current_closure_available and std::fabs(phi_owner) > 1.0e-14 and
-                  std::fabs(phi_neighbor) > 1.0e-14)
-              {
-                const auto [owner_partial_current, neighbor_partial_current] =
-                  ComputePartialOutwardCurrents(coarse_cell, f, cg);
-                const double owner_coeff = owner_partial_current / phi_owner;
-                const double neighbor_coeff = neighbor_partial_current / phi_neighbor;
-                if (std::isfinite(owner_coeff) and std::isfinite(neighbor_coeff))
-                {
-                  partial_diag = owner_coeff;
-                  partial_offdiag = -neighbor_coeff;
-                  partial_current_closure_available = true;
                 }
               }
             }

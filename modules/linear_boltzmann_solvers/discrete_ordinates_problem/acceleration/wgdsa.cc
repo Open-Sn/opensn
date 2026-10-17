@@ -30,8 +30,10 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
 
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
-    auto matid_2_mgxs_map =
-      PackGroupsetXS(block_id_to_xs_map, groupset.first_group, groupset.last_group);
+    auto matid_2_mgxs_map = PackGroupsetXS(block_id_to_xs_map,
+                                           groupset.first_group,
+                                           groupset.last_group,
+                                           do_problem.GetDSATimeAbsorptionScale());
 
     // Create solver
     const auto& sdm = do_problem.GetSpatialDiscretization();
