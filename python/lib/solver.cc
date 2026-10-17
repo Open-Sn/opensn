@@ -1220,6 +1220,19 @@ WrapLBS(py::module& slv)
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
+          - fused_aao_sweep: bool, default=False
+            Use the fused all-at-once GPU scheduler for ``AAH`` sweeps. Each kernel launch
+            sweeps the current level of up to 256 ready angle sets instead of one, which
+            reduces launch count when individual levels are too small to fill the GPU. Up to
+            ``fused_aao_lanes`` such runs are in flight at once, so angle sets that become
+            ready later (for example when upstream angular fluxes arrive from another rank)
+            start without waiting for the others. The solution matches the default scheduler
+            to floating-point rounding. Requires ``sweep_type="AAH"`` and ``use_gpus=True``.
+            Otherwise construction raises an error.
+          - fused_aao_lanes: int, default=8
+            With ``fused_aao_sweep=True``, the number of fused runs (each a batch of angle
+            sets on its own GPU stream) that may be in flight at once on each rank. Must be at
+            least 1. Ignored unless ``fused_aao_sweep=True``.
 
         These options are applied at problem creation.
     sweep_type : str, default="AAH"

@@ -76,6 +76,10 @@ public:
    */
   const std::string& GetSweepType() const { return sweep_type_; }
 
+  bool UseFusedAAO() const { return options_.fused_aao_sweep; }
+
+  unsigned int GetFusedAAOLanes() const { return options_.fused_aao_lanes; }
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
