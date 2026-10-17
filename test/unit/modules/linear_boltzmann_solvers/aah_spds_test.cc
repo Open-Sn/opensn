@@ -42,3 +42,30 @@ TEST(AAHSPDSTest, ReportsGlobalCycle)
               "Cycles need to be allowed by the calling application.");
   }
 }
+
+TEST(AAHSPDSTest, ComputesDownstreamDepthOnIrregularGlobalGraph)
+{
+  if (mpi_comm.size() < 4)
+    GTEST_SKIP() << "This test requires at least four MPI ranks";
+
+  auto grid = MeshContinuum::New();
+  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
+  cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank());
+  cell->partition_id = mpi_comm.rank();
+  grid->AddGlobalCell(cell);
+
+  SPDSFaceNeighborInfoVec face_info(1);
+  AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
+
+  // The short 0->3 branch distinguishes downstream depth from max_level - upstream_level:
+  // vertex 3 is a sink at upstream level one, so its true depth is one, not two.
+  spds.SetGlobalEdges({{0, 1, 1.0}, {1, 2, 1.0}, {0, 3, 1.0}});
+
+  const auto metadata = spds.BuildGlobalSweepMetadata();
+  ASSERT_EQ(metadata.location_depths.size(), static_cast<std::size_t>(mpi_comm.size()));
+
+  std::vector<int> expected_depths(static_cast<std::size_t>(mpi_comm.size()), 1);
+  expected_depths[0] = 3;
+  expected_depths[1] = 2;
+  EXPECT_EQ(metadata.location_depths, expected_depths);
+}

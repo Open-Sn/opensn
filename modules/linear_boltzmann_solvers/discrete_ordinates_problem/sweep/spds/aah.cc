@@ -34,6 +34,23 @@ LevelizeTopologicalOrder(const Graph& graph,
   return {std::move(levels), max_level};
 }
 
+// Compute the number of vertices on the longest path from each vertex to a sink.
+template <typename VertexRange>
+std::vector<int>
+ComputeDownstreamDepths(const Graph& graph,
+                        const VertexRange& topological_order,
+                        size_t num_vertices)
+{
+  std::vector<int> depths(num_vertices, 1);
+  for (auto vertex = topological_order.rbegin(); vertex != topological_order.rend(); ++vertex)
+    for (auto [edge, edge_end] = boost::out_edges(*vertex, graph); edge != edge_end; ++edge)
+    {
+      const auto successor = boost::target(*edge, graph);
+      depths[*vertex] = std::max(depths[*vertex], depths[successor] + 1);
+    }
+  return depths;
+}
+
 } // namespace
 
 AAH_SPDS::AAH_SPDS(int id,
@@ -141,15 +158,11 @@ AAH_SPDS::BuildGlobalSweepMetadata()
   }
   std::reverse(global_linear_sweep_order.begin(), global_linear_sweep_order.end());
 
-  const auto [levels, max_level] =
-    LevelizeTopologicalOrder(global_tdg, global_linear_sweep_order, static_cast<size_t>(comm_size));
-
   GlobalSweepMetadata metadata;
-  metadata.location_depths.resize(comm_size);
+  metadata.location_depths =
+    ComputeDownstreamDepths(global_tdg, global_linear_sweep_order, static_cast<size_t>(comm_size));
   metadata.delayed_dependencies.resize(comm_size);
   metadata.delayed_successors.resize(comm_size);
-  for (int loc = 0; loc < comm_size; ++loc)
-    metadata.location_depths[loc] = max_level - levels[loc] + 1;
   for (const auto& [dep_vertex, loc_vertex] : edges_to_remove)
   {
     if (std::cmp_greater_equal(dep_vertex, comm_size) or
