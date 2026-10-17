@@ -32,8 +32,8 @@ DiffusionMIPSolver::DiffusionMIPSolver(std::string name,
                     std::move(bcs),
                     std::move(map_mat_id_2_xs),
                     unit_cell_matrices,
-                    false,
                     suppress_bcs,
+                    false,
                     verbose)
 {
   if (sdm_.GetType() != SpatialDiscretizationType::PIECEWISE_LINEAR_DISCONTINUOUS)
@@ -224,7 +224,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             MatSetValues(A_, nf, adj_idxs.data(), nn, cell_idxs.data(), adj_AT.data(), ADD_VALUES));
 
         } // internal face
-        else
+        else if (not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id) > 0)
@@ -744,7 +744,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             MatSetValues(A_, nf, adj_idxs.data(), nn, cell_idxs.data(), adj_AT.data(), ADD_VALUES));
 
         } // internal face
-        else
+        else if (not suppress_bcs_)
         {
           BoundaryCondition bc;
           if (bcs_.count(face.neighbor_id) > 0)
