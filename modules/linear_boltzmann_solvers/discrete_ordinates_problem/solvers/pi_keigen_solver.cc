@@ -63,6 +63,13 @@ void
 PowerIterationKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
   CheckKEigenRequirements(errors);
+  if (not acceleration_)
+    return;
+  if (&acceleration_->GetProblem() != do_problem_.get())
+    errors.emplace_back("acceleration " + acceleration_->GetName() +
+                        " was created for a different problem than the one this solver solves.");
+  else
+    acceleration_->CheckRequirements(errors);
 }
 
 ScopedSourceScopes

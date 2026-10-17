@@ -24,6 +24,7 @@ public:
   explicit CMFDAcceleration(const InputParameters& params);
   ~CMFDAcceleration() override;
 
+  void CheckRequirements(std::vector<std::string>& errors) const override;
   void Initialize() final;
   void PreExecute() final;
   void PrePowerIteration() final;

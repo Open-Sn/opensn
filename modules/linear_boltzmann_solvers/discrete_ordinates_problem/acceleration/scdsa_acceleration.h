@@ -16,6 +16,7 @@ class SCDSAAcceleration : public DiscreteOrdinatesKEigenAcceleration
 public:
   explicit SCDSAAcceleration(const InputParameters& params);
 
+  void CheckRequirements(std::vector<std::string>& errors) const override;
   void Initialize() final;
   void PreExecute() final;
   void PrePowerIteration() final;

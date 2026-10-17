@@ -35,6 +35,7 @@ private:
   bool verbose_;
   std::vector<double> saved_q_moments_local_;
   std::vector<double> psi_new_, psi_old_;
+  std::vector<double> phi_unaccelerated_;
 
   void SyncLaggedStateToLatestIterate(WGSContext& gs_context);
 };

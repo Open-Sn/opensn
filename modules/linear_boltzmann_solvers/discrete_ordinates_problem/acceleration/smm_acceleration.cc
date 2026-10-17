@@ -48,21 +48,30 @@ SMMAcceleration::SMMAcceleration(const InputParameters& params)
     psi_new_local_(do_problem_.GetPsiNewLocal()),
     dimension_(0)
 {
-  if (do_problem_.GetNumGroupsets() != 1)
-    throw std::logic_error(
-      "SMM acceleration is only implemented for problems with a single groupset.");
+}
+
+void
+SMMAcceleration::CheckRequirements(std::vector<std::string>& errors) const
+{
+  RequireSingleGroupset(errors);
+  RequireMultipleAAHSweeps(errors);
   if (do_problem_.GetScatteringOrder() != 0)
-    throw std::runtime_error("SMM acceleration is only supported with P0 scattering");
-  OpenSnInvalidArgumentIf(
-    not do_problem_.SaveAngularFluxEnabled(),
-    "SMM acceleration requires `options.save_angular_flux=true` for the associated problem.");
+    errors.emplace_back(GetName() + " is only supported with P0 scattering.");
+  if (not do_problem_.SaveAngularFluxEnabled())
+    errors.emplace_back(GetName() +
+                        " requires `options.save_angular_flux=true` for the associated problem.");
+  // The SMM boundary closure is defined for vacuum (Robin) and reflecting boundaries only. An
+  // isotropic boundary, even with zero strength, becomes a Dirichlet diffusion condition.
+  for (const auto& [bid, bc] : do_problem_.GetBoundaryDefinitions())
+    if (bc.type == LBSBoundaryType::ISOTROPIC or bc.type == LBSBoundaryType::ARBITRARY)
+      errors.emplace_back(GetName() + ": boundary " + std::to_string(bid) +
+                          " is isotropic or arbitrary; only vacuum and reflecting boundaries are "
+                          "supported.");
 }
 
 void
 SMMAcceleration::Initialize()
 {
-  CheckAAHSingleSweepStability();
-
   const auto& sdm = do_problem_.GetSpatialDiscretization();
   const auto num_groups = do_problem_.GetNumGroups();
   const auto num_gs_groups = front_gs_.GetNumGroups();
@@ -92,11 +101,6 @@ SMMAcceleration::Initialize()
   // Create diffusion solver
   UnknownManager diff_uk_man;
   diff_uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
-
-  for (const auto& [bid, bc] : do_problem_.GetBoundaryDefinitions())
-    if ((bc.type == LBSBoundaryType::ISOTROPIC) or (bc.type == LBSBoundaryType::ARBITRARY))
-      throw std::logic_error("Only vacuum and reflective boundaries are valid for "
-                             "k-eigenvalue problems.");
 
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), false);
 

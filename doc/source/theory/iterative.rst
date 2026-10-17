@@ -196,6 +196,44 @@ consists of the following steps:
       where the spectral amplitude :math:`\xi_g` is obtained from an
       infinite medium calculation for each distinct material type.
 
+In OpenSn, the thermal groups of a groupset are iterated together with Jacobi
+iteration in energy, and the two-grid correction follows the Jacobi form of
+:cite:t:`ragusa_hanus_TG_2020`. Split the isotropic transfer matrix into its
+diagonal (within-group) part :math:`S_D` and off-diagonal part :math:`S_O`, and
+let :math:`\Sigma_t = \operatorname{diag}(\sigma_{t,g})`. The spectrum
+:math:`\xi` is the eigenvector of the largest eigenvalue :math:`\rho` of the
+infinite-medium iteration matrix,
+
+.. math:: A^{-1} B\, \xi = \rho\, \xi \,, \qquad \sum_g \xi_g = 1 \,,
+
+where the matrices depend on the iteration being accelerated:
+
+* with within-group DSA on the groupset, each iteration behaves like Jacobi
+  iteration with converged within-group scattering, and
+  :math:`A = \Sigma_t - S_D`, :math:`B = S_O`;
+* without it, each iteration is a single sweep with all scattering lagged, and
+  :math:`A = \Sigma_t`, :math:`B = S_D + S_O`.
+
+:math:`A^{-1}B` is non-negative, so :math:`\rho` is its spectral radius and
+:math:`\xi \ge 0`. Because a Jacobi iteration matrix can also have the
+eigenvalue :math:`-\rho` (for example, two groups coupled by downscatter and
+upscatter), :math:`\xi` is computed by power iteration on
+:math:`A^{-1}B + sI` with a shift :math:`s \ge \rho`, which makes
+:math:`\rho + s` the unique dominant eigenvalue. The correction amplitude
+:math:`\theta` solves
+
+.. math:: -\nabla \cdot \langle D \rangle \nabla \theta + \langle \sigma_a \rangle \theta
+          = \sum_g \left[ B \left( \phi^{(\text{th}+1/2)} - \phi^{(\text{th})} \right) \right]_g \,,
+
+with :math:`\langle D \rangle = \sum_g D_g \xi_g` and
+:math:`\langle \sigma_a \rangle = \sum_g \bigl(\sigma_{t,g} \xi_g - \sum_{g'}
+\sigma_{s,g \leftarrow g'} \xi_{g'}\bigr)`, where :math:`\phi^{(\text{th}+1/2)}`
+includes the within-group DSA correction when it is used. In time-dependent
+problems, :math:`1/(v_g \theta \Delta t)` is added to :math:`\sigma_{t,g}` and to
+the transport cross section in :math:`D_g`. The correction removes the mode
+with spectrum :math:`\xi`; error modes of the Jacobi iteration with other
+energy shapes, such as the :math:`-\rho` mode above, are not reduced.
+
 Power Iterations
 ----------------
 
@@ -612,30 +650,55 @@ neighbor's opposing outflow. If the neighbor cell is on another MPI rank,
 the needed neighbor outflow is exchanged before the CMFD operator is
 assembled.
 
-OpenSn also implements a partial-current closure. Let
-:math:`P_{I\rightarrow J,g_c}` be the restricted outgoing partial
-current from coarse cell :math:`I` through the face shared with
-:math:`J`, and let :math:`P_{J\rightarrow I,g_c}` be the opposing
-outgoing partial current from :math:`J`. The net current is their
-difference, but the partial-current closure inserts the two one-sided
-current coefficients directly:
+OpenSn also implements the partial-current CMFD (pCMFD) closure of
+:cite:t:`cho2003pcmfd`. Let :math:`P_{I\rightarrow J,g_c}` be the restricted
+outgoing partial current from coarse cell :math:`I` through the face shared
+with :math:`J`, and let :math:`P_{J\rightarrow I,g_c}` be the opposing outgoing
+partial current from :math:`J`. Each partial current is modeled with half of
+the diffusion coupling and its own nonlinear correction:
 
 .. math::
 
-   J^{\text{pc}}_{I,J,g_c}
+   J^{+}_{I,J,g_c}
    =
-   \frac{P_{I\rightarrow J,g_c}}{\Phi_{I,g_c}}\Phi_{I,g_c}
-   -
-   \frac{P_{J\rightarrow I,g_c}}{\Phi_{J,g_c}}\Phi_{J,g_c}.
+   \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)
+   +
+   \widehat{D}^{+}_{I,J,g_c}\Phi_{I,g_c},
+   \qquad
+   J^{-}_{I,J,g_c}
+   =
+   \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{J,g_c}-\Phi_{I,g_c}\right)
+   +
+   \widehat{D}^{-}_{I,J,g_c}\Phi_{J,g_c}.
 
-Equivalently, the diagonal face coefficient for cell :math:`I` is
-:math:`P_{I\rightarrow J,g_c}/\Phi_{I,g_c}` and the off-diagonal
-coefficient multiplying :math:`\Phi_{J,g_c}` is
-:math:`-P_{J\rightarrow I,g_c}/\Phi_{J,g_c}`. This form preserves the
-latest partial currents when evaluated at the current restricted
-transport flux. If either one-sided scalar flux is too small, or if the
-resulting coefficients are not finite, the partial-current closure is
-not used on that face.
+The corrections are chosen so that :math:`J^{+}` and :math:`J^{-}` reproduce
+:math:`P_{I\rightarrow J,g_c}` and :math:`P_{J\rightarrow I,g_c}` when evaluated
+with the latest restricted transport scalar fluxes:
+
+.. math::
+
+   \widehat{D}^{+}_{I,J,g_c}
+   =
+   \frac{P_{I\rightarrow J,g_c}
+   - \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)}
+   {\Phi_{I,g_c}},
+   \qquad
+   \widehat{D}^{-}_{I,J,g_c}
+   =
+   \frac{P_{J\rightarrow I,g_c}
+   - \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{J,g_c}-\Phi_{I,g_c}\right)}
+   {\Phi_{J,g_c}}.
+
+The outward net current is :math:`J^{\text{pc}}_{I,J,g_c} = J^{+}_{I,J,g_c} -
+J^{-}_{I,J,g_c}`, so the diagonal face coefficient for cell :math:`I` is
+:math:`D^f_{I,J,g_c}+\widehat{D}^{+}_{I,J,g_c}` and the off-diagonal coefficient
+multiplying :math:`\Phi_{J,g_c}` is
+:math:`-D^f_{I,J,g_c}-\widehat{D}^{-}_{I,J,g_c}`. Like the net-current closure,
+this form reproduces the latest transport net current, so the CMFD fixed point
+is unchanged. It differs in how the coarse operator responds to a change of the
+coarse flux: the diffusion coupling is retained in both one-sided currents. If
+either one-sided scalar flux is too small, or if the resulting coefficients are
+not finite, the partial-current closure is not used on that face.
 
 The implementation can also blend the net-current and partial-current
 closures. With a partial-current fraction :math:`\eta \in [0,1]`, the
@@ -650,10 +713,21 @@ face contribution is
    \eta J^{\text{pc}}_{I,J,g_c}.
 
 Here :math:`J^{\text{net}}` is the diffusion plus nonlinear net-current
-closure and :math:`J^{\text{pc}}` is the partial-current closure. The
-automatic closure logic begins with the net-current closure, probes the
-early low-order behavior with both net and partial closures, and may
-select a blend or the pure partial-current closure when the partial
+closure and :math:`J^{\text{pc}}` is the partial-current closure.
+
+The partial-current closure is the default. The net-current closure, as in
+standard CMFD, can make the coarse correction oscillate or diverge when the
+coarse cells are optically thick. The partial-current closure remains stable
+with a full (unrelaxed) correction over a much wider range of coarse-cell
+optical thickness. Dropping the diffusion coupling from the partial currents,
+which reduces the closure to partial-current coarse-mesh rebalance, is not
+equivalent: rebalance can diverge on optically thin coarse cells unless the
+correction is strongly relaxed. If the partial-current coefficients cannot be
+formed on a face (an adjacent coarse flux is essentially zero), that face uses
+the diffusion coupling without the current correction. With the ``auto``
+option, the closure logic begins with the net-current closure, probes the
+early low-order behavior with both net and partial closures, and may select a
+blend or the pure partial-current closure when the partial
 closure gives a materially better low-order residual or coarse
 eigenvalue prediction. If the automatic path continues with the
 net-current closure but early iterations show a large mismatch between
@@ -1023,6 +1097,7 @@ References
    adams1993two
    adams_barbu_eig_2023
    adams_larsen_iter_methods
+   cho2003pcmfd
    fichtl2009krylov
    guthrie1999gmres
    hanuvs2019uncollided

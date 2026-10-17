@@ -17,6 +17,7 @@
   },
   {
     "file": "cmfd.py",
+    "comment": "Tutorial tolerances (k_tol=1e-6, balance_residual_tolerance=1e-3): the gold is the k at that stopping point, 3.5e-6 below the tightly converged k of 1.1715512",
     "num_procs": 1,
     "checks": [
       {
@@ -26,7 +27,7 @@
       {
         "type": "KeyValuePair",
         "key": "CMFD k-eigenvalue =",
-        "goldvalue": 1.15663057,
+        "goldvalue": 1.17154771,
         "abs_tol": 1e-6
       }
     ]

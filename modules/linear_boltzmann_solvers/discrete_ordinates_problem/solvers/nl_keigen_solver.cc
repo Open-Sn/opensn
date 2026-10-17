@@ -80,6 +80,13 @@ void
 NonLinearKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
   CheckKEigenRequirements(errors);
+  // The nonlinear residual applies WGDSA/TGDSA preconditioning to a single groupset only.
+  if (do_problem_->GetNumGroupsets() > 1)
+    for (const auto& groupset : do_problem_->GetGroupsets())
+      if (groupset.apply_wgdsa or groupset.apply_tgdsa)
+        errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                            ": WGDSA/TGDSA preconditioning of the nonlinear k-eigenvalue solver "
+                            "supports only single-groupset problems.");
 }
 
 void

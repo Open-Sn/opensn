@@ -372,6 +372,51 @@ The main TGDSA controls are:
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
 options have for WGDSA. The default threshold is ``20000`` global unknowns.
 
+TGDSA follows the two-grid method of :cite:t:`adams1993two` in the Jacobi
+form of :cite:t:`ragusa_hanus_TG_2020`. Each groupset iteration lags the
+scattering between groups. The slowest error mode of that iteration in an infinite medium is flat in space
+with a fixed energy shape :math:`\xi_g`, the eigenvector of the largest
+eigenvalue of the infinite-medium iteration matrix. TGDSA solves one
+energy-collapsed diffusion problem for the amplitude of that mode and adds
+:math:`\xi_g` times the amplitude to each group's scalar flux. The spectrum, the
+collapsed diffusion coefficient, and the collapsed absorption cross section are
+computed per material when the groupset is initialized. Two forms are used,
+depending on whether WGDSA is enabled on the groupset:
+
+* With WGDSA (recommended), each groupset iteration behaves like Jacobi
+  iteration with converged within-group scattering. The spectrum is computed
+  for that iteration, and the TGDSA residual contains only scattering between
+  groups.
+* Without WGDSA, each groupset iteration is a single sweep with all scattering
+  lagged. The spectrum is computed for that iteration, and the residual also
+  contains within-group scattering.
+
+TGDSA removes only the slowest error mode, which has a single energy shape. In
+problems with many thermal groups this mode dominates and TGDSA is very
+effective. With few groups and strong scattering both up and down in energy,
+the Jacobi iteration can also have an error mode that alternates in sign
+between groups and decays just as slowly; TGDSA does not reduce that mode. For
+example, with two groups coupled by downscatter and upscatter, the Jacobi
+iteration matrix has eigenvalues :math:`\pm\rho`.
+
+TGDSA requires a groupset with at least two groups; it is rejected for a
+single-group groupset. For a material without scattering between the groups of
+the groupset, a flat two-grid spectrum is used and a warning is printed.
+
+DSA with reflecting boundaries and time dependence
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+With opposing reflecting boundaries, the incoming angular flux on those
+boundaries is lagged by one iteration and carried as an additional unknown of
+the groupset iteration. The DSA scalar-flux correction is applied to these
+lagged angular fluxes as well (as an isotropic correction), so that WGDSA
+remains effective for both Richardson and Krylov inner solvers.
+
+In time-dependent problems the diffusion operators include the time
+absorption :math:`1/(v\theta\Delta t)` of the transport operator and are rebuilt
+when the time step or :math:`\theta` changes (see
+:doc:`../theory/time_discretization`).
+
 When to think about DSA
 ~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -561,3 +606,8 @@ For most users:
    Groupsets are one of the highest-leverage parts of the input. A good groupset
    design makes the rest of the solver configuration easier. A bad groupset
    design can make even a correct problem look unstable or slow.
+
+.. bibliography::
+   :style: unsrtalpha
+   :filter: False
+   :labelprefix: GS
