@@ -88,57 +88,72 @@ SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
   aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
 
+  // Every lane's stream is idle here. The delayed-psi uploads in PrepostReceives go on lane 0. A
+  // run may use another lane, so lane 0 is synchronized before any run starts.
   std::size_t num_anglesets = angle_agg_.GetNumAngleSets();
   std::vector<AAHD_AngleSet*> all_anglesets(num_anglesets);
+  crb::Stream& setup_stream = aah_sweep_chunk.GetLaneStream(0);
   for (std::size_t i = 0; i < num_anglesets; ++i)
   {
     auto* aahd_angle_set = dynamic_cast<AAHD_AngleSet*>(angle_agg_[i].get());
     aahd_angle_set->ResetDependencyCounter();
+    aahd_angle_set->SetFLUDSStream(setup_stream);
     aahd_angle_set->PrepostReceives();
     all_anglesets[i] = aahd_angle_set;
   }
+  setup_stream.synchronize();
 
   // Maximum angle sets per fused run. Each member is one grid-z slice, so this bounds the launch
   // well below the CUDA/HIP grid-z limit (65535) and bounds the per-run slot array at
   // max_batch_width * levels entries.
   constexpr std::size_t max_batch_width = 256;
-  std::vector<bool> started(num_anglesets, false);
+  const std::size_t num_lanes = aah_sweep_chunk.NumFusedLanes();
+  std::vector<std::vector<AAHD_AngleSet*>> lane_runs(num_lanes);
+  // Angle sets that have not started, in angle-set order. Only these are polled for readiness.
+  std::vector<AAHD_AngleSet*> pending = all_anglesets;
   std::size_t num_finished = 0;
 
+  // Runs are pipelined. Up to num_lanes runs are in flight, each on its own stream. When a lane is
+  // idle, its run's members are completed. This releases their followers and sends their
+  // downstream angular fluxes. The angle sets that are ready then start on a free lane. They do
+  // not wait for the other runs. A run's members are fixed when it starts, so the run needs no
+  // host interaction until it is done.
   while (num_finished < num_anglesets)
   {
-    // Compose a batch from whichever angle sets are currently ready. Composition is fixed for
-    // the batch's whole run (see SweepBatchRun), no per-level backfill, so the run needs only
-    // one host-blocking synchronize instead of one per level.
-    std::vector<AAHD_AngleSet*> batch;
-    batch.reserve(std::min(num_anglesets, max_batch_width));
-    for (std::size_t i = 0; i < num_anglesets && batch.size() < max_batch_width; ++i)
+    for (std::size_t lane = 0; lane < num_lanes; ++lane)
     {
-      if (started[i])
+      auto& run = lane_runs[lane];
+      if (run.empty() or not aah_sweep_chunk.IsLaneIdle(lane))
         continue;
-      if (all_anglesets[i]->IsReady())
+      for (auto* as : run)
       {
-        all_anglesets[i]->PrepareForBatch(sweep_chunk);
-        batch.push_back(all_anglesets[i]);
-        started[i] = true;
+        as->FinishCompletion(sweep_chunk);
+        ++num_finished;
       }
+      run.clear();
     }
 
-    if (batch.empty())
-      continue; // still waiting on MPI dependencies; nothing submittable yet
-
-    // Run every level of this batch back-to-back; one host-blocking wait for the whole run.
-    aah_sweep_chunk.SweepBatchRun(batch);
-
-    // Every member of `batch` is now fully complete. Enqueue all their D2H copies, synchronize
-    // once for the whole group, then do host-side completion bookkeeping.
-    for (auto* as : batch)
-      as->SubmitCompletionCopies();
-    aah_sweep_chunk.GetBatchStream().synchronize();
-    for (auto* as : batch)
+    for (std::size_t lane = 0; lane < num_lanes; ++lane)
     {
-      as->FinishCompletion(sweep_chunk);
-      ++num_finished;
+      auto& run = lane_runs[lane];
+      if (not run.empty())
+        continue;
+      crb::Stream& stream = aah_sweep_chunk.GetLaneStream(lane);
+      auto still_pending = pending.begin();
+      for (auto* as : pending)
+      {
+        if (run.size() < max_batch_width and as->IsReady())
+        {
+          as->PrepareForBatch(sweep_chunk, stream);
+          run.push_back(as);
+        }
+        else
+          *still_pending++ = as;
+      }
+      pending.erase(still_pending, pending.end());
+      if (run.empty())
+        break; // nothing else is ready yet
+      aah_sweep_chunk.SubmitBatchRun(lane, run);
     }
   }
 

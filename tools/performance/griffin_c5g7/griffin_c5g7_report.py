@@ -61,6 +61,8 @@ def run_case(args, num_dirs: int, sweep_type: str, log_dir: Path) -> dict:
         cmd += ["--py", py_assignment(name, value)]
     if args.extra:
         cmd += ["--py", f"extra_problem_params={args.extra}"]
+    if args.extra_options:
+        cmd += ["--py", f"extra_options={args.extra_options}"]
 
     tag = f"{args.label}_{sweep_type}_{num_dirs}"
     print(f"[{tag}] {' '.join(cmd)}", flush=True)
@@ -72,8 +74,9 @@ def run_case(args, num_dirs: int, sweep_type: str, log_dir: Path) -> dict:
     unknowns = UNKNOWNS_RE.findall(completed.stdout)
     result = {"tag": tag, "num_dirs": num_dirs, "sweep_type": sweep_type,
               "returncode": completed.returncode, "num_solves": len(timings)}
-    # The first power iteration includes one-time GPU setup; drop it when there are others.
-    steady = timings[1:] if len(timings) > 1 else timings
+    # The first power iteration includes one-time GPU setup, so it is never used. A case without
+    # at least one more completed power iteration has no steady-state time.
+    steady = timings[1:]
     if steady:
         result["sweep_time"] = statistics.median(t for t, _ in steady)
         result["grind_ns"] = statistics.median(g for _, g in steady)
@@ -96,6 +99,9 @@ def main() -> int:
     parser.add_argument("--angle-agg", default="polar")
     parser.add_argument("--sweeps-per-outer", type=int, default=10)
     parser.add_argument("--num-outers", type=int, default=3)
+    parser.add_argument("--extra-options", default="",
+                        help="Python dict literal merged into the problem's options block, "
+                             "e.g. \"{'fused_aao_sweep': True}\"")
     parser.add_argument("--extra", default="",
                         help="Python dict literal merged into the problem parameters")
     parser.add_argument("--cpu", action="store_true", help="run without use_gpus")
@@ -105,6 +111,9 @@ def main() -> int:
     parser.add_argument("--log-dir", type=Path, default=Path.cwd() / "griffin_c5g7_logs")
     args = parser.parse_args()
 
+    if args.num_outers < 2:
+        parser.error("--num-outers must be at least 2 because the first power iteration is a "
+                     "warm-up")
     if not args.mesh_file.is_file():
         print(f"{args.mesh_file} not found; run make_c5g7_quad_mesh.py first", file=sys.stderr)
         return 1
@@ -112,23 +121,32 @@ def main() -> int:
     args.exe = args.exe.resolve()
     args.log_dir.mkdir(parents=True, exist_ok=True)
 
-    results = [run_case(args, d, st, args.log_dir)
-               for st in args.sweep_types for d in args.dirs]
+    # Alternate the sweep-type order from one direction count to the next, so drift during the
+    # run does not favor one sweep type. Cases run, and are logged, in this order.
+    cases = []
+    for i, d in enumerate(args.dirs):
+        sweep_types = args.sweep_types if i % 2 == 0 else list(reversed(args.sweep_types))
+        cases += [(d, st) for st in sweep_types]
+    results = [run_case(args, d, st, args.log_dir) for d, st in cases]
 
     print()
     print(f"{'case':<24} {'dirs':>5} {'sweep (s)':>11} {'grind (ns)':>11} "
           f"{'Griffin (s)':>12} {'Griffin (ns)':>13} {'ratio':>7} {'lagged':>8}")
     status = 0
     for r in results:
-        if "sweep_time" not in r:
+        if r["returncode"] != 0 or "sweep_time" not in r:
             print(f"{r['tag']:<24} {r['num_dirs']:>5}  FAILED (rc={r['returncode']}, "
-                  f"see {args.log_dir / (r['tag'] + '.log')})")
+                  f"{r['num_solves']} timed solves, see {args.log_dir / (r['tag'] + '.log')})")
             status = 1
             continue
         d = r["num_dirs"]
         expected = NUM_ELEMENTS * DOFS_PER_ELEMENT * NUM_GROUPS * d
         if r.get("unknowns") != expected:
-            print(f"WARNING: {r['tag']} has {r.get('unknowns')} unknowns, Griffin has {expected}")
+            # A different problem size cannot be compared with Griffin's fixed reference.
+            print(f"{r['tag']:<24} {d:>5}  INVALID ({r.get('unknowns')} unknowns, Griffin has "
+                  f"{expected})")
+            status = 1
+            continue
         g_time = GRIFFIN_A100_SWEEP_TIME.get(d)
         g_grind = griffin_grind_ns(d) if g_time else None
         ratio = r["sweep_time"] / g_time if g_time else None

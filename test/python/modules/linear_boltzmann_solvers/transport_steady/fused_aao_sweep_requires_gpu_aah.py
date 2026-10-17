@@ -5,9 +5,10 @@
 """fused_aao_sweep selects a GPU AAH scheduler, so it requires sweep_type="AAH" and use_gpus=True.
 
 Construction must reject the option on a CPU AAH problem and on a CBC problem instead of
-silently ignoring it. The same problem without the option must construct and solve, so the
-rejections come from the option and not from the rest of the input. The unit source in a pure
-absorber with vacuum boundaries bounds the average scalar flux by Q/sigma_t = 1.
+silently ignoring it, and must reject fused_aao_lanes below 1. The same problem without the
+option must construct and solve, so the rejections come from the option and not from the rest
+of the input. The unit source in a pure absorber with vacuum boundaries bounds the average
+scalar flux by Q/sigma_t = 1.
 """
 
 if "opensn_console" not in globals():
@@ -21,7 +22,7 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
 
 
-def make_problem(grid, sweep_type, fused_aao_sweep):
+def make_problem(grid, sweep_type, fused_aao_sweep, **extra_options):
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(1.0, 0.0)
     return DiscreteOrdinatesProblem(
@@ -34,17 +35,17 @@ def make_problem(grid, sweep_type, fused_aao_sweep):
         boundary_conditions=[
             {"name": n, "type": "vacuum"} for n in ("xmin", "xmax", "ymin", "ymax")
         ],
-        options={"verbose_inner_iterations": False, "verbose_outer_iterations": False},
+        options={"verbose_inner_iterations": False, "verbose_outer_iterations": False,
+                 "fused_aao_sweep": fused_aao_sweep, **extra_options},
         sweep_type=sweep_type,
-        fused_aao_sweep=fused_aao_sweep,
     )
 
 
-def is_rejected(action):
+def is_rejected(action, message="fused_aao_sweep requires"):
     try:
         action()
     except ValueError as error:
-        return int("fused_aao_sweep requires" in str(error))
+        return int(message in str(error))
     return 0
 
 
@@ -54,6 +55,8 @@ if __name__ == "__main__":
 
     rejected = is_rejected(lambda: make_problem(grid, "AAH", True))
     rejected += is_rejected(lambda: make_problem(grid, "CBC", True))
+    lanes_rejected = is_rejected(lambda: make_problem(grid, "AAH", False, fused_aao_lanes=0),
+                                 "fused_aao_lanes")
 
     problem = make_problem(grid, "AAH", False)
     solver = SteadyStateSourceSolver(problem=problem)
@@ -64,4 +67,5 @@ if __name__ == "__main__":
     phi_avg = average.GetValue()[0][0]
     if rank == 0:
         print(f"FUSED_AAO_REJECTED {rejected}")
+        print(f"FUSED_AAO_LANES_REJECTED {lanes_rejected}")
         print(f"FUSED_AAO_CONTROL_SOLVED {int(0.0 < phi_avg <= 1.0)}")

@@ -649,7 +649,22 @@ LBSProblem::GetOptionsBlock()
                                  AllowableRangeList::New({"l2", "pointwise"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
+  params.AddOptionalParameter(
+    "fused_aao_sweep",
+    false,
+    "If true and sweep_type is \"AAH\" on GPU, uses an opt-in scheduler that fuses multiple "
+    "angle sets' current level into each kernel launch instead of one launch per angle set. "
+    "Falls back to the default all-at-once scheduler when false.");
+  params.AddOptionalParameter(
+    "fused_aao_lanes",
+    8,
+    "With fused_aao_sweep, the number of fused runs (each a batch of angle sets on its own GPU "
+    "stream) that may be in flight at once on each rank. More lanes let angle sets that become "
+    "ready while other runs are in flight, such as those waiting on other ranks, start without "
+    "waiting. Ignored unless fused_aao_sweep is true.");
+
   params.ConstrainParameterRange("max_mpi_message_size", AllowableRangeLowLimit::New(1024));
+  params.ConstrainParameterRange("fused_aao_lanes", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("write_restart_time_interval", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("max_ags_iterations", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("ags_tolerance", AllowableRangeLowLimit::New(1.0e-18));
@@ -736,6 +751,11 @@ LBSProblem::ParseOptions(const InputParameters& input)
      [this](const ParameterBlock& spec)
      { options_.field_function_prefix = spec.GetValue<std::string>(); }},
     {"adjoint", [this](const ParameterBlock& spec) { options_.adjoint = spec.GetValue<bool>(); }},
+    {"fused_aao_sweep",
+     [this](const ParameterBlock& spec) { options_.fused_aao_sweep = spec.GetValue<bool>(); }},
+    {"fused_aao_lanes",
+     [this](const ParameterBlock& spec)
+     { options_.fused_aao_lanes = static_cast<unsigned int>(spec.GetValue<int>()); }},
   };
 
   for (const auto& spec : specified_params.GetParameters())

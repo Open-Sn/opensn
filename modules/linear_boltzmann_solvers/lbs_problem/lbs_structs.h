@@ -76,6 +76,11 @@ struct LBSOptions
 
   bool csda_enabled = false;
 
+  /// Flag for the fused all-at-once GPU scheduler for AAH sweeps (DiscreteOrdinatesProblem only).
+  bool fused_aao_sweep = false;
+  /// Number of fused runs that may be in flight at once on each rank with fused_aao_sweep.
+  unsigned int fused_aao_lanes = 8;
+
   std::string field_function_prefix_option = "prefix";
   std::string field_function_prefix; // Default is empty
 

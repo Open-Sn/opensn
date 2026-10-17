@@ -16,15 +16,24 @@ namespace opensn::gpu_kernel
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
 
-/// Largest cell DOF count whose local system is kept in registers (see AddAtIndex). Larger systems
-/// do not fit in registers, and the extra code only adds register pressure, so they keep
-/// run-time indexing.
+/**
+ * Largest cell DOF count whose local system is kept in registers (see AddAtIndex).
+ * Larger systems do not fit in registers. For them the extra code only adds register pressure, so
+ * they keep run-time indexing.
+ */
 constexpr std::size_t max_register_resident_dofs = 4;
 
-/// Adds `value` to `array[index]` for an index known only at run time. For systems of up to
-/// max_register_resident_dofs DOFs every access uses a compile-time index, so the local array can
-/// stay in registers instead of being placed in local memory. `n` is the array length and
-/// `ndofs` the cell DOF count.
+/**
+ * Add a value to an array entry whose index is known only at run time.
+ * For systems of up to max_register_resident_dofs DOFs, every access uses a compile-time index.
+ * The local array can then stay in registers instead of being placed in local memory.
+ *
+ * \tparam n Array length.
+ * \tparam ndofs Cell DOF count.
+ * \param array Array to update.
+ * \param index Index of the entry.
+ * \param value Value to add.
+ */
 template <std::size_t n, std::size_t ndofs = n>
 __CRB_DEVICE_FUNC__ void
 AddAtIndex(double* array, std::uint32_t index, double value)
@@ -41,7 +50,15 @@ AddAtIndex(double* array, std::uint32_t index, double value)
     array[index] += value;
 }
 
-/// Returns `array[index]` for an index known only at run time (see AddAtIndex).
+/**
+ * Return an array entry whose index is known only at run time (see AddAtIndex).
+ *
+ * \tparam n Array length.
+ * \tparam ndofs Cell DOF count.
+ * \param array Array to read.
+ * \param index Index of the entry.
+ * \return Value of the entry.
+ */
 template <std::size_t n, std::size_t ndofs = n>
 __CRB_DEVICE_FUNC__ double
 ValueAtIndex(const double* array, std::uint32_t index)
@@ -130,7 +147,7 @@ ComputeSurfaceIntegral(double* sweep_matrix,
     {
       double mu = direction.omega[0] * face.normal[0] + direction.omega[1] * face.normal[1] +
                   direction.omega[2] * face.normal[2];
-      // Adds the face coupling of face node `fi` (cell row `Ai`, right-hand side `psi_i`).
+      // Add the face coupling of face node `fi` to cell row `Ai` and right-hand side `psi_i`.
       auto add_face_row = [&](std::uint32_t fi, double* Ai, double& psi_i)
       {
         for (std::uint32_t fj = 0; fj < face.num_face_nodes; ++fj)
@@ -155,8 +172,8 @@ ComputeSurfaceIntegral(double* sweep_matrix,
       };
       if constexpr (ndofs <= max_register_resident_dofs)
       {
-        // Rows are visited with compile-time indices (each row's face node found at run time) so
-        // the local system stays in registers; every row still receives its contributions in
+        // Rows are visited with compile-time indices so the local system stays in registers. Each
+        // row's face node is found at run time. Every row still receives its contributions in
         // face-node order.
         _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
         {

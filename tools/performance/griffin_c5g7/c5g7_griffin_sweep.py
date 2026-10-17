@@ -29,6 +29,8 @@ Parameters (pass with -p name=value):
                     Diagnostic only: removes the reflecting dependencies between angle sets,
                     so every angle set can sweep at once, without changing the sweep work.
   extra_problem_params  dict merged into the DiscreteOrdinatesProblem arguments
+  extra_options     dict merged into the problem's options block, for example
+                    {'fused_aao_sweep': True, 'fused_aao_lanes': 8}
 
 Timing mode does not save the angular flux. The paper's GPU sweeper stored the full angular
 flux on the device, while OpenSn's GPU path would copy it back to the host after every sweep.
@@ -73,6 +75,7 @@ if __name__ == "__main__":
     mesh_file = get_option("mesh_file", os.path.join(script_dir, "c5g7_griffin.msh"))
     vacuum_boundaries = bool(get_option("vacuum_boundaries", False))
     extra_problem_params = dict(get_option("extra_problem_params", {}))
+    extra_options = dict(get_option("extra_options", {}))
 
     if mode not in ("timing", "keff"):
         raise ValueError("mode must be 'timing' or 'keff'")
@@ -122,7 +125,8 @@ if __name__ == "__main__":
         options={"verbose_inner_iterations": True,
                  "verbose_outer_iterations": True,
                  "save_angular_flux": False,
-                 "power_default_kappa": 1.0},
+                 "power_default_kappa": 1.0,
+                 **extra_options},
         sweep_type=sweep_type,
         use_gpus=use_gpus,
     )
@@ -133,7 +137,8 @@ if __name__ == "__main__":
               f"n_azimuthal={n_azimuthal} sweep_type={sweep_type} angle_agg={angle_agg} "
               f"use_gpus={use_gpus} vacuum_boundaries={vacuum_boundaries} ranks={size} "
               f"sweeps_per_outer={sweeps_per_outer} "
-              f"num_outers={num_outers} extra={extra_problem_params}")
+              f"num_outers={num_outers} extra={extra_problem_params} "
+              f"extra_options={extra_options}")
 
     phys = DiscreteOrdinatesProblem(**problem_params)
 

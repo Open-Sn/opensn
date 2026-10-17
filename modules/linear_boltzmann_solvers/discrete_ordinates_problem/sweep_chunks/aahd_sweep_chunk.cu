@@ -36,7 +36,9 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
                problem.GetMinCellDOFCount()),
     problem_(problem)
 {
-  batch_stream_ = crb::Stream();
+  // Each idle lane costs only its stream and slot buffers. Without the fused scheduler only one
+  // lane is created. Its stream also identifies the device below.
+  lanes_.resize(problem.UseFusedAAO() ? problem.GetFusedAAOLanes() : 1);
 
   // Fused-kernel launch parameters in units of the device's warp (wavefront) size and
   // compute-unit count, so they scale across NVIDIA, AMD, and Intel GPUs.
@@ -47,7 +49,7 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
     ::CUDA_OR_HIP(DevAttrMultiProcessorCount, DeviceAttributeMultiprocessorCount)));
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
   const auto num_compute_units = static_cast<std::size_t>(
-    batch_stream_.get_device().get_info<::sycl::info::device::max_compute_units>());
+    lanes_.front().stream.get_device().get_info<::sycl::info::device::max_compute_units>());
 #else
   const std::size_t num_compute_units = 1;
 #endif
@@ -101,7 +103,7 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
 namespace
 {
 
-/// Launches one level of a fused run on `stream`.
+// Launch one level of a fused run on `stream`.
 template <std::uint32_t fixed_ndofs>
 void
 LaunchFusedLevel(crb::Stream& stream,
@@ -125,10 +127,11 @@ LaunchFusedLevel(crb::Stream& stream,
 } // namespace
 
 void
-AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
+AAHDSweepChunk::SubmitBatchRun(std::size_t lane, const std::vector<AAHD_AngleSet*>& batch)
 {
   if (batch.empty())
     return;
+  FusedLane& run_lane = lanes_[lane];
 
   // Build the shared (angle-set-independent) arguments from any one representative angle set.
   // The kernel replaces its per-angle-set fields with each thread's batch-slot values.
@@ -137,8 +140,8 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
     problem_, groupset_, *batch.front(), *front_fluds, surface_source_active_);
 
   // The run covers the deepest member's level count, and the angle-group axis covers the
-  // largest member. Members with fewer levels or angles get empty slots or idle threads; the
-  // kernel bounds-checks both against each slot.
+  // largest member. Members with fewer levels or angles get empty slots or idle threads. The
+  // kernel checks both bounds against each slot.
   const std::size_t batch_size = batch.size();
   std::size_t max_depth = 0;
   std::size_t max_angleset_size = 0;
@@ -148,12 +151,20 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
     max_angleset_size = std::max(max_angleset_size, as->GetNumAngles());
   }
   if (max_depth == 0)
+  {
+    for (auto* as : batch)
+      as->SubmitCompletionCopies();
     return;
+  }
   const auto stride_size = static_cast<unsigned int>(max_angleset_size * groupset_.GetNumGroups());
 
-  // Precompute every level's batch-slot data on the host, then copy the whole run to the device
-  // at once, so levels launch back-to-back below with no copy or synchronization between them.
-  std::vector<gpu_kernel::AAHD_BatchSlot> host_slots(batch_size * max_depth);
+  // Precompute every level's batch-slot data on the host. Then copy the whole run to the device
+  // at once on the lane's stream. The levels below then launch back to back with no copy or
+  // synchronization between them. The lane is idle, so its buffers can be rewritten.
+  const std::size_t total_slots = batch_size * max_depth;
+  auto& host_slots = run_lane.host_slots;
+  if (host_slots.size() < total_slots)
+    host_slots.resize(total_slots);
   for (std::size_t m = 0; m < batch_size; ++m)
     batch[m]->FillBatchSlots(max_depth, batch_size, host_slots.data() + m);
   std::vector<unsigned int> max_level_size_per_level(max_depth, 0);
@@ -161,16 +172,15 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
     for (std::size_t m = 0; m < batch_size; ++m)
       max_level_size_per_level[level] =
         std::max(max_level_size_per_level[level], host_slots[level * batch_size + m].num_cells);
-  const std::size_t total_slots = host_slots.size();
-  if (batch_slots_device_.size() < total_slots)
-    batch_slots_device_ = crb::DeviceMemory<gpu_kernel::AAHD_BatchSlot>(total_slots);
-  crb::copy(batch_slots_device_, host_slots, total_slots);
+  if (run_lane.device_slots.size() < total_slots)
+    run_lane.device_slots = crb::DeviceMemory<gpu_kernel::AAHD_BatchSlot>(total_slots);
+  crb::copy(run_lane.device_slots, host_slots, total_slots, 0, 0, run_lane.stream);
 
   // Compile for the cell DOF count when every local cell has the same one.
   const std::uint32_t fixed_ndofs =
     (min_num_cell_dofs_ == max_num_cell_dofs_) ? max_num_cell_dofs_ : 0;
 
-  auto* device_slots_base = batch_slots_device_.get();
+  auto* device_slots_base = run_lane.device_slots.get();
   for (std::size_t level = 0; level < max_depth; ++level)
   {
     // Large levels use the linear (cell, angle-group) mapping, which leaves no idle lanes. Small
@@ -207,7 +217,7 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
     auto launch = [&](auto fixed_c)
     {
       LaunchFusedLevel<decltype(fixed_c)::value>(
-        batch_stream_, shared_args, level_slots_ptr, grid_size, block_size, linear_mapping);
+        run_lane.stream, shared_args, level_slots_ptr, grid_size, block_size, linear_mapping);
     };
     switch (fixed_ndofs)
     {
@@ -231,8 +241,10 @@ AAHDSweepChunk::SweepBatchRun(const std::vector<AAHD_AngleSet*>& batch)
         break;
     }
   }
-  // Exactly one host-blocking wait for the whole run, instead of one per level.
-  batch_stream_.synchronize();
+  // The members' device-to-host copies follow the last level on the same stream. The caller
+  // polls IsLaneIdle instead of waiting.
+  for (auto* as : batch)
+    as->SubmitCompletionCopies();
 }
 
 } // namespace opensn
