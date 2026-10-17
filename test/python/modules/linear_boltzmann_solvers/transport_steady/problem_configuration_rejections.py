@@ -26,14 +26,15 @@ violated rule:
 13. a restart path whose directory is an existing file (only rank 0 creates the directory, and
     every rank must raise),
 14. both `read_restart_path` and `read_initial_condition_path` (alternatives; the files need not
-    exist because the rule rejects the problem before anything is read).
+    exist because the rule rejects the problem before anything is read),
+15. TGDSA on a single-group groupset (two-grid acceleration needs groups to couple).
 
 Finally, SetBoundaryOptions must reject a reflecting rmax boundary on an RZ problem (reflecting
 axis), and a non-planar reflecting boundary on an XY problem, before the boundaries change: a
 fixed-source solve afterwards must reproduce the solve of an identical fresh problem to round-off.
 
 Checks:
-  CONFIG_REJECTIONS_PASSED: number of cases (of 16) that behave as described.
+  CONFIG_REJECTIONS_PASSED: number of cases (of 17) that behave as described.
   CONFIG_RZ_REJECTED_MAX_DIFF: max |phi - phi_fresh| after the rejected RZ boundary change.
   CONFIG_NONPLANAR_REJECTED_MAX_DIFF: max |phi - phi_fresh| after the rejected XY boundary change.
 """
@@ -201,6 +202,11 @@ if __name__ == "__main__":
         "invalid configuration",
         "should start at group 1",
         "non-empty `write_restart_path`",
+    )
+
+    passed += rejected(
+        lambda: xy_problem(grid, xs1, 1, [dict(groupset(0, 0), apply_tgdsa=True)]),
+        "Groupset 0: apply_tgdsa requires at least two groups",
     )
 
     rz_grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes], coord_sys="cylindrical").Execute()

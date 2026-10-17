@@ -66,6 +66,20 @@ public:
   void SetSteadyStateMode() override;
 
   void SetTime(double time) override;
+
+  /**
+   * Returns the time-absorption scale 1/(theta dt) with which the diffusion acceleration
+   * operators (WGDSA/TGDSA) were built; 0 for steady-state operators.
+   */
+  double GetDSATimeAbsorptionScale() const { return dsa_time_absorption_scale_; }
+
+  /**
+   * Rebuilds the WGDSA/TGDSA operators if the time absorption 1/(v theta dt) of the current
+   * mode, time step, and theta differs from the one they were built with. Called before each
+   * transient step to pick up changes of dt or theta. Mode changes rebuild the operators through
+   * RebuildRuntimeObjects().
+   */
+  void UpdateDSATimeAbsorption();
   /** @} */
 
   ~DiscreteOrdinatesProblem() override;
@@ -259,6 +273,9 @@ protected:
    */
 
   void InitializeSolverSchemes();
+
+  /// Time-absorption scale 1/(theta dt) for the current mode, time step, and theta (0 when steady).
+  double ComputeDSATimeAbsorptionScale() const;
   /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
   void ReinitializeSolverSchemes();
 
@@ -337,6 +354,8 @@ protected:
     quadrature_fluds_commondata_map_;
 
   const std::string sweep_type_;
+  /// Time-absorption scale 1/(theta dt) of the current DSA operators (0 when steady).
+  double dsa_time_absorption_scale_ = 0.0;
   /** @} */
 
   /**

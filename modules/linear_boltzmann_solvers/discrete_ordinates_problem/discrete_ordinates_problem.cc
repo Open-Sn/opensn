@@ -447,6 +447,12 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ": AZIMUTHAL angle aggregation is only valid for TWOD_CYLINDRICAL and "
                           "ONED_SPHERICAL geometries.");
 
+  // TGDSA corrects the error mode coupled across the groups of a groupset.
+  for (const auto& groupset : groupsets_)
+    if (groupset.apply_tgdsa and groupset.GetNumGroups() < 2)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": apply_tgdsa requires at least two groups, but the groupset has one.");
+
   // Quadratures: every groupset needs one, with a common scattering order and the mesh dimension.
   const auto grid_dim = grid_->GetDimension();
   for (const auto& groupset : groupsets_)
@@ -626,6 +632,7 @@ DiscreteOrdinatesProblem::BuildRuntimeData()
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
+  dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
   for (auto& groupset : groupsets_)
   {
     InitFluxDataStructures(groupset);
@@ -668,6 +675,8 @@ DiscreteOrdinatesProblem::RebuildRuntimeObjects()
   InitializeSourceFunction();
   InitializeBoundaries();
   RebuildBoundaryRuntimeData();
+  // Build the diffusion acceleration operators with the time absorption of the current mode.
+  dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
   for (auto& groupset : groupsets_)
   {
     WGDSA::CleanUp(groupset);
@@ -1111,6 +1120,31 @@ void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
+}
+
+double
+DiscreteOrdinatesProblem::ComputeDSATimeAbsorptionScale() const
+{
+  return IsTimeDependent() ? 1.0 / (GetTheta() * GetTimeStep()) : 0.0;
+}
+
+void
+DiscreteOrdinatesProblem::UpdateDSATimeAbsorption()
+{
+  const double scale = ComputeDSATimeAbsorptionScale();
+  if (scale == dsa_time_absorption_scale_)
+    return;
+  dsa_time_absorption_scale_ = scale;
+
+  for (auto& groupset : groupsets_)
+  {
+    if (not(groupset.apply_wgdsa or groupset.apply_tgdsa))
+      continue;
+    WGDSA::CleanUp(groupset);
+    TGDSA::CleanUp(groupset);
+    WGDSA::Init(*this, groupset);
+    TGDSA::Init(*this, groupset);
+  }
 }
 
 void

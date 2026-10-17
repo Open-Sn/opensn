@@ -15,6 +15,72 @@
 namespace opensn
 {
 
+namespace
+{
+
+/**
+ * Applies WGDSA/TGDSA to the groupset vector `phi_input` (flux moments followed by the lagged
+ * angular unknowns) and writes the result to `pc_output`. The scalar-flux correction is also
+ * applied, as an isotropic angular correction, to the lagged boundary angular fluxes.
+ */
+void
+ApplyDSAPreconditioner(WGSContext& gs_context, Vec phi_input, Vec pc_output)
+{
+  DiscreteOrdinatesProblem& do_problem = gs_context.do_problem;
+  LBSGroupset& groupset = gs_context.groupset;
+
+  // Copy PETSc vector to STL
+  auto& phi_new_local = do_problem.GetPhiNewLocal();
+  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
+    do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
+
+  const bool correct_delayed_psi =
+    groupset.angle_agg and groupset.angle_agg->GetNumDelayedAngularDOFs().second > 0;
+  std::vector<double> delta_phi;
+  if (correct_delayed_psi)
+    delta_phi = phi_new_local;
+
+  // Apply WGDSA
+  if (groupset.apply_wgdsa)
+  {
+    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
+
+    std::vector<double> delta_phi_local;
+    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
+
+    groupset.wgdsa_solver->Assemble_b(delta_phi_local);
+    groupset.wgdsa_solver->Solve(delta_phi_local);
+
+    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
+  }
+  // Apply TGDSA
+  if (groupset.apply_tgdsa)
+  {
+    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
+
+    std::vector<double> delta_phi_local;
+    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
+
+    groupset.tgdsa_solver->Assemble_b(delta_phi_local);
+    groupset.tgdsa_solver->Solve(delta_phi_local);
+
+    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
+  }
+
+  if (correct_delayed_psi)
+  {
+    for (size_t i = 0; i < delta_phi.size(); ++i)
+      delta_phi[i] = phi_new_local[i] - delta_phi[i];
+    ApplyDSACorrectionToDelayedBoundaryFlux(do_problem, groupset, delta_phi);
+  }
+
+  // Copy STL vector to PETSc Vec
+  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
+    do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
+}
+
+} // namespace
+
 PetscErrorCode
 WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
 {
@@ -23,94 +89,14 @@ WGDSA_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   if (ierr != PETSC_SUCCESS)
     return ierr;
 
-  auto* gs_context_ptr = static_cast<WGSContext*>(context);
-
-  // Shorten some names
-  DiscreteOrdinatesProblem& do_problem = gs_context_ptr->do_problem;
-  LBSGroupset& groupset = gs_context_ptr->groupset;
-
-  // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr->do_problem.GetPhiNewLocal();
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-    do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
-
-  // Apply WGDSA
-  if (groupset.apply_wgdsa)
-  {
-    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
-
-    std::vector<double> delta_phi_local;
-    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
-
-    groupset.wgdsa_solver->Assemble_b(delta_phi_local);
-    groupset.wgdsa_solver->Solve(delta_phi_local);
-
-    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
-  }
-  // Apply TGDSA
-  if (groupset.apply_tgdsa)
-  {
-    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
-
-    std::vector<double> delta_phi_local;
-    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
-
-    groupset.tgdsa_solver->Assemble_b(delta_phi_local);
-    groupset.tgdsa_solver->Solve(delta_phi_local);
-
-    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
-  }
-
-  // Copy STL vector to PETSc Vec
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-    do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
-
+  ApplyDSAPreconditioner(*static_cast<WGSContext*>(context), phi_input, pc_output);
   return PETSC_SUCCESS;
 }
 
 PetscErrorCode
 WGDSA_TGDSA_PreConditionerMult2(WGSContext& gs_context_ptr, Vec phi_input, Vec pc_output)
 {
-  // Shorten some names
-  DiscreteOrdinatesProblem& do_problem = gs_context_ptr.do_problem;
-  LBSGroupset& groupset = gs_context_ptr.groupset;
-
-  // Copy PETSc vector to STL
-  auto& phi_new_local = gs_context_ptr.do_problem.GetPhiNewLocal();
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-    do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
-
-  // Apply WGDSA
-  if (groupset.apply_wgdsa)
-  {
-    CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
-
-    std::vector<double> delta_phi_local;
-    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
-
-    groupset.wgdsa_solver->Assemble_b(delta_phi_local);
-    groupset.wgdsa_solver->Solve(delta_phi_local);
-
-    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
-  }
-  // Apply TGDSA
-  if (groupset.apply_tgdsa)
-  {
-    CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
-
-    std::vector<double> delta_phi_local;
-    TGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
-
-    groupset.tgdsa_solver->Assemble_b(delta_phi_local);
-    groupset.tgdsa_solver->Solve(delta_phi_local);
-
-    TGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
-  }
-
-  // Copy STL vector to PETSc Vec
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-    do_problem, groupset, pc_output, PhiSTLOption::PHI_NEW);
-
+  ApplyDSAPreconditioner(gs_context_ptr, phi_input, pc_output);
   return PETSC_SUCCESS;
 }
 

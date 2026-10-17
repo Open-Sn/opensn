@@ -5,6 +5,7 @@
 
 #include "framework/parameters/input_parameters.h"
 #include <string>
+#include <vector>
 
 namespace opensn
 {
@@ -33,6 +34,16 @@ public:
    * Calls the internal Initialize() method.
    */
   void Initialize(PowerIterationKEigenSolver& solver);
+
+  /**
+   * Appends one message for each requirement of this acceleration method that the problem
+   * violates. The owning solver calls it from its CheckRequirements, so it runs collectively before
+   * Initialize() and before each execution. The default has no requirements.
+   */
+  virtual void CheckRequirements(std::vector<std::string>& errors) const;
+
+  /// The problem this acceleration method was created for.
+  const DiscreteOrdinatesProblem& GetProblem() const { return do_problem_; }
 
   /**
    * Initialization method for derived classes. Must be overridden.
@@ -102,8 +113,11 @@ protected:
   /// Copies back only the scalar moments to a lbs primary flux vector.
   void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
 
-  /// Guard used by acceleration methods that are not stable with one AAH sweep.
-  void CheckAAHSingleSweepStability() const;
+  /// Appends an error if an AAH groupset does one sweep per iteration (unstable for this method).
+  void RequireMultipleAAHSweeps(std::vector<std::string>& errors) const;
+
+  /// Appends an error if the problem has more than one groupset.
+  void RequireSingleGroupset(std::vector<std::string>& errors) const;
 
   /// The associated DiscreteOrdinatesProblem problem
   DiscreteOrdinatesProblem& do_problem_;

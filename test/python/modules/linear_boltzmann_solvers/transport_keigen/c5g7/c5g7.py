@@ -52,7 +52,7 @@ def make_groupsets(num_groups, pquad, inner_linear_method, l_max_its):
                 "inner_linear_method": inner_linear_method,
                 "l_max_its": l_max_its,
                 "l_abs_tol": 1.0e-10,
-                "angle_aggregation_type": "polar",
+                "angle_aggregation_type": "single",
             }
         )
     return groupsets
@@ -114,6 +114,10 @@ if __name__ == "__main__":
     if "scdsa" in k_method or "smm" in k_method:
         inner_linear_method = "classic_richardson"
         l_max_its = 2
+    elif k_method == "pi_cmfd":
+        # CMFD does the outer acceleration; a few unaccelerated sweeps per update suffice.
+        inner_linear_method = "classic_richardson"
+        l_max_its = 4
     else:
         inner_linear_method = "petsc_gmres"
         l_max_its = 5
@@ -145,25 +149,29 @@ if __name__ == "__main__":
             k_tol=k_tolerance,
         )
     elif k_method == "pi_cmfd":
+        # Small spatial aggregates with three coarse energy groups keep the coarse problem
+        # effective and the direct solve affordable. The balance tolerance gives a scalar flux
+        # at least as accurate as the converged PI solution.
         cmfd = CMFDAcceleration(
             problem=phys,
+            current_closure=get_option("cmfd_current_closure", "partial"),
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
-            aggregation_size=int(get_option("cmfd_aggregation_size", 16)),
-            group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
+            aggregation_size=int(get_option("cmfd_aggregation_size", 2)),
+            group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 3)),
             update_wgs_max_its=int(get_option("cmfd_update_wgs_max_its", 4)),
-            update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-4)),
+            update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-10)),
             relaxation=float(get_option("cmfd_relaxation", 1.0)),
             inactive_iterations=int(get_option("cmfd_inactive_iterations", 1)),
             l_abs_tol=float(get_option("cmfd_l_abs_tol", 1.0e-10)),
             max_iters=int(get_option("cmfd_l_max_its", 100)),
-            pi_max_its=int(get_option("cmfd_pi_max_its", 5)),
+            pi_max_its=int(get_option("cmfd_pi_max_its", 10)),
             pi_k_tol=float(get_option("cmfd_pi_k_tol", 1.0e-10)),
-            coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "auto"),
+            coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "direct"),
             correction_max_attempts=int(get_option("cmfd_correction_max_attempts", 10)),
             correction_min_damping=float(get_option("cmfd_correction_min_damping", 1.0e-4)),
             negative_flux_tolerance=float(get_option("cmfd_negative_flux_tolerance", 1.0e-6)),
             balance_residual_tolerance=float(
-                get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
+                get_option("cmfd_balance_residual_tolerance", 1.0e-6)
             ),
             verbose=get_bool_option("cmfd_verbose", False),
         )

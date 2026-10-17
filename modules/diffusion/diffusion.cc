@@ -11,6 +11,7 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/error.h"
 #include <sstream>
+#include <string>
 
 namespace opensn
 {
@@ -259,10 +260,13 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   OpenSnPETScCall(VecSet(x_, 0.0));
 
-  if (not use_initial_guess)
-    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
-  else
-    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
+  // A direct (preonly) solve does not use an initial guess, and PETSc rejects a nonzero guess
+  // for it.
+  KSPType ksp_type = nullptr;
+  OpenSnPETScCall(KSPGetType(ksp_, &ksp_type));
+  const bool direct_solve = ksp_type != nullptr and std::string(ksp_type) == KSPPREONLY;
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(
+    ksp_, (use_initial_guess and not direct_solve) ? PETSC_TRUE : PETSC_FALSE));
 
   OpenSnPETScCall(KSPSetTolerances(
     ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
@@ -314,10 +318,13 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
   OpenSnPETScCall(VecSet(x_, 0.0));
 
-  if (not use_initial_guess)
-    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
-  else
-    OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
+  // A direct (preonly) solve does not use an initial guess, and PETSc rejects a nonzero guess
+  // for it.
+  KSPType ksp_type = nullptr;
+  OpenSnPETScCall(KSPGetType(ksp_, &ksp_type));
+  const bool direct_solve = ksp_type != nullptr and std::string(ksp_type) == KSPPREONLY;
+  OpenSnPETScCall(KSPSetInitialGuessNonzero(
+    ksp_, (use_initial_guess and not direct_solve) ? PETSC_TRUE : PETSC_FALSE));
 
   OpenSnPETScCall(KSPSetTolerances(
     ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
