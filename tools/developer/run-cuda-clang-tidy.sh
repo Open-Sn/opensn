@@ -91,8 +91,8 @@ while [[ $# -gt 0 ]]; do
 done
 
 invocation_dir=$(pwd -P)
-# The repository is the one containing this script. (The git toplevel of the current directory can
-# be a different checkout, for example when this tree is a copy inside another repository.)
+# The repository is the one containing this script. The git toplevel of the current directory can
+# be a different checkout, for example when this tree is a copy inside another repository.
 repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 if ! command -v python3 >/dev/null 2>&1; then
   echo "Error: 'python3' not found." >&2
