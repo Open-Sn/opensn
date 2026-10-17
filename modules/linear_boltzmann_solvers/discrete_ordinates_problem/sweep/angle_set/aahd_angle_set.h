@@ -66,31 +66,58 @@ public:
   /**
    * \name Fused all-at-once batch interface
    * Used only by SweepScheduler::ScheduleAlgoAAOFused. A batch run sweeps every level of every
-   * member angle set in one uninterrupted sequence of launches (see
-   * AAHDSweepChunk::SweepBatchRun), so no per-level progress is kept between calls.
+   * member angle set in one uninterrupted sequence of launches on one stream. No per-level
+   * progress is kept between calls. See AAHDSweepChunk::SubmitBatchRun.
    * \{
    */
-  /// Prepares this angle set's device buffers before it joins a batch run. Mirrors the first
-  /// part of AngleSetAdvance. Call once per sweep, before the run starts.
-  void PrepareForBatch(SweepChunk& sweep_chunk);
+  /**
+   * Direct this angle set's FLUDS host-device copies to a stream.
+   *
+   * \param stream Stream for the copies.
+   */
+  void SetFLUDSStream(crb::Stream& stream);
 
-  /// Number of levels in this angle set's levelized local subgrid.
+  /**
+   * Prepare this angle set's device buffers for a batch run.
+   * This mirrors the first part of AngleSetAdvance. Call it once per sweep, before the run is
+   * submitted.
+   *
+   * \param sweep_chunk Sweep chunk that runs the batch.
+   * \param stream Stream of the lane whose batch run this angle set joins.
+   */
+  void PrepareForBatch(SweepChunk& sweep_chunk, crb::Stream& stream);
+
+  /// Return the number of levels in this angle set's levelized local subgrid.
   std::size_t NumLevels() const;
 
-  /// Writes this angle set's batch slot for each level in [0, num_levels) to
-  /// `slots[level * slot_stride]`. Levels at or beyond NumLevels() get an empty slot, because the
-  /// caller runs every batch member through the same level range.
+  /**
+   * Write this angle set's batch slot for each level of a batch run.
+   * Levels at or beyond NumLevels() get an empty slot because every batch member runs through the
+   * same level range.
+   *
+   * \param num_levels Number of levels in the batch run.
+   * \param slot_stride Distance between this angle set's slots of consecutive levels.
+   * \param slots Slot array. The slot for level `level` is written to `slots[level * slot_stride]`.
+   */
   void FillBatchSlots(std::size_t num_levels,
                       std::size_t slot_stride,
                       gpu_kernel::AAHD_BatchSlot* slots) const;
 
-  /// Enqueues this angle set's post-sweep device-to-host copies on the batch stream without
-  /// synchronizing. The caller synchronizes once for the whole batch before FinishCompletion.
+  /**
+   * Enqueue this angle set's post-sweep device-to-host copies without synchronizing.
+   * The copies go on the angle set's FLUDS stream, which is its run's lane. The caller waits for
+   * that stream before FinishCompletion.
+   */
   void SubmitCompletionCopies();
 
-  /// Finalizes this angle set after its SubmitCompletionCopies copies have completed: decrements
-  /// the followers' dependency counters, sends downstream psi, and copies the saved angular flux
-  /// to its destination. Mirrors the second part of AngleSetAdvance.
+  /**
+   * Finish this angle set after its SubmitCompletionCopies copies have completed.
+   * This decrements the followers' dependency counters, sends the downstream angular fluxes, and
+   * copies the saved angular flux to its destination. It mirrors the second part of
+   * AngleSetAdvance.
+   *
+   * \param sweep_chunk Sweep chunk that ran the batch.
+   */
   void FinishCompletion(SweepChunk& sweep_chunk);
   /** \} */
 

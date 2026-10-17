@@ -32,6 +32,13 @@ import os
 if "opensn_console" not in globals():
     from mpi4py import MPI
     rank = MPI.COMM_WORLD.rank
+
+    def MPIAllReduce(value):
+        return MPI.COMM_WORLD.allreduce(value, op=MPI.SUM)
+
+    def MPIBarrier():
+        MPI.COMM_WORLD.Barrier()
+
     from pyopensn.mesh import (OrthogonalMeshGenerator, FromFileMeshGenerator,
                                ExtruderMeshGenerator)
     from pyopensn.xs import MultiGroupXS
@@ -92,8 +99,10 @@ if __name__ == "__main__":
     elif mesh_kind in ("tri2d", "prism3d"):
         n = 180 if mesh_kind == "tri2d" else 60
         path = os.path.join(work_dir, f"gpu_sweep_matrix_tri{n}.msh")
-        if not os.path.isfile(path):
+        # One rank writes a missing mesh, and every rank waits for it before reading it.
+        if rank == 0 and not os.path.isfile(path):
             write_triangle_mesh(path, n, float(n))
+        MPIBarrier()
         if mesh_kind == "tri2d":
             grid = FromFileMeshGenerator(filename=path).Execute()
         else:
@@ -142,8 +151,9 @@ if __name__ == "__main__":
         sweep_type=sweep_type,
         use_gpus=True,
     )
+    # Only fused runs name the option, so builds without it (such as main) also run this input.
     if fused:
-        problem_params["fused_aao_sweep"] = True
+        problem_params["options"]["fused_aao_sweep"] = True
 
     if rank == 0:
         print(f"GPU_SWEEP_MATRIX config: mesh_kind={mesh_kind} num_groups={num_groups} "
@@ -155,6 +165,7 @@ if __name__ == "__main__":
     solver.Initialize()
     solver.Execute()
 
-    phi = problem.GetPhiNewLocal()
+    # Sum over all ranks, so the checksum covers the whole problem on any number of ranks.
+    phi_sum = MPIAllReduce(sum(problem.GetPhiNewLocal()))
     if rank == 0:
-        print(f"GPU_SWEEP_MATRIX phi_checksum: {sum(phi):.15e}")
+        print(f"GPU_SWEEP_MATRIX phi_checksum: {phi_sum:.15e}")

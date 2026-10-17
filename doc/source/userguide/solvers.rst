@@ -195,6 +195,8 @@ Problem options available in Python include:
 * ``ags_convergence_check``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
+* ``fused_aao_sweep`` and ``fused_aao_lanes`` for GPU ``"AAH"`` sweeps (see
+  :doc:`discrete_ordinates_problems`)
 
 ``use_precursors`` controls whether delayed-neutron precursor treatment is kept
 active for the problem. The default is ``True``. This should usually stay

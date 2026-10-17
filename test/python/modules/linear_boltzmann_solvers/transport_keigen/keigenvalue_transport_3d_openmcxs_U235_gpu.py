@@ -81,9 +81,9 @@ if __name__ == "__main__":
         options={
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": True,
+            "fused_aao_sweep": bool(globals().get("fused_aao_sweep", False)),
         },
         use_gpus=True,
-        fused_aao_sweep=bool(globals().get("fused_aao_sweep", False)),
     )
     k_solver = NonLinearKEigenSolver(
         problem=phys,

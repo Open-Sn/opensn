@@ -119,13 +119,19 @@ AAHD_AngleSet::CopyBoundaryOffsetToDevice()
 }
 
 void
-AAHD_AngleSet::PrepareForBatch(SweepChunk& sweep_chunk)
+AAHD_AngleSet::SetFLUDSStream(crb::Stream& stream)
+{
+  dynamic_cast<AAHD_FLUDS*>(fluds_.get())->GetStream() = stream;
+}
+
+void
+AAHD_AngleSet::PrepareForBatch(SweepChunk& sweep_chunk, crb::Stream& stream)
 {
   auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
   auto& aahd_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
-  // Redirect this angle set's FluDS operations onto the sweep chunk's shared batch stream, so
-  // its H2D/D2H copies stay correctly ordered relative to the fused kernel launches.
-  aahd_fluds->GetStream() = aahd_sweep_chunk.GetBatchStream();
+  // Put this angle set's FLUDS copies on its run's lane stream, so they stay ordered relative to
+  // that run's fused kernel launches.
+  aahd_fluds->GetStream() = stream;
   aahd_fluds->CopyNonLocalIncomingPsiToDevice();
   aahd_fluds->AllocateSaveAngularFlux(aahd_sweep_chunk.GetProblem(),
                                       aahd_sweep_chunk.GetGroupset());
@@ -184,8 +190,8 @@ AAHD_AngleSet::FinishCompletion(SweepChunk& sweep_chunk)
   auto* aahd_fluds = dynamic_cast<AAHD_FLUDS*>(fluds_.get());
   auto& aahd_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
 
-  // The caller synchronized the batch stream after SubmitCompletionCopies, so the host buffer
-  // read by CopySaveAngularFluxToDestinationPsi below is complete.
+  // The caller saw this angle set's lane stream complete after SubmitCompletionCopies, so the
+  // host buffers sent below and read by CopySaveAngularFluxToDestinationPsi are complete.
 
   if (not following_angle_sets_.empty())
   {

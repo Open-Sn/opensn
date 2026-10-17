@@ -20,7 +20,7 @@ enum class SchedulingAlgorithm
   DEPTH_OF_GRAPH = 2,     ///< DOG
   ALL_AT_ONCE = 3,        ///< AAO
   ASYNC_FIFO = 4,         ///< ASYNC_FIFO
-  ALL_AT_ONCE_FUSED = 5   ///< AAO with multiple angle sets fused into each kernel launch
+  ALL_AT_ONCE_FUSED = 5   ///< AAO with several angle sets fused into each kernel launch.
 };
 
 struct RuleValues
@@ -72,7 +72,7 @@ private:
   /// Performs the all-at-once scheduling algorithm.
   void ScheduleAlgoAAO(SweepChunk& sweep_chunk);
 
-  /// Opt-in AAO variant that fuses multiple angle sets into each kernel launch.
+  /// Perform the all-at-once scheduling algorithm with angle sets fused into kernel launches.
   void ScheduleAlgoAAOFused(SweepChunk& sweep_chunk);
 
 private:

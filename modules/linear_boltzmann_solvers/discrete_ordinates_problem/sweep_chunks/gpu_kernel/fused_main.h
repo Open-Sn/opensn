@@ -13,10 +13,18 @@ namespace crb = caribou;
 namespace opensn::gpu_kernel
 {
 
-/// Calls `f` with the cell DOF count as a compile-time constant. With `fixed_ndofs > 0` only that
-/// count is compiled, which keeps register and stack use at what that cell type needs; the caller
-/// guarantees that every cell has that count. With `fixed_ndofs == 0` every count up to
-/// LBSProblem::max_dofs_gpu is compiled and selected at run time.
+/**
+ * Call a function with the cell DOF count as a compile-time constant.
+ * With `fixed_ndofs > 0` only that count is compiled. This keeps register and stack use at what
+ * that cell type needs. The caller guarantees that every cell has that count. With
+ * `fixed_ndofs == 0` every count up to LBSProblem::max_dofs_gpu is compiled and selected at run
+ * time.
+ *
+ * \tparam fixed_ndofs Single compiled cell DOF count, or 0 to compile all counts.
+ * \tparam F Type of the function.
+ * \param num_nodes Number of nodes (DOFs) of the cell.
+ * \param f Function called with a `std::integral_constant` of the DOF count.
+ */
 template <std::uint32_t fixed_ndofs, class F>
 __CRB_DEVICE_FUNC__ void
 DispatchCellDOFs(std::uint32_t num_nodes, F& f)
@@ -41,7 +49,13 @@ DispatchCellDOFs(std::uint32_t num_nodes, F& f)
   }
 }
 
-/// Assembles this thread's Arguments<AAH> from the shared launch data and its batch slot.
+/**
+ * Assemble a thread's sweep arguments from the shared launch data and its batch slot.
+ *
+ * \param shared_args Launch data shared by every angle set of the launch.
+ * \param slot Batch slot of the thread's angle set.
+ * \return Arguments of the thread's angle set.
+ */
 __CRB_DEVICE_FUNC__ Arguments<SweepKind::AAH>
 SlotArguments(const Arguments<SweepKind::AAH>& shared_args, const AAHD_BatchSlot& slot)
 {
@@ -55,15 +69,18 @@ SlotArguments(const Arguments<SweepKind::AAH>& shared_args, const AAHD_BatchSlot
 }
 
 /**
- * Fused AAHD sweep kernel: one thread per (cell, angle-group) of every batch slot's current level.
- * Each grid-z slice (blockIdx.z / SYCL dimension 0) is a different angle set's current level, so
- * one launch covers many angle sets instead of one. The per-thread work is the same solver.h Sweep
- * as `SweepKernel` in main.h, fed an `Arguments<AAH>` assembled from the shared launch data and the
- * thread's batch slot.
- * With `linear_mapping`, x enumerates the slot's (cell, angle-group) pairs cell by cell, so a warp
- * covers consecutive cells' angle-groups with no idle lanes. Otherwise x is the angle-group and y
- * the cell, which spreads a small level over more warps. `fixed_ndofs` selects a single compiled
- * cell DOF count (see DispatchCellDOFs).
+ * Sweep the current level of every batch slot, with one thread per cell and angle-group.
+ * Each grid-z slice (blockIdx.z, or SYCL dimension 0) is a different angle set's current level.
+ * One launch therefore covers many angle sets instead of one. The per-thread work is the same
+ * solver.h Sweep as `SweepKernel` in main.h. Its arguments are assembled from the shared launch
+ * data and the thread's batch slot.
+ *
+ * \tparam fixed_ndofs Single compiled cell DOF count, or 0 for all counts (see DispatchCellDOFs).
+ * \param shared_args Launch data shared by every angle set of the launch.
+ * \param batch_slots Batch slots of the launch, one per grid-z slice.
+ * \param linear_mapping If true, x enumerates the slot's (cell, angle-group) pairs cell by cell,
+ *        so a warp covers consecutive cells' angle-groups with no idle lanes. If false, x is the
+ *        angle-group and y is the cell, which spreads a small level over more warps.
  */
 template <std::uint32_t fixed_ndofs>
 __CRB_GLOBAL_FUNC__ void

@@ -78,7 +78,6 @@ The main constructor inputs are:
 * ``options``: problem-level settings
 * ``sweep_type``: ``"AAH"`` or ``"CBC"``
 * ``use_gpus``: request GPU sweep support where available
-* ``fused_aao_sweep``: use the fused GPU scheduler for ``"AAH"`` sweeps
 * ``time_dependent``: whether the problem starts in time-dependent mode
 
 A complete problem definition often looks like:
@@ -185,17 +184,37 @@ This selects the sweep type:
 
 This requests GPU acceleration where supported.
 
-``fused_aao_sweep``
--------------------
+Fused GPU scheduling options
+----------------------------
 
-This selects the fused all-at-once scheduler for GPU ``"AAH"`` sweeps. Each
-kernel launch sweeps the current level of up to 256 ready angle sets, instead
-of launching each angle set's levels separately. This reduces the number of
-launches when individual levels are too small to fill the GPU, such as
-two-dimensional problems or problems with few groups. It changes scheduling
-only; the solution matches the default scheduler to floating-point rounding. It requires
-``sweep_type="AAH"`` and ``use_gpus=True``, and construction raises an error
-otherwise.
+Two entries of ``options`` control the fused all-at-once GPU scheduler:
+
+.. code-block:: python
+
+   phys = DiscreteOrdinatesProblem(
+       ...,
+       sweep_type="AAH",
+       use_gpus=True,
+       options={"fused_aao_sweep": True, "fused_aao_lanes": 8},
+   )
+
+``fused_aao_sweep`` (default ``False``) selects the fused all-at-once scheduler
+for GPU ``"AAH"`` sweeps. Each kernel launch sweeps the current level of up to
+256 ready angle sets, instead of launching each angle set's levels separately.
+This reduces the number of launches when individual levels are too small to
+fill the GPU, such as two-dimensional problems or problems with few groups.
+Several such runs are in
+flight at once (see ``fused_aao_lanes``), so on multiple ranks the angle sets
+that become ready as upstream angular fluxes arrive start without waiting for
+the runs already in progress. It requires ``sweep_type="AAH"`` and ``use_gpus=True``,
+and construction raises an error otherwise.
+
+``fused_aao_lanes`` sets, with ``fused_aao_sweep=True``, how many fused runs
+(each a batch of angle sets on its own GPU stream) may be in flight at once on
+each rank. The default is 8 and the value must be at least 1. With one lane, a run must finish
+before the next starts, which serializes the small batches that form when angle
+sets become ready a few at a time on multiple ranks. More lanes help until the
+ready work no longer fills them. The option is ignored unless ``fused_aao_sweep=True``.
 
 ``time_dependent``
 ------------------
@@ -400,7 +419,7 @@ Current restrictions:
 * both ``"AAH"`` and ``"CBC"`` sweep types support GPU acceleration,
 * curvilinear problems do not support GPU acceleration,
 * time-dependent problems do not support GPU acceleration,
-* ``fused_aao_sweep=True`` requires ``sweep_type="AAH"``.
+* ``options.fused_aao_sweep=True`` requires ``sweep_type="AAH"``.
 
 Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.

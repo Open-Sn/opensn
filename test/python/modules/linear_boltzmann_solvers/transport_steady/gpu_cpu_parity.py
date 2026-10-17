@@ -55,10 +55,9 @@ def solve(sweep_type, use_gpus, fused_aao_sweep=False):
             {"name": "xmin", "type": "isotropic", "group_strength": [0.25]},
             {"name": "ymin", "type": "reflecting"},
         ],
-        options={"max_ags_iterations": 1},
+        options={"max_ags_iterations": 1, "fused_aao_sweep": fused_aao_sweep},
         sweep_type=sweep_type,
         use_gpus=use_gpus,
-        fused_aao_sweep=fused_aao_sweep,
     )
     solver = SteadyStateSourceSolver(problem=problem, compute_balance=True)
     solver.Initialize()

@@ -907,6 +907,31 @@
     ]
   },
   {
+    "file": "transport_3d_4_cycles_1_gpu.py",
+    "outfileprefix": "transport_3d_4_cycles_1_fused_1lane_gpu",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh with cycles - PWLD (fused AAO GPU scheduler, one lane: runs serialized, same answer)",
+    "requires_gpu": "True",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.55349e-01,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 4.08422e-10,
+        "abs_tol": 0.0001
+      }
+    ],
+    "args": [
+      "fused_aao_sweep=True",
+      "fused_aao_lanes=1"
+    ]
+  },
+  {
     "file": "restart_repartition.py",
     "comment": "Steady-state restart remaps flux moments across different MPI partitions",
     "num_procs": 4,
@@ -1827,6 +1852,12 @@
         "type": "KeyValuePair",
         "key": "FUSED_AAO_REJECTED",
         "goldvalue": 2,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FUSED_AAO_LANES_REJECTED",
+        "goldvalue": 1,
         "abs_tol": 0
       },
       {

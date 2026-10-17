@@ -9,10 +9,12 @@
 namespace opensn::gpu_kernel
 {
 
-// Per-angle-set data for one grid-z slot of a fused (multi-angle-set) AAHD sweep kernel launch.
-// Fields shared by every angle set in a groupset's sweep (mesh/quadrature/source/phi/boundary/
-// groupset info) are passed once per launch via `Arguments<SweepKind::AAH>`. Only the fields
-// that vary per angle set live here.
+/**
+ * Per-angle-set data for one grid-z slot of a fused AAHD sweep kernel launch.
+ * Data shared by every angle set in a groupset's sweep, such as the mesh, quadrature, sources,
+ * scalar flux, boundaries, and groupset, is passed once per launch in `Arguments<SweepKind::AAH>`.
+ * Only the fields that vary per angle set are here.
+ */
 struct AAHD_BatchSlot
 {
   /// Device pointer to this angle set's direction index (indices, for angleset_size > 1).
