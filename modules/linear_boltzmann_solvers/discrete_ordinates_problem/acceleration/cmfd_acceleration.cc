@@ -981,6 +981,8 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
   const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
   const bool add_delayed_production =
     do_problem_.GetOptions().use_precursors and not precursors.empty();
+  // In adjoint mode F is transposed, and so is the delayed production.
+  const bool adjoint = do_problem_.GetOptions().adjoint;
   const bool has_flux = not fine_coarse_phi.empty();
   const auto fine_offset = coarse_cell.local_id * num_groups_;
   double numerator = 0.0;
@@ -995,8 +997,8 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
       numerator += F[g][gp] * phi;
       if (add_delayed_production)
         for (const auto& precursor : precursors)
-          numerator += precursor.emission_spectrum[g] * precursor.fractional_yield *
-                       nu_delayed_sigma_f[gp] * phi;
+          numerator += precursor.emission_spectrum[adjoint ? gp : g] * precursor.fractional_yield *
+                       nu_delayed_sigma_f[adjoint ? g : gp] * phi;
     }
   }
   if (std::fabs(denominator) <= 1.0e-30)
@@ -1013,8 +1015,8 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
         numerator += F[g][gp];
         if (add_delayed_production)
           for (const auto& precursor : precursors)
-            numerator +=
-              precursor.emission_spectrum[g] * precursor.fractional_yield * nu_delayed_sigma_f[gp];
+            numerator += precursor.emission_spectrum[adjoint ? gp : g] *
+                         precursor.fractional_yield * nu_delayed_sigma_f[adjoint ? g : gp];
       }
     }
   }

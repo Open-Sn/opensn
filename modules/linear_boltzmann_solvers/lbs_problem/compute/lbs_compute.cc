@@ -56,8 +56,17 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
         // contributions are prompt-only and adds delayed production separately via
         // nu_delayed_sigma_f. If the production matrix changes to include delayed
         // production, adjust this sum to prevent double counting.
+        // In adjoint mode F is transposed, and so is the delayed production.
         if (options.use_precursors and not xs.GetPrecursors().empty())
-          local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        {
+          if (options.adjoint)
+            for (const auto& precursor : xs.GetPrecursors())
+              for (unsigned int gp = 0; gp <= last_grp; ++gp)
+                local_production += precursor.emission_spectrum[gp] * precursor.fractional_yield *
+                                    nu_delayed_sigma_f[g] * phi[uk_map + gp] * IntV_ShapeI;
+          else
+            local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        }
       }
     } // for node
   } // for cell

@@ -153,19 +153,22 @@ SourceFunction::DelayedFission(const PrecursorList& precursors,
                                const double* phi,
                                std::size_t /*node_id*/) const
 {
+  // In adjoint mode the delayed production chi_d[g] nu_d sigma_f[g'] is transposed, like the
+  // production matrix.
+  const bool adjoint = lbs_problem_.GetOptions().adjoint;
   double value = 0.0;
   if (apply_ags_fission_src_)
     for (auto gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
         for (const auto& precursor : precursors)
-          value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
-                   nu_delayed_sigma_f[gp] * phi[gp];
+          value += precursor.emission_spectrum[adjoint ? gp : g_] * precursor.fractional_yield *
+                   nu_delayed_sigma_f[adjoint ? g_ : gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
     for (auto gp = gs_i_; gp <= gs_f_; ++gp)
       for (const auto& precursor : precursors)
-        value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
-                 nu_delayed_sigma_f[gp] * phi[gp];
+        value += precursor.emission_spectrum[adjoint ? gp : g_] * precursor.fractional_yield *
+                 nu_delayed_sigma_f[adjoint ? g_ : gp] * phi[gp];
 
   return value;
 }
