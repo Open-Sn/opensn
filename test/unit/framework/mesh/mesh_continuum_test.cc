@@ -290,7 +290,7 @@ TEST(MeshContinuumTest, SetBlockIDFromLogicalVolumeSense)
   EXPECT_EQ(block_volumes.size(), 2U);
   EXPECT_NEAR(block_volumes[3], 1.0, 1.0e-12);
   EXPECT_NEAR(block_volumes[7], 3.0, 1.0e-12);
-  CheckGhostBlockIDs(*grid, 7, 3);
+  EXPECT_EQ(CheckGhostBlockIDs(*grid, 7, 3) > 0, mpi_comm.size() > 1);
 }
 
 TEST(MeshContinuumTest, SetBoundaryIDFromLogicalVolumeSense)
