@@ -11,6 +11,7 @@
 #include <exception>
 #include <memory>
 #include <new>
+#include <stdexcept>
 #include <utility>
 #include <vector>
 
@@ -18,10 +19,11 @@ using namespace opensn;
 
 // GALERKIN_ONE needs a square moment-to-discrete operator, so it selects as many harmonics as
 // there are directions. For Lebedev and SLDFE sets that selection comes from tabulated rules.
-// A set without a tabulated rule cannot be built with GALERKIN_ONE and must be rejected with an
-// exception. If it is not rejected, the harmonic selection does not terminate and allocates
-// without bound, so run these tests under a memory limit (for example `ulimit -v 4194304`).
-// The std::bad_alloc that ends such a run counts as a failure, not as a rejection.
+// A set without a tabulated rule cannot be built with GALERKIN_ONE and must be rejected with
+// std::invalid_argument. If it is not rejected, the harmonic selection does not terminate and
+// allocates without bound, so run these tests under a memory limit (for example
+// `ulimit -v 4194304`). Any other exception, such as the std::bad_alloc that ends such a run,
+// counts as a failure, not as a rejection.
 
 namespace
 {
@@ -34,15 +36,25 @@ IsRejected(Construct construct)
   {
     construct();
   }
+  catch (const std::invalid_argument&)
+  {
+    return ::testing::AssertionSuccess();
+  }
   catch (const std::bad_alloc&)
   {
     return ::testing::AssertionFailure()
            << "std::bad_alloc: the harmonic selection ran out of memory instead of rejecting "
               "the set";
   }
-  catch (const std::exception&)
+  catch (const std::exception& e)
   {
-    return ::testing::AssertionSuccess();
+    return ::testing::AssertionFailure()
+           << "the set was rejected with an exception other than std::invalid_argument: "
+           << e.what();
+  }
+  catch (...)
+  {
+    return ::testing::AssertionFailure() << "the set was rejected with a non-standard exception";
   }
   return ::testing::AssertionFailure() << "the set was accepted";
 }
