@@ -847,9 +847,9 @@ WrapLBS(py::module& slv)
     must provide ``VELOCITY`` or ``INV_VELOCITY`` data.
 
     Forward/adjoint mode toggles via :meth:`LBSProblem.SetAdjoint` do not change this map.
-    The ``MultiGroupXS`` objects themselves are mutable and shared by pointer. If the same
-    ``MultiGroupXS`` handle is shared across multiple problems, toggling adjoint mode in one
-    problem also changes the transport mode seen by the others.
+    The ``MultiGroupXS`` objects themselves are mutable and shared by pointer, so a change to
+    one, such as ``Scale``, is seen by every problem that uses it. The transport mode belongs
+    to each problem: problems that share a ``MultiGroupXS`` handle can run in different modes.
     )"
   );
   lbs_problem.def(
@@ -905,8 +905,8 @@ WrapLBS(py::module& slv)
     If this is called with the same mode as the current setting, no reset is performed.
 
     The block-id to cross-section map is preserved across the transition.
-    However, the mode change is applied to the mapped ``MultiGroupXS`` objects themselves.
-    If those objects are shared with other problems, they observe the same mode toggle.
+    The mode change applies to this problem only. Other problems that share the mapped
+    ``MultiGroupXS`` objects keep their own mode.
 
     After a mode change, reapply the desired driving terms before solving, typically:
       - :meth:`LBSProblem.SetPointSources`

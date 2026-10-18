@@ -37,7 +37,7 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
-    const auto& F = xs.GetProductionMatrix();
+    const auto& F = xs.GetProductionMatrix(options.adjoint);
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
     if (not xs.IsFissionable())

@@ -76,12 +76,16 @@ struct TwoGridCollapsedInfo
  * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
  * absorption 1/(v theta dt) that the theta scheme adds to the total cross section is included in
  * the collapse so that the diffusion operator matches the transport operator being accelerated.
+ *
+ * The collapse uses the transposed transfer matrix when `adjoint` is true, as a problem in adjoint
+ * mode does, and the forward transfer matrix otherwise.
  */
 TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
                                               EnergyCollapseScheme scheme,
                                               unsigned int first_group,
                                               unsigned int last_group,
-                                              double time_absorption_scale = 0.0);
+                                              double time_absorption_scale = 0.0,
+                                              bool adjoint = false);
 
 /// Translates sweep boundary conditions to that used in diffusion acceleration methods.
 std::map<uint64_t, BoundaryCondition>

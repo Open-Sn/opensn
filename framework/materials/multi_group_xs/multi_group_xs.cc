@@ -161,11 +161,12 @@ MultiGroupXS::Combine(
   bool has_stopping_power = false;
   mgxs.custom_xs_.clear();
 
-  // Init transfer matrices only if at least one exists
+  // Init transfer matrices only if at least one exists. The forward data are combined, whatever
+  // mode the inputs are in.
   if (std::any_of(xsecs.begin(),
                   xsecs.end(),
                   [](const std::shared_ptr<MultiGroupXS>& x)
-                  { return not x->GetTransferMatrices().empty(); }))
+                  { return not x->GetTransferMatrices(false).empty(); }))
     mgxs.transfer_matrices_.assign(mgxs.scattering_order_ + 1,
                                    SparseMatrix(mgxs.num_groups_, mgxs.num_groups_));
 
@@ -204,7 +205,7 @@ MultiGroupXS::Combine(
     const auto& nu_sig_f = xs->GetNuSigmaF();
     const auto& nu_p_sig_f = xs->GetNuPromptSigmaF();
     const auto& nu_d_sig_f = xs->GetNuDelayedSigmaF();
-    const auto& F = xs->GetProductionMatrix();
+    const auto& F = xs->GetProductionMatrix(false);
     const auto custom_xs_names = xs->GetCustomXSNames();
 
     // Here, raw cross sections are scaled by densities and spectra by
@@ -286,12 +287,12 @@ MultiGroupXS::Combine(
     // together has to take the sparse matrix's protection mechanisms into
     // account.
 
-    if (not xs->GetTransferMatrices().empty())
+    if (not xs->GetTransferMatrices(false).empty())
     {
       for (unsigned int m = 0; m < xs->GetScatteringOrder() + 1; ++m)
       {
         auto& Sm = mgxs.transfer_matrices_[m];
-        const auto& Sm_other = xs->GetTransferMatrix(m);
+        const auto& Sm_other = xs->GetTransferMatrix(m, false);
         for (unsigned int g = 0; g < mgxs.num_groups_; ++g)
         {
           const auto& cols = Sm_other.rowI_indices[g];
@@ -499,10 +500,10 @@ MultiGroupXS::ComputeCollisionEnergyLossCoefficients(const EnergyGroupStructure&
   for (unsigned int g = 0; g < num_groups_; ++g)
     coefficients[g] = energy.centers[g] * sigma_t_[g];
 
-  const auto& transfer_matrices = GetTransferMatrices();
-  if (not transfer_matrices.empty())
+  // The forward transfer matrix gives the energy loss, whatever mode this object is in.
+  if (not transfer_matrices_.empty())
   {
-    const auto& S0 = transfer_matrices.front();
+    const auto& S0 = transfer_matrices_.front();
     for (unsigned int g_to = 0; g_to < num_groups_; ++g_to)
       for (const auto& [_, g_from, sigma_s] : S0.Row(g_to))
         coefficients.at(g_from) -= energy.centers[g_to] * sigma_s;

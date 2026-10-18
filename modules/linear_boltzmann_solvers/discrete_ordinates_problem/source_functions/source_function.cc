@@ -47,6 +47,9 @@ SourceFunction::operator()(const LBSGroupset& groupset,
 
   const auto& m_to_ell_em_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
+  // The transfer and production matrices of the problem's mode (transposed in adjoint mode)
+  const bool adjoint = lbs_problem_.GetOptions().adjoint;
+
   // Apply all nodal sources
   const auto& grid = lbs_problem_.GetGrid();
   const auto& discretization = lbs_problem_.GetSpatialDiscretization();
@@ -58,8 +61,8 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     // Obtain xs
     const auto& xs = transport_view.GetXS();
 
-    const auto& S = xs.GetTransferMatrices();
-    const auto& F = xs.GetProductionMatrix();
+    const auto& S = xs.GetTransferMatrices(adjoint);
+    const auto& F = xs.GetProductionMatrix(adjoint);
     const auto& precursors = xs.GetPrecursors();
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 

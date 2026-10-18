@@ -7,6 +7,7 @@
 #include <pybind11/stl.h>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #define XS_GETTER(method_name)                                                                     \
@@ -15,6 +16,24 @@
 
 namespace opensn
 {
+
+namespace
+{
+
+/**
+ * Replaces the contents of xs with new_xs and keeps the adjoint mode of xs, so that a problem in
+ * adjoint mode that uses xs gets the transposes of the new data.
+ */
+void
+ReplaceContents(MultiGroupXS& xs, MultiGroupXS&& new_xs)
+{
+  const bool adjoint = xs.GetAdjointMode();
+  xs = std::move(new_xs);
+  if (adjoint)
+    xs.SetAdjointMode(true);
+}
+
+} // namespace
 
 // Wrap multi-group cross section
 void
@@ -49,7 +68,7 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def(
     "CreateSimpleOneGroup",
     [](MultiGroupXS& self, double sigma_t, double c, double velocity) {
-      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity);
+      ReplaceContents(self, MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity));
     },
     R"(
     Populate this object with a one-group cross section.
@@ -76,7 +95,7 @@ WrapMultiGroupXS(py::module& xs)
     "LoadFromOpenSn",
     [](MultiGroupXS& self, const std::string& file_name)
     {
-      self = MultiGroupXS::LoadFromOpenSn(file_name);
+      ReplaceContents(self, MultiGroupXS::LoadFromOpenSn(file_name));
     },
     py::arg("file_name"),
     R"(
@@ -177,7 +196,8 @@ WrapMultiGroupXS(py::module& xs)
        double temperature,
        const std::vector<std::string>& extra_xs_names)
     {
-      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names);
+      ReplaceContents(
+        self, MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names));
     },
     R"(
     Load multi-group cross sections from an OpenMC cross-section file into this
@@ -200,7 +220,8 @@ WrapMultiGroupXS(py::module& xs)
        bool csda_format,
        const std::vector<std::string>& particle_order)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format, particle_order);
+      ReplaceContents(
+        self, MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format, particle_order));
     },
     R"(
     Load multi-group cross sections from a CEPXS-BFP binary cross-section file.

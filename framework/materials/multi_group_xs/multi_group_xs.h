@@ -81,11 +81,20 @@ public:
 
   bool IsFissionable() const { return is_fissionable_; }
 
+  /**
+   * Sets the mode of the getters that take no mode argument. Entering adjoint mode rebuilds the
+   * transposed transfer and production matrices, and Scale keeps them current while adjoint mode
+   * is set.
+   *
+   * @note LBS problems pass their own mode to the getters, so problems that share this object can
+   *       run in different modes. A problem in adjoint mode sets adjoint mode here so that the
+   *       transposes exist.
+   */
   void SetAdjointMode(bool val)
   {
-    adjoint_ = val;
-    if (adjoint_ and transposed_transfer_matrices_.empty())
+    if (val and not adjoint_)
       TransposeTransferAndProduction();
+    adjoint_ = val;
   }
 
   bool GetAdjointMode() const { return adjoint_; }
@@ -101,14 +110,31 @@ public:
   /// Returns contiguous half-open ranges of groups with nonzero stopping power.
   std::vector<std::pair<unsigned int, unsigned int>> GetStoppingPowerGroupRanges() const;
 
+  /// Returns the transfer matrices in the mode set by SetAdjointMode.
   const std::vector<SparseMatrix>& GetTransferMatrices() const
   {
-    return adjoint_ ? transposed_transfer_matrices_ : transfer_matrices_;
+    return GetTransferMatrices(adjoint_);
   }
 
+  /**
+   * Returns the transfer matrices, or their transposes when adjoint is true. The transposes exist
+   * once adjoint mode has been set.
+   */
+  const std::vector<SparseMatrix>& GetTransferMatrices(bool adjoint) const
+  {
+    return adjoint ? transposed_transfer_matrices_ : transfer_matrices_;
+  }
+
+  /// Returns the moment-ell transfer matrix in the mode set by SetAdjointMode.
   const SparseMatrix& GetTransferMatrix(unsigned int ell) const
   {
-    return adjoint_ ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
+    return GetTransferMatrix(ell, adjoint_);
+  }
+
+  /// Returns the moment-ell transfer matrix, or its transpose when adjoint is true.
+  const SparseMatrix& GetTransferMatrix(unsigned int ell, bool adjoint) const
+  {
+    return adjoint ? transposed_transfer_matrices_.at(ell) : transfer_matrices_.at(ell);
   }
 
   const std::vector<double>& GetChi() const { return chi_; }
@@ -126,10 +152,18 @@ public:
    * prompt production when delayed-neutrons are enabled, and add delayed production
    * from nu_delayed_sigma_f separately. If production_matrix_ ever includes delayed
    * contributions, those routines must be updated to avoid double counting.
+   *
+   * Returns the matrix in the mode set by SetAdjointMode.
    */
   const std::vector<std::vector<double>>& GetProductionMatrix() const
   {
-    return adjoint_ ? transposed_production_matrix_ : production_matrix_;
+    return GetProductionMatrix(adjoint_);
+  }
+
+  /// Returns the production matrix, or its transpose when adjoint is true.
+  const std::vector<std::vector<double>>& GetProductionMatrix(bool adjoint) const
+  {
+    return adjoint ? transposed_production_matrix_ : production_matrix_;
   }
 
   const std::vector<Precursor>& GetPrecursors() const { return precursors_; }

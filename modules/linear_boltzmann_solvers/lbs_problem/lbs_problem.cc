@@ -1121,9 +1121,14 @@ LBSProblem::InitializeMaterials()
 
   log.Log0Verbose1() << "Initializing Materials";
 
-  // The cross-section map has been validated (see CheckConfigurationErrors).
-  for (const auto& [blk_id, mat] : block_id_to_xs_map_)
-    mat->SetAdjointMode(options_.adjoint);
+  // The cross-section map has been validated (see CheckConfigurationErrors). The problem passes its
+  // own mode to the cross-section getters, so problems that share cross sections can run in
+  // different modes. In adjoint mode the cross sections are set to adjoint mode, which builds their
+  // transposes and keeps them current when they are scaled. A forward problem leaves that setting
+  // alone, because another problem may be using the transposes.
+  if (options_.adjoint)
+    for (const auto& [blk_id, mat] : block_id_to_xs_map_)
+      mat->SetAdjointMode(true);
 
   // Initialize precursor properties
   num_precursors_ = 0;
