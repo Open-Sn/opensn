@@ -7,6 +7,7 @@
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <cstddef>
+#include <stdexcept>
 #include <vector>
 
 using namespace opensn;
@@ -275,4 +276,46 @@ TEST(AAHMessageStructTest, LargestLimitsWithLargeLocation)
   ExpectValidSplit(sweep_communicator, 2000000000, 2147483647);
   EXPECT_EQ(SplitOneLocation(sweep_communicator, 2000000000, 2147483647, max_num_messages).size(),
             8U);
+}
+
+TEST(AAHMessageStructTest, UnknownCountsUpToIntMax)
+{
+  SweepCommunicator sweep_communicator(mpi_comm, 1);
+
+  // A location may hold up to INT_MAX = 2147483647 unknowns; one more is refused. Near that count
+  // the rounded-up sum n + count - 1 of a ceiling division exceeds INT_MAX. Each case gives n, the
+  // limit B and the minimal message count ceil(n / floor(B / 8)). That sum first exceeds INT_MAX
+  // at n = 2147483641 for B = 2^31 - 8 and 2^31 - 1 (268435455 doubles per message), at
+  // n = 2147483633 for B = 2^30 and 2^30 + 7 (2^27 doubles) and at n = 2147482625 for B = 2^24
+  // and 2^24 + 7 (2^21 doubles). The count one below each of these is included; 2147483640
+  // doubles fill eight messages of 2^31 - 8 bytes exactly.
+  struct Case
+  {
+    std::size_t num_unknowns;
+    int max_message_bytes;
+    std::size_t num_messages;
+  };
+  const std::vector<Case> cases = {{2147483647, 2147483647, 9},
+                                   {2147483647, 2147483640, 9},
+                                   {2147483641, 2147483647, 9},
+                                   {2147483640, 2147483640, 8},
+                                   {2147483647, 1073741824, 16},
+                                   {2147483633, 1073741831, 16},
+                                   {2147483632, 1073741824, 16},
+                                   {2147483647, 16777216, 1024},
+                                   {2147482625, 16777223, 1024},
+                                   {2147482624, 16777216, 1024}};
+  int max_num_messages = 0;
+  for (const auto& c : cases)
+  {
+    ExpectValidSplit(sweep_communicator, c.num_unknowns, c.max_message_bytes);
+    EXPECT_EQ(
+      SplitOneLocation(sweep_communicator, c.num_unknowns, c.max_message_bytes, max_num_messages)
+        .size(),
+      c.num_messages)
+      << "num_unknowns=" << c.num_unknowns << " max_mpi_message_size=" << c.max_message_bytes;
+  }
+
+  EXPECT_THROW(SplitOneLocation(sweep_communicator, 2147483648, 2147483647, max_num_messages),
+               std::logic_error);
 }
