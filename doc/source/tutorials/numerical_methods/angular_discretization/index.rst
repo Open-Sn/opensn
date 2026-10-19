@@ -10,5 +10,6 @@ strongly forward-peaked scattering. Quadrature construction is introduced in
    :maxdepth: 1
 
    operator_methods
+   isotropic_scattering_p4
+   anisotropic_boundary_delta_forward
    forward_peaked_g099
-   delta_forward
