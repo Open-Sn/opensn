@@ -947,5 +947,47 @@
         "abs_tol": 1e-12
       }
     ]
+  },
+  {
+    "file": "keigen_acceleration_requirements.py",
+    "comment": "k-eigenvalue acceleration requirements (SCDSA/SMM single groupset, SMM P0, stored psi, and vacuum/reflecting boundaries, AAH sweep count, acceleration built for another problem, NLKE DSA single groupset, CMFD and SCDSA-pwlc rejected in 1D spherical) raise ValueError on every rank at Initialize(); neighboring valid configurations, including CMFD in RZ and SCDSA-pwld in 1D spherical, are accepted",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "KEIGEN_ACCELERATION_REQUIREMENTS_PASSED",
+        "wordnum": 1,
+        "gold": 13,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "keigen_acceleration_repeated_execute.py",
+    "comment": "Repeated PI solves with SCDSA, SMM, and CMFD: a second Execute() reproduces k (SCDSA with AAH and l_max_its=2 is accepted again), SetXSMap() between solves rebuilds the acceleration (k matches a new problem and solver), and CMFD leaves the within-group solve settings unchanged",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "REPEATED_EXECUTE_MAX_REL_DK",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "FloatCompare",
+        "key": "SETXS_MAX_REL_DK",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_SETTINGS_RESTORED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]

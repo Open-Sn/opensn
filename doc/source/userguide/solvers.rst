@@ -232,10 +232,13 @@ the legacy rank-local format have the same restriction.
 The ``use_precursors`` setting is treated as user intent and persists across later
 :py:meth:`SetXSMap` calls, even if the current cross-section map temporarily has
 no precursor-bearing material. If cross sections are swapped, existing
-precursor concentrations are remapped by local cell and precursor-family index;
-new families start at zero and removed families are discarded. If a cell passes
-through a material with zero precursors, its precursor history is dropped and
-any later reintroduced precursor families restart from zero.
+precursor concentrations are remapped by spatial node and precursor-family
+index, and the decay constants, yields, and emission spectra of the new material
+apply from the next step on. New families start at zero and removed families are
+discarded. The warning reports the global sum of the absolute discarded nodal
+concentrations. If a swap assigns a cell a material without precursors, that
+cell's precursor concentrations are discarded, and precursor families
+reintroduced by a later swap start from zero.
 
 If any fissionable material in the active map contains precursor data and
 ``use_precursors=True``, then all fissionable materials in that map must
@@ -526,10 +529,12 @@ Use it when:
 * you want backward Euler, Crank-Nicolson, or another theta-scheme transient
   update
 
-GPU support
------------
+Supported problems
+------------------
 
-Transient solves do not currently support GPU acceleration.
+Transient solves do not currently support GPU acceleration, curvilinear (RZ or
+1D spherical) geometry, or adjoint mode. A problem with any of these is rejected when it is
+created with ``time_dependent=True`` or switched with ``SetTimeDependentMode()``.
 
 Constructor
 -----------
@@ -754,7 +759,8 @@ The constructor takes:
 * ``problem``: an existing
   :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
 * ``max_iters``: maximum power iterations
-* ``k_tol``: convergence tolerance on ``k_eff``
+* ``k_tol``: tolerance on the relative change of ``k_eff`` between power
+  iterations; values below ``1.0e-12`` are treated as ``1.0e-12``
 * ``reset_phi0``: whether to reset scalar fluxes to 1.0 before solving
 
 The problem must be in steady-state mode and have no external sources: no
@@ -799,8 +805,12 @@ At a high level, the solver:
 2. forms the fission source from the current iterate
 3. solves the transport problem with the problem's AGS/groupset iteration
 4. updates ``k_eff``
-5. repeats until the eigenvalue change satisfies ``k_tol`` or ``max_iters`` is
-   reached
+5. repeats until the relative eigenvalue change is below ``k_tol`` in two
+   consecutive iterations, or ``max_iters`` is reached. A single small change
+   also occurs where an accelerated eigenvalue sequence overshoots and turns
+   around, so one is not taken as convergence. With an acceleration method, the
+   method must also allow convergence (for CMFD, see
+   ``balance_residual_tolerance``)
 6. in adjoint mode, reorients the solution: each direction's angular flux is
    swapped with that of its opposite direction and each flux moment of degree
    :math:`\ell` is multiplied by :math:`(-1)^\ell` (see :doc:`../theory/adjoint`). This happens after the final restart dump, so

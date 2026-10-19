@@ -65,17 +65,30 @@ DiscreteOrdinatesKEigenAcceleration::Initialize(PowerIterationKEigenSolver& solv
 }
 
 void
-DiscreteOrdinatesKEigenAcceleration::CheckAAHSingleSweepStability() const
+DiscreteOrdinatesKEigenAcceleration::CheckRequirements(std::vector<std::string>& /*errors*/) const
+{
+}
+
+void
+DiscreteOrdinatesKEigenAcceleration::RequireMultipleAAHSweeps(
+  std::vector<std::string>& errors) const
 {
   // If using the AAH solver with one sweep, a few iterations need to be done
-  // to get rid of the junk in the unconverged lagged angular fluxes.  Five
-  // sweeps is a guess at how many initial sweeps are necessary.
+  // to get rid of the junk in the unconverged lagged angular fluxes.
   for (const auto& groupset : groupsets_)
     if (do_problem_.GetSweepType() == "AAH" and groupset.max_iterations == 1)
-      throw std::logic_error("The AAH solver is not stable for single-sweep methods due to "
-                             "the presence of lagged angular fluxes.  Multiple sweeps are "
-                             "allowed, however, the number of sweeps required to get sensible "
-                             "results is not well studied and problem dependent.");
+      errors.emplace_back(
+        GetName() + ": the AAH sweep is not stable with one sweep per iteration (groupset " +
+        std::to_string(groupset.id) +
+        " has l_max_its=1) because of the lagged angular fluxes. Use more sweeps; the number "
+        "required is problem dependent.");
+}
+
+void
+DiscreteOrdinatesKEigenAcceleration::RequireSingleGroupset(std::vector<std::string>& errors) const
+{
+  if (do_problem_.GetNumGroupsets() != 1)
+    errors.emplace_back(GetName() + " is only implemented for problems with a single groupset.");
 }
 
 std::vector<uint64_t>

@@ -5,6 +5,8 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h"
+#include <cstdint>
+#include <functional>
 #include <limits>
 #include <map>
 #include <memory>
@@ -118,6 +120,22 @@ public:
   virtual void CopyDelayedAngularFluxOldToNew(int groupset_id) {}
 
   virtual void CopyDelayedAngularFluxNewToOld(int groupset_id) {}
+
+  /**
+   * Nodal correction for a lagged boundary angular flux, indexed by (cell local id, face,
+   * face node, group index within the groupset).
+   */
+  using DelayedFluxCorrection =
+    std::function<double(std::uint32_t, unsigned int, unsigned int, unsigned int)>;
+
+  /**
+   * Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux of this
+   * boundary. Used by diffusion synthetic acceleration to correct the lagged incoming angular flux
+   * consistently with the scalar-flux correction. No-op for boundaries without delayed flux.
+   */
+  virtual void AddToNewDelayedAngularFlux(int groupset_id, const DelayedFluxCorrection& correction)
+  {
+  }
 
   virtual const Vector3* GetNormalForReflection() const { return nullptr; }
 

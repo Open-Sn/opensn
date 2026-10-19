@@ -199,6 +199,77 @@
     ]
   },
   {
+    "file": "transport_2d_cepxs_synthetic_csda_infinite_medium.py",
+    "comment": "2D synthetic CEPXS CSDA infinite medium with reflecting boundaries, WGDSA and TGDSA (DSA-corrected lagged reflected angular fluxes with CSDA energy slopes); same exact reference",
+    "args": [
+      "apply_dsa=True"
+    ],
+    "outfileprefix": "transport_2d_cepxs_synthetic_csda_infinite_medium_dsa",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_0_AVG=",
+        "goldvalue": 7.051282051282e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_1_AVG=",
+        "goldvalue": 4.688467731944e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GROUP_2_AVG=",
+        "goldvalue": 5.767228565162e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_AVG=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MIN=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_MAX=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CDEP_AVG=",
+        "goldvalue": 4.989853630876e-02,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_EDEP_AVG=",
+        "goldvalue": 2.5,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CEPXS_EDEP_AVG=",
+        "goldvalue": 9.836112125560e-01,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_CDEP_AVG=",
+        "goldvalue": 6.069393988893e-02,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cepxs_synthetic_csda_infinite_medium_unstructured.py",
     "comment": "2D unstructured synthetic CEPXS CSDA infinite medium with reflecting boundaries",
     "num_procs": 4,

@@ -649,12 +649,15 @@ What it does:
 - sets the fission source from the previous iterate
 - performs the transport solve through AGS and the groupset inner solves
 - updates ``k_eff``
-- repeats until the eigenvalue change is below ``k_tol`` or ``max_iters`` is
-  reached
+- repeats until the relative eigenvalue change is below ``k_tol`` in two
+  consecutive power iterations, or ``max_iters`` is reached
 
-``k_tol`` is the stopping tolerance on the eigenvalue change between successive
-power iterations. ``1.0e-8`` to ``1.0e-10`` is a reasonable production range,
-with ``1.0e-10`` being common when a fairly tight ``k_eff`` is desired.
+``k_tol`` is the stopping tolerance on the relative eigenvalue change
+:math:`|k_n - k_{n-1}| / k_n` between successive power iterations; it must hold
+for two consecutive iterations, because an accelerated eigenvalue sequence can
+overshoot and show one small change where it turns around. ``1.0e-8`` to
+``1.0e-10`` is a reasonable production range, with ``1.0e-10`` being common
+when a fairly tight ``k_eff`` is desired.
 
 ``max_iters`` is the hard cap on power iterations. ``500`` to ``1000`` is a
 reasonable starting range. If that cap is reached often, the issue is usually

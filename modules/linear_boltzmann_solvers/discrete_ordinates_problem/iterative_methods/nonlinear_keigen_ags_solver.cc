@@ -11,6 +11,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/caliper_scopes.h"
+#include "framework/utils/error.h"
 #include "framework/utils/timer.h"
 #include "caliper/cali.h"
 #include <petscsnes.h>
@@ -50,10 +51,10 @@ NLKEigenvalueAGSSolver::PreSetupCallback()
   nl_context_ptr->groupset_ids.clear();
   for (const auto& groupset : lbs_problem->GetGroupsets())
   {
-    if ((groupset.apply_wgdsa or groupset.apply_tgdsa) and lbs_problem->GetNumGroupsets() > 1)
-      throw std::logic_error(
-        std::string(__PRETTY_FUNCTION__) +
-        ": Preconditioning currently only supports single groupset simulations.");
+    // NonLinearKEigenSolver::CheckRequirements rejects this before the solve.
+    OpenSnLogicalErrorIf((groupset.apply_wgdsa or groupset.apply_tgdsa) and
+                           lbs_problem->GetNumGroupsets() > 1,
+                         "DSA preconditioning of a multi-groupset nonlinear k-eigenvalue solve.");
     nl_context_ptr->groupset_ids.push_back(groupset.id);
   }
 }

@@ -32,7 +32,11 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.AddOptionalParameter<std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>>(
     "acceleration", {}, "The acceleration method");
   params.AddOptionalParameter("max_iters", 1000, "Maximum power iterations allowed");
-  params.AddOptionalParameter("k_tol", 1.0e-10, "Tolerance on the k-eigenvalue");
+  params.AddOptionalParameter(
+    "k_tol",
+    1.0e-10,
+    "Tolerance on the relative change of the k-eigenvalue between power iterations; it must hold "
+    "for two consecutive iterations. Values below 1.0e-12 are treated as 1.0e-12.");
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   return params;
 }
@@ -63,9 +67,16 @@ void
 PowerIterationKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
   CheckKEigenRequirements(errors);
+  if (not acceleration_)
+    return;
+  if (&acceleration_->GetProblem() != do_problem_.get())
+    errors.emplace_back("acceleration " + acceleration_->GetName() +
+                        " was created for a different problem than the one this solver solves.");
+  else
+    acceleration_->CheckRequirements(errors);
 }
 
-ScopedSourceScopes
+ScopedRestore
 PowerIterationKEigenSolver::PrepareProblem()
 {
   const auto& options = do_problem_->GetOptions();
@@ -104,12 +115,6 @@ PowerIterationKEigenSolver::InitializeSolver()
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
   F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
-
-  if (acceleration_)
-  {
-    CALI_CXX_MARK_SCOPE("Acceleration");
-    acceleration_->Initialize(*this);
-  }
 }
 
 void
@@ -122,15 +127,25 @@ PowerIterationKEigenSolver::ExecuteSolver()
 
   const auto scopes = PrepareProblem();
 
+  // Acceleration methods change the within-group solve settings of the problem's groupsets; restore
+  // them when this solve returns or throws.
+  auto wgs_settings = do_problem_->PreserveWGSSolveSettings();
+
+  // The acceleration is built from the problem's current runtime objects for each Execute(), so a
+  // problem setter between calls (e.g. SetXSMap) cannot leave it with stale operators.
   if (acceleration_)
   {
     CALI_CXX_MARK_SCOPE("Acceleration");
+    acceleration_->Initialize(*this);
     acceleration_->PreExecute();
   }
 
   const auto& options = do_problem_->GetOptions();
-  double k_eff_prev = 1.0;
+  // The first change is measured from the current eigenvalue: 1.0 for a new solver, otherwise the
+  // result of the previous solve or the restart value.
+  double k_eff_prev = k_eff_;
   double k_eff_change = 1.0;
+  bool previous_k_change_converged = false;
 
   // Start power iterations
   unsigned int nit = 0;
@@ -189,8 +204,13 @@ PowerIterationKEigenSolver::ExecuteSolver()
     nit += 1;
     num_power_iterations_ = nit;
 
-    converged = k_eff_change < std::max(k_tolerance_, 1.0e-12) and
+    // The change must be below the tolerance in two consecutive iterations. A single small change
+    // also occurs where a non-monotone k sequence turns around (accelerated iterations can
+    // overshoot), which is not convergence.
+    const bool k_change_converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
+    converged = k_change_converged and previous_k_change_converged and
                 (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
+    previous_k_change_converged = k_change_converged;
 
     // Print iteration summary
     if (options.verbose_outer_iterations)
@@ -234,6 +254,9 @@ PowerIterationKEigenSolver::ExecuteSolver()
       break;
   } // for k iterations
   CALI_CXX_MARK_LOOP_END(pi_iteration);
+
+  // Restore here so that a failure propagates; the guard only logs one during unwinding.
+  wgs_settings.Restore();
 
   // If restarts are enabled, always write a restart dump upon convergence or
   // when we reach the iteration limit

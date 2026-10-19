@@ -40,16 +40,22 @@ SCDSAAcceleration::Create(const ParameterBlock& params)
 SCDSAAcceleration::SCDSAAcceleration(const InputParameters& params)
   : DiscreteOrdinatesKEigenAcceleration(params), sdm_(params.GetParamValue<std::string>("sdm"))
 {
-  if (do_problem_.GetNumGroupsets() != 1)
-    throw std::logic_error(
-      "SCDSA acceleration is only implemented for problems with a single groupset.");
+}
+
+void
+SCDSAAcceleration::CheckRequirements(std::vector<std::string>& errors) const
+{
+  RequireSingleGroupset(errors);
+  RequireMultipleAAHSweeps(errors);
+  // The PWLC correction diverges in 1D spherical geometry; the PWLD (MIP) correction converges.
+  if (sdm_ == "pwlc" and do_problem_.GetGeometryType() == GeometryType::ONED_SPHERICAL)
+    errors.emplace_back(GetName() + ": sdm=\"pwlc\" is not supported in 1D spherical geometry; "
+                                    "use sdm=\"pwld\".");
 }
 
 void
 SCDSAAcceleration::Initialize()
 {
-  CheckAAHSingleSweepStability();
-
   front_wgs_solver_ = do_problem_.GetWGSSolver(front_gs_.id);
   front_wgs_context_ = std::dynamic_pointer_cast<WGSContext>(front_wgs_solver_->GetContext());
   OpenSnLogicalErrorIf(not front_wgs_context_, ": Casting failed");
@@ -124,12 +130,9 @@ SCDSAAcceleration::PreExecute()
 
   // If using multiple sweeps, the algorithm requires a delta-phi between two
   // successive iterations. This is not possible to obtain with the standard solve
-  // routine.  Instead, a follow-up sweep must be performed.  If using two or more
-  // sweeps, reduce the sweep count by one to ensure the user gets the requested
-  // number of sweeps per outer.
+  // routine.  Instead, a follow-up sweep is performed after the groupset solve, so each
+  // outer iteration does one sweep more than the groupset's l_max_its.
   extra_sweep_ = front_gs_.max_iterations > 1;
-  if (extra_sweep_)
-    front_gs_.max_iterations -= 1;
 }
 
 void

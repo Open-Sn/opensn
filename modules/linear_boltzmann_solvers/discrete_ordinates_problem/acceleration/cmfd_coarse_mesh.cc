@@ -12,6 +12,8 @@
 #include <deque>
 #include <optional>
 #include <set>
+#include <stdexcept>
+#include <string>
 #include <tuple>
 #include <vector>
 
@@ -453,6 +455,21 @@ FetchProvisionalCoarseCells(const CMFDCoarseMesh& provisional,
   return fetched;
 }
 
+/**
+ * Throws on every rank if any rank counted a degenerate coarse-mesh entity. Collective: the count
+ * comes from rank-local cells, and a throw on only some ranks would leave the others waiting in the
+ * next collective.
+ */
+void
+ThrowIfAnyRankCounted(const std::size_t local_count, const std::string& what)
+{
+  std::size_t count = 0;
+  opensn::mpi_comm.all_reduce(local_count, count, mpi::op::sum<std::size_t>());
+  // Thrown directly: the message names the operation, which is the useful context.
+  if (count > 0)
+    throw std::logic_error("CMFD coarse mesh: " + std::to_string(count) + " " + what + ".");
+}
+
 struct FinalNodeSummary
 {
   int partition_id = 0;
@@ -489,6 +506,7 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
   const auto coarse_cell_metadata =
     BuildRemoteCoarseCellMetadataMap(grid, *this, ghost_fine_to_coarse);
 
+  std::size_t local_degenerate_faces = 0;
   for (auto& coarse_cell : local_cells_)
   {
     std::set<uint64_t> fine_cell_set(coarse_cell.fine_cell_ids.begin(),
@@ -553,12 +571,17 @@ CMFDCoarseMesh::BuildExteriorFaces(const MeshContinuum& grid)
     coarse_cell.faces.reserve(face_map.size());
     for (auto& [_, coarse_face] : face_map)
     {
-      OpenSnLogicalErrorIf(coarse_face.area <= 0.0, "CMFD coarse face has non-positive area.");
+      if (coarse_face.area <= 0.0)
+      {
+        ++local_degenerate_faces;
+        continue;
+      }
       coarse_face.centroid = coarse_face.centroid / coarse_face.area;
       coarse_face.normal = coarse_face.normal.Normalized();
       coarse_cell.faces.push_back(std::move(coarse_face));
     }
   }
+  ThrowIfAnyRankCounted(local_degenerate_faces, "coarse faces have non-positive area");
 }
 
 CMFDCoarseMesh
@@ -626,6 +649,7 @@ CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
 
   std::set<uint64_t> assigned;
   std::size_t local_coarse_count = 0;
+  std::size_t local_degenerate_cells = 0;
   for (const auto& seed_cell : grid.GetLocalCells())
   {
     if (assigned.count(seed_cell->global_id) > 0)
@@ -666,10 +690,13 @@ CMFDCoarseMesh::BuildLocalAggregation(const MeshContinuum& grid,
       }
     }
 
-    OpenSnLogicalErrorIf(coarse_cell.volume <= 0.0, "CMFD coarse cell has non-positive volume.");
-    coarse_cell.centroid = coarse_cell.centroid / coarse_cell.volume;
+    if (coarse_cell.volume <= 0.0)
+      ++local_degenerate_cells;
+    else
+      coarse_cell.centroid = coarse_cell.centroid / coarse_cell.volume;
     coarse_mesh.AddLocalCell(std::move(coarse_cell));
   }
+  ThrowIfAnyRankCounted(local_degenerate_cells, "coarse cells have non-positive volume");
 
   const auto coarse_extents =
     BuildLocationExtents(coarse_mesh.local_cells_.size(), opensn::mpi_comm);

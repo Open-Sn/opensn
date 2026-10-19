@@ -65,6 +65,14 @@ All terms that depend on the flux being solved for, including prompt fission
 and the implicit part of the delayed source, are treated implicitly within the
 step.
 
+The within-group and two-grid diffusion synthetic acceleration operators
+(WGDSA, TGDSA) are built for the same operator: the time absorption
+:math:`\tau_g = 1/(v_g\theta\Delta t)` is added to the removal cross section
+and to the transport cross section in the diffusion coefficient,
+:math:`D_g = 1/\bigl(3(\sigma_{tr,g} + \tau_g)\bigr)`, and the two-grid energy
+spectrum is computed with :math:`\sigma_{t,g} + \tau_g`. The operators are
+rebuilt when :math:`\Delta t` or :math:`\theta` changes.
+
 Delayed-neutron precursors
 --------------------------
 

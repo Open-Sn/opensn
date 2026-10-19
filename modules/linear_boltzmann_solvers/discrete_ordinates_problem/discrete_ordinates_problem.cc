@@ -8,6 +8,8 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/functions/function.h"
 #include "framework/data_types/allowable_range.h"
@@ -447,6 +449,12 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ": AZIMUTHAL angle aggregation is only valid for TWOD_CYLINDRICAL and "
                           "ONED_SPHERICAL geometries.");
 
+  // TGDSA corrects the error mode coupled across the groups of a groupset.
+  for (const auto& groupset : groupsets_)
+    if (groupset.apply_tgdsa and groupset.GetNumGroups() < 2)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": apply_tgdsa requires at least two groups, but the groupset has one.");
+
   // Quadratures: every groupset needs one, with a common scattering order and the mesh dimension.
   const auto grid_dim = grid_->GetDimension();
   for (const auto& groupset : groupsets_)
@@ -626,6 +634,7 @@ DiscreteOrdinatesProblem::BuildRuntimeData()
 
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
+  dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
   for (auto& groupset : groupsets_)
   {
     InitFluxDataStructures(groupset);
@@ -668,6 +677,8 @@ DiscreteOrdinatesProblem::RebuildRuntimeObjects()
   InitializeSourceFunction();
   InitializeBoundaries();
   RebuildBoundaryRuntimeData();
+  // Build the diffusion acceleration operators with the time absorption of the current mode.
+  dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
   for (auto& groupset : groupsets_)
   {
     WGDSA::CleanUp(groupset);
@@ -837,6 +848,40 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   max_groupset_size_ = solver_scheme.max_groupset_size;
   max_level_size_ = solver_scheme.max_level_size;
   max_angleset_size_ = solver_scheme.max_angleset_size;
+}
+
+void
+DiscreteOrdinatesProblem::SetWGSSolveSettings(const size_t groupset_id,
+                                              const unsigned int max_iterations,
+                                              const double residual_tolerance)
+{
+  auto& groupset = groupsets_.at(groupset_id);
+  groupset.max_iterations = max_iterations;
+  groupset.residual_tolerance = residual_tolerance;
+  // Classic Richardson reads the groupset settings in each solve; a PETSc solver copies them at
+  // construction.
+  if (auto petsc_solver = std::dynamic_pointer_cast<PETScLinearSolver>(GetWGSSolver(groupset_id)))
+  {
+    auto& tolerance_options = petsc_solver->GetToleranceOptions();
+    tolerance_options.maximum_iterations = static_cast<PetscInt>(max_iterations);
+    tolerance_options.residual_absolute = residual_tolerance;
+    petsc_solver->ApplyToleranceOptions();
+  }
+}
+
+ScopedRestore
+DiscreteOrdinatesProblem::PreserveWGSSolveSettings()
+{
+  std::vector<std::pair<unsigned int, double>> saved;
+  saved.reserve(groupsets_.size());
+  for (const auto& groupset : groupsets_)
+    saved.emplace_back(groupset.max_iterations, groupset.residual_tolerance);
+  return ScopedRestore(
+    [this, saved]
+    {
+      for (std::size_t gs = 0; gs < saved.size(); ++gs)
+        SetWGSSolveSettings(gs, saved[gs].first, saved[gs].second);
+    });
 }
 
 void
@@ -1111,6 +1156,42 @@ void
 DiscreteOrdinatesProblem::ReinitializeSolverSchemes()
 {
   InitializeSolverSchemes();
+}
+
+double
+DiscreteOrdinatesProblem::ComputeDSATimeAbsorptionScale() const
+{
+  return IsTimeDependent() ? 1.0 / (GetTheta() * GetTimeStep()) : 0.0;
+}
+
+void
+DiscreteOrdinatesProblem::UpdateDSATimeAbsorption()
+{
+  const double scale = ComputeDSATimeAbsorptionScale();
+  if (scale == dsa_time_absorption_scale_)
+    return;
+  // WGDSA::Init and TGDSA::Init read the scale from the problem, so it is set before the rebuild.
+  dsa_time_absorption_scale_ = scale;
+
+  try
+  {
+    for (auto& groupset : groupsets_)
+    {
+      if (not(groupset.apply_wgdsa or groupset.apply_tgdsa))
+        continue;
+      WGDSA::CleanUp(groupset);
+      TGDSA::CleanUp(groupset);
+      WGDSA::Init(*this, groupset);
+      TGDSA::Init(*this, groupset);
+    }
+  }
+  catch (...)
+  {
+    // Some operators may be rebuilt and others removed. Invalidate the scale (NaN compares unequal
+    // to every scale) so that the next call rebuilds all of them.
+    dsa_time_absorption_scale_ = std::numeric_limits<double>::quiet_NaN();
+    throw;
+  }
 }
 
 void

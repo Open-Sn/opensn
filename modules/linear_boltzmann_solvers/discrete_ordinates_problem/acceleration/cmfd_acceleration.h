@@ -24,6 +24,7 @@ public:
   explicit CMFDAcceleration(const InputParameters& params);
   ~CMFDAcceleration() override;
 
+  void CheckRequirements(std::vector<std::string>& errors) const override;
   void Initialize() final;
   void PreExecute() final;
   void PrePowerIteration() final;
@@ -77,8 +78,6 @@ private:
   void InitializeLinearSystem();
   void ConfigureCoarseLinearSolver(bool direct);
   void ConfigureTransportSolve(unsigned int max_iterations, double residual_tolerance);
-  void SnapshotOriginalTransportSolve();
-  void RestoreOriginalTransportSolve();
   void BuildCoarseFluxCache();
   void BuildFaceCurrentCache();
   void AssembleOperator();
@@ -145,8 +144,6 @@ private:
   const unsigned int inactive_iterations_;
   const unsigned int update_wgs_max_its_;
   const double update_wgs_abs_tol_;
-  std::vector<unsigned int> original_wgs_max_its_;
-  std::vector<double> original_wgs_residual_tolerance_;
   const double balance_residual_tolerance_;
   const std::string coarse_solver_policy_;
   const std::size_t coarse_direct_solve_threshold_;
