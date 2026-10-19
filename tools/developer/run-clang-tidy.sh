@@ -82,7 +82,9 @@ if ! command -v run-clang-tidy >/dev/null 2>&1; then
   exit 127
 fi
 
-repo=$(git rev-parse --show-toplevel)
+# The repository is the one containing this script. The git toplevel of the current directory can
+# be a different checkout, for example when this tree is a copy inside another repository.
+repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 header_filter="^${repo}/(framework|modules|python)/"
 
 

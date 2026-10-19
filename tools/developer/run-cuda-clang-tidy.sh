@@ -91,7 +91,9 @@ while [[ $# -gt 0 ]]; do
 done
 
 invocation_dir=$(pwd -P)
-repo=$(git rev-parse --show-toplevel)
+# The repository is the one containing this script. The git toplevel of the current directory can
+# be a different checkout, for example when this tree is a copy inside another repository.
+repo=$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd -P)
 if ! command -v python3 >/dev/null 2>&1; then
   echo "Error: 'python3' not found." >&2
   exit 127
@@ -124,6 +126,15 @@ if [[ ! -f "${cuda_path}/include/cuda.h" ]]; then
   echo "Error: --cuda-path '${cuda_path}' does not contain include/cuda.h." >&2
   exit 2
 fi
+# nvcc's version macros, which the -D__NVCC__ below needs alongside it: libraries such as
+# Boost.Config treat __NVCC__ without them as an old nvcc and disable C++11 features.
+cuda_version=$(sed -n 's/^#define CUDA_VERSION \([0-9][0-9]*\).*/\1/p' "${cuda_path}/include/cuda.h")
+if [[ -z "$cuda_version" ]]; then
+  echo "Error: could not read CUDA_VERSION from '${cuda_path}/include/cuda.h'." >&2
+  exit 2
+fi
+cuda_version_major=$(( cuda_version / 1000 ))
+cuda_version_minor=$(( (cuda_version % 1000) / 10 ))
 if [[ ! -f "$compile_commands" ]]; then
   echo "Error: '${compile_commands}' not found." >&2
   echo "       Configure a CUDA build first so CMake writes compile_commands.json." >&2
@@ -138,7 +149,7 @@ fi
 
 mkdir -p "$sanitized_build"
 
-python3 - "$compile_commands" "$sanitized_compile_commands" "$cuda_files_list" "$repo" "$cuda_path" "$cuda_arch" ${clang_args[@]+"${clang_args[@]}"} <<'PY'
+python3 - "$compile_commands" "$sanitized_compile_commands" "$cuda_files_list" "$repo" "$cuda_path" "$cuda_arch" "$cuda_version_major" "$cuda_version_minor" ${clang_args[@]+"${clang_args[@]}"} <<'PY'
 import json
 import os
 from pathlib import Path
@@ -151,7 +162,9 @@ cuda_files_path = sys.argv[3]
 repo = sys.argv[4]
 cuda_path = sys.argv[5]
 cuda_arch = sys.argv[6]
-extra_clang_args = sys.argv[7:]
+cuda_version_major = sys.argv[7]
+cuda_version_minor = sys.argv[8]
+extra_clang_args = sys.argv[9:]
 compile_db_dir = Path(path).parent
 with open(path, encoding="utf-8") as f:
     commands = json.load(f)
@@ -389,6 +402,9 @@ for original_entry in commands:
             "--no-cuda-version-check",
             "-Wno-unknown-cuda-version",
             "-D__NVCC__",
+            f"-D__CUDACC_VER_MAJOR__={cuda_version_major}",
+            f"-D__CUDACC_VER_MINOR__={cuda_version_minor}",
+            "-D__CUDACC_VER_BUILD__=0",
             f"-I{repo}",
             f"-I{repo}/external",
             f"-I{repo}/external/caribou",
