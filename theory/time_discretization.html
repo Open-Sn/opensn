@@ -154,6 +154,13 @@ starting at zero; there is no absolute tolerance to absorb that cancellation.</p
 <p>All terms that depend on the flux being solved for, including prompt fission
 and the implicit part of the delayed source, are treated implicitly within the
 step.</p>
+<p>The within-group and two-grid diffusion synthetic acceleration operators
+(WGDSA, TGDSA) are built for the same operator: the time absorption
+<span class="math notranslate nohighlight">\(\tau_g = 1/(v_g\theta\Delta t)\)</span> is added to the removal cross section
+and to the transport cross section in the diffusion coefficient,
+<span class="math notranslate nohighlight">\(D_g = 1/\bigl(3(\sigma_{tr,g} + \tau_g)\bigr)\)</span>, and the two-grid energy
+spectrum is computed with <span class="math notranslate nohighlight">\(\sigma_{t,g} + \tau_g\)</span>. The operators are
+rebuilt when <span class="math notranslate nohighlight">\(\Delta t\)</span> or <span class="math notranslate nohighlight">\(\theta\)</span> changes.</p>
 </section>
 <section id="delayed-neutron-precursors">
 <h2><span class="section-number">3.2. </span>Delayed-neutron precursors<a class="headerlink" href="#delayed-neutron-precursors" title="Link to this heading"></a></h2>

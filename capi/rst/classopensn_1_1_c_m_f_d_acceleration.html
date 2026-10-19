@@ -125,6 +125,13 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration17CheckRequirementsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1ae8d7152b59d26d8e83740c322119ee6a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckRequirements</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration17CheckRequirementsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends one message for each requirement of this acceleration method that the problem violates. </p>
+<p>The owning solver calls it from its CheckRequirements, so it runs collectively before <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1af56eceb3fd10c498cbced54e861ac64a"><span class="std std-ref">Initialize()</span></a> and before each execution. The default has no requirements. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16CMFDAcceleration10InitializeEv">
 <span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1af56eceb3fd10c498cbced54e861ac64a"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">final</span></span><a class="headerlink" href="#_CPPv4N6opensn16CMFDAcceleration10InitializeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initialization method for derived classes. </p>

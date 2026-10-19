@@ -210,10 +210,14 @@ again clears the previous initialized state first.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
-<li><p><strong>acceleration</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration.html#pyopensn.solver.DiscreteOrdinatesKEigenAcceleration" title="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration"><em>pyopensn.solver.DiscreteOrdinatesKEigenAcceleration</em></a>) – Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration.</p></li>
+<li><p><strong>acceleration</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration.html#pyopensn.solver.DiscreteOrdinatesKEigenAcceleration" title="pyopensn.solver.DiscreteOrdinatesKEigenAcceleration"><em>pyopensn.solver.DiscreteOrdinatesKEigenAcceleration</em></a>) – Optional DiscreteOrdinatesKEigenAcceleration instance for acceleration. It must be
+created for the same <code class="docutils literal notranslate"><span class="pre">problem</span></code>. <code class="docutils literal notranslate"><span class="pre">Initialize()</span></code> checks the requirements of the
+acceleration method against the problem and raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> listing every
+violation.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default = 1000</em>) – Maximum power iterations allowed.</p></li>
-<li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the k-eigenvalue.</p></li>
-<li><p><strong>reset_solution</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, initialize flux moments to 1.0.</p></li>
+<li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the relative change of the k-eigenvalue between power iterations. The
+iteration converges when the change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive iterations.
+Values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code>.</p></li>
 <li><p><strong>reset_phi0</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, reinitializes scalar fluxes to 1.0.</p></li>
 </ul>
 </dd>

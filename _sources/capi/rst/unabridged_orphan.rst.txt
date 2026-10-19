@@ -1625,7 +1625,7 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_scoped_source_scopes.rst
+   classopensn_1_1_scoped_restore.rst
 
 .. toctree::
    :maxdepth: 1

@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -141,7 +143,7 @@ k-eigenvalue balance equation, and prolongs a bounded scalar-flux correction
 back to the transport solution.</p>
 <p>With CMFD, each power iteration performs a configured number of high-order WGS
 transport update iterations, then applies a bounded low-order scalar-flux
-correction. The defaults use one WGS update iteration, automatic current
+correction. The defaults use one WGS update iteration, the partial-current
 closure, fixed correction relaxation, and a transport-current balance check
 before outer power iteration is allowed to converge, against a fixed
 tolerance (<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>). See the description of
@@ -173,10 +175,10 @@ to the power-iteration solver:</p>
 energy aggregation:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cmfd</span> <span class="o">=</span> <span class="n">CMFDAcceleration</span><span class="p">(</span>
     <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
-    <span class="n">current_closure</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">current_closure</span><span class="o">=</span><span class="s2">&quot;partial&quot;</span><span class="p">,</span>
     <span class="n">aggregation_size</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span>
     <span class="n">group_aggregation_size</span><span class="o">=</span><span class="p">(</span><span class="n">num_groups</span> <span class="o">+</span> <span class="mi">3</span><span class="p">)</span> <span class="o">//</span> <span class="mi">4</span><span class="p">,</span>  <span class="c1"># about 4 CMFD energy groups</span>
-    <span class="n">relaxation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+    <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
     <span class="n">update_wgs_max_its</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">update_wgs_abs_tol</span><span class="o">=</span><span class="mf">1.0e-12</span><span class="p">,</span>
     <span class="c1"># balance_residual_tolerance left at its default (1.0e-6); pass it explicitly only</span>
@@ -232,19 +234,31 @@ the logical coarse graph consistently on all ranks. This is usually worthwhile
 when rank-local aggregation creates too many small coarse cells, but it can
 increase setup memory and communication compared with <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">current_closure</span></code></dt><dd><p>Face-current closure used in the CMFD operator. Valid choices are <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>,
-<code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>. The automatic mode
-probes the early coarse-balance behavior and may choose net-current closure,
-partial-current closure, or a blend.</p>
-<p><code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> matches the signed transport current across each coarse face using
-a current-correction term in the coarse diffusion operator. <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>
-builds the face coupling from the outgoing partial currents on the two sides
-of the coarse face, normalized by the adjacent coarse scalar fluxes. The
-partial-current form can provide a stronger correction, but it is more
-sensitive to noisy or very small coarse fluxes. The automatic mode is the
-recommended starting point, but a fixed value is useful when comparing
-methods, reproducing a benchmark setting, or diagnosing a case where auto
-selection is not robust.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">current_closure</span></code></dt><dd><p>Face-current closure used in the CMFD operator. Valid choices are
+<code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> is the partial-current CMFD (pCMFD) closure: each outgoing
+partial current on the two sides of a coarse face is modeled with half of the
+diffusion coupling plus its own nonlinear correction, so both one-sided
+transport partial currents are reproduced. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> matches the signed
+transport current across each coarse face using a single current-correction
+term in the coarse diffusion operator. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> probes the early
+coarse-balance behavior and may choose the net-current closure, the
+partial-current closure, or a blend. All three closures reproduce the
+transport currents at convergence, so they have the same fixed point; they
+differ in convergence rate and stability.</p>
+<p>The partial-current closure is the recommended choice. It is typically stable
+with an unrelaxed correction (<code class="docutils literal notranslate"><span class="pre">relaxation=1.0</span></code>) on both optically thin and
+optically thick coarse cells. The net-current closure, like standard CMFD in
+general, can oscillate or diverge when coarse cells are optically thick, and
+it is not always stabilized by <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> can
+converge in fewer iterations on some problems, but <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> judges the
+closures from the early iterations only and can keep an unstable net closure,
+for example when the power iteration starts from a nearly converged flux
+(such as a restart). Use a fixed <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> mainly for method
+comparisons or benchmark reproduction. On a face where an adjacent coarse
+flux is essentially zero, so that the partial-current coefficients cannot be
+formed, the partial-current closure uses the plain diffusion coupling for
+that face.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target number of fine cells per aggregated CMFD coarse cell for
 <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">32</span></code>.
@@ -252,7 +266,19 @@ Larger values reduce the cost of the coarse solve but make the coarse
 correction less detailed. Smaller values increase coarse-system cost but can
 improve robustness. For lattice problems, values from roughly 8 to 64 are
 typical exploration points. Use wall time and final k agreement, not only the
-number of power iterations, when comparing values.</p>
+number of power iterations, when comparing values. An aggregate that spans
+many mean free paths cannot represent the slowly converging spatial modes
+inside it, so in optically thick regions large aggregates accelerate little;
+use smaller aggregates (or <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;identity&quot;</span></code>) there.</p>
+<p>Aggregates never cross mesh-block boundaries, so on finely divided
+heterogeneous geometry (for example, pin cells with separate fuel, clad, and
+moderator blocks) many aggregates are smaller than the target, and the
+realized number of fine cells per coarse cell (printed at initialization) can
+be well below <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>. When the error that remains after a few
+transport sweeps varies within each aggregate, the outer convergence rate
+stalls at roughly the unaccelerated sweep rate. Smaller aggregates remove
+this limit; combining them with <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code> keeps the direct
+coarse solve affordable.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code></dt><dd><p>Number of transport energy groups per CMFD coarse energy group. This is not
 the final number of CMFD energy groups. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>, which preserves
@@ -264,25 +290,43 @@ specific number of coarse groups, use:</p>
 <p>For example, <code class="docutils literal notranslate"><span class="pre">group_aggregation_size=16</span></code> means 16 transport groups per CMFD
 coarse group. By contrast, <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">15)</span> <span class="pre">//</span> <span class="pre">16</span></code> chooses an aggregation
 size that gives about 16 total CMFD coarse groups.</p>
+<p>A few coarse energy groups usually retain most of the acceleration while
+reducing the coarse-system size, which can reduce the cost of each direct
+factorization. Collapsing to a single coarse group gives up the spectral
+coupling and can noticeably slow convergence when there is significant
+upscattering.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Strictly positive relaxation factor for the scalar-flux correction. The default is
-<code class="docutils literal notranslate"><span class="pre">0.5</span></code>. The correction limiter may reduce the damping for a single update or
+<code class="docutils literal notranslate"><span class="pre">1.0</span></code>, the full correction, which the partial-current closure usually
+tolerates. The correction limiter may reduce the damping for a single update or
 skip that update if the correction would produce non-finite values, an invalid
-k-eigenvalue, or an unacceptable scalar-flux undershoot. Smaller values are
-more conservative and can reduce oscillation; larger values can accelerate
-well-behaved cases but may trigger more damping or rejected corrections.</p>
+k-eigenvalue, or an unacceptable scalar-flux undershoot. A relaxation factor
+<span class="math notranslate nohighlight">\(\omega &lt; 1\)</span> is more conservative and can reduce oscillation, but even an
+ideal correction then leaves about a fraction <span class="math notranslate nohighlight">\(1-\omega\)</span> of the error,
+which increases the number of outer iterations.
+Reduce it when the log shows repeatedly damped or skipped corrections, or when
+using the net-current closure on optically thick coarse cells.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code></dt><dd><p>Maximum WGS iterations used for each transport update. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>.
 Increasing this can make each transport update more accurate, but also more
 expensive. The usual fast CMFD workflow keeps this small and lets CMFD provide
 the outer acceleration. For a tightly converged-transport workflow, increase
 this value and set a tight <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>.</p>
+<p>The cost of an update also depends on the groupset <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code>.
+Each <code class="docutils literal notranslate"><span class="pre">&quot;classic_richardson&quot;</span></code> iteration is one sweep, while a Krylov update
+adds a few sweeps of fixed overhead to its iterations. Because CMFD provides the outer
+acceleration, a few Richardson sweeps per update (for example
+<code class="docutils literal notranslate"><span class="pre">inner_linear_method=&quot;classic_richardson&quot;</span></code> with <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> of
+about 4) are often the cheapest choice.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code></dt><dd><p>WGS absolute tolerance used for each transport update. The default is
 <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code>. When <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, this tolerance is normally not the
 stopping criterion because only one WGS iteration is allowed. It matters when
 <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> is large enough for the WGS solve to stop by residual
-tolerance before reaching the iteration limit.</p>
+tolerance before reaching the iteration limit. Keep it well below
+<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>: a transport update stopped at a loose
+tolerance leaves an error that the correction cannot remove, and the balance
+residual then stalls near that tolerance while the eigenvalue oscillates.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Restricted transport-current balance residual required before CMFD permits the
 outer power iteration to converge. This is an additional convergence check
@@ -310,7 +354,9 @@ defaults.</p>
 <dt><code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code></dt><dd><p>Number of initial power iterations before applying CMFD corrections. The
 default is <code class="docutils literal notranslate"><span class="pre">0</span></code>. Inactive iterations retain the <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesProblem</span></code>
 groupset WGS limits and tolerance. CMFD applies <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> and
-<code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code> starting with the first active iteration.
+<code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code> starting with the first active iteration. The power
+iteration solver restores the problem’s groupset settings when <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>
+returns.
 Increase this only when debugging startup behavior where
 very early CMFD corrections are repeatedly rejected.</p>
 </dd>
@@ -442,6 +488,10 @@ scalar-flux balance.</p>
 <ul class="simple">
 <li><p>CMFD is integrated with <a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>,
 not <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>.</p></li>
+<li><p>CMFD is not supported in 1D spherical geometry. The coarse balance uses mesh
+cell volumes and face areas; in 1D spherical geometry the face areas are
+spherical (zero at the center) but the volumes are slab lengths. RZ geometry
+is supported.</p></li>
 <li><p>Local aggregation is rank-local. Coarse cells are not formed across MPI rank
 boundaries.</p></li>
 <li><p>The CMFD coarse solve uses PETSc on the host. GPU CMFD solves are not

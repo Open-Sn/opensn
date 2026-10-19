@@ -92,6 +92,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/input_parameters.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -114,12 +115,23 @@
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">DiscreteOrdinatesKEigenAcceleration</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Public initialize method, to be called by the power iteration solver</span>
-<span class="cm">   * using this acceleration scheme.</span>
+<span class="cm">   * Public initialize method, called by the power iteration solver at the start of each</span>
+<span class="cm">   * Execute(). Builds the acceleration data from the problem&#39;s current runtime objects, so it must</span>
+<span class="cm">   * support repeated calls.</span>
 <span class="cm">   *</span>
 <span class="cm">   * Calls the internal Initialize() method.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">(</span><span class="n">PowerIterationKEigenSolver</span><span class="o">&amp;</span><span class="w"> </span><span class="n">solver</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Appends one message for each requirement of this acceleration method that the problem</span>
+<span class="cm">   * violates. The owning solver calls it from its CheckRequirements, so it runs collectively before</span>
+<span class="cm">   * Initialize() and before each execution. The default has no requirements.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckRequirements</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// The problem this acceleration method was created for.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetProblem</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Initialization method for derived classes. Must be overridden.</span>
@@ -189,8 +201,11 @@
 <span class="w">  </span><span class="c1">/// Copies back only the scalar moments to a lbs primary flux vector.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ProjectBackPhi0</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Guard used by acceleration methods that are not stable with one AAH sweep.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckAAHSingleSweepStability</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Appends an error if an AAH groupset does one sweep per iteration (unstable for this method).</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireMultipleAAHSweeps</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Appends an error if the problem has more than one groupset.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RequireSingleGroupset</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// The associated DiscreteOrdinatesProblem problem</span>
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>

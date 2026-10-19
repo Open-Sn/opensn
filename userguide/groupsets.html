@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -482,9 +484,51 @@ story.</p>
 <p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
 options have for WGDSA. The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
+<p>TGDSA follows the two-grid method of <span id="id1">Adams and Morel [<a class="reference internal" href="#id144" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">GSAM93</a>]</span> in the Jacobi
+form of <span id="id2">Hanus and Ragusa [<a class="reference internal" href="#id145" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">GSHR20</a>]</span>. Each groupset iteration lags the
+scattering between groups. The slowest error mode of that iteration in an infinite medium is flat in space
+with a fixed energy shape <span class="math notranslate nohighlight">\(\xi_g\)</span>, the eigenvector of the largest
+eigenvalue of the infinite-medium iteration matrix. TGDSA solves one
+energy-collapsed diffusion problem for the amplitude of that mode and adds
+<span class="math notranslate nohighlight">\(\xi_g\)</span> times the amplitude to each group’s scalar flux. The spectrum, the
+collapsed diffusion coefficient, and the collapsed absorption cross section are
+computed per material when the groupset is initialized. Two forms are used,
+depending on whether WGDSA is enabled on the groupset:</p>
+<ul class="simple">
+<li><p>With WGDSA (recommended), each groupset iteration behaves like Jacobi
+iteration with converged within-group scattering. The spectrum is computed
+for that iteration, and the TGDSA residual contains only scattering between
+groups.</p></li>
+<li><p>Without WGDSA, each groupset iteration is a single sweep with all scattering
+lagged. The spectrum is computed for that iteration, and the residual also
+contains within-group scattering.</p></li>
+</ul>
+<p>TGDSA removes only the slowest error mode, which has a single energy shape. In
+problems with many thermal groups this mode dominates and TGDSA is very
+effective. With few groups and strong scattering both up and down in energy,
+the Jacobi iteration can also have an error mode that alternates in sign
+between groups and decays just as slowly; TGDSA does not specifically remove
+that mode. For
+example, with two groups coupled by downscatter and upscatter, the Jacobi
+iteration matrix has eigenvalues <span class="math notranslate nohighlight">\(\pm\rho\)</span>.</p>
+<p>TGDSA requires a groupset with at least two groups; it is rejected for a
+single-group groupset. For a material without scattering between the groups of
+the groupset, a flat two-grid spectrum is used and a warning is printed.</p>
+</section>
+<section id="dsa-with-reflecting-boundaries-and-time-dependence">
+<h4><span class="section-number">7.5.4.3. </span>DSA with reflecting boundaries and time dependence<a class="headerlink" href="#dsa-with-reflecting-boundaries-and-time-dependence" title="Link to this heading"></a></h4>
+<p>With opposing reflecting boundaries, the incoming angular flux on those
+boundaries is lagged by one iteration and carried as an additional unknown of
+the groupset iteration. The DSA scalar-flux correction is applied to these
+lagged angular fluxes as well (as an isotropic correction), so that WGDSA
+remains effective for both Richardson and Krylov inner solvers.</p>
+<p>In time-dependent problems the diffusion operators include the time
+absorption <span class="math notranslate nohighlight">\(1/(v\theta\Delta t)\)</span> of the transport operator and are rebuilt
+when the time step or <span class="math notranslate nohighlight">\(\theta\)</span> changes (see
+<a class="reference internal" href="../theory/time_discretization.html"><span class="doc">Time Discretization</span></a>).</p>
 </section>
 <section id="when-to-think-about-dsa">
-<h4><span class="section-number">7.5.4.3. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>
+<h4><span class="section-number">7.5.4.4. </span>When to think about DSA<a class="headerlink" href="#when-to-think-about-dsa" title="Link to this heading"></a></h4>
 <p>DSA is most worth considering when:</p>
 <ul class="simple">
 <li><p>the problem is optically thick,</p></li>
@@ -662,6 +706,18 @@ from another case.</p>
 <p>Groupsets are one of the highest-leverage parts of the input. A good groupset
 design makes the rest of the solver configuration easier. A bad groupset
 design can make even a correct problem look unstable or slow.</p>
+</div>
+<div class="docutils container" id="id3">
+<div role="list" class="citation-list">
+<div class="citation" id="id144" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">GSAM93</a><span class="fn-bracket">]</span></span>
+<p>BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. <em>Nuclear Science and Engineering</em>, 115(3):253–264, 1993.</p>
+</div>
+<div class="citation" id="id145" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">GSHR20</a><span class="fn-bracket">]</span></span>
+<p>Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. <em>Nuclear Science and Engineering</em>, 194(10):873–893, 2020. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">https://doi.org/10.1080/00295639.2020.1767436</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">doi:10.1080/00295639.2020.1767436</a>.</p>
+</div>
+</div>
 </div>
 </section>
 </section>

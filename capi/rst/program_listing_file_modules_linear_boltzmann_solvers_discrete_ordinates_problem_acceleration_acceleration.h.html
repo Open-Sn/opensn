@@ -155,17 +155,61 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">spectrum</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="n">TwoGridCollapsedInfo</span><span class="w"> </span><span class="nf">MakeTwoGridCollapsedInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span><span class="w"> </span><span class="n">EnergyCollapseScheme</span><span class="w"> </span><span class="n">scheme</span><span class="p">);</span>
+<span class="cm">/**</span>
+<span class="cm"> * Computes the two-grid collapsed diffusion data for a material over the groups</span>
+<span class="cm"> * [first_group, last_group] of the accelerated groupset. The returned spectrum is indexed by global</span>
+<span class="cm"> * group and is zero outside that range.</span>
+<span class="cm"> *</span>
+<span class="cm"> * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time</span>
+<span class="cm"> * absorption 1/(v theta dt) that the theta scheme adds to the total cross section is included in</span>
+<span class="cm"> * the collapse so that the diffusion operator matches the transport operator being accelerated.</span>
+<span class="cm"> */</span>
+<span class="n">TwoGridCollapsedInfo</span><span class="w"> </span><span class="nf">MakeTwoGridCollapsedInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
+<span class="w">                                              </span><span class="n">EnergyCollapseScheme</span><span class="w"> </span><span class="n">scheme</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
 
 <span class="c1">/// Translates sweep boundary conditions to that used in diffusion acceleration methods.</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span>
 <span class="n">TranslateBCs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">sweep_boundaries</span><span class="p">,</span>
 <span class="w">             </span><span class="kt">bool</span><span class="w"> </span><span class="n">vacuum_bcs_are_dirichlet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
 
-<span class="c1">/// Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.</span>
+<span class="cm">/**</span>
+<span class="cm"> * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.</span>
+<span class="cm"> *</span>
+<span class="cm"> * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time</span>
+<span class="cm"> * absorption tau_g = 1/(v_g theta dt) is added to the removal cross section and to the transport</span>
+<span class="cm"> * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)).</span>
+<span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">Multigroup_D_and_sigR</span><span class="o">&gt;</span><span class="w"> </span><span class="n">PackGroupsetXS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">blkid_to_xs_map</span><span class="p">,</span>
 <span class="w">                                                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_grp_index</span><span class="p">,</span>
-<span class="w">                                                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group_index</span><span class="p">);</span>
+<span class="w">                                                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group_index</span><span class="p">,</span>
+<span class="w">                                                             </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span><span class="p">;</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular</span>
+<span class="cm"> * fluxes of opposing reflecting boundaries, as the isotropic angular correction</span>
+<span class="cm"> * delta psi = delta phi (quadrature weights sum to one).</span>
+<span class="cm"> *</span>
+<span class="cm"> * Source iteration carries the lagged boundary angular fluxes as unknowns alongside phi. A DSA</span>
+<span class="cm"> * update that corrects phi but not these fluxes leaves the boundary error to re-enter on the next</span>
+<span class="cm"> * sweep, which can make source iteration with DSA diverge.</span>
+<span class="cm"> *</span>
+<span class="cm"> * `delta_phi_local` has the layout of the local flux-moment vector.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ApplyDSACorrectionToDelayedBoundaryFlux</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">delta_phi_local</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Returns D / (1 + 3 D tau), the diffusion coefficient with time absorption tau added to</span>
+<span class="cm"> * the transport cross section of D = 1/(3 sigma_tr).</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">AddTimeAbsorptionToDiffusionCoefficient</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">D</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tau</span><span class="p">);</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

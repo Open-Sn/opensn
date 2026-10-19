@@ -105,22 +105,31 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSGroupset</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 
-<span class="c1">/// Restores the source scopes overridden by WGSContext::OverrideSourceScopes() when destroyed.</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">ScopedSourceScopes</span>
+<span class="cm">/**</span>
+<span class="cm"> * Runs a restore function once: on Restore(), or else when destroyed. Returned by the operations</span>
+<span class="cm"> * that change problem-owned solver settings temporarily, e.g. WGSContext::OverrideSourceScopes()</span>
+<span class="cm"> * and DiscreteOrdinatesProblem::PreserveWGSSolveSettings().</span>
+<span class="cm"> *</span>
+<span class="cm"> * The destructor must not throw, since it also runs during stack unwinding, so it logs a failed</span>
+<span class="cm"> * restore instead. Call Restore() on the normal path when a failure must propagate.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ScopedRestore</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">ScopedSourceScopes</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">restore</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">restore_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">restore</span><span class="p">))</span><span class="w"> </span><span class="p">{}</span>
-<span class="w">  </span><span class="n">ScopedSourceScopes</span><span class="p">(</span><span class="n">ScopedSourceScopes</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">restore_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exchange</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">restore_</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">))</span>
+<span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">()</span><span class="o">&gt;</span><span class="w"> </span><span class="n">restore</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">restore_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">restore</span><span class="p">))</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="n">ScopedRestore</span><span class="p">(</span><span class="n">ScopedRestore</span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">restore_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">exchange</span><span class="p">(</span><span class="n">other</span><span class="p">.</span><span class="n">restore_</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">))</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
-<span class="w">  </span><span class="n">ScopedSourceScopes</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">ScopedSourceScopes</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
-<span class="w">  </span><span class="n">ScopedSourceScopes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScopedSourceScopes</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
-<span class="w">  </span><span class="n">ScopedSourceScopes</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScopedSourceScopes</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
-<span class="w">  </span><span class="o">~</span><span class="n">ScopedSourceScopes</span><span class="p">()</span>
+<span class="w">  </span><span class="n">ScopedRestore</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">ScopedRestore</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ScopedRestore</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="n">ScopedRestore</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="o">~</span><span class="n">ScopedRestore</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Runs the restore function now, if it has not run; errors propagate.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Restore</span><span class="p">()</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">restore_</span><span class="p">)</span>
-<span class="w">      </span><span class="n">restore_</span><span class="p">();</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="k">auto</span><span class="w"> </span><span class="n">restore</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">exchange</span><span class="p">(</span><span class="n">restore_</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">))</span>
+<span class="w">      </span><span class="n">restore</span><span class="p">();</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="k">private</span><span class="o">:</span>
@@ -165,8 +174,8 @@
 
 <span class="w">  </span><span class="c1">/// Applies `modify` to the source scopes of every WGS context of `do_problem` until the</span>
 <span class="w">  </span><span class="c1">/// returned guard is destroyed. This is the only way to change the scopes after construction.</span>
-<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">ScopedSourceScopes</span><span class="w"> </span><span class="n">OverrideSourceScopes</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
-<span class="w">                                                               </span><span class="k">const</span><span class="w"> </span><span class="n">SourceScopeModifier</span><span class="o">&amp;</span><span class="w"> </span><span class="n">modify</span><span class="p">);</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="k">static</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="w"> </span><span class="n">OverrideSourceScopes</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                                          </span><span class="k">const</span><span class="w"> </span><span class="n">SourceScopeModifier</span><span class="o">&amp;</span><span class="w"> </span><span class="n">modify</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">;</span>
 <span class="w">  </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">;</span>

@@ -30,22 +30,31 @@ Program Listing for File wgs_context.h
    class LBSGroupset;
    class DiscreteOrdinatesProblem;
    
-   /// Restores the source scopes overridden by WGSContext::OverrideSourceScopes() when destroyed.
-   class ScopedSourceScopes
+   /**
+    * Runs a restore function once: on Restore(), or else when destroyed. Returned by the operations
+    * that change problem-owned solver settings temporarily, e.g. WGSContext::OverrideSourceScopes()
+    * and DiscreteOrdinatesProblem::PreserveWGSSolveSettings().
+    *
+    * The destructor must not throw, since it also runs during stack unwinding, so it logs a failed
+    * restore instead. Call Restore() on the normal path when a failure must propagate.
+    */
+   class ScopedRestore
    {
    public:
-     explicit ScopedSourceScopes(std::function<void()> restore) : restore_(std::move(restore)) {}
-     ScopedSourceScopes(ScopedSourceScopes&& other) noexcept
-       : restore_(std::exchange(other.restore_, nullptr))
+     explicit ScopedRestore(std::function<void()> restore) : restore_(std::move(restore)) {}
+     ScopedRestore(ScopedRestore&& other) noexcept : restore_(std::exchange(other.restore_, nullptr))
      {
      }
-     ScopedSourceScopes& operator=(ScopedSourceScopes&&) = delete;
-     ScopedSourceScopes(const ScopedSourceScopes&) = delete;
-     ScopedSourceScopes& operator=(const ScopedSourceScopes&) = delete;
-     ~ScopedSourceScopes()
+     ScopedRestore& operator=(ScopedRestore&&) = delete;
+     ScopedRestore(const ScopedRestore&) = delete;
+     ScopedRestore& operator=(const ScopedRestore&) = delete;
+     ~ScopedRestore();
+   
+     /// Runs the restore function now, if it has not run; errors propagate.
+     void Restore()
      {
-       if (restore_)
-         restore_();
+       if (auto restore = std::exchange(restore_, nullptr))
+         restore();
      }
    
    private:
@@ -90,8 +99,8 @@ Program Listing for File wgs_context.h
    
      /// Applies `modify` to the source scopes of every WGS context of `do_problem` until the
      /// returned guard is destroyed. This is the only way to change the scopes after construction.
-     [[nodiscard]] static ScopedSourceScopes OverrideSourceScopes(DiscreteOrdinatesProblem& do_problem,
-                                                                  const SourceScopeModifier& modify);
+     [[nodiscard]] static ScopedRestore OverrideSourceScopes(DiscreteOrdinatesProblem& do_problem,
+                                                             const SourceScopeModifier& modify);
    
      DiscreteOrdinatesProblem& do_problem;
      LBSGroupset& groupset;

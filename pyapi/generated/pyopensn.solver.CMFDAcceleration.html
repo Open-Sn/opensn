@@ -122,7 +122,7 @@
 <dd><p>CMFD acceleration for the power iteration k-eigenvalue solver.</p>
 <p>With CMFD, each power iteration performs a configured number of high-order WGS
 transport update iterations, then applies a bounded low-order scalar-flux correction.
-The defaults use one WGS update iteration, automatic current closure, fixed
+The defaults use one WGS update iteration, the partial-current closure, fixed
 correction relaxation, and a transport-current balance gate before outer power
 iteration is allowed to converge.</p>
 <p>Most users should tune only the common controls: <code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code>, <code class="docutils literal notranslate"><span class="pre">current_closure</span></code>,
@@ -151,17 +151,22 @@ Aggregates are connected by face adjacency, remain within one mesh block, and ma
 smaller than <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> near boundaries or disconnected regions. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code>
 is primarily for debugging and method comparisons.</p>
 </p></li>
-<li><p><strong>current_closure</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
+<li><p><strong>current_closure</strong> (<em>str</em><em>, </em><em>default=&quot;partial&quot;</em>) – <dl class="simple">
 <dt>Common option. CMFD face-current closure. Valid choices are:</dt><dd><ul>
-<li><p>’auto’ : choose net, partial, or a blend from early coarse-balance behavior</p></li>
+<li><p>’partial’ : partial-current CMFD (pCMFD); each one-sided partial current carries
+half of the diffusion coupling plus its own transport correction</p></li>
 <li><p>’net’ : match the signed transport current across each coarse face</p></li>
-<li><p>’partial’ : build face coupling from outgoing partial currents on both sides</p></li>
+<li><p>’auto’ : choose net, partial, or a blend from early coarse-balance behavior</p></li>
 </ul>
 </dd>
 </dl>
-<p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> is recommended for production use. A fixed closure is useful when
-comparing methods, reproducing a benchmark setting, or diagnosing a case where
-automatic selection is not robust.</p>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> is the default and is recommended for production use: it is typically
+stable with an unrelaxed correction on both optically thin and thick coarse cells,
+whereas the net-current closure can oscillate or diverge on optically thick coarse
+cells. All closures share the same fixed point. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> can
+converge in fewer iterations on some problems,
+but <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> judges the closures only from early iterations and can keep an
+unstable net closure, for example when starting from a nearly converged flux.</p>
 </p></li>
 <li><p><strong>aggregation_size</strong> (<em>int</em><em>, </em><em>default=32</em>) – Common option. Target number of fine cells per aggregated coarse cell for
 <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;global_aggregation&quot;</span></code>.
@@ -172,10 +177,13 @@ increase the coarse-system cost but may improve robustness.</p></li>
 final number of coarse groups. A value of 1 preserves the full transport group
 structure in the low-order system. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> total coarse groups, use
 <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">N</span></code>.</p></li>
-<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=0.5</em>) – Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
+<li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
 This is the requested correction strength. The correction limiter may damp or
 skip an individual correction if the requested update would produce an invalid
-k-eigenvalue, non-finite flux, or excessive negative scalar flux.</p></li>
+k-eigenvalue, non-finite flux, or excessive negative scalar flux. The default
+applies the full correction. A value below 1 is more conservative, but even an
+ideal correction then leaves about <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">relaxation</span></code> of the error; reduce it when
+corrections are repeatedly damped or skipped.</p></li>
 <li><p><strong>update_wgs_max_its</strong> (<em>int</em><em>, </em><em>default=1</em>) – Common option. Maximum WGS iterations used before each CMFD correction. The
 default performs one transport update iteration per power iteration; larger
 values make each transport update more accurate but more expensive.</p></li>

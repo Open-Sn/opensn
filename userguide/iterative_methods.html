@@ -23,6 +23,8 @@
       <script src="../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
@@ -763,12 +765,15 @@ iteration on top of the transport solve.</p>
 <li><p>sets the fission source from the previous iterate</p></li>
 <li><p>performs the transport solve through AGS and the groupset inner solves</p></li>
 <li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
-<li><p>repeats until the eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is
-reached</p></li>
+<li><p>repeats until the relative eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two
+consecutive power iterations, or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is reached</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code> is the stopping tolerance on the eigenvalue change between successive
-power iterations. <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> is a reasonable production range,
-with <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> being common when a fairly tight <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> is desired.</p>
+<p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code> is the stopping tolerance on the relative eigenvalue change
+<span class="math notranslate nohighlight">\(|k_n - k_{n-1}| / k_n\)</span> between successive power iterations; it must hold
+for two consecutive iterations, because an accelerated eigenvalue sequence can
+overshoot and show one small change where it turns around. <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> to
+<code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> is a reasonable production range, with <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> being common
+when a fairly tight <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> is desired.</p>
 <p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is the hard cap on power iterations. <code class="docutils literal notranslate"><span class="pre">500</span></code> to <code class="docutils literal notranslate"><span class="pre">1000</span></code> is a
 reasonable starting range. If that cap is reached often, the issue is usually
 not the cap itself but the overall transport convergence strategy.</p>

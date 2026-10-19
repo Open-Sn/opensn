@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1abceb062850a19351f0b3cc28b39a9ed9:
+
+Function opensn::ApplyDSACorrectionToDelayedBoundaryFlux
+========================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ApplyDSACorrectionToDelayedBoundaryFlux(DiscreteOrdinatesProblem&, const LBSGroupset&, const std::vector<double>&)
+   :project: opensn

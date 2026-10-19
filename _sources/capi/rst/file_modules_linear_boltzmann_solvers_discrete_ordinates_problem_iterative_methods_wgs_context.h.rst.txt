@@ -78,5 +78,5 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_w_g_s_context`
 
-- :ref:`exhale_class_classopensn_1_1_scoped_source_scopes`
+- :ref:`exhale_class_classopensn_1_1_scoped_restore`
 

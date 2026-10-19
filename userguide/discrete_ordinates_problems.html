@@ -396,15 +396,15 @@ for continuing the same type of solve from restart state.</p></li>
 an initial condition. <a class="reference internal" href="../pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.TransientSolver</span></code></a> can use a
 steady-state restart this way, then switch the problem to time-dependent mode.
 It cannot be combined with <code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code>.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code>: include stored angular fluxes in restart
-dumps when <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>. This is required for full transient
-continuation restarts, but optional when a steady-state restart is used only
-as a transient initial condition.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code>: include delayed sweep angular-flux buffers.
-Full continuation restarts require these buffers whenever the problem has
-delayed sweep angular state, including partitioned parallel,
-reflected-boundary, and cyclic-sweep cases. These buffers are optional for
-the steady-state-restart-as-transient-initial-condition workflow.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code>: include stored angular fluxes in
+steady-state restart dumps when <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>. They are optional
+when a steady-state restart is used only as a transient initial condition.
+Time-dependent restart dumps always include them, regardless of this option,
+because full transient restarts require them.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">write_delayed_psi_to_restart</span></code>: include delayed sweep angular-flux buffers
+in steady-state restart dumps. These buffers are optional for the
+steady-state-restart-as-transient-initial-condition workflow. Time-dependent
+restart dumps always include them, regardless of this option.</p></li>
 </ul>
 <p>Restart files written by current OpenSn versions identify cells globally and
 store nodal flux moments and precursor values in a partition-independent

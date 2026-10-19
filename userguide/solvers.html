@@ -85,22 +85,22 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#transient-solver">20. Transient Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id1">20.1. GPU support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">20.2. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#supported-problems">20.1. Supported problems</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">20.2. Constructor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-execute">20.3. Using Execute</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#using-an-explicit-python-timestep-loop">20.4. Using an Explicit Python Timestep Loop</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#balance-reporting">20.5. Balance Reporting</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#power-iteration-k-eigen-solver">21. Power Iteration k-Eigen Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id3">21.1. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id4">21.2. GPU support</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id5">21.3. How It Operates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">21.1. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">21.2. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id4">21.3. How It Operates</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nonlinear-k-eigen-solver">22. Nonlinear k-Eigen Solver</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#id6">22.1. Constructor</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id7">22.2. GPU support</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id5">22.1. Constructor</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id6">22.2. GPU support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#groupsets-and-dsa">22.3. Groupsets and DSA</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#statuses-and-errors">22.4. Statuses and errors</a></li>
 </ul>
@@ -369,10 +369,13 @@ the legacy rank-local format have the same restriction.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">use_precursors</span></code> setting is treated as user intent and persists across later
 <code class="xref py py-meth docutils literal notranslate"><span class="pre">SetXSMap()</span></code> calls, even if the current cross-section map temporarily has
 no precursor-bearing material. If cross sections are swapped, existing
-precursor concentrations are remapped by local cell and precursor-family index;
-new families start at zero and removed families are discarded. If a cell passes
-through a material with zero precursors, its precursor history is dropped and
-any later reintroduced precursor families restart from zero.</p>
+precursor concentrations are remapped by spatial node and precursor-family
+index, and the decay constants, yields, and emission spectra of the new material
+apply from the next step on. New families start at zero and removed families are
+discarded. The warning reports the global sum of the absolute discarded nodal
+concentrations. If a swap assigns a cell a material without precursors, that
+cell’s precursor concentrations are discarded, and precursor families
+reintroduced by a later swap start from zero.</p>
 <p>If any fissionable material in the active map contains precursor data and
 <code class="docutils literal notranslate"><span class="pre">use_precursors=True</span></code>, then all fissionable materials in that map must
 contain precursor data. Non-fissionable materials may have zero precursors.</p>
@@ -645,12 +648,14 @@ the adjoint form.</p>
 <li><p>you want backward Euler, Crank-Nicolson, or another theta-scheme transient
 update</p></li>
 </ul>
-<section id="id1">
-<h2><span class="section-number">20.1. </span>GPU support<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
-<p>Transient solves do not currently support GPU acceleration.</p>
+<section id="supported-problems">
+<h2><span class="section-number">20.1. </span>Supported problems<a class="headerlink" href="#supported-problems" title="Link to this heading"></a></h2>
+<p>Transient solves do not currently support GPU acceleration, curvilinear (RZ or
+1D spherical) geometry, or adjoint mode. A problem with any of these is rejected when it is
+created with <code class="docutils literal notranslate"><span class="pre">time_dependent=True</span></code> or switched with <code class="docutils literal notranslate"><span class="pre">SetTimeDependentMode()</span></code>.</p>
 </section>
-<section id="id2">
-<h2><span class="section-number">20.2. </span>Constructor<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
+<section id="id1">
+<h2><span class="section-number">20.2. </span>Constructor<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
 <p>The transient solver constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
@@ -852,14 +857,15 @@ problem with outer power iteration.</p>
 <li><p>you need a standard k-eigenvalue solve, and</p></li>
 <li><p>the usual power-iteration convergence behavior is acceptable</p></li>
 </ul>
-<section id="id3">
-<h2><span class="section-number">21.1. </span>Constructor<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
+<section id="id2">
+<h2><span class="section-number">21.1. </span>Constructor<a class="headerlink" href="#id2" title="Link to this heading"></a></h2>
 <p>The constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code>: maximum power iterations</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code>: convergence tolerance on <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code>: tolerance on the relative change of <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> between power
+iterations; values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code>: whether to reset scalar fluxes to 1.0 before solving</p></li>
 </ul>
 <p>The problem must be in steady-state mode and have no external sources: no
@@ -872,8 +878,8 @@ on the same problem, clear the sources for the eigenvalue solve, for example
 <code class="docutils literal notranslate"><span class="pre">problem.SetVolumetricSources(clear_volumetric_sources=True)</span></code>. The same
 requirements apply to <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>.</p>
 </section>
-<section id="id4">
-<h2><span class="section-number">21.2. </span>GPU support<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<section id="id3">
+<h2><span class="section-number">21.2. </span>GPU support<a class="headerlink" href="#id3" title="Link to this heading"></a></h2>
 <p>This solver can run with GPU acceleration when the associated
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a> is configured for GPU
 sweeps. The same problem-side restrictions apply as for steady-state source
@@ -892,16 +898,20 @@ acceleration.</p>
 </pre></div>
 </div>
 </section>
-<section id="id5">
-<h2><span class="section-number">21.3. </span>How It Operates<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
+<section id="id4">
+<h2><span class="section-number">21.3. </span>How It Operates<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
 <p>At a high level, the solver:</p>
 <ol class="arabic simple">
 <li><p>optionally resets the starting scalar flux</p></li>
 <li><p>forms the fission source from the current iterate</p></li>
 <li><p>solves the transport problem with the problem’s AGS/groupset iteration</p></li>
 <li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
-<li><p>repeats until the eigenvalue change satisfies <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is
-reached</p></li>
+<li><p>repeats until the relative eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two
+consecutive iterations, or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is reached. A single small change
+also occurs where an accelerated eigenvalue sequence overshoots and turns
+around, so one is not taken as convergence. With an acceleration method, the
+method must also allow convergence (for CMFD, see
+<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>)</p></li>
 <li><p>in adjoint mode, reorients the solution: each direction’s angular flux is
 swapped with that of its opposite direction and each flux moment of degree
 <span class="math notranslate nohighlight">\(\ell\)</span> is multiplied by <span class="math notranslate nohighlight">\((-1)^\ell\)</span> (see <a class="reference internal" href="../theory/adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>). This happens after the final restart dump, so
@@ -942,8 +952,8 @@ problem with a nonlinear solve strategy rather than outer power iteration.</p>
 <li><p>you want a small number of initial power iterations before entering the
 nonlinear solve</p></li>
 </ul>
-<section id="id6">
-<h2><span class="section-number">22.1. </span>Constructor<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
+<section id="id5">
+<h2><span class="section-number">22.1. </span>Constructor<a class="headerlink" href="#id5" title="Link to this heading"></a></h2>
 <p>The constructor takes:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
@@ -957,8 +967,8 @@ nonlinear solve</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">num_initial_power_iterations</span></code></p></li>
 </ul>
 </section>
-<section id="id7">
-<h2><span class="section-number">22.2. </span>GPU support<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<section id="id6">
+<h2><span class="section-number">22.2. </span>GPU support<a class="headerlink" href="#id6" title="Link to this heading"></a></h2>
 <p>This solver does not currently provide a supported GPU execution path.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span> <span class="o">=</span> <span class="n">NonLinearKEigenSolver</span><span class="p">(</span>

@@ -1035,19 +1035,22 @@ that callback.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>write_delayed_psi_to_restart: bool, default=True</dt><dd><p>Include delayed sweep angular-flux buffers. Full continuation restarts require
-these buffers whenever the problem has delayed sweep angular state, including
-partitioned parallel, reflected-boundary, and cyclic-sweep cases. These buffers
-are optional when a steady-state restart is used only as a transient initial
-condition because the transient initialization can reconstruct angular state
-from the flux moments.</p>
+<dt>write_delayed_psi_to_restart: bool, default=True</dt><dd><p>Include delayed sweep angular-flux buffers in steady-state restart dumps. These
+buffers are optional when a steady-state restart is used only as a transient
+initial condition because the transient initialization can reconstruct angular
+state from the flux moments. Time-dependent restart dumps always include them,
+regardless of this option, because continuing a transient requires them whenever
+the problem has delayed sweep angular state, including partitioned parallel,
+reflected-boundary, and cyclic-sweep cases.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>write_angular_flux_to_restart: bool, default=True</dt><dd><p>Include stored angular fluxes in restart dumps when <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>.
-This is required for continuing a time-dependent restart, but optional when a
-steady-state restart is used only as a transient initial condition.</p>
+<dt>write_angular_flux_to_restart: bool, default=True</dt><dd><p>Include stored angular fluxes in steady-state restart dumps when
+<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>. They are optional when a steady-state restart is used
+only as a transient initial condition. Time-dependent restart dumps always
+include them, regardless of this option, because continuing a transient requires
+them.</p>
 </dd>
 </dl>
 </li>

@@ -106,6 +106,8 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">ScopedRestore</span><span class="p">;</span>
+
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AGSLinearSolver</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinearSolver</span><span class="p">;</span>
@@ -153,6 +155,20 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSteadyStateMode</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetTime</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the time-absorption scale 1/(theta dt) with which the diffusion acceleration</span>
+<span class="cm">   * operators (WGDSA/TGDSA) were built; 0 for steady-state operators.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetDSATimeAbsorptionScale</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">dsa_time_absorption_scale_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Rebuilds the WGDSA/TGDSA operators if the time absorption 1/(v theta dt) of the current</span>
+<span class="cm">   * mode, time step, and theta differs from the one they were built with. Called before each</span>
+<span class="cm">   * transient step to pick up changes of dt or theta. Mode changes rebuild the operators through</span>
+<span class="cm">   * RebuildRuntimeObjects().</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateDSATimeAbsorption</span><span class="p">();</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="w">  </span><span class="o">~</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -169,6 +185,21 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetWGSSolver</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumWGSSolvers</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Sets the iteration limit and absolute residual tolerance of a groupset&#39;s within-group solve,</span>
+<span class="cm">   * on the groupset and on its WGS solver.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span>
+<span class="w">  </span><span class="nf">SetWGSSolveSettings</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iterations</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">residual_tolerance</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Saves the within-group iteration limit and residual tolerance of every groupset. The returned</span>
+<span class="cm">   * guard restores them with SetWGSSolveSettings() when destroyed. Solvers hold it while</span>
+<span class="cm">   * acceleration methods change these settings, so that the settings outlive neither the solve</span>
+<span class="cm">   * nor an exception.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="w"> </span><span class="n">PreserveWGSSolveSettings</span><span class="p">();</span>
 
 <span class="w">  </span><span class="n">WGSContext</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetWGSContext</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
@@ -346,6 +377,9 @@
 <span class="cm">   */</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolverSchemes</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Time-absorption scale 1/(theta dt) for the current mode, time step, and theta (0 when steady).</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">ComputeDSATimeAbsorptionScale</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Rebuild WGS/AGS solver schemes after runtime configuration changes.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReinitializeSolverSchemes</span><span class="p">();</span>
 
@@ -424,6 +458,8 @@
 <span class="w">    </span><span class="n">quadrature_fluds_commondata_map_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">sweep_type_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Time-absorption scale 1/(theta dt) of the current DSA operators (0 when steady).</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">dsa_time_absorption_scale_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
 
 <span class="w">  </span><span class="cm">/**</span>

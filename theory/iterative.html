@@ -124,7 +124,7 @@
 <h1><span class="section-number">6. </span>Iterative Solution Algorithms<a class="headerlink" href="#iterative-solution-algorithms" title="Link to this heading"></a></h1>
 <p>The Adams-Larsen review paper is a good reference for fast iterative
 schemes for discrete-ordinates particle transport calculations
-<span id="id1">Adams and Larsen [<a class="reference internal" href="#id53" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
+<span id="id1">Adams and Larsen [<a class="reference internal" href="#id55" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>.</p>
 <section id="multigroup-solution-process-background">
 <h2><span class="section-number">6.1. </span>Multigroup Solution Process: Background<a class="headerlink" href="#multigroup-solution-process-background" title="Link to this heading"></a></h2>
 <p>The transport equation needs to be solved for each group <span class="math notranslate nohighlight">\(g\)</span>
@@ -174,7 +174,7 @@ contributions).</p>
 <section id="source-iteration">
 <h3><span class="section-number">6.2.1. </span>Source Iteration:<a class="headerlink" href="#source-iteration" title="Link to this heading"></a></h3>
 <p>In the Source Iteration (SI) method
-<span id="id2">Adams and Larsen [<a class="reference internal" href="#id53" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
+<span id="id2">Adams and Larsen [<a class="reference internal" href="#id55" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, the flux moments are
 lagged at iteration <span class="math notranslate nohighlight">\(i\)</span> to yield the following iterative strategy</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{cases}
@@ -216,7 +216,7 @@ only its action is required. Each action of <span class="math notranslate nohigh
 transport sweep to evaluate the action of <span class="math notranslate nohighlight">\(L^{-1}\)</span>. Krylov
 subspace methods, such as GMRes, can be employed in a matrix-free
 fashion to solve such a system
-<span id="id3">Saad and Schultz [<a class="reference internal" href="#id251" title="Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. SIAM Journal on scientific and statistical computing, 7(3):856–869, 1986.">SS86</a>]</span>, <span id="id4">Saad [<a class="reference internal" href="#id250" title="Yousef Saad. Iterative methods for sparse linear systems. Siam, 2003.">Saa03</a>]</span>, <span id="id5">Patton and Holloway [<a class="reference internal" href="#id73" title="BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In ANS Topical Meeting on Radiation Protection and Shielding, volume 1, 384. 1996.">PH96</a>]</span>, <span id="id6">Guthrie <em>et al.</em> [<a class="reference internal" href="#id74" title="Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. Transport Theory and Statistical Physics, 28(1):83–102, 1999.">GHP99</a>]</span>, <span id="id7">Oliveira and Deng [<a class="reference internal" href="#id75" title="Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. Progress in Nuclear Energy, 33(1):155–174, 1998.">OD98</a>]</span>, <span id="id8">Warsa <em>et al.</em> [<a class="reference internal" href="#id172" title="James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. Nuclear Science and Engineering, 147(3):218–248, 2004.">WWM04</a>]</span>, <span id="id9">Fichtl <em>et al.</em> [<a class="reference internal" href="#id77" title="Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. Journal of Computational Physics, 228(22):8413–8426, 2009.">FWP09</a>]</span>.</p>
+<span id="id3">Saad and Schultz [<a class="reference internal" href="#id253" title="Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. SIAM Journal on scientific and statistical computing, 7(3):856–869, 1986.">SS86</a>]</span>, <span id="id4">Saad [<a class="reference internal" href="#id252" title="Yousef Saad. Iterative methods for sparse linear systems. Siam, 2003.">Saa03</a>]</span>, <span id="id5">Patton and Holloway [<a class="reference internal" href="#id75" title="BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In ANS Topical Meeting on Radiation Protection and Shielding, volume 1, 384. 1996.">PH96</a>]</span>, <span id="id6">Guthrie <em>et al.</em> [<a class="reference internal" href="#id76" title="Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. Transport Theory and Statistical Physics, 28(1):83–102, 1999.">GHP99</a>]</span>, <span id="id7">Oliveira and Deng [<a class="reference internal" href="#id77" title="Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. Progress in Nuclear Energy, 33(1):155–174, 1998.">OD98</a>]</span>, <span id="id8">Warsa <em>et al.</em> [<a class="reference internal" href="#id174" title="James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. Nuclear Science and Engineering, 147(3):218–248, 2004.">WWM04</a>]</span>, <span id="id9">Fichtl <em>et al.</em> [<a class="reference internal" href="#id79" title="Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. Journal of Computational Physics, 228(22):8413–8426, 2009.">FWP09</a>]</span>.</p>
 </section>
 </section>
 <section id="within-group-acceleration">
@@ -225,7 +225,7 @@ fashion to solve such a system
 Source Iteration process can be slow. From spectral error analyses, the
 slowest-decaying error modes are diffusive modes. Hence, the idea to
 accelerate the SI procedure with a low-order synthetic accelerator
-<span id="id10">Adams and Larsen [<a class="reference internal" href="#id53" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, <span id="id11">Morel [<a class="reference internal" href="#id156" title="JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. Nuclear Science and Engineering, 82:34–46, 1982.">Mor82</a>]</span>, <span id="id12">Larsen [<a class="reference internal" href="#id163" title="Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. Transport Theory and Statistical Physics, 13(1-2):107–126, 1984. URL: https://doi.org/10.1080/00411458408211656, doi:10.1080/00411458408211656.">Lar84</a>]</span>.</p>
+<span id="id10">Adams and Larsen [<a class="reference internal" href="#id55" title="ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. Progress in Nuclear Energy, 40(1):3–159, 2002.">AL02</a>]</span>, <span id="id11">Morel [<a class="reference internal" href="#id158" title="JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. Nuclear Science and Engineering, 82:34–46, 1982.">Mor82</a>]</span>, <span id="id12">Larsen [<a class="reference internal" href="#id165" title="Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. Transport Theory and Statistical Physics, 13(1-2):107–126, 1984. URL: https://doi.org/10.1080/00411458408211656, doi:10.1080/00411458408211656.">Lar84</a>]</span>.</p>
 <p>We proceed by presenting an iteration of SI, solved using a transport
 sweep:</p>
 <div class="math notranslate nohighlight">
@@ -255,7 +255,7 @@ discretization with the original transport problem. In OpenSn, the
 operator <span class="math notranslate nohighlight">\(A\)</span> is a diffusion operator. The resulting Diffusion
 Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
-<span id="id13">Wang and Ragusa [<a class="reference internal" href="#id162" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id133" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
+<span id="id13">Wang and Ragusa [<a class="reference internal" href="#id164" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id135" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
 </section>
 <section id="thermal-upscattering-acceleration">
 <h2><span class="section-number">6.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
@@ -264,7 +264,7 @@ absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
 process will be applied over all thermal groups at once and is based on
 the two-grid (TG) methods by Adams and Morel
-<span id="id15">Adams and Morel [<a class="reference internal" href="#id165" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">AM93</a>]</span>, <span id="id16">Hanus and Ragusa [<a class="reference internal" href="#id166" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Akin to the
+<span id="id15">Adams and Morel [<a class="reference internal" href="#id167" title="BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. Nuclear Science and Engineering, 115(3):253–264, 1993.">AM93</a>]</span>, <span id="id16">Hanus and Ragusa [<a class="reference internal" href="#id168" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Akin to the
 spatial multigrid techniques, the TG method consists of two energy
 grids: a fine grid (corresponding to the thermal group structure) and a
 coarse grid (a single macro-group over the entire thermal range). Adams
@@ -295,6 +295,51 @@ infinite medium calculation for each distinct material type.</p>
 </ol>
 </li>
 </ol>
+<p>In OpenSn, the thermal groups of a groupset are iterated together with Jacobi
+iteration in energy, and the two-grid correction follows the Jacobi form of
+<span id="id17">Hanus and Ragusa [<a class="reference internal" href="#id168" title="Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. Nuclear Science and Engineering, 194(10):873–893, 2020. URL: https://doi.org/10.1080/00295639.2020.1767436, doi:10.1080/00295639.2020.1767436.">HR20</a>]</span>. Split the isotropic transfer matrix into its
+diagonal (within-group) part <span class="math notranslate nohighlight">\(S_D\)</span> and off-diagonal part <span class="math notranslate nohighlight">\(S_O\)</span>, and
+let <span class="math notranslate nohighlight">\(\Sigma_t = \operatorname{diag}(\sigma_{t,g})\)</span>. The spectrum
+<span class="math notranslate nohighlight">\(\xi\)</span> is the eigenvector of the largest eigenvalue <span class="math notranslate nohighlight">\(\rho\)</span> of the
+infinite-medium iteration matrix,</p>
+<div class="math notranslate nohighlight">
+\[A^{-1} B\, \xi = \rho\, \xi \,, \qquad \sum_g \xi_g = 1 \,,\]</div>
+<p>where the matrices depend on the iteration being accelerated:</p>
+<ul class="simple">
+<li><p>with within-group DSA on the groupset, each iteration behaves like Jacobi
+iteration with converged within-group scattering, and
+<span class="math notranslate nohighlight">\(A = \Sigma_t - S_D\)</span>, <span class="math notranslate nohighlight">\(B = S_O\)</span>;</p></li>
+<li><p>without it, each iteration is a single sweep with all scattering lagged, and
+<span class="math notranslate nohighlight">\(A = \Sigma_t\)</span>, <span class="math notranslate nohighlight">\(B = S_D + S_O\)</span>.</p></li>
+</ul>
+<p><span class="math notranslate nohighlight">\(A^{-1}B\)</span> is non-negative, so <span class="math notranslate nohighlight">\(\rho\)</span> is its spectral radius and
+<span class="math notranslate nohighlight">\(\xi \ge 0\)</span>. Because a Jacobi iteration matrix can also have the
+eigenvalue <span class="math notranslate nohighlight">\(-\rho\)</span> (for example, two groups coupled by downscatter and
+upscatter), <span class="math notranslate nohighlight">\(\xi\)</span> is computed by power iteration on
+<span class="math notranslate nohighlight">\(A^{-1}B + sI\)</span> with a shift <span class="math notranslate nohighlight">\(s \ge \rho\)</span>. For <span class="math notranslate nohighlight">\(\rho &gt; 0\)</span>, every
+shifted eigenvalue <span class="math notranslate nohighlight">\(\lambda + s\)</span> with <span class="math notranslate nohighlight">\(\lambda \ne \rho\)</span> is smaller in
+magnitude than <span class="math notranslate nohighlight">\(\rho + s\)</span>. The eigenvector need not be unique: if the
+groups of the groupset form several mutually uncoupled sets with the same
+spectral radius, <span class="math notranslate nohighlight">\(\rho\)</span> is a multiple eigenvalue, and the iteration,
+started from a flat vector, returns a non-negative vector in its eigenspace.
+If the scattering between the groups of the groupset has no
+cycle and there is no lagged within-group scattering (for example, downscatter
+only or upscatter only), <span class="math notranslate nohighlight">\(A^{-1}B\)</span> is nilpotent, <span class="math notranslate nohighlight">\(\rho = 0\)</span>, and
+there is no error mode to remove; a flat spectrum is used. The correction amplitude
+<span class="math notranslate nohighlight">\(\theta\)</span> solves</p>
+<div class="math notranslate nohighlight">
+\[-\nabla \cdot \langle D \rangle \nabla \theta + \langle \sigma_a \rangle \theta
+= \sum_g \left[ B \left( \phi^{(\text{th}+1/2)} - \phi^{(\text{th})} \right) \right]_g \,,\]</div>
+<p>with <span class="math notranslate nohighlight">\(\langle D \rangle = \sum_g D_g \xi_g\)</span> and
+<span class="math notranslate nohighlight">\(\langle \sigma_a \rangle = \sum_g \bigl(\sigma_{t,g} \xi_g - \sum_{g'}
+\sigma_{s,g \leftarrow g'} \xi_{g'}\bigr)\)</span>, where <span class="math notranslate nohighlight">\(\phi^{(\text{th}+1/2)}\)</span>
+includes the within-group DSA correction when it is used. In time-dependent
+problems, <span class="math notranslate nohighlight">\(1/(v_g \theta \Delta t)\)</span> is added to <span class="math notranslate nohighlight">\(\sigma_{t,g}\)</span> and to
+the transport cross section in <span class="math notranslate nohighlight">\(D_g\)</span>. The correction targets the mode
+with spectrum <span class="math notranslate nohighlight">\(\xi\)</span>. Error modes of the Jacobi iteration with other
+energy shapes, such as the <span class="math notranslate nohighlight">\(-\rho\)</span> mode above, contribute to the
+right-hand side and can change through the correction, but they are not
+specifically removed.</p>
 </section>
 <section id="power-iterations">
 <h2><span class="section-number">6.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
@@ -322,7 +367,7 @@ for each of these iterative schemes):</p>
 <div class="line-block">
 <div class="line">Power Iterations can be slow to converge when the dominance ratio
 (ratio of the largest eigenvalue to the second largest eigenvalue) is
-close to 1 <span id="id17">Reed [<a class="reference internal" href="#id148" title="Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. Nuclear Science and Engineering, 45(3):245, 1971.">Ree71</a>]</span>. To remedy this,
+close to 1 <span id="id18">Reed [<a class="reference internal" href="#id150" title="Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. Nuclear Science and Engineering, 45(3):245, 1971.">Ree71</a>]</span>. To remedy this,
 acceleration of Power Iterations is necessary. To do so, the
 second-moment method, a linearization of the variable Eddington-tensor
 method, is employed in OpenSn. For efficiency’s sake, a smaller number
@@ -339,7 +384,7 @@ However, a low-order approximation to the transport equation is
 employed to solve for the approximation of the scalar error
 <span class="math notranslate nohighlight">\(\delta \Phi = \Phi - \Phi^{\text{(o+1/2)}}\)</span>. At this stage,
 this description gives rise to the Adams-Barbu method
-<span id="id18">Barbu and Adams [<a class="reference internal" href="#id168" title="Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. Nuclear Science and Engineering, 197(4):517–533, 2023. URL: https://doi.org/10.1080/00295639.2022.2123205, doi:10.1080/00295639.2022.2123205.">BA23</a>]</span> if the diffusion is chosen as
+<span id="id19">Barbu and Adams [<a class="reference internal" href="#id170" title="Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. Nuclear Science and Engineering, 197(4):517–533, 2023. URL: https://doi.org/10.1080/00295639.2022.2123205, doi:10.1080/00295639.2022.2123205.">BA23</a>]</span> if the diffusion is chosen as
 the low-order operator. Note that an eigenvalue problem that contains
 an inhomogeneous source term needs to be solved. Then, the flux update
 would be given by
@@ -351,7 +396,7 @@ would be given by
 terms of the flux update <span class="math notranslate nohighlight">\(\Phi^{\text{(o+1)}}\)</span>. When the
 low-order operator is chosen to be the second-moment method, a
 linearization of the variable Eddington-tensor method
-<span id="id19">Connor Woodsford and Morel [<a class="reference internal" href="#id169" title="James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. Nuclear Science and Engineering, 0(0):1–9, 2024. URL: https://doi.org/10.1080/00295639.2024.2303107, doi:10.1080/00295639.2024.2303107.">CWM24</a>]</span>, the scheme implemented in OpenSn
+<span id="id20">Connor Woodsford and Morel [<a class="reference internal" href="#id171" title="James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. Nuclear Science and Engineering, 0(0):1–9, 2024. URL: https://doi.org/10.1080/00295639.2024.2303107, doi:10.1080/00295639.2024.2303107.">CWM24</a>]</span>, the scheme implemented in OpenSn
 is obtained:</div>
 </div>
 <blockquote>
@@ -609,7 +654,7 @@ nonlinear current correction from transport.</p>
 is not guaranteed to equal the net current produced by the high-order
 transport sweep.
 Traditional CMFD fixes this by adding a nonlinear current correction
-<span id="id20">OpenMOC Documentation [<a class="reference internal" href="#id325" title="OpenMOC Documentation. Coarse mesh finite difference acceleration. 2019. Accessed: 2026-05-18. URL: https://mit-crpg.github.io/OpenMOC/methods/cmfd.html.">OpenMOCDocumentation19</a>]</span>.
+<span id="id21">OpenMOC Documentation [<a class="reference internal" href="#id328" title="OpenMOC Documentation. Coarse mesh finite difference acceleration. 2019. Accessed: 2026-05-18. URL: https://mit-crpg.github.io/OpenMOC/methods/cmfd.html.">OpenMOCDocumentation19</a>]</span>.
 OpenSn writes the corrected current in the form</p>
 <div class="math notranslate nohighlight">
 \[J_{I,J,g_c}
@@ -647,27 +692,49 @@ face, OpenSn adds the owner’s outward angular outflow and subtracts the
 neighbor’s opposing outflow. If the neighbor cell is on another MPI rank,
 the needed neighbor outflow is exchanged before the CMFD operator is
 assembled.</p>
-<p>OpenSn also implements a partial-current closure. Let
-<span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}\)</span> be the restricted outgoing partial
-current from coarse cell <span class="math notranslate nohighlight">\(I\)</span> through the face shared with
-<span class="math notranslate nohighlight">\(J\)</span>, and let <span class="math notranslate nohighlight">\(P_{J\rightarrow I,g_c}\)</span> be the opposing
-outgoing partial current from <span class="math notranslate nohighlight">\(J\)</span>. The net current is their
-difference, but the partial-current closure inserts the two one-sided
-current coefficients directly:</p>
+<p>OpenSn also implements the partial-current CMFD (pCMFD) closure of
+<span id="id22">Cho <em>et al.</em> [<a class="reference internal" href="#id327" title="Nam Zin Cho, Gil Soo Lee, and Chang Je Park. Partial current-based CMFD acceleration of the 2D/1D fusion method for 3D whole-core transport calculations. Transactions of the American Nuclear Society, 88:594, 2003.">CLP03</a>]</span>. Let <span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}\)</span> be the restricted
+outgoing partial current from coarse cell <span class="math notranslate nohighlight">\(I\)</span> through the face shared
+with <span class="math notranslate nohighlight">\(J\)</span>, and let <span class="math notranslate nohighlight">\(P_{J\rightarrow I,g_c}\)</span> be the opposing outgoing
+partial current from <span class="math notranslate nohighlight">\(J\)</span>. Each partial current is modeled with half of
+the diffusion coupling and its own nonlinear correction:</p>
 <div class="math notranslate nohighlight">
-\[J^{\text{pc}}_{I,J,g_c}
+\[J^{+}_{I,J,g_c}
 =
-\frac{P_{I\rightarrow J,g_c}}{\Phi_{I,g_c}}\Phi_{I,g_c}
--
-\frac{P_{J\rightarrow I,g_c}}{\Phi_{J,g_c}}\Phi_{J,g_c}.\]</div>
-<p>Equivalently, the diagonal face coefficient for cell <span class="math notranslate nohighlight">\(I\)</span> is
-<span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}/\Phi_{I,g_c}\)</span> and the off-diagonal
-coefficient multiplying <span class="math notranslate nohighlight">\(\Phi_{J,g_c}\)</span> is
-<span class="math notranslate nohighlight">\(-P_{J\rightarrow I,g_c}/\Phi_{J,g_c}\)</span>. This form preserves the
-latest partial currents when evaluated at the current restricted
-transport flux. If either one-sided scalar flux is too small, or if the
-resulting coefficients are not finite, the partial-current closure is
-not used on that face.</p>
+\frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)
++
+\widehat{D}^{+}_{I,J,g_c}\Phi_{I,g_c},
+\qquad
+J^{-}_{I,J,g_c}
+=
+\frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{J,g_c}-\Phi_{I,g_c}\right)
++
+\widehat{D}^{-}_{I,J,g_c}\Phi_{J,g_c}.\]</div>
+<p>The corrections are chosen so that <span class="math notranslate nohighlight">\(J^{+}\)</span> and <span class="math notranslate nohighlight">\(J^{-}\)</span> reproduce
+<span class="math notranslate nohighlight">\(P_{I\rightarrow J,g_c}\)</span> and <span class="math notranslate nohighlight">\(P_{J\rightarrow I,g_c}\)</span> when evaluated
+with the latest restricted transport scalar fluxes:</p>
+<div class="math notranslate nohighlight">
+\[\widehat{D}^{+}_{I,J,g_c}
+=
+\frac{P_{I\rightarrow J,g_c}
+- \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{I,g_c}-\Phi_{J,g_c}\right)}
+{\Phi_{I,g_c}},
+\qquad
+\widehat{D}^{-}_{I,J,g_c}
+=
+\frac{P_{J\rightarrow I,g_c}
+- \frac{1}{2}D^f_{I,J,g_c}\left(\Phi_{J,g_c}-\Phi_{I,g_c}\right)}
+{\Phi_{J,g_c}}.\]</div>
+<p>The outward net current is <span class="math notranslate nohighlight">\(J^{\text{pc}}_{I,J,g_c} = J^{+}_{I,J,g_c} -
+J^{-}_{I,J,g_c}\)</span>, so the diagonal face coefficient for cell <span class="math notranslate nohighlight">\(I\)</span> is
+<span class="math notranslate nohighlight">\(D^f_{I,J,g_c}+\widehat{D}^{+}_{I,J,g_c}\)</span> and the off-diagonal coefficient
+multiplying <span class="math notranslate nohighlight">\(\Phi_{J,g_c}\)</span> is
+<span class="math notranslate nohighlight">\(-D^f_{I,J,g_c}-\widehat{D}^{-}_{I,J,g_c}\)</span>. Like the net-current closure,
+this form reproduces the latest transport net current, so the CMFD fixed point
+is unchanged. It differs in how the coarse operator responds to a change of the
+coarse flux: the diffusion coupling is retained in both one-sided currents. If
+either one-sided scalar flux is too small, or if the resulting coefficients are
+not finite, the partial-current closure is not used on that face.</p>
 <p>The implementation can also blend the net-current and partial-current
 closures. With a partial-current fraction <span class="math notranslate nohighlight">\(\eta \in [0,1]\)</span>, the
 face contribution is</p>
@@ -678,10 +745,20 @@ face contribution is</p>
 +
 \eta J^{\text{pc}}_{I,J,g_c}.\]</div>
 <p>Here <span class="math notranslate nohighlight">\(J^{\text{net}}\)</span> is the diffusion plus nonlinear net-current
-closure and <span class="math notranslate nohighlight">\(J^{\text{pc}}\)</span> is the partial-current closure. The
-automatic closure logic begins with the net-current closure, probes the
-early low-order behavior with both net and partial closures, and may
-select a blend or the pure partial-current closure when the partial
+closure and <span class="math notranslate nohighlight">\(J^{\text{pc}}\)</span> is the partial-current closure.</p>
+<p>The partial-current closure is the default. The net-current closure, as in
+standard CMFD, can make the coarse correction oscillate or diverge when the
+coarse cells are optically thick. The partial-current closure remains stable
+with a full (unrelaxed) correction over a much wider range of coarse-cell
+optical thickness. Dropping the diffusion coupling from the partial currents,
+which reduces the closure to partial-current coarse-mesh rebalance, is not
+equivalent: rebalance can diverge on optically thin coarse cells unless the
+correction is strongly relaxed. If the partial-current coefficients cannot be
+formed on a face (an adjacent coarse flux is essentially zero), that face uses
+the diffusion coupling without the current correction. With the <code class="docutils literal notranslate"><span class="pre">auto</span></code>
+option, the closure logic begins with the net-current closure, probes the
+early low-order behavior with both net and partial closures, and may select a
+blend or the pure partial-current closure when the partial
 closure gives a materially better low-order residual or coarse
 eigenvalue prediction. If the automatic path continues with the
 net-current closure but early iterations show a large mismatch between
@@ -870,7 +947,7 @@ and accelerates the all-groups scalar-flux balance.</p>
 of scattering, and with localized small sources, the <span class="math notranslate nohighlight">\(S_n\)</span> method
 will exhibit ray effects (angular discretization error). These ray
 effects can be mitigated by splitting the angular flux into uncollided
-and collided components <span id="id21">Hanus <em>et al.</em> [<a class="reference internal" href="#id170" title="Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. Journal of Computational Physics, 398:108848, 2019.">HHR+19</a>]</span>:</p>
+and collided components <span id="id23">Hanus <em>et al.</em> [<a class="reference internal" href="#id172" title="Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. Journal of Computational Physics, 398:108848, 2019.">HHR+19</a>]</span>:</p>
 <div class="math notranslate nohighlight">
 \[\Psi = \Psi^u + \Psi^c \,.\]</div>
 <p>Then, the original transport problem
@@ -901,7 +978,7 @@ be done using ray tracing, thus mitigating ray effects.</p></li>
 least-squares projection of the scalar flux onto the local PWLD basis
 (from which cell removal is computed) and the outgoing face currents,
 using the point source’s exact analytic attenuation, following the
-near-source treatment of <span id="id22">Woodsford <em>et al.</em> [<a class="reference internal" href="#id326" title="Connor Woodsford, Jean C. Ragusa, and Jim E. Morel. Sweep-based uncollided-flux treatment on unstructured grids. Progress in Nuclear Energy, 200:106524, 2026. URL: https://doi.org/10.1016/j.pnucene.2026.106524, doi:10.1016/j.pnucene.2026.106524.">WRM26</a>]</span>. For the true field,
+near-source treatment of <span id="id24">Woodsford <em>et al.</em> [<a class="reference internal" href="#id329" title="Connor Woodsford, Jean C. Ragusa, and Jim E. Morel. Sweep-based uncollided-flux treatment on unstructured grids. Progress in Nuclear Energy, 200:106524, 2026. URL: https://doi.org/10.1016/j.pnucene.2026.106524, doi:10.1016/j.pnucene.2026.106524.">WRM26</a>]</span>. For the true field,
 away from the source itself, <span class="math notranslate nohighlight">\(\vec{\nabla}\cdot(\phi\vec{\Omega}_s)
 + \sigma_t\phi = 0\)</span>, so by the divergence theorem the incoming current
 plus the cell source equals the outgoing current plus absorption
@@ -909,7 +986,7 @@ exactly; a mismatch between the two independently ray-traced quadratures
 is therefore purely a numerical artifact of finite quadrature resolution
 near the source’s own near-singular field, not missing physics. OpenSn
 reconciles the two quadratures with the single shared scale factor from
-Eqs. (24)–(25) of <span id="id23">Woodsford <em>et al.</em> [<a class="reference internal" href="#id326" title="Connor Woodsford, Jean C. Ragusa, and Jim E. Morel. Sweep-based uncollided-flux treatment on unstructured grids. Progress in Nuclear Energy, 200:106524, 2026. URL: https://doi.org/10.1016/j.pnucene.2026.106524, doi:10.1016/j.pnucene.2026.106524.">WRM26</a>]</span>. It scales the raw
+Eqs. (24)–(25) of <span id="id25">Woodsford <em>et al.</em> [<a class="reference internal" href="#id329" title="Connor Woodsford, Jean C. Ragusa, and Jim E. Morel. Sweep-based uncollided-flux treatment on unstructured grids. Progress in Nuclear Energy, 200:106524, 2026. URL: https://doi.org/10.1016/j.pnucene.2026.106524, doi:10.1016/j.pnucene.2026.106524.">WRM26</a>]</span>. It scales the raw
 least-squares projection (and thus removal) and outgoing currents by that
 factor, so that the cell’s source, removal, and leakage balance exactly.
 Because no nonlinear positivity correction is applied, individual PWLD
@@ -993,88 +1070,93 @@ source in this problem.</p></li>
 </section>
 <section id="references">
 <h2><span class="section-number">6.9. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
-<div class="docutils container" id="id24">
+<div class="docutils container" id="id26">
 <div role="list" class="citation-list">
-<div class="citation" id="id53" role="doc-biblioentry">
+<div class="citation" id="id55" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>AL02<span class="fn-bracket">]</span></span>
 <span class="backrefs">(<a role="doc-backlink" href="#id1">1</a>,<a role="doc-backlink" href="#id2">2</a>,<a role="doc-backlink" href="#id10">3</a>)</span>
 <p>ML Adams and EW Larsen. Fast iterative methods for discrete-ordinates particle transport calculations. <em>Progress in Nuclear Energy</em>, 40(1):3–159, 2002.</p>
 </div>
-<div class="citation" id="id251" role="doc-biblioentry">
+<div class="citation" id="id253" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">SS86</a><span class="fn-bracket">]</span></span>
 <p>Youcef Saad and Martin H Schultz. Gmres: a generalized minimal residual algorithm for solving nonsymmetric linear systems. <em>SIAM Journal on scientific and statistical computing</em>, 7(3):856–869, 1986.</p>
 </div>
-<div class="citation" id="id250" role="doc-biblioentry">
+<div class="citation" id="id252" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">Saa03</a><span class="fn-bracket">]</span></span>
 <p>Yousef Saad. <em>Iterative methods for sparse linear systems</em>. Siam, 2003.</p>
 </div>
-<div class="citation" id="id73" role="doc-biblioentry">
+<div class="citation" id="id75" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">PH96</a><span class="fn-bracket">]</span></span>
 <p>BW Patton and JP Holloway. Application of krylov subspace methods to the slab geometry transport equation. In <em>ANS Topical Meeting on Radiation Protection and Shielding</em>, volume 1, 384. 1996.</p>
 </div>
-<div class="citation" id="id74" role="doc-biblioentry">
+<div class="citation" id="id76" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">GHP99</a><span class="fn-bracket">]</span></span>
 <p>Brian Guthrie, James P Holloway, and Bruce W Patton. Gmres as a multi-step transport sweep accelerator. <em>Transport Theory and Statistical Physics</em>, 28(1):83–102, 1999.</p>
 </div>
-<div class="citation" id="id75" role="doc-biblioentry">
+<div class="citation" id="id77" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">OD98</a><span class="fn-bracket">]</span></span>
 <p>Suely Oliveira and Yuanhua Deng. Preconditioned krylov subspace methods for transport equations. <em>Progress in Nuclear Energy</em>, 33(1):155–174, 1998.</p>
 </div>
-<div class="citation" id="id172" role="doc-biblioentry">
+<div class="citation" id="id174" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">WWM04</a><span class="fn-bracket">]</span></span>
 <p>James S Warsa, Todd A Wareing, and Jim E Morel. Krylov iterative methods and the degraded effectiveness of diffusion synthetic acceleration for multidimensional $s_n$ calculations in problems with material discontinuities. <em>Nuclear Science and Engineering</em>, 147(3):218–248, 2004.</p>
 </div>
-<div class="citation" id="id77" role="doc-biblioentry">
+<div class="citation" id="id79" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">FWP09</a><span class="fn-bracket">]</span></span>
 <p>Erin D Fichtl, James S Warsa, and Anil K Prinja. Krylov iterative methods and synthetic acceleration for transport in binary statistical media. <em>Journal of Computational Physics</em>, 228(22):8413–8426, 2009.</p>
 </div>
-<div class="citation" id="id156" role="doc-biblioentry">
+<div class="citation" id="id158" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">Mor82</a><span class="fn-bracket">]</span></span>
 <p>JE Morel. A synthetic acceleration method for discrete ordinates calculations with highly anisotropic scattering. <em>Nuclear Science and Engineering</em>, 82:34–46, 1982.</p>
 </div>
-<div class="citation" id="id163" role="doc-biblioentry">
+<div class="citation" id="id165" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">Lar84</a><span class="fn-bracket">]</span></span>
 <p>Edward W. Larsen. Diffusion-synthetic acceleration methods for discrete-ordinates problems. <em>Transport Theory and Statistical Physics</em>, 13(1-2):107–126, 1984. URL: <a class="reference external" href="https://doi.org/10.1080/00411458408211656">https://doi.org/10.1080/00411458408211656</a>, <a class="reference external" href="https://doi.org/10.1080/00411458408211656">doi:10.1080/00411458408211656</a>.</p>
 </div>
-<div class="citation" id="id162" role="doc-biblioentry">
+<div class="citation" id="id164" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id13">WR10</a><span class="fn-bracket">]</span></span>
 <p>Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. <em>Nuclear Science and Engineering</em>, 166:145–166, 2010.</p>
 </div>
-<div class="citation" id="id133" role="doc-biblioentry">
+<div class="citation" id="id135" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id14">TR14</a><span class="fn-bracket">]</span></span>
 <p>Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. <em>Journal of Computational Physics</em>, 274:356–369, 2014. URL: <a class="reference external" href="https://www.sciencedirect.com/science/article/pii/S0021999114004100">https://www.sciencedirect.com/science/article/pii/S0021999114004100</a>, <a class="reference external" href="https://doi.org/https://doi.org/10.1016/j.jcp.2014.05.044">doi:https://doi.org/10.1016/j.jcp.2014.05.044</a>.</p>
 </div>
-<div class="citation" id="id165" role="doc-biblioentry">
+<div class="citation" id="id167" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id15">AM93</a><span class="fn-bracket">]</span></span>
 <p>BT Adams and JE Morel. A two-grid acceleration scheme for the multigroup $s_n$ equations with neutron upscattering. <em>Nuclear Science and Engineering</em>, 115(3):253–264, 1993.</p>
 </div>
-<div class="citation" id="id166" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id16">HR20</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id168" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>HR20<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id16">1</a>,<a role="doc-backlink" href="#id17">2</a>)</span>
 <p>Milan Hanus and Jean C. Ragusa. Thermal upscattering acceleration schemes for parallel transport sweeps. <em>Nuclear Science and Engineering</em>, 194(10):873–893, 2020. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">https://doi.org/10.1080/00295639.2020.1767436</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2020.1767436">doi:10.1080/00295639.2020.1767436</a>.</p>
 </div>
-<div class="citation" id="id148" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id17">Ree71</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id150" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">Ree71</a><span class="fn-bracket">]</span></span>
 <p>Wm H Reed. The effectiveness of acceleration techniques for iterative methods in transport theory. <em>Nuclear Science and Engineering</em>, 45(3):245, 1971.</p>
 </div>
-<div class="citation" id="id168" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id18">BA23</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id170" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">BA23</a><span class="fn-bracket">]</span></span>
 <p>Anthony P. Barbu and Marvin L. Adams. Convergence properties of a linear diffusion-acceleration method for k-eigenvalue transport problems. <em>Nuclear Science and Engineering</em>, 197(4):517–533, 2023. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">https://doi.org/10.1080/00295639.2022.2123205</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2022.2123205">doi:10.1080/00295639.2022.2123205</a>.</p>
 </div>
-<div class="citation" id="id169" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id19">CWM24</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id171" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">CWM24</a><span class="fn-bracket">]</span></span>
 <p>James Tutt Connor Woodsford and Jim E. Morel. A variant of the second-moment method for k-eigenvalue calculations. <em>Nuclear Science and Engineering</em>, 0(0):1–9, 2024. URL: <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">https://doi.org/10.1080/00295639.2024.2303107</a>, <a class="reference external" href="https://doi.org/10.1080/00295639.2024.2303107">doi:10.1080/00295639.2024.2303107</a>.</p>
 </div>
-<div class="citation" id="id325" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id20">OpenMOCDocumentation19</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id328" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">OpenMOCDocumentation19</a><span class="fn-bracket">]</span></span>
 <p>OpenMOC Documentation. Coarse mesh finite difference acceleration. 2019. Accessed: 2026-05-18. URL: <a class="reference external" href="https://mit-crpg.github.io/OpenMOC/methods/cmfd.html">https://mit-crpg.github.io/OpenMOC/methods/cmfd.html</a>.</p>
 </div>
-<div class="citation" id="id170" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id21">HHR+19</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id327" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id22">CLP03</a><span class="fn-bracket">]</span></span>
+<p>Nam Zin Cho, Gil Soo Lee, and Chang Je Park. Partial current-based CMFD acceleration of the 2D/1D fusion method for 3D whole-core transport calculations. <em>Transactions of the American Nuclear Society</em>, 88:594, 2003.</p>
+</div>
+<div class="citation" id="id172" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id23">HHR+19</a><span class="fn-bracket">]</span></span>
 <p>Milan Hanus, Logan H Harbour, Jean C Ragusa, Michael P Adams, and Marvin L Adams. Uncollided flux techniques for arbitrary finite element meshes. <em>Journal of Computational Physics</em>, 398:108848, 2019.</p>
 </div>
-<div class="citation" id="id326" role="doc-biblioentry">
+<div class="citation" id="id329" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span>WRM26<span class="fn-bracket">]</span></span>
-<span class="backrefs">(<a role="doc-backlink" href="#id22">1</a>,<a role="doc-backlink" href="#id23">2</a>)</span>
+<span class="backrefs">(<a role="doc-backlink" href="#id24">1</a>,<a role="doc-backlink" href="#id25">2</a>)</span>
 <p>Connor Woodsford, Jean C. Ragusa, and Jim E. Morel. Sweep-based uncollided-flux treatment on unstructured grids. <em>Progress in Nuclear Energy</em>, 200:106524, 2026. URL: <a class="reference external" href="https://doi.org/10.1016/j.pnucene.2026.106524">https://doi.org/10.1016/j.pnucene.2026.106524</a>, <a class="reference external" href="https://doi.org/10.1016/j.pnucene.2026.106524">doi:10.1016/j.pnucene.2026.106524</a>.</p>
 </div>
 </div>

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a1af06d1ab7a9c35fb0bbf2d9251c748d:
+
+Function opensn::AddTimeAbsorptionToDiffusionCoefficient
+========================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::AddTimeAbsorptionToDiffusionCoefficient(double, double)
+   :project: opensn

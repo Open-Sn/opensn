@@ -388,18 +388,19 @@
 <section id="Options-most-users-should-tune">
 <h3><span class="section-number">3.2.2.9.1. </span>Options most users should tune<a class="headerlink" href="#Options-most-users-should-tune" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">current_closure=&quot;auto&quot;</span></code></dt><dd><p>CMFD needs a face-current closure for the low-order operator. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> starts from net current and probes whether net, partial current, or a blend is more appropriate. This is the recommended starting point. Fixed <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> are useful for sensitivity studies or if auto is poor for a specific problem.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">current_closure=&quot;partial&quot;</span></code></dt><dd><p>CMFD needs a face-current closure for the low-order operator. <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> (the default) is the partial-current CMFD (pCMFD) closure: each outgoing partial current carries half of the diffusion coupling plus its own transport correction. It is the recommended choice: it is typically stable with an unrelaxed correction, whereas net-current CMFD can oscillate or diverge on optically thick coarse cells. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (which probes the early iterations to choose net, partial, or a
+blend) are useful for comparisons.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target fine cells per spatial CMFD coarse cell. Larger values make the CMFD solve cheaper but less detailed. Smaller values make the correction more detailed but increase coarse-solve cost. For small tutorial problems, use a small value such as 8. For larger problems, 16 to 64 is a reasonable first scan.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code></dt><dd><p>Number of fine energy groups per CMFD coarse energy group. This is not the final number of coarse groups. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> coarse groups, use <code class="docutils literal notranslate"><span class="pre">(num_groups</span> <span class="pre">+</span> <span class="pre">N</span> <span class="pre">-</span> <span class="pre">1)</span> <span class="pre">//</span> <span class="pre">N</span></code>. The notebook targets 16 coarse groups for speed; production CASL runs often use 16 to 32 coarse groups.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Requested strength of the scalar-flux correction. <code class="docutils literal notranslate"><span class="pre">0.5</span></code> is conservative. Larger values can reduce iterations but may trigger damping or skipped corrections. Smaller values are safer but weaker.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Requested strength of the scalar-flux correction. With the partial-current closure the full correction (<code class="docutils literal notranslate"><span class="pre">1.0</span></code>) is usually stable and converges fastest; for an ideal correction, a value below 1 leaves about <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">relaxation</span></code> of the error, so it slows convergence. Reduce it only if the log shows damped or skipped corrections.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code></dt><dd><p>Number of high-order WGS update iterations before each CMFD correction. The production CMFD workflow normally starts with 1. Increasing this can stabilize hard cases, but each power iteration becomes more expensive.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code></dt><dd><p>Number of high-order WGS update iterations before each CMFD correction. The notebook uses 3: with this many-group problem, a slightly cleaner transport update lets each CMFD correction remove more error, so fewer power iterations are needed. Values from 1 to about 4 are reasonable starting points; larger values make each power iteration more expensive.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. The default is <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>. This notebook sets it explicitly to a looser fixed value so the tutorial runs quickly and predictably; production inputs should pick a value deliberately rather than assuming tighter is always safer, since the achievable residual floor depends on the mesh,
-aggregation, and closure and is not known in advance.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code></dt><dd><p>Additional CMFD convergence check based on restricted transport-current balance. This prevents convergence based only on a small k change when the low-order balance is still inconsistent with transport. The default is <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>. This notebook sets it explicitly to <code class="docutils literal notranslate"><span class="pre">1.0e-3</span></code>, together with <code class="docutils literal notranslate"><span class="pre">k_tol</span> <span class="pre">=</span> <span class="pre">1.0e-6</span></code>, which keeps the tutorial quick while converging the eigenvalue to within about 1 pcm of the tightly converged value; production inputs should pick a value deliberately rather than
+assuming tighter is always safer, since the achievable residual floor depends on the mesh, aggregation, and closure and is not known in advance.</p>
 </dd>
 </dl>
 </section>
@@ -410,26 +411,26 @@ aggregation, and closure and is not known in advance.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;direct&quot;</span></code></dt><dd><p>Direct coarse solve. This is robust for small or moderate coarse systems. For large 3D problems, <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> or iterative PETSc options may be required to avoid excessive memory use.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol=1.0e-12</span></code></dt><dd><p>With <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, this tolerance usually does not stop the WGS solve; the iteration limit does. It remains useful if you increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol=1.0e-12</span></code></dt><dd><p>With a small <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>, this tolerance usually does not stop the WGS solve; the iteration limit does. It remains useful if you increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code>.</p>
 </dd>
 </dl>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">k_tol</span> <span class="o">=</span> <span class="mf">1.0e-4</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">k_tol</span> <span class="o">=</span> <span class="mf">1.0e-6</span>
 <span class="n">target_coarse_groups</span> <span class="o">=</span> <span class="mi">16</span>
 
 <span class="n">cmfd</span> <span class="o">=</span> <span class="n">CMFDAcceleration</span><span class="p">(</span>
     <span class="n">problem</span><span class="o">=</span><span class="n">phys</span><span class="p">,</span>
-    <span class="n">current_closure</span><span class="o">=</span><span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+    <span class="n">current_closure</span><span class="o">=</span><span class="s2">&quot;partial&quot;</span><span class="p">,</span>
     <span class="n">coarse_mesh</span><span class="o">=</span><span class="s2">&quot;local_aggregation&quot;</span><span class="p">,</span>
     <span class="n">aggregation_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span>
     <span class="n">group_aggregation_size</span><span class="o">=</span><span class="p">(</span><span class="n">num_groups</span> <span class="o">+</span> <span class="n">target_coarse_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="n">target_coarse_groups</span><span class="p">,</span>
-    <span class="n">relaxation</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
-    <span class="n">update_wgs_max_its</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">relaxation</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span>
+    <span class="n">update_wgs_max_its</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span>
     <span class="n">update_wgs_abs_tol</span><span class="o">=</span><span class="mf">1.0e-12</span><span class="p">,</span>
-    <span class="n">balance_residual_tolerance</span><span class="o">=</span><span class="mf">1.0e-1</span><span class="p">,</span>
+    <span class="n">balance_residual_tolerance</span><span class="o">=</span><span class="mf">1.0e-3</span><span class="p">,</span>
     <span class="n">coarse_solver_policy</span><span class="o">=</span><span class="s2">&quot;direct&quot;</span><span class="p">,</span>
 <span class="p">)</span>
 
@@ -451,7 +452,7 @@ CMFD convergence check = ..., transport-current balance residual = ...
 </pre></div>
 </div>
 <p>The solve is converged only when the outer k tolerance and the CMFD balance check are both satisfied.</p>
-<p>With <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, <code class="docutils literal notranslate"><span class="pre">WGS</span> <span class="pre">=</span> <span class="pre">iteration_limit</span></code> is expected. It does not mean the calculation failed; it means the high-order update intentionally performed one WGS iteration before the CMFD correction.</p>
+<p>With a small <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> (3 here), <code class="docutils literal notranslate"><span class="pre">WGS</span> <span class="pre">=</span> <span class="pre">iteration_limit</span></code> is expected. It does not mean the calculation failed; it means the high-order update intentionally performed three WGS iterations before the CMFD correction.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -499,8 +500,8 @@ CMFD convergence check = ..., transport-current balance residual = ...
 <p>Meaning: every damping attempt produced a scalar-flux update that violated the negative-flux guard.</p>
 <p>What to do:</p>
 <ol class="arabic simple">
-<li><p>Reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, for example from <code class="docutils literal notranslate"><span class="pre">0.5</span></code> to <code class="docutils literal notranslate"><span class="pre">0.25</span></code>.</p></li>
-<li><p>Try <code class="docutils literal notranslate"><span class="pre">current_closure=&quot;net&quot;</span></code> if auto selected partial current too aggressively.</p></li>
+<li><p>Reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, for example from <code class="docutils literal notranslate"><span class="pre">1.0</span></code> to <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.</p></li>
+<li><p>Compare with <code class="docutils literal notranslate"><span class="pre">current_closure=&quot;net&quot;</span></code>; the partial-current coefficients can respond strongly where coarse fluxes are small.</p></li>
 <li><p>Increase <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> to make the transport update cleaner before CMFD is applied.</p></li>
 <li><p>Consider a few <code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code> only as a diagnostic. Do not use inactive iterations to hide persistent instability.</p></li>
 </ol>

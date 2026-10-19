@@ -116,6 +116,10 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">SMMAcceleration</span></span><a class="headerlink" href="#pyopensn.solver.SMMAcceleration" title="Link to this definition"></a></dt>
 <dd><p>Construct an SMM accelerator for the power iteration k-eigenvalue solver.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_s_m_m_acceleration.html#_CPPv4N6opensn15SMMAccelerationE" title="opensn::SMMAcceleration"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::SMMAcceleration</span></code></a>.</p>
+<p>Requires a single groupset, isotropic (P0) scattering, <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code>,
+only vacuum and reflecting boundaries (an isotropic boundary is rejected even with zero
+strength), and, with the AAH sweep, <code class="docutils literal notranslate"><span class="pre">l_max_its</span></code> greater than one. The owning solver checks
+these requirements in <code class="docutils literal notranslate"><span class="pre">Initialize()</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.SMMAcceleration.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.SMMAcceleration" title="pyopensn.solver.SMMAcceleration"><span class="pre">pyopensn.solver.SMMAcceleration</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.SMMAcceleration.__init__" title="Link to this definition"></a></dt>
@@ -135,7 +139,7 @@ SMM acceleration only supports problems with isotropic scattering.</p>
 <li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;ssss&quot;</em>) – Additional PETSc options.</p></li>
 <li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Maximum allowable iterations for inner power iterations.</p></li>
 <li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – k-eigenvalue tolerance for the inner power iterations.</p></li>
-<li><p><strong>sdm</strong> (<em>str</em><em>, </em><em>default=&quot;pwld&quot;</em>) – <dl class="simple">
+<li><p><strong>sdm</strong> (<em>str</em><em>, </em><em>default=&quot;pwlc&quot;</em>) – <dl class="simple">
 <dt>Spatial discretization method to use for the diffusion solver. Valid choices are:</dt><dd><ul>
 <li><p>’pwld’ : Piecewise Linear Discontinuous</p></li>
 <li><p>’pwlc’ : Piecewise Linear Continuous</p></li>

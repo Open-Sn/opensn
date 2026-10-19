@@ -129,8 +129,22 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration10InitializeER26PowerIterationKEigenSolver">
 <span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1a96795aeaed23a5799eecb2b53688e882"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolverE" title="opensn::PowerIterationKEigenSolver"><span class="n"><span class="pre">PowerIterationKEigenSolver</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">solver</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn35DiscreteOrdinatesKEigenAcceleration10InitializeER26PowerIterationKEigenSolver" title="Link to this definition"></a><br /></dt>
-<dd><p>Public initialize method, to be called by the power iteration solver using this acceleration scheme. </p>
+<dd><p>Public initialize method, called by the power iteration solver at the start of each Execute(). </p>
+<p>Builds the acceleration data from the problem’s current runtime objects, so it must support repeated calls.</p>
 <p>Calls the internal <a class="reference internal" href="#classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1ac890c7c1687f7f8a786232eccbec05c4"><span class="std std-ref">Initialize()</span></a> method. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration17CheckRequirementsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1a4ecc018158fe875408c4d81af82e2cb8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckRequirements</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration17CheckRequirementsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends one message for each requirement of this acceleration method that the problem violates. </p>
+<p>The owning solver calls it from its CheckRequirements, so it runs collectively before <a class="reference internal" href="#classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1ac890c7c1687f7f8a786232eccbec05c4"><span class="std std-ref">Initialize()</span></a> and before each execution. The default has no requirements. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration10GetProblemEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1aacd90ccd8bc08a0e55f4b0206a483875"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetProblem</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration10GetProblemEv" title="Link to this definition"></a><br /></dt>
+<dd><p>The problem this acceleration method was created for. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -215,9 +229,15 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration28CheckAAHSingleSweepStabilityEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1aa7770ab9295976680d25f8af0f6a0f1f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckAAHSingleSweepStability</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration28CheckAAHSingleSweepStabilityEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Guard used by acceleration methods that are not stable with one AAH sweep. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration24RequireMultipleAAHSweepsERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1a68c26afbd7181fa26f1fe3126db5e6ee"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RequireMultipleAAHSweeps</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration24RequireMultipleAAHSweepsERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends an error if an AAH groupset does one sweep per iteration (unstable for this method). </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration21RequireSingleGroupsetERNSt6vectorINSt6stringEEE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_k_eigen_acceleration_1a81e86c4c0364d8cb4f650ce0a920e677"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RequireSingleGroupset</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">errors</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn35DiscreteOrdinatesKEigenAcceleration21RequireSingleGroupsetERNSt6vectorINSt6stringEEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Appends an error if the problem has more than one groupset. </p>
 </dd></dl>
 
 </div>
