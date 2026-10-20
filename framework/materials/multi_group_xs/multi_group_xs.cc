@@ -711,12 +711,12 @@ MultiGroupXS::Scale(const double factor)
     for (auto& value : values)
       value *= scaling_factor_;
 
+  // Clear the transposes of the old data. In adjoint mode rebuild them now; otherwise
+  // SetAdjointMode rebuilds them on the next switch to adjoint mode.
+  transposed_transfer_matrices_.clear();
+  transposed_production_matrix_.clear();
   if (adjoint_)
-  {
-    transposed_transfer_matrices_.clear();
-    transposed_production_matrix_.clear();
     TransposeTransferAndProduction();
-  }
 
   diffusion_initialized_ = false;
   ComputeDiffusionParameters();
