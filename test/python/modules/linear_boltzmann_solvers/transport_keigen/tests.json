@@ -294,6 +294,56 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_1d_1g_smm_vacuum.py",
+    "comment": "1D 1G vacuum slab: power iteration with SMM (pwld, pwlc) matches unaccelerated power iteration",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumPIError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumPWLDError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumPWLCError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_smm_vacuum_s2.py",
+    "comment": "1D 1G vacuum slab, S2: power iteration with SMM (pwld, pwlc) matches unaccelerated power iteration",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumS2PIError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumS2PWLDError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SMMVacuumS2PWLCError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_2d_1b_qblock.py",
     "comment": "2D 2G KEigenvalue::Solver test using NonLinearK",
     "num_procs": 4,
