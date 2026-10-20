@@ -347,6 +347,22 @@ if (OPENSN_WITH_GPU)
   set_property(TARGET libopensngpu PROPERTY OUTPUT_NAME opensngpu)
   add_subdirectory(external/caribou)
   target_link_libraries(libopensngpu PUBLIC libcaribou)
+  # Installed consumers link the static GPU library themselves, so they also
+  # need the GPU runtime that CMake adds implicitly to in-tree links.
+  if(OPENSN_WITH_CUDA OR HIP_ON_NVIDIA)
+    if(OPENSN_WITH_CUDA)
+      string(TOLOWER "${CMAKE_CUDA_RUNTIME_LIBRARY}" _opensn_gpu_runtime)
+    else()
+      string(TOLOWER "${CMAKE_HIP_RUNTIME_LIBRARY}" _opensn_gpu_runtime)
+    endif()
+    if(_opensn_gpu_runtime STREQUAL "shared")
+      target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:CUDA::cudart>)
+    elseif(NOT _opensn_gpu_runtime STREQUAL "none")
+      target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:CUDA::cudart_static>)
+    endif()
+  elseif(OPENSN_WITH_HIP)
+    target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:hip::host>)
+  endif()
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     target_compile_options(libopensngpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
   endif()
@@ -398,10 +414,11 @@ endif()
 
 target_link_libraries(libopensn
     PUBLIC
-    ${PETSC_LIBRARY}
+    PETSc::PETSc
     ${VTK_LIBRARIES}
     caliper
-    ${HDF5_LIBRARIES}
+    HDF5::HDF5
+    Boost::headers
     mpicpp-lite::mpicpp-lite
     MPI::MPI_CXX
 )
@@ -566,6 +583,7 @@ install(
     FILES
         "${CMAKE_CURRENT_BINARY_DIR}/OpenSnConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/OpenSnConfigVersion.cmake"
+        "${PROJECT_SOURCE_DIR}/cmake/FindPETSc.cmake"
     DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/opensn
 )
 

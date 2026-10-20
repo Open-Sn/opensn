@@ -1,11 +1,86 @@
 set(OPENSN_VERSION @PROJECT_VERSION@)
+set(_OpenSn_WITH_PYTHON @OPENSN_WITH_PYTHON@)
+set(_OpenSn_WITH_CUDA @OPENSN_WITH_CUDA@)
+set(_OpenSn_WITH_HIP @OPENSN_WITH_HIP@)
+set(_OpenSn_HIP_ON_NVIDIA @HIP_ON_NVIDIA@)
+set(_OpenSn_VTK_VERSION "@VTK_VERSION@")
 
 @PACKAGE_INIT@
 
-include("${CMAKE_CURRENT_LIST_DIR}/OpenSnTargets.cmake")
+include(CMakeFindDependencyMacro)
 include(FindPackageHandleStandardArgs)
 
-find_dependency(mpicpp-lite 2.7.1 REQUIRED)
+# Find the dependencies referenced by the exported targets.
+find_dependency(MPI COMPONENTS CXX)
+find_dependency(mpicpp-lite 2.7.1)
+find_dependency(HDF5 COMPONENTS C HL)
+
+find_package(Boost 1.86 CONFIG QUIET)
+if(NOT Boost_FOUND)
+  cmake_policy(PUSH)
+  if(POLICY CMP0167)
+    cmake_policy(SET CMP0167 OLD)
+  endif()
+  find_package(Boost 1.86 QUIET)
+  cmake_policy(POP)
+endif()
+if(NOT Boost_FOUND)
+  set(OpenSn_FOUND FALSE)
+  set(OpenSn_NOT_FOUND_MESSAGE "OpenSn requires Boost 1.86 or newer, which was not found.")
+  return()
+endif()
+
+if(_OpenSn_VTK_VERSION VERSION_GREATER_EQUAL "9.0.0")
+  find_dependency(VTK COMPONENTS
+    CommonCore CommonDataModel IOLegacy IOCore IOXML ParallelCore
+    IOParallelXML FiltersCore IOEnSight IOExodus)
+else()
+  find_dependency(VTK COMPONENTS
+    vtkCommonCore vtkCommonDataModel vtkIOLegacy vtkIOCore vtkIOXML
+    vtkParallelCore vtkIOParallelXML vtkFiltersCore vtkIOEnSight vtkIOExodus)
+endif()
+
+# FindPETSc.cmake is installed next to this file.
+set(_OpenSn_saved_module_path "${CMAKE_MODULE_PATH}")
+list(PREPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}")
+find_package(PETSc 3.17 QUIET)
+set(CMAKE_MODULE_PATH "${_OpenSn_saved_module_path}")
+unset(_OpenSn_saved_module_path)
+if(NOT PETSc_FOUND)
+  set(OpenSn_FOUND FALSE)
+  set(OpenSn_NOT_FOUND_MESSAGE
+    "OpenSn requires PETSc 3.17 or newer, which was not found. Set PETSC_DIR or add PETSc to CMAKE_PREFIX_PATH.")
+  return()
+endif()
+find_dependency(caliper)
+
+if(_OpenSn_WITH_CUDA OR _OpenSn_HIP_ON_NVIDIA)
+  find_dependency(CUDAToolkit 12.0)
+elseif(_OpenSn_WITH_HIP)
+  find_dependency(hip)
+endif()
+
+if(_OpenSn_WITH_PYTHON)
+  find_dependency(Python3 COMPONENTS Interpreter Development)
+  if(NOT TARGET pybind11::embed)
+    execute_process(
+      COMMAND ${Python3_EXECUTABLE} -m pybind11 --cmakedir
+      OUTPUT_VARIABLE _OpenSn_pybind11_dir
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      ERROR_QUIET
+    )
+    find_dependency(pybind11 CONFIG HINTS "${_OpenSn_pybind11_dir}")
+    unset(_OpenSn_pybind11_dir)
+  endif()
+endif()
+
+unset(_OpenSn_WITH_PYTHON)
+unset(_OpenSn_WITH_CUDA)
+unset(_OpenSn_WITH_HIP)
+unset(_OpenSn_HIP_ON_NVIDIA)
+unset(_OpenSn_VTK_VERSION)
+
+include("${CMAKE_CURRENT_LIST_DIR}/OpenSnTargets.cmake")
 
 find_library(OPENSN_LIBRARY NAMES opensn HINTS ${PACKAGE_PREFIX_DIR}/lib NO_DEFAULT_PATH)
 find_path(OPENSN_INCLUDE_DIR framework/runtime.h HINTS ${PACKAGE_PREFIX_DIR}/include/opensn)
