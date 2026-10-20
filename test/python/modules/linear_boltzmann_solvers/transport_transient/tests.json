@@ -392,6 +392,74 @@
     ]
   },
   {
+    "file": "transient_precursors_restart_two_blocks.py",
+    "outfileprefix": "transient_precursors_restart_two_blocks_one_material",
+    "comment": "Delayed precursor restarts with one material on two block IDs reproduce the uninterrupted transient steps",
+    "num_procs": 4,
+    "args": [
+      "xs_case=\"one_material\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PRECURSOR_RESTART_TWO_BLOCKS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_precursors_restart_two_blocks.py",
+    "outfileprefix": "transient_precursors_restart_two_blocks_mixed_families",
+    "comment": "Delayed precursor restarts with a one-family and a two-family material on two block IDs reproduce the uninterrupted transient steps",
+    "num_procs": 4,
+    "args": [
+      "xs_case=\"mixed_families\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PRECURSOR_RESTART_TWO_BLOCKS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_precursors_restart_two_blocks.py",
+    "outfileprefix": "transient_precursors_restart_two_blocks_multigroup",
+    "comment": "Two-group delayed precursor restarts with two materials on two block IDs reproduce the uninterrupted transient steps",
+    "num_procs": 4,
+    "args": [
+      "xs_case=\"multigroup\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PRECURSOR_RESTART_TWO_BLOCKS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_precursors_restart_two_blocks.py",
+    "outfileprefix": "transient_precursors_restart_two_blocks_header_count",
+    "comment": "Restarts written without precursor data on two block IDs read on another xs_map with the same total precursor family count",
+    "num_procs": 4,
+    "args": [
+      "xs_case=\"header_count\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PRECURSOR_RESTART_TWO_BLOCKS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
     "file": "transient_precursors_from_steady_restart_cbc.py",
     "comment": "Delayed precursor transient initialized from a steady-state restart (CBC)",
     "num_procs": 4,
