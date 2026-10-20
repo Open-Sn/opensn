@@ -327,7 +327,7 @@
   },
   {
     "file": "adjoint_keigen_delayed_infinite_medium.py",
-    "comment": "use_precursors=False on delayed data: adjoint k equals forward k, P/R matches the operator forward k selects",
+    "comment": "use_precursors=False on delayed data: forward and adjoint k and P/R equal the prompt-only references",
     "num_procs": 2,
     "args": [
       "scenario=\"no_precursors\""
@@ -336,13 +336,13 @@
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_ADJ_FWD_REL_DIFF=",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_FWD_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
-        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_FWD_REL_ERR=",
+        "key": "ADJOINT_DELAYED_NO_PRECURSORS_K_ADJ_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-08
       },

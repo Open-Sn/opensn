@@ -25,22 +25,15 @@ groups, so that the family, its yield and both group indices of the delayed term
     rate (ComputeFissionRate) of the converged flux, against numpy's 1^T F phi / sigma_f^T phi
     (forward) and 1^T F^T phi* / sigma_f^T phi* (adjoint), phi* the eigenvector of the transposed
     operator. k does not depend on how the production weights the flux; the ratio does.
-  no_precursors: use_precursors=False; the adjoint eigenvalue equals the forward one. The forward
-    eigenvalue selects the operator, F with or without the delayed part, whichever k is nearer, so
-    the check does not fix whether such a solve applies delayed production. P/R of the forward and
-    adjoint fluxes is compared with that operator's references, as in production.
+  no_precursors: use_precursors=False, so no delayed neutrons are produced: k_inf and the P/R
+    references are those of the prompt-only F = chi_p (nu_p sigma_f)^T (k_inf = 0.993), and k and
+    P/R are checked as in production.
 
 Checks:
   ADJOINT_DELAYED_K_FWD_REL_ERR: |k_forward / k_inf - 1|.
   ADJOINT_DELAYED_K_ADJ_REL_ERR: |k_adjoint / k_inf - 1|.
-  ADJOINT_DELAYED_<SCENARIO>_K_{FWD,ADJ}_REL_ERR: the same relative errors for the scenarios
-    two_groupsets, cmfd and production.
-  ADJOINT_DELAYED_PRODUCTION_RATIO_{FWD,ADJ}_REL_ERR: the relative errors of P/R.
-  ADJOINT_DELAYED_NO_PRECURSORS_K_ADJ_FWD_REL_DIFF: |k_adjoint / k_forward - 1|.
-  ADJOINT_DELAYED_NO_PRECURSORS_K_FWD_REL_ERR: |k_forward / k_ref - 1|, k_ref the selected
-    operator's eigenvalue.
-  ADJOINT_DELAYED_NO_PRECURSORS_RATIO_{FWD,ADJ}_REL_ERR: the relative errors of P/R against the
-    selected operator.
+  ADJOINT_DELAYED_<SCENARIO>_K_{FWD,ADJ}_REL_ERR: the same relative errors for the other scenarios.
+  ADJOINT_DELAYED_{PRODUCTION,NO_PRECURSORS}_RATIO_{FWD,ADJ}_REL_ERR: the relative errors of P/R.
 """
 
 import os
@@ -235,12 +228,15 @@ if __name__ == "__main__":
         results["K_ADJ="] = f"{k_adjoint:.10f}"
         results["K_FWD_REL_ERR="] = f"{abs(k_forward / k_inf - 1.0):.6e}"
         results["K_ADJ_REL_ERR="] = f"{abs(k_adjoint / k_inf - 1.0):.6e}"
-    elif scenario in ("two_groupsets", "cmfd", "production"):
+    elif scenario in ("two_groupsets", "cmfd", "production", "no_precursors"):
         medium = media["two_families"]
-        k_inf = k_infinite(medium)
+        # Without precursors the references are those of the prompt-only operator.
+        use_precursors = scenario != "no_precursors"
+        k_inf = k_infinite(medium, use_precursors)
         settings = {
             "groupsets": 2 if scenario == "two_groupsets" else 1,
             "cmfd": scenario == "cmfd",
+            "use_precursors": use_precursors,
         }
         k_forward, ratio_forward = solve(grid, medium, adjoint=False, **settings)
         k_adjoint, ratio_adjoint = solve(grid, medium, adjoint=True, **settings)
@@ -250,40 +246,19 @@ if __name__ == "__main__":
         results["K_ADJ="] = f"{k_adjoint:.10f}"
         results["K_FWD_REL_ERR="] = f"{abs(k_forward / k_inf - 1.0):.6e}"
         results["K_ADJ_REL_ERR="] = f"{abs(k_adjoint / k_inf - 1.0):.6e}"
-        if scenario == "production":
-            ratio_forward_ref = production_ratio_reference(medium, adjoint=False)
-            ratio_adjoint_ref = production_ratio_reference(medium, adjoint=True)
+        if scenario in ("production", "no_precursors"):
+            ratio_forward_ref = production_ratio_reference(
+                medium, adjoint=False, use_precursors=use_precursors
+            )
+            ratio_adjoint_ref = production_ratio_reference(
+                medium, adjoint=True, use_precursors=use_precursors
+            )
             results["RATIO_FWD="] = f"{ratio_forward:.10f}"
             results["RATIO_ADJ="] = f"{ratio_adjoint:.10f}"
             results["RATIO_FWD_REF="] = f"{ratio_forward_ref:.10f}"
             results["RATIO_ADJ_REF="] = f"{ratio_adjoint_ref:.10f}"
             results["RATIO_FWD_REL_ERR="] = f"{abs(ratio_forward / ratio_forward_ref - 1.0):.6e}"
             results["RATIO_ADJ_REL_ERR="] = f"{abs(ratio_adjoint / ratio_adjoint_ref - 1.0):.6e}"
-    elif scenario == "no_precursors":
-        medium = media["two_families"]
-        k_forward, ratio_forward = solve(grid, medium, adjoint=False, use_precursors=False)
-        k_adjoint, ratio_adjoint = solve(grid, medium, adjoint=True, use_precursors=False)
-        k_prompt = k_infinite(medium, use_precursors=False)
-        k_full = k_infinite(medium)
-        delayed = abs(k_forward / k_full - 1.0) < abs(k_forward / k_prompt - 1.0)
-        k_ref = k_full if delayed else k_prompt
-        ratio_forward_ref = production_ratio_reference(
-            medium, adjoint=False, use_precursors=delayed
-        )
-        ratio_adjoint_ref = production_ratio_reference(medium, adjoint=True, use_precursors=delayed)
-        prefix = "ADJOINT_DELAYED_NO_PRECURSORS_"
-        results["DELAYED_PRODUCTION="] = f"{delayed}"
-        results["K_REF="] = f"{k_ref:.10f}"
-        results["K_FWD="] = f"{k_forward:.10f}"
-        results["K_ADJ="] = f"{k_adjoint:.10f}"
-        results["K_ADJ_FWD_REL_DIFF="] = f"{abs(k_adjoint / k_forward - 1.0):.6e}"
-        results["K_FWD_REL_ERR="] = f"{abs(k_forward / k_ref - 1.0):.6e}"
-        results["RATIO_FWD="] = f"{ratio_forward:.10f}"
-        results["RATIO_ADJ="] = f"{ratio_adjoint:.10f}"
-        results["RATIO_FWD_REF="] = f"{ratio_forward_ref:.10f}"
-        results["RATIO_ADJ_REF="] = f"{ratio_adjoint_ref:.10f}"
-        results["RATIO_FWD_REL_ERR="] = f"{abs(ratio_forward / ratio_forward_ref - 1.0):.6e}"
-        results["RATIO_ADJ_REL_ERR="] = f"{abs(ratio_adjoint / ratio_adjoint_ref - 1.0):.6e}"
     else:
         sys.exit(f"Unknown scenario {scenario!r}.")
 
