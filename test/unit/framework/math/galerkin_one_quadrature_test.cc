@@ -196,6 +196,40 @@ RefinesLikeNewSet(SLDFEsqQuadrature& quadrature, SLDFEsqQuadrature& new_set)
   return SameState(StateOf(quadrature), StateOf(new_set));
 }
 
+// GALERKIN_ONE builds the discrete-to-moment operator from the inverse of the moment-to-discrete
+// operator, so for a set with n directions both are n x n and sum_d D2M(d, m) M2D(d, k) = delta_mk.
+::testing::AssertionResult
+HasInverseOperators(const AngularQuadrature& quadrature, std::size_t num_directions)
+{
+  if (quadrature.GetNumAngles() != num_directions or quadrature.GetNumMoments() != num_directions)
+    return ::testing::AssertionFailure()
+           << quadrature.GetNumAngles() << " directions and " << quadrature.GetNumMoments()
+           << " moments, expected " << num_directions << " of each";
+
+  const auto& d2m = quadrature.GetDiscreteToMomentOperator();
+  const auto& m2d = quadrature.GetMomentToDiscreteOperator();
+  const std::vector<std::size_t> shape = {num_directions, num_directions};
+  if (d2m.dimension() != shape or m2d.dimension() != shape)
+    return ::testing::AssertionFailure()
+           << "operator shapes (" << d2m.dimension()[0] << ", " << d2m.dimension()[1] << ") and ("
+           << m2d.dimension()[0] << ", " << m2d.dimension()[1] << "), expected (" << num_directions
+           << ", " << num_directions << ")";
+
+  double max_error = 0.0;
+  for (std::size_t m = 0; m < num_directions; ++m)
+    for (std::size_t k = 0; k < num_directions; ++k)
+    {
+      double sum = 0.0;
+      for (std::size_t d = 0; d < num_directions; ++d)
+        sum += d2m(d, m) * m2d(d, k);
+      max_error = std::max(max_error, std::fabs(sum - (m == k ? 1.0 : 0.0)));
+    }
+  if (max_error > 1.0e-9)
+    return ::testing::AssertionFailure() << "max |D2M^T M2D - I| = " << max_error;
+
+  return ::testing::AssertionSuccess();
+}
+
 } // namespace
 
 TEST(GalerkinOneQuadratureTest, LocallyRefinedSLDFEThrows)
@@ -217,6 +251,38 @@ TEST(GalerkinOneQuadratureTest, LocallyRefinedSLDFEThrows)
   EXPECT_TRUE(SameState(StateOf(sldfe_2d), before_2d));
   SLDFEsqQuadrature2DXY new_sldfe_2d(0, 0, false, method);
   EXPECT_TRUE(RefinesLikeNewSet(sldfe_2d, new_sldfe_2d));
+}
+
+TEST(GalerkinOneQuadratureTest, LocallyRefinedSLDFEWithRuleBuilds)
+{
+  // A cone size of pi splits every square of a level-0 set, which then has the direction count of
+  // level 1 (384 in 3D, 192 in 2D). A level-0 set takes its rule from its direction count, so the
+  // level-1 rule applies, and both operators must be rebuilt for the refined directions.
+  const auto method = OperatorConstructionMethod::GALERKIN_ONE;
+  SLDFEsqQuadrature3DXYZ sldfe(0, 0, false, method);
+  EXPECT_NO_THROW(sldfe.LocallyRefine(Vector3(0.0, 0.0, 1.0), M_PI));
+  EXPECT_TRUE(HasInverseOperators(sldfe, 384));
+
+  SLDFEsqQuadrature2DXY sldfe_2d(0, 0, false, method);
+  EXPECT_NO_THROW(sldfe_2d.LocallyRefine(Vector3(0.0, 0.0, 1.0), M_PI));
+  EXPECT_TRUE(HasInverseOperators(sldfe_2d, 192));
+}
+
+TEST(GalerkinOneQuadratureTest, LocallyRefinedSLDFEWithMismatchedRuleThrows)
+{
+  // Above level 0 an SLDFE set takes its rule from its level, so a refined level-1 set still
+  // selects with the level-1 rule, which gives fewer harmonics than the set has directions (384
+  // for 672 in 3D, 192 for 480 in 2D). The rejection must leave the set as it was.
+  const auto method = OperatorConstructionMethod::GALERKIN_ONE;
+  SLDFEsqQuadrature3DXYZ sldfe(1, 0, false, method);
+  const auto before = StateOf(sldfe);
+  EXPECT_TRUE(IsRejected([&sldfe] { sldfe.LocallyRefine(Vector3(0.0, 0.0, 1.0), 1.0); }));
+  EXPECT_TRUE(SameState(StateOf(sldfe), before));
+
+  SLDFEsqQuadrature2DXY sldfe_2d(1, 0, false, method);
+  const auto before_2d = StateOf(sldfe_2d);
+  EXPECT_TRUE(IsRejected([&sldfe_2d] { sldfe_2d.LocallyRefine(Vector3(0.0, 0.0, 1.0), 1.0); }));
+  EXPECT_TRUE(SameState(StateOf(sldfe_2d), before_2d));
 }
 
 namespace
