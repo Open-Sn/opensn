@@ -1,7 +1,10 @@
 #include "gtest/gtest.h"
 #include "test/unit/common/mesh_builders.h"
 #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/logical_volume/rpp_logical_volume.h"
+#include "framework/parameters/parameter_block.h"
 #include "framework/runtime.h"
+#include <cmath>
 
 using namespace opensn;
 
@@ -206,4 +209,120 @@ TEST(MeshContinuumTest, PointInsideCellFace3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);
+}
+
+namespace
+{
+
+/// RPP logical volume that is infinite in x and y and spans [zmin, zmax] in z.
+std::shared_ptr<RPPLogicalVolume>
+MakeZSlabVolume(double zmin, double zmax)
+{
+  auto params = RPPLogicalVolume::GetInputParameters();
+  ParameterBlock block;
+  block.AddParameter("infx", true);
+  block.AddParameter("infy", true);
+  block.AddParameter("zmin", zmin);
+  block.AddParameter("zmax", zmax);
+  params.AssignParameters(block);
+  return std::make_shared<RPPLogicalVolume>(params);
+}
+
+/// Global number of boundary faces with their centroid at z that are named `name`.
+int
+CountNamedBoundaryFaces(const MeshContinuum& grid, const std::string& name, double z)
+{
+  int local_count = 0;
+  const auto& id_map = grid.GetBoundaryIDMap();
+  for (const auto& cell : grid.GetLocalCells())
+    for (const auto& face : cell->faces)
+    {
+      if (face.has_neighbor or std::fabs(face.centroid.z - z) > 1.0e-12)
+        continue;
+      const auto it = id_map.find(face.neighbor_id);
+      if (it != id_map.end() and it->second == name)
+        ++local_count;
+    }
+  int global_count = 0;
+  mpi_comm.all_reduce(local_count, global_count, mpi::op::sum<int>());
+  return global_count;
+}
+
+/// Checks that each ghost cell has `outside_id` if its centroid has z > 1 and `inside_id`
+/// otherwise. Returns the global number of ghost cells with z > 1.
+int
+CheckGhostBlockIDs(const MeshContinuum& grid, unsigned int outside_id, unsigned int inside_id)
+{
+  int local_count = 0;
+  for (const auto ghost_id : grid.GetGhostGlobalIDs())
+  {
+    const auto& cell = grid.GetGlobalCell(ghost_id);
+    const bool outside = cell.centroid.z > 1.0;
+    EXPECT_EQ(cell.block_id, outside ? outside_id : inside_id);
+    local_count += outside ? 1 : 0;
+  }
+  int global_count = 0;
+  mpi_comm.all_reduce(local_count, global_count, mpi::op::sum<int>());
+  return global_count;
+}
+
+} // namespace
+
+TEST(MeshContinuumTest, SetBlockIDFromLogicalVolumeSense)
+{
+  // Eight cells of length 0.5 on [0, 4]; the volume holds the centroids of the first two.
+  const auto grid = BuildLineMesh(4.0, 8, 0.0);
+  grid->SetUniformBlockID(0);
+  const auto volume = MakeZSlabVolume(0.0, 1.0);
+
+  // sense = false selects the cells whose centroids are outside the volume, ghost cells too.
+  grid->SetBlockIDFromLogicalVolume(*volume, 7, false);
+  auto block_volumes = grid->ComputeVolumePerBlockID();
+  EXPECT_EQ(block_volumes.size(), 2U);
+  EXPECT_NEAR(block_volumes[0], 1.0, 1.0e-12);
+  EXPECT_NEAR(block_volumes[7], 3.0, 1.0e-12);
+  // Ghost cells outside the volume exist exactly when there are two or more ranks.
+  EXPECT_EQ(CheckGhostBlockIDs(*grid, 7, 0) > 0, mpi_comm.size() > 1);
+
+  // sense = true selects the cells whose centroids are inside the volume.
+  grid->SetBlockIDFromLogicalVolume(*volume, 3, true);
+  block_volumes = grid->ComputeVolumePerBlockID();
+  EXPECT_EQ(block_volumes.size(), 2U);
+  EXPECT_NEAR(block_volumes[3], 1.0, 1.0e-12);
+  EXPECT_NEAR(block_volumes[7], 3.0, 1.0e-12);
+  EXPECT_EQ(CheckGhostBlockIDs(*grid, 7, 3) > 0, mpi_comm.size() > 1);
+}
+
+TEST(MeshContinuumTest, SetBoundaryIDFromLogicalVolumeSense)
+{
+  // The boundary faces of the line mesh are at z = 0 and z = 4; the volume holds z = 0 only.
+  const auto grid = BuildLineMesh(4.0, 8, 0.0);
+  const auto volume = MakeZSlabVolume(-0.5, 0.5);
+
+  // sense = false selects the boundary faces whose centroids are outside the volume.
+  grid->SetBoundaryIDFromLogicalVolume(*volume, "outside_face", false);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outside_face", 0.0), 0);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outside_face", 4.0), 1);
+
+  // sense = true selects the boundary faces whose centroids are inside the volume.
+  grid->SetBoundaryIDFromLogicalVolume(*volume, "inside_face", true);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "inside_face", 0.0), 1);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outside_face", 4.0), 1);
+}
+
+TEST(MeshContinuumTest, SetBoundaryIDFromInteriorLogicalVolumeSense)
+{
+  // The volume holds no boundary face, so sense = false selects both and sense = true none.
+  const auto grid = BuildLineMesh(4.0, 8, 0.0);
+  const auto volume = MakeZSlabVolume(1.0, 3.0);
+
+  grid->SetBoundaryIDFromLogicalVolume(*volume, "outer", false);
+  EXPECT_EQ(grid->GetBoundaryNameMap().count("outer"), 1U);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 0.0), 1);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 4.0), 1);
+
+  grid->SetBoundaryIDFromLogicalVolume(*volume, "inner", true);
+  EXPECT_EQ(grid->GetBoundaryNameMap().count("inner"), 0U);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 0.0), 1);
+  EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 4.0), 1);
 }
