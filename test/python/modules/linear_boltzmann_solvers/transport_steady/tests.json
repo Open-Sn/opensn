@@ -883,6 +883,55 @@
     ]
   },
   {
+    "file": "transport_3d_4_cycles_1_gpu.py",
+    "outfileprefix": "transport_3d_4_cycles_1_fused_gpu",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh with cycles - PWLD (fused AAO GPU scheduler)",
+    "requires_gpu": "True",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.55349e-01,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 4.08422e-10,
+        "abs_tol": 0.0001
+      }
+    ],
+    "args": [
+      "fused_aao_sweep=True"
+    ]
+  },
+  {
+    "file": "transport_3d_4_cycles_1_gpu.py",
+    "outfileprefix": "transport_3d_4_cycles_1_fused_1lane_gpu",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh with cycles - PWLD (fused AAO GPU scheduler, one lane: runs serialized, same answer)",
+    "requires_gpu": "True",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 5.55349e-01,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 4.08422e-10,
+        "abs_tol": 0.0001
+      }
+    ],
+    "args": [
+      "fused_aao_sweep=True",
+      "fused_aao_lanes=1"
+    ]
+  },
+  {
     "file": "restart_repartition.py",
     "comment": "Steady-state restart remaps flux moments across different MPI partitions",
     "num_procs": 4,
@@ -1554,7 +1603,7 @@
   },
   {
     "file": "gpu_cpu_parity.py",
-    "comment": "Full-vector CPU/GPU parity for AAH and CBC sweeps",
+    "comment": "Full-vector CPU/GPU parity for AAH, CBC, and fused AAO AAH sweeps",
     "requires_gpu": true,
     "num_procs": 1,
     "checks": [
@@ -1591,6 +1640,24 @@
       {
         "type": "KeyValuePair",
         "key": "CBC_GPU_CPU_BALANCE_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_FUSED_GPU_CPU_MAX_ABS_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_FUSED_GPU_CPU_REL_L2_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAH_FUSED_GPU_CPU_BALANCE_DIFF=",
         "goldvalue": 0.0,
         "abs_tol": 1.0e-9
       }
@@ -1773,6 +1840,31 @@
         "wordnum": 1,
         "gold": 0.0,
         "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "fused_aao_sweep_requires_gpu_aah.py",
+    "comment": "fused_aao_sweep is rejected without use_gpus=True and sweep_type=AAH",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "FUSED_AAO_REJECTED",
+        "goldvalue": 2,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FUSED_AAO_LANES_REJECTED",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FUSED_AAO_CONTROL_SOLVED",
+        "goldvalue": 1,
+        "abs_tol": 0
       }
     ]
   }

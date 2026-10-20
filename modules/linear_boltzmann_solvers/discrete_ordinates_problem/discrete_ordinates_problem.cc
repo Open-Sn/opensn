@@ -475,6 +475,10 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ").");
   }
 
+  // The fused scheduler is only for GPU AAH sweeps.
+  if (options_.fused_aao_sweep and (not use_gpus_ or sweep_type_ != "AAH"))
+    errors.emplace_back("fused_aao_sweep requires sweep_type=\"AAH\" and use_gpus=True.");
+
   CheckCSDA(errors);
 
   // Collective. Check all ranks before any sweep can propagate NaNs.

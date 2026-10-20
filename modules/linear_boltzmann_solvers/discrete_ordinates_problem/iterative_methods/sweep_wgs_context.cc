@@ -23,12 +23,12 @@ namespace
 {
 
 inline SchedulingAlgorithm
-GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu)
+GetSchedulingAlgorithm(const std::string& sweep_type, bool use_gpu, bool fused_aao)
 {
   if (sweep_type == "AAH")
   {
     if (use_gpu)
-      return SchedulingAlgorithm::ALL_AT_ONCE;
+      return fused_aao ? SchedulingAlgorithm::ALL_AT_ONCE_FUSED : SchedulingAlgorithm::ALL_AT_ONCE;
     else
       return SchedulingAlgorithm::DEPTH_OF_GRAPH;
   }
@@ -54,7 +54,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
                                  std::shared_ptr<SweepChunk> swp_chnk)
   : WGSContext(do_problem, groupset, set_source_function, lhs_scope, rhs_scope, log_info),
     sweep_chunk(std::move(swp_chnk)),
-    sweep_scheduler(GetSchedulingAlgorithm(do_problem.GetSweepType(), do_problem.UseGPUs()),
+    sweep_scheduler(GetSchedulingAlgorithm(
+                      do_problem.GetSweepType(), do_problem.UseGPUs(), do_problem.UseFusedAAO()),
                     *groupset.angle_agg,
                     *sweep_chunk)
 {

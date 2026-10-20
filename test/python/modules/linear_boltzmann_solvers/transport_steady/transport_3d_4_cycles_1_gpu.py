@@ -106,6 +106,8 @@ if __name__ == "__main__":
         ],
         options={
             "max_ags_iterations": 50,
+            "fused_aao_sweep": bool(globals().get("fused_aao_sweep", False)),
+            **({"fused_aao_lanes": int(fused_aao_lanes)} if "fused_aao_lanes" in globals() else {}),
         },
         use_gpus=True,
     )

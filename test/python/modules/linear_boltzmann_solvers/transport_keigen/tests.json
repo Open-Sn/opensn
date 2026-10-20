@@ -249,6 +249,24 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_3d_openmcxs_U235_gpu.py",
+    "outfileprefix": "keigenvalue_transport_3d_openmcxs_U235_fused_gpu",
+    "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration (fused AAO GPU scheduler)",
+    "num_procs": 4,
+    "requires_gpu": "True",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 2.2800213,
+        "abs_tol": 1e-05
+      }
+    ],
+    "args": [
+      "fused_aao_sweep=True"
+    ]
+  },
+  {
     "file": "keigenvalue_transport_3d_openmcxs_U235_cbc_gpu.py",
     "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration (CBC)",
     "num_procs": 4,

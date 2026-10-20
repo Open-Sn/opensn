@@ -16,6 +16,67 @@ namespace opensn::gpu_kernel
 
 // NOLINTBEGIN(cppcoreguidelines-pro-type-reinterpret-cast, modernize-use-auto)
 
+/**
+ * Largest cell DOF count whose local system is kept in registers (see AddAtIndex).
+ * Larger systems do not fit in registers. For them the extra code only adds register pressure, so
+ * they keep run-time indexing.
+ */
+constexpr std::size_t max_register_resident_dofs = 4;
+
+/**
+ * Add a value to an array entry whose index is known only at run time.
+ * For systems of up to max_register_resident_dofs DOFs, every access uses a compile-time index.
+ * The local array can then stay in registers instead of being placed in local memory.
+ *
+ * \tparam n Array length.
+ * \tparam ndofs Cell DOF count.
+ * \param array Array to update.
+ * \param index Index of the entry.
+ * \param value Value to add.
+ */
+template <std::size_t n, std::size_t ndofs = n>
+__CRB_DEVICE_FUNC__ void
+AddAtIndex(double* array, std::uint32_t index, double value)
+{
+  if constexpr (ndofs <= max_register_resident_dofs)
+  {
+    _Pragma("unroll") for (std::uint32_t k = 0; k < n; ++k)
+    {
+      if (k == index)
+        array[k] += value;
+    }
+  }
+  else
+    array[index] += value;
+}
+
+/**
+ * Return an array entry whose index is known only at run time (see AddAtIndex).
+ *
+ * \tparam n Array length.
+ * \tparam ndofs Cell DOF count.
+ * \param array Array to read.
+ * \param index Index of the entry.
+ * \return Value of the entry.
+ */
+template <std::size_t n, std::size_t ndofs = n>
+__CRB_DEVICE_FUNC__ double
+ValueAtIndex(const double* array, std::uint32_t index)
+{
+  if constexpr (ndofs <= max_register_resident_dofs)
+  {
+    double value = 0.0;
+    _Pragma("unroll") for (std::uint32_t k = 0; k < n; ++k)
+    {
+      if (k == index)
+        value = array[k];
+    }
+    return value;
+  }
+  else
+    return array[index];
+}
+
 /// Compute the sweep matrix from gradient, mass, and the source term
 template <std::size_t ndofs, SweepKind k>
 __CRB_DEVICE_FUNC__ void
@@ -86,16 +147,14 @@ ComputeSurfaceIntegral(double* sweep_matrix,
     {
       double mu = direction.omega[0] * face.normal[0] + direction.omega[1] * face.normal[1] +
                   direction.omega[2] * face.normal[2];
-      // compute surface integral
-      for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
+      // Add the face coupling of face node `fi` to cell row `Ai` and right-hand side `psi_i`.
+      auto add_face_row = [&](std::uint32_t fi, double* Ai, double& psi_i)
       {
-        std::uint32_t i = face.cell_mapping_data[fi];
-        double* Ai = sweep_matrix + i * ndofs;
         for (std::uint32_t fj = 0; fj < face.num_face_nodes; ++fj)
         {
           std::uint32_t j = face.cell_mapping_data[fj];
           double mu_Nij = -mu * face.M_surf_data[fi * face.num_face_nodes + fj];
-          Ai[j] += mu_Nij;
+          AddAtIndex<ndofs>(Ai, j, mu_Nij);
           double* upwind_psi;
           if constexpr (k == SweepKind::AAH)
             upwind_psi =
@@ -108,7 +167,29 @@ ComputeSurfaceIntegral(double* sweep_matrix,
           else
             upwind_psi = args.flud_data.GetIncomingFluxPointer(
               cell_edge_data[face_node_counter + fj], angle_group_idx);
-          psi[i] += *upwind_psi * mu_Nij;
+          psi_i += *upwind_psi * mu_Nij;
+        }
+      };
+      if constexpr (ndofs <= max_register_resident_dofs)
+      {
+        // Rows are visited with compile-time indices so the local system stays in registers. Each
+        // row's face node is found at run time. Every row still receives its contributions in
+        // face-node order.
+        _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
+        {
+          for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
+          {
+            if (face.cell_mapping_data[fi] == i)
+              add_face_row(fi, sweep_matrix + i * ndofs, psi[i]);
+          }
+        }
+      }
+      else
+      {
+        for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
+        {
+          std::uint32_t i = face.cell_mapping_data[fi];
+          add_face_row(fi, sweep_matrix + i * ndofs, psi[i]);
         }
       }
     }
@@ -162,7 +243,7 @@ GaussianElimination(double* sweep_matrix, double* psi)
 }
 
 /// Record angular flux to downwind and compute outflow for boundary faces.
-template <SweepKind k>
+template <std::size_t ndofs, SweepKind k>
 __CRB_DEVICE_FUNC__ void
 WritePsiToFludsAndOutflow(const double* psi,
                           CellView& cell,
@@ -191,7 +272,8 @@ WritePsiToFludsAndOutflow(const double* psi,
         for (std::uint32_t fi = 0; fi < face.num_face_nodes; ++fi)
         {
           const std::uint32_t i = face.cell_mapping_data[fi];
-          const double outflow = direction.weight * mu * face.IntS_shapeI_data[fi] * psi[i];
+          const double outflow =
+            direction.weight * mu * face.IntS_shapeI_data[fi] * ValueAtIndex<ndofs>(psi, i);
           crb::atomic_add(face.outflow + args.groupset_start + group_idx, outflow);
         }
       }
@@ -218,7 +300,7 @@ WritePsiToFludsAndOutflow(const double* psi,
               node_index, angle_group_idx, args.boundary, args.boundary_offset);
           else
             downwind_psi = args.flud_data.GetOutgoingFluxPointer(node_index, angle_group_idx);
-          *downwind_psi = psi[i];
+          *downwind_psi = ValueAtIndex<ndofs>(psi, i);
         }
       }
     }
@@ -286,7 +368,7 @@ Sweep(const Arguments<k>& args,
   // solve for the angular flux
   GaussianElimination<ndofs>(buffer.A(), buffer.b());
   // save the result
-  WritePsiToFludsAndOutflow<k>(
+  WritePsiToFludsAndOutflow<ndofs, k>(
     buffer.b(), cell, direction, cell_edge_data, angle_group_idx, group_idx, args);
   ComputePhi<ndofs, k>(buffer.b(), cell, direction, group_idx, num_moments, args);
   if (saved_psi != nullptr)

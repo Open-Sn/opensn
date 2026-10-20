@@ -2,7 +2,8 @@
 # SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 # SPDX-License-Identifier: MIT
 
-"""Compare complete CPU and GPU scalar-flux vectors for both GPU sweep types."""
+"""Compare complete CPU and GPU scalar-flux vectors for both GPU sweep types and the fused
+all-at-once AAH GPU scheduler."""
 
 import math
 import os
@@ -21,7 +22,7 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
 
 
-def solve(sweep_type, use_gpus):
+def solve(sweep_type, use_gpus, fused_aao_sweep=False):
     nodes_x = [i / 6.0 for i in range(7)]
     nodes_y = [i / 5.0 for i in range(6)]
     grid = OrthogonalMeshGenerator(node_sets=[nodes_x, nodes_y]).Execute()
@@ -54,7 +55,7 @@ def solve(sweep_type, use_gpus):
             {"name": "xmin", "type": "isotropic", "group_strength": [0.25]},
             {"name": "ymin", "type": "reflecting"},
         ],
-        options={"max_ags_iterations": 1},
+        options={"max_ags_iterations": 1, "fused_aao_sweep": fused_aao_sweep},
         sweep_type=sweep_type,
         use_gpus=use_gpus,
     )
@@ -78,12 +79,14 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Incorrect number of processors. Expected 1 processor but got {size}.")
 
-    for sweep_type in ("AAH", "CBC"):
+    for label, sweep_type, fused in (("AAH", "AAH", False),
+                                     ("CBC", "CBC", False),
+                                     ("AAH_FUSED", "AAH", True)):
         cpu_phi, cpu_balance = solve(sweep_type, False)
-        gpu_phi, gpu_balance = solve(sweep_type, True)
+        gpu_phi, gpu_balance = solve(sweep_type, True, fused)
         max_abs, relative_l2 = compare(cpu_phi, gpu_phi)
 
         if rank == 0:
-            print(f"{sweep_type}_GPU_CPU_MAX_ABS_DIFF={max_abs:.16e}")
-            print(f"{sweep_type}_GPU_CPU_REL_L2_DIFF={relative_l2:.16e}")
-            print(f"{sweep_type}_GPU_CPU_BALANCE_DIFF={abs(cpu_balance - gpu_balance):.16e}")
+            print(f"{label}_GPU_CPU_MAX_ABS_DIFF={max_abs:.16e}")
+            print(f"{label}_GPU_CPU_REL_L2_DIFF={relative_l2:.16e}")
+            print(f"{label}_GPU_CPU_BALANCE_DIFF={abs(cpu_balance - gpu_balance):.16e}")
