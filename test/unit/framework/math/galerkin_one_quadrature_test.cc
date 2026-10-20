@@ -12,6 +12,7 @@
 #include <memory>
 #include <new>
 #include <stdexcept>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -88,11 +89,134 @@ TEST(GalerkinOneQuadratureTest, SLDFELevelWithoutRuleThrows)
     [] { SLDFEsqQuadrature2DXY(4, 0, false, OperatorConstructionMethod::GALERKIN_ONE); }));
 }
 
+namespace
+{
+
+// The data that SLDFEsqQuadrature::LocallyRefine rebuilds: the directions, the harmonic selection,
+// and the operators.
+struct QuadratureState
+{
+  std::vector<double> phi;
+  std::vector<double> theta;
+  std::vector<double> weights;
+  std::vector<double> omegas;
+  std::vector<std::pair<unsigned int, int>> harmonics;
+  unsigned int scattering_order = 0;
+  std::vector<std::size_t> d2m_shape;
+  std::vector<double> d2m;
+  std::vector<std::size_t> m2d_shape;
+  std::vector<double> m2d;
+};
+
+QuadratureState
+StateOf(const AngularQuadrature& quadrature)
+{
+  QuadratureState state;
+  for (const auto& abscissa : quadrature.GetAbscissae())
+  {
+    state.phi.push_back(abscissa.phi);
+    state.theta.push_back(abscissa.theta);
+  }
+  state.weights = quadrature.GetWeights();
+  for (const auto& omega : quadrature.GetOmegas())
+    state.omegas.insert(state.omegas.end(), {omega.x, omega.y, omega.z});
+  for (const auto& harmonic : quadrature.GetMomentToHarmonicsIndexMap())
+    state.harmonics.emplace_back(harmonic.ell, harmonic.m);
+  state.scattering_order = quadrature.GetScatteringOrder();
+  const auto& d2m = quadrature.GetDiscreteToMomentOperator();
+  state.d2m_shape = d2m.dimension();
+  state.d2m.assign(d2m.begin(), d2m.end());
+  const auto& m2d = quadrature.GetMomentToDiscreteOperator();
+  state.m2d_shape = m2d.dimension();
+  state.m2d.assign(m2d.begin(), m2d.end());
+  return state;
+}
+
+// Compares two states exactly and names every part that differs.
+::testing::AssertionResult
+SameState(const QuadratureState& actual, const QuadratureState& expected)
+{
+  std::vector<std::string> changed;
+  if (actual.phi != expected.phi or actual.theta != expected.theta)
+    changed.emplace_back("abscissae");
+  if (actual.weights != expected.weights)
+    changed.emplace_back("weights");
+  if (actual.omegas != expected.omegas)
+    changed.emplace_back("directions");
+  if (actual.harmonics != expected.harmonics)
+    changed.emplace_back("harmonics");
+  if (actual.scattering_order != expected.scattering_order)
+    changed.emplace_back("scattering order");
+  if (actual.d2m_shape != expected.d2m_shape or actual.d2m != expected.d2m)
+    changed.emplace_back("discrete-to-moment operator");
+  if (actual.m2d_shape != expected.m2d_shape or actual.m2d != expected.m2d)
+    changed.emplace_back("moment-to-discrete operator");
+  if (changed.empty())
+    return ::testing::AssertionSuccess();
+
+  auto failure = ::testing::AssertionFailure() << "changed:";
+  for (std::size_t i = 0; i < changed.size(); ++i)
+    failure << (i == 0 ? " " : ", ") << changed[i];
+  failure << " (" << actual.omegas.size() / 3 << " directions and " << actual.harmonics.size()
+          << " moments, expected " << expected.omegas.size() / 3 << " and "
+          << expected.harmonics.size() << ")";
+  return failure;
+}
+
+// A cone size of 0 splits no square, so the refinement rebuilds the set from its squares as they
+// are. Returns how the refinement ended.
+std::string
+RefineWithoutSplitting(SLDFEsqQuadrature& quadrature)
+{
+  try
+  {
+    quadrature.LocallyRefine(Vector3(0.0, 0.0, 1.0), 0.0);
+  }
+  catch (const std::invalid_argument&)
+  {
+    return "rejected";
+  }
+  catch (const std::exception& e)
+  {
+    return std::string("failed (") + e.what() + ")";
+  }
+  return "accepted";
+}
+
+// The squares of an SLDFE set are not public; only a later refinement reads them. If they are
+// unchanged, a refinement that splits none of them ends as on a new set and leaves the same state.
+::testing::AssertionResult
+RefinesLikeNewSet(SLDFEsqQuadrature& quadrature, SLDFEsqQuadrature& new_set)
+{
+  const auto outcome = RefineWithoutSplitting(quadrature);
+  const auto expected = RefineWithoutSplitting(new_set);
+  if (outcome != expected)
+    return ::testing::AssertionFailure()
+           << "a refinement that splits no square was " << outcome << ", on a new set " << expected;
+  return SameState(StateOf(quadrature), StateOf(new_set));
+}
+
+} // namespace
+
 TEST(GalerkinOneQuadratureTest, LocallyRefinedSLDFEThrows)
 {
-  // A locally refined level-0 set has a direction count that no rule describes.
-  SLDFEsqQuadrature3DXYZ sldfe(0, 0, false, OperatorConstructionMethod::GALERKIN_ONE);
+  // A locally refined level-0 set has a direction count that no rule describes. The rejection
+  // must leave the set as it was.
+  const auto method = OperatorConstructionMethod::GALERKIN_ONE;
+  SLDFEsqQuadrature3DXYZ sldfe(0, 0, false, method);
+  const auto before = StateOf(sldfe);
   EXPECT_TRUE(IsRejected([&sldfe] { sldfe.LocallyRefine(Vector3(0.0, 0.0, 1.0), 1.0); }));
+  EXPECT_TRUE(SameState(StateOf(sldfe), before));
+  SLDFEsqQuadrature3DXYZ new_sldfe(0, 0, false, method);
+  EXPECT_TRUE(RefinesLikeNewSet(sldfe, new_sldfe));
+
+  // The same in 2D, where the set keeps only the directions with a positive z component.
+  SLDFEsqQuadrature2DXY sldfe_2d(0, 0, false, method);
+  const auto before_2d = StateOf(sldfe_2d);
+  EXPECT_TRUE(IsRejected([&sldfe_2d] { sldfe_2d.LocallyRefine(Vector3(0.0, 0.0, 1.0), 1.0); }));
+  EXPECT_TRUE(SameState(StateOf(sldfe_2d), before_2d));
+  SLDFEsqQuadrature2DXY new_sldfe_2d(0, 0, false, method);
+  EXPECT_TRUE(RefinesLikeNewSet(sldfe_2d, new_sldfe_2d));
 }
 
 namespace
