@@ -481,6 +481,25 @@
     ]
   },
   {
+    "file": "transport_2d_aah_message_split.py",
+    "comment": "2D AAH sweep with messages split at max_mpi_message_size = 1025 bytes matches the default split",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "AAHMessageSplitRelativeDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AAHMessageSplitRelativeBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
     "file": "transport_2d_4a_dsa_ortho.py",
     "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,

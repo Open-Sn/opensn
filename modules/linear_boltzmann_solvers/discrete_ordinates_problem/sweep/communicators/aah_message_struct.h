@@ -68,16 +68,11 @@ SetupMessageData(const std::vector<int>& locations,
     int message_count = 0, message_size = 0;
     if (num_unknowns != 0)
     {
-      const std::size_t total_bytes =
-        static_cast<std::size_t>(num_unknowns) * static_cast<std::size_t>(sizeof(double));
-      const auto max_message_bytes = static_cast<std::size_t>(max_mpi_message_size);
-      message_count = 1;
-      if (total_bytes > max_message_bytes)
-      {
-        message_count = static_cast<int>((total_bytes + max_message_bytes - 1) / max_message_bytes);
-      }
-      message_count = std::min(message_count, num_unknowns);
-      message_size = ((num_unknowns + (message_count - 1)) / message_count);
+      const std::size_t max_message_doubles =
+        std::max<std::size_t>(1, static_cast<std::size_t>(max_mpi_message_size) / sizeof(double));
+      message_count = static_cast<int>(
+        (static_cast<std::size_t>(num_unknowns) + max_message_doubles - 1) / max_message_doubles);
+      message_size = num_unknowns / message_count + (num_unknowns % message_count != 0 ? 1 : 0);
     }
     // skip if no message
     if (message_count == 0)
