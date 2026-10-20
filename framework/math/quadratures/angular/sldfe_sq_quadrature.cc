@@ -833,13 +833,35 @@ SLDFEsqQuadrature::LocallyRefine(const Vector3& ref_dir,
     }
   }
 
+  // GALERKIN_ONE needs a harmonic selection rule that gives one harmonic per direction of the
+  // refined set. Check it before anything changes, with the selection that MakeHarmonicIndices
+  // makes below, so that a rejected refinement leaves the quadrature as it was.
+  if (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE)
+  {
+    size_t num_angles = 0;
+    for (const auto& sq : new_deployment)
+      for (const auto& omega : sq.sub_sqr_points)
+        if (FilterQuadraturePoint(omega))
+          ++num_angles;
+
+    const auto num_moments = SelectGalerkinHarmonics(num_angles).size();
+    if (num_moments != num_angles)
+      throw std::invalid_argument(
+        "GALERKIN_ONE requires one harmonic per direction, but the harmonic selection rule gives " +
+        std::to_string(num_moments) + " harmonics for the refined quadrature (" +
+        std::to_string(dimension_) + "D, " + std::to_string(num_angles) +
+        " directions). Use another operator construction method to refine this quadrature.");
+  }
+
   deployed_SQs.clear();
   deployed_SQs = new_deployment;
 
   PopulateQuadratureAbscissae();
   MakeHarmonicIndices();
-  BuildDiscreteToMomentOperator();
+  // For GALERKIN_ONE the discrete-to-moment operator is the inverse of the moment-to-discrete
+  // operator, so the latter must be rebuilt for the new directions first.
   BuildMomentToDiscreteOperator();
+  BuildDiscreteToMomentOperator();
 
   log.Log() << "SLDFEsq refined " << num_refined << " SQs.";
 }
