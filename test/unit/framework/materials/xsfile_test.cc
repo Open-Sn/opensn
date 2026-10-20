@@ -290,6 +290,62 @@ TEST(MultiGroupXSTest, AdjointModeWithNumMomentsAfterTransferMoments)
   check(false, 2.0);
 }
 
+TEST(MultiGroupXSTest, AdjointModeAfterScalingInForwardMode)
+{
+  // Scaling in forward mode must reach the transposes built by an earlier switch to adjoint mode.
+  // After adjoint, forward, Scale, and adjoint again, the transfer and production matrices must be
+  // the transposes of the scaled data.
+  const auto fname = MakeTempXSFile({1.0, 0.1, 0.01},
+                                    "NUM_MOMENTS 2\n"
+                                    "TRANSFER_MOMENTS_BEGIN\n"
+                                    "M_GFROM_GTO_VAL 0 0 0 0.25\n"
+                                    "M_GFROM_GTO_VAL 0 0 1 0.125\n"
+                                    "M_GFROM_GTO_VAL 0 1 1 0.375\n"
+                                    "M_GFROM_GTO_VAL 1 0 0 0.0625\n"
+                                    "M_GFROM_GTO_VAL 1 0 1 0.03125\n"
+                                    "M_GFROM_GTO_VAL 1 1 1 0.09375\n"
+                                    "TRANSFER_MOMENTS_END\n"
+                                    "SIGMA_F_BEGIN\n0 0.25\n1 0.5\nSIGMA_F_END\n"
+                                    "NU_BEGIN\n0 2.5\n1 2.0\nNU_END\n"
+                                    "CHI_BEGIN\n0 0.75\n1 0.25\nCHI_END\n");
+  auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+  std::filesystem::remove(fname);
+  ASSERT_TRUE(xs.IsFissionable());
+
+  // S[ell][g][g'] is the moment-ell transfer from group g' to group g, and
+  // F[g][g'] = chi[g] * nu_sigma_f[g']. These values and their doubles are exact in binary.
+  const std::vector<std::vector<std::vector<double>>> S = {{{0.25, 0.0}, {0.125, 0.375}},
+                                                           {{0.0625, 0.0}, {0.03125, 0.09375}}};
+  const std::vector<std::vector<double>> F = {{0.46875, 0.75}, {0.15625, 0.25}};
+  const auto check = [&](const bool adjoint, const double factor)
+  {
+    ASSERT_EQ(xs.GetAdjointMode(), adjoint);
+    ASSERT_EQ(xs.GetTransferMatrices().size(), 2U);
+    for (unsigned int ell = 0; ell < 2; ++ell)
+      for (unsigned int g = 0; g < 2; ++g)
+        for (unsigned int gp = 0; gp < 2; ++gp)
+          EXPECT_EQ(xs.GetTransferMatrix(ell).GetValueIJ(g, gp),
+                    factor * (adjoint ? S[ell][gp][g] : S[ell][g][gp]));
+    const auto& P = xs.GetProductionMatrix();
+    ASSERT_EQ(P.size(), 2U);
+    for (unsigned int g = 0; g < 2; ++g)
+    {
+      ASSERT_EQ(P[g].size(), 2U);
+      for (unsigned int gp = 0; gp < 2; ++gp)
+        EXPECT_EQ(P[g][gp], factor * (adjoint ? F[gp][g] : F[g][gp]));
+    }
+  };
+
+  check(false, 1.0);
+  xs.SetAdjointMode(true);
+  check(true, 1.0);
+  xs.SetAdjointMode(false);
+  xs.Scale(2.0);
+  check(false, 2.0);
+  xs.SetAdjointMode(true);
+  check(true, 2.0);
+}
+
 TEST(CEPXS, CoupledEnergyBounds)
 {
   // In this 40-electron/40-photon library both species share the upper energy.
