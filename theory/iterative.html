@@ -304,14 +304,9 @@ let <span class="math notranslate nohighlight">\(\Sigma_t = \operatorname{diag}(
 infinite-medium iteration matrix,</p>
 <div class="math notranslate nohighlight">
 \[A^{-1} B\, \xi = \rho\, \xi \,, \qquad \sum_g \xi_g = 1 \,,\]</div>
-<p>where the matrices depend on the iteration being accelerated:</p>
-<ul class="simple">
-<li><p>with within-group DSA on the groupset, each iteration behaves like Jacobi
-iteration with converged within-group scattering, and
-<span class="math notranslate nohighlight">\(A = \Sigma_t - S_D\)</span>, <span class="math notranslate nohighlight">\(B = S_O\)</span>;</p></li>
-<li><p>without it, each iteration is a single sweep with all scattering lagged, and
-<span class="math notranslate nohighlight">\(A = \Sigma_t\)</span>, <span class="math notranslate nohighlight">\(B = S_D + S_O\)</span>.</p></li>
-</ul>
+<p>where <span class="math notranslate nohighlight">\(A = \Sigma_t - S_D\)</span> and <span class="math notranslate nohighlight">\(B = S_O\)</span> (Jacobi iteration with
+converged within-group scattering). The same spectrum is used with or without
+within-group DSA.</p>
 <p><span class="math notranslate nohighlight">\(A^{-1}B\)</span> is non-negative, so <span class="math notranslate nohighlight">\(\rho\)</span> is its spectral radius and
 <span class="math notranslate nohighlight">\(\xi \ge 0\)</span>. Because a Jacobi iteration matrix can also have the
 eigenvalue <span class="math notranslate nohighlight">\(-\rho\)</span> (for example, two groups coupled by downscatter and
