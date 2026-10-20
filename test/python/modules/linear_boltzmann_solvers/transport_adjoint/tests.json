@@ -359,5 +359,87 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Two materials with the same production but different delayed data: k, P/R and a flat flux, forward and adjoint",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"two_materials\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_two_materials",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_FLAT_FWD=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_FLAT_ADJ=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Fixed sources in two materials with different delayed data and two groupsets: flux and P/R, forward and adjoint",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"two_materials_source\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_two_materials_source",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_SOURCE_PHI_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_SOURCE_PHI_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_SOURCE_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_SOURCE_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]
