@@ -25,8 +25,8 @@ using Matrix = std::vector<std::vector<double>>;
 const std::vector<Matrix> TRANSFER = {{{0.5, 0.0}, {0.25, 0.5}}, {{0.0, 0.0}, {0.125, 0.0}}};
 const Matrix PRODUCTION = {{0.375, 0.9375}, {0.125, 0.3125}};
 
-std::shared_ptr<MultiGroupXS>
-LoadTestXS()
+MultiGroupXS
+ReadTestXS()
 {
   const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
   const auto path = std::filesystem::temp_directory_path() /
@@ -48,9 +48,15 @@ LoadTestXS()
            "M_GFROM_GTO_VAL 1 0 1 0.125\n"
            "TRANSFER_MOMENTS_END\n";
   }
-  auto xs = std::make_shared<MultiGroupXS>(MultiGroupXS::LoadFromOpenSn(path.string()));
+  auto xs = MultiGroupXS::LoadFromOpenSn(path.string());
   std::filesystem::remove(path);
   return xs;
+}
+
+std::shared_ptr<MultiGroupXS>
+LoadTestXS()
+{
+  return std::make_shared<MultiGroupXS>(ReadTestXS());
 }
 
 Matrix
@@ -176,6 +182,75 @@ TEST(MultiGroupXSAdjointModeTest, GettersWithModeFollowScaleInEitherMode)
   ExpectExplicitModeData(*xs, 4.0, "after Scale(4) in adjoint mode");
   xs->SetAdjointMode(false);
   ExpectExplicitModeData(*xs, 4.0, "after leaving adjoint mode");
+}
+
+TEST(MultiGroupXSAdjointModeTest, ReplaceContentsKeepsAdjointModeAndTransposesTheNewData)
+{
+  // A problem in adjoint mode that holds this object reads the transposes. Replacing the contents
+  // with new data, as the Python methods that reload cross sections in place do, must keep the
+  // adjoint mode and give the transposes of the new data, also after the new data are scaled.
+  auto xs = LoadTestXS();
+  xs->Scale(3.0);
+  xs->SetAdjointMode(true);
+  ExpectModeData(*xs, true, 3.0);
+
+  xs->ReplaceContents(ReadTestXS());
+  ExpectModeData(*xs, true, 1.0);
+  ExpectExplicitModeData(*xs, 1.0, "after ReplaceContents");
+
+  xs->Scale(2.0);
+  ExpectModeData(*xs, true, 2.0);
+  ExpectExplicitModeData(*xs, 2.0, "after Scale(2) of the new data");
+}
+
+TEST(MultiGroupXSAdjointModeTest, ReplaceContentsWithACopyKeepsTheModesOfBothObjects)
+{
+  // An object in adjoint mode takes the data of a copy of an object in forward mode.
+  auto xs = LoadTestXS();
+  xs->Scale(3.0);
+  xs->SetAdjointMode(true);
+  auto forward = LoadTestXS();
+  forward->Scale(0.5);
+  xs->ReplaceContents(MultiGroupXS(*forward));
+  ExpectModeData(*xs, true, 0.5);
+  ExpectExplicitModeData(*xs, 0.5, "after ReplaceContents with a forward-mode copy");
+  ExpectModeData(*forward, false, 0.5);
+
+  // An object in forward mode takes the data of a copy of an object in adjoint mode.
+  auto target = LoadTestXS();
+  auto adjoint_source = LoadTestXS();
+  adjoint_source->Scale(0.5);
+  adjoint_source->SetAdjointMode(true);
+  target->ReplaceContents(MultiGroupXS(*adjoint_source));
+  ExpectModeData(*target, false, 0.5);
+  ExpectModeData(*adjoint_source, true, 0.5);
+
+  // An object in adjoint mode takes the data of a copy of another object in adjoint mode. The copy
+  // brings its own transposes, which must be replaced, not added to.
+  auto adjoint_target = LoadTestXS();
+  adjoint_target->Scale(3.0);
+  adjoint_target->SetAdjointMode(true);
+  adjoint_target->ReplaceContents(MultiGroupXS(*adjoint_source));
+  ExpectModeData(*adjoint_target, true, 0.5);
+  ExpectExplicitModeData(*adjoint_target, 0.5, "after ReplaceContents with an adjoint-mode copy");
+  ExpectModeData(*adjoint_source, true, 0.5);
+}
+
+TEST(MultiGroupXSAdjointModeTest, ReplaceContentsInForwardModeRebuildsExistingTransposes)
+{
+  // Transposes built in adjoint mode stay current after the object returns to forward mode and
+  // its contents are replaced.
+  auto xs = LoadTestXS();
+  xs->Scale(3.0);
+  xs->SetAdjointMode(true);
+  xs->SetAdjointMode(false);
+
+  xs->ReplaceContents(ReadTestXS());
+  ExpectModeData(*xs, false, 1.0);
+  ExpectExplicitModeData(*xs, 1.0, "after ReplaceContents in forward mode");
+
+  xs->Scale(2.0);
+  ExpectExplicitModeData(*xs, 2.0, "after Scale(2) of the new data in forward mode");
 }
 
 TEST(MultiGroupXSAdjointModeTest, CombineUsesForwardData)
