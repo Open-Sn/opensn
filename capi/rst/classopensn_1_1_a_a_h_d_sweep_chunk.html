@@ -87,6 +87,16 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aahd_sweep_chunk.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-aahd-sweep-chunk-h"><span class="std std-ref">File aahd_sweep_chunk.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_a_a_h_d_sweep_chunk_1_1_fused_lane.html#exhale-struct-structopensn-1-1-a-a-h-d-sweep-chunk-1-1-fused-lane"><span class="std std-ref">Struct AAHDSweepChunk::FusedLane</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_a_a_h_d_sweep_chunk_1_1_fused_launch_parameters.html#exhale-struct-structopensn-1-1-a-a-h-d-sweep-chunk-1-1-fused-launch-parameters"><span class="std std-ref">Struct AAHDSweepChunk::FusedLaunchParameters</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -102,6 +112,61 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHDSweepChunkE">
 <span class="target" id="classopensn_1_1_a_a_h_d_sweep_chunk"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHDSweepChunk</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE" title="opensn::SweepChunk"><span class="n"><span class="pre">SweepChunk</span></span></a><a class="headerlink" href="#_CPPv4N6opensn14AAHDSweepChunkE" title="Link to this definition"></a><br /></dt>
 <dd><div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-fused-all-at-once-batch-runs">Fused all-at-once batch runs</p>
+<p>Used only by SweepScheduler::ScheduleAlgoAAOFused.</p>
+<p>A batch run sweeps every level of every member angle set as one uninterrupted sequence of fused kernel launches on a lane’s stream. Several lanes run at once. Angle sets that become ready later, for example when upstream angular fluxes arrive from another rank, start on a free lane. They do not wait for the runs already in flight. </p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn14AAHDSweepChunk13NumFusedLanesEv">
+<span class="target" id="classopensn_1_1_a_a_h_d_sweep_chunk_1af5b46ddcd731e8f29ef0b902fc134164"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumFusedLanes</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn14AAHDSweepChunk13NumFusedLanesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the number of lanes, which is <a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#classopensn_1_1_discrete_ordinates_problem_1af99049b7b46cd9b914755d8303b00bd8"><span class="std std-ref">DiscreteOrdinatesProblem::GetFusedAAOLanes</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHDSweepChunk13GetLaneStreamENSt6size_tE">
+<span class="target" id="classopensn_1_1_a_a_h_d_sweep_chunk_1a277139b10afef523a93975c4dd97157c"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Stream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetLaneStream</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lane</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHDSweepChunk13GetLaneStreamENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the stream of a lane. </p>
+<p>The members of a run on that lane use it for their <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> copies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lane</strong> – Lane index. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Stream of the lane. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHDSweepChunk14SubmitBatchRunENSt6size_tERKNSt6vectorIP13AAHD_AngleSetEE">
+<span class="target" id="classopensn_1_1_a_a_h_d_sweep_chunk_1aa6ce8ed6269b05b21befeef74ea25ec2"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SubmitBatchRun</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lane</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_a_a_h_d___angle_set.html#_CPPv4N6opensn13AAHD_AngleSetE" title="opensn::AAHD_AngleSet"><span class="n"><span class="pre">AAHD_AngleSet</span></span></a><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">batch</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHDSweepChunk14SubmitBatchRunENSt6size_tERKNSt6vectorIP13AAHD_AngleSetEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Enqueue a batch run on an idle lane and return without waiting. </p>
+<p>The run sweeps every level of every angle set in the batch, followed by their completion copies (<a class="reference internal" href="classopensn_1_1_a_a_h_d___angle_set.html#classopensn_1_1_a_a_h_d___angle_set_1a75a5f6628b1bddca4e3d9eab02b99ba3"><span class="std std-ref">AAHD_AngleSet::SubmitCompletionCopies</span></a>). Every member must have been prepared for this lane with <a class="reference internal" href="classopensn_1_1_a_a_h_d___angle_set.html#classopensn_1_1_a_a_h_d___angle_set_1a73c7550aded1e7223b9966de1ab70d62"><span class="std std-ref">AAHD_AngleSet::PrepareForBatch</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>lane</strong> – Index of an idle lane. </p></li>
+<li><p><strong>batch</strong> – Angle sets of the run. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHDSweepChunk10IsLaneIdleENSt6size_tE">
+<span class="target" id="classopensn_1_1_a_a_h_d_sweep_chunk_1ab0864b264e5ff891c51d5d12025f4ae2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsLaneIdle</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">lane</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14AAHDSweepChunk10IsLaneIdleENSt6size_tE" title="Link to this definition"></a><br /></dt>
+<dd><p>Check whether a lane is idle. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>lane</strong> – Lane index. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>True when all work submitted to the lane has completed. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn14AAHDSweepChunk14AAHDSweepChunkER24DiscreteOrdinatesProblemR11LBSGroupset">

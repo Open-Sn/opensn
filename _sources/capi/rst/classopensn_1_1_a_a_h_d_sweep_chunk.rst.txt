@@ -6,6 +6,17 @@ Class AAHDSweepChunk
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aahd_sweep_chunk.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d_sweep_chunk_1_1_fused_lane`
+- :ref:`exhale_struct_structopensn_1_1_a_a_h_d_sweep_chunk_1_1_fused_launch_parameters`
+
+
 Inheritance Relationships
 -------------------------
 

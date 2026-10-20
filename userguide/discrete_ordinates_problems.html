@@ -78,7 +78,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#options">11.3.8. <code class="docutils literal notranslate"><span class="pre">options</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#sweep-type">11.3.9. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#use-gpus">11.3.10. <code class="docutils literal notranslate"><span class="pre">use_gpus</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#time-dependent">11.3.11. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#fused-gpu-scheduling-options">11.3.11. Fused GPU scheduling options</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#time-dependent">11.3.12. <code class="docutils literal notranslate"><span class="pre">time_dependent</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shared-lbs-interface">11.4. Shared LBS Interface</a></li>
@@ -340,8 +341,36 @@ mesh, source, or groupset definitions.</p>
 <h3><span class="section-number">11.3.10. </span><code class="docutils literal notranslate"><span class="pre">use_gpus</span></code><a class="headerlink" href="#use-gpus" title="Link to this heading"></a></h3>
 <p>This requests GPU acceleration where supported.</p>
 </section>
+<section id="fused-gpu-scheduling-options">
+<h3><span class="section-number">11.3.11. </span>Fused GPU scheduling options<a class="headerlink" href="#fused-gpu-scheduling-options" title="Link to this heading"></a></h3>
+<p>Two entries of <code class="docutils literal notranslate"><span class="pre">options</span></code> control the fused all-at-once GPU scheduler:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="o">...</span><span class="p">,</span>
+    <span class="n">sweep_type</span><span class="o">=</span><span class="s2">&quot;AAH&quot;</span><span class="p">,</span>
+    <span class="n">use_gpus</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;fused_aao_sweep&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;fused_aao_lanes&quot;</span><span class="p">:</span> <span class="mi">8</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">fused_aao_sweep</span></code> (default <code class="docutils literal notranslate"><span class="pre">False</span></code>) selects the fused all-at-once scheduler
+for GPU <code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code> sweeps. Each kernel launch sweeps the current level of up to
+256 ready angle sets, instead of launching each angle set’s levels separately.
+This reduces the number of launches when individual levels are too small to
+fill the GPU, such as two-dimensional problems or problems with few groups.
+Several such runs are in
+flight at once (see <code class="docutils literal notranslate"><span class="pre">fused_aao_lanes</span></code>), so on multiple ranks the angle sets
+that become ready as upstream angular fluxes arrive start without waiting for
+the runs already in progress. It requires <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code>,
+and construction raises an error otherwise.</p>
+<p><code class="docutils literal notranslate"><span class="pre">fused_aao_lanes</span></code> sets, with <code class="docutils literal notranslate"><span class="pre">fused_aao_sweep=True</span></code>, how many fused runs
+(each a batch of angle sets on its own GPU stream) may be in flight at once on
+each rank. The default is 8 and the value must be at least 1. With one lane, a run must finish
+before the next starts, which serializes the small batches that form when angle
+sets become ready a few at a time on multiple ranks. More lanes help until the
+ready work no longer fills them. The option is ignored unless <code class="docutils literal notranslate"><span class="pre">fused_aao_sweep=True</span></code>.</p>
+</section>
 <section id="time-dependent">
-<h3><span class="section-number">11.3.11. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.3.12. </span><code class="docutils literal notranslate"><span class="pre">time_dependent</span></code><a class="headerlink" href="#time-dependent" title="Link to this heading"></a></h3>
 <p>This puts the problem into time-dependent mode at construction time.</p>
 </section>
 </section>
@@ -522,7 +551,8 @@ later.</p>
 <ul class="simple">
 <li><p>both <code class="docutils literal notranslate"><span class="pre">&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;CBC&quot;</span></code> sweep types support GPU acceleration,</p></li>
 <li><p>curvilinear problems do not support GPU acceleration,</p></li>
-<li><p>time-dependent problems do not support GPU acceleration.</p></li>
+<li><p>time-dependent problems do not support GPU acceleration,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">options.fused_aao_sweep=True</span></code> requires <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code>.</p></li>
 </ul>
 <p>Most users should treat this as a deployment choice after the base problem is
 already running correctly on the CPU.</p>

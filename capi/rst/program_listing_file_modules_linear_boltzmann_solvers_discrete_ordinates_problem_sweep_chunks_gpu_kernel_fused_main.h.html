@@ -1,0 +1,258 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File fused_main.h &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File fused_main.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-fused-main-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-fused-main-h"></span><h1>Program Listing for File fused_main.h<a class="headerlink" href="#program-listing-for-file-fused-main-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_fused_main.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-gpu-kernel-fused-main-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/fused_main.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/aahd_batch_slot.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/arguments.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/main.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;caribou/main.hpp&quot;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">crb</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">caribou</span><span class="p">;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span><span class="o">::</span><span class="nn">gpu_kernel</span>
+<span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Call a function with the cell DOF count as a compile-time constant.</span>
+<span class="cm"> * With `fixed_ndofs &gt; 0` only that count is compiled. This keeps register and stack use at what</span>
+<span class="cm"> * that cell type needs. The caller guarantees that every cell has that count. With</span>
+<span class="cm"> * `fixed_ndofs == 0` every count up to LBSProblem::max_dofs_gpu is compiled and selected at run</span>
+<span class="cm"> * time.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \tparam fixed_ndofs Single compiled cell DOF count, or 0 to compile all counts.</span>
+<span class="cm"> * \tparam F Type of the function.</span>
+<span class="cm"> * \param num_nodes Number of nodes (DOFs) of the cell.</span>
+<span class="cm"> * \param f Function called with a `std::integral_constant` of the DOF count.</span>
+<span class="cm"> */</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">fixed_ndofs</span><span class="p">,</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">F</span><span class="o">&gt;</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">DispatchCellDOFs</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_nodes</span><span class="p">,</span><span class="w"> </span><span class="n">F</span><span class="o">&amp;</span><span class="w"> </span><span class="n">f</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="p">(</span><span class="n">fixed_ndofs</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">num_nodes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="n">fixed_ndofs</span><span class="p">)</span>
+<span class="w">      </span><span class="n">f</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">integral_constant</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">fixed_ndofs</span><span class="o">&gt;</span><span class="p">{});</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">else</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">done</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="k">auto</span><span class="w"> </span><span class="n">dispatch</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="n">dof_c</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="o">!</span><span class="n">done</span><span class="w"> </span><span class="o">&amp;&amp;</span><span class="w"> </span><span class="n">num_nodes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="k">decltype</span><span class="p">(</span><span class="n">dof_c</span><span class="p">)</span><span class="o">::</span><span class="n">value</span><span class="p">)</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="n">f</span><span class="p">(</span><span class="n">dof_c</span><span class="p">);</span>
+<span class="w">        </span><span class="n">done</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">};</span>
+<span class="w">    </span><span class="n">ForDOFs1ToMax</span><span class="p">(</span><span class="n">dispatch</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Assemble a thread&#39;s sweep arguments from the shared launch data and its batch slot.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param shared_args Launch data shared by every angle set of the launch.</span>
+<span class="cm"> * \param slot Batch slot of the thread&#39;s angle set.</span>
+<span class="cm"> * \return Arguments of the thread&#39;s angle set.</span>
+<span class="cm"> */</span>
+<span class="n">__CRB_DEVICE_FUNC__</span><span class="w"> </span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;</span>
+<span class="n">SlotArguments</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">shared_args</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_BatchSlot</span><span class="o">&amp;</span><span class="w"> </span><span class="n">slot</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shared_args</span><span class="p">;</span>
+<span class="w">  </span><span class="n">args</span><span class="p">.</span><span class="n">directions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">directions</span><span class="p">;</span>
+<span class="w">  </span><span class="n">args</span><span class="p">.</span><span class="n">boundary_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">boundary_offset</span><span class="p">;</span>
+<span class="w">  </span><span class="n">args</span><span class="p">.</span><span class="n">angleset_size</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">angleset_size</span><span class="p">;</span>
+<span class="w">  </span><span class="n">args</span><span class="p">.</span><span class="n">flud_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">flud_index</span><span class="p">;</span>
+<span class="w">  </span><span class="n">args</span><span class="p">.</span><span class="n">flud_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">flud_data</span><span class="p">;</span>
+<span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">args</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Sweep the current level of every batch slot, with one thread per cell and angle-group.</span>
+<span class="cm"> * Each grid-z slice (blockIdx.z, or SYCL dimension 0) is a different angle set&#39;s current level.</span>
+<span class="cm"> * One launch therefore covers many angle sets instead of one. The per-thread work is the same</span>
+<span class="cm"> * solver.h Sweep as `SweepKernel` in main.h. Its arguments are assembled from the shared launch</span>
+<span class="cm"> * data and the thread&#39;s batch slot.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \tparam fixed_ndofs Single compiled cell DOF count, or 0 for all counts (see DispatchCellDOFs).</span>
+<span class="cm"> * \param shared_args Launch data shared by every angle set of the launch.</span>
+<span class="cm"> * \param batch_slots Batch slots of the launch, one per grid-z slice.</span>
+<span class="cm"> * \param linear_mapping If true, x enumerates the slot&#39;s (cell, angle-group) pairs cell by cell,</span>
+<span class="cm"> *        so a warp covers consecutive cells&#39; angle-groups with no idle lanes. If false, x is the</span>
+<span class="cm"> *        angle-group and y is the cell, which spreads a small level over more warps.</span>
+<span class="cm"> */</span>
+<span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">fixed_ndofs</span><span class="o">&gt;</span>
+<span class="n">__CRB_GLOBAL_FUNC__</span><span class="w"> </span><span class="kt">void</span>
+<span class="n">AAHDFusedSweepKernel</span><span class="p">(</span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;</span><span class="w"> </span><span class="n">shared_args</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_BatchSlot</span><span class="o">*</span><span class="w"> </span><span class="n">batch_slots</span><span class="p">,</span>
+<span class="w">                     </span><span class="kt">bool</span><span class="w"> </span><span class="n">linear_mapping</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="cp">#if defined(__NVCC__) || defined(__HIPCC__)</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">slot_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">z</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blockDim</span><span class="p">.</span><span class="n">x</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">threadIdx</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">blockDim</span><span class="p">.</span><span class="n">y</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">blockIdx</span><span class="p">.</span><span class="n">y</span><span class="p">;</span>
+<span class="cp">#elif defined(SYCL_LANGUAGE_VERSION) &amp;&amp; defined(__INTEL_LLVM_COMPILER)</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">work_index</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">::</span><span class="n">sycl</span><span class="o">::</span><span class="n">ext</span><span class="o">::</span><span class="n">oneapi</span><span class="o">::</span><span class="n">this_work_item</span><span class="o">::</span><span class="n">get_nd_item</span><span class="o">&lt;</span><span class="mi">3</span><span class="o">&gt;</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">slot_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_index</span><span class="p">.</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">x_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_index</span><span class="p">.</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">2</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">y_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">work_index</span><span class="p">.</span><span class="n">get_global_id</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+<span class="cp">#endif</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_BatchSlot</span><span class="o">&amp;</span><span class="w"> </span><span class="n">slot</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">batch_slots</span><span class="p">[</span><span class="n">slot_idx</span><span class="p">];</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">slot_stride</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">shared_args</span><span class="p">.</span><span class="n">groupset_size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">angleset_size</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">cell_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear_mapping</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">x_idx</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">slot_stride</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">y_idx</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">linear_mapping</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">x_idx</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">cell_idx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">slot_stride</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">x_idx</span><span class="p">;</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cell_idx</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">num_cells</span><span class="w"> </span><span class="o">||</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">slot_stride</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Arguments</span><span class="o">&lt;</span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;</span><span class="w"> </span><span class="n">args</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SlotArguments</span><span class="p">(</span><span class="n">shared_args</span><span class="p">,</span><span class="w"> </span><span class="n">slot</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">angle_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">groupset_size</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">angle_group_idx</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">angle_idx</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">groupset_size</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">slot</span><span class="p">.</span><span class="n">cells_to_sweep</span><span class="p">[</span><span class="n">cell_idx</span><span class="p">];</span>
+<span class="w">  </span><span class="n">CellView</span><span class="w"> </span><span class="n">cell</span><span class="p">;</span>
+<span class="w">  </span><span class="n">MeshView</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">mesh_data</span><span class="p">).</span><span class="n">GetCellView</span><span class="p">(</span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">cell</span><span class="p">.</span><span class="n">num_nodes</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span><span class="p">;</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="p">[</span><span class="n">cell_edge_data</span><span class="p">,</span><span class="w"> </span><span class="n">_</span><span class="p">]</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">GetCellDataIndex</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">flud_index</span><span class="p">,</span><span class="w"> </span><span class="n">cell_local_idx</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_moments</span><span class="p">;</span>
+<span class="w">  </span><span class="n">DirectionView</span><span class="w"> </span><span class="n">direction</span><span class="p">;</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">QuadratureView</span><span class="w"> </span><span class="nf">quadrature</span><span class="p">(</span><span class="n">args</span><span class="p">.</span><span class="n">quad_data</span><span class="p">);</span>
+<span class="w">    </span><span class="n">num_moments</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">quadrature</span><span class="p">.</span><span class="n">num_moments</span><span class="p">;</span>
+<span class="w">    </span><span class="n">quadrature</span><span class="p">.</span><span class="n">GetDirectionView</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span><span class="w"> </span><span class="n">args</span><span class="p">.</span><span class="n">directions</span><span class="p">[</span><span class="n">angle_idx</span><span class="p">]);</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">auto</span><span class="w"> </span><span class="n">sweep</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">[</span><span class="o">&amp;</span><span class="p">](</span><span class="k">auto</span><span class="w"> </span><span class="n">dof_c</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Sweep</span><span class="o">&lt;</span><span class="k">decltype</span><span class="p">(</span><span class="n">dof_c</span><span class="p">)</span><span class="o">::</span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="n">SweepKind</span><span class="o">::</span><span class="n">AAH</span><span class="o">&gt;</span><span class="p">(</span><span class="n">args</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">direction</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">cell_edge_data</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">angle_group_idx</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">group_idx</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">num_moments</span><span class="p">,</span>
+<span class="w">                                                  </span><span class="n">slot</span><span class="p">.</span><span class="n">saved_psi</span><span class="p">);</span>
+<span class="w">  </span><span class="p">};</span>
+<span class="w">  </span><span class="n">DispatchCellDOFs</span><span class="o">&lt;</span><span class="n">fixed_ndofs</span><span class="o">&gt;</span><span class="p">(</span><span class="n">cell</span><span class="p">.</span><span class="n">num_nodes</span><span class="p">,</span><span class="w"> </span><span class="n">sweep</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn::gpu_kernel</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

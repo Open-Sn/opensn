@@ -103,6 +103,78 @@
 <span class="target" id="classopensn_1_1_a_a_h_d___angle_set"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AAHD_AngleSet</span></span></span><span class="w"> </span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="k"><span class="pre">public</span></span><span class="w"> </span><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span><a class="reference internal" href="classopensn_1_1_angle_set.html#_CPPv4N6opensn8AngleSetE" title="opensn::AngleSet"><span class="n"><span class="pre">AngleSet</span></span></a><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSetE" title="Link to this definition"></a><br /></dt>
 <dd><p>AAHD angle set. </p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-fused-all-at-once-batch-interface">Fused all-at-once batch interface</p>
+<p>Used only by SweepScheduler::ScheduleAlgoAAOFused.</p>
+<p>A batch run sweeps every level of every member angle set in one uninterrupted sequence of launches on one stream. No per-level progress is kept between calls. See <a class="reference internal" href="classopensn_1_1_a_a_h_d_sweep_chunk.html#classopensn_1_1_a_a_h_d_sweep_chunk_1aa6ce8ed6269b05b21befeef74ea25ec2"><span class="std std-ref">AAHDSweepChunk::SubmitBatchRun</span></a>. </p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet14SetFLUDSStreamERN3crb6StreamE">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a85e30378126700cd822f14e345491afd"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetFLUDSStream</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Stream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet14SetFLUDSStreamERN3crb6StreamE" title="Link to this definition"></a><br /></dt>
+<dd><p>Direct this angle set’s <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> host-device copies to a stream. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>stream</strong> – Stream for the copies. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet15PrepareForBatchER10SweepChunkRN3crb6StreamE">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a73c7550aded1e7223b9966de1ab70d62"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PrepareForBatch</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE" title="opensn::SweepChunk"><span class="n"><span class="pre">SweepChunk</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sweep_chunk</span></span>, <span class="n"><span class="pre">crb</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">Stream</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">stream</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet15PrepareForBatchER10SweepChunkRN3crb6StreamE" title="Link to this definition"></a><br /></dt>
+<dd><p>Prepare this angle set’s device buffers for a batch run. </p>
+<p>This mirrors the first part of AngleSetAdvance. Call it once per sweep, before the run is submitted.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>sweep_chunk</strong> – Sweep chunk that runs the batch. </p></li>
+<li><p><strong>stream</strong> – Stream of the lane whose batch run this angle set joins. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13AAHD_AngleSet9NumLevelsEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a4a11fb68f6d910893b8e6380fe5f99af"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NumLevels</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13AAHD_AngleSet9NumLevelsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the number of levels in this angle set’s levelized local subgrid. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn13AAHD_AngleSet14FillBatchSlotsENSt6size_tENSt6size_tEPN10gpu_kernel14AAHD_BatchSlotE">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a43d7a04f52edcd8d592d6dfdf0fd4083"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FillBatchSlots</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_levels</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">slot_stride</span></span>, <span class="n"><span class="pre">gpu_kernel</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">AAHD_BatchSlot</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="n sig-param"><span class="pre">slots</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn13AAHD_AngleSet14FillBatchSlotsENSt6size_tENSt6size_tEPN10gpu_kernel14AAHD_BatchSlotE" title="Link to this definition"></a><br /></dt>
+<dd><p>Write this angle set’s batch slot for each level of a batch run. </p>
+<p>Levels at or beyond <a class="reference internal" href="#classopensn_1_1_a_a_h_d___angle_set_1a4a11fb68f6d910893b8e6380fe5f99af"><span class="std std-ref">NumLevels()</span></a> get an empty slot because every batch member runs through the same level range.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_levels</strong> – Number of levels in the batch run. </p></li>
+<li><p><strong>slot_stride</strong> – Distance between this angle set’s slots of consecutive levels. </p></li>
+<li><p><strong>slots</strong> – Slot array. The slot for level <code class="docutils literal notranslate"><span class="pre">level</span></code> is written to <code class="docutils literal notranslate"><span class="pre">slots[level</span> <span class="pre">*</span> <span class="pre">slot_stride]</span></code>. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet22SubmitCompletionCopiesEv">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a75a5f6628b1bddca4e3d9eab02b99ba3"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SubmitCompletionCopies</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet22SubmitCompletionCopiesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Enqueue this angle set’s post-sweep device-to-host copies without synchronizing. </p>
+<p>The copies go on the angle set’s <a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#classopensn_1_1_f_l_u_d_s"><span class="std std-ref">FLUDS</span></a> stream, which is its run’s lane. The caller waits for that stream before FinishCompletion. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet16FinishCompletionER10SweepChunk">
+<span class="target" id="classopensn_1_1_a_a_h_d___angle_set_1a33f8d487f52289bf6f776ad87df1fd5a"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FinishCompletion</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_sweep_chunk.html#_CPPv4N6opensn10SweepChunkE" title="opensn::SweepChunk"><span class="n"><span class="pre">SweepChunk</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sweep_chunk</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AAHD_AngleSet16FinishCompletionER10SweepChunk" title="Link to this definition"></a><br /></dt>
+<dd><p>Finish this angle set after its SubmitCompletionCopies copies have completed. </p>
+<p>This decrements the followers’ dependency counters, sends the downstream angular fluxes, and copies the saved angular flux to its destination. It mirrors the second part of AngleSetAdvance.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>sweep_chunk</strong> – Sweep chunk that ran the batch. </p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13AAHD_AngleSet13AAHD_AngleSetE6size_tRK11LBSGroupsetRK4SPDSRNSt10shared_ptrI5FLUDSEERNSt6vectorI6size_tEERNSt3mapI8uint64_tNSt10shared_ptrI13SweepBoundaryEEEEiRK17SweepCommunicator">

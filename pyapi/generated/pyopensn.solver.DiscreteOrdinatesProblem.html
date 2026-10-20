@@ -1112,6 +1112,19 @@ Print outer solver progress, including PI/NLKE iterations and transient steps.</
 <li><p>power_default_kappa: float, default=3.20435e-11</p></li>
 <li><p>field_function_prefix_option: {‘prefix’, ‘solver_name’}, default=’prefix’</p></li>
 <li><p>field_function_prefix: str, default=’’</p></li>
+<li><p>fused_aao_sweep: bool, default=False
+Use the fused all-at-once GPU scheduler for <code class="docutils literal notranslate"><span class="pre">AAH</span></code> sweeps. Each kernel launch
+sweeps the current level of up to 256 ready angle sets instead of one, which
+reduces launch count when individual levels are too small to fill the GPU. Up to
+<code class="docutils literal notranslate"><span class="pre">fused_aao_lanes</span></code> such runs are in flight at once, so angle sets that become
+ready later (for example when upstream angular fluxes arrive from another rank)
+start without waiting for the others. The solution matches the default scheduler
+to floating-point rounding. Requires <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">use_gpus=True</span></code>.
+Otherwise construction raises an error.</p></li>
+<li><p>fused_aao_lanes: int, default=8
+With <code class="docutils literal notranslate"><span class="pre">fused_aao_sweep=True</span></code>, the number of fused runs (each a batch of angle
+sets on its own GPU stream) that may be in flight at once on each rank. Must be at
+least 1. Ignored unless <code class="docutils literal notranslate"><span class="pre">fused_aao_sweep=True</span></code>.</p></li>
 </ul>
 </dd>
 </dl>

@@ -92,6 +92,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aahd_async_comm.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/aahd_batch_slot.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;caribou/main.hpp&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
@@ -148,6 +149,64 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyBoundaryOffsetToDevice</span><span class="p">();</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="nf">GetDeviceBoudnaryOffset</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">device_boundary_offsets_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * \name Fused all-at-once batch interface</span>
+<span class="cm">   * Used only by SweepScheduler::ScheduleAlgoAAOFused. A batch run sweeps every level of every</span>
+<span class="cm">   * member angle set in one uninterrupted sequence of launches on one stream. No per-level</span>
+<span class="cm">   * progress is kept between calls. See AAHDSweepChunk::SubmitBatchRun.</span>
+<span class="cm">   * \{</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Direct this angle set&#39;s FLUDS host-device copies to a stream.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param stream Stream for the copies.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetFLUDSStream</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Prepare this angle set&#39;s device buffers for a batch run.</span>
+<span class="cm">   * This mirrors the first part of AngleSetAdvance. Call it once per sweep, before the run is</span>
+<span class="cm">   * submitted.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param sweep_chunk Sweep chunk that runs the batch.</span>
+<span class="cm">   * \param stream Stream of the lane whose batch run this angle set joins.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PrepareForBatch</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">,</span><span class="w"> </span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Return the number of levels in this angle set&#39;s levelized local subgrid.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">NumLevels</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Write this angle set&#39;s batch slot for each level of a batch run.</span>
+<span class="cm">   * Levels at or beyond NumLevels() get an empty slot because every batch member runs through the</span>
+<span class="cm">   * same level range.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param num_levels Number of levels in the batch run.</span>
+<span class="cm">   * \param slot_stride Distance between this angle set&#39;s slots of consecutive levels.</span>
+<span class="cm">   * \param slots Slot array. The slot for level `level` is written to `slots[level * slot_stride]`.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">FillBatchSlots</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_levels</span><span class="p">,</span>
+<span class="w">                      </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">slot_stride</span><span class="p">,</span>
+<span class="w">                      </span><span class="n">gpu_kernel</span><span class="o">::</span><span class="n">AAHD_BatchSlot</span><span class="o">*</span><span class="w"> </span><span class="n">slots</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Enqueue this angle set&#39;s post-sweep device-to-host copies without synchronizing.</span>
+<span class="cm">   * The copies go on the angle set&#39;s FLUDS stream, which is its run&#39;s lane. The caller waits for</span>
+<span class="cm">   * that stream before FinishCompletion.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SubmitCompletionCopies</span><span class="p">();</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Finish this angle set after its SubmitCompletionCopies copies have completed.</span>
+<span class="cm">   * This decrements the followers&#39; dependency counters, sends the downstream angular fluxes, and</span>
+<span class="cm">   * copies the saved angular flux to its destination. It mirrors the second part of</span>
+<span class="cm">   * AngleSetAdvance.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param sweep_chunk Sweep chunk that ran the batch.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">FinishCompletion</span><span class="p">(</span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/** \} */</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="w"> </span><span class="n">m</span><span class="p">;</span>
 

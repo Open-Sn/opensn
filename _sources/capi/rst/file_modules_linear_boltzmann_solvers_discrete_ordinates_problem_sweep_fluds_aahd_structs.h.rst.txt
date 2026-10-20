@@ -46,6 +46,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aahd_fluds_common_data.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_aahd_batch_slot.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_gpu_kernel_arguments.h`
 
 
@@ -77,7 +79,7 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespacestd_1a38a7ee27156f0e5bb69be8be630258c0`
-
 - :ref:`exhale_function_namespacestd_1a7ef16e0b23291ac3cdf07c9adfa0c250`
+
+- :ref:`exhale_function_namespacestd_1a38a7ee27156f0e5bb69be8be630258c0`
 
