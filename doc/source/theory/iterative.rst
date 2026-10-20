@@ -206,13 +206,9 @@ infinite-medium iteration matrix,
 
 .. math:: A^{-1} B\, \xi = \rho\, \xi \,, \qquad \sum_g \xi_g = 1 \,,
 
-where the matrices depend on the iteration being accelerated:
-
-* with within-group DSA on the groupset, each iteration behaves like Jacobi
-  iteration with converged within-group scattering, and
-  :math:`A = \Sigma_t - S_D`, :math:`B = S_O`;
-* without it, each iteration is a single sweep with all scattering lagged, and
-  :math:`A = \Sigma_t`, :math:`B = S_D + S_O`.
+where :math:`A = \Sigma_t - S_D` and :math:`B = S_O` (Jacobi iteration with
+converged within-group scattering). The same spectrum is used with or without
+within-group DSA.
 
 :math:`A^{-1}B` is non-negative, so :math:`\rho` is its spectral radius and
 :math:`\xi \ge 0`. Because a Jacobi iteration matrix can also have the

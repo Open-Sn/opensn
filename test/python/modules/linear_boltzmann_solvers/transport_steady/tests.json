@@ -1831,7 +1831,7 @@
   },
   {
     "file": "transport_tgdsa_two_group_infinite_medium.py",
-    "comment": "TGDSA spectrum (Perron eigenvector when the Jacobi matrix has eigenvalues +/-rho) and TGDSA-only consistency with the single-sweep iteration: 2-group infinite medium, classic Richardson with TGDSA and WGDSA+TGDSA, exact phi from (Sigma_t - S) phi = Q",
+    "comment": "TGDSA spectrum (Perron eigenvector when the Jacobi matrix has eigenvalues +/-rho), computed over the accelerated groupset only, and convergence of TGDSA alone and WGDSA+TGDSA: 2-group infinite medium, classic Richardson, exact phi from (Sigma_t - S) phi = Q",
     "num_procs": 2,
     "checks": [
       {
@@ -1865,6 +1865,20 @@
         "key": "FUSED_AAO_CONTROL_SOLVED",
         "goldvalue": 1,
         "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "transport_tgdsa_heterogeneous.py",
+    "comment": "TGDSA without WGDSA converges in a heterogeneous 12-group HDPE/He-3 slab (the single-sweep TGDSA spectrum, concentrated in different groups in the two materials, makes it diverge); compared with an unaccelerated GMRES reference",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TGDSA_HETEROGENEOUS_MAX_REL_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-07
       }
     ]
   }

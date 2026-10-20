@@ -38,16 +38,15 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
       const auto& mat_id = mat_id_xs_pair.first;
       const auto& xs = mat_id_xs_pair.second;
 
-      // With WGDSA, each groupset iteration (one sweep followed by a within-group DSA solve)
-      // behaves like Jacobi iteration with converged within-group scattering (JFULL). Without
-      // it, the iteration is a single sweep with all scattering lagged (JPARTIAL). The spectrum
-      // and the residual must match the iteration being accelerated (Hanus, Ragusa, and
-      // Hackemack, M&C 2017).
-      const auto scheme =
-        groupset.apply_wgdsa ? EnergyCollapseScheme::JFULL : EnergyCollapseScheme::JPARTIAL;
+      // The spectrum is that of Jacobi iteration with converged within-group scattering (JFULL),
+      // with or without WGDSA. Without WGDSA, the spectrum of the single-sweep iteration
+      // (JPARTIAL) matches the iteration more closely in a homogeneous medium, but it is
+      // dominated by each material's most strongly self-scattering group, so neighboring
+      // materials can have spectra in different groups. The collapsed correction is then mapped
+      // to the wrong groups across material interfaces, and the iteration can diverge.
       TwoGridCollapsedInfo tginfo =
         MakeTwoGridCollapsedInfo(*xs,
-                                 scheme,
+                                 EnergyCollapseScheme::JFULL,
                                  groupset.first_group,
                                  groupset.last_group,
                                  do_problem.GetDSATimeAbsorptionScale());
@@ -111,10 +110,8 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
-  // The residual is the scattering lagged by the iteration within the groupset: between groups
-  // only with WGDSA (JFULL), all scattering without it (JPARTIAL). See TGDSA::Init. Groups outside
-  // the groupset are not part of its iteration error.
-  const bool include_within_group = not groupset.apply_wgdsa;
+  // The residual is the scattering between groups of the groupset, matching the JFULL spectrum
+  // (see TGDSA::Init). Groups outside the groupset are not part of its iteration error.
 
   auto local_node_count = do_problem.GetLocalNodeCount();
   if (delta_phi_local.size() != local_node_count)
@@ -140,8 +137,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
       {
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
-          if (gprime >= gsi and gprime < gsi + gss and
-              (include_within_group or gprime != (gsi + g)))
+          if (gprime >= gsi and gprime < gsi + gss and gprime != (gsi + g))
             R_g += sigma_sm * phi_in_mapped[gprime];
 
         delta_phi_mapped += R_g;
