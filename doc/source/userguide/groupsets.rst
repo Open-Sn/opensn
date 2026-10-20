@@ -380,16 +380,9 @@ eigenvalue of the infinite-medium iteration matrix. TGDSA solves one
 energy-collapsed diffusion problem for the amplitude of that mode and adds
 :math:`\xi_g` times the amplitude to each group's scalar flux. The spectrum, the
 collapsed diffusion coefficient, and the collapsed absorption cross section are
-computed per material when the groupset is initialized. Two forms are used,
-depending on whether WGDSA is enabled on the groupset:
-
-* With WGDSA (recommended), each groupset iteration behaves like Jacobi
-  iteration with converged within-group scattering. The spectrum is computed
-  for that iteration, and the TGDSA residual contains only scattering between
-  groups.
-* Without WGDSA, each groupset iteration is a single sweep with all scattering
-  lagged. The spectrum is computed for that iteration, and the residual also
-  contains within-group scattering.
+computed per material when the groupset is initialized, assuming converged
+within-group scattering. TGDSA does not accelerate within-group scattering, so
+use it with WGDSA (recommended) when within-group scattering is strong.
 
 TGDSA removes only the slowest error mode, which has a single energy shape. In
 problems with many thermal groups this mode dominates and TGDSA is very
