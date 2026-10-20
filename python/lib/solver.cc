@@ -471,14 +471,10 @@ WrapLBS(py::module& slv)
     "ReadFluxMomentsAndMakeSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
-      auto ext_src_moments = self.GetExtSrcMomentsLocal();
-      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, ext_src_moments);
-      self.SetExtSrcMomentsFrom(ext_src_moments);
+      std::vector<double> file_phi;
+      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, file_phi);
       log.Log() << "Making source moments from flux file.";
-      const auto temp_phi = self.GetPhiNewLocal();
-      self.SetPhiNewFrom(self.GetExtSrcMomentsLocal());
-      self.SetExtSrcMomentsFrom(self.MakeSourceMomentsFromPhi());
-      self.SetPhiNewFrom(temp_phi);
+      self.SetExtSrcMomentsFrom(self.MakeSourceMomentsFromPhi(file_phi));
     },
     R"(
     Read flux moments and compute corresponding source moments.

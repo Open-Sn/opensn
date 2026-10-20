@@ -78,7 +78,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
         // Declare moment src
         fixed_src_moments_ = default_zero_src_.data();
 
-        if (lbs_problem_.GetOptions().use_src_moments)
+        if (apply_fixed_src_ and lbs_problem_.GetOptions().use_src_moments)
           fixed_src_moments_ = &ext_src_moments_local[uk_map];
 
         // Loop over groupset groups
