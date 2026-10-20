@@ -338,6 +338,7 @@ MultiGroupXS::Reset()
   nu_delayed_sigma_f_.clear();
   production_matrix_.clear();
   transposed_production_matrix_.clear();
+  transposes_initialized_ = false;
   precursors_.clear();
 
   inv_velocity_.clear();
@@ -712,15 +713,26 @@ MultiGroupXS::Scale(const double factor)
     for (auto& value : values)
       value *= scaling_factor_;
 
-  // Clear the transposes of the old data. In adjoint mode rebuild them now; otherwise
-  // SetAdjointMode rebuilds them on the next switch to adjoint mode.
-  transposed_transfer_matrices_.clear();
-  transposed_production_matrix_.clear();
-  if (adjoint_)
+  if (transposes_initialized_)
+  {
+    transposed_transfer_matrices_.clear();
+    transposed_production_matrix_.clear();
     TransposeTransferAndProduction();
+  }
 
   diffusion_initialized_ = false;
   ComputeDiffusionParameters();
+}
+
+void
+MultiGroupXS::ReplaceContents(MultiGroupXS&& other)
+{
+  const bool adjoint = adjoint_;
+  const bool transposes_initialized = transposes_initialized_;
+  *this = std::move(other);
+  adjoint_ = adjoint;
+  if (transposes_initialized)
+    TransposeTransferAndProduction();
 }
 
 void
@@ -775,6 +787,8 @@ MultiGroupXS::TransposeTransferAndProduction()
       for (unsigned int gp = 0; gp < num_groups_; ++gp)
         transposed_production_matrix_[g].push_back(F[gp][g]);
   }
+
+  transposes_initialized_ = true;
 }
 
 } // namespace opensn

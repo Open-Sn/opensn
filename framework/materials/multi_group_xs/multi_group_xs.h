@@ -61,6 +61,13 @@ public:
    */
   void Scale(double factor);
 
+  /**
+   * Replaces the cross sections of this object with those of other. This object keeps its adjoint
+   * mode, and transposes built for the old data are rebuilt from the new data, so that a problem
+   * in adjoint mode that uses this object sees the new data.
+   */
+  void ReplaceContents(MultiGroupXS&& other);
+
   double GetScaleFactor() const { return scaling_factor_; }
 
   /**
@@ -82,9 +89,9 @@ public:
   bool IsFissionable() const { return is_fissionable_; }
 
   /**
-   * Sets the mode of the getters that take no mode argument. Entering adjoint mode rebuilds the
-   * transposed transfer and production matrices, and Scale keeps them current while adjoint mode
-   * is set.
+   * Sets the mode of the getters that take no mode argument. Entering adjoint mode builds the
+   * transposed transfer and production matrices if they do not exist yet. Once built, Scale and
+   * ReplaceContents keep them current in either mode.
    *
    * @note LBS problems pass their own mode to the getters, so problems that share this object can
    *       run in different modes. A problem in adjoint mode sets adjoint mode here so that the
@@ -92,7 +99,7 @@ public:
    */
   void SetAdjointMode(bool val)
   {
-    if (val and not adjoint_)
+    if (val and not transposes_initialized_)
       TransposeTransferAndProduction();
     adjoint_ = val;
   }
@@ -265,6 +272,8 @@ private:
    */
   std::vector<std::vector<double>> production_matrix_;
   std::vector<std::vector<double>> transposed_production_matrix_;
+  /// Whether the transposes have been built. They are then rebuilt whenever the data change.
+  bool transposes_initialized_ = false;
 
   // Diffusion quantities
   bool diffusion_initialized_;
