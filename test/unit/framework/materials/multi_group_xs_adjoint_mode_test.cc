@@ -103,6 +103,26 @@ ExpectModeData(const MultiGroupXS& xs, const bool adjoint, const double factor)
     xs.GetProductionMatrix(), Scaled(PRODUCTION, factor, adjoint), mode + " mode production");
 }
 
+/// Checks the data returned by the getters that take the mode, in both modes, whatever mode is set.
+void
+ExpectExplicitModeData(const MultiGroupXS& xs, const double factor, const std::string& when)
+{
+  for (const bool adjoint : {false, true})
+  {
+    const std::string mode = std::string(adjoint ? "adjoint" : "forward") + " data " + when;
+    ASSERT_EQ(xs.GetTransferMatrices(adjoint).size(), TRANSFER.size()) << mode;
+    for (unsigned int ell = 0; ell < TRANSFER.size(); ++ell)
+    {
+      const auto expected = Scaled(TRANSFER[ell], factor, adjoint);
+      const auto label = mode + ", transfer moment " + std::to_string(ell);
+      ExpectMatrixEq(Dense(xs.GetTransferMatrix(ell, adjoint)), expected, label);
+      ExpectMatrixEq(Dense(xs.GetTransferMatrices(adjoint)[ell]), expected, label + " (vector)");
+    }
+    ExpectMatrixEq(
+      xs.GetProductionMatrix(adjoint), Scaled(PRODUCTION, factor, adjoint), mode + ", production");
+  }
+}
+
 } // namespace
 
 TEST(MultiGroupXSAdjointModeTest, GettersFollowTheSetMode)
@@ -132,6 +152,30 @@ TEST(MultiGroupXSAdjointModeTest, EnteringAdjointModeTransposesDataScaledInForwa
   ExpectModeData(*xs, true, 3.0);
   xs->SetAdjointMode(false);
   ExpectModeData(*xs, false, 3.0);
+}
+
+TEST(MultiGroupXSAdjointModeTest, GettersWithModeFollowScaleInEitherMode)
+{
+  // Once adjoint mode has been set, the transposes must follow every Scale, also while the
+  // getters without a mode argument are in forward mode.
+  auto xs = LoadTestXS();
+  xs->SetAdjointMode(true);
+  xs->SetAdjointMode(false);
+  for (const double factor : {2.0, 3.0})
+  {
+    xs->Scale(factor);
+    ExpectModeData(*xs, false, factor);
+    const auto when =
+      "after Scale(" + std::to_string(static_cast<int>(factor)) + ") in forward mode";
+    ExpectExplicitModeData(*xs, factor, when);
+  }
+
+  xs->SetAdjointMode(true);
+  ExpectExplicitModeData(*xs, 3.0, "after entering adjoint mode");
+  xs->Scale(4.0);
+  ExpectExplicitModeData(*xs, 4.0, "after Scale(4) in adjoint mode");
+  xs->SetAdjointMode(false);
+  ExpectExplicitModeData(*xs, 4.0, "after leaving adjoint mode");
 }
 
 TEST(MultiGroupXSAdjointModeTest, CombineUsesForwardData)
