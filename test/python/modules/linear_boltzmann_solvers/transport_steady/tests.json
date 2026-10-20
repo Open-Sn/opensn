@@ -1955,5 +1955,36 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "flux_moments_to_source_moments_failure_2d.py",
+    "comment": "A ReadFluxMomentsAndMakeSourceMoments call that raises after reading the file (an UncollidedProblem has no source function) leaves phi_new and phi_old unchanged",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_FAILED_CALL_FILE_DIFFERS=",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_FAILED_CALL_RAISED=",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_FAILED_CALL_PHI_NEW_UNCHANGED=",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FLUX_MOMENTS_FAILED_CALL_PHI_OLD_UNCHANGED=",
+        "goldvalue": 1,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]
