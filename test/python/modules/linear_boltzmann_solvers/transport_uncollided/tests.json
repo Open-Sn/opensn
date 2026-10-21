@@ -21,6 +21,12 @@
         "key": "UncollidedFaceOrVertexSourceRejected=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedTwoDimensionalMeshRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
       }
     ]
   },
@@ -47,6 +53,50 @@
         "key": "UncollidedReflectingFaceOrVertexSourceRejected=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReflectingPlaneSourceRejected=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "uncollided_source_cell_average.py",
+    "comment": "Exact source-cell average flux for interior and vacuum-boundary sources, against an independent face-integral reference",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSourceCellInteriorError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedSourceCellBoundaryError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_exact_near_source_leakage.py",
+    "comment": "Exact near-source leakage for a source close to a vertex of its cell, against the exact point-source solution",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedExactLeakageRMSError=",
+        "goldvalue": 0.0164517,
+        "abs_tol": 0.003
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedExactLeakageMaxError=",
+        "goldvalue": 0.03689925,
+        "abs_tol": 0.006
       }
     ]
   },
@@ -64,180 +114,208 @@
     ]
   },
   {
-    "file": "uncollided_2d_reflecting.py",
-    "comment": "2D reflected image-source attenuation and first-collision recombination",
+    "file": "uncollided_3d_reflecting.py",
+    "comment": "Three reflecting symmetry planes against the exact image-source solution, with exact near-source leakage",
     "num_procs": 1,
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "UncollidedReflecting2DMaxAnalyticError=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.05
+        "key": "UncollidedReflecting3DMaxAnalyticError=",
+        "goldvalue": 0.009516904,
+        "abs_tol": 0.003
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedReflecting2DRecombinationError=",
+        "key": "UncollidedReflecting3DRecombinationError=",
         "goldvalue": 0.0,
         "abs_tol": 1e-12
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedReflecting2DCombinedBalance=",
+        "key": "UncollidedReflecting3DCombinedBalance=",
         "goldvalue": 0.0,
-        "abs_tol": 0.005
+        "abs_tol": 0.001
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedReflecting2DMismatchRejected=",
+        "key": "UncollidedReflecting3DMismatchRejected=",
         "goldvalue": 1.0,
         "abs_tol": 0.0
       }
     ]
   },
   {
-    "file": "uncollided_2d_structured_analytic.py",
-    "comment": "2D structured-mesh uncollided flux remains positive and preserves global outflow",
+    "file": "uncollided_3d_polyhedral_reflecting.py",
+    "comment": "Reflected uncollided transport on a true polyhedral pMesh against the analytic image-source solution",
     "num_procs": 1,
+    "env": {
+      "OPENSN_NUM_THREADS": 4
+    },
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "Uncollided2DStructuredNegativeScalarFluxViolation=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-14
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DStructuredOutflowRelativeError=",
-        "goldvalue": 0.0,
-        "abs_tol": 0.02
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_unstructured_analytic.py",
-    "comment": "2D unstructured homogeneous uncollided attenuation and P1 moments",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DMaxScalarRelativeError=",
-        "goldvalue": 0.1134274,
-        "abs_tol": 0.02
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DMaxP1ScaledError=",
-        "goldvalue": 0.10793101,
-        "abs_tol": 0.02
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DRecombinationError=",
+        "key": "UncollidedPolyhedralVolumeError=",
         "goldvalue": 0.0,
         "abs_tol": 1e-12
       },
       {
         "type": "KeyValuePair",
-        "key": "Uncollided2DMinimumScalarFlux=",
-        "goldvalue": 0.036309,
-        "abs_tol": 0.005
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DOutflowRelativeError=",
-        "goldvalue": 0.0031488,
-        "abs_tol": 0.001
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_unstructured_convergence.py",
-    "comment": "2D scalar-flux accuracy on independent unstructured meshes",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DFineError=",
-        "goldvalue": 0.09565332,
-        "abs_tol": 0.02
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_unstructured_heterogeneous.py",
-    "comment": "2D unstructured heterogeneous optical-path attenuation",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DHeterogeneousRelativeError=",
-        "goldvalue": 0.00880381,
-        "abs_tol": 0.0026
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_unstructured_oblique_layers.py",
-    "comment": "2D optical-path attenuation across oblique material interfaces",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DObliqueLayersError=",
-        "goldvalue": 0.01857252,
-        "abs_tol": 0.005
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_source_superposition.py",
-    "comment": "Multiple 2D point sources preserve linear superposition",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DSuperpositionRelativeDifference=",
+        "key": "UncollidedPolyhedralReflectingMaxError=",
         "goldvalue": 0.0,
-        "abs_tol": 1e-12
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DSourceScaleRelativeDifference=",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-12
-      }
-    ]
-  },
-  {
-    "file": "uncollided_2d_multigroup_analytic.py",
-    "comment": "2D multigroup uncollided attenuation matches groupwise analytic values",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Uncollided2DMultigroupMaxError=",
-        "goldvalue": 0.04231392,
         "abs_tol": 0.01
       }
     ]
   },
   {
+    "file": "uncollided_3d_structured_analytic.py",
+    "comment": "3D hexahedral cell-average positivity and global outflow against the exact escape fraction",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DStructuredNegativeCellAverageViolation=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-14
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DStructuredOutflowRelativeError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_prism_analytic.py",
+    "comment": "3D prism scalar flux and P1 moments against the exact point-source solution, bulk positivity, and global outflow",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DPrismMaxScalarRelativeError=",
+        "goldvalue": 0.02959326,
+        "abs_tol": 0.008
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DPrismMaxP1ScaledError=",
+        "goldvalue": 0.03488252,
+        "abs_tol": 0.008
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DPrismRecombinationError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DPrismBulkMinimumScalarFlux=",
+        "goldvalue": 0.006443981,
+        "abs_tol": 0.001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DPrismOutflowRelativeError=",
+        "goldvalue": 0.0005795592,
+        "abs_tol": 0.0002
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_heterogeneous.py",
+    "comment": "Attenuation across a planar material interface, as a ratio to a homogeneous solve and absolutely",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DHeterogeneousRatioError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.01
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DHeterogeneousRelativeError=",
+        "goldvalue": 0.06944977,
+        "abs_tol": 0.015
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_oblique_layers.py",
+    "comment": "Attenuation through oblique material layers on an extruded mesh, as a ratio to a homogeneous solve and absolutely",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DObliqueLayersRatioError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DObliqueLayersError=",
+        "goldvalue": 0.1209062,
+        "abs_tol": 0.025
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_source_superposition.py",
+    "comment": "Linear superposition and strength scaling of 3D point sources",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DSuperpositionRelativeDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DSourceScaleRelativeDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "uncollided_3d_multigroup_analytic.py",
+    "comment": "3D two-group attenuation: group decoupling and agreement with the exact solution",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DMultigroupDecouplingDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Uncollided3DMultigroupMaxError=",
+        "goldvalue": 0.03814459,
+        "abs_tol": 0.008
+      }
+    ]
+  },
+  {
     "file": "uncollided_3d_unstructured_analytic.py",
-    "comment": "3D tetrahedral scalar-flux mesh convergence",
+    "comment": "3D tetrahedral scalar-flux mesh convergence with exact near-source leakage",
     "num_procs": 1,
     "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "Uncollided3DFineMaxError=",
-        "goldvalue": 0.07285865,
-        "abs_tol": 0.02
+        "goldvalue": 0.005107384,
+        "abs_tol": 0.0015
       }
     ]
   },
   {
-    "file": "uncollided_collided_2d_unstructured.py",
-    "comment": "2D unstructured first-collision source and total balance",
+    "file": "uncollided_collided_3d_prism.py",
+    "comment": "First-collision source and total flux on a 3D prism mesh",
     "num_procs": 1,
     "checks": [
       {
@@ -249,7 +327,7 @@
       {
         "type": "KeyValuePair",
         "key": "UnstructuredCollidedFraction=",
-        "goldvalue": 0.325493,
+        "goldvalue": 0.2988837,
         "abs_tol": 0.01
       }
     ]
@@ -304,133 +382,133 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_1=",
-        "goldvalue": 3.0530544035421463,
-        "abs_tol": 3.0530544035421463e-06
+        "goldvalue": 3.488392335115859,
+        "abs_tol": 3.488392335115859e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_2=",
-        "goldvalue": 1.3024115507856593,
-        "abs_tol": 1.3024115507856593e-06
+        "goldvalue": 1.3346173641706818,
+        "abs_tol": 1.3346173641706818e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_3=",
-        "goldvalue": 0.5153651438013669,
-        "abs_tol": 5.153651438013669e-07
+        "goldvalue": 0.5049057905950466,
+        "abs_tol": 5.049057905950465e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_4=",
-        "goldvalue": 0.2611301918657172,
-        "abs_tol": 2.611301918657172e-07
+        "goldvalue": 0.2540015078107937,
+        "abs_tol": 2.5400150781079374e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_5=",
-        "goldvalue": 0.15527915953464377,
-        "abs_tol": 1.5527915953464377e-07
+        "goldvalue": 0.15065619023033952,
+        "abs_tol": 1.5065619023033952e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_6=",
-        "goldvalue": 0.10293242389759734,
-        "abs_tol": 1.0293242389759733e-07
+        "goldvalue": 0.0998507418764488,
+        "abs_tol": 9.985074187644879e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_7=",
-        "goldvalue": 0.04382601590910784,
-        "abs_tol": 4.3826015909107836e-08
+        "goldvalue": 0.04251626124372835,
+        "abs_tol": 4.2516261243728346e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_8=",
-        "goldvalue": 0.011468462514028992,
-        "abs_tol": 1.146846251402899e-08
+        "goldvalue": 0.011090877866602438,
+        "abs_tol": 1.1090877866602438e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_9=",
-        "goldvalue": 0.0034104223299897423,
-        "abs_tol": 3.4104223299897423e-09
+        "goldvalue": 0.00330362778525074,
+        "abs_tol": 3.3036277852507396e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3A_10=",
-        "goldvalue": 0.0009908857973573296,
-        "abs_tol": 9.908857973573296e-10
+        "goldvalue": 0.0009597819155572008,
+        "abs_tol": 9.597819155572008e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_1=",
-        "goldvalue": 0.10293242389759734,
-        "abs_tol": 1.0293242389759733e-07
+        "goldvalue": 0.0998507418764488,
+        "abs_tol": 9.985074187644879e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_2=",
-        "goldvalue": 0.023130080115538357,
-        "abs_tol": 2.3130080115538356e-08
+        "goldvalue": 0.02304926770667867,
+        "abs_tol": 2.3049267706678667e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_3=",
-        "goldvalue": 0.004687601281529266,
-        "abs_tol": 4.687601281529265e-09
+        "goldvalue": 0.004645718790951846,
+        "abs_tol": 4.6457187909518456e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_4=",
-        "goldvalue": 0.0014172713836603703,
-        "abs_tol": 1.4172713836603703e-09
+        "goldvalue": 0.001398501026516177,
+        "abs_tol": 1.398501026516177e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_5=",
-        "goldvalue": 0.0002852344687906054,
-        "abs_tol": 2.852344687906054e-10
+        "goldvalue": 0.0002815063622655523,
+        "abs_tol": 2.8150636226555227e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3B_6=",
-        "goldvalue": 8.511395502987994e-05,
+        "goldvalue": 8.48673226898299e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_1=",
-        "goldvalue": 3.282421016847003e-05,
+        "goldvalue": 3.2331629140488275e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_2=",
-        "goldvalue": 2.5891745990122238e-05,
+        "goldvalue": 2.551395861071939e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_3=",
-        "goldvalue": 1.781331825227676e-05,
+        "goldvalue": 1.7569553360972845e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_4=",
-        "goldvalue": 2.9832544316260537e-05,
+        "goldvalue": 2.9696968206874597e-05,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_5=",
-        "goldvalue": 6.428293522357702e-06,
+        "goldvalue": 6.345362888513332e-06,
         "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseI_3C_6=",
-        "goldvalue": 3.3059752395663934e-06,
+        "goldvalue": 3.2434691735007373e-06,
         "abs_tol": 1e-10
       }
     ]
@@ -444,133 +522,133 @@
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_1=",
-        "goldvalue": 5.157429170709131,
-        "abs_tol": 5.157429170709131e-06
+        "goldvalue": 5.794039787503701,
+        "abs_tol": 5.794039787503701e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_2=",
-        "goldvalue": 2.0772241537470535,
-        "abs_tol": 2.0772241537470535e-06
+        "goldvalue": 2.140988946896137,
+        "abs_tol": 2.140988946896137e-06
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_3=",
-        "goldvalue": 0.8950078276883014,
-        "abs_tol": 8.950078276883014e-07
+        "goldvalue": 0.893714124212381,
+        "abs_tol": 8.937141242123809e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_4=",
-        "goldvalue": 0.4778193844973829,
-        "abs_tol": 4.77819384497383e-07
+        "goldvalue": 0.4750971275139873,
+        "abs_tol": 4.750971275139873e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_5=",
-        "goldvalue": 0.28843212473365754,
-        "abs_tol": 2.884321247336575e-07
+        "goldvalue": 0.28668090367549665,
+        "abs_tol": 2.866809036754966e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_6=",
-        "goldvalue": 0.19368382820559796,
-        "abs_tol": 1.9368382820559794e-07
+        "goldvalue": 0.19244143848474726,
+        "abs_tol": 1.9244143848474726e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_7=",
-        "goldvalue": 0.10504348035743753,
-        "abs_tol": 1.0504348035743753e-07
+        "goldvalue": 0.10449370166094803,
+        "abs_tol": 1.0449370166094802e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_8=",
-        "goldvalue": 0.03283566041934536,
-        "abs_tol": 3.283566041934536e-08
+        "goldvalue": 0.03266284711663605,
+        "abs_tol": 3.2662847116636047e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_9=",
-        "goldvalue": 0.010793134870724754,
-        "abs_tol": 1.0793134870724754e-08
+        "goldvalue": 0.010740863192609392,
+        "abs_tol": 1.074086319260939e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3A_10=",
-        "goldvalue": 0.003376261242981884,
-        "abs_tol": 3.3762612429818838e-09
+        "goldvalue": 0.003359945975437431,
+        "abs_tol": 3.3599459754374306e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_1=",
-        "goldvalue": 0.19368382820559796,
-        "abs_tol": 1.9368382820559794e-07
+        "goldvalue": 0.19244143848474726,
+        "abs_tol": 1.9244143848474726e-07
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_2=",
-        "goldvalue": 0.06488162955127963,
-        "abs_tol": 6.488162955127963e-08
+        "goldvalue": 0.06510943154150807,
+        "abs_tol": 6.510943154150806e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_3=",
-        "goldvalue": 0.022084513109407435,
-        "abs_tol": 2.2084513109407433e-08
+        "goldvalue": 0.022093625980071994,
+        "abs_tol": 2.2093625980071994e-08
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_4=",
-        "goldvalue": 0.009852485213489267,
-        "abs_tol": 9.852485213489266e-09
+        "goldvalue": 0.009830345229280519,
+        "abs_tol": 9.830345229280518e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_5=",
-        "goldvalue": 0.003424363128021386,
-        "abs_tol": 3.424363128021386e-09
+        "goldvalue": 0.003416247859279388,
+        "abs_tol": 3.4162478592793876e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3B_6=",
-        "goldvalue": 0.0010285832123667039,
-        "abs_tol": 1.0285832123667037e-09
+        "goldvalue": 0.0010264659165333454,
+        "abs_tol": 1.0264659165333453e-09
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_1=",
-        "goldvalue": 0.0003359058845176,
-        "abs_tol": 3.359058845176e-10
+        "goldvalue": 0.0003362378448669309,
+        "abs_tol": 3.3623784486693087e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_2=",
-        "goldvalue": 0.00027925508754236074,
-        "abs_tol": 2.792550875423607e-10
+        "goldvalue": 0.00027967603776026407,
+        "abs_tol": 2.7967603776026404e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_3=",
-        "goldvalue": 0.00021267864403762103,
-        "abs_tol": 2.1267864403762103e-10
+        "goldvalue": 0.00021288896096451085,
+        "abs_tol": 2.1288896096451084e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_4=",
-        "goldvalue": 0.00024167830663661549,
-        "abs_tol": 2.416783066366155e-10
+        "goldvalue": 0.00024162854170797004,
+        "abs_tol": 2.4162854170797e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_5=",
-        "goldvalue": 0.00011008265801166123,
-        "abs_tol": 1.1008265801166122e-10
+        "goldvalue": 0.00011001257921056696,
+        "abs_tol": 1.1001257921056695e-10
       },
       {
         "type": "KeyValuePair",
         "key": "KobayashiCoarseCaseII_3C_6=",
-        "goldvalue": 4.399655034052415e-05,
+        "goldvalue": 4.392413262259531e-05,
         "abs_tol": 1e-10
       }
     ]
@@ -783,7 +861,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.091039831,
+        "goldvalue": 1.115364082,
         "abs_tol": 1e-08
       }
     ]
@@ -801,7 +879,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.091039831,
+        "goldvalue": 1.115364082,
         "abs_tol": 1e-08
       }
     ]
@@ -819,7 +897,7 @@
       {
         "type": "KeyValuePair",
         "key": "ParallelEquivalentIntegral=",
-        "goldvalue": 1.091039831,
+        "goldvalue": 1.115364082,
         "abs_tol": 1e-08
       }
     ]

@@ -226,7 +226,7 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   if (mpi_comm.size() != 1)
     GTEST_SKIP() << "Uncollided flux generation runs with exactly one MPI rank.";
 
-  auto grid = BuildSquareMesh(1.0, 4, 0.0);
+  auto grid = BuildBoxMesh(1.0, 4, 0.0);
   grid->SetUniformBlockID(0);
 
   ParameterBlock groupset("0");
@@ -244,14 +244,15 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   xs_map.ChangeToArray();
 
   ParameterBlock point_source;
-  point_source.AddParameter(ParameterBlock("location", std::vector<double>{0.3, 0.4, 0.0}));
+  point_source.AddParameter(ParameterBlock("location", std::vector<double>{0.3, 0.4, 0.35}));
   point_source.AddParameter(ParameterBlock("strength", std::vector<double>{1.0}));
   ParameterBlock near_source;
   near_source.AddParameter("xmin", -0.01);
   near_source.AddParameter("xmax", 1.01);
   near_source.AddParameter("ymin", -0.01);
   near_source.AddParameter("ymax", 1.01);
-  near_source.AddParameter("infz", true);
+  near_source.AddParameter("zmin", -0.01);
+  near_source.AddParameter("zmax", 1.01);
 
   const std::string problem_name = "uncollided_point_source";
   ParameterBlock params;

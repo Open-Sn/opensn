@@ -1002,16 +1002,82 @@ Notes:
    flux shape is poorly resolved. The correction restores cell balance, but the
    mesh or source placement may still need refinement.
 
-   This treatment also applies in the cell containing the point source. OpenSn
-   evaluates the analytic flux at the finite-element volume and face quadrature
-   points. The accuracy of these spatial integrals depends strongly on the
-   source's position within its containing cell. A source near the cell
-   centroid generally gives better-distributed samples. Near a face, edge, or
-   vertex, the singular field is concentrated into a smaller part of the cell
-   and the discrete integrals can have much larger error. Exact cell balance
-   after correction does not by itself establish spatial accuracy; source
-   placement and local mesh refinement must be checked through a convergence
-   study.
+   The flux is singular at the source, so these quadratures cannot resolve it
+   in the cell that contains the source. That cell is instead represented by
+   its exact cell-average flux. With :math:`R(\vec{\Omega})` the distance from
+   the source to the cell boundary in direction :math:`\vec{\Omega}`, the
+   volume integral of the flux and the leakage through face :math:`f` are
+
+   .. math::
+
+      \int_{V} \phi \, dV
+      = \frac{S}{4\pi}\int_{4\pi}
+        \frac{1 - e^{-\sigma_t R(\vec{\Omega})}}{\sigma_t} \, d\Omega ,
+      \qquad
+      J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\sigma_t R(\vec{\Omega})} \, d\Omega ,
+
+   where :math:`\Omega_f` is the solid angle subtended by face :math:`f`.
+   OpenSn evaluates these over the cone from the source through each PWL side
+   triangle of each face with a composite
+   Gauss--Legendre rule in variables that keep the integrands smooth even when
+   the source is close to a face, edge, or vertex of the cell. This makes the
+   result much less sensitive to where the source lies than a rule in the
+   original variables. The quadrature error still depends on the source position
+   through the integration limits and the number of panels. The method applies
+   to cells of any shape, provided every face is directly visible from the
+   source, which is always the case in a convex cell. In a non-convex 3D cell a
+   ray from the source may leave the cell and re-enter it; if so, OpenSn falls
+   back to the quadrature projection with a warning. The flux in the
+   source cell is the cell average, so a single cell cannot resolve the flux
+   shape near the source, and the higher angular moments of the source cell are
+   projected from this constant flux. Accuracy near the source must still be
+   checked through mesh refinement.
+
+   The source term in the balance of the source cell is
+   :math:`S\,\Omega_c/(4\pi)`, where :math:`\Omega_c` is the solid angle the
+   cell subtends at the source, computed exactly from the cell's faces. It
+   equals :math:`S` for a source inside the cell. For a source on a vacuum
+   boundary, the remaining fraction leaves the domain directly and is counted
+   as outflow. Sources on a reflecting boundary are rejected, because such a
+   source coincides with its own image.
+
+   When the source is close to an edge or vertex of its cell, it is also close
+   to the cells that share that edge or vertex. Their quadrature leakages are
+   then inaccurate, and because each near-source cell's correction factor is
+   computed from the leakages it receives, the error propagates to every
+   downstream cell. With the optional ``exact_near_source_leakage`` treatment,
+   each convex near-source cell that shares a vertex with the source cell is
+   integrated exactly over direction. The leakage through an outgoing face
+   :math:`f` is
+
+   .. math::
+
+      J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\tau(\vec{\Omega})} \, d\Omega ,
+
+   where :math:`\tau` is the optical depth from the source to the face along
+   :math:`\vec{\Omega}`, found by ray tracing, so heterogeneous media are
+   handled. With :math:`\Delta(\vec{\Omega})` the chord length through the
+   cell and :math:`\tau_{in} = \tau - \sigma_t \Delta` the optical depth to
+   where the ray enters it, the volume integral is
+
+   .. math::
+
+      \int_{V} \phi \, dV
+      = \frac{S}{4\pi}\sum_{f\,\mathrm{outgoing}}\int_{\Omega_f}
+        e^{-\tau_{in}(\vec{\Omega})}\,
+        \frac{1 - e^{-\sigma_t \Delta(\vec{\Omega})}}{\sigma_t} \, d\Omega ,
+
+   which reduces to :math:`\Delta` as :math:`\sigma_t \to 0`. These are the
+   same integrals as for the cell containing the source, which is the case
+   :math:`\tau_{in} = 0` with :math:`\Delta` the distance to the face, and
+   OpenSn evaluates both with the same routine. The directions are integrated
+   over each face side triangle by fanning it out from the point of the
+   triangle closest to the source, with the radius graded by a :math:`\sinh`
+   substitution, so the integrands remain smooth however close the source is
+   to the cell. The two treatments differ only in how the flux inside the cell
+   is represented: the projected flux shape of a neighbor cell is rescaled to
+   the exact volume integral, while the source cell, whose projection cannot
+   resolve the singularity, uses the constant cell average.
 
 #. Finite-volume sources can be approximated externally by weighted point
    sources, for example at volume-quadrature points. Those quadrature points

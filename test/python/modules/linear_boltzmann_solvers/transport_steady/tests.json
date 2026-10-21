@@ -1975,7 +1975,7 @@
     ]
   },
   {
-    "file": "flux_moments_to_source_moments_failure_2d.py",
+    "file": "flux_moments_to_source_moments_failure_3d.py",
     "comment": "A ReadFluxMomentsAndMakeSourceMoments call that raises after reading the file (an UncollidedProblem has no source function) leaves phi_new and phi_old unchanged",
     "num_procs": 1,
     "checks": [

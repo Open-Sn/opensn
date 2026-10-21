@@ -11,37 +11,37 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedSampleOpenSn=",
-        "goldvalue": 155.605048137,
+        "goldvalue": 160.532857626,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedLineMeanRelativeError=",
-        "goldvalue": 0.02207941784982,
+        "goldvalue": 0.01704424107794,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedFineLineMeanRelativeError=",
-        "goldvalue": 0.009871387451248,
+        "goldvalue": 0.005021797182590,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedFineLineMaxRelativeError=",
-        "goldvalue": 0.02377214881434,
+        "goldvalue": 0.01796513221488,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedNearSourceLineCoarseMeanRelativeError=",
-        "goldvalue": 0.02665865946522,
+        "goldvalue": 0.01352181056879,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "UncollidedNearSourceLineFineMeanRelativeError=",
-        "goldvalue": 0.02475006956659,
+        "goldvalue": 0.004268264408586,
         "rel_tol": 1e-08
       }
     ]
@@ -59,13 +59,13 @@
       {
         "type": "KeyValuePair",
         "key": "Total scalar flux at (0.024, 0.016, 0.008):",
-        "goldvalue": 399.2665520868,
+        "goldvalue": 406.1703219492,
         "rel_tol": 1e-08
       },
       {
         "type": "KeyValuePair",
         "key": "Total scalar-flux integral:",
-        "goldvalue": 0.02176869131032,
+        "goldvalue": 0.02172379804834,
         "rel_tol": 1e-08
       },
       {
@@ -77,7 +77,7 @@
       {
         "type": "KeyValuePair",
         "key": "Collided fraction of line-integrated flux:",
-        "goldvalue": 0.5819877383826,
+        "goldvalue": 0.5838387573083,
         "rel_tol": 1e-08
       }
     ]

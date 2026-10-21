@@ -507,8 +507,8 @@ The uncollided calculation follows the same problem/solver lifecycle as other
 OpenSn transport calculations. Construct the problem and solver, then call
 ``Initialize`` and ``Execute``:
 
-Uncollided generation is restricted to Cartesian two- and three-dimensional
-meshes and must run with exactly one MPI rank.
+Uncollided generation is restricted to three-dimensional Cartesian meshes and
+must run with exactly one MPI rank.
 
 The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
@@ -523,7 +523,7 @@ reflected-image projection and to the bulk-sweep group solve.
 
 .. code-block:: python
 
-   from pyopensn.aquad import GLCProductQuadrature2DXY
+   from pyopensn.aquad import GLCProductQuadrature3DXYZ
    from pyopensn.logvol import RPPLogicalVolume
    from pyopensn.solver import (
        DiscreteOrdinatesProblem,
@@ -538,10 +538,11 @@ reflected-image projection and to the bulk-sweep group solve.
        xmax=0.25,
        ymin=-0.25,
        ymax=0.25,
-       infz=True,
+       zmin=-0.25,
+       zmax=0.25,
    )
    point_source = PointSource(
-       location=[0.0, 0.0, 0.0],
+       location=[0.01, 0.02, 0.03],
        strength=[1.0],
    )
 
@@ -562,9 +563,9 @@ reflected-image projection and to the bulk-sweep group solve.
    uncollided_solver.Initialize()
    uncollided_solver.Execute()
 
-   quadrature = GLCProductQuadrature2DXY(
-       n_polar=2,
-       n_azimuthal=24,
+   quadrature = GLCProductQuadrature3DXYZ(
+       n_polar=4,
+       n_azimuthal=16,
        scattering_order=1,
    )
    problem = DiscreteOrdinatesProblem(
@@ -606,19 +607,32 @@ Every point source requires a corresponding entry in ``near_source``. The two
 lists are matched by position, so ``near_source`` is required whenever
 ``point_sources`` is nonempty.
 
-For now, uncollided generation requires each point source to lie strictly
-inside a single cell. A source located exactly on a face, edge, or vertex is
-rejected as unsupported.
+For now, uncollided generation requires each point source to belong to a single
+cell. A source located exactly on a face, edge, or vertex shared by more than
+one cell is rejected as unsupported, as is a source on a reflecting boundary. A
+source on a vacuum boundary emits into the domain only the fraction of its
+strength in the solid angle its cell subtends; the rest is counted as outflow.
 
 .. important::
 
-   Point-source placement strongly affects spatial accuracy. Whenever the
-   physical model permits, construct the mesh so that each source lies well
-   inside its containing cell and near the cell centroid. A source near a
-   face, edge, or vertex produces highly uneven local basis weights and makes
-   the near-singular flux and outgoing currents difficult to integrate
-   accurately. The conservation correction restores cell balance, but it
-   cannot recover an unresolved local flux shape.
+   Point-source placement affects spatial accuracy. The cell containing the
+   source is represented by its exact cell-average flux and exact face
+   leakages wherever the source lies in it. The neighboring cells, however,
+   are projected from quadrature points by default. When the source lies
+   close to an edge or vertex of its cell, it is also close to the neighbors
+   sharing that edge or vertex, and their quadrature leakages can be wrong by
+   tens of percent. The near-source conservation correction then carries
+   that error into every downstream cell, and mesh refinement does not
+   remove it, because each mesh places the source differently relative to its
+   cell. A source close to a single face is not affected.
+
+   Set ``exact_near_source_leakage=True`` to integrate the cells that share a
+   vertex with the source cell exactly over direction, which makes the result
+   much less sensitive to where the source lies in its cell. It costs
+   additional ray tracing for those cells and applies to convex cells. Without
+   it, construct the mesh, whenever the physical model permits, so that each
+   source lies well inside its containing cell. The conservation correction
+   restores cell balance, but it cannot recover an unresolved local flux shape.
 
    Do not move a physically fixed source merely to improve the discretization.
    Instead, align or locally refine the mesh around it. Check mesh convergence
@@ -627,11 +641,6 @@ rejected as unsupported.
    and face quadratures for this calculation; their order is not currently
    user-configurable. A large correction indicates that these spatial
    integrations do not adequately resolve the source on the current mesh.
-
-In two-dimensional problems, a point source represents the two-dimensional
-transport Green's function, equivalently a line source per unit
-out-of-plane depth. Its free-space uncollided scalar flux scales as
-:math:`1/(2 \pi r)`, not as the three-dimensional :math:`1/(4 \pi r^2)` point-source field.
 
 Finite-volume sources can be approximated by the input author with weighted
 point sources. For example, a quadrature approximation uses

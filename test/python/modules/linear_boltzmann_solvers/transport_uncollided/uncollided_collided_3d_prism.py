@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""First-collision source and total-flux test on an unstructured mesh."""
+"""First-collision source and total-flux test on an extruded prism mesh."""
 
 import importlib
 import os
@@ -11,10 +11,10 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import (
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
@@ -26,7 +26,7 @@ if "opensn_console" not in globals():
 
 sys.path.append(os.path.dirname(__file__))
 uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-mesh_path = uncollided_utils.mesh_path
+extruded_mesh = uncollided_utils.extruded_mesh
 remove_file = uncollided_utils.remove_file
 volume_integral = uncollided_utils.volume_integral
 
@@ -35,29 +35,30 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj")
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    # Centered on its containing cell so it isn't flush against a face
-    source = PointSource(location=[0.0441723, -0.0330477, 0.0], strength=[1.0])
+    source = PointSource(location=[0.0441723, -0.0330477, 1.11], strength=[1.0])
     near_source = RPPLogicalVolume(
         xmin=-0.22,
         xmax=0.22,
         ymin=-0.22,
         ymax=0.22,
-        infz=True,
+        zmin=0.89,
+        zmax=1.33,
     )
     whole_domain = RPPLogicalVolume(
         xmin=-1.01,
         xmax=1.01,
         ymin=-1.01,
         ymax=1.01,
-        infz=True,
+        zmin=-0.01,
+        zmax=2.01,
     )
 
-    file_name = "uncollided_collided_2d_unstructured.h5"
+    file_name = "uncollided_collided_3d_prism.h5"
     remove_file(file_name)
     uncollided = UncollidedProblem(
         mesh=grid,
@@ -77,9 +78,9 @@ if __name__ == "__main__":
         FieldFunctionInterpolationVolume,
     )
 
-    quadrature = GLCProductQuadrature2DXY(
-        n_polar=2,
-        n_azimuthal=24,
+    quadrature = GLCProductQuadrature3DXYZ(
+        n_polar=4,
+        n_azimuthal=16,
         scattering_order=1,
     )
     problem = DiscreteOrdinatesProblem(

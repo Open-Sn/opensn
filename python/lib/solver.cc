@@ -977,7 +977,7 @@ WrapLBS(py::module& slv)
     Parameters
     ----------
     mesh : Mesh
-        Cartesian two- or three-dimensional spatial mesh.
+        Cartesian three-dimensional spatial mesh.
     num_groups : int
         Number of energy groups.
     groupsets : List[Dict], default=[]
@@ -995,8 +995,11 @@ WrapLBS(py::module& slv)
         reflecting plane.
     point_sources : List[pyopensn.source.PointSource], default=[]
         Explicit point sources. At least one point source is required. For now,
-        each source must lie strictly inside a single cell; sources exactly on
-        faces, edges, or vertices are rejected.
+        each source must belong to a single cell; sources exactly on faces,
+        edges, or vertices shared by more than one cell are rejected, as are
+        sources on a reflecting boundary. A source on a vacuum boundary emits
+        into the domain only the fraction of its strength in the solid angle
+        that its cell subtends; the rest is counted as outflow.
     near_source : List[pyopensn.logvol.LogicalVolume]
         Near-source ray-traced region for each point source, in the same order
         as ``point_sources``. This list is required whenever point sources are
@@ -1006,19 +1009,28 @@ WrapLBS(py::module& slv)
         Maximum spherical-harmonic order written to the HDF5 file. It must be
         at least the scattering order of the collided problem that consumes
         the file.
+    exact_near_source_leakage : bool, default=False
+        Integrate the face leakages and volume integrals of the near-source
+        cells that share a vertex with a point source's cell exactly over
+        direction, instead of with spatial quadrature. Without it, a source
+        close to an edge or vertex of its cell can produce errors of tens of
+        percent throughout the domain; with it, the result is much less
+        sensitive to where the source lies in its cell. Each treated cell costs
+        additional ray tracing. Non-convex cells keep the quadrature
+        treatment.
     Notes
     -----
     Only explicit point sources are supported by the uncollided generator.
-    Each point source must lie strictly inside a single cell. Uncollided
-    generation must run on a Cartesian two- or three-dimensional mesh with
-    exactly one MPI rank.
+    Each point source must belong to a single cell. Uncollided generation must
+    run on a Cartesian three-dimensional mesh with exactly one MPI rank.
 
-    Point-source placement strongly affects spatial accuracy. Construct or
-    locally refine the mesh so that each source lies well inside its containing
-    cell and near the cell centroid whenever the physical model permits. Exact
-    balance after the near-source correction does not guarantee that the local
-    flux shape is resolved; monitor the reported correction and verify mesh
-    convergence.
+    Point-source placement affects spatial accuracy. The cell containing a
+    source is represented by its exact cell average, but a source close to an
+    edge or vertex of that cell is also close to its neighbors, whose flux is
+    then poorly resolved by spatial quadrature unless
+    ``exact_near_source_leakage`` is enabled. Exact balance after the
+    near-source correction does not guarantee that the local flux shape is
+    resolved; monitor the reported correction and verify mesh convergence.
 
     A volumetric source may be approximated externally by multiple weighted
     point sources, as in the Kobayashi benchmark example. Choose the source

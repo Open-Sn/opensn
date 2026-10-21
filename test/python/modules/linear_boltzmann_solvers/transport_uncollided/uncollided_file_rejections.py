@@ -11,16 +11,16 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     size = MPI.COMM_WORLD.size
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import DiscreteOrdinatesProblem, UncollidedProblem, UncollidedSolver
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
 sys.path.append(os.path.dirname(__file__))
 uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-mesh_path = uncollided_utils.mesh_path
+extruded_mesh = uncollided_utils.extruded_mesh
 remove_file = uncollided_utils.remove_file
 
 
@@ -37,7 +37,7 @@ def make_uncollided_file(grid, xs, scattering_order, file_name):
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
-        point_sources=[PointSource(location=[0.13, -0.22, 0.0], strength=[1.0])],
+        point_sources=[PointSource(location=[0.13, -0.22, 1.05], strength=[1.0])],
         near_source=[whole_domain],
         scattering_order=scattering_order,
     )
@@ -47,8 +47,8 @@ def make_uncollided_file(grid, xs, scattering_order, file_name):
 
 
 def make_collided_problem(grid, xs, scattering_order, file_name):
-    quadrature = GLCProductQuadrature2DXY(
-        n_polar=2,
+    quadrature = GLCProductQuadrature3DXYZ(
+        n_polar=4,
         n_azimuthal=12,
         scattering_order=scattering_order,
     )
@@ -70,7 +70,9 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(
+        ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj", num_layers=4
+    )
     grid.SetUniformBlockID(0)
 
     xs_reference = MultiGroupXS()
