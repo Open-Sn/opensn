@@ -1380,16 +1380,29 @@ LBSProblem::HasCapableDevices()
 std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()
 {
+  return MakeSourceMomentsFromPhi(phi_new_local_);
+}
+
+std::vector<double>
+LBSProblem::MakeSourceMomentsFromPhi(const std::vector<double>& phi)
+{
   CALI_CXX_MARK_SCOPE("Source/MomentsFromPhi");
 
   auto num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
+  OpenSnLogicalErrorIf(not active_set_source_function_,
+                       GetName() + ": MakeSourceMomentsFromPhi requires a source function, "
+                                   "but this problem type has none.");
+  OpenSnInvalidArgumentIf(
+    phi.size() != num_local_dofs,
+    "MakeSourceMomentsFromPhi size mismatch. Provided size=" + std::to_string(phi.size()) +
+      ", expected local DOFs=" + std::to_string(num_local_dofs) + ".");
 
   std::vector<double> source_moments(num_local_dofs, 0.0);
   for (auto& groupset : groupsets_)
   {
     active_set_source_function_(groupset,
                                 source_moments,
-                                phi_new_local_,
+                                phi,
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                   APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES |
                                   APPLY_PREVIOUS_PRECURSOR_SOURCES);

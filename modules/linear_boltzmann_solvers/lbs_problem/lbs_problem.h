@@ -366,6 +366,9 @@ public:
   /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
   std::vector<double> MakeSourceMomentsFromPhi();
 
+  /// Makes a source-moments vector from scattering and fission based on the given flux moments.
+  std::vector<double> MakeSourceMomentsFromPhi(const std::vector<double>& phi);
+
   /**
    * A method for post-processing an adjoint solution.
    *
