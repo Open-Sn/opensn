@@ -453,6 +453,9 @@
 <span class="w">  </span><span class="c1">/// Makes a source-moments vector from scattering and fission based on the latest phi-solution.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MakeSourceMomentsFromPhi</span><span class="p">();</span>
 
+<span class="w">  </span><span class="c1">/// Makes a source-moments vector from scattering and fission based on the given flux moments.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MakeSourceMomentsFromPhi</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi</span><span class="p">);</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * A method for post-processing an adjoint solution.</span>
 <span class="cm">   *</span>
