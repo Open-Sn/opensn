@@ -15,6 +15,7 @@
 #include "hdf5.h"
 #include <atomic>
 #include <mutex>
+#include <optional>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -116,6 +117,7 @@ protected:
   /// Zero-allocation variant: writes into pre-allocated @p phi_out and reuses the three
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
+  /// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.
   void RaytraceLineInto(RayTracer& ray_tracer,
                         const Cell& cell,
                         const Vector3& qp_xyz,
@@ -125,6 +127,51 @@ protected:
                         std::vector<double>& scratch_bp,
                         std::vector<double>& scratch_mfp,
                         double tolerance = 1.0e-12);
+
+  /// Integrals of the uncollided flux of a point source over a cell.
+  struct ExactCellIntegrals
+  {
+    /// Volume integral of the scalar flux over the cell, per group.
+    std::vector<double> volume_integral;
+    /// Outgoing leakage through each cell face, indexed [face][group]; zero for other faces.
+    std::vector<std::vector<double>> face_leakage;
+  };
+
+  /**
+   * Integrates the uncollided flux of a point source over a cell, and its leakage through each
+   * outgoing face, exactly over direction.
+   *
+   * Every direction from the source through the cell leaves it through an outgoing face. Along
+   * it the flux is S exp(-tau(r)) / (4 pi r^2), so with tau_in the optical depth from the source
+   * to where the ray enters the cell and Delta the chord through the homogeneous cell, the leakage
+   * integrand is S exp(-tau_in - sigma_t Delta) / (4 pi) and the volume integrand is
+   * S exp(-tau_in) (1 - exp(-sigma_t Delta)) / (4 pi sigma_t). The optical depth comes from ray
+   * tracing, so heterogeneous media are handled. For the cell containing the source, the ray
+   * starts in the cell, so tau_in = 0 and Delta is the distance to the face.
+   *
+   * The directions through each PWL side triangle of each outgoing face are integrated with a
+   * composite Gauss-Legendre rule in variables that keep the integrands smooth however close the
+   * source is to a face, edge, or vertex, at points that lie on the face.
+   *
+   * Returns std::nullopt when a ray from the source could cross the cell more than once: for a
+   * cell that does not contain the source, when it is not convex; and for the cell containing
+   * the source, when a face is not directly visible from it. Also returns std::nullopt when the
+   * source is on the inner side of a face that is not outgoing.
+   */
+  std::optional<ExactCellIntegrals>
+  IntegrateCellExactly(RayTracer& ray_tracer, const Cell& cell, const SourcePoint& source_point);
+
+  /**
+   * Returns the fraction of the full solid angle that a cell subtends at a point on or in it.
+   *
+   * The signed solid angles of the PWL side triangles of the cell's faces are summed, so the
+   * result is exact for cells of any shape, including non-convex ones. It is 1 for a point
+   * inside the cell, 1/2 on a planar face, and smaller on an edge or vertex.
+   */
+  double SubtendedAngleFraction(const Cell& cell, const Vector3& point) const;
+
+  /// True when every vertex of the cell lies on the inner side of the plane of every face.
+  bool IsConvex(const Cell& cell) const;
 
   void SweepBulkRegion(const SourcePoint& source_point);
 
@@ -167,10 +214,10 @@ protected:
   bool all_cells_convex_ = true;
 
   /// Precomputed face vertex data -- bypasses the std::map-backed VertexHandler in the hot path.
-  /// Supports faces with up to kMaxFaceSides vertices (covers triangles and quads).
+  /// Supports faces with up to max_sides vertices (covers common polyhedral mesh faces).
   struct FaceVertData
   {
-    static constexpr uint32_t max_sides = 4;
+    static constexpr uint32_t max_sides = 8;
     Vector3 verts[max_sides]; // inline vertex positions (no tree traversal)
     Vector3 centroid;
     uint64_t neighbor_id = 0;
@@ -183,10 +230,13 @@ protected:
   std::vector<uint32_t> cell_num_faces_;    // [num_cells] number of faces per cell
   /// O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step.
   std::unordered_map<uint64_t, uint32_t> global_to_local_id_;
-  /// True when all_cells_convex_ and all faces have <= kMaxFaceSides vertices.
+  /// True when all_cells_convex_ and all faces have <= FaceVertData::max_sides vertices.
   bool use_fast_trace_ = false;
 
   unsigned int ell_max_ = 0;
+  /// Integrate the leakages and volume integrals of the cells that share a vertex with a point
+  /// source's cell exactly over direction instead of with spatial quadrature.
+  bool exact_near_source_leakage_ = false;
   std::vector<Moment> moments_;
   std::vector<std::string> moment_names_;
   std::vector<std::vector<double>> accumulated_moments_;

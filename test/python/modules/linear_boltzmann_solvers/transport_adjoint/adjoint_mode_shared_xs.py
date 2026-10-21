@@ -51,7 +51,7 @@ production weights the flux, the ratio does.
     (nu_d sigma_f)^T with chi_d = (0.48, 0.52) and k_inf = 0.99699. The adjoint problem is built on
     the same cross sections, and only the forward problem is solved and checked; a transposed
     delayed term would put its k 7.7e-3 off.
-  first_collision: on a 2D mesh with vacuum faces and the medium without fission, an adjoint
+  first_collision: on a 3D mesh with vacuum faces and the medium without fission, an adjoint
     problem is built, then a forward problem whose first-collision source comes from an
     uncollided-flux file, on the same cross sections, and both are solved. Each flux must equal
     that of the same problem on its own copy of the cross sections.
@@ -116,7 +116,7 @@ if "opensn_console" not in globals():
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.xs import MultiGroupXS
     from pyopensn.source import PointSource, VolumetricSource
-    from pyopensn.aquad import GLProductQuadrature1DSlab, GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLProductQuadrature1DSlab, GLCProductQuadrature3DXYZ
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver
     from pyopensn.solver import PowerIterationKEigenSolver, CMFDAcceleration
@@ -626,9 +626,9 @@ def run_keigen_delayed(results):
 def run_first_collision(results, fission=None, prefix="SHARED_XS_FIRST_COLLISION"):
     require_procs(1)
     nodes = [-1.0, -0.5, 0.0, 0.5, 1.0]
-    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()
+    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes]).Execute()
     grid.SetUniformBlockID(0)
-    quadrature = GLCProductQuadrature2DXY(n_polar=2, n_azimuthal=8, scattering_order=0)
+    quadrature = GLCProductQuadrature3DXYZ(n_polar=2, n_azimuthal=8, scattering_order=0)
 
     xs = load_xs(fission)
     file_name = f"adjoint_mode_shared_xs_{scenario}.h5"
@@ -639,8 +639,12 @@ def run_first_collision(results, fission=None, prefix="SHARED_XS_FIRST_COLLISION
         num_groups=2,
         groupsets=[{"groups_from_to": [0, 1]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
-        point_sources=[PointSource(location=[0.14, -0.19, 0.0], strength=[1.0, 0.5])],
-        near_source=[RPPLogicalVolume(xmin=-1.01, xmax=1.01, ymin=-1.01, ymax=1.01, infz=True)],
+        point_sources=[PointSource(location=[0.14, -0.19, 0.07], strength=[1.0, 0.5])],
+        near_source=[
+            RPPLogicalVolume(
+                xmin=-1.01, xmax=1.01, ymin=-1.01, ymax=1.01, zmin=-1.01, zmax=1.01
+            )
+        ],
         scattering_order=0,
     )
     uncollided_solver = UncollidedSolver(problem=uncollided, file_name=file_name)
