@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Verify linear superposition for multiple 2D point sources."""
+"""Verify linear superposition for multiple 3D point sources."""
 
 import importlib
 import os
@@ -14,14 +14,14 @@ if "opensn_console" not in globals():
     from pyopensn.fieldfunc import FieldFunctionInterpolationPoint
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.math import Vector3
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import UncollidedProblem, UncollidedSolver
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
 sys.path.append(os.path.dirname(__file__))
 uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-mesh_path = uncollided_utils.mesh_path
+extruded_mesh = uncollided_utils.extruded_mesh
 point_value = uncollided_utils.point_value
 remove_file = uncollided_utils.remove_file
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj")
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
@@ -62,18 +62,17 @@ if __name__ == "__main__":
         xmax=1.01,
         ymin=-1.01,
         ymax=1.01,
-        infz=True,
+        zmin=-0.01,
+        zmax=2.01,
     )
 
-    # Centered on each source's containing cell so neither sits flush
-    # against a face
-    source_a = ((-0.322228, 0.183878, 0.0), 1.0)
-    source_b = ((0.267895, -0.268373, 0.0), 0.7)
+    source_a = ((-0.322228, 0.183878, 0.87), 1.0)
+    source_b = ((0.267895, -0.268373, 1.18), 0.7)
     sample_points = [
-        (-0.52, -0.41, 0.0),
-        (-0.18, 0.49, 0.0),
-        (0.47, -0.08, 0.0),
-        (0.14, 0.34, 0.0),
+        (-0.52, -0.41, 1.31),
+        (-0.18, 0.49, 0.62),
+        (0.47, -0.08, 1.04),
+        (0.14, 0.34, 1.45),
     ]
 
     scalar_a = solve_scalar_flux(
@@ -123,8 +122,8 @@ if __name__ == "__main__":
     remove_file("uncollided_superposition_ab.h5")
 
     if rank == 0:
-        print(f"Uncollided2DSuperpositionRelativeDifference={max_relative_difference:.8e}")
-        print(f"Uncollided2DSourceScaleRelativeDifference={max_scale_difference:.8e}")
+        print(f"Uncollided3DSuperpositionRelativeDifference={max_relative_difference:.8e}")
+        print(f"Uncollided3DSourceScaleRelativeDifference={max_scale_difference:.8e}")
         sys.stdout.flush()
 
     if max_relative_difference > 1.0e-12:

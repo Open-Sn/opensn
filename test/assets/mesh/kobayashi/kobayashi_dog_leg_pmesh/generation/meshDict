@@ -1,0 +1,20 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    class dictionary;
+    location "system";
+    object meshDict;
+}
+
+surfaceFile "kobayashi_box.stl";
+
+maxCellSize 5.0;
+
+workflowControls
+{
+    stopAfter templateGeneration;
+}
