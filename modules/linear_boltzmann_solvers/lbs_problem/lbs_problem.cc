@@ -1389,6 +1389,9 @@ LBSProblem::MakeSourceMomentsFromPhi(const std::vector<double>& phi)
   CALI_CXX_MARK_SCOPE("Source/MomentsFromPhi");
 
   auto num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
+  OpenSnLogicalErrorIf(not active_set_source_function_,
+                       GetName() + ": MakeSourceMomentsFromPhi requires a source function, "
+                                   "but this problem type has none.");
   OpenSnInvalidArgumentIf(
     phi.size() != num_local_dofs,
     "MakeSourceMomentsFromPhi size mismatch. Provided size=" + std::to_string(phi.size()) +
