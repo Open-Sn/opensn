@@ -70,7 +70,7 @@ production weights the flux, the ratio does.
     and the solves are repeated without a rebuild: each flux must equal that of the same problem on
     a new object loaded from that file.
   tgdsa: the two-group medium of transport_tgdsa_two_group_infinite_medium.py, sigma_t = (1, 2),
-    S = [[0.5, 0.09], [0.45, 1.9]], q = (1, 0), solved by classic Richardson with TGDSA alone (60
+    S = [[0.5, 0.09], [0.45, 1.9]], q = (1, 0), solved by classic Richardson with TGDSA alone (400
     iterations allowed) as there, in adjoint mode: an adjoint problem on its own cross sections, and
     an adjoint problem built first and then a forward problem on one shared object. The two-grid
     collapse and correction must use the transposed transfer matrix in the adjoint problems and
@@ -518,7 +518,7 @@ def run_tgdsa(results):
                     ),
                     "inner_linear_method": "classic_richardson",
                     "l_abs_tol": 1.0e-10,
-                    "l_max_its": 60,
+                    "l_max_its": 400,
                     "apply_wgdsa": False,
                     "apply_tgdsa": True,
                     "tgdsa_l_abs_tol": 1.0e-12,
