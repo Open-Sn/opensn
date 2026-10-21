@@ -26,7 +26,7 @@ Program Listing for File sweep.h
    
    class Cell;
    class SPDS;
-   class MeshContinuum;
+   class Mesh;
    
    inline constexpr double FACE_ORIENTATION_TOLERANCE = 1.0e-12;
    
@@ -68,6 +68,6 @@ Program Listing for File sweep.h
    };
    
    /// Print a sweep ordering to file.
-   void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
+   void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<Mesh> vol_continuum);
    
    } // namespace opensn

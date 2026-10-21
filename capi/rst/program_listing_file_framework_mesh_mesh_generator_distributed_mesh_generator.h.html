@@ -120,7 +120,7 @@
 <span class="cm">   * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,</span>
 <span class="cm">   * and set up the local mesh.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
@@ -200,7 +200,7 @@
 <span class="cm">   * boundaries.</span>
 <span class="cm">   * \return A shared pointer to the local mesh.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SetupLocalMesh</span><span class="p">(</span><span class="n">DistributedMeshData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh_info</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">SetupLocalMesh</span><span class="p">(</span><span class="n">DistributedMeshData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">mesh_info</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

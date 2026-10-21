@@ -120,7 +120,7 @@
 <h2><span class="section-number">2.1.1.1. </span>Meshing<a class="headerlink" href="#meshing" title="Link to this heading"></a></h2>
 <p>Python mesh construction starts with <a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator" title="pyopensn.mesh.MeshGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeshGenerator</span></code></a>. Calling
 <a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.MeshGenerator.html#pyopensn.mesh.MeshGenerator.Execute" title="pyopensn.mesh.MeshGenerator.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> completes the generator pipeline and returns the
-<a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeshContinuum</span></code></a> used by a problem.</p>
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.Mesh.html#pyopensn.mesh.Mesh" title="pyopensn.mesh.Mesh"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mesh</span></code></a> used by a problem.</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">pyopensn.mesh</span></code> module provides these mesh generators:</p>
 <ul class="simple">
 <li><p><a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.OrthogonalMeshGenerator.html#pyopensn.mesh.OrthogonalMeshGenerator" title="pyopensn.mesh.OrthogonalMeshGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code></a> creates one-, two-, or three-dimensional
@@ -143,7 +143,7 @@ distributes the resulting partitions to the MPI ranks.</p></li>
 </ul>
 <p>Imported meshes can carry block IDs for materials and volumetric sources and boundary IDs for
 boundary conditions and sources. IDs can also be assigned after generation using the methods on
-<a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.MeshContinuum.html#pyopensn.mesh.MeshContinuum" title="pyopensn.mesh.MeshContinuum"><code class="xref py py-class docutils literal notranslate"><span class="pre">MeshContinuum</span></code></a>.</p>
+<a class="reference internal" href="../../../pyapi/generated/pyopensn.mesh.Mesh.html#pyopensn.mesh.Mesh" title="pyopensn.mesh.Mesh"><code class="xref py py-class docutils literal notranslate"><span class="pre">Mesh</span></code></a>.</p>
 <p>Mesh generators can be chained through their <code class="docutils literal notranslate"><span class="pre">inputs</span></code> parameter, allowing one generator to
 transform the output of another.</p>
 </section>

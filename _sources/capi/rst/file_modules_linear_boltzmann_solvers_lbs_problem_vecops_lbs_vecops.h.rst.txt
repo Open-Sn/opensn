@@ -32,7 +32,7 @@ Includes
 
 - ``cstdint``
 
-- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+- ``framework/mesh/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh_mesh.h`)
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_structs.h`)
 

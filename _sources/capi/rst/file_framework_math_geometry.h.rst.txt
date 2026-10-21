@@ -40,7 +40,7 @@ Included By
 
 - :ref:`file_framework_math_spatial_discretization_finite_element_unit_cell_matrices.h`
 
-- :ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`
+- :ref:`file_framework_mesh_mesh_mesh.h`
 
 - :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`
 

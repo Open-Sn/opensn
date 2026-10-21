@@ -32,7 +32,7 @@ Program Listing for File piecewise_linear_base.h
    {
    protected:
      /// Constructor
-     explicit PieceWiseLinearBase(const std::shared_ptr<MeshContinuum>& grid,
+     explicit PieceWiseLinearBase(const std::shared_ptr<Mesh>& grid,
                                   QuadratureOrder q_order,
                                   SpatialDiscretizationType sdm_type);
    

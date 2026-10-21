@@ -68,7 +68,7 @@ Constructor Summary
 
 The main constructor inputs are:
 
-* ``mesh``: a :py:class:`pyopensn.mesh.MeshContinuum`
+* ``mesh``: a :py:class:`pyopensn.mesh.Mesh`
 * ``num_groups``: total number of energy groups
 * ``groupsets``: one or more groupset dictionaries
 * ``xs_map``: block-id to cross-section mapping

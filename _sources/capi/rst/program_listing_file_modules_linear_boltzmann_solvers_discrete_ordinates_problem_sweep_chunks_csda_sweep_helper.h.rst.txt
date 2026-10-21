@@ -20,7 +20,7 @@ Program Listing for File csda_sweep_helper.h
    #include "framework/data_types/vector.h"
    #include "framework/materials/multi_group_xs/multi_group_xs.h"
    #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
-   #include "framework/mesh/mesh_continuum/mesh_continuum.h"
+   #include "framework/mesh/mesh/mesh.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
    #include <vector>

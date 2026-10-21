@@ -68,7 +68,7 @@ Included By
 
 - :ref:`file_framework_mesh_logical_volume_logical_volume.h`
 
-- :ref:`file_framework_mesh_mesh_continuum_cell.h`
+- :ref:`file_framework_mesh_mesh_cell.h`
 
 - :ref:`file_framework_mesh_raytrace_raytracer.h`
 

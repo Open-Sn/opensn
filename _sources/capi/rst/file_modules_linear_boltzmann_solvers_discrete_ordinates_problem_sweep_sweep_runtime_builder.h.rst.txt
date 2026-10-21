@@ -65,7 +65,7 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1ab0fc39f7df9f8b9120eb172421c12882`
+- :ref:`exhale_function_namespaceopensn_1a6bd76d68630156c9ab6a1dccc24c92c9`
 
 
 Typedefs

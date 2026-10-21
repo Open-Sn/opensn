@@ -1,0 +1,17 @@
+.. _exhale_class_classopensn_1_1_mesh:
+
+Class Mesh
+==========
+
+- Defined in :ref:`file_framework_mesh_mesh_mesh.h`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::Mesh
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

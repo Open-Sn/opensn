@@ -1415,12 +1415,12 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_mesh_carrier.rst
+   classopensn_1_1_mesh.rst
 
 .. toctree::
    :maxdepth: 1
 
-   classopensn_1_1_mesh_continuum.rst
+   classopensn_1_1_mesh_carrier.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2258,7 +2258,7 @@ Directories
 .. toctree::
    :maxdepth: 1
 
-   dir_framework_mesh_mesh_continuum.rst
+   dir_framework_mesh_mesh.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2762,7 +2762,7 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_mesh_continuum_cell.h.rst
+   file_framework_mesh_mesh_cell.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3007,12 +3007,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_mesh_continuum_grid_face_histogram.h.rst
+   file_framework_mesh_mesh_grid_face_histogram.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_mesh_continuum_grid_vtk_utils.h.rst
+   file_framework_mesh_mesh_grid_vtk_utils.h.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3192,12 +3192,12 @@ Files
 .. toctree::
    :maxdepth: 1
 
-   file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h.rst
+   file_framework_mesh_mesh_mesh.h.rst
 
 .. toctree::
    :maxdepth: 1
 
-   file_framework_mesh_mesh_continuum_mesh_continuum.h.rst
+   file_modules_linear_boltzmann_solvers_lbs_problem_device_carrier_mesh_carrier.h.rst
 
 .. toctree::
    :maxdepth: 1

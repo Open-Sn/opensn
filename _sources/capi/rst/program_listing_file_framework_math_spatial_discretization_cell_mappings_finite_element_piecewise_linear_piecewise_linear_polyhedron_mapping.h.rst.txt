@@ -35,7 +35,7 @@ Program Listing for File piecewise_linear_polyhedron_mapping.h
    public:
      /// Constructor for the Piecewise Linear Polyhedron cell finite element view.
      PieceWiseLinearPolyhedronMapping(const Cell& polyh_cell,
-                                      std::shared_ptr<MeshContinuum> ref_grid,
+                                      std::shared_ptr<Mesh> ref_grid,
                                       const TetrahedraQuadrature& volume_quadrature,
                                       const TriangleQuadrature& surface_quadrature);
    

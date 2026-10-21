@@ -30,7 +30,7 @@ Includes
 --------
 
 
-- ``framework/mesh/mesh_continuum/grid_vtk_utils.h`` (:ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`)
+- ``framework/mesh/mesh/grid_vtk_utils.h`` (:ref:`file_framework_mesh_mesh_grid_vtk_utils.h`)
 
 - ``framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h`` (:ref:`file_framework_mesh_unpartitioned_mesh_unpartitioned_mesh.h`)
 

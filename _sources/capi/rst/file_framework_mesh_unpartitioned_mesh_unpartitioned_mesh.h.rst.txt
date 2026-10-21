@@ -32,9 +32,9 @@ Includes
 
 - ``array`` (:ref:`file_framework_data_types_byte_array.h`)
 
-- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
+- ``framework/mesh/mesh/cell.h`` (:ref:`file_framework_mesh_mesh_cell.h`)
 
-- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+- ``framework/mesh/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh_mesh.h`)
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 

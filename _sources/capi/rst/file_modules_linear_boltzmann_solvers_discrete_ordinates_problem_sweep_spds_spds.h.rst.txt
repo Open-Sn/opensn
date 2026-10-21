@@ -83,7 +83,7 @@ Functions
 ---------
 
 
-- :ref:`exhale_function_namespaceopensn_1a2a5d81e6f1f631a771bbab49bd79bae7`
+- :ref:`exhale_function_namespaceopensn_1ac56f7f1c806a9f0b949ca6e7b4d6c672`
 
 
 Typedefs

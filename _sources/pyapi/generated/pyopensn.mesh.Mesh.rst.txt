@@ -1,0 +1,8 @@
+﻿pyopensn.mesh.Mesh
+==================
+
+.. currentmodule:: pyopensn.mesh
+
+.. autoclass:: Mesh
+   :members:
+   :inherited-members:

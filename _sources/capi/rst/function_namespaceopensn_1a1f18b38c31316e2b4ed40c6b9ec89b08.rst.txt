@@ -3,7 +3,7 @@
 Function opensn::BuildCellBlockIDsFromField
 ===========================================
 
-- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_vtk_utils.h`
+- Defined in :ref:`file_framework_mesh_mesh_grid_vtk_utils.h`
 
 
 Function Documentation

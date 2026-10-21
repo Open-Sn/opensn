@@ -101,7 +101,7 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">Cell</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SPDS</span><span class="p">;</span>
-<span class="k">class</span><span class="w"> </span><span class="nc">MeshContinuum</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Mesh</span><span class="p">;</span>
 
 <span class="kr">inline</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">FACE_ORIENTATION_TOLERANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">;</span>
 
@@ -143,7 +143,7 @@
 <span class="p">};</span>
 
 <span class="c1">/// Print a sweep ordering to file.</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">PrintSweepOrdering</span><span class="p">(</span><span class="n">SPDS</span><span class="o">*</span><span class="w"> </span><span class="n">sweep_order</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vol_continuum</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">PrintSweepOrdering</span><span class="p">(</span><span class="n">SPDS</span><span class="o">*</span><span class="w"> </span><span class="n">sweep_order</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vol_continuum</span><span class="p">);</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

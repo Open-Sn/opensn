@@ -30,7 +30,7 @@ Includes
 --------
 
 
-- ``framework/mesh/mesh_continuum/cell.h`` (:ref:`file_framework_mesh_mesh_continuum_cell.h`)
+- ``framework/mesh/mesh/cell.h`` (:ref:`file_framework_mesh_mesh_cell.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_fluds_structs.h`)
 

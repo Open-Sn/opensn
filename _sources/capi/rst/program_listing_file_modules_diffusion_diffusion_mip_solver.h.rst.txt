@@ -20,7 +20,7 @@ Program Listing for File diffusion_mip_solver.h
    
    namespace opensn
    {
-   class MeshContinuum;
+   class Mesh;
    class Cell;
    struct Vector3;
    class SpatialDiscretization;

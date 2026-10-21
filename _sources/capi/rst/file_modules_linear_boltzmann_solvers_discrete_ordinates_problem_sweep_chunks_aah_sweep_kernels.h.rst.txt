@@ -40,7 +40,7 @@ Includes
 
 - ``framework/math/spatial_discretization/spatial_discretization.h`` (:ref:`file_framework_math_spatial_discretization_spatial_discretization.h`)
 
-- ``framework/mesh/mesh_continuum/mesh_continuum.h`` (:ref:`file_framework_mesh_mesh_continuum_mesh_continuum.h`)
+- ``framework/mesh/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh_mesh.h`)
 
 - ``framework/utils/error.h`` (:ref:`file_framework_utils_error.h`)
 

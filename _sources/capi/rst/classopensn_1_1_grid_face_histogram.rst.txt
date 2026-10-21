@@ -3,7 +3,7 @@
 Class GridFaceHistogram
 =======================
 
-- Defined in :ref:`file_framework_mesh_mesh_continuum_grid_face_histogram.h`
+- Defined in :ref:`file_framework_mesh_mesh_grid_face_histogram.h`
 
 
 Class Documentation

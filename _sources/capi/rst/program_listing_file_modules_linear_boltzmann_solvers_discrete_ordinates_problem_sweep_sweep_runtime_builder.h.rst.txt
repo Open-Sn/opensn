@@ -27,7 +27,7 @@ Program Listing for File sweep_runtime_builder.h
    
    class GridFaceHistogram;
    class LBSGroupset;
-   class MeshContinuum;
+   class Mesh;
    class SPDS;
    class SpatialDiscretization;
    
@@ -46,7 +46,7 @@ Program Listing for File sweep_runtime_builder.h
    
    SweepRuntime BuildSweepRuntime(const std::string& problem_name,
                                   const std::vector<LBSGroupset>& groupsets,
-                                  const std::shared_ptr<MeshContinuum>& grid,
+                                  const std::shared_ptr<Mesh>& grid,
                                   const std::string& sweep_type,
                                   bool use_gpus,
                                   const SpatialDiscretization& discretization,

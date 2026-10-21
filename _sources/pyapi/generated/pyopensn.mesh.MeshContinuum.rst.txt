@@ -1,8 +1,0 @@
-﻿pyopensn.mesh.MeshContinuum
-===========================
-
-.. currentmodule:: pyopensn.mesh
-
-.. autoclass:: MeshContinuum
-   :members:
-   :inherited-members:

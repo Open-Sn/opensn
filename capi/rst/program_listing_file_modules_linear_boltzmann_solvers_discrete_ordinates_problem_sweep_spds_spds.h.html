@@ -125,7 +125,7 @@
 
 <span class="k">using</span><span class="w"> </span><span class="n">SPDSFaceNeighborInfoVec</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SPDSFaceNeighborInfo</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 
-<span class="n">SPDSFaceNeighborInfoVec</span><span class="w"> </span><span class="nf">BuildSPDSFaceNeighborInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MeshContinuum</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
+<span class="n">SPDSFaceNeighborInfoVec</span><span class="w"> </span><span class="nf">BuildSPDSFaceNeighborInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">SPDS</span>
 <span class="p">{</span>
@@ -136,13 +136,10 @@
 <span class="cm">   * \param omega The angular direction vector.</span>
 <span class="cm">   * \param grid Reference to the grid.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">SPDS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span>
-<span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">omega_</span><span class="p">(</span><span class="n">omega</span><span class="p">),</span><span class="w"> </span><span class="n">grid_</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">SPDS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">omega_</span><span class="p">(</span><span class="n">omega</span><span class="p">),</span><span class="w"> </span><span class="n">grid_</span><span class="p">(</span><span class="n">grid</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
-<span class="w">  </span><span class="c1">/// Return a reference to the MeshContinuum object.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Return a reference to the Mesh object.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetGrid</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Return a reference to the direction vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">GetOmega</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">omega_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
@@ -266,7 +263,7 @@
 <span class="w">  </span><span class="c1">/// Angular direction vector.</span>
 <span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">omega_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Reference to the grid.</span>
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">MeshContinuum</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">grid_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Sweep-plane local subgrid associated with this SPDS.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">spls_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Levelized sweep-plane local subgrid associated with this SPDS.</span>

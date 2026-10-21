@@ -92,7 +92,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a7941b868151f9e1906e9b3811922de31`
 
-- :ref:`exhale_function_namespaceopensn_1a09c0dff065711e5f707227d9aca35e80`
+- :ref:`exhale_function_namespaceopensn_1a891316856b0d433bce824b76e18cd208`
 
 
 Variables

@@ -17,7 +17,7 @@ Subdirectories
 
 - :ref:`dir_framework_mesh_io`
 - :ref:`dir_framework_mesh_logical_volume`
-- :ref:`dir_framework_mesh_mesh_continuum`
+- :ref:`dir_framework_mesh_mesh`
 - :ref:`dir_framework_mesh_mesh_generator`
 - :ref:`dir_framework_mesh_mesh_mapping`
 - :ref:`dir_framework_mesh_raytrace`
