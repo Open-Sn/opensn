@@ -14,7 +14,7 @@ namespace opensn
 
 class Cell;
 class SPDS;
-class MeshContinuum;
+class Mesh;
 
 inline constexpr double FACE_ORIENTATION_TOLERANCE = 1.0e-12;
 
@@ -56,6 +56,6 @@ struct Task
 };
 
 /// Print a sweep ordering to file.
-void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<MeshContinuum> vol_continuum);
+void PrintSweepOrdering(SPDS* sweep_order, std::shared_ptr<Mesh> vol_continuum);
 
 } // namespace opensn

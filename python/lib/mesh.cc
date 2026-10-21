@@ -10,7 +10,7 @@
 #include "framework/graphs/petsc_graph_partitioner.h"
 #include "framework/mesh/io/mesh_io.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/mesh_generator/mesh_generator.h"
 #include "framework/mesh/mesh_generator/extruder_mesh_generator.h"
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
@@ -37,35 +37,35 @@ WrapMesh(py::module& mesh)
 {
   // clang-format off
   // mesh continuum
-  auto mesh_continuum = py::class_<MeshContinuum, std::shared_ptr<MeshContinuum>>(
+  auto mesh_cls = py::class_<Mesh, std::shared_ptr<Mesh>>(
     mesh,
-    "MeshContinuum",
+    "Mesh",
     R"(
     Mesh continuum.
 
-    Wrapper of :cpp:class:`opensn::MeshContinuum`.
+    Wrapper of :cpp:class:`opensn::Mesh`.
     )"
   );
-  mesh_continuum.def_property(
+  mesh_cls.def_property(
     "dimension",
-    &MeshContinuum::GetDimension,
-    &MeshContinuum::SetDimension,
+    &Mesh::GetDimension,
+    &Mesh::SetDimension,
     "Number of dimensions of the mesh."
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "GetGlobalNumberOfCells",
-    &MeshContinuum::GetGlobalNumberOfCells,
+    &Mesh::GetGlobalNumberOfCells,
     "Get global number of cells."
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetUniformBlockID",
-    &MeshContinuum::SetUniformBlockID,
+    &Mesh::SetUniformBlockID,
     "Set block ID's for all cells to the specified block ID.",
     py::arg("mat_id")
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetBlockIDFromLogicalVolume",
-    &MeshContinuum::SetBlockIDFromLogicalVolume,
+    &Mesh::SetBlockIDFromLogicalVolume,
     R"(
     Set block ID's using a logical volume.
 
@@ -84,9 +84,9 @@ WrapMesh(py::module& mesh)
     py::arg("block_id"),
     py::arg("inside")
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetUniformBoundaryID",
-    &MeshContinuum::SetUniformBoundaryID,
+    &Mesh::SetUniformBoundaryID,
     R"(
     Assign all boundary faces to a single name
 
@@ -97,9 +97,9 @@ WrapMesh(py::module& mesh)
     )",
     py::arg("boundary_name")
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetBoundaryIDFromLogicalVolume",
-    &MeshContinuum::SetBoundaryIDFromLogicalVolume,
+    &Mesh::SetBoundaryIDFromLogicalVolume,
     R"(
     Set boundary ID's using a logical volume.
 
@@ -118,14 +118,14 @@ WrapMesh(py::module& mesh)
     py::arg("boundary_name"),
     py::arg("inside") = true
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetOrthogonalBoundaries",
-    &MeshContinuum::SetOrthogonalBoundaries,
+    &Mesh::SetOrthogonalBoundaries,
     "Set boundary IDs for xmin/xmax, ymin/ymax, zmin/zmax for a right parallelpiped domain."
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "ExportToPVTU",
-    [](std::shared_ptr<MeshContinuum> self, const std::string& file_name) {
+    [](std::shared_ptr<Mesh> self, const std::string& file_name) {
       MeshIO::ToPVTU(self, file_name);
     },
     R"(
@@ -138,9 +138,9 @@ WrapMesh(py::module& mesh)
     )",
     py::arg("file_base_name")
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "ComputeVolumePerBlockID",
-    &MeshContinuum::ComputeVolumePerBlockID,
+    &Mesh::ComputeVolumePerBlockID,
     R"(
     Compute volume per block ID
 
@@ -150,9 +150,9 @@ WrapMesh(py::module& mesh)
         Key is the block ID and the value is the computed volume
     )"
   );
-  mesh_continuum.def(
+  mesh_cls.def(
     "SetBlockIDFromFunction",
-    [](MeshContinuum& self, const std::function<unsigned int(Vector3, unsigned int)>& func)
+    [](Mesh& self, const std::function<unsigned int(Vector3, unsigned int)>& func)
     {
       int local_num_cells_modified = 0;
       // change local cells

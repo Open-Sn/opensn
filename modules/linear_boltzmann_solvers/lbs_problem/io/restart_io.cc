@@ -6,7 +6,7 @@
 #include "framework/utils/error.h"
 #include "framework/utils/hdf_utils.h"
 #include "framework/logging/log.h"
-#include "framework/mesh/mesh_continuum/mesh_continuum.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/utils/caliper_scopes.h"
 #include <algorithm>
