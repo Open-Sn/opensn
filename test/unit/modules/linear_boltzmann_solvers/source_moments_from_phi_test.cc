@@ -16,10 +16,10 @@
 #include <cstddef>
 #include <filesystem>
 #include <fstream>
-#include <functional>
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <typeinfo>
 #include <vector>
 
 using namespace opensn;
@@ -216,8 +216,11 @@ TEST(MakeSourceMomentsFromPhiTest, WrongSizeThrows)
   EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
 }
 
-// An UncollidedProblem has no source function, so making the source moments throws, and the
-// problem's flux moments and external source moments are left unchanged.
+// An UncollidedProblem has no source function, so making the source moments throws a
+// std::logic_error (not a subclass such as std::invalid_argument) whose message names the problem
+// and the operation, and the problem's flux moments and external source moments are left
+// unchanged. The problem has its own name, so that the message is checked for the problem's name
+// and not for its type.
 TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
 {
   if (mpi_comm.size() != 1)
@@ -250,7 +253,9 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   near_source.AddParameter("ymax", 1.01);
   near_source.AddParameter("infz", true);
 
+  const std::string problem_name = "uncollided_point_source";
   ParameterBlock params;
+  params.AddParameter("name", problem_name);
   params.AddParameter("mesh", grid);
   params.AddParameter("num_groups", 1);
   params.AddParameter(groupsets);
@@ -261,6 +266,7 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
     "near_source",
     std::vector<std::shared_ptr<LogicalVolume>>{RPPLogicalVolume::Create(near_source)}));
   auto problem = UncollidedProblem::Create(params);
+  ASSERT_EQ(problem->GetName(), problem_name);
 
   const auto num_local_dofs = problem->GetPhiNewLocal().size();
   const auto phi_new = MakeVector(num_local_dofs, 1.0, 0.125, 11);
@@ -271,7 +277,22 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   problem->SetExtSrcMomentsFrom(ext_src);
 
   const auto phi = MakeVector(num_local_dofs, 0.5, 0.0625, 7);
-  EXPECT_THROW(problem->MakeSourceMomentsFromPhi(phi), std::bad_function_call);
+  EXPECT_THROW(
+    {
+      try
+      {
+        problem->MakeSourceMomentsFromPhi(phi);
+      }
+      catch (const std::logic_error& error)
+      {
+        const std::string message = error.what();
+        EXPECT_TRUE(typeid(error) == typeid(std::logic_error)) << typeid(error).name();
+        EXPECT_NE(message.find(problem_name), std::string::npos) << message;
+        EXPECT_NE(message.find("MakeSourceMomentsFromPhi"), std::string::npos) << message;
+        throw;
+      }
+    },
+    std::logic_error);
   EXPECT_EQ(problem->GetPhiNewLocal(), phi_new);
   EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
   EXPECT_EQ(problem->GetExtSrcMomentsLocal(), ext_src);

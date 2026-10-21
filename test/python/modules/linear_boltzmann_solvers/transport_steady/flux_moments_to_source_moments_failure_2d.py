@@ -15,10 +15,15 @@ loads B into phi_old with ReadFluxMoments, so that phi_new (zero) and phi_old (B
 other and from A, and then reads A with ReadFluxMomentsAndMakeSourceMoments. The external source
 moments of an UncollidedProblem are not read by anything, so they are not checked.
 
+The error is a std::logic_error (a RuntimeError in Python) whose message names the problem and
+MakeSourceMomentsFromPhi. The UncollidedProblem has its own name, so that the message is checked for
+the problem's name and not for its type.
+
 Checks:
   FLUX_MOMENTS_FAILED_CALL_FILE_DIFFERS: 1 if A differs from both phi_new and phi_old before the
     call, and phi_old is B (else the next checks are vacuous).
-  FLUX_MOMENTS_FAILED_CALL_RAISED: 1 if the call raised.
+  FLUX_MOMENTS_FAILED_CALL_RAISED: 1 if the call raised a RuntimeError whose message names the
+    problem and MakeSourceMomentsFromPhi.
   FLUX_MOMENTS_FAILED_CALL_PHI_NEW_UNCHANGED: 1 if phi_new is bit for bit the one before the call.
   FLUX_MOMENTS_FAILED_CALL_PHI_OLD_UNCHANGED: the same for phi_old.
 """
@@ -84,7 +89,9 @@ if __name__ == "__main__":
     flux_a = write_flux_file(grid, xs, 1.0, file_base_a)
     flux_b = write_flux_file(grid, xs, 3.0, file_base_b)
 
+    problem_name = "uncollided_point_source"
     uncollided = UncollidedProblem(
+        name=problem_name,
         mesh=grid,
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
@@ -107,8 +114,13 @@ if __name__ == "__main__":
     raised = False
     try:
         uncollided.ReadFluxMomentsAndMakeSourceMoments(file_base_a, False)
-    except Exception:
-        raised = True
+    except Exception as error:
+        message = str(error)
+        raised = (
+            type(error) is RuntimeError
+            and problem_name in message
+            and "MakeSourceMomentsFromPhi" in message
+        )
 
     phi_new_unchanged = phi_new.tobytes() == np.array(uncollided.GetPhiNewLocal()).tobytes()
     phi_old_unchanged = phi_old.tobytes() == np.array(uncollided.GetPhiOldLocal()).tobytes()
