@@ -5,6 +5,7 @@
 #  PETSC_INCLUDE_DIR - The PETSc include directory
 #  PETSC_LIBRARY - The PETSc library
 #  PETSC_VERSION - The PETSc version
+#  PETSc::PETSc - Imported target for the PETSc library and include directory
 
 find_path(
     PETSC_INCLUDE_DIR
@@ -48,3 +49,11 @@ find_package_handle_standard_args(
     REQUIRED_VARS PETSC_LIBRARY PETSC_INCLUDE_DIR
     VERSION_VAR PETSC_VERSION
 )
+
+if(PETSC_FOUND AND NOT TARGET PETSc::PETSc)
+    add_library(PETSc::PETSc UNKNOWN IMPORTED)
+    set_target_properties(PETSc::PETSc PROPERTIES
+        IMPORTED_LOCATION "${PETSC_LIBRARY}"
+        INTERFACE_INCLUDE_DIRECTORIES "${PETSC_INCLUDE_DIR}"
+    )
+endif()
