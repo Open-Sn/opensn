@@ -12,6 +12,7 @@
 #include "framework/mesh/mesh/grid_face_histogram.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep_parallel_for.h"
 #include "framework/utils/error.h"
 #include "framework/utils/timer.h"
@@ -56,6 +57,45 @@ BuildCBCGPUFludsCommonData(SweepRuntime& runtime,
 
 } // namespace detail
 #endif
+
+namespace detail
+{
+
+UniqueSOGroupings
+GroupDirectionsByOrthant(const std::string& problem_name,
+                         const AngularQuadrature& quadrature,
+                         const unsigned int dimension)
+{
+  OpenSnLogicalErrorIf(dimension != 2 and dimension != 3,
+                       problem_name + ": Orthant angle aggregation requires a 2D or 3D mesh.");
+
+  UniqueSOGroupings groupings(size_t{1} << dimension);
+  for (size_t n = 0; n < quadrature.GetNumAngles(); ++n)
+  {
+    const auto& omega = quadrature.GetOmega(n);
+    const std::array<double, 3> components = {omega.x, omega.y, omega.z};
+    size_t orthant = 0;
+    for (unsigned int d = 0; d < dimension; ++d)
+    {
+      OpenSnLogicalErrorIf(std::abs(components[d]) <= FACE_ORIENTATION_TOLERANCE,
+                           problem_name + ": Orthant angle aggregation cannot use direction " +
+                             std::to_string(n) + " " + omega.PrintStr() + ": Omega_" + "xyz"[d] +
+                             " is zero, so the direction is not inside any one " +
+                             (dimension == 2 ? "quadrant." : "octant."));
+      if (components[d] > 0.0)
+        orthant |= size_t{1} << d;
+    }
+    groupings[orthant].push_back(n);
+  }
+
+  groupings.erase(std::remove_if(groupings.begin(),
+                                 groupings.end(),
+                                 [](const DirIDs& ids) { return ids.empty(); }),
+                  groupings.end());
+  return groupings;
+}
+
+} // namespace detail
 
 namespace
 {
@@ -290,6 +330,20 @@ AssociateSOsAndDirections(const std::string& problem_name,
                                  "failed");
       }
 
+      break;
+    }
+    case AngleAggregationType::QUADRANT:
+    case AngleAggregationType::OCTANT:
+    {
+      const bool octant = agg_type == AngleAggregationType::OCTANT;
+      if (grid->GetType() != MeshType::ORTHOGONAL or
+          (octant and geometry_type != GeometryType::THREED_CARTESIAN) or
+          (not octant and geometry_type != GeometryType::TWOD_CARTESIAN))
+        throw std::logic_error(problem_name + ": " + (octant ? "OCTANT" : "QUADRANT") +
+                               " angle aggregation requires a matching Cartesian orthogonal "
+                               "mesh.");
+      unique_so_groupings =
+        detail::GroupDirectionsByOrthant(problem_name, quadrature, grid->GetDimension());
       break;
     }
     default:
