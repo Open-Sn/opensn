@@ -1072,8 +1072,13 @@ WrapLBS(py::module& slv)
               Two-entry list with the first and last group id for the groupset, e.g. ``[0, 3]``.
           - angular_quadrature: pyopensn.aquad.AngularQuadrature, optional
               Handle to an angular quadrature.
-          - angle_aggregation_type: {'polar', 'single', 'azimuthal'}, default='single'
-              Angle aggregation method to use during sweeping.
+          - angle_aggregation_type: {'polar', 'single', 'azimuthal', 'quadrant', 'octant'},
+            default='single'
+              Angle aggregation method to use during sweeping. ``'quadrant'`` (2D) and
+              ``'octant'`` (3D) put all directions in the same quadrant or octant in one angle
+              set. They require a Cartesian orthogonal mesh and a quadrature in which every
+              direction has nonzero ``Omega_x`` and ``Omega_y`` (and, for ``'octant'``,
+              ``Omega_z``), so each direction lies strictly inside one quadrant or octant.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
             'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
 

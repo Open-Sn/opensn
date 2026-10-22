@@ -82,8 +82,9 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
 
   // Constraints
-  params.ConstrainParameterRange("angle_aggregation_type",
-                                 AllowableRangeList::New({"polar", "single", "azimuthal"}));
+  params.ConstrainParameterRange(
+    "angle_aggregation_type",
+    AllowableRangeList::New({"polar", "single", "azimuthal", "quadrant", "octant"}));
   params.ConstrainParameterRange(
     "inner_linear_method",
     AllowableRangeList::New(
@@ -176,6 +177,10 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
     angleagg_method = AngleAggregationType::SINGLE;
   else if (angle_agg_typestr == "azimuthal")
     angleagg_method = AngleAggregationType::AZIMUTHAL;
+  else if (angle_agg_typestr == "quadrant")
+    angleagg_method = AngleAggregationType::QUADRANT;
+  else if (angle_agg_typestr == "octant")
+    angleagg_method = AngleAggregationType::OCTANT;
 
   // Inner solver
   const auto inner_linear_method = params.GetParamValue<std::string>("inner_linear_method");
