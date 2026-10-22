@@ -179,7 +179,7 @@
 </section>
 <section id="Configure-and-solve-the-problem">
 <h2><span class="section-number">2.6.4.3. </span>Configure and solve the problem<a class="headerlink" href="#Configure-and-solve-the-problem" title="Link to this heading"></a></h2>
-<p>Setting <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code> retains the directional solution needed to compute leakage. Enabling balance accounting provides an independent check that boundary inflow equals absorption plus total outflow.</p>
+<p>Leakage is evaluated from the boundary currents that every sweep records, so <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is not required. Enabling balance accounting provides an independent check that boundary inflow equals absorption plus total outflow.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -190,7 +190,6 @@
     <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span><span class="n">groupset</span><span class="p">],</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
     <span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundary_conditions</span><span class="p">,</span>
-    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;save_angular_flux&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">},</span>
 <span class="p">)</span>
 <span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">compute_balance</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
@@ -201,7 +200,7 @@
 </section>
 <section id="Check-leakage-symmetry-and-particle-balance">
 <h2><span class="section-number">2.6.4.4. </span>Check leakage symmetry and particle balance<a class="headerlink" href="#Check-leakage-symmetry-and-particle-balance" title="Link to this heading"></a></h2>
-<p><code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code> integrates the stored angular flux over each requested boundary. The square, material, source, mesh, and quadrature are symmetric about <span class="math notranslate nohighlight">\(y=0.5\)</span>, so leakage through <code class="docutils literal notranslate"><span class="pre">ymin</span></code> and <code class="docutils literal notranslate"><span class="pre">ymax</span></code> should agree. The balance residual verifies that inflow is accounted for by absorption and leakage through all three vacuum boundaries.</p>
+<p><code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code> integrates the net boundary current over each requested boundary. The square, material, source, mesh, and quadrature are symmetric about <span class="math notranslate nohighlight">\(y=0.5\)</span>, so leakage through <code class="docutils literal notranslate"><span class="pre">ymin</span></code> and <code class="docutils literal notranslate"><span class="pre">ymax</span></code> should agree. The balance residual verifies that inflow is accounted for by absorption and leakage through all three vacuum boundaries.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>

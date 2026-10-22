@@ -117,6 +117,23 @@
 <dd><p>Construct a CMFD accelerator for the power iteration k-eigenvalue solver.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAccelerationE" title="opensn::CMFDAcceleration"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::CMFDAcceleration</span></code></a>.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetNumAppliedCorrections">
+<span class="sig-name descname"><span class="pre">GetNumAppliedCorrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetNumAppliedCorrections" title="Link to this definition"></a></dt>
+<dd><p>Return the number of CMFD corrections applied during the last power-iteration solve.</p>
+<p>Inactive iterations are not counted. The count is reset at the start of each solve.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetNumSkippedCorrections">
+<span class="sig-name descname"><span class="pre">GetNumSkippedCorrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetNumSkippedCorrections" title="Link to this definition"></a></dt>
+<dd><p>Return the number of CMFD corrections skipped during the last power-iteration solve.</p>
+<p>A correction is skipped when a coarse linear solve does not converge or when every
+damping attempt is rejected; the power iteration then uses the unaccelerated transport
+update. Inactive iterations are not counted. The count is reset at the start of each
+solve.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.__init__" title="Link to this definition"></a></dt>
 <dd><p>CMFD acceleration for the power iteration k-eigenvalue solver.</p>
@@ -156,17 +173,14 @@ is primarily for debugging and method comparisons.</p>
 <li><p>’partial’ : partial-current CMFD (pCMFD); each one-sided partial current carries
 half of the diffusion coupling plus its own transport correction</p></li>
 <li><p>’net’ : match the signed transport current across each coarse face</p></li>
-<li><p>’auto’ : choose net, partial, or a blend from early coarse-balance behavior</p></li>
 </ul>
 </dd>
 </dl>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> is the default and is recommended for production use: it is typically
 stable with an unrelaxed correction on both optically thin and thick coarse cells,
 whereas the net-current closure can oscillate or diverge on optically thick coarse
-cells. All closures share the same fixed point. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> can
-converge in fewer iterations on some problems,
-but <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> judges the closures only from early iterations and can keep an
-unstable net closure, for example when starting from a nearly converged flux.</p>
+cells. Both closures share the same fixed point. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> can converge in fewer
+iterations on some problems with optically thin coarse cells.</p>
 </p></li>
 <li><p><strong>aggregation_size</strong> (<em>int</em><em>, </em><em>default=32</em>) – Common option. Target number of fine cells per aggregated coarse cell for
 <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;local_aggregation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;global_aggregation&quot;</span></code>.
@@ -200,6 +214,10 @@ outer <code class="docutils literal notranslate"><span class="pre">k_tol</span><
 tight that it forces unnecessary asymptotic balance iterations.</p></li>
 <li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-7</em>) – Developer/debug. Absolute residual tolerance for each CMFD coarse linear solve.
 This affects the low-order linear solve, not the outer transport convergence.</p></li>
+<li><p><strong>l_rel_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. Relative residual tolerance for each iterative CMFD coarse
+linear solve. The solve converges when either <code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code> or <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> is
+met. Unlike the absolute tolerance, it does not depend on the coarse flux
+normalization.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default=100</em>) – Developer/debug. Maximum iterations for each CMFD coarse linear solve. Increase
 only if the coarse KSP solve is reaching its iteration limit. CMFD skips a
 correction when any coarse linear solve fails to converge within this limit. If
@@ -233,9 +251,9 @@ CMFD applies its transport update controls starting with the first active iterat
 <li><p><strong>coarse_solver_policy</strong> (<em>str</em><em>, </em><em>default=&quot;auto&quot;</em>) – <dl class="simple">
 <dt>Developer/debug. Coarse solver policy. Valid choices are:</dt><dd><ul>
 <li><p>’auto’ : PETSc preonly+LU below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code>
-global unknowns, GMRES+Jacobi otherwise</p></li>
+global unknowns, GMRES with hypre BoomerAMG otherwise</p></li>
 <li><p>’direct’ : PETSc preonly+LU</p></li>
-<li><p>’iterative’ : GMRES+Jacobi</p></li>
+<li><p>’iterative’ : GMRES with hypre BoomerAMG</p></li>
 <li><p>’petsc_options’ : allow <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> to override the PETSc KSP/PC setup</p></li>
 </ul>
 </dd>

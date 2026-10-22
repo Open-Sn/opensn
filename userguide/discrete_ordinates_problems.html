@@ -929,18 +929,19 @@ balance for the problem and returns a dictionary of balance terms.</p>
 </section>
 <section id="computeleakage">
 <h3><span class="section-number">11.11.2. </span><code class="docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code><a class="headerlink" href="#computeleakage" title="Link to this heading"></a></h3>
-<p>This computes boundary leakage and returns a dictionary mapping boundary names
-to group-wise NumPy arrays.</p>
+<p>This computes the net boundary leakage, the outgoing minus the incoming partial
+current integrated over each boundary, and returns a dictionary mapping boundary
+names to group-wise NumPy arrays.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">leakage</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeLeakage</span><span class="p">([</span><span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;xmax&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-<p>Important requirement:</p>
-<ul class="simple">
-<li><p>leakage computation requires <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code></p></li>
-</ul>
-<p>This requirement exists because leakage is derived from the outgoing angular
-flux.</p>
+<p>On a vacuum boundary the net leakage equals the outgoing current. On a boundary
+with an incident flux (isotropic or arbitrary) it is reduced by the inflow and
+can be negative, and on a reflecting boundary it vanishes at convergence. The
+balance table’s <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> instead sums only the outgoing partial currents.
+Leakage is computed from the face outflow tallies and the stored incident
+boundary fluxes, so it does not require <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>.</p>
 </section>
 </section>
 <section id="writing-and-reading-transport-state">

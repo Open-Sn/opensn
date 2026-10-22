@@ -388,8 +388,7 @@
 <section id="Options-most-users-should-tune">
 <h3><span class="section-number">3.2.2.9.1. </span>Options most users should tune<a class="headerlink" href="#Options-most-users-should-tune" title="Link to this heading"></a></h3>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">current_closure=&quot;partial&quot;</span></code></dt><dd><p>CMFD needs a face-current closure for the low-order operator. <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> (the default) is the partial-current CMFD (pCMFD) closure: each outgoing partial current carries half of the diffusion coupling plus its own transport correction. It is the recommended choice: it is typically stable with an unrelaxed correction, whereas net-current CMFD can oscillate or diverge on optically thick coarse cells. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> (which probes the early iterations to choose net, partial, or a
-blend) are useful for comparisons.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">current_closure=&quot;partial&quot;</span></code></dt><dd><p>CMFD needs a face-current closure for the low-order operator. <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> (the default) is the partial-current CMFD (pCMFD) closure: each outgoing partial current carries half of the diffusion coupling plus its own transport correction. It is the recommended choice: it is typically stable with an unrelaxed correction, whereas net-current CMFD can oscillate or diverge on optically thick coarse cells. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> is useful for comparisons.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code></dt><dd><p>Target fine cells per spatial CMFD coarse cell. Larger values make the CMFD solve cheaper but less detailed. Smaller values make the correction more detailed but increase coarse-solve cost. For small tutorial problems, use a small value such as 8. For larger problems, 16 to 64 is a reasonable first scan.</p>
 </dd>
@@ -524,7 +523,7 @@ CMFD convergence check = ..., transport-current balance residual = ...
 <li><p>Is the coarse system too large? Increase <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> or <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>.</p></li>
 <li><p>Are corrections being skipped? Fix the skip reason first.</p></li>
 <li><p>Is <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> too large? Start with 1.</p></li>
-<li><p>Is the closure poor? Compare <code class="docutils literal notranslate"><span class="pre">auto</span></code>, <code class="docutils literal notranslate"><span class="pre">net</span></code>, and <code class="docutils literal notranslate"><span class="pre">partial</span></code> on a short run.</p></li>
+<li><p>Is the closure poor? Compare <code class="docutils literal notranslate"><span class="pre">net</span></code> and <code class="docutils literal notranslate"><span class="pre">partial</span></code> on a short run.</p></li>
 <li><p>Is the balance check much tighter than needed for the requested k accuracy?</p></li>
 </ol>
 </section>

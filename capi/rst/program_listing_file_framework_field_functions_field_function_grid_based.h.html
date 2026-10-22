@@ -162,7 +162,10 @@
 <span class="w">  </span><span class="c1">/// Sets the callback used to refresh this field function.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetUpdateCallback</span><span class="p">(</span><span class="n">UpdateCallback</span><span class="w"> </span><span class="n">callback</span><span class="p">,</span><span class="w"> </span><span class="n">CanUpdateCallback</span><span class="w"> </span><span class="n">can_update_callback</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Returns the component values at requested point.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the component values at the requested point. A point on a face of a discontinuous</span>
+<span class="cm">   * field gets the average over all cells containing it. Collective.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPointValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Evaluates the field function, on a cell, at the specified point, for the given component.</span>

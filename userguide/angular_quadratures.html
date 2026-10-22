@@ -586,6 +586,20 @@ not enough. Both angular resolutions should generally be increased together.</p>
 <p>For non-product quadratures such as Lebedev, triangular, and SLDFE sets, the
 same principle applies: increasing the supported moment order should be paired
 with a richer directional set.</p>
+<p>With the standard operator construction, the discrete-to-moment operator
+<span class="math notranslate nohighlight">\(D\)</span> and the moment-to-discrete operator <span class="math notranslate nohighlight">\(M\)</span> are inverses on the
+moment space, <span class="math notranslate nohighlight">\(D^T M = I\)</span>, only if the quadrature integrates the products
+of the retained spherical harmonics exactly, that is, harmonics through degree
+<span class="math notranslate nohighlight">\(2L\)</span>. When it does not, the higher scattering moments are aliased: part of
+an angular moment is mapped onto other moments or lost. For example, a 3D
+product set with 4 azimuthal angles has <span class="math notranslate nohighlight">\(\cos 2\varphi = 0\)</span> at every
+direction, so with <code class="docutils literal notranslate"><span class="pre">scattering_order=2</span></code> the corresponding moment vanishes.
+Product sets are exact up to a resolution-dependent order and then fail
+abruptly. The triangular and SLDFE sets are not exact for
+<code class="docutils literal notranslate"><span class="pre">scattering_order</span> <span class="pre">&gt;=</span> <span class="pre">2</span></code> at any refinement, but their error decreases as they
+are refined. OpenSn checks <span class="math notranslate nohighlight">\(D^T M\)</span> when a quadrature is built and logs a
+warning with the maximum deviation when it exceeds <span class="math notranslate nohighlight">\(10^{-6}\)</span>; increase the
+quadrature resolution or reduce <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> when that warning appears.</p>
 <section id="operator-construction-methods">
 <h3><span class="section-number">6.4.1. </span>Operator construction methods<a class="headerlink" href="#operator-construction-methods" title="Link to this heading"></a></h3>
 <p>Each quadrature constructor accepts <code class="docutils literal notranslate"><span class="pre">operator_method</span></code>:</p>

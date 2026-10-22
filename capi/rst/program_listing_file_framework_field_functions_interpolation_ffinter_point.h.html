@@ -116,7 +116,10 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Gets the value of the field function evaluation at the point.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gets the value of the field function at the point. A point on a face of a discontinuous field</span>
+<span class="cm">   * is evaluated in the containing cell with the smallest global id. Collective.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetPointValue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>

@@ -117,6 +117,9 @@
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pyopensn.solver.</span></span><span class="sig-name descname"><span class="pre">PowerIterationKEigenSolver</span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver" title="Link to this definition"></a></dt>
 <dd><p>Power iteration k-eigenvalue solver.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolverE" title="opensn::PowerIterationKEigenSolver"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::PowerIterationKEigenSolver</span></code></a>.</p>
+<p>The eigenvector is returned with an arbitrary scale that depends on the solver, the
+acceleration method, and the starting flux. Normalize absolute quantities (power, reaction
+rates, leakage, balance rates) explicitly, e.g. with <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span></code>.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.Advance">
 <span class="sig-name descname"><span class="pre">Advance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.solver.Solver.html#pyopensn.solver.Solver" title="pyopensn.solver.Solver"><span class="pre">pyopensn.solver.Solver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.Advance" title="Link to this definition"></a></dt>
@@ -144,10 +147,12 @@ Global volumetric production/source rate used by the solver,
 approximately <code class="docutils literal notranslate"><span class="pre">integral</span> <span class="pre">Q</span> <span class="pre">dV</span></code> summed over groups and the full domain.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>:
 Global incoming boundary contribution integrated over incoming
-angular flux on boundaries.</p></li>
+angular flux on boundaries. On reflecting boundaries the outgoing partial
+current is counted as the incoming one, so reflecting faces add equal
+amounts to <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> and cancel in <code class="docutils literal notranslate"><span class="pre">balance</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code>:
 Global outgoing boundary contribution accumulated from face outflow
-tallies.</p></li>
+tallies, including reflecting boundaries (see <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">balance</span></code>:
 Rate balance,
 <code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.</p></li>
@@ -203,6 +208,15 @@ again clears the previous initialized state first.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.IsConverged">
+<span class="sig-name descname"><span class="pre">IsConverged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.IsConverged" title="Link to this definition"></a></dt>
+<dd><p>Return True if the last <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Execute" title="pyopensn.solver.PowerIterationKEigenSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> met the convergence criteria.</p>
+<p>Convergence requires the k-eigenvalue change to fall below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> and, when an
+acceleration method is attached, its own convergence check (for CMFD, the balance
+residual) to pass. Returns False if <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> was reached first.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a power iteration k-eigen solver.</p>
@@ -219,6 +233,8 @@ violation.</p></li>
 iteration converges when the change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive iterations.
 Values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code>.</p></li>
 <li><p><strong>reset_phi0</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, reinitializes scalar fluxes to 1.0.</p></li>
+<li><p><strong>compute_balance</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, print the balance table, with production scaled by <code class="docutils literal notranslate"><span class="pre">1/k_eff</span></code>, after
+<a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Execute" title="pyopensn.solver.PowerIterationKEigenSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> completes.</p></li>
 </ul>
 </dd>
 </dl>

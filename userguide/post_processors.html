@@ -543,7 +543,9 @@ inside both:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>Each logical volume produces one row of results.</p>
+<p>Each logical volume produces one row of results. A cell belongs to a logical
+volume when its centroid is inside it. Construction fails if the block
+restriction, or any logical volume, selects no cells.</p>
 </section>
 <section id="energy-restriction">
 <h3><span class="section-number">26.8.3. </span>Energy Restriction<a class="headerlink" href="#energy-restriction" title="Link to this heading"></a></h3>
@@ -594,7 +596,12 @@ uniform multiplier:</p>
 <span class="p">)</span>
 </pre></div>
 </div>
-<p>The cross-section name must exist in the problem’s XS definitions. Only one of
+<p>The name must be a built-in or custom 1D cross section. Materials that do not
+define an optional built-in cross section (for example, <code class="docutils literal notranslate"><span class="pre">sigma_f</span></code> of a
+non-fissile material) contribute zero. <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> raises an error if no
+material in the problem defines it, so a misspelled or absent reaction is not
+reported as a zero rate. A custom cross section must be defined on every
+material. A definition without one value per group is rejected. Only one of
 <code class="docutils literal notranslate"><span class="pre">multiplier</span></code>, <code class="docutils literal notranslate"><span class="pre">group_multipliers</span></code>, and <code class="docutils literal notranslate"><span class="pre">xs_multiplier</span></code> may be specified.</p>
 </section>
 <section id="results">

@@ -117,7 +117,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.post.VolumePostprocessor.Execute">
 <span class="sig-name descname"><span class="pre">Execute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.post.VolumePostprocessor" title="pyopensn.post.VolumePostprocessor"><span class="pre">pyopensn.post.VolumePostprocessor</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.post.VolumePostprocessor.Execute" title="Link to this definition"></a></dt>
-<dd><p>Execute the postprocessor</p>
+<dd><p>Execute the postprocessor. Collective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">xs_multiplier</span></code> is not a known cross-section name, no material in the problem has
+    that cross section, a custom cross section is missing from some material, or the cross
+    section of some material does not have one value per group.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -143,10 +150,22 @@ Columns correspond to the energy restrictions (i.e. groups, or groups within a g
 <li><p><strong>groupset</strong> (<em>int</em><em>, </em><em>optional</em>) – Single groupset to compute (mutually exclusive with group).</p></li>
 <li><p><strong>multiplier</strong> (<em>float</em><em>, </em><em>optional</em>) – Constant multiplier. Default 1.0.</p></li>
 <li><p><strong>group_multipliers</strong> (<em>List</em><em>[</em><em>float</em><em>]</em><em>, </em><em>optional</em>) – Group-wise multipliers, one per group.</p></li>
-<li><p><strong>xs_multiplier</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of a cross-section multiplier.</p></li>
+<li><p><strong>xs_multiplier</strong> (<em>str</em><em>, </em><em>optional</em>) – Name of a 1D cross section (one value per group) used as a group-wise multiplier.
+Materials without an optional standard cross section (<code class="docutils literal notranslate"><span class="pre">sigma_f</span></code>, <code class="docutils literal notranslate"><span class="pre">nu_sigma_f</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chi</span></code>, <code class="docutils literal notranslate"><span class="pre">inv_velocity</span></code>, <code class="docutils literal notranslate"><span class="pre">energy_deposition</span></code>, or <code class="docutils literal notranslate"><span class="pre">stopping_power</span></code>; e.g. <code class="docutils literal notranslate"><span class="pre">sigma_f</span></code>
+of a non-fissile material) contribute zero, but at least one material in the problem
+must have it. A custom cross section must be defined on every material. At most one of
+<code class="docutils literal notranslate"><span class="pre">multiplier</span></code>, <code class="docutils literal notranslate"><span class="pre">group_multipliers</span></code>, and <code class="docutils literal notranslate"><span class="pre">xs_multiplier</span></code> may be given.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>ValueError</strong> – If the block or logical-volume restriction selects no cells on any rank.</p>
+</dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Construction and <a class="reference internal" href="#pyopensn.post.VolumePostprocessor.Execute" title="pyopensn.post.VolumePostprocessor.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> are collective and must be called on all MPI ranks.
+Cells are selected by centroid. <code class="docutils literal notranslate"><span class="pre">integral</span></code> and <code class="docutils literal notranslate"><span class="pre">avg</span></code> use the physical volume (the full
+revolution in RZ and 1D spherical geometry); <code class="docutils literal notranslate"><span class="pre">max</span></code> and <code class="docutils literal notranslate"><span class="pre">min</span></code> use nodal values.</p>
 </dd></dl>
 
 </dd></dl>

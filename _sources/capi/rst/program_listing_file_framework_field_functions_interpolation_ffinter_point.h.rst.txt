@@ -41,7 +41,10 @@ Program Listing for File ffinter_point.h
    
      void Execute() override;
    
-     /// Gets the value of the field function evaluation at the point.
+     /**
+      * Gets the value of the field function at the point. A point on a face of a discontinuous field
+      * is evaluated in the containing cell with the smallest global id. Collective.
+      */
      double GetPointValue() const;
    
    protected:

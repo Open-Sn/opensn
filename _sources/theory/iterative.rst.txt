@@ -706,21 +706,6 @@ coarse flux: the diffusion coupling is retained in both one-sided currents. If
 either one-sided scalar flux is too small, or if the resulting coefficients are
 not finite, the partial-current closure is not used on that face.
 
-The implementation can also blend the net-current and partial-current
-closures. With a partial-current fraction :math:`\eta \in [0,1]`, the
-face contribution is
-
-.. math::
-
-   J_{I,J,g_c}
-   =
-   (1-\eta)J^{\text{net}}_{I,J,g_c}
-   +
-   \eta J^{\text{pc}}_{I,J,g_c}.
-
-Here :math:`J^{\text{net}}` is the diffusion plus nonlinear net-current
-closure and :math:`J^{\text{pc}}` is the partial-current closure.
-
 The partial-current closure is the default. The net-current closure, as in
 standard CMFD, can make the coarse correction oscillate or diverge when the
 coarse cells are optically thick. The partial-current closure remains stable
@@ -730,18 +715,8 @@ which reduces the closure to partial-current coarse-mesh rebalance, is not
 equivalent: rebalance can diverge on optically thin coarse cells unless the
 correction is strongly relaxed. If the partial-current coefficients cannot be
 formed on a face (an adjacent coarse flux is essentially zero), that face uses
-the diffusion coupling without the current correction. With the ``auto``
-option, the closure logic begins with the net-current closure, probes the
-early low-order behavior with both net and partial closures, and may select a
-blend or the pure partial-current closure when the partial
-closure gives a materially better low-order residual or coarse
-eigenvalue prediction. If the automatic path continues with the
-net-current closure but early iterations show a large mismatch between
-the assembled-operator residual and the transport-current residual, or a
-large coarse eigenvalue jump together with a rejected or strongly damped
-correction, it can switch from net to partial. These rules affect only
-the current closure in the CMFD operator; they do not alter the
-high-order transport equation.
+the diffusion coupling without the current correction. The closure affects
+only the CMFD operator; it does not alter the high-order transport equation.
 
 This current matching is what distinguishes CMFD from simply solving an
 ordinary coarse diffusion problem. The diffusion coefficient supplies a
@@ -825,8 +800,9 @@ iterate. Each coarse power iteration solves
 
 with a PETSc linear solver. Small coarse systems use a direct LU solve
 when the automatic coarse-solver policy selects the direct path. Larger
-coarse systems use GMRES with Jacobi preconditioning unless another
-PETSc configuration is supplied. Iterative coarse solves are initialized
+coarse systems use GMRES preconditioned with algebraic multigrid (hypre
+BoomerAMG) unless another PETSc configuration is supplied; an iterative solve
+converges when either a relative or an absolute residual tolerance is met. Iterative coarse solves are initialized
 with the latest restricted transport scalar flux. If any coarse linear
 solve fails to converge, the low-order correction from that outer
 iteration is not applied. In the automatic coarse-solver policy, an

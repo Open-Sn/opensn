@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ad475503dd716480317157800b0661d33:
+
+Function opensn::LogBalanceTable
+================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_compute_discrete_ordinates_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::LogBalanceTable(const BalanceTable&, double)
+   :project: opensn

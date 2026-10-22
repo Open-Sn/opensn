@@ -217,6 +217,12 @@
 <span class="w">  </span><span class="c1">/// Quadrature point direction vectors in Cartesian coordinates.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">omegas_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{};</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Warns if the standard D2M and M2D operators are not inverse on the moment space. Does nothing</span>
+<span class="cm">   * for Galerkin construction or until both operators are built for the current moments.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckMomentOperatorConsistency</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">AngularQuadrature</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 

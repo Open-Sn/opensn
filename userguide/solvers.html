@@ -96,6 +96,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#id2">21.1. Constructor</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id3">21.2. GPU support</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#id4">21.3. How It Operates</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flux-normalization">21.4. Flux normalization</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#nonlinear-k-eigen-solver">22. Nonlinear k-Eigen Solver</a><ul>
@@ -841,7 +842,9 @@ summary that includes:</p>
 <p>The rates are evaluated at <span class="math notranslate nohighlight">\(t^n + \theta\Delta t\)</span>, where the theta scheme
 satisfies the discrete balance exactly, so the inventory residual is at the level
 of the iterative tolerances for any <code class="docutils literal notranslate"><span class="pre">theta</span></code>. This is often the most direct way
-to check that a transient step is behaving sensibly.</p>
+to check that a transient step is behaving sensibly. Pass
+<code class="docutils literal notranslate"><span class="pre">compute_balance=True</span></code> to print this table after every timestep, as the
+steady-state and k-eigenvalue solvers print theirs after <code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>When a transient result looks suspicious, the balance table is often the
@@ -942,6 +945,24 @@ other methods.</p>
 <p>Balance reporting with <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code> uses
 <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">/</span> <span class="pre">k_eff</span></code> scaling on the production term.</p>
 </section>
+<section id="flux-normalization">
+<span id="keigen-flux-normalization"></span><h2><span class="section-number">21.4. </span>Flux normalization<a class="headerlink" href="#flux-normalization" title="Link to this heading"></a></h2>
+<p>A k-eigenvalue solve determines the flux only up to a constant factor, and
+OpenSn does not normalize it to a physical level. The scale left in the problem
+depends on the solver, the acceleration method, and the starting flux: power
+iteration keeps the scale implied by its initial guess, while the nonlinear
+solver and SMM normalize the fission production to the eigenvalue. Ratios,
+shapes, <code class="docutils literal notranslate"><span class="pre">k_eff</span></code>, and the relative balance are unaffected, but absolute
+quantities computed afterward are not comparable between solvers. This includes
+power, reaction rates, leakage, balance-table rates, postprocessor values, and
+flux moments written to files.</p>
+<p>Normalize these quantities explicitly. <code class="docutils literal notranslate"><span class="pre">power_normalization_target</span></code> in
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.CreateFieldFunction" title="pyopensn.solver.LBSProblem.CreateFieldFunction"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.CreateFieldFunction()</span></code></a> scales only the field
+function that call returns; it does not change the problem’s flux or any other
+output. To normalize other quantities, obtain the factor from
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.ComputeFieldFunctionPowerScaleFactor" title="pyopensn.solver.LBSProblem.ComputeFieldFunctionPowerScaleFactor"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.ComputeFieldFunctionPowerScaleFactor()</span></code></a> and
+multiply each output you want normalized by it.</p>
+</section>
 </section>
 <section id="nonlinear-k-eigen-solver">
 <h1><span class="section-number">22. </span>Nonlinear k-Eigen Solver<a class="headerlink" href="#nonlinear-k-eigen-solver" title="Link to this heading"></a></h1>
@@ -986,6 +1007,8 @@ nonlinear solve</p></li>
 <span class="nb">print</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">())</span>
 </pre></div>
 </div>
+<p>As with power iteration, the flux scale is arbitrary; see
+<a class="reference internal" href="#keigen-flux-normalization"><span class="std std-ref">Flux normalization</span></a>.</p>
 </section>
 <section id="groupsets-and-dsa">
 <h2><span class="section-number">22.3. </span>Groupsets and DSA<a class="headerlink" href="#groupsets-and-dsa" title="Link to this heading"></a></h2>

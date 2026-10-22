@@ -144,10 +144,12 @@ Global volumetric production/source rate used by the solver,
 approximately <code class="docutils literal notranslate"><span class="pre">integral</span> <span class="pre">Q</span> <span class="pre">dV</span></code> summed over groups and the full domain.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>:
 Global incoming boundary contribution integrated over incoming
-angular flux on boundaries.</p></li>
+angular flux on boundaries. On reflecting boundaries the outgoing partial
+current is counted as the incoming one, so reflecting faces add equal
+amounts to <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code> and <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> and cancel in <code class="docutils literal notranslate"><span class="pre">balance</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code>:
 Global outgoing boundary contribution accumulated from face outflow
-tallies.</p></li>
+tallies, including reflecting boundaries (see <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>).</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">balance</span></code>:
 Rate balance,
 <code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.
@@ -217,7 +219,10 @@ again clears the previous initialized state first.</p>
 <dd><p>Construct a steady state solver.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
-<dd class="field-odd"><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing discrete ordinates problem instance.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing discrete ordinates problem instance.</p></li>
+<li><p><strong>compute_balance</strong> (<em>bool</em><em>, </em><em>optional</em><em>, </em><em>default=False</em>) – If true, print the balance table after <a class="reference internal" href="#pyopensn.solver.SteadyStateSourceSolver.Execute" title="pyopensn.solver.SteadyStateSourceSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> completes.</p></li>
+</ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

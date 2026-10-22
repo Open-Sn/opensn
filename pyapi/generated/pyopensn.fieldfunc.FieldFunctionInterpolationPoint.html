@@ -164,7 +164,8 @@ is called. No separate <code class="docutils literal notranslate"><span class="p
 <span class="sig-name descname"><span class="pre">GetPointValue</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint" title="pyopensn.fieldfunc.FieldFunctionInterpolationPoint"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolationPoint</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationPoint.GetPointValue" title="Link to this definition"></a></dt>
 <dd><p>Get the most recently computed point value.</p>
 <p>Call <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> after changing the point or field function to refresh
-the stored result.</p>
+the stored result. For a point on a face of a discontinuous field, the value
+is taken from the containing cell with the smallest global id. Collective.</p>
 </dd></dl>
 
 <dl class="py method">

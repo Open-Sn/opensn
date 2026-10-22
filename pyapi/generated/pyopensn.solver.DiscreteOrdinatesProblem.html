@@ -156,7 +156,8 @@ without needing a field function.</p>
 </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The total fission production.</p>
+<dd class="field-even"><p>The total fission production, integrated over the physical volume. In RZ and 1D spherical
+geometry the integral covers the full revolution (factors of 2*pi and 4*pi).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -183,7 +184,8 @@ without needing a field function.</p>
 </p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>The total fission rate.</p>
+<dd class="field-even"><p>The total fission rate, integrated over the physical volume. In RZ and 1D spherical
+geometry the integral covers the full revolution (factors of 2*pi and 4*pi).</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>float</p>
@@ -205,19 +207,17 @@ boundaries. RZ problems use rmin, rmax, zmin, and zmax.</p>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
 <dd class="field-even"><p>A dictionary mapping boundary names to group-wise leakage vectors.
-Each array contains the outflow (the outgoing partial current, per group) integrated over
-the corresponding boundary surface. Incoming flux is not subtracted, so on boundaries
-with inflow (sources or reflection) this is not the net leakage. In RZ geometry the
-surface integral covers the full revolution.</p>
+Each array contains the net leakage (per group): the outgoing partial current minus the
+incoming partial current, integrated over the corresponding boundary surface. On a
+vacuum boundary this equals the outgoing current; on a boundary with an incident flux it
+is reduced by the inflow and can be negative; on a reflecting boundary it vanishes at
+convergence. In RZ geometry the surface integral covers the full revolution.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, numpy.ndarray]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><ul class="simple">
-<li><p><strong>RuntimeError</strong> – If <cite>save_angular_flux</cite> option was not enabled during problem setup.</p></li>
-<li><p><strong>ValueError</strong> – If one or more boundary ids are not present on the current mesh.</p></li>
-</ul>
+<dd class="field-even"><p><strong>ValueError</strong> – If one or more boundary ids are not present on the current mesh.</p>
 </dd>
 </dl>
 </dd></dl>

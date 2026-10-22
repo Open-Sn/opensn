@@ -235,27 +235,22 @@ when rank-local aggregation creates too many small coarse cells, but it can
 increase setup memory and communication compared with <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">current_closure</span></code></dt><dd><p>Face-current closure used in the CMFD operator. Valid choices are
-<code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>.</p>
+<code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>.</p>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> is the partial-current CMFD (pCMFD) closure: each outgoing
 partial current on the two sides of a coarse face is modeled with half of the
 diffusion coupling plus its own nonlinear correction, so both one-sided
 transport partial currents are reproduced. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> matches the signed
 transport current across each coarse face using a single current-correction
-term in the coarse diffusion operator. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> probes the early
-coarse-balance behavior and may choose the net-current closure, the
-partial-current closure, or a blend. All three closures reproduce the
+term in the coarse diffusion operator. Both closures reproduce the
 transport currents at convergence, so they have the same fixed point; they
 differ in convergence rate and stability.</p>
 <p>The partial-current closure is the recommended choice. It is typically stable
 with an unrelaxed correction (<code class="docutils literal notranslate"><span class="pre">relaxation=1.0</span></code>) on both optically thin and
 optically thick coarse cells. The net-current closure, like standard CMFD in
 general, can oscillate or diverge when coarse cells are optically thick, and
-it is not always stabilized by <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> can
-converge in fewer iterations on some problems, but <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> judges the
-closures from the early iterations only and can keep an unstable net closure,
-for example when the power iteration starts from a nearly converged flux
-(such as a restart). Use a fixed <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> mainly for method
-comparisons or benchmark reproduction. On a face where an adjacent coarse
+it is not always stabilized by <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>. <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code> can converge in
+fewer iterations on some problems with optically thin coarse cells; use it
+mainly for method comparisons or benchmark reproduction. On a face where an adjacent coarse
 flux is essentially zero, so that the partial-current coefficients cannot be
 formed, the partial-current closure uses the plain diffusion coupling for
 that face.</p>
@@ -367,9 +362,12 @@ rejected corrections. Raising the allowed undershoot or lowering the minimum
 damping can hide instability; changing these should be accompanied by checks
 of final k and scalar-flux behavior.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">max_iters</span></code></dt><dd><p>Coarse linear solver tolerance and maximum iterations. Defaults are
-<code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code> and <code class="docutils literal notranslate"><span class="pre">100</span></code>. These control the CMFD coarse linear solves, not the
-outer transport convergence. CMFD corrections are not applied when a coarse
+<dt><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code>, and <code class="docutils literal notranslate"><span class="pre">max_iters</span></code></dt><dd><p>Coarse linear solver tolerances and maximum iterations. Defaults are
+<code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code>, <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>, and <code class="docutils literal notranslate"><span class="pre">100</span></code>. An iterative coarse solve converges when
+either the absolute or the relative residual tolerance is met; the relative
+tolerance does not depend on the arbitrary normalization of the coarse flux.
+These control the CMFD coarse linear solves, not the outer transport
+convergence. CMFD corrections are not applied when a coarse
 linear solve fails to converge, because an unconverged low-order solve can
 produce a misleading correction. If this occurs with an iterative coarse
 solver, use a direct coarse solve for modest coarse systems, increase
@@ -386,14 +384,19 @@ dominate runtime.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code></dt><dd><p>PETSc coarse-solver selection controls. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU
 solve for coarse systems below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code> global
-unknowns and an iterative GMRES/Jacobi solve otherwise. The default threshold
+unknowns and an iterative GMRES solve preconditioned with hypre BoomerAMG
+otherwise. The default threshold
 is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns. Force <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> only for small or moderate
 coarse systems that fit comfortably in host memory. Use <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> when
 direct factorization is too expensive. If an iterative coarse KSP does not
 converge, CMFD skips the correction for that power iteration; increase
 <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>, use <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> with a stronger PETSc configuration,
 reduce coarse-system stiffness with finer aggregation, or switch to
-<code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> when memory permits.</p>
+<code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> when memory permits. If several consecutive corrections are
+skipped, CMFD logs a warning that the power iteration is proceeding without
+acceleration. After a solve, <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver.IsConverged()</span></code> and
+<code class="docutils literal notranslate"><span class="pre">CMFDAcceleration.GetNumSkippedCorrections()</span></code> report whether the solve
+converged and how many corrections were skipped.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">petsc_options</span></code></dt><dd><p>Additional PETSc options for developer experiments. This is normally empty.
 Options are intended for CMFD coarse-solver experiments, not for routine input

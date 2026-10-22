@@ -7,7 +7,7 @@
    "source": [
     "# Leakage Rate Through a Boundary\n",
     "\n",
-    "This tutorial integrates the outgoing angular flux over a named boundary with `ComputeLeakage`."
+    "This tutorial computes the net leakage through a named boundary with `ComputeLeakage`."
    ]
   },
   {
@@ -17,7 +17,7 @@
    "source": [
     "## Solve a two-dimensional fixed-source problem\n",
     "\n",
-    "A uniform source is placed in a homogeneous unit square with vacuum boundaries. Because leakage is evaluated from the outgoing angular flux, `save_angular_flux` must be enabled on the transport problem."
+    "A uniform source is placed in a homogeneous unit square with vacuum boundaries. Leakage is evaluated from the boundary currents that every sweep records, so `save_angular_flux` is not required."
    ]
   },
   {
@@ -54,7 +54,6 @@
     "        {\"name\": name, \"type\": \"vacuum\"}\n",
     "        for name in (\"xmin\", \"xmax\", \"ymin\", \"ymax\")\n",
     "    ],\n",
-    "    options={\"save_angular_flux\": True},\n",
     ")\n",
     "solver = SteadyStateSourceSolver(problem=problem)\n",
     "solver.Initialize()\n",
