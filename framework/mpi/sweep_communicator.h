@@ -28,26 +28,26 @@ public:
       throw std::invalid_argument("SweepCommunicator: Number of groupsets must be positive.");
     }
 
-    int* tag_upper_bound = nullptr;
+    std::optional<int> tag_upper_bound;
     int found = 0;
     try
     {
-      OpenSnMPICall(MPI_Comm_get_attr(static_cast<MPI_Comm>(communicator_),
-                                      MPI_TAG_UB,
-                                      static_cast<void*>(&tag_upper_bound),
-                                      &found));
+      tag_upper_bound = communicator_.attr<int>(mpi::tag_ub);
     }
     catch (...)
     {
       communicator_.free();
       throw;
     }
-    if (found == 0 or tag_upper_bound == nullptr or *tag_upper_bound < 0)
+    if (tag_upper_bound.has_value())
+    {
+      tag_upper_bound_ = tag_upper_bound.value();
+    }
+    else
     {
       communicator_.free();
       throw std::runtime_error("SweepCommunicator: Failed to query MPI_TAG_UB.");
     }
-    tag_upper_bound_ = *tag_upper_bound;
   }
 
   SweepCommunicator(const SweepCommunicator&) = delete;
