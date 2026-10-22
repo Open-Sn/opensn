@@ -498,6 +498,21 @@ For non-product quadratures such as Lebedev, triangular, and SLDFE sets, the
 same principle applies: increasing the supported moment order should be paired
 with a richer directional set.
 
+With the standard operator construction, the discrete-to-moment operator
+:math:`D` and the moment-to-discrete operator :math:`M` are inverses on the
+moment space, :math:`D^T M = I`, only if the quadrature integrates the products
+of the retained spherical harmonics exactly, that is, harmonics through degree
+:math:`2L`. When it does not, the higher scattering moments are aliased: part of
+an angular moment is mapped onto other moments or lost. For example, a 3D
+product set with 4 azimuthal angles has :math:`\cos 2\varphi = 0` at every
+direction, so with ``scattering_order=2`` the corresponding moment vanishes.
+Product sets are exact up to a resolution-dependent order and then fail
+abruptly. The triangular and SLDFE sets are not exact for
+``scattering_order >= 2`` at any refinement, but their error decreases as they
+are refined. OpenSn checks :math:`D^T M` when a quadrature is built and logs a
+warning with the maximum deviation when it exceeds :math:`10^{-6}`; increase the
+quadrature resolution or reduce ``scattering_order`` when that warning appears.
+
 Operator construction methods
 -----------------------------
 

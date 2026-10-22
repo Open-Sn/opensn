@@ -9,10 +9,13 @@
 #include "framework/mesh/mesh/cell.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <algorithm>
 #include <cmath>
 #include <fstream>
 #include <limits>
+#include <stdexcept>
 #include <cstdint>
+#include <utility>
 
 namespace opensn
 {
@@ -36,7 +39,11 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
 
   // Create points;
   const Vector3 vif = pf_ - pi_;
-  double delta_d = vif.Norm() / (number_of_points_ - 1);
+  const double length = vif.Norm();
+  if (not(length > 0.0))
+    throw std::invalid_argument(
+      "FieldFunctionInterpolationLine::Initialize: initial and final points must differ.");
+  double delta_d = length / (number_of_points_ - 1);
   const auto omega = vif.Normalized();
   std::vector<Vector3> tmp_points(number_of_points_);
   tmp_points[0] = pi_;
@@ -60,12 +67,60 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
   std::vector<uint32_t> local_owner_cell_lids(number_of_points_,
                                               std::numeric_limits<uint32_t>::max());
 
+  // Point k is at line parameter t = k * delta_d. Only points where the line crosses a cell's
+  // bounding box can be inside the cell, so each cell tests just that range of points. The box
+  // uses the coordinates the point-in-cell test uses: z in 1D, x and y in 2D, all in 3D.
+  const auto dim = grid->GetDimension();
+  const unsigned int first_axis = dim == 1 ? 2 : 0;
+  const unsigned int last_axis = dim == 2 ? 1 : 2;
   for (const auto& cell : grid->GetLocalCells())
   {
-    for (int p = 0; p < number_of_points_; ++p)
+    Vector3 box_min = grid->GlobalVertex(cell->vertex_ids.front());
+    Vector3 box_max = box_min;
+    for (const uint64_t vid : cell->vertex_ids)
+    {
+      const auto& vertex = grid->GlobalVertex(vid);
+      for (unsigned int a = 0; a < 3; ++a)
+      {
+        box_min(a) = std::min(box_min(a), vertex[a]);
+        box_max(a) = std::max(box_max(a), vertex[a]);
+      }
+    }
+
+    // Clip the line parameter range [0, length] to the box, padded so that rounding cannot
+    // exclude a point the point-in-cell test accepts.
+    double t_min = 0.0;
+    double t_max = length;
+    for (unsigned int a = first_axis; a <= last_axis and t_min <= t_max; ++a)
+    {
+      const double pad =
+        1.0e-9 * (std::fabs(box_min[a]) + std::fabs(box_max[a]) + box_max[a] - box_min[a]) +
+        1.0e-12;
+      const double lo = box_min[a] - pad;
+      const double hi = box_max[a] + pad;
+      if (std::fabs(omega[a]) < 1.0e-14)
+      {
+        if (pi_[a] < lo or pi_[a] > hi)
+          t_max = -1.0;
+        continue;
+      }
+      double t_lo = (lo - pi_[a]) / omega[a];
+      double t_hi = (hi - pi_[a]) / omega[a];
+      if (t_lo > t_hi)
+        std::swap(t_lo, t_hi);
+      t_min = std::max(t_min, t_lo);
+      t_max = std::min(t_max, t_hi);
+    }
+    if (t_min > t_max)
+      continue;
+
+    const int p_first = std::max(0, static_cast<int>(std::floor(t_min / delta_d)));
+    const int p_last =
+      std::min(number_of_points_ - 1, static_cast<int>(std::ceil(t_max / delta_d)));
+    for (int p = p_first; p <= p_last; ++p)
     {
       auto& point = tmp_points[p];
-      if (grid->CheckPointInsideCell(*cell, point) and cell->global_id < local_owner_cell_gids[p])
+      if (cell->global_id < local_owner_cell_gids[p] and grid->CheckPointInsideCell(*cell, point))
       {
         local_owner_cell_gids[p] = cell->global_id;
         local_owner_cell_lids[p] = cell->local_id;

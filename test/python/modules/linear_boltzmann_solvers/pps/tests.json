@@ -22,5 +22,43 @@
         "error_code": 0
       }
     ]
+  },
+  {
+    "file": "volume_postprocessor_selection.py",
+    "comment": "VolumePostprocessor: sigma_f multiplier over fuel/moderator equals the fuel-only integral and ComputeFissionRate; empty selections, unknown cross sections, and a cross section no material defines are rejected on every rank; an empty XS property is returned to Python as an empty array",
+    "num_procs": 2,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PP_SIGMA_F_WHOLE_OVER_FUEL=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_SIGMA_F_OVER_FISSION_RATE=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_POSITIVE_FISSION_RATE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_REJECTIONS_ON_ALL_RANKS=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_MODERATOR_EMPTY_SIGMA_F=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

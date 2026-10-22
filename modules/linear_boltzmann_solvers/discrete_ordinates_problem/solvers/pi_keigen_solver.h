@@ -25,6 +25,8 @@ public:
   unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
   /// Return the total number of transport sweeps applied by all WGS solvers.
   std::size_t GetNumSweeps() const;
+  /// Return true if the last Execute() met its convergence criteria before max_iters.
+  bool IsConverged() const { return converged_; }
 
   BalanceTable ComputeBalanceTable() const;
 
@@ -49,6 +51,7 @@ protected:
   double F_prev_;
   bool reset_phi0_;
   unsigned int num_power_iterations_ = 0;
+  bool converged_ = false;
 
   std::vector<double>& q_moments_local_;
   std::vector<double>& phi_old_local_;

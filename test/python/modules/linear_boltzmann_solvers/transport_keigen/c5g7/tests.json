@@ -16,6 +16,12 @@
         "wordnum": 13,
         "gold": 1.192559,
         "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
       }
     ]
   },
@@ -35,6 +41,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 1.192559,
         "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 2
       }
     ]
   },
@@ -54,6 +72,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 1.192559,
         "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 2
       }
     ]
   },

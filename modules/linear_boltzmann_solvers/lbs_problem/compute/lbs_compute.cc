@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
 #include <cassert>
 
@@ -62,6 +63,9 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
     } // for node
   } // for cell
 
+  // Report a physical rate: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  local_production *= IntegralMeasureScale(grid->GetCoordinateSystem());
+
   // Allreduce global production
   double global_production = 0.0;
   mpi_comm.all_reduce(local_production, global_production, mpi::op::sum<double>());
@@ -109,7 +113,10 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
     } // for node
   } // for cell
 
-  // Allreduce global production
+  // Report a physical rate: curvilinear unit integrals omit the angular extent (2*pi in RZ).
+  local_fission_rate *= IntegralMeasureScale(grid->GetCoordinateSystem());
+
+  // Allreduce global fission rate
   double global_fission_rate = 0.0;
   mpi_comm.all_reduce(local_fission_rate, global_fission_rate, mpi::op::sum<double>());
 

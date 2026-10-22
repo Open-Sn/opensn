@@ -844,8 +844,9 @@ It is useful for:
 ``ComputeLeakage()``
 --------------------
 
-This computes boundary leakage and returns a dictionary mapping boundary names
-to group-wise NumPy arrays.
+This computes the net boundary leakage, the outgoing minus the incoming partial
+current integrated over each boundary, and returns a dictionary mapping boundary
+names to group-wise NumPy arrays.
 
 Example:
 
@@ -853,12 +854,12 @@ Example:
 
    leakage = phys.ComputeLeakage(["xmin", "xmax"])
 
-Important requirement:
-
-* leakage computation requires ``save_angular_flux=True``
-
-This requirement exists because leakage is derived from the outgoing angular
-flux.
+On a vacuum boundary the net leakage equals the outgoing current. On a boundary
+with an incident flux (isotropic or arbitrary) it is reduced by the inflow and
+can be negative, and on a reflecting boundary it vanishes at convergence. The
+balance table's ``outflow_rate`` instead sums only the outgoing partial currents.
+Leakage is computed from the face outflow tallies and the stored incident
+boundary fluxes, so it does not require ``save_angular_flux=True``.
 
 Writing and Reading Transport State
 ===================================

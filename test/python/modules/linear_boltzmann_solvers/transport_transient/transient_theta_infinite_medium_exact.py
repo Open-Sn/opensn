@@ -26,7 +26,8 @@ advance restores the problem time to t^n.
 Checks:
   THETA_EXACT_MAX_REL_ERR: max relative error in phi over all steps and cases.
   THETA_BALANCE_MAX_REL_RESID: max |inventory residual| / |inventory change|.
-Both are at the level of the inner solver tolerance (1e-12).
+  The inventory residual printed by a solver with compute_balance=True after each step.
+All are at the level of the inner solver tolerance (1e-12).
 """
 
 import os
@@ -184,6 +185,43 @@ if __name__ == "__main__":
             raise
     if failure_problem.GetTime() != 0.0:
         raise RuntimeError("failed advance did not restore the problem time")
+
+    # compute_balance=True prints the theta-centered timestep balance after every step. The check
+    # takes the first residual after its marker, so take two steps first and let Execute() take
+    # only the last step after the marker.
+    balance_problem = DiscreteOrdinatesProblem(
+        mesh=grid,
+        num_groups=1,
+        time_dependent=True,
+        groupsets=[
+            {
+                "groups_from_to": (0, 0),
+                "angular_quadrature": GLProductQuadrature1DSlab(n_polar=4, scattering_order=0),
+                "inner_linear_method": "petsc_gmres",
+                "l_abs_tol": 1.0e-12,
+                "l_max_its": 500,
+            }
+        ],
+        xs_map=[{"block_ids": [0], "xs": xs}],
+        volumetric_sources=[VolumetricSource(block_ids=[0], strength_function=source_strength)],
+        boundary_conditions=[
+            {"name": "zmin", "type": "reflecting"},
+            {"name": "zmax", "type": "reflecting"},
+        ],
+        options={
+            "save_angular_flux": True,
+            "use_precursors": True,
+            "verbose_inner_iterations": False,
+        },
+    )
+    balance_solver = TransientSolver(problem=balance_problem, dt=dt, stop_time=3 * dt, theta=0.7,
+                                     initial_state="zero", verbose=False, compute_balance=True)
+    balance_solver.Initialize()
+    balance_solver.Advance()
+    balance_solver.Advance()
+    if rank == 0:
+        print("THETA_BALANCE_LAST_PRINT_BEGIN", flush=True)
+    balance_solver.Execute()
 
     if rank == 0:
         print(f"THETA_EXACT_MAX_REL_ERR {max_err:.6e}")

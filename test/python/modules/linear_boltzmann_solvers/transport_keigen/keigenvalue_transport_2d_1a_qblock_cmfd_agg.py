@@ -99,6 +99,8 @@ if __name__ == "__main__":
     sweeps = k_solver.GetNumSweeps()
     if rank == 0:
         print(f"Python k-eigenvalue: {k}")
+        print(f"Python converged: {int(k_solver.IsConverged())}")
+        print(f"Python CMFD skipped corrections: {cmfd.GetNumSkippedCorrections()}")
         print(f"Python sweeps: {sweeps}")
 
     expected_k = 0.5969127

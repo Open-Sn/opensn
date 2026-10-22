@@ -54,7 +54,23 @@ WrapPostprocessors(py::module& post)
     group_multipliers : List[float], optional
         Group-wise multipliers, one per group.
     xs_multiplier : str, optional
-        Name of a cross-section multiplier.
+        Name of a 1D cross section (one value per group) used as a group-wise multiplier.
+        Materials without an optional standard cross section (``sigma_f``, ``nu_sigma_f``,
+        ``chi``, ``inv_velocity``, ``energy_deposition``, or ``stopping_power``; e.g. ``sigma_f``
+        of a non-fissile material) contribute zero, but at least one material in the problem
+        must have it. A custom cross section must be defined on every material. At most one of
+        ``multiplier``, ``group_multipliers``, and ``xs_multiplier`` may be given.
+
+    Raises
+    ------
+    ValueError
+        If the block or logical-volume restriction selects no cells on any rank.
+
+    Notes
+    -----
+    Construction and :meth:`Execute` are collective and must be called on all MPI ranks.
+    Cells are selected by centroid. ``integral`` and ``avg`` use the physical volume (the full
+    revolution in RZ and 1D spherical geometry); ``max`` and ``min`` use nodal values.
     )"
   );
   vp.def(
@@ -64,7 +80,14 @@ WrapPostprocessors(py::module& post)
       self.Execute();
     },
     R"(
-    Execute the postprocessor
+    Execute the postprocessor. Collective.
+
+    Raises
+    ------
+    ValueError
+        If ``xs_multiplier`` is not a known cross-section name, no material in the problem has
+        that cross section, a custom cross section is missing from some material, or the cross
+        section of some material does not have one value per group.
     )"
   );
   vp.def(

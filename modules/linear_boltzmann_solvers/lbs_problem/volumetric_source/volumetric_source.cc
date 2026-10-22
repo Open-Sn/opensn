@@ -11,8 +11,10 @@
 #include "framework/runtime.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/math/math_time_stepping.h"
+#include <cmath>
 #include <memory>
 #include <limits>
+#include <string>
 
 namespace opensn
 {
@@ -77,6 +79,10 @@ VolumetricSource::VolumetricSource(const InputParameters& params)
   const bool has_strength_func = static_cast<bool>(strength_function_);
   if ((has_strength ? 1 : 0) + (has_spatial_func ? 1 : 0) + (has_strength_func ? 1 : 0) == 0)
     throw std::invalid_argument("Either a function or the source strength must be provided.");
+  for (std::size_t g = 0; g < strength_.size(); ++g)
+    if (not std::isfinite(strength_[g]))
+      throw std::invalid_argument("Volumetric source group_strength[" + std::to_string(g) +
+                                  "] is not finite.");
   if ((has_strength ? 1 : 0) + (has_spatial_func ? 1 : 0) + (has_strength_func ? 1 : 0) > 1)
     throw std::invalid_argument(
       "Specify only one of group_strength, func, or strength_function for a volumetric source.");
@@ -132,6 +138,10 @@ VolumetricSource::Initialize(const LBSProblem& lbs_problem)
     }
   }
 
+  is_subscriber_.assign(grid->GetLocalCellCount(), false);
+  for (const auto local_id : subscribers_)
+    is_subscriber_[local_id] = true;
+
   num_local_subsribers_ = subscribers_.size();
   mpi_comm.all_reduce(num_local_subsribers_, num_global_subscribers_, mpi::op::sum<size_t>());
 
@@ -155,7 +165,7 @@ VolumetricSource::Evaluate(const Cell& cell,
                            const unsigned int num_groups,
                            const double time) const
 {
-  if (std::count(subscribers_.begin(), subscribers_.end(), cell.local_id) == 0)
+  if (cell.local_id >= is_subscriber_.size() or not is_subscriber_[cell.local_id])
     return std::vector<double>(num_groups, 0.0); // NOLINT
   else if (not function_)
   {

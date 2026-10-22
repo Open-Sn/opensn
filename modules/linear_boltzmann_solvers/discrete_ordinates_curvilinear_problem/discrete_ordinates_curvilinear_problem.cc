@@ -18,6 +18,27 @@
 namespace opensn
 {
 
+namespace
+{
+
+const char*
+AngleAggregationName(const AngleAggregationType type)
+{
+  switch (type)
+  {
+    case AngleAggregationType::SINGLE:
+      return "single";
+    case AngleAggregationType::POLAR:
+      return "polar";
+    case AngleAggregationType::AZIMUTHAL:
+      return "azimuthal";
+    default:
+      return "undefined";
+  }
+}
+
+} // namespace
+
 InputParameters
 DiscreteOrdinatesCurvilinearProblem::GetInputParameters()
 {
@@ -81,9 +102,10 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
     const auto aggregation = groupset.angleagg_method;
     if (cylindrical and aggregation != AngleAggregationType::AZIMUTHAL and
         aggregation != AngleAggregationType::SINGLE)
-      errors.emplace_back(
-        "Invalid angle aggregation (type = " + std::to_string(static_cast<int>(aggregation)) +
-        ") for groupset " + gs + ". Supported: AZIMUTHAL, SINGLE.");
+      errors.emplace_back("Groupset " + gs + " uses angle_aggregation_type \"" +
+                          AngleAggregationName(aggregation) +
+                          "\", which RZ geometry does not support. Use \"azimuthal\" or "
+                          "\"single\".");
     if (cylindrical and grid_->GetType() == MeshType::UNSTRUCTURED and
         aggregation != AngleAggregationType::SINGLE)
       errors.emplace_back("Groupset " + gs +

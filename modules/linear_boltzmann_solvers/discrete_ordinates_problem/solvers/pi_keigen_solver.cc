@@ -150,6 +150,7 @@ PowerIterationKEigenSolver::ExecuteSolver()
   // Start power iterations
   unsigned int nit = 0;
   num_power_iterations_ = 0;
+  converged_ = false;
   bool converged = false;
   CALI_CXX_MARK_LOOP_BEGIN(pi_iteration, "PIIteration");
   while (nit < max_iters_)
@@ -254,6 +255,7 @@ PowerIterationKEigenSolver::ExecuteSolver()
       break;
   } // for k iterations
   CALI_CXX_MARK_LOOP_END(pi_iteration);
+  converged_ = converged;
 
   // Restore here so that a failure propagates; the guard only logs one during unwinding.
   wgs_settings.Restore();

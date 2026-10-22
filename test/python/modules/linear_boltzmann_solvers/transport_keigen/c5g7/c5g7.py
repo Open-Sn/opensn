@@ -251,3 +251,7 @@ if __name__ == "__main__":
         print(f"Python k-eigenvalue: {k}")
         if hasattr(k_solver, "GetNumSweeps"):
             print(f"Python sweeps: {k_solver.GetNumSweeps()}")
+        if hasattr(k_solver, "IsConverged"):
+            print(f"Python converged: {int(k_solver.IsConverged())}")
+        if k_method == "pi_cmfd":
+            print(f"Python CMFD skipped corrections: {cmfd.GetNumSkippedCorrections()}")

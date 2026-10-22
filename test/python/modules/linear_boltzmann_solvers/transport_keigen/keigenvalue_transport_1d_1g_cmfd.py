@@ -105,7 +105,7 @@ if __name__ == "__main__":
         phys = make_problem()
         cmfd_kwargs = dict(
             problem=phys,
-            current_closure=get_option("cmfd_current_closure", "auto"),
+            current_closure=get_option("cmfd_current_closure", "partial"),
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
             aggregation_size=get_option("cmfd_aggregation_size", 2),
             group_aggregation_size=get_option("cmfd_group_aggregation_size", 1),
@@ -132,8 +132,11 @@ if __name__ == "__main__":
         )
         solver.Initialize()
         solver.Execute()
+        cmfd_status["converged"] = solver.IsConverged()
+        cmfd_status["skipped"] = cmfd.GetNumSkippedCorrections()
         return solver.GetEigenvalue(), solver.GetNumPowerIterations(), solver.GetNumSweeps()
 
+    cmfd_status = {}
     pi_k, pi_iterations, pi_sweeps = run_power_iteration()
     cmfd_k, cmfd_iterations, cmfd_sweeps = run_cmfd()
     k_difference = abs(cmfd_k - pi_k)
@@ -148,6 +151,8 @@ if __name__ == "__main__":
         print(f"Python CMFD sweeps: {cmfd_sweeps}")
         print(f"Python CMFD-PI k-difference: {k_difference}")
         print(f"Python CMFD sweep speedup: {cmfd_speedup}")
+        print(f"Python CMFD converged: {int(cmfd_status['converged'])}")
+        print(f"Python CMFD skipped corrections: {cmfd_status['skipped']}")
 
     if not get_option("cmfd_limiter_stress", False):
         expected_k = 0.9945456

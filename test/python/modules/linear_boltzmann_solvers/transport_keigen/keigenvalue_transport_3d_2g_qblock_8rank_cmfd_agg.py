@@ -134,8 +134,12 @@ if __name__ == "__main__":
         solver = PowerIterationKEigenSolver(**solver_options)
         solver.Initialize()
         solver.Execute()
+        if acceleration is not None:
+            cmfd_status["converged"] = solver.IsConverged()
+            cmfd_status["skipped"] = acceleration.GetNumSkippedCorrections()
         return solver.GetEigenvalue(), solver.GetNumSweeps()
 
+    cmfd_status = {}
     pi_k, pi_sweeps = run_solver(use_cmfd=False)
     cmfd_k, cmfd_sweeps = run_solver(use_cmfd=True)
     k_difference = abs(cmfd_k - pi_k)
@@ -148,6 +152,8 @@ if __name__ == "__main__":
         print(f"Python CMFD sweeps: {cmfd_sweeps}")
         print(f"Python CMFD-PI k-difference: {k_difference}")
         print(f"Python CMFD sweep ratio: {cmfd_sweep_ratio}")
+        print(f"Python CMFD converged: {int(cmfd_status['converged'])}")
+        print(f"Python CMFD skipped corrections: {cmfd_status['skipped']}")
 
     expected_k = get_option("expected_k", 0.5024441)
     if abs(pi_k - expected_k) > 5.0e-5:

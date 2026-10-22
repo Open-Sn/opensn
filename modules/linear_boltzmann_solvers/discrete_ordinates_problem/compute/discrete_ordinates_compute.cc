@@ -488,11 +488,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
   if (time_dependent)
   {
-    // NOTE: The time-dependent balance calculation uses end-of-step rates and a simple
-    // initial/final calculation. For full consistency with the time discretization, it
-    // should use theta-centered rates (sources/absorption), time-averaged boundary
-    // inflow/outflow, and a correct handling of pulsed sources/boundaries when
-    // start/end times fall inside the timestep.
+    // Rates are evaluated at the problem's current state and time. TransientSolver passes the
+    // theta-centered state, for which the theta scheme balances exactly. Sources and boundaries
+    // that switch on or off inside the step are evaluated at that single time, not averaged.
     const double predicted_inventory_change = dt * global_balance;
     const double actual_inventory_change = global_final - global_initial;
     const double inventory_residual = actual_inventory_change - predicted_inventory_change;
@@ -512,20 +510,6 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
                              predicted_inventory_change,
                              actual_inventory_change,
                              inventory_residual};
-    log.Log() << "\nTimestep balance (dt = " << std::setprecision(6) << std::fixed << dt << "):\n"
-              << std::setprecision(6) << std::scientific
-              << " Production rate             = " << table.production_rate << "\n"
-              << " In-flow rate                = " << table.inflow_rate << "\n"
-              << " Absorption rate             = " << table.absorption_rate << "\n"
-              << " Out-flow rate               = " << table.outflow_rate << "\n"
-              << " Balance                     = " << table.balance << "\n"
-              << " Initial inventory           = " << table.initial_inventory.value() << "\n"
-              << " Final inventory             = " << table.final_inventory.value() << "\n"
-              << " Predicted inventory change  = " << table.predicted_inventory_change.value()
-              << "\n"
-              << " Actual inventory change     = " << table.actual_inventory_change.value() << "\n"
-              << " Inventory residual          = " << table.inventory_residual.value() << "\n\n";
-
     opensn::mpi_comm.barrier();
     return table;
   }
@@ -550,16 +534,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 }
 
 void
-ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
+LogBalanceTable(const BalanceTable& table, const double dt)
 {
-  CaliperPhaseScope cali_post_phase("Post", CaliperPostPhaseDepth());
-  CALI_CXX_MARK_SCOPE("Balance");
-
-  const auto table = ComputeBalanceTable(do_problem, scaling_factor);
-  const auto time_dependent = do_problem.IsTimeDependent();
-  const auto dt = time_dependent ? do_problem.GetTimeStep() : 0.0;
-
-  if (time_dependent)
+  if (table.initial_inventory.has_value())
   {
     log.Log() << "\nTimestep balance (dt = " << std::setprecision(6) << std::fixed << dt << "):\n"
               << std::setprecision(6) << std::scientific
@@ -568,7 +545,7 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Absorption rate             = " << table.absorption_rate << "\n"
               << " Out-flow rate               = " << table.outflow_rate << "\n"
               << " Balance                     = " << table.balance << "\n"
-              << " Initial inventory           = " << table.initial_inventory.value_or(0.0) << "\n"
+              << " Initial inventory           = " << table.initial_inventory.value() << "\n"
               << " Final inventory             = " << table.final_inventory.value_or(0.0) << "\n"
               << " Predicted inventory change  = " << table.predicted_inventory_change.value_or(0.0)
               << "\n"
@@ -594,6 +571,16 @@ ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
               << " Out-flow rate               = " << table.outflow_rate << "\n"
               << " Balance                     = " << table.balance << "\n\n";
   }
+}
+
+void
+ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor)
+{
+  CaliperPhaseScope cali_post_phase("Post", CaliperPostPhaseDepth());
+  CALI_CXX_MARK_SCOPE("Balance");
+
+  const auto table = ComputeBalanceTable(do_problem, scaling_factor);
+  LogBalanceTable(table, do_problem.IsTimeDependent() ? do_problem.GetTimeStep() : 0.0);
 }
 
 std::vector<double>

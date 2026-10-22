@@ -186,6 +186,9 @@ def run_solver(name):
     if rank == 0:
         print(f"{name} k-eigenvalue: {k:.12f}")
         print(f"{name} k-error: {error:.6e}")
+        if name == "PowerIterationCMFD":
+            print(f"{name} converged: {int(solver.IsConverged())}")
+            print(f"{name} skipped corrections: {cmfd.GetNumSkippedCorrections()}")
     return name, k, error
 
 

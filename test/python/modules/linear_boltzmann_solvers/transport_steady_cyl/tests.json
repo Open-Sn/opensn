@@ -334,6 +334,18 @@
       },
       {
         "type": "KeyValuePair",
+        "key": "RZ_FISSION_RATE_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FISSION_PRODUCTION_OVER_EXACT=",
+        "goldvalue": 1.0,
+        "abs_tol": 1e-9
+      },
+      {
+        "type": "KeyValuePair",
         "key": "RZ_SURFACE_FE_AREA_OVER_EXACT=",
         "goldvalue": 1.0,
         "abs_tol": 1e-9

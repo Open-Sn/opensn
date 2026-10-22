@@ -734,7 +734,9 @@ summary that includes:
 The rates are evaluated at :math:`t^n + \theta\Delta t`, where the theta scheme
 satisfies the discrete balance exactly, so the inventory residual is at the level
 of the iterative tolerances for any ``theta``. This is often the most direct way
-to check that a transient step is behaving sensibly.
+to check that a transient step is behaving sensibly. Pass
+``compute_balance=True`` to print this table after every timestep, as the
+steady-state and k-eigenvalue solvers print theirs after :meth:`Execute`.
 
 .. note::
 
@@ -842,6 +844,28 @@ problem.
 Balance reporting with :py:meth:`ComputeBalanceTable` uses
 ``1 / k_eff`` scaling on the production term.
 
+.. _keigen-flux-normalization:
+
+Flux normalization
+------------------
+
+A k-eigenvalue solve determines the flux only up to a constant factor, and
+OpenSn does not normalize it to a physical level. The scale left in the problem
+depends on the solver, the acceleration method, and the starting flux: power
+iteration keeps the scale implied by its initial guess, while the nonlinear
+solver and SMM normalize the fission production to the eigenvalue. Ratios,
+shapes, ``k_eff``, and the relative balance are unaffected, but absolute
+quantities computed afterward are not comparable between solvers. This includes
+power, reaction rates, leakage, balance-table rates, postprocessor values, and
+flux moments written to files.
+
+Normalize these quantities explicitly. ``power_normalization_target`` in
+:py:meth:`pyopensn.solver.LBSProblem.CreateFieldFunction` scales only the field
+function that call returns; it does not change the problem's flux or any other
+output. To normalize other quantities, obtain the factor from
+:py:meth:`pyopensn.solver.LBSProblem.ComputeFieldFunctionPowerScaleFactor` and
+multiply each output you want normalized by it.
+
 Nonlinear k-Eigen Solver
 ========================
 
@@ -890,6 +914,9 @@ Example:
    solver.Initialize()
    solver.Execute()
    print(solver.GetEigenvalue())
+
+As with power iteration, the flux scale is arbitrary; see
+:ref:`keigen-flux-normalization`.
 
 Groupsets and DSA
 -----------------

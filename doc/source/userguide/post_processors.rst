@@ -432,7 +432,9 @@ inside both:
        block_ids=[1],
    )
 
-Each logical volume produces one row of results.
+Each logical volume produces one row of results. A cell belongs to a logical
+volume when its centroid is inside it. Construction fails if the block
+restriction, or any logical volume, selects no cells.
 
 Energy Restriction
 -------------------
@@ -495,7 +497,12 @@ Weight by a cross section (for example, fission rate):
        xs_multiplier="sigma_f",
    )
 
-The cross-section name must exist in the problem's XS definitions. Only one of
+The name must be a built-in or custom 1D cross section. Materials that do not
+define an optional built-in cross section (for example, ``sigma_f`` of a
+non-fissile material) contribute zero. ``Execute()`` raises an error if no
+material in the problem defines it, so a misspelled or absent reaction is not
+reported as a zero rate. A custom cross section must be defined on every
+material. A definition without one value per group is rejected. Only one of
 ``multiplier``, ``group_multipliers``, and ``xs_multiplier`` may be specified.
 
 Results

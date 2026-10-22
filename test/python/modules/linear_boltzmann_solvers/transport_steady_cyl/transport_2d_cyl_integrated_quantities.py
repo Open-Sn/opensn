@@ -12,7 +12,9 @@ physical volume 2 pi (R^2 / 2) H = 18 pi:
 - balance-table production and absorption rates equal Q * V and sigma_a * phi * V,
 - volume field-function integral of phi and VolumePostprocessor integral equal phi * V,
 - a response evaluation with a unit material source and phi as the buffer equals phi * V,
-- a power field normalized to a specified total integrates to that total, and
+- a power field normalized to a specified total integrates to that total,
+- ComputeFissionRate and ComputeFissionProduction equal sigma_f * phi * V and nu sigma_f * phi * V,
+  and
 - exported finite-element surface weights on rmax integrate to its physical area 2 pi R H.
 
 A separate problem with a point source of strength S = 3 (a ring in RZ) on a mesh vertex shared
@@ -152,6 +154,11 @@ if __name__ == "__main__":
         "normalized_power", "power", power_normalization_target=power_target
     )
     normalized_power_integral = field_function_volume_integral(normalized_power, "sum")
+    # phi is still the exact solution: the cross sections were swapped without a new solve.
+    fission_rate = problem.ComputeFissionRate("new")
+    fission_production = problem.ComputeFissionProduction("new")
+    exact_fission_rate = fissile_xs.sigma_f[0] * phi_exact * volume
+    exact_fission_production = fissile_xs.nu_sigma_f[0] * phi_exact * volume
 
     # Point source (ring) with vacuum outer boundaries.
     S = 3.0
@@ -178,6 +185,9 @@ if __name__ == "__main__":
         print(f"RZ_VOLUME_PP_OVER_EXACT={vp_integral / (phi_exact * volume):.12e}")
         print(f"RZ_EVALUATOR_OVER_EXACT={evaluator_integral / (phi_exact * volume):.12e}")
         print(f"RZ_POWER_NORMALIZATION_OVER_TARGET={normalized_power_integral / power_target:.12e}")
+        print(f"RZ_FISSION_RATE_OVER_EXACT={fission_rate / exact_fission_rate:.12e}")
+        production_ratio = fission_production / exact_fission_production
+        print(f"RZ_FISSION_PRODUCTION_OVER_EXACT={production_ratio:.12e}")
         print(f"RZ_SURFACE_FE_AREA_OVER_EXACT={fe_surface_area / lateral_area:.12e}")
         print(f"RZ_SURFACE_MASS_AREA_OVER_EXACT={mass_surface_area / lateral_area:.12e}")
         print(f"RZ_POINT_SOURCE_PRODUCTION_OVER_S={point_table['production_rate'] / S:.12e}")

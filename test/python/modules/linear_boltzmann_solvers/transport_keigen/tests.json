@@ -41,6 +41,18 @@
         "key": "Python CMFD-PI k-difference:",
         "goldvalue": 0.0,
         "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -69,6 +81,18 @@
         "key": "Python CMFD-PI k-difference:",
         "goldvalue": 0.0,
         "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_cbc"
@@ -171,6 +195,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5969127,
         "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -187,6 +223,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5969127,
         "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_cbc"
@@ -201,12 +249,24 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5969127,
         "abs_tol": 2e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
   {
     "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
-    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps",
+    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -217,6 +277,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5969127,
         "abs_tol": 2e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_agg_cbc"
@@ -498,6 +570,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.9293377,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -514,6 +598,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.9293377,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_exo_wedge_cmfd_cbc"
@@ -528,6 +624,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.9293377,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -544,6 +652,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.9293377,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_exo_wedge_cmfd_agg_cbc"
@@ -639,6 +759,18 @@
         "key": "Balance=",
         "goldvalue": 0.0,
         "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -661,6 +793,18 @@
         "key": "Balance=",
         "goldvalue": 0.0,
         "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_1g_reflecting_cmfd_agg_cbc"
@@ -694,6 +838,47 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_qblock_cmfd_agg.py",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD with the iterative (GMRES/AMG) coarse solver",
+    "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_agg_iterative",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_solver_policy=\"iterative\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5028015,
+        "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -710,6 +895,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_agg_cbc"
@@ -730,12 +927,24 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_cmfd_energy_agg.py",
-    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using spatial and energy-group aggregated CMFD acceleration and CBC sweeps",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using spatial and energy-group aggregated CMFD acceleration and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -752,6 +961,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_energy_agg_cbc"
@@ -772,12 +993,24 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_cmfd_multigroupset.py",
-    "comment": "3D 2G heterogeneous qblock CMFD regression with one groupset per group, P1 transport moments, and CBC sweeps",
+    "comment": "3D 2G heterogeneous qblock CMFD regression with one groupset per group, P1 transport moments, and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -794,6 +1027,18 @@
         "key": "Python k-eigenvalue:",
         "goldvalue": 0.5028015,
         "abs_tol": 5e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_multigroupset_cbc"
@@ -833,6 +1078,18 @@
         "key": "Python CMFD-PI k-difference:",
         "goldvalue": 0.0,
         "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -861,6 +1118,18 @@
         "key": "Python CMFD-PI k-difference:",
         "goldvalue": 0.0,
         "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_8rank_cmfd_agg_cbc"
@@ -895,6 +1164,18 @@
         "key": "CMFD_ACCEL category=coarse_mesh metric=aggregation_ratio value=",
         "goldvalue": 11.3388,
         "abs_tol": 0.1
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -918,6 +1199,18 @@
         "key": "CMFD_ACCEL category=coarse_mesh metric=aggregation_ratio value=",
         "goldvalue": 11.3388,
         "abs_tol": 0.1
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_unstructured_8rank_cmfd_agg_metrics_cbc"
@@ -944,6 +1237,18 @@
         "key": "NonLinearKEigen k-eigenvalue:",
         "goldvalue": 0.647082071109,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIterationCMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIterationCMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ]
   },
@@ -972,6 +1277,18 @@
         "key": "NonLinearKEigen k-eigenvalue:",
         "goldvalue": 0.647082071109,
         "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIterationCMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PowerIterationCMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_5g_upscatter_solvers_cbc"

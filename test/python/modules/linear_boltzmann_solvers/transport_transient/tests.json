@@ -1651,7 +1651,7 @@
   },
   {
     "file": "transient_theta_infinite_medium_exact.py",
-    "comment": "Exact theta-scheme recurrence (theta = 1, 1/2, 0.7) for a fissile infinite medium with two precursor families and a ramp source, AAH and CBC, plus the discrete balance identity",
+    "comment": "Exact theta-scheme recurrence (theta = 1, 1/2, 0.7) for a fissile infinite medium with two precursor families and a ramp source, AAH and CBC, plus the discrete balance identity; compute_balance=True prints the theta-centered timestep balance after each Execute() step",
     "num_procs": 2,
     "checks": [
       {
@@ -1666,6 +1666,13 @@
         "key": "THETA_BALANCE_MAX_REL_RESID",
         "wordnum": 1,
         "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Inventory residual          =",
+        "skip_lines_until": "THETA_BALANCE_LAST_PRINT_BEGIN",
+        "goldvalue": 0.0,
         "abs_tol": 1e-10
       }
     ]
