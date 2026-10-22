@@ -95,7 +95,7 @@ AAHD_ASynchronousCommunicator::PrepostReceiveUpstreamPsi()
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
+      const auto tag = GetMessageTag(m);
       preloc_msg_request_[req] = comm.irecv(source, tag, &upstream_psi[block_pos], size);
     }
   }
@@ -128,7 +128,7 @@ AAHD_ASynchronousCommunicator::PrepostReceiveDelayedData()
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
+      const auto tag = GetMessageTag(m);
       delayed_preloc_msg_request_[req] = comm.irecv(source, tag, &upstream_psi[block_pos], size);
     }
   }
@@ -156,7 +156,7 @@ AAHD_ASynchronousCommunicator::SendDownstreamPsi()
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      const int tag = GetMessageTag(m);
+      const auto tag = GetMessageTag(m);
       deploc_msg_request_[req] = comm.isend(dest, tag, &outgoing_psi[block_pos], size);
     }
   }

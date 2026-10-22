@@ -48,7 +48,7 @@ DistributedMeshGenerator::Execute()
   else
   {
     std::vector<std::byte> data;
-    mpi_comm.recv<std::byte>(0, rank, data);
+    mpi_comm.recv<std::byte>(0, mpi::Tag{rank}, data);
     ByteArray serial_data(data);
     mesh_info = DeserializeMeshData(serial_data);
   }
@@ -190,7 +190,7 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
       loc0_data = serial_data;
     else
       mpi_comm.send<std::byte>(
-        pid, pid, serial_data.Data().data(), static_cast<int>(serial_data.Size()));
+        pid, mpi::Tag{pid}, serial_data.Data().data(), static_cast<int>(serial_data.Size()));
   }
   return loc0_data;
 }

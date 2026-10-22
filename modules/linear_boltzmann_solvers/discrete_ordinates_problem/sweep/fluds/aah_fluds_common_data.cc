@@ -416,7 +416,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count_[deplocI]);
 
-    send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
+    send_requests[deplocI] =
+      mpi_comm.isend(locJ, mpi::Tag{101 + tag_index}, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 
@@ -434,7 +435,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     auto locJ = delayed_location_dependencies[prelocI];
 
     std::vector<int64_t> face_indices;
-    mpi_comm.recv(locJ, 101 + tag_index, face_indices);
+    mpi_comm.recv(locJ, mpi::Tag{101 + tag_index}, face_indices);
 
     DeSerializeCellInfo(delayed_prelocI_cell_views_[prelocI],
                         &face_indices,
@@ -455,7 +456,7 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
     auto locJ = location_dependencies[prelocI];
 
     std::vector<int64_t> face_indices;
-    mpi_comm.recv(locJ, 101 + tag_index, face_indices);
+    mpi_comm.recv(locJ, mpi::Tag{101 + tag_index}, face_indices);
 
     DeSerializeCellInfo(
       prelocI_cell_views_[prelocI], &face_indices, prelocI_face_dof_count_[prelocI]);
@@ -475,7 +476,8 @@ AAH_FLUDSCommonData::InitializeBetaElements(const SPDS& spds, int tag_index /*=0
 
     SerializeCellInfo(cell_views, multi_face_indices[deplocI], deplocI_face_dof_count_[deplocI]);
 
-    send_requests[deplocI] = mpi_comm.isend(locJ, 101 + tag_index, multi_face_indices[deplocI]);
+    send_requests[deplocI] =
+      mpi_comm.isend(locJ, mpi::Tag{101 + tag_index}, multi_face_indices[deplocI]);
 
     // TODO: Watch eager limits on sent data
 

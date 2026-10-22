@@ -16,9 +16,9 @@ TEST(SweepCommunicatorTest, RankAndTagValidation)
   EXPECT_THROW(communicator.GetPeerRank(-1), std::out_of_range);
   EXPECT_THROW(communicator.GetPeerRank(mpi_comm.size()), std::out_of_range);
 
-  EXPECT_EQ(communicator.BuildMessageTag(0, 3, 8, 7), 31);
-  EXPECT_EQ(communicator.BuildMessageTag(0, 3, 8, 7), 31);
-  EXPECT_GT(communicator.BuildMessageTag(1, 0), communicator.BuildMessageTag(0, 3, 8, 7));
+  EXPECT_EQ(communicator.BuildMessageTag(0, 3, 8, 7), mpi::Tag{31});
+  EXPECT_GT(communicator.BuildMessageTag(1, 0).value(),
+            communicator.BuildMessageTag(0, 3, 8, 7).value());
   EXPECT_THROW(communicator.BuildMessageTag(2, 0), std::out_of_range);
   EXPECT_THROW(communicator.BuildMessageTag(0, 0, 0, 0), std::invalid_argument);
   EXPECT_THROW(communicator.BuildMessageTag(0, 0, 2, 2), std::invalid_argument);
@@ -33,7 +33,7 @@ TEST(SweepCommunicatorTest, HasPrivateMessageContext)
     return;
 
   SweepCommunicator sweep_communicator(mpi_comm, 1);
-  constexpr int tag = 7;
+  constexpr mpi::Tag tag{7};
 
   mpi_comm.barrier();
   if (mpi_comm.rank() == 0)

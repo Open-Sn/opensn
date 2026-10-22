@@ -46,21 +46,21 @@ protected:
 
     // Each angle set reserves num_message_tag_blocks_ contiguous blocks of count tags.
     const auto stride = static_cast<std::size_t>(count) * num_message_tag_blocks_;
-    const int last_tag = BuildMessageTag(stride, stride - 1);
+    const auto last_tag = BuildMessageTag(stride, stride - 1);
     max_num_messages_ = count;
-    message_tag_base_ = last_tag - static_cast<int>(stride) + 1;
+    message_tag_base_ = last_tag.value() - static_cast<int>(stride) + 1;
   }
 
-  int GetMessageTag(int offset = 0, int block = 0) const
+  mpi::Tag GetMessageTag(int offset = 0, int block = 0) const
   {
     if (offset < 0 or offset >= max_num_messages_)
       throw std::out_of_range("AsynchronousCommunicator: Message offset is out of range.");
     if (block < 0 or block >= num_message_tag_blocks_)
       throw std::out_of_range("AsynchronousCommunicator: Message tag block is out of range.");
-    return message_tag_base_ + block * max_num_messages_ + offset;
+    return mpi::Tag{message_tag_base_ + block * max_num_messages_ + offset};
   }
 
-  int BuildMessageTag(std::size_t stride = 1, std::size_t offset = 0) const
+  mpi::Tag BuildMessageTag(std::size_t stride = 1, std::size_t offset = 0) const
   {
     return sweep_communicator_.BuildMessageTag(groupset_id_, angle_set_id_, stride, offset);
   }

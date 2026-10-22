@@ -12,7 +12,7 @@ include(FindPackageHandleStandardArgs)
 
 # Find the dependencies referenced by the exported targets.
 find_dependency(MPI COMPONENTS CXX)
-find_dependency(mpicpp-lite 2.7.1)
+find_dependency(mpicpp-lite 3.1)
 find_dependency(HDF5 COMPONENTS C HL)
 
 find_package(Boost 1.86 CONFIG QUIET)
