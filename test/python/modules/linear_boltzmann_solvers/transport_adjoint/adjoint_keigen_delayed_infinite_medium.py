@@ -281,7 +281,7 @@ def solve(grid, materials, adjoint, groupsets=1, cmfd=False, use_precursors=True
         # The settings of keigenvalue_transport_1d_1g_cmfd.py.
         acceleration = CMFDAcceleration(
             problem=phys,
-            current_closure="auto",
+            current_closure="partial",
             coarse_mesh="local_aggregation",
             aggregation_size=2,
             group_aggregation_size=1,
