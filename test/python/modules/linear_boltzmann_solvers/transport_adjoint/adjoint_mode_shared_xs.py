@@ -310,7 +310,7 @@ def build_keigen(grid, xs, adjoint, cmfd=False, group_aggregation_size=1):
         # The settings of keigenvalue_transport_1d_1g_cmfd.py.
         acceleration = CMFDAcceleration(
             problem=problem,
-            current_closure="auto",
+            current_closure="partial",
             coarse_mesh="local_aggregation",
             aggregation_size=2,
             group_aggregation_size=group_aggregation_size,
