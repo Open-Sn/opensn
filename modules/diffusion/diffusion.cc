@@ -175,7 +175,7 @@ DiffusionSolver::Initialize()
   log.Log() << "Done Sparsity pattern";
   opensn::mpi_comm.barrier();
   if (petsc_comm_ == MPI_COMM_NULL)
-    OpenSnMPICall(MPI_Comm_dup(opensn::mpi_comm, &petsc_comm_));
+    petsc_comm_ = opensn::mpi_comm.duplicate();
   A_ = CreateSquareMatrix(petsc_comm_, num_local_dofs_, num_global_dofs_);
   InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
   opensn::mpi_comm.barrier();
