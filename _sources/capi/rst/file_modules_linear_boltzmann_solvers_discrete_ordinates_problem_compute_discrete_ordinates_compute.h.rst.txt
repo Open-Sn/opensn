@@ -77,9 +77,9 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a2c8745b535a9a21dc512fc3e3cc02e60`
 
-- :ref:`exhale_function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02`
-
 - :ref:`exhale_function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73`
+
+- :ref:`exhale_function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02`
 
 - :ref:`exhale_function_namespaceopensn_1ad475503dd716480317157800b0661d33`
 
