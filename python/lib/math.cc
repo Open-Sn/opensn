@@ -21,7 +21,10 @@ WrapYlm(py::module& math)
   // clang-format off
   math.def(
     "Ylm",
-    &Ylm,
+    [](unsigned int ell, int m, double theta, double varphi)
+    {
+      return Ylm(ell, m, varphi, theta);
+    },
     R"(
     Compute the tesseral spherical harmonics.
 
