@@ -24,6 +24,10 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
 
+  // Delayed emission spectrum of a cell, weighted by the precursor yields, for the adjoint
+  // production
+  std::vector<double> delayed_spectrum;
+
   // Loop over local cells
   double local_production = 0.0;
   for (const auto& cell : grid->GetLocalCells())
@@ -38,6 +42,14 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
     if (not xs.IsFissionable())
       continue;
+
+    if (options.use_precursors and options.adjoint and not xs.GetPrecursors().empty())
+    {
+      delayed_spectrum.assign(last_grp + 1, 0.0);
+      for (const auto& precursor : xs.GetPrecursors())
+        for (unsigned int g = first_grp; g <= last_grp; ++g)
+          delayed_spectrum[g] += precursor.emission_spectrum[g] * precursor.fractional_yield;
+    }
 
     // Loop over nodes
     const int num_nodes = transport_view.GetNumNodes();
@@ -57,8 +69,16 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
         // contributions are prompt-only and adds delayed production separately via
         // nu_delayed_sigma_f. If the production matrix changes to include delayed
         // production, adjust this sum to prevent double counting.
+        // In adjoint mode F is transposed, and so is the delayed production.
         if (options.use_precursors and not xs.GetPrecursors().empty())
-          local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        {
+          if (options.adjoint)
+            for (unsigned int gp = 0; gp <= last_grp; ++gp)
+              local_production +=
+                delayed_spectrum[gp] * nu_delayed_sigma_f[g] * phi[uk_map + gp] * IntV_ShapeI;
+          else
+            local_production += nu_delayed_sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        }
       }
     } // for node
   } // for cell

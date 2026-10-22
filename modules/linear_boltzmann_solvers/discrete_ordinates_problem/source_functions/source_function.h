@@ -90,6 +90,8 @@ protected:
   unsigned int last_grp_ = 0;
 
   double cell_volume_ = 0.0;
+  /// Delayed emission spectrum of the current cell, weighted by the precursor yields.
+  std::vector<double> delayed_spectrum_;
   unsigned int g_ = 0;
   const double* fixed_src_moments_ = nullptr;
   std::vector<double> default_zero_src_;

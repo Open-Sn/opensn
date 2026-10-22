@@ -63,6 +63,17 @@ SourceFunction::operator()(const LBSGroupset& groupset,
     const auto& precursors = xs.GetPrecursors();
     const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
 
+    // Delayed emission spectrum of the cell, weighted by the precursor yields, for the delayed
+    // fission source
+    if ((apply_ags_fission_src_ or apply_wgs_fission_src_) and
+        lbs_problem_.GetOptions().use_precursors and xs.IsFissionable() and not precursors.empty())
+    {
+      delayed_spectrum_.assign(lbs_problem_.GetNumGroups(), 0.0);
+      for (const auto& precursor : precursors)
+        for (auto g = first_grp_; g <= last_grp_; ++g)
+          delayed_spectrum_[g] += precursor.emission_spectrum[g] * precursor.fractional_yield;
+    }
+
     // Loop over nodes
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
@@ -153,19 +164,23 @@ SourceFunction::DelayedFission(const PrecursorList& precursors,
                                const double* phi,
                                std::size_t /*node_id*/) const
 {
+  if (precursors.empty())
+    return 0.0;
+
+  // In adjoint mode the delayed production chi_d[g] nu_d sigma_f[g'] is transposed, like the
+  // production matrix.
+  const bool adjoint = lbs_problem_.GetOptions().adjoint;
   double value = 0.0;
   if (apply_ags_fission_src_)
     for (auto gp = first_grp_; gp <= last_grp_; ++gp)
       if (gp < gs_i_ or gp > gs_f_)
-        for (const auto& precursor : precursors)
-          value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
-                   nu_delayed_sigma_f[gp] * phi[gp];
+        value +=
+          delayed_spectrum_[adjoint ? gp : g_] * nu_delayed_sigma_f[adjoint ? g_ : gp] * phi[gp];
 
   if (apply_wgs_fission_src_)
     for (auto gp = gs_i_; gp <= gs_f_; ++gp)
-      for (const auto& precursor : precursors)
-        value += precursor.emission_spectrum[g_] * precursor.fractional_yield *
-                 nu_delayed_sigma_f[gp] * phi[gp];
+      value +=
+        delayed_spectrum_[adjoint ? gp : g_] * nu_delayed_sigma_f[adjoint ? g_ : gp] * phi[gp];
 
   return value;
 }
