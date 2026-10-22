@@ -57,7 +57,7 @@ Console::BindAllReduce(const mpi::Communicator& comm)
       if (op == "sum")       comm.all_reduce(value, out, mpi::op::sum<int>());
       else if (op == "max")  comm.all_reduce(value, out, mpi::op::max<int>());
       else if (op == "min")  comm.all_reduce(value, out, mpi::op::min<int>());
-      else if (op == "bor")  MPI_Allreduce(&value, &out, 1, MPI_INT, MPI_BOR, comm);
+      else if (op == "bor")  comm.all_reduce(value, out, mpi::op::bor<int>());
       else throw std::invalid_argument("MPIAllReduce: unknown op '" + op + "'");
       return out;
     },
