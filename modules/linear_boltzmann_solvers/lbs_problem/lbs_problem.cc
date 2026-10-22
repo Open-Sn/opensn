@@ -620,7 +620,11 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter("write_restart_time_interval",
                               0,
                               "Time interval in seconds at which restart data is to be written.");
-  params.AddOptionalParameter("use_precursors", true, "Flag for using delayed neutron precursors.");
+  params.AddOptionalParameter(
+    "use_precursors",
+    true,
+    "Flag for storing and evolving delayed neutron precursors. Steady-state fission sources "
+    "include delayed neutron production whenever delayed data exists.");
   params.AddOptionalParameter("use_source_moments",
                               false,
                               "Flag for ignoring fixed sources and selectively using source "
@@ -978,19 +982,24 @@ LBSProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
                           ") than the simulation (" + std::to_string(num_groups_) +
                           "). Cross-sections must have at least as many groups as the simulation.");
 
-  // With precursors, delayed-neutron data on one fissionable material requires it on all of them.
+  // With delayed-neutron production active, delayed-neutron data on one fissionable material
+  // requires it on all of them. Production is active in steady state and, in time-dependent mode,
+  // with use_precursors (UseDelayedNeutronProduction). The precursor count is set only when the
+  // materials are initialized, so the condition is evaluated from the options here.
   const bool has_fissionable_precursors = std::any_of(
     xs_map.begin(),
     xs_map.end(),
     [](const auto& entry)
     { return entry.second->IsFissionable() and not entry.second->GetPrecursors().empty(); });
-  if (options_.use_precursors and has_fissionable_precursors)
+  const bool delayed_production = not IsTimeDependent() or options_.use_precursors;
+  if (delayed_production and has_fissionable_precursors)
     for (const auto& [block_id, xs] : xs_map)
       if (xs->IsFissionable() and xs->GetPrecursors().empty())
         errors.emplace_back(
           "incompatible cross-section data for material id " + std::to_string(block_id) +
-          ". When options.use_precursors=true and delayed-neutron precursor data is present for "
-          "one fissionable material, it must be present for all fissionable materials.");
+          ". When delayed-neutron production is active and delayed-neutron precursor data is "
+          "present for one fissionable material, it must be present for all fissionable "
+          "materials.");
 
   if (options_.adjoint)
   {

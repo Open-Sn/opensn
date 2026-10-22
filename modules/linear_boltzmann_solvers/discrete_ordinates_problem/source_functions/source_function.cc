@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
@@ -126,7 +127,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
               for (size_t gp = gs_i_; gp <= gs_f_; ++gp)
                 rhs += F_g[gp] * phi_im[gp];
 
-            if (lbs_problem_.GetOptions().use_precursors)
+            if (UseDelayedNeutronProduction(lbs_problem_))
               rhs += DelayedFission(precursors, nu_delayed_sigma_f, &phi[uk_map], node_id);
           }
 

@@ -101,9 +101,10 @@ fission source scaled by :math:`1/k_\mathrm{eff}`. The physical transient remove
 that scaling, so a noncritical eigenstate generally grows or decays even when
 the inputs are unchanged. The stationary guarantee applies to an equilibrated
 critical eigenstate (:math:`k_\mathrm{eff}=1`).
-With ``use_precursors=False`` the model is prompt only: delayed
-neutrons are omitted from steady-state, k-eigenvalue, and transient solves,
-which lowers :math:`k_\text{eff}` by approximately the delayed fraction.
+With ``use_precursors=False`` a transient is prompt only: precursors are not
+evolved and delayed neutrons are omitted. Steady-state and k-eigenvalue solves
+include delayed neutron production whenever the cross sections contain
+delayed-neutron data, regardless of ``use_precursors``.
 
 Particle balance
 ----------------

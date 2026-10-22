@@ -198,12 +198,18 @@ Problem options available in Python include:
 * ``fused_aao_sweep`` and ``fused_aao_lanes`` for GPU ``"AAH"`` sweeps (see
   :doc:`discrete_ordinates_problems`)
 
-``use_precursors`` controls whether delayed-neutron precursor treatment is kept
-active for the problem. The default is ``True``. This should usually stay
-enabled for transient and k-eigen workflows unless you explicitly want a
-prompt-only model. With ``use_precursors=False``, delayed neutrons are omitted
-from steady-state and k-eigenvalue solves as well as from transients, which
-lowers :math:`k_\text{eff}` by approximately the delayed fraction.
+``use_precursors`` controls delayed-neutron precursor storage and transient
+precursor evolution. It does not remove delayed neutron production from
+steady-state or k-eigenvalue fission sources. If the active cross sections
+contain delayed-neutron data, steady-state and k-eigenvalue solves use total
+fission production, prompt plus delayed, regardless of ``use_precursors``.
+
+For transient solves, ``use_precursors=True`` evolves precursor concentrations
+and includes delayed production through the transient precursor equations.
+``use_precursors=False`` is a prompt-only transient, even if the cross sections
+contain delayed-neutron data. Keep the default ``True`` for production
+delayed-neutron transients; set it to ``False`` only when a prompt-only transient
+is intentional.
 
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
 ``read_initial_condition_path`` reads restart data as an initial condition (the
@@ -242,9 +248,11 @@ concentrations. If a swap assigns a cell a material without precursors, that
 cell's precursor concentrations are discarded, and precursor families
 reintroduced by a later swap start from zero.
 
-If any fissionable material in the active map contains precursor data and
-``use_precursors=True``, then all fissionable materials in that map must
-contain precursor data. Non-fissionable materials may have zero precursors.
+If delayed-neutron production is active and any fissionable material in the
+active map contains precursor data, then all fissionable materials in that map
+must contain precursor data. Non-fissionable materials may have zero precursors.
+In steady-state mode, delayed-neutron production is active whenever delayed data
+exists. In transient mode, it is active only when ``use_precursors=True``.
 
 .. note::
 
@@ -581,6 +589,15 @@ Restart data (``read_restart_path``) and a pending initial condition
 
 .. note::
 
+   A steady-state or k-eigenvalue initial condition computed with delayed
+   cross-section data uses total fission production. A following transient uses
+   delayed precursors only if the problem option ``use_precursors`` is ``True``.
+   If ``use_precursors`` is ``False``, the transient is prompt-only even though
+   the steady initial condition may have included delayed production in its
+   eigenvalue or source balance.
+
+.. note::
+
    ``initial_state="zero"`` is mostly useful for controlled studies where the
    transient should begin from a clean zero field rather than from whatever
    state the problem currently holds.
@@ -820,6 +837,12 @@ At a high level, the solver:
 
 This solver uses the groupset inner solver and AGS settings configured on the
 problem.
+
+If the cross sections contain delayed-neutron data, the fission source and
+``k_eff`` update use total fission production, prompt plus delayed. This
+steady-state behavior is independent of ``use_precursors``. The
+``use_precursors`` option only controls whether precursor concentrations are
+stored and computed after the solve.
 
 .. note::
 

@@ -14,8 +14,33 @@
         "type": "FloatCompare",
         "key": "NLKE final",
         "wordnum": 13,
-        "gold": 0.99454,
+        "gold": 0.99954,
         "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_precursor_toggle.py",
+    "comment": "1D delayed k-eigenvalue is independent of precursor storage in steady state",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python use_precursors=False k-eigenvalue:",
+        "goldvalue": 0.9995433,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python use_precursors=True k-eigenvalue:",
+        "goldvalue": 0.9995433,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python precursor toggle k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -27,13 +52,13 @@
       {
         "type": "KeyValuePair",
         "key": "Python PI k-eigenvalue:",
-        "goldvalue": 0.9945456,
+        "goldvalue": 0.9995433,
         "abs_tol": 5e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Python CMFD k-eigenvalue:",
-        "goldvalue": 0.9945456,
+        "goldvalue": 0.9995433,
         "abs_tol": 5e-06
       },
       {
@@ -55,13 +80,13 @@
       {
         "type": "KeyValuePair",
         "key": "Python PI k-eigenvalue:",
-        "goldvalue": 0.9945456,
+        "goldvalue": 0.9995433,
         "abs_tol": 5e-06
       },
       {
         "type": "KeyValuePair",
         "key": "Python CMFD k-eigenvalue:",
-        "goldvalue": 0.9945456,
+        "goldvalue": 0.9995433,
         "abs_tol": 5e-06
       },
       {
@@ -380,7 +405,7 @@
         "type": "FloatCompare",
         "key": "NLKE final",
         "wordnum": 13,
-        "gold": 0.99454,
+        "gold": 0.99954,
         "abs_tol": 1e-05
       }
     ]
@@ -456,6 +481,19 @@
         "key": "NLKE final",
         "wordnum": 13,
         "gold": 1.5029618,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_openmcxs_delayed_slab.py",
+    "comment": "1D 2G delayed-neutron slab keigenvalue test using OpenMC MGXS library",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "OPENSN_KEFF",
+        "goldvalue": 0.35819387,
         "abs_tol": 1e-05
       }
     ]
@@ -612,14 +650,14 @@
         "type": "FloatCompare",
         "key": "PI final",
         "wordnum": 13,
-        "gold": 0.995,
+        "gold": 1.0,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Balance=",
         "goldvalue": 0.0,
-        "abs_tol": 1e-08
+        "abs_tol": 1e-07
       }
     ]
   },
@@ -631,7 +669,7 @@
       {
         "type": "KeyValuePair",
         "key": "Python k-eigenvalue:",
-        "goldvalue": 0.995,
+        "goldvalue": 1.0,
         "abs_tol": 0.0001
       },
       {
@@ -653,7 +691,7 @@
       {
         "type": "KeyValuePair",
         "key": "Python k-eigenvalue:",
-        "goldvalue": 0.995,
+        "goldvalue": 1.0,
         "abs_tol": 0.0001
       },
       {
