@@ -711,12 +711,12 @@ MultiGroupXS::Scale(const double factor)
     for (auto& value : values)
       value *= scaling_factor_;
 
-  if (adjoint_ and not transfer_matrices_.empty())
-  {
-    transposed_transfer_matrices_.clear();
-    transposed_production_matrix_.clear();
+  // Clear the transposes of the old data. In adjoint mode rebuild them now; otherwise
+  // SetAdjointMode rebuilds them on the next switch to adjoint mode.
+  transposed_transfer_matrices_.clear();
+  transposed_production_matrix_.clear();
+  if (adjoint_)
     TransposeTransferAndProduction();
-  }
 
   diffusion_initialized_ = false;
   ComputeDiffusionParameters();
@@ -749,7 +749,7 @@ MultiGroupXS::TransposeTransferAndProduction()
   transposed_production_matrix_.clear();
 
   // Transpose transfer matrices
-  for (unsigned int ell = 0; ell <= scattering_order_; ++ell)
+  for (size_t ell = 0; ell < transfer_matrices_.size(); ++ell)
   {
     const auto& S_ell = transfer_matrices_[ell];
     SparseMatrix S_ell_transpose(num_groups_, num_groups_);
