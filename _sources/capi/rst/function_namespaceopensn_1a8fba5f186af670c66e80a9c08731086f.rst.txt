@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1afee220ef7cbae7ce8d08b3156bfcebe8:
+.. _exhale_function_namespaceopensn_1a8fba5f186af670c66e80a9c08731086f:
 
 Function opensn::MakeTwoGridCollapsedInfo
 =========================================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::MakeTwoGridCollapsedInfo(const MultiGroupXS&, EnergyCollapseScheme, unsigned int, unsigned int, double)
+.. doxygenfunction:: opensn::MakeTwoGridCollapsedInfo(const MultiGroupXS&, EnergyCollapseScheme, unsigned int, unsigned int, double, bool)
    :project: opensn

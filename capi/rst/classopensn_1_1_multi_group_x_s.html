@@ -121,6 +121,13 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12MultiGroupXS15ReplaceContentsERR12MultiGroupXS">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1a1d6839228c20f9028b920a56942a78f9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReplaceContents</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="#_CPPv4N6opensn12MultiGroupXSE" title="opensn::MultiGroupXS"><span class="n"><span class="pre">MultiGroupXS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">other</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12MultiGroupXS15ReplaceContentsERR12MultiGroupXS" title="Link to this definition"></a><br /></dt>
+<dd><p>Replaces the cross sections of this object with those of other. </p>
+<p>This object keeps its adjoint mode, and transposes built for the old data are rebuilt from the new data, so that a problem in adjoint mode that uses this object sees the new data. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS14GetScaleFactorEv">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1a211616a5c90ea41402792ef5547c3c5f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetScaleFactor</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS14GetScaleFactorEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -162,7 +169,13 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn12MultiGroupXS14SetAdjointModeEb">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1ac150cfca2cffbd370573acb3c0201cf5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAdjointMode</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">val</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12MultiGroupXS14SetAdjointModeEb" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Sets the mode of the getters that take no mode argument. </p>
+<p>Entering adjoint mode builds the transposed transfer and production matrices if they do not exist yet. Once built, Scale and ReplaceContents keep them current in either mode.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>LBS problems pass their own mode to the getters, so problems that share this object can run in different modes. A problem in adjoint mode sets adjoint mode here so that the transposes exist. </p>
+</div>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS14GetAdjointModeEv">
@@ -203,12 +216,27 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS19GetTransferMatricesEv">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1a71d363a87c9b1c61caa7188f11a2c7d6"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sparse_matrix.html#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTransferMatrices</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS19GetTransferMatricesEv" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns the transfer matrices in the mode set by SetAdjointMode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS19GetTransferMatricesEb">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1a03b1170e56835d85af3ca1fd6525b9e4"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sparse_matrix.html#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTransferMatrices</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS19GetTransferMatricesEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the transfer matrices, or their transposes when adjoint is true. </p>
+<p>The transposes exist once adjoint mode has been set. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS17GetTransferMatrixEj">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1adb45dc363308ee8fca544a7a92add248"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sparse_matrix.html#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTransferMatrix</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ell</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS17GetTransferMatrixEj" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dd><p>Returns the moment-ell transfer matrix in the mode set by SetAdjointMode. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS17GetTransferMatrixEjb">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1a613b3a49fef29ad5d2a8e08a05868bab"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sparse_matrix.html#_CPPv4N6opensn12SparseMatrixE" title="opensn::SparseMatrix"><span class="n"><span class="pre">SparseMatrix</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetTransferMatrix</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ell</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS17GetTransferMatrixEjb" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the moment-ell transfer matrix, or its transpose when adjoint is true. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS6GetChiEv">
@@ -238,10 +266,18 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEv">
 <span class="target" id="classopensn_1_1_multi_group_x_s_1aa8fb7fe9a79328526dd9e4ce6a0f11ad"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetProductionMatrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEv" title="Link to this definition"></a><br /></dt>
-<dd><div class="admonition note">
+<dd><p>
+Returns the matrix in the mode set by SetAdjointMode. </p>
+<div class="admonition note">
 <p class="admonition-title">Note</p>
-<p>The LBS source and fission-production routines assume this matrix represents prompt production when delayed-neutrons are enabled, and add delayed production from nu_delayed_sigma_f separately. If production_matrix_ ever includes delayed contributions, those routines must be updated to avoid double counting. </p>
+<p>The LBS source and fission-production routines assume this matrix represents prompt production when delayed-neutrons are enabled, and add delayed production from nu_delayed_sigma_f separately. If production_matrix_ ever includes delayed contributions, those routines must be updated to avoid double counting.</p>
 </div>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEb">
+<span class="target" id="classopensn_1_1_multi_group_x_s_1ace9af7e3ec52c2b87520593b6cd6f7a5"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetProductionMatrix</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn12MultiGroupXS19GetProductionMatrixEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the production matrix, or its transpose when adjoint is true. </p>
 </dd></dl>
 
 <dl class="cpp function">

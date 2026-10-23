@@ -680,16 +680,20 @@ In Python there are two valid ways to set mode:</p>
 </ol>
 <p>A mode transition triggers:</p>
 <ul class="simple">
-<li><p>reinitializes material mode (forward vs adjoint),</p></li>
+<li><p>reinitializes the problem’s materials in the new mode (a transition to
+forward mode leaves the mapped cross-section objects in adjoint mode, and
+the problem reads their forward data),</p></li>
 <li><p>clears point and volumetric sources,</p></li>
 <li><p>clears boundary conditions,</p></li>
 <li><p>zeros scalar and angular flux state.</p></li>
 </ul>
 <p>The block-id to cross-section map is preserved. After switching mode, reapply
 the desired driving terms (sources and boundaries) before solving.</p>
-<p>Adjoint mode is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves.
-If the same cross-section object is shared across multiple problems, toggling
-adjoint mode in one problem affects all problems using that object.</p>
+<p>Adjoint mode is applied to the mapped <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code> objects themselves,
+which builds their transposed transfer and production data. The transport
+mode belongs to each problem, so problems that share a cross-section object
+can run in different modes. A change to the object, such as <code class="docutils literal notranslate"><span class="pre">Scale</span></code>, is
+seen by every problem that uses it.</p>
 </div>
 <section id="id4">
 <h3>Base class<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>

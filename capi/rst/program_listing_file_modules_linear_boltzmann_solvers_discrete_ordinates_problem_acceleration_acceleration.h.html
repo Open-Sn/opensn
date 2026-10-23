@@ -163,12 +163,16 @@
 <span class="cm"> * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time</span>
 <span class="cm"> * absorption 1/(v theta dt) that the theta scheme adds to the total cross section is included in</span>
 <span class="cm"> * the collapse so that the diffusion operator matches the transport operator being accelerated.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The collapse uses the transposed transfer matrix when `adjoint` is true, as a problem in adjoint</span>
+<span class="cm"> * mode does, and the forward transfer matrix otherwise.</span>
 <span class="cm"> */</span>
 <span class="n">TwoGridCollapsedInfo</span><span class="w"> </span><span class="nf">MakeTwoGridCollapsedInfo</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">,</span>
 <span class="w">                                              </span><span class="n">EnergyCollapseScheme</span><span class="w"> </span><span class="n">scheme</span><span class="p">,</span>
 <span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_group</span><span class="p">,</span>
 <span class="w">                                              </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group</span><span class="p">,</span>
-<span class="w">                                              </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">                                              </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="c1">/// Translates sweep boundary conditions to that used in diffusion acceleration methods.</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span>
