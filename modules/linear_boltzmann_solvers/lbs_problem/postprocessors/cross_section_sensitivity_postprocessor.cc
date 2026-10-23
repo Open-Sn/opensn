@@ -438,11 +438,13 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
       if (column < 0)
         continue;
 
+      // The relative coefficient is the cross section sigma_s,ell(from_group -> to_group), the
+      // forward data, whatever mode the problem is in.
       double relative_coefficient = 1.0;
       if (relative_)
       {
-        if (ell < xs->GetTransferMatrices().size())
-          relative_coefficient = xs->GetTransferMatrix(ell).GetValueIJ(to_group, from_group);
+        if (ell < xs->GetTransferMatrices(false).size())
+          relative_coefficient = xs->GetTransferMatrix(ell, false).GetValueIJ(to_group, from_group);
         else
           relative_coefficient = 0.0;
       }

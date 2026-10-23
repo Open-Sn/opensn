@@ -766,7 +766,7 @@ CMFDAcceleration::CondensedRemovalXS(const MultiGroupXS& xs,
                                      const unsigned int coarse_group) const
 {
   const auto& sigma_t = xs.GetSigmaTotal();
-  const auto& scatter = xs.GetTransferMatrix(0);
+  const auto& scatter = xs.GetTransferMatrix(0, do_problem_.GetOptions().adjoint);
   const bool has_flux = not fine_coarse_phi.empty();
   const auto fine_offset = coarse_cell.local_id * num_groups_;
   double denominator = 0.0;
@@ -836,7 +836,7 @@ CMFDAcceleration::CondensedScatterXS(const MultiGroupXS& xs,
                                      const unsigned int row_coarse_group,
                                      const unsigned int col_coarse_group) const
 {
-  const auto& scatter = xs.GetTransferMatrix(0);
+  const auto& scatter = xs.GetTransferMatrix(0, do_problem_.GetOptions().adjoint);
   const bool has_flux = not fine_coarse_phi.empty();
   const auto fine_offset = coarse_cell.local_id * num_groups_;
   double numerator = 0.0;
@@ -872,7 +872,7 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
                                         const unsigned int row_coarse_group,
                                         const unsigned int col_coarse_group) const
 {
-  const auto& F = xs.GetProductionMatrix();
+  const auto& F = xs.GetProductionMatrix(do_problem_.GetOptions().adjoint);
   const auto& precursors = xs.GetPrecursors();
   const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
   const bool add_delayed_production =

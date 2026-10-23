@@ -61,5 +61,36 @@
         "abs_tol": 1e-06
       }
     ]
+  },
+  {
+    "file": "scatter_relative_adjoint_mode.py",
+    "comment": "1D reflective infinite-medium absolute and relative scatter sensitivities with asymmetric scattering, computed in adjoint and in forward mode",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_SCATTER_ADJ_MODE_ABS_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_SCATTER_ADJ_MODE_RELATIVE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_SCATTER_FWD_MODE_ABS_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_SCATTER_FWD_MODE_RELATIVE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]

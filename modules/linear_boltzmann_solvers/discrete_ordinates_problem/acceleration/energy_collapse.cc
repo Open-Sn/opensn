@@ -54,7 +54,8 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
                          EnergyCollapseScheme scheme,
                          const unsigned int first_group,
                          const unsigned int last_group,
-                         const double time_absorption_scale)
+                         const double time_absorption_scale,
+                         const bool adjoint)
 {
   const std::string fname = "acceleration::MakeTwoGridCollapsedInfo";
 
@@ -94,10 +95,10 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
   }
 
   // Make a Dense matrix from sparse transfer matrix
-  if (xs.GetTransferMatrices().empty())
+  if (xs.GetTransferMatrices(adjoint).empty())
     throw std::logic_error(fname + ": list of scattering matrices empty.");
 
-  const auto& isotropic_transfer_matrix = xs.GetTransferMatrix(0);
+  const auto& isotropic_transfer_matrix = xs.GetTransferMatrix(0, adjoint);
 
   DenseMatrix<double> S(n, n, 0.0);
   for (unsigned int i = 0; i < n; ++i)

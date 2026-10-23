@@ -352,7 +352,9 @@ Problem
 
    A mode transition triggers:
 
-   - reinitializes material mode (forward vs adjoint),
+   - reinitializes the problem's materials in the new mode (a transition to
+     forward mode leaves the mapped cross-section objects in adjoint mode, and
+     the problem reads their forward data),
    - clears point and volumetric sources,
    - clears boundary conditions,
    - zeros scalar and angular flux state.
@@ -360,9 +362,11 @@ Problem
    The block-id to cross-section map is preserved. After switching mode, reapply
    the desired driving terms (sources and boundaries) before solving.
 
-   Adjoint mode is applied to the mapped ``MultiGroupXS`` objects themselves.
-   If the same cross-section object is shared across multiple problems, toggling
-   adjoint mode in one problem affects all problems using that object.
+   Adjoint mode is applied to the mapped ``MultiGroupXS`` objects themselves,
+   which builds their transposed transfer and production data. The transport
+   mode belongs to each problem, so problems that share a cross-section object
+   can run in different modes. A change to the object, such as ``Scale``, is
+   seen by every problem that uses it.
 
 Base class
 ^^^^^^^^^^

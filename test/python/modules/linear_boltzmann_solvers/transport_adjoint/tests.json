@@ -441,5 +441,441 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "Forward and adjoint problems sharing one cross-section object, and cross sections scaled between adjoint mode switches or under a live adjoint problem (infinite-medium exact fluxes)",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FWD_FIRST_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FWD_AGAIN_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_ADJ_AGAIN_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SCALED_XS_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_LIVE_ADJ_SCALED_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_LIVE_FWD_SCALED_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "Forward and adjoint k-eigenvalue problems sharing one fissionable cross-section object, built in either order: k_inf and the production-to-fission ratio of each mode",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"keigen\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_keigen",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_FA_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_FA_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_FA_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_FA_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_AF_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_AF_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_AF_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_KEIGEN_AF_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "CMFD-accelerated forward k-eigenvalue problem sharing its cross sections with an adjoint problem: k_inf and the production-to-fission ratio within CMFD's accuracy",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"keigen_cmfd\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_keigen_cmfd",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_FWD_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "A forward problem with a first-collision source and an adjoint problem sharing one cross-section object match the same problems on unshared cross sections",
+    "num_procs": 1,
+    "args": [
+      "scenario=\"first_collision\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_first_collision",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FIRST_COLLISION_FWD_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FIRST_COLLISION_ADJ_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "Cross sections repopulated in place after an adjoint problem was built on them, solved again without a rebuild: the exact fluxes of the new data for a forward and an adjoint problem sharing one object (LoadFromOpenSn) and an adjoint problem (CreateSimpleOneGroup), and for adjoint problems whose cross sections are reloaded from the same file (LoadFromOpenMC, LoadFromCEPXS) the fluxes of the same problem on a newly loaded object",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"reload\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_reload",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_FWD_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_FISSION_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_FISSION_FWD_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_ONE_GROUP_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_OPENMC_ADJ_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_RELOAD_CEPXS_ADJ_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "CMFD-accelerated forward k-eigenvalue problem with group aggregation 2 sharing its cross sections with an adjoint problem: k_inf and the production-to-fission ratio within CMFD's accuracy",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"keigen_cmfd_groups\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_keigen_cmfd_groups",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_GROUPS_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_GROUPS_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_GROUPS_FWD_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_GROUPS_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_GROUPS_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "Forward k-eigenvalue problem with delayed-neutron precursors sharing its cross sections with an adjoint problem, built in either order: k_inf and the production-to-fission ratio",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"keigen_delayed\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_keigen_delayed",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_DELAYED_FA_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_DELAYED_FA_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_DELAYED_AF_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_DELAYED_AF_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "A forward problem with a first-collision source and an adjoint problem sharing one fissionable cross-section object match the same problems on unshared cross sections",
+    "num_procs": 1,
+    "args": [
+      "scenario=\"first_collision_fission\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_first_collision_fission",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FIRST_COLLISION_FISSION_FWD_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_FIRST_COLLISION_FISSION_ADJ_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "Adjoint TGDSA (classic Richardson, TGDSA alone) on the two-group medium of transport_tgdsa_two_group_infinite_medium.py, alone and on cross sections shared with a forward problem: exact infinite-medium fluxes",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"tgdsa\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_tgdsa",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_TGDSA_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_TGDSA_AF_FWD_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_TGDSA_AF_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "adjoint_mode_shared_xs.py",
+    "comment": "CMFD-accelerated adjoint k-eigenvalue problem, alone and sharing its cross sections with a forward problem built later, group aggregation 1 and 2: k_inf and the adjoint production-to-fission ratio within CMFD's accuracy",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"keigen_cmfd_adjoint\""
+    ],
+    "outfileprefix": "adjoint_mode_shared_xs_keigen_cmfd_adjoint",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_A_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_A_RATIO_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_A_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_AF_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_AF_RATIO_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G1_AF_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_A_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_A_RATIO_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_A_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_AF_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_AF_RATIO_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SHARED_XS_CMFD_ADJOINT_G2_AF_CONVERGED=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      }
+    ]
   }
 ]

@@ -49,7 +49,7 @@ WrapMultiGroupXS(py::module& xs)
   multigroup_xs.def(
     "CreateSimpleOneGroup",
     [](MultiGroupXS& self, double sigma_t, double c, double velocity) {
-      self = MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity);
+      self.ReplaceContents(MultiGroupXS::CreateSimpleOneGroup(sigma_t, c, velocity));
     },
     R"(
     Populate this object with a one-group cross section.
@@ -76,7 +76,7 @@ WrapMultiGroupXS(py::module& xs)
     "LoadFromOpenSn",
     [](MultiGroupXS& self, const std::string& file_name)
     {
-      self = MultiGroupXS::LoadFromOpenSn(file_name);
+      self.ReplaceContents(MultiGroupXS::LoadFromOpenSn(file_name));
     },
     py::arg("file_name"),
     R"(
@@ -177,7 +177,8 @@ WrapMultiGroupXS(py::module& xs)
        double temperature,
        const std::vector<std::string>& extra_xs_names)
     {
-      self = MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names);
+      self.ReplaceContents(
+        MultiGroupXS::LoadFromOpenMC(file_name, dataset_name, temperature, extra_xs_names));
     },
     R"(
     Load multi-group cross sections from an OpenMC cross-section file into this
@@ -200,7 +201,8 @@ WrapMultiGroupXS(py::module& xs)
        bool csda_format,
        const std::vector<std::string>& particle_order)
     {
-      self = MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format, particle_order);
+      self.ReplaceContents(
+        MultiGroupXS::LoadFromCEPXS(file_name, material_id, csda_format, particle_order));
     },
     R"(
     Load multi-group cross sections from a CEPXS-BFP binary cross-section file.

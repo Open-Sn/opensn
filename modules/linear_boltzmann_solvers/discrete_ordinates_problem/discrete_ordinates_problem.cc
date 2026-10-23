@@ -759,7 +759,9 @@ DiscreteOrdinatesProblem::InitializeFCS()
       const auto num_nodes = discretization_->GetCellNumNodes(*cell);
       const auto& transport_view = cell_transport_views_[cell->local_id];
       const auto& xs = transport_view.GetXS();
-      const auto& transfer_matrices = xs.GetTransferMatrices();
+      // An uncollided flux is forward only (see CheckConfigurationErrors), so the first-collision
+      // source uses the forward transfer and production matrices.
+      const auto& transfer_matrices = xs.GetTransferMatrices(false);
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
@@ -772,7 +774,7 @@ DiscreteOrdinatesProblem::InitializeFCS()
 
           if (ell == 0 and xs.IsFissionable())
           {
-            const auto& production = xs.GetProductionMatrix()[g];
+            const auto& production = xs.GetProductionMatrix(false)[g];
             for (size_t gp = 0; gp < num_groups_; ++gp)
               rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
 
