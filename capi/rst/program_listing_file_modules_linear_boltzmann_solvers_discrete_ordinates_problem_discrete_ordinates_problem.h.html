@@ -274,6 +274,14 @@
 <span class="w">  </span><span class="c1">/// Reorient an adjoint solution to account for backwards streaming.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Restore a physical adjoint solution to the orientation used by the sweep solver.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RestoreAdjointSolutionOrientation</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Normalize newly loaded restart vectors to the internal sweep orientation.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">NormalizeLoadedAdjointSolutionOrientation</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">physical_orientation</span><span class="p">);</span>
+
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjointSolutionReoriented</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint_solution_reoriented_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="c1">/// Zeroes all the outflow data-structures required to compute balance.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroOutflowBalanceVars</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
@@ -503,6 +511,7 @@
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_source_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_outflow_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">uncollided_flux_applied_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint_solution_reoriented_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">WGSContext</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_contexts_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
@@ -559,6 +568,7 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepChunk</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CreateCBCDSweepChunk</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAngularFluxStorage</span><span class="p">();</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TransformAdjointSolutionOrientation</span><span class="p">();</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateAngularFluxFieldFunction</span><span class="p">(</span><span class="n">FieldFunctionGridBased</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ff</span><span class="p">,</span>
 <span class="w">                                      </span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                      </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group</span><span class="p">,</span>

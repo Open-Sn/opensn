@@ -463,6 +463,12 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
+<span class="w">  </span><span class="c1">/// Restores a physically reoriented adjoint solution to the solver&#39;s internal orientation.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">RestoreAdjointSolutionOrientation</span><span class="p">()</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="c1">/// Whether the stored adjoint fluxes use the physical rather than internal sweep orientation.</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjointSolutionReoriented</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Flag indicating if OpenSn is compiled with GPU-aware MPI.</span>
 <span class="cm">   * This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks</span>

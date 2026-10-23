@@ -280,6 +280,12 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem28adjoint_solution_reoriented_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1afe68c0a1f6d7a0ec1fb93d39b6fc8abd"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">adjoint_solution_reoriented_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem28adjoint_solution_reoriented_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Max level size. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem11ags_solver_E">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a01a93eb89ac03b435695a20c742e3920"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_a_g_s_linear_solver.html#_CPPv4N6opensn15AGSLinearSolverE" title="opensn::AGSLinearSolver"><span class="n"><span class="pre">AGSLinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ags_solver_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem11ags_solver_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Max level size. </p>
@@ -455,6 +461,24 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ad79f974ab8df726e4fc3f66886ff6c6b"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReorientAdjointSolution</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem23ReorientAdjointSolutionEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Reorient an adjoint solution to account for backwards streaming. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem33RestoreAdjointSolutionOrientationEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a6beeed0781e39826832ee5f9f6d4c9e8"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RestoreAdjointSolutionOrientation</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem33RestoreAdjointSolutionOrientationEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Restore a physical adjoint solution to the orientation used by the sweep solver. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem41NormalizeLoadedAdjointSolutionOrientationEb">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1acdb469994056b5152e3083297b725be1"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">NormalizeLoadedAdjointSolutionOrientation</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">physical_orientation</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem41NormalizeLoadedAdjointSolutionOrientationEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Normalize newly loaded restart vectors to the internal sweep orientation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem27IsAdjointSolutionReorientedEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa383334d34bf87a55a85f2e3e3c54c47"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAdjointSolutionReoriented</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem27IsAdjointSolutionReorientedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the sweep boundaries as a read-only reference. </p>
 </dd></dl>
 
 <dl class="cpp function">
