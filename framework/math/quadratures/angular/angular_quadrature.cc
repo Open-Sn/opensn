@@ -522,6 +522,13 @@ AngularQuadrature::MapOppositeDirections() const
     for (size_t m = 0; m < num_angles and not found; ++m)
       if ((omegas_[m] - omega_opposite).NormSquare() < tolerance * tolerance)
       {
+        const double weight_tolerance =
+          64.0 * std::numeric_limits<double>::epsilon() *
+          std::max({1.0, std::abs(weights_[n]), std::abs(weights_[m])});
+        if (std::abs(weights_[n] - weights_[m]) > weight_tolerance)
+          throw std::logic_error(
+            "AngularQuadrature: Opposite directions have unequal weights for direction " +
+            std::to_string(n) + " in " + GetName() + ".");
         opposite[n] = m;
         found = true;
       }

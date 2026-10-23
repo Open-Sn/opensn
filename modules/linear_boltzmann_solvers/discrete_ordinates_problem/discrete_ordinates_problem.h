@@ -187,6 +187,14 @@ public:
   /// Reorient an adjoint solution to account for backwards streaming.
   void ReorientAdjointSolution() override;
 
+  /// Restore a physical adjoint solution to the orientation used by the sweep solver.
+  void RestoreAdjointSolutionOrientation() override;
+
+  /// Normalize newly loaded restart vectors to the internal sweep orientation.
+  void NormalizeLoadedAdjointSolutionOrientation(bool physical_orientation);
+
+  bool IsAdjointSolutionReoriented() const override { return adjoint_solution_reoriented_; }
+
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
@@ -416,6 +424,7 @@ protected:
   double uncollided_source_rate_ = 0.0;
   double uncollided_outflow_rate_ = 0.0;
   bool uncollided_flux_applied_ = false;
+  bool adjoint_solution_reoriented_ = false;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
@@ -472,6 +481,7 @@ private:
   std::shared_ptr<SweepChunk> CreateCBCDSweepChunk(LBSGroupset& groupset);
 
   void UpdateAngularFluxStorage();
+  void TransformAdjointSolutionOrientation();
   void UpdateAngularFluxFieldFunction(FieldFunctionGridBased& ff,
                                       size_t groupset_id,
                                       unsigned int group,

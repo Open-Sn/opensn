@@ -102,6 +102,8 @@ NonLinearKEigenSolver::InitializeSolver()
 void
 NonLinearKEigenSolver::ExecuteSolver()
 {
+  do_problem_->RestoreAdjointSolutionOrientation();
+
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
 

@@ -43,6 +43,14 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
 {
   bool success = true;
 
+  bool file_adjoint_solution_reoriented = false;
+  if (H5Aexists(file_id, "adjoint_solution_reoriented") > 0)
+    success &= H5ReadAttribute<bool>(
+      file_id, "adjoint_solution_reoriented", file_adjoint_solution_reoriented);
+  OpenSnInvalidArgumentIf(file_adjoint_solution_reoriented and not do_problem.IsAdjoint(),
+                          do_problem.GetName() +
+                            ": a forward restart cannot contain a reoriented adjoint solution.");
+
   bool file_time_dependent = do_problem.IsTimeDependent();
   if (H5Aexists(file_id, "time_dependent") > 0)
     success &= H5ReadAttribute<bool>(file_id, "time_dependent", file_time_dependent);
@@ -64,7 +72,10 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
       "flux state depends on the original decomposition.");
 
   if (repartitioned)
+  {
+    do_problem.NormalizeLoadedAdjointSolutionOrientation(file_adjoint_solution_reoriented);
     return success;
+  }
 
   int gs_id = 0;
   const bool full_time_dependent_restart =
@@ -168,6 +179,8 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
     }
   }
 
+  do_problem.NormalizeLoadedAdjointSolutionOrientation(file_adjoint_solution_reoriented);
+
   return success;
 }
 
@@ -176,6 +189,8 @@ DiscreteOrdinatesProblemIO::WriteRestartData(const DiscreteOrdinatesProblem& do_
                                              hid_t file_id)
 {
   bool success = H5CreateAttribute<bool>(file_id, "time_dependent", do_problem.IsTimeDependent());
+  success &= H5CreateAttribute<bool>(
+    file_id, "adjoint_solution_reoriented", do_problem.IsAdjointSolutionReoriented());
 
   // A time-dependent restart cannot be read without the angular flux and the lagged angular
   // flux, so they are always written in time-dependent mode. Time-dependent mode keeps both

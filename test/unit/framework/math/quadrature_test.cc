@@ -495,6 +495,18 @@ public:
   std::string GetName() const override { return "Asymmetric"; }
 };
 
+class UnequalOppositeWeightQuadrature : public AngularQuadrature
+{
+public:
+  UnequalOppositeWeightQuadrature()
+    : AngularQuadrature(AngularQuadratureType::PRODUCT_QUADRATURE, 3, 0)
+  {
+    omegas_ = {Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, -1.0)};
+    weights_ = {0.75, 1.25};
+  }
+  std::string GetName() const override { return "UnequalOppositeWeight"; }
+};
+
 } // namespace
 
 TEST(QuadratureTest, MapOppositeDirections)
@@ -512,6 +524,7 @@ TEST(QuadratureTest, MapOppositeDirections)
   // RZ directions store the symmetric out-of-plane component as z >= 0, including the zero-weight
   // starting directions, so the 2D rule applies.
   ExpectOppositeDirections(GLCProductQuadrature2DRZ(4, 8, 0));
+  EXPECT_THROW(UnequalOppositeWeightQuadrature().MapOppositeDirections(), std::logic_error);
 }
 
 TEST(QuadratureTest, GLProductQuadrature1DSphericalAngularSequence)

@@ -47,16 +47,20 @@ MakeFissileXS()
 
 /// A 2D XY problem with one classic-Richardson groupset of `l_max_its` iterations.
 std::shared_ptr<DiscreteOrdinatesProblem>
-MakeProblem(const int l_max_its)
+MakeProblem(const int l_max_its,
+            const bool adjoint = false,
+            const unsigned int scattering_order = 0,
+            const std::string& write_restart_stem = "",
+            const std::string& read_restart_stem = "")
 {
   auto grid = BuildSquareMesh(10.0, 4, 0.0);
   grid->SetUniformBlockID(0);
 
   ParameterBlock groupset("0");
   groupset.AddParameter(ParameterBlock("groups_from_to", std::vector<int>{0, 0}));
-  groupset.AddParameter(
-    "angular_quadrature",
-    std::shared_ptr<AngularQuadrature>(std::make_shared<GLCProductQuadrature2DXY>(2, 4, 0)));
+  groupset.AddParameter("angular_quadrature",
+                        std::shared_ptr<AngularQuadrature>(
+                          std::make_shared<GLCProductQuadrature2DXY>(2, 4, scattering_order)));
   groupset.AddParameter("inner_linear_method", std::string("classic_richardson"));
   groupset.AddParameter("l_max_its", l_max_its);
   groupset.AddParameter("l_abs_tol", 1.0e-14);
@@ -76,6 +80,14 @@ MakeProblem(const int l_max_its)
   params.AddParameter("num_groups", 1);
   params.AddParameter(groupsets);
   params.AddParameter(xs_map);
+  ParameterBlock options("options");
+  options.AddParameter("adjoint", adjoint);
+  options.AddParameter("save_angular_flux", true);
+  if (not write_restart_stem.empty())
+    options.AddParameter("write_restart_path", write_restart_stem);
+  if (not read_restart_stem.empty())
+    options.AddParameter("read_restart_path", read_restart_stem);
+  params.AddParameter(options);
   return DiscreteOrdinatesProblem::Create(params);
 }
 
@@ -148,4 +160,45 @@ TEST(PIKEigenRepeatedExecuteTest, FirstChangeIsMeasuredFromCurrentEigenvalue)
   solver->Execute();
   EXPECT_EQ(solver->GetNumPowerIterations(), 2U);
   EXPECT_NEAR(solver->GetEigenvalue(), k_first, 1.0e-8 * k_first);
+}
+
+TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
+{
+  auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+  mpi_comm.broadcast(now, 0);
+  const auto restart_stem = (std::filesystem::temp_directory_path() /
+                             ("opensn_adjoint_physical_restart_" + std::to_string(now) + "_"))
+                              .string();
+  const auto restart_path = restart_stem + std::to_string(mpi_comm.rank()) + ".restart.h5";
+
+  auto problem = MakeProblem(20, true, 1, restart_stem);
+  ParameterBlock pi_params;
+  pi_params.AddParameter("problem", std::shared_ptr<Problem>(problem));
+  pi_params.AddParameter("max_iters", 1000);
+  pi_params.AddParameter("k_tol", 1.0e-10);
+  auto solver = PowerIterationKEigenSolver::Create(pi_params);
+  solver->Initialize();
+  solver->Execute();
+  const auto physical_phi = problem->GetPhiNewLocal();
+  ASSERT_TRUE(problem->IsAdjointSolutionReoriented());
+  ASSERT_TRUE(problem->WriteRestartData());
+
+  auto restarted_problem = MakeProblem(20, true, 1, "", restart_stem);
+  ParameterBlock restarted_pi_params;
+  restarted_pi_params.AddParameter("problem", std::shared_ptr<Problem>(restarted_problem));
+  restarted_pi_params.AddParameter("max_iters", 1000);
+  restarted_pi_params.AddParameter("k_tol", 1.0e-10);
+  auto restarted_solver = PowerIterationKEigenSolver::Create(restarted_pi_params);
+  restarted_solver->Initialize();
+
+  EXPECT_FALSE(restarted_problem->IsAdjointSolutionReoriented());
+  restarted_problem->ReorientAdjointSolution();
+  ASSERT_EQ(restarted_problem->GetPhiNewLocal().size(), physical_phi.size());
+  for (size_t i = 0; i < physical_phi.size(); ++i)
+    EXPECT_NEAR(restarted_problem->GetPhiNewLocal()[i], physical_phi[i], 1.0e-12);
+
+  restarted_problem->RestoreAdjointSolutionOrientation();
+  EXPECT_FALSE(restarted_problem->IsAdjointSolutionReoriented());
+
+  std::filesystem::remove(restart_path);
 }
