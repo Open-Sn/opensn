@@ -75,6 +75,8 @@ Important restrictions:
 * Curvilinear discrete ordinates problems do not support GPU acceleration.
 * Time-dependent problems do not support GPU acceleration.
 * OpenSn uses one GPU per MPI rank.
+* GPU ``"CBC"`` sweeps on more than one MPI rank require a GPU-aware MPI library
+  and OpenSn configured with ``-DOPENSN_USE_GPU_AWARE_MPI=ON``.
 
 Practical guidance:
 
