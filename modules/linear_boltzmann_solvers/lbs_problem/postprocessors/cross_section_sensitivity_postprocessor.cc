@@ -47,7 +47,8 @@ CrossSectionSensitivityPostprocessor::GetInputParameters()
     "adjoint_angular_fluxes", "", "Adjoint angular-flux file prefix. Empty uses current psi.");
   params.AddOptionalParameter("flux_moments_single_file",
                               false,
-                              "Read flux moments from a single file instead of one file per rank.");
+                              "Read flux moments from a single file instead of one file per rank. "
+                              "Serial runs only.");
 
   params.ConstrainParameterRange("sensitivity_type",
                                  AllowableRangeList::New({"sigma_t", "scatter", "production"}));

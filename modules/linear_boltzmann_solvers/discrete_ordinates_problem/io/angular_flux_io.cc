@@ -6,7 +6,9 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/mesh/mesh/mesh.h"
+#include "framework/utils/collective_error.h"
 #include "framework/utils/hdf_utils.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "framework/math/spatial_weight_function.h"
 #include <algorithm>
 #include <array>
@@ -23,16 +25,30 @@ void
 DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
-  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src)
+  std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src,
+  FluxSolutionRole role,
+  AdjointFluxOrientation orientation)
 {
-  // Open the HDF5 file
-  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
-  const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
-  OpenSnLogicalErrorIf(file.Id() < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
-
   // Select source vector
   std::vector<std::vector<double>>& src =
     opt_src.has_value() ? opt_src.value().get() : do_problem.GetPsiNewLocal();
+
+  if (role == FluxSolutionRole::UNSPECIFIED and not opt_src.has_value())
+    role = do_problem.IsAdjoint() ? FluxSolutionRole::ADJOINT : FluxSolutionRole::FORWARD;
+  if (orientation == AdjointFluxOrientation::UNSPECIFIED and not opt_src.has_value())
+    orientation = not do_problem.IsAdjoint()
+                    ? AdjointFluxOrientation::UNSPECIFIED
+                    : (do_problem.IsAdjointSolutionReoriented() ? AdjointFluxOrientation::PHYSICAL
+                                                                : AdjointFluxOrientation::SOLVER);
+  OpenSnInvalidArgumentIf(
+    (role == FluxSolutionRole::ADJOINT) != (orientation != AdjointFluxOrientation::UNSPECIFIED),
+    "An adjoint flux file must specify its orientation, while a non-adjoint file must not.");
+
+  // Open the HDF5 file only after the arguments are validated, since H5F_ACC_TRUNC discards
+  // existing data
+  std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
+  const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+  OpenSnLogicalErrorIf(file.Id() < 0, "WriteAngularFluxes: Failed to open " + file_name + ".");
 
   log.Log() << "Writing angular flux to " << file_base;
 
@@ -46,6 +62,8 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   auto num_groupsets = groupsets.size();
 
   H5CreateAttribute(file.Id(), "num_groupsets", num_groupsets);
+  H5CreateAttribute(file.Id(), "solution_role", static_cast<unsigned int>(role));
+  H5CreateAttribute(file.Id(), "adjoint_orientation", static_cast<unsigned int>(orientation));
 
   // Store Mesh Information
   std::vector<uint64_t> cell_ids, num_cell_nodes;
@@ -97,6 +115,14 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
     H5CreateAttribute(file.Id(), group_name + "/num_directions", num_gs_dirs);
     H5CreateAttribute(file.Id(), group_name + "/num_groups", num_gs_groups);
 
+    // The directions and weights identify the quadrature the angular fluxes belong to.
+    std::vector<double> omegas;
+    omegas.reserve(3 * num_gs_dirs);
+    for (const auto& omega : quadrature->GetOmegas())
+      omegas.insert(omegas.end(), {omega.x, omega.y, omega.z});
+    H5WriteDataset1D(file.Id(), group_name + "/omegas", omegas);
+    H5WriteDataset1D(file.Id(), group_name + "/weights", quadrature->GetWeights());
+
     // Write the groupset angular flux data
     std::vector<double> values;
     for (const auto& cell : grid->GetLocalCells())
@@ -117,141 +143,189 @@ void
 DiscreteOrdinatesProblemIO::ReadAngularFluxes(
   DiscreteOrdinatesProblem& do_problem,
   const std::string& file_base,
-  std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest)
+  std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest,
+  FluxSolutionRole expected_role,
+  AdjointFluxOrientation expected_orientation)
 {
-  // Open HDF5 file
   std::string file_name = file_base + std::to_string(opensn::mpi_comm.rank()) + ".h5";
-  const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
-  OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
 
-  // Select destination vector
   std::vector<std::vector<double>>& dest =
     opt_dest.has_value() ? opt_dest.value().get() : do_problem.GetPsiNewLocal();
 
   log.Log() << "Reading angular flux file from " << file_base;
 
-  // Read macro data and check for compatibility
-  uint64_t file_num_groupsets = 0;
-  uint64_t file_num_local_cells = 0;
-  uint64_t file_num_local_nodes = 0;
-
-  H5ReadAttribute(file.Id(), "num_groupsets", file_num_groupsets);
-  H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells);
-  H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes);
-
-  const auto& grid = do_problem.GetGrid();
-  const auto& discretization = do_problem.GetSpatialDiscretization();
-  const auto& groupsets = do_problem.GetGroupsets();
-
-  const auto num_local_nodes = discretization.GetNumLocalNodes();
-  const auto num_groupsets = groupsets.size();
-
-  OpenSnLogicalErrorIf(file_num_local_nodes != num_local_nodes,
-                       "Incompatible number of local nodes found in file " + file_name + ".");
-  OpenSnLogicalErrorIf(file_num_groupsets != num_groupsets,
-                       "Incompatible number of groupsets found in file " + file_name + ".");
-
-  // Read in mesh information
-  std::vector<uint64_t> file_cell_ids, file_num_cell_nodes;
-  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/cell_ids", file_cell_ids);
-  H5ReadDataset1D<uint64_t>(file.Id(), "mesh/num_cell_nodes", file_num_cell_nodes);
-
-  std::vector<double> nodes_x, nodes_y, nodes_z;
-  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_x", nodes_x);
-  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_y", nodes_y);
-  H5ReadDataset1D<double>(file.Id(), "mesh/nodes_z", nodes_z);
-
-  // Validate mesh compatibility
-  uint64_t curr_node = 0;
-  std::map<uint64_t, std::map<uint64_t, uint64_t>> file_cell_nodal_mapping;
-  for (uint64_t c = 0; c < file_num_local_cells; ++c)
-  {
-    const uint64_t cell_global_id = file_cell_ids[c];
-    const auto& cell = grid->GetGlobalCell(cell_global_id);
-
-    if (not grid->IsCellLocal(cell_global_id))
-      continue;
-
-    // Check for cell compatibility
-    const auto& nodes = discretization.GetCellNodeLocations(cell);
-    OpenSnLogicalErrorIf(nodes.size() != file_num_cell_nodes[c],
-                         "Incompatible number of cell nodes encountered on cell " +
-                           std::to_string(cell_global_id) + ".");
-
-    std::vector<Vector3> file_nodes;
-    file_nodes.reserve(file_num_cell_nodes[c]);
-    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
+  // Each rank validates its own file; a failure on any rank is raised on every rank. The result is
+  // published only after the whole file has been validated.
+  std::vector<std::vector<double>> result;
+  RunWithCollectiveErrors(
+    [&]
     {
-      file_nodes.emplace_back(nodes_x[curr_node], nodes_y[curr_node], nodes_z[curr_node]);
-      ++curr_node;
-    }
+      const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+      OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
 
-    // Map the system nodes to file nodes
-    auto& mapping = file_cell_nodal_mapping[cell_global_id];
-    for (uint64_t n = 0; n < file_num_cell_nodes[c]; ++n)
-    {
-      bool mapping_found = false;
-      for (uint64_t m = 0; m < nodes.size(); ++m)
-        if ((nodes[m] - file_nodes[n]).NormSquare() < 1.0e-12)
+      uint64_t file_num_groupsets = 0;
+      uint64_t file_num_local_cells = 0;
+      uint64_t file_num_local_nodes = 0;
+      OpenSnLogicalErrorIf(
+        not H5ReadAttribute(file.Id(), "num_groupsets", file_num_groupsets) or
+          not H5ReadAttribute(file.Id(), "mesh/num_local_cells", file_num_local_cells) or
+          not H5ReadAttribute(file.Id(), "mesh/num_local_nodes", file_num_local_nodes),
+        "Failed to read the angular-flux metadata from " + file_name + ".");
+
+      auto file_role = static_cast<unsigned int>(FluxSolutionRole::UNSPECIFIED);
+      auto file_orientation = static_cast<unsigned int>(AdjointFluxOrientation::UNSPECIFIED);
+      const bool has_role = H5Aexists(file.Id(), "solution_role") > 0;
+      const bool has_orientation = H5Aexists(file.Id(), "adjoint_orientation") > 0;
+      if (has_role)
+        OpenSnLogicalErrorIf(not H5ReadAttribute(file.Id(), "solution_role", file_role),
+                             "Failed to read the solution role from " + file_name + ".");
+      if (has_orientation)
+        OpenSnLogicalErrorIf(
+          not H5ReadAttribute(file.Id(), "adjoint_orientation", file_orientation),
+          "Failed to read the adjoint orientation from " + file_name + ".");
+      OpenSnLogicalErrorIf(has_role != has_orientation,
+                           "Incomplete solution provenance in " + file_name + ".");
+      OpenSnLogicalErrorIf(file_role > static_cast<unsigned int>(FluxSolutionRole::ADJOINT),
+                           "Invalid solution role in " + file_name + ".");
+      OpenSnLogicalErrorIf(file_orientation >
+                             static_cast<unsigned int>(AdjointFluxOrientation::PHYSICAL),
+                           "Invalid adjoint orientation in " + file_name + ".");
+      OpenSnLogicalErrorIf(
+        has_role and
+          ((file_role == static_cast<unsigned int>(FluxSolutionRole::ADJOINT)) !=
+           (file_orientation != static_cast<unsigned int>(AdjointFluxOrientation::UNSPECIFIED))),
+        "Inconsistent solution role and adjoint orientation in " + file_name + ".");
+      OpenSnLogicalErrorIf(
+        expected_role != FluxSolutionRole::UNSPECIFIED and
+          (not has_role or file_role != static_cast<unsigned int>(expected_role)),
+        "The solution role in " + file_name + " does not match the requested role.");
+      OpenSnLogicalErrorIf(expected_orientation != AdjointFluxOrientation::UNSPECIFIED and
+                             (not has_orientation or
+                              file_orientation != static_cast<unsigned int>(expected_orientation)),
+                           "The adjoint orientation in " + file_name +
+                             " does not match the requested orientation.");
+      if (not opt_dest.has_value() and has_role)
+      {
+        const auto problem_role =
+          do_problem.IsAdjoint() ? FluxSolutionRole::ADJOINT : FluxSolutionRole::FORWARD;
+        OpenSnLogicalErrorIf(file_role != static_cast<unsigned int>(problem_role),
+                             "The solution role in " + file_name +
+                               " does not match the problem mode.");
+        OpenSnLogicalErrorIf(
+          do_problem.IsAdjoint() and
+            file_orientation != static_cast<unsigned int>(AdjointFluxOrientation::SOLVER),
+          "A physical adjoint flux in " + file_name +
+            " cannot be loaded as problem state; use the restart interface so all solution "
+            "vectors are restored to solver orientation together.");
+      }
+
+      const auto& grid = do_problem.GetGrid();
+      const auto& discretization = do_problem.GetSpatialDiscretization();
+      const auto& groupsets = do_problem.GetGroupsets();
+
+      OpenSnLogicalErrorIf(file_num_local_cells != grid->GetLocalCellCount(),
+                           "Incompatible number of cells found in " + file_name +
+                             ". Angular-flux files must be read with the rank count and partition "
+                             "that wrote them.");
+      OpenSnLogicalErrorIf(file_num_local_nodes != discretization.GetNumLocalNodes(),
+                           "Incompatible number of local nodes found in file " + file_name + ".");
+      OpenSnLogicalErrorIf(file_num_groupsets != groupsets.size(),
+                           "Incompatible number of groupsets found in file " + file_name + ".");
+
+      const auto mesh = LBSSolverIO::ReadFileMeshNodes(file.Id(), file_name, *grid, discretization);
+
+      // Reads and validates one groupset's angular fluxes into result.
+      const auto read_groupset = [&](const LBSGroupset& groupset)
+      {
+        const auto gs = std::to_string(groupset.id);
+        const auto group_name = "groupset_" + gs;
+        const auto& uk_man = groupset.psi_uk_man_;
+        const auto& quadrature = groupset.quadrature;
+        const auto num_gs_dirs = quadrature->GetNumAngles();
+        const auto num_gs_groups = groupset.GetNumGroups();
+
+        uint64_t file_num_gs_dirs = 0;
+        unsigned int file_num_gs_groups = 0;
+        OpenSnLogicalErrorIf(
+          not H5ReadAttribute(file.Id(), group_name + "/num_directions", file_num_gs_dirs) or
+            not H5ReadAttribute(file.Id(), group_name + "/num_groups", file_num_gs_groups),
+          "Failed to read the metadata of groupset " + gs + " from " + file_name + ".");
+        OpenSnLogicalErrorIf(file_num_gs_dirs != num_gs_dirs,
+                             "Incompatible number of groupset angles found in file " + file_name +
+                               " for groupset " + gs + ".");
+        OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
+                             "Incompatible number of groupset groups found in file " + file_name +
+                               " for groupset " + gs + ".");
+
+        // A quadrature with the same number of directions is not necessarily the same quadrature.
+        if (H5Has(file.Id(), group_name + "/omegas") and H5Has(file.Id(), group_name + "/weights"))
         {
-          mapping[n] = m;
-          mapping_found = true;
-        }
-      OpenSnLogicalErrorIf(not mapping_found,
-                           "Incompatible node locations for cell " +
-                             std::to_string(cell_global_id) + ".");
-    }
-  }
-
-  // Read groupset data
-  dest.clear();
-  for (uint64_t gs = 0; gs < num_groupsets; ++gs)
-  {
-    uint64_t file_num_gs_dirs = 0;
-    unsigned int file_num_gs_groups = 0;
-
-    auto group_name = "groupset_" + std::to_string(gs);
-    H5ReadAttribute(file.Id(), group_name + "/num_directions", file_num_gs_dirs);
-    H5ReadAttribute(file.Id(), group_name + "/num_groups", file_num_gs_groups);
-
-    const auto& groupset = groupsets.at(gs);
-    const auto& uk_man = groupset.psi_uk_man_;
-    const auto& quadrature = groupset.quadrature;
-
-    const auto num_gs_dirs = quadrature->GetNumAngles();
-    const auto num_gs_groups = groupset.GetNumGroups();
-    OpenSnLogicalErrorIf(file_num_gs_dirs != num_gs_dirs,
-                         "Incompatible number of groupset angles found in file " + file_name +
-                           " for groupset " + std::to_string(gs) + ".");
-    OpenSnLogicalErrorIf(file_num_gs_groups != num_gs_groups,
-                         "Incompatible number of groupset groups found in file " + file_name +
-                           " for groupset " + std::to_string(gs) + ".");
-
-    // Size the groupset angular flux vector
-    const auto num_local_gs_dofs = discretization.GetNumLocalDOFs(uk_man);
-    dest.emplace_back(num_local_gs_dofs, 0.0);
-    auto& psi = dest.back();
-
-    // Read the groupset angular flux vector
-    uint64_t v = 0;
-    std::vector<double> values;
-    H5ReadDataset1D<double>(file.Id(), group_name + "/values", values);
-    for (uint64_t c = 0; c < file_num_local_cells; ++c)
-    {
-      const auto cell_global_id = file_cell_ids[c];
-      const auto& cell = grid->GetGlobalCell(cell_global_id);
-      for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell); ++i)
-        for (uint64_t n = 0; n < num_gs_dirs; ++n)
-          for (unsigned int g = 0; g < num_gs_groups; ++g)
+          std::vector<double> omegas, weights;
+          OpenSnLogicalErrorIf(
+            not H5ReadDataset1D<double>(file.Id(), group_name + "/omegas", omegas) or
+              not H5ReadDataset1D<double>(file.Id(), group_name + "/weights", weights) or
+              omegas.size() != 3 * num_gs_dirs or weights.size() != num_gs_dirs,
+            "Failed to read the quadrature of groupset " + gs + " from " + file_name + ".");
+          OpenSnLogicalErrorIf(std::any_of(omegas.begin(),
+                                           omegas.end(),
+                                           [](double value) { return not std::isfinite(value); }) or
+                                 std::any_of(weights.begin(),
+                                             weights.end(),
+                                             [](double value) { return not std::isfinite(value); }),
+                               "The quadrature of groupset " + gs + " in " + file_name +
+                                 " contains a non-finite value.");
+          const auto& problem_weights = quadrature->GetWeights();
+          size_t mismatch = num_gs_dirs;
+          for (size_t n = 0; n < num_gs_dirs and mismatch == num_gs_dirs; ++n)
           {
-            const auto& imap = file_cell_nodal_mapping.at(cell_global_id).at(i);
-            const auto dof_map = discretization.MapDOFLocal(cell, imap, uk_man, n, g);
-            psi[dof_map] = values[v];
-            ++v;
+            const Vector3 file_omega(omegas[3 * n], omegas[3 * n + 1], omegas[3 * n + 2]);
+            if ((quadrature->GetOmega(n) - file_omega).NormSquare() > 1.0e-20 or
+                std::fabs(weights[n] - problem_weights[n]) >
+                  1.0e-10 * std::fabs(problem_weights[n]))
+              mismatch = n;
           }
-    }
-  }
+          OpenSnLogicalErrorIf(mismatch < num_gs_dirs,
+                               "The angular quadrature of groupset " + gs + " in " + file_name +
+                                 " differs from the problem's quadrature (direction " +
+                                 std::to_string(mismatch) + ").");
+        }
+        else
+          log.Log0Warning() << file_name << " was written without the quadrature of groupset " << gs
+                            << "; it cannot be checked against the problem's quadrature.";
+
+        std::vector<double> values;
+        OpenSnLogicalErrorIf(not H5ReadDataset1D<double>(file.Id(), group_name + "/values", values),
+                             "Failed to read the angular fluxes of groupset " + gs + " from " +
+                               file_name + ".");
+        OpenSnLogicalErrorIf(values.size() != file_num_local_nodes * num_gs_dirs * num_gs_groups,
+                             "The angular fluxes of groupset " + gs + " in " + file_name +
+                               " do not match the nodes, directions, and groups in its metadata.");
+        OpenSnLogicalErrorIf(std::any_of(values.begin(),
+                                         values.end(),
+                                         [](double value) { return not std::isfinite(value); }),
+                             "The angular fluxes of groupset " + gs + " in " + file_name +
+                               " contain a non-finite value.");
+
+        auto& psi = result.emplace_back(discretization.GetNumLocalDOFs(uk_man), 0.0);
+        uint64_t v = 0;
+        for (size_t c = 0; c < mesh.cell_ids.size(); ++c)
+        {
+          const auto& cell = grid->GetGlobalCell(mesh.cell_ids[c]);
+          for (const auto node : mesh.node_maps[c])
+            for (uint64_t n = 0; n < num_gs_dirs; ++n)
+              for (unsigned int g = 0; g < num_gs_groups; ++g)
+                psi[discretization.MapDOFLocal(cell, node, uk_man, n, g)] = values[v++];
+        }
+      };
+      for (const auto& groupset : groupsets)
+        read_groupset(groupset);
+    });
+
+  if (not opt_dest.has_value())
+    do_problem.RestoreAdjointSolutionOrientation();
+  dest = std::move(result);
 }
+
 void
 DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   DiscreteOrdinatesProblem& do_problem,
