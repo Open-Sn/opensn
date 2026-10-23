@@ -20,9 +20,9 @@ SweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-SweepChunk::SetCell(Cell const* cell_ptr)
+SweepChunk::SetCell(uint64_t cell_local_id)
 {
-  cell_ = cell_ptr;
+  cell_local_id_ = cell_local_id;
 }
 
 void
@@ -33,7 +33,7 @@ SweepChunk::ZeroDestinationPhi()
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views_[cell->local_id];
+    const auto& transport_view = cell_transport_views_[cell.local_id];
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
     for (size_t i = 0; i < num_nodes; ++i)
     {
