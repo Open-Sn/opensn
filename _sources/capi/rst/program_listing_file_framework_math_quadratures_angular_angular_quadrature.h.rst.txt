@@ -120,6 +120,10 @@ Program Listing for File angular_quadrature.h
      /// Populate the map of moment index to spherical harmonic indices.
      void MakeHarmonicIndices();
    
+     /// Harmonics that the selection rules give a Galerkin method for `num_angles` directions of this
+     /// quadrature. MakeHarmonicIndices uses it for the current directions.
+     std::vector<HarmonicIndices> SelectGalerkinHarmonics(size_t num_angles) const;
+   
      /// Discrete-to-moment operator matrix.
      /// OpenSn storage is indexed [angle][moment].
      NDArray<double, 2> d2m_op_ = {};
