@@ -608,6 +608,8 @@ The available aggregation types are:
 - ``'polar'``
 - ``'single'``
 - ``'azimuthal'``
+- ``'quadrant'``
+- ``'octant'``
 
 The default groupset aggregation is ``'single'``, which is compatible with
 every quadrature, mesh, and geometry.
@@ -641,7 +643,95 @@ It is not appropriate for:
 - fully unstructured 3D (non-extruded) meshes
 
 For those quadratures, and for fully unstructured 3D meshes, use the default
-``'single'`` aggregation.
+``'single'`` aggregation. On Cartesian orthogonal meshes, triangular and SLDFE
+quadratures can also use ``'quadrant'`` or ``'octant'`` aggregation.
+
+``quadrant`` and ``octant``
+---------------------------
+
+``quadrant`` aggregation places every direction with the same signs of
+:math:`\Omega_x` and :math:`\Omega_y` in one angle set, so a quadrature with
+directions in all four quadrants gives four angle sets. ``octant`` is the
+corresponding 3D mode. It groups by the signs of :math:`\Omega_x`,
+:math:`\Omega_y`, and :math:`\Omega_z`, giving eight angle sets.
+
+On an orthogonal mesh every face normal lies along a coordinate axis, so the
+sign of :math:`\boldsymbol{\Omega} \cdot \mathbf{n}` on each face is the same
+for every direction in a quadrant or octant. Those directions therefore share
+one sweep ordering, including the dependencies between partitions. This holds
+for any partitioning, including graph partitioners such as ParMETIS that
+produce non-planar partition boundaries. Cycles between partitions are handled
+exactly as for ``single`` aggregation, for both AAH and CBC sweeps, provided
+``allow_cycles`` is enabled (the default).
+
+The solution is the same as with ``single`` aggregation, up to iteration
+tolerance and floating-point rounding. Only the sweep organization changes:
+fewer, larger angle sets mean fewer sweep orderings to build and store, which
+usually lowers memory use and shortens sweeps on both CPUs and GPUs.
+
+Requirements:
+
+- ``quadrant`` requires a 2D Cartesian mesh and ``octant`` a 3D Cartesian
+  mesh, in both cases of orthogonal type, as created by
+  ``OrthogonalMeshGenerator``. Unstructured meshes, meshes imported from mesh
+  files (for example Gmsh, VTK, or OBJ), and meshes from
+  ``ExtruderMeshGenerator`` are rejected, even when their faces happen to be
+  axis-aligned.
+- Curvilinear problems (``DiscreteOrdinatesCurvilinearProblem``) do not
+  support these modes.
+- Every direction must lie strictly inside one quadrant or octant:
+
+  - ``quadrant``: :math:`\Omega_x \neq 0` and :math:`\Omega_y \neq 0` for
+    every direction. :math:`\Omega_z` is not restricted, because a 2D mesh has
+    no faces normal to :math:`z`.
+  - ``octant``: :math:`\Omega_x \neq 0`, :math:`\Omega_y \neq 0`, and
+    :math:`\Omega_z \neq 0` for every direction.
+
+  A direction with, for example, :math:`\Omega_x = 0` runs parallel to every
+  mesh face whose normal points along :math:`x`. Those faces are neither
+  upwind nor downwind for it, so it cannot share a sweep ordering with the
+  directions on either side of it. If the quadrature contains such a
+  direction, the problem reports it, and the zero component, during setup.
+  A component counts as zero when its magnitude is at most
+  :math:`10^{-12}`.
+
+Quadrature compatibility:
+
+- ``GLCProductQuadrature2DXY`` and ``GLCProductQuadrature3DXYZ``: always
+  compatible. ``n_polar`` must be even and ``n_azimuthal`` a multiple of 4, so
+  no direction has a zero :math:`\Omega_x`, :math:`\Omega_y`, or
+  :math:`\Omega_z`.
+- ``GLCTriangularQuadrature2DXY``, ``GLCTriangularQuadrature3DXYZ``,
+  ``SLDFEsqQuadrature2DXY``, and ``SLDFEsqQuadrature3DXYZ``: compatible.
+- Lebedev quadratures: not compatible. Every Lebedev rule includes the six
+  directions along the coordinate axes, such as :math:`(1, 0, 0)`, so they
+  require ``'single'`` aggregation.
+
+Example:
+
+.. code-block:: python
+
+   from pyopensn.aquad import GLCProductQuadrature3DXYZ
+   from pyopensn.mesh import OrthogonalMeshGenerator
+
+   nodes = [i / 10 for i in range(11)]
+   grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes]).Execute()
+   grid.SetUniformBlockID(0)
+
+   quad = GLCProductQuadrature3DXYZ(n_polar=8, n_azimuthal=16, scattering_order=1)
+
+   phys = DiscreteOrdinatesProblem(
+       mesh=grid,
+       num_groups=1,
+       groupsets=[
+           {
+               "groups_from_to": (0, 0),
+               "angular_quadrature": quad,
+               "angle_aggregation_type": "octant",
+           }
+       ],
+       xs_map=[{"block_ids": [0], "xs": xs}],
+   )
 
 ``single``
 ----------
@@ -802,8 +892,13 @@ Recommendations
 - For standard 1D slab problems, start with ``GLProductQuadrature1DSlab``.
 - For standard Cartesian 2D and 3D problems, start with
   ``GLCProductQuadrature2DXY`` or ``GLCProductQuadrature3DXYZ``.
-- For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, keep
-  the default ``angle_aggregation_type='single'``.
+- For Cartesian problems using Lebedev quadratures, keep the default
+  ``angle_aggregation_type='single'``. Triangular and SLDFE quadratures also
+  use ``'single'``, except on orthogonal meshes, where they can use
+  ``'quadrant'`` (2D) or ``'octant'`` (3D).
+- On 2D and 3D Cartesian orthogonal meshes, consider ``'quadrant'`` or
+  ``'octant'`` aggregation for faster sweeps and lower memory use, with the
+  same solution as ``'single'``.
 - For 2D RZ problems, use ``GLCProductQuadrature2DRZ`` with
   ``DiscreteOrdinatesCurvilinearProblem``.
 - For 1D spherical problems, use ``GLProductQuadrature1DSpherical`` with
