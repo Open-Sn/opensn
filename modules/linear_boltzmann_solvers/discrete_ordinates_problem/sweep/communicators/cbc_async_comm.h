@@ -58,7 +58,7 @@ public:
 
 protected:
   /// Validated angle-set MPI message tag.
-  const int message_tag_;
+  const mpi::Tag message_tag_;
   /// Communicator used for incoming face psi.
   const mpi::Communicator& receive_comm_;
   /// CBC FLUDS receiving nonlocal face psi.

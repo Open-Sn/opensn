@@ -88,12 +88,11 @@ DiffusionSolver::~DiffusionSolver()
   OpenSnPETScCall(VecDestroy(&rhs_));
   OpenSnPETScCall(VecDestroy(&x_));
   OpenSnPETScCall(KSPDestroy(&ksp_));
-  if (petsc_comm_ != MPI_COMM_NULL)
+  if (petsc_comm_.is_valid())
   {
-    int finalized = 0;
-    MPI_Finalized(&finalized);
+    auto finalized = mpi::Environment::is_finalized();
     if (not finalized)
-      MPI_Comm_free(&petsc_comm_);
+      petsc_comm_.free();
   }
 }
 
@@ -174,8 +173,8 @@ DiffusionSolver::Initialize()
   opensn::mpi_comm.barrier();
   log.Log() << "Done Sparsity pattern";
   opensn::mpi_comm.barrier();
-  if (petsc_comm_ == MPI_COMM_NULL)
-    OpenSnMPICall(MPI_Comm_dup(opensn::mpi_comm, &petsc_comm_));
+  if (not petsc_comm_.is_valid())
+    petsc_comm_ = opensn::mpi_comm.duplicate();
   A_ = CreateSquareMatrix(petsc_comm_, num_local_dofs_, num_global_dofs_);
   InitMatrixSparsity(A_, nodal_nnz_in_diag, nodal_nnz_off_diag);
   opensn::mpi_comm.barrier();

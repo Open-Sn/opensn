@@ -5,7 +5,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "mpicpp-lite/mpicpp-lite.h"
 #include "petscksp.h"
+
+namespace mpi = mpicpp_lite;
 
 namespace opensn
 {
@@ -129,7 +132,7 @@ protected:
    * A communicator per solver keeps coexisting direct diffusion solvers (e.g. WGDSA and TGDSA)
    * from sharing that grid.
    */
-  MPI_Comm petsc_comm_ = MPI_COMM_NULL;
+  mpi::Communicator petsc_comm_ = MPI_COMM_NULL;
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;
   Vec x_ = nullptr;

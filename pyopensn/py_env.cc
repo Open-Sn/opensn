@@ -31,9 +31,8 @@ PyEnv::PyEnv()
               << mpi_comm.size() << " processes.\n\n";
   }
   // check MPI threading level
-  int provided;
-  MPI_Query_thread(&provided);
-  if (provided != MPI_THREAD_MULTIPLE)
+  auto provided = mpi::Environment::query_thread();
+  if (provided != mpi::ThreadSupport::MULTIPLE)
   {
     throw std::runtime_error("MPI must be initialized with thread_level \"multiple\". See "
                              "mpi4py.rc for more information\n");

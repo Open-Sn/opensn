@@ -151,10 +151,10 @@ AAH_ASynchronousCommunicator::ReceiveDelayedData()
     for (int m = 0; m < delayed_preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = delayed_preloc_msg_data_[i][m];
-      const int psi_tag = GetMessageTag(m, 0);
+      const auto psi_tag = GetMessageTag(m, 0);
       if (not delayed_preloc_msg_received_[i][m])
       {
-        const int psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : 0;
+        const mpi::Tag psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : mpi::Tag{0};
         if (not comm.iprobe(source, psi_tag) or
             (csda_enabled_ and not comm.iprobe(source, psiE_tag)))
         {
@@ -202,10 +202,10 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
     for (int m = 0; m < preloc_msg_data_[i].size(); ++m)
     {
       const auto& [source, size, block_pos] = preloc_msg_data_[i][m];
-      const int psi_tag = GetMessageTag(m, 0);
+      const auto psi_tag = GetMessageTag(m, 0);
       if (not preloc_msg_received_[i][m])
       {
-        const int psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : 0;
+        const mpi::Tag psiE_tag = csda_enabled_ ? GetMessageTag(m, 1) : mpi::Tag{0};
         if (not comm.iprobe(source, psi_tag) or
             (csda_enabled_ and not comm.iprobe(source, psiE_tag)))
         {
@@ -249,11 +249,11 @@ AAH_ASynchronousCommunicator::SendDownstreamPsi()
     for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
     {
       const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      const int psi_tag = GetMessageTag(m, 0);
+      const auto psi_tag = GetMessageTag(m, 0);
       deploc_msg_request_[req] = comm.isend(dest, psi_tag, &outgoing_psi[block_pos], size);
       if (csda_enabled_)
       {
-        const int psiE_tag = GetMessageTag(m, 1);
+        const auto psiE_tag = GetMessageTag(m, 1);
         const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[i];
         deploc_msgE_request_[req] = comm.isend(dest, psiE_tag, &outgoing_psiE[block_pos], size);
       }

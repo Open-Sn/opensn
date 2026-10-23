@@ -56,14 +56,12 @@ class Opensn(CMakePackage):
     depends_on("gmake", type="build")
     depends_on("googletest@1.15:", type="build")
     depends_on("mpi")
-    depends_on("mpicpp-lite@2.7:")
+    depends_on("mpicpp-lite@3.1.0:")
     depends_on("boost@1.86:")
     depends_on("hdf5@1.14:+hl+mpi")
     depends_on("vtk@9.3:+mpi io=exodusii")
     depends_on("caliper@2.13:+mpi~gotcha~kokkos")
-    depends_on(
-        "petsc@3.24.1:+mpi+double~complex+int64+hdf5+metis+ptscotch+hypre"
-    )
+    depends_on("petsc@3.24.1:+mpi+double~complex+int64+hdf5+metis+ptscotch+hypre")
 
     depends_on("cuda@12:", when="+cuda")
     depends_on("hip", when="+hip")
