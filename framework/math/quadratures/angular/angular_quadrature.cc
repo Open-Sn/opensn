@@ -23,6 +23,28 @@ AngularQuadrature::GetWeightSum() const
   return std::accumulate(weights_.begin(), weights_.end(), 0.0);
 }
 
+std::vector<AngularQuadrature::HarmonicIndices>
+AngularQuadrature::SelectGalerkinHarmonics(size_t num_angles) const
+{
+  // Set up parameters for rule-based selection
+  HarmonicSelectionRules::SelectionParameters params;
+  params.quadrature_type = type_;
+  params.construction_method = construction_method_;
+  params.dimension = dimension_;
+  // For GALERKIN_ONE, the scattering order is determined by the selection rules
+  // so that the resulting operator is a square matrix (num_angles == num_moms).
+  // The user-provided scattering_order is ignored.
+  params.scattering_order = (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE)
+                              ? std::numeric_limits<unsigned int>::max()
+                              : scattering_order_;
+  params.num_angles = num_angles;
+  params.quadrature_order = GetQuadratureOrder();
+  params.n_polar = GetNumPolarAngles();
+  params.n_azimuthal = GetNumAzimuthalAngles();
+
+  return HarmonicSelectionRules::SelectHarmonics(params);
+}
+
 void
 AngularQuadrature::MakeHarmonicIndices()
 {
@@ -32,24 +54,8 @@ AngularQuadrature::MakeHarmonicIndices()
   if ((construction_method_ == OperatorConstructionMethod::GALERKIN_ONE or
        construction_method_ == OperatorConstructionMethod::GALERKIN_THREE))
   {
-    // Set up parameters for rule-based selection
-    HarmonicSelectionRules::SelectionParameters params;
-    params.quadrature_type = type_;
-    params.construction_method = construction_method_;
-    params.dimension = dimension_;
-    // For GALERKIN_ONE, the scattering order is determined by the selection rules
-    // so that the resulting operator is a square matrix (num_angles == num_moms).
-    // The user-provided scattering_order is ignored.
-    params.scattering_order = (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE)
-                                ? std::numeric_limits<unsigned int>::max()
-                                : scattering_order_;
-    params.num_angles = GetNumAngles();
-    params.quadrature_order = GetQuadratureOrder();
-    params.n_polar = GetNumPolarAngles();
-    params.n_azimuthal = GetNumAzimuthalAngles();
-
     // Get rule-selected harmonics
-    m_to_ell_em_map_ = HarmonicSelectionRules::SelectHarmonics(params);
+    m_to_ell_em_map_ = SelectGalerkinHarmonics(GetNumAngles());
 
     // For GALERKIN_ONE, update scattering_order_ to the maximum ell in the selected harmonics
     if (construction_method_ == OperatorConstructionMethod::GALERKIN_ONE and

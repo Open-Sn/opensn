@@ -9,6 +9,7 @@
 #include <map>
 #include <set>
 #include <sstream>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -636,6 +637,15 @@ HarmonicSelectionRules::Select1D(const SelectionParameters& params)
 std::vector<AngularQuadrature::HarmonicIndices>
 HarmonicSelectionRules::SelectStandard(const SelectionParameters& params)
 {
+  // Every Galerkin fallback ends here. GALERKIN_ONE passes the largest unsigned int as the
+  // scattering order (AngularQuadrature::MakeHarmonicIndices), so the loops below would never end.
+  if (params.construction_method == OperatorConstructionMethod::GALERKIN_ONE)
+    throw std::invalid_argument(
+      "GALERKIN_ONE requires a harmonic selection rule for this quadrature (" +
+      std::to_string(params.dimension) + "D, " + std::to_string(params.num_angles) +
+      " directions), and none is available. Use a quadrature with a rule or another operator "
+      "construction method.");
+
   std::vector<AngularQuadrature::HarmonicIndices> harmonics;
 
   Logger::GetInstance().Log0Verbose1()
