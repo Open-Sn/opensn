@@ -24,9 +24,9 @@ SweepChunk::SetAngleSet(AngleSet& angle_set)
 }
 
 void
-SweepChunk::SetCell(Cell const* cell_ptr)
+SweepChunk::SetCell(uint64_t cell_local_id)
 {
-  cell_ = cell_ptr;
+  cell_local_id_ = cell_local_id;
 }
 
 void

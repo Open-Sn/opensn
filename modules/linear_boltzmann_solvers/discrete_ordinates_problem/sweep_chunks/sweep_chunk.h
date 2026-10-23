@@ -50,7 +50,7 @@ public:
       groupset_group_stride_(groupset_.GetNumGroups()),
       destination_phi_(destination_phi),
       destination_psi_(destination_psi),
-      cell_(nullptr)
+      cell_local_id_(std::numeric_limits<uint64_t>::max())
   {
   }
 
@@ -61,7 +61,7 @@ public:
   virtual void SetAngleSet(AngleSet& angle_set);
 
   /// Sets the active cell for cell-by-cell sweeps.
-  void SetCell(Cell const* cell_ptr);
+  void SetCell(uint64_t cell_local_id);
 
   /**
    * Zero the portion of the output flux moments vector corresponding to the groupset for this
@@ -147,7 +147,7 @@ protected:
   std::vector<double> psi_theta_;
   bool surface_source_active_ = false;
   bool include_rhs_time_term_ = true;
-  const Cell* cell_;
+  uint64_t cell_local_id_;
 };
 
 } // namespace opensn
