@@ -463,6 +463,27 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReorientAdjointSolution</span><span class="p">()</span><span class="w"> </span><span class="p">{};</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Flag indicating if OpenSn is compiled with GPU-aware MPI.</span>
+<span class="cm">   * This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks</span>
+<span class="cm">   * without copied back from the host. This acceleration significantly reduces sweep time for</span>
+<span class="cm">   * intra-node GPU data transfers.</span>
+<span class="cm">   * \note Memory error will be thrown when MPI library is not compiled with GPU support.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_gpu_aware_mpi</span><span class="w"> </span><span class="o">=</span>
+<span class="cp">#ifdef __OPENSN_USE_GPU_AWARE_MPI__</span>
+<span class="w">    </span><span class="nb">true</span><span class="p">;</span>
+<span class="cp">#else</span>
+<span class="w">    </span><span class="nb">false</span><span class="p">;</span>
+<span class="cp">#endif</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Flag indicating if GPU and CPU can directly access memory of each other.</span>
+<span class="cm">   * It returns ``true`` when device-allocated memory can be accessed directly by the host without</span>
+<span class="cm">   * having the driver performing implicit copies. It enables fast non-copy path for delayed flux</span>
+<span class="cm">   * in AAH sweep for both local and non-local.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_integrated_memory</span><span class="p">;</span>
+
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Input parameters based construction.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">LBSProblem</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>

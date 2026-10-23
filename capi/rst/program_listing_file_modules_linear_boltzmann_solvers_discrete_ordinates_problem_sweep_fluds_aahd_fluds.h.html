@@ -142,9 +142,24 @@
 <span class="p">{</span>
 <span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Member constructor.</span>
-<span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">AAHD_Bank</span><span class="p">(</span><span class="n">size</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">stride_size</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">size</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">stride_size</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Update views.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UpdateViews</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">view</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">span</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">old_view</span><span class="p">);</span>
+<span class="w">  </span><span class="c1">/// Set new delayed values to old delayed values.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOldToNew</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Set old delayed values to new delayed values.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetNewToOld</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Upload the old delayed values to the device asynchronously.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">UploadOldToDevice</span><span class="p">(</span><span class="n">crb</span><span class="o">::</span><span class="n">Stream</span><span class="o">&amp;</span><span class="w"> </span><span class="n">stream</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Get the device storage the sweep reads the old delayed values from.</span>
+<span class="w">  </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="nf">GetOldDeviceStorage</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Host storage for old delayed bank.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_old_storage</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Device storage for old delayed bank, only allocated for integrated memory.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_old_storage</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="c1">/// Non-local bank storage structure.</span>
@@ -186,6 +201,8 @@
 
 <span class="w">  </span><span class="c1">/// Host storage for current delayed bank.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">HostVector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">host_current_storage</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Device storage for current delayed bank.</span>
+<span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">device_current_storage</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="c1">/// AAH FLUDS for device.</span>
@@ -291,10 +308,8 @@
 <span class="w">  </span><span class="c1">/// Device storage of local angular fluxes.</span>
 <span class="w">  </span><span class="n">crb</span><span class="o">::</span><span class="n">DeviceMemory</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">local_psi_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Delayed local bank for angular fluxes.</span>
+<span class="w">  </span><span class="c1">/// Delayed local bank for old and new angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="w"> </span><span class="n">delayed_local_psi_bank_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Delayed local bank for old angular fluxes.</span>
-<span class="w">  </span><span class="n">AAHD_DelayedLocalBank</span><span class="w"> </span><span class="n">delayed_local_psi_old_bank_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Non-local bank for incoming angular fluxes.</span>
 <span class="w">  </span><span class="n">AAHD_NonLocalBank</span><span class="w"> </span><span class="n">nonlocal_incoming_psi_bank_</span><span class="p">;</span>

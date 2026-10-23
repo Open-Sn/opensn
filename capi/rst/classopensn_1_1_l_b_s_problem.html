@@ -758,6 +758,24 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem17use_gpu_aware_mpiE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a706d148d3992222e06a1e56abbb86447"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">use_gpu_aware_mpi</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem17use_gpu_aware_mpiE" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating if OpenSn is compiled with GPU-aware MPI. </p>
+<p>This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks without copied back from the host. This acceleration significantly reduces sweep time for intra-node GPU data transfers. </p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Memory error will be thrown when MPI library is not compiled with GPU support. </p>
+</div>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21has_integrated_memoryE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a4806fe25c44d555e6de28358484a1e0f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_integrated_memory</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21has_integrated_memoryE" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating if GPU and CPU can directly access memory of each other. </p>
+<p>It returns <code class="docutils literal notranslate"><span class="pre">true</span></code> when device-allocated memory can be accessed directly by the host without having the driver performing implicit copies. It enables fast non-copy path for delayed flux in AAH sweep for both local and non-local. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem12max_dofs_gpuE">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a1d5e131dbdc1c6d897573bd6adf0f71f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_dofs_gpu</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">10</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem12max_dofs_gpuE" title="Link to this definition"></a><br /></dt>
 <dd><p>Max number of DOFs per cell that the sweep kernel on GPU can handle. </p>
