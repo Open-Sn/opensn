@@ -120,6 +120,8 @@ PowerIterationKEigenSolver::InitializeSolver()
 void
 PowerIterationKEigenSolver::ExecuteSolver()
 {
+  do_problem_->RestoreAdjointSolutionOrientation();
+
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_pi("PI", CaliperPIScopeDepth());
 

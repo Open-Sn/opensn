@@ -1237,6 +1237,31 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 void
 DiscreteOrdinatesProblem::ReorientAdjointSolution()
 {
+  if (not options_.adjoint or adjoint_solution_reoriented_)
+    return;
+  TransformAdjointSolutionOrientation();
+  adjoint_solution_reoriented_ = true;
+}
+
+void
+DiscreteOrdinatesProblem::RestoreAdjointSolutionOrientation()
+{
+  if (not options_.adjoint or not adjoint_solution_reoriented_)
+    return;
+  TransformAdjointSolutionOrientation();
+  adjoint_solution_reoriented_ = false;
+}
+
+void
+DiscreteOrdinatesProblem::NormalizeLoadedAdjointSolutionOrientation(const bool physical_orientation)
+{
+  adjoint_solution_reoriented_ = physical_orientation;
+  RestoreAdjointSolutionOrientation();
+}
+
+void
+DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
+{
   CALI_CXX_MARK_SCOPE("ReorientAdjointSolution");
 
   for (const auto& groupset : groupsets_)
@@ -1343,6 +1368,7 @@ DiscreteOrdinatesProblem::ZeroPsi()
 void
 DiscreteOrdinatesProblem::ResetDerivedSolutionVectors()
 {
+  adjoint_solution_reoriented_ = false;
   ZeroPsi();
   ZeroPhiE();
   for (auto& groupset : groupsets_)

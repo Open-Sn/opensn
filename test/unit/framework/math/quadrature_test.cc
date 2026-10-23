@@ -495,6 +495,18 @@ public:
   std::string GetName() const override { return "Asymmetric"; }
 };
 
+class UnequalOppositeWeightQuadrature : public AngularQuadrature
+{
+public:
+  UnequalOppositeWeightQuadrature()
+    : AngularQuadrature(AngularQuadratureType::PRODUCT_QUADRATURE, 3, 0)
+  {
+    omegas_ = {Vector3(0.0, 0.0, 1.0), Vector3(0.0, 0.0, -1.0)};
+    weights_ = {0.75, 1.25};
+  }
+  std::string GetName() const override { return "UnequalOppositeWeight"; }
+};
+
 } // namespace
 
 TEST(QuadratureTest, MapOppositeDirections)
@@ -512,6 +524,7 @@ TEST(QuadratureTest, MapOppositeDirections)
   // RZ directions store the symmetric out-of-plane component as z >= 0, including the zero-weight
   // starting directions, so the 2D rule applies.
   ExpectOppositeDirections(GLCProductQuadrature2DRZ(4, 8, 0));
+  EXPECT_THROW(UnequalOppositeWeightQuadrature().MapOppositeDirections(), std::logic_error);
 }
 
 TEST(QuadratureTest, GLProductQuadrature1DSphericalAngularSequence)
@@ -603,4 +616,26 @@ TEST(QuadratureTest, MapOppositeDirectionsMissingDirectionThrows)
 {
   const AsymmetricQuadrature quad;
   EXPECT_THROW(quad.MapOppositeDirections(), std::logic_error);
+}
+
+TEST(QuadratureTest, MapOppositeDirectionsRejectsAsymmetricSLDFERefinement)
+{
+  // Reproduce the first locally refined quadrature from the SLDFE tutorial. Refining only around
+  // this direction leaves the quadrature without matching directions near its opposite.
+  SLDFEsqQuadrature3DXYZ quad(4, 0);
+  const double pi = std::acos(-1.0);
+  const Vector3 refinement_direction(
+    1.0 / std::sqrt(3.0), 1.0 / std::sqrt(3.0), 1.0 / std::sqrt(3.0));
+  quad.LocallyRefine(refinement_direction, 30.0 * pi / 180.0, false);
+  quad.LocallyRefine(refinement_direction, 10.0 * pi / 180.0, false);
+
+  try
+  {
+    quad.MapOppositeDirections();
+    FAIL() << "An asymmetrically refined SLDFE quadrature must not map every opposite direction.";
+  }
+  catch (const std::logic_error& error)
+  {
+    EXPECT_NE(std::string(error.what()).find("No opposite direction"), std::string::npos);
+  }
 }

@@ -64,6 +64,8 @@ SteadyStateSourceSolver::ExecuteSolver()
 
   const auto& options = do_problem_->GetOptions();
 
+  do_problem_->RestoreAdjointSolutionOrientation();
+
   if (do_problem_->HasUncollidedFlux())
   {
     // `phi_new_local_` is kept as the reported total flux between solves so field

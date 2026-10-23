@@ -1001,11 +1001,26 @@ LBSProblem::CheckConfigurationErrors(std::vector<std::string>& errors) const
     // That is the exact discrete adjoint only when G = W M2D^T diag(w) M2D commutes with the
     // scattering operator, which does not hold in general for Galerkin operators.
     for (const auto& groupset : groupsets_)
+    {
       if (groupset.quadrature and groupset.quadrature->GetOperatorConstructionMethod() !=
                                     OperatorConstructionMethod::STANDARD)
         errors.emplace_back("Adjoint calculations are not supported with Galerkin quadrature "
                             "operators (groupset " +
                             std::to_string(groupset.id) + "). Use operator_method='standard'.");
+
+      if (not groupset.quadrature)
+        continue;
+      try
+      {
+        groupset.quadrature->MapOppositeDirections();
+      }
+      catch (const std::exception& error)
+      {
+        errors.emplace_back("Adjoint calculations require an equal-weight opposite direction for "
+                            "every quadrature direction (groupset " +
+                            std::to_string(groupset.id) + "): " + error.what());
+      }
+    }
 
     if (IsTimeDependent())
       errors.emplace_back("Time-dependent adjoint problems are not supported.");

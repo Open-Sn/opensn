@@ -376,6 +376,12 @@ public:
    */
   virtual void ReorientAdjointSolution() {};
 
+  /// Restores a physically reoriented adjoint solution to the solver's internal orientation.
+  virtual void RestoreAdjointSolutionOrientation() {}
+
+  /// Whether the stored adjoint fluxes use the physical rather than internal sweep orientation.
+  virtual bool IsAdjointSolutionReoriented() const { return false; }
+
   /**
    * Flag indicating if OpenSn is compiled with GPU-aware MPI.
    * This flag enables fast non-copy path for AAH sweep. Data are transferred between MPI ranks
