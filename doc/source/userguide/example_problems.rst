@@ -632,7 +632,7 @@ stages:
 .. code-block:: python
 
    phys.WriteFluxMoments("phi_dump")
-   phys.ReadFluxMoments("phi_dump", single_file_flag=True)
+   phys.ReadFluxMoments("phi_dump", single_file_flag=False)
 
 or, when angular-flux storage is enabled:
 
