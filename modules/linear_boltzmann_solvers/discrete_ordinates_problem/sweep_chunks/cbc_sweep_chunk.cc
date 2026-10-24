@@ -23,8 +23,11 @@ CBCSweepChunk::CBCSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetNumMoments(),
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
+    diamond_difference_(problem.UsesDiamondDifference()),
     sweep_impl_(&CBCSweepChunk::Sweep_Generic)
 {
+  if (diamond_difference_)
+    return;
   if ((min_num_cell_dofs_ == max_num_cell_dofs_) and (min_num_cell_dofs_ >= 2) and
       (min_num_cell_dofs_ <= 8))
   {

@@ -4,6 +4,8 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_structs.h"
+#include <cstddef>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -90,19 +92,47 @@ private:
   /// \}
 };
 
+/// Address of one incoming boundary node in the device boundary bank.
+struct CBCD_BoundaryInput
+{
+  /// Offset of the node's values in the groupset's device boundary bank.
+  std::uint64_t offset = 0;
+  /// True for a reflecting boundary.
+  bool reflecting = false;
+  /// True when the boundary values depend on the angle.
+  bool angle_dependent = false;
+};
+
 /**
  * Set of device pointers to local, boundary, and non-local buffers for CBCD FLUDS.
  */
 struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
 {
-  /// Pointer to incoming boundary angular fluxes.
-  double* __restrict__ incoming_boundary_psi = nullptr;
-  /// Pointer to outgoing boundary angular fluxes.
-  double* __restrict__ outgoing_boundary_psi = nullptr;
+  /// Offsets of the incoming nonlocal nodes' values in the received device packets.
+  const std::size_t* __restrict__ incoming_packet_offsets = nullptr;
+  /// Device boundary bank addresses indexed by incoming boundary node.
+  const CBCD_BoundaryInput* __restrict__ incoming_boundary_map = nullptr;
+  /// Device boundary bank offsets indexed by outgoing boundary node.
+  const std::uint64_t* __restrict__ outgoing_boundary_map = nullptr;
+  /// Reflecting flags indexed by outgoing boundary node (nullptr when no boundary reflects).
+  const std::uint8_t* __restrict__ outgoing_boundary_reflecting = nullptr;
+
+  /// Check whether an outgoing face node's angular flux has a downwind consumer.
+  constexpr bool ShouldStoreOutgoingFlux(const CBCD_NodeIndex& node_index) const noexcept
+  {
+    if (node_index.IsUndefined() or not node_index.IsOutgoing())
+      return false;
+    return not node_index.IsBoundary() or
+           (outgoing_boundary_reflecting != nullptr and
+            outgoing_boundary_reflecting[node_index.GetIndex()] != 0);
+  }
 
   /// Get pointer to the incoming angular flux (if the face is not incoming, a nullptr is returned).
   constexpr double* GetIncomingFluxPointer(const CBCD_NodeIndex& node_index,
-                                           unsigned int angle_group_idx) const noexcept
+                                           const unsigned int angle_group_idx,
+                                           const unsigned int group_idx,
+                                           double* boundary,
+                                           const bool surface_source_active) const noexcept
   {
     // Undefined case (corresponds to a parallel face)
     if (node_index.IsUndefined())
@@ -115,7 +145,12 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
     // Incoming boundary case
     if (node_index.IsBoundary())
     {
-      return incoming_boundary_psi + node_index.GetIndex() * stride_size + angle_group_idx;
+      const auto& input = incoming_boundary_map[node_index.GetIndex()];
+      if (input.reflecting)
+        return boundary + input.offset + angle_group_idx;
+      if (not surface_source_active)
+        return boundary + group_idx;
+      return boundary + input.offset + (input.angle_dependent ? angle_group_idx : group_idx);
     }
     // Incoming local case
     if (node_index.IsLocal())
@@ -125,13 +160,16 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
     // Incoming non-local case
     else
     {
-      return nonlocal_incoming_psi + node_index.GetIndex() * stride_size + angle_group_idx;
+      const auto node = node_index.GetIndex();
+      const auto offset = incoming_packet_offsets[node];
+      return nonlocal_incoming_psi + offset + angle_group_idx;
     }
   }
 
   /// Get pointer to the outgoing angular flux (if the face is not outgoing, a nullptr is returned).
   constexpr double* GetOutgoingFluxPointer(const CBCD_NodeIndex& node_index,
-                                           unsigned int angle_group_idx) const noexcept
+                                           const unsigned int angle_group_idx,
+                                           double* boundary) const noexcept
   {
     // Undefined case (corresponds to a parallel face)
     if (node_index.IsUndefined())
@@ -144,7 +182,7 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
     // Outgoing boundary case
     if (node_index.IsBoundary())
     {
-      return outgoing_boundary_psi + node_index.GetIndex() * stride_size + angle_group_idx;
+      return boundary + outgoing_boundary_map[node_index.GetIndex()] + angle_group_idx;
     }
     // Outgoing local case
     if (node_index.IsLocal())
@@ -159,29 +197,58 @@ struct CBCD_FLUDSPointerSet : public FLUDSPointerSet
   }
 };
 
-/**
- * Metadata for boundary face nodes.
- */
-struct BoundaryNodeInfo
+/// Host metadata for one outgoing boundary face.
+struct CBCD_OutgoingBoundaryFace
 {
-  std::uint64_t cell_local_id;
-  unsigned int face_id;
-  size_t face_node;
-  std::uint64_t storage_index;
-  std::uint64_t boundary_id;
+  /// Boundary ID.
+  std::uint64_t boundary_id = 0;
+  /// Face index within the cell.
+  unsigned int face_id = 0;
+  /// Index of the face's first node among the outgoing boundary nodes.
+  std::uint32_t storage_offset = 0;
+  /// Number of face nodes.
+  std::uint16_t num_face_nodes = 0;
 };
 
-/**
- * Metadata for non-local face nodes.
- */
-struct NonlocalNodeInfo
+/// Host metadata for one incoming boundary face.
+struct CBCD_IncomingBoundaryFace
 {
-  std::uint64_t cell_local_id;
-  std::uint64_t cell_global_id;
-  unsigned int face_id;
-  size_t face_node;
-  short face_node_mapped;
-  std::uint64_t storage_index;
+  /// Boundary ID.
+  std::uint64_t boundary_id = 0;
+  /// Local ID of the cell.
+  std::uint32_t cell_local_id = 0;
+  /// Face index within the cell.
+  unsigned int face_id = 0;
+  /// Index of the face's first node among the incoming boundary nodes.
+  std::uint32_t storage_offset = 0;
+  /// Number of face nodes.
+  std::uint16_t num_face_nodes = 0;
+};
+
+/// Host metadata for one incoming nonlocal face.
+struct CBCD_IncomingNonlocalFace
+{
+  /// Local ID of the downwind cell.
+  std::uint32_t cell_local_id = 0;
+  /// Index of the face's first node among the incoming nonlocal nodes.
+  std::uint32_t storage_offset = 0;
+  /// Index into the source-partition array.
+  std::uint32_t source_partition_index = 0;
+  /// Number of face nodes.
+  std::uint16_t num_face_nodes = 0;
+};
+
+/// Host metadata for one outgoing nonlocal face.
+struct CBCD_OutgoingNonlocalFace
+{
+  /// Index into the destination-rank array.
+  std::uint32_t destination_index = 0;
+  /// Index of the face among the faces sent to the destination.
+  std::uint32_t destination_face_index = 0;
+  /// Index of the face's first node among the outgoing nonlocal nodes, in destination-node order.
+  std::uint32_t storage_offset = 0;
+  /// Number of face nodes.
+  std::uint16_t num_face_nodes = 0;
 };
 
 } // namespace opensn

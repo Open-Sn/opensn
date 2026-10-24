@@ -96,6 +96,12 @@ public:
 
   unsigned int GetFusedAAOLanes() const { return options_.fused_aao_lanes; }
 
+  /// If the steady-state CBC slab sweep uses diamond difference.
+  bool UsesDiamondDifference() const { return transport_discretization_ == "diamond_difference"; }
+
+  /// If classic Richardson applies the consistent multigroup slab DSA correction.
+  bool ApplyOneDimensionalDSA() const { return apply_1d_dsa_; }
+
   std::pair<std::uint64_t, std::uint64_t> GetNumPhiIterativeUnknowns() override;
 
   std::shared_ptr<AGSLinearSolver> GetAGSSolver();
@@ -290,6 +296,9 @@ protected:
   /// CSDA rules; does nothing for problems without CSDA.
   void CheckCSDA(std::vector<std::string>& errors) const;
 
+  /// Diamond-difference rules; does nothing for PWLD transport.
+  void CheckDiamondDifference(std::vector<std::string>& errors) const;
+
   /// Rejects sigma_t <= 0 where an XY quadrature has a direction with no in-plane component.
   void CheckNonStreamingDirections(std::vector<std::string>& errors) const;
   /** @} */
@@ -383,6 +392,8 @@ protected:
     quadrature_fluds_commondata_map_;
 
   const std::string sweep_type_;
+  const std::string transport_discretization_;
+  const bool apply_1d_dsa_;
   /// Time-absorption scale 1/(theta dt) of the current DSA operators (0 when steady).
   double dsa_time_absorption_scale_ = 0.0;
   /** @} */
@@ -464,7 +475,6 @@ private:
 
   std::shared_ptr<FLUDS> CreateCBCD_FLUDS(std::size_t num_groups,
                                           std::size_t num_angles,
-                                          std::size_t num_local_cells,
                                           const FLUDSCommonData& common_data,
                                           const UnknownManager& psi_uk_man,
                                           const SpatialDiscretization& sdm,

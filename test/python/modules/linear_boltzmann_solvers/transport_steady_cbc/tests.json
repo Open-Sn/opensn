@@ -67,5 +67,30 @@
         "abs_tol": 1e-06
       }
     ]
+  },
+  {
+    "file": "transport_1d_diamond_dsa.py",
+    "comment": "1D diamond-difference CBC test (consistent DSA)",
+    "num_procs": 3,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Reference-error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Constant-error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Balance-error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
   }
 ]

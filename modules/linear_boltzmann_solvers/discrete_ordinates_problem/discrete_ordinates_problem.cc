@@ -12,6 +12,7 @@
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/functions/function.h"
+#include "framework/math/quadratures/angular/product_quadrature.h"
 #include "framework/data_types/allowable_range.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/source_function.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/source_functions/transient_source_function.h"
@@ -52,6 +53,18 @@ DiscreteOrdinatesProblem::GetInputParameters()
   params.AddOptionalParameter(
     "sweep_type", "AAH", "The sweep type to use for sweep operatorations.");
   params.ConstrainParameterRange("sweep_type", AllowableRangeList::New({"AAH", "CBC"}));
+  params.AddOptionalParameter(
+    "transport_discretization",
+    "pwld",
+    "Transport cell discretization. diamond_difference is restricted to "
+    "steady-state, host CBC Cartesian slabs with isotropic scattering, "
+    "prescribed incoming boundaries, and one classic Richardson groupset.");
+  params.ConstrainParameterRange("transport_discretization",
+                                 AllowableRangeList::New({"pwld", "diamond_difference"}));
+  params.AddOptionalParameter("apply_1d_dsa",
+                              false,
+                              "Apply the consistent diamond-difference multigroup DSA correction. "
+                              "Requires transport_discretization=diamond_difference.");
   params.AddOptionalParameter("time_dependent",
                               false,
                               "If true, initializes the problem in time-dependent mode. "
@@ -108,7 +121,10 @@ DiscreteOrdinatesProblem::Create(const ParameterBlock& params)
 }
 
 DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params)
-  : LBSProblem(params), sweep_type_(params.GetParamValue<std::string>("sweep_type"))
+  : LBSProblem(params),
+    sweep_type_(params.GetParamValue<std::string>("sweep_type")),
+    transport_discretization_(params.GetParamValue<std::string>("transport_discretization")),
+    apply_1d_dsa_(params.GetParamValue<bool>("apply_1d_dsa"))
 {
   // The configuration (time-dependent mode, adjoint, uncollided flux, ...) is validated by
   // ValidateConfiguration() in BuildRuntime(), once the object is fully constructed. The rules are
@@ -475,11 +491,21 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ").");
   }
 
+#if defined(__OPENSN_WITH_GPU__) && !defined(__OPENSN_USE_GPU_AWARE_MPI__)
+  // GPU CBC sweeps pass device buffers to MPI and have no host-staged path. The condition is the
+  // same on every rank.
+  if (use_gpus_ and sweep_type_ == "CBC" and opensn::mpi_comm.size() > 1)
+    errors.emplace_back("GPU sweep_type=\"CBC\" on more than one MPI rank requires a GPU-aware MPI "
+                        "library and OpenSn configured with -DOPENSN_USE_GPU_AWARE_MPI=ON.");
+#endif
+
   // The fused scheduler is only for GPU AAH sweeps.
   if (options_.fused_aao_sweep and (not use_gpus_ or sweep_type_ != "AAH"))
     errors.emplace_back("fused_aao_sweep requires sweep_type=\"AAH\" and use_gpus=True.");
 
   CheckCSDA(errors);
+
+  CheckDiamondDifference(errors);
 
   // Collective. Check all ranks before any sweep can propagate NaNs.
   CheckNonStreamingDirections(errors);
@@ -523,6 +549,85 @@ DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& 
                           " has a direction with no in-plane component, which requires a "
                           "positive sigma_t.");
   }
+}
+
+void
+DiscreteOrdinatesProblem::CheckDiamondDifference(std::vector<std::string>& errors) const
+{
+  if (apply_1d_dsa_ and not UsesDiamondDifference())
+    errors.emplace_back("One-dimensional DSA requires diamond-difference transport.");
+  if (not UsesDiamondDifference())
+    return;
+
+  if (sweep_type_ != "CBC" or UseGPUs() or IsTimeDependent() or
+      geometry_type_ != GeometryType::ONED_SLAB or options_.adjoint or HasUncollidedFlux())
+    errors.emplace_back("Diamond difference requires steady-state host CBC Cartesian slab "
+                        "transport without adjoint or uncollided-flux options.");
+  if (groupsets_.size() != 1 or groupsets_.front().first_group != 0 or
+      groupsets_.front().GetNumGroups() != num_groups_)
+    errors.emplace_back("Diamond difference requires one groupset containing all groups.");
+  if (not groupsets_.empty())
+  {
+    const auto& groupset = groupsets_.front();
+    if (dynamic_cast<const GLProductQuadrature1DSlab*>(groupset.quadrature.get()) == nullptr)
+      errors.emplace_back(
+        "Diamond difference initially requires a Gauss-Legendre slab quadrature.");
+    if (groupset.iterative_method != LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON or
+        num_moments_ != 1 or groupset.apply_wgdsa or groupset.apply_tgdsa)
+      errors.emplace_back("Diamond difference requires isotropic classic Richardson iteration "
+                          "without WGDSA or TGDSA.");
+  }
+  if (std::any_of(boundary_definitions_.begin(),
+                  boundary_definitions_.end(),
+                  [](const auto& entry)
+                  { return entry.second.type == LBSBoundaryType::REFLECTING; }))
+    errors.emplace_back("Diamond difference does not yet support reflecting boundaries.");
+
+  bool fission = false;
+  bool anisotropic = false;
+  bool invalid_total = false;
+  bool negative_removal = false;
+  bool invalid_transfer = false;
+  for (const auto& [id, xs] : block_id_to_xs_map_)
+  {
+    fission |= xs->IsFissionable();
+    anisotropic |= xs->GetScatteringOrder() != 0;
+    for (const auto sigma_t : xs->GetSigmaTotal())
+      invalid_total |= not std::isfinite(sigma_t) or sigma_t <= 0.0;
+    const auto& scatter = xs->GetTransferMatrix(0);
+    for (unsigned int g = 0; g < num_groups_ and g < xs->GetSigmaTotal().size(); ++g)
+      negative_removal |= xs->GetSigmaTotal()[g] < scatter.GetValueIJ(g, g);
+    for (unsigned int g = 0; g < num_groups_; ++g)
+      for (const auto& [row, column, value] : scatter.Row(g))
+        invalid_transfer |= value != 0.0 and (column > row or row - column > 1);
+  }
+  if (fission)
+    errors.emplace_back("Diamond difference does not yet support fission.");
+  if (anisotropic)
+    errors.emplace_back("Diamond difference initially requires isotropic cross sections.");
+  if (invalid_total)
+    errors.emplace_back("Diamond difference requires positive, finite total cross sections.");
+  if (negative_removal)
+    errors.emplace_back("Diamond difference requires nonnegative removal cross sections.");
+  if (invalid_transfer)
+    errors.emplace_back(
+      "Diamond difference initially supports only self-scattering and adjacent downscatter.");
+
+  bool invalid_cell = false;
+  for (const auto& cell : grid_->GetLocalCells())
+  {
+    invalid_cell |= cell->vertex_ids.size() != 2 or cell->faces.size() != 2;
+    if (cell->vertex_ids.size() == 2)
+    {
+      const auto& first = grid_->GlobalVertex(cell->vertex_ids[0]);
+      const auto& second = grid_->GlobalVertex(cell->vertex_ids[1]);
+      invalid_cell |= first.z == second.z or first.x != second.x or first.y != second.y;
+    }
+  }
+  bool any_invalid_cell = false;
+  opensn::mpi_comm.all_reduce(invalid_cell, any_invalid_cell, mpi::op::logical_or<bool>());
+  if (any_invalid_cell)
+    errors.emplace_back("Diamond difference requires two-node Cartesian slabs aligned with z.");
 }
 
 void

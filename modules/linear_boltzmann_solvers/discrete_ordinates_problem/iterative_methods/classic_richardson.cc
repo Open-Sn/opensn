@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/wgdsa.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/diamond_difference_dsa.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
@@ -53,6 +54,9 @@ ClassicRichardson::Solve()
 
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
+  std::unique_ptr<DiamondDifferenceDSA> diamond_dsa;
+  if (do_problem.ApplyOneDimensionalDSA())
+    diamond_dsa = std::make_unique<DiamondDifferenceDSA>(do_problem);
   gs_context_ptr->last_solve = {};
   const auto scope = gs_context_ptr->GetLHSSourceScope() | gs_context_ptr->GetRHSSourceScope();
   saved_q_moments_local_ = do_problem.GetQMomentsLocal();
@@ -75,6 +79,9 @@ ClassicRichardson::Solve()
         groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
     }
     gs_context_ptr->ApplyInverseTransportOperator(scope);
+
+    if (diamond_dsa)
+      diamond_dsa->Apply();
 
     // Scalar flux before acceleration, to form the DSA correction applied to the lagged
     // boundary angular fluxes.

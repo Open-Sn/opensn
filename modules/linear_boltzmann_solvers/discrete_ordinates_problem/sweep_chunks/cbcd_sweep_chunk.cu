@@ -2,11 +2,12 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/main.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/cbcd_fused_main.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/gpu_kernel/round_up.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/device_vector_mirror.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include "caliper/cali.h"
 #include <algorithm>
+#include <cstdint>
+#include <vector>
 
 namespace opensn
 {
@@ -27,53 +28,149 @@ CBCDSweepChunk::CBCDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
                problem.GetMinCellDOFCount()),
     problem_(problem)
 {
+  const auto num_angle_sets = groupset.angle_agg->GetNumAngleSets();
+  angle_sets_.reserve(num_angle_sets);
+  angle_set_launches_.reserve(num_angle_sets);
   for (auto& as : *(groupset.angle_agg))
   {
     auto* angle_set = dynamic_cast<CBCD_AngleSet*>(as.get());
     auto* fluds = dynamic_cast<CBCD_FLUDS*>(&(angle_set->GetFLUDS()));
     angle_sets_.push_back(angle_set);
-    fluds_list_.push_back(fluds);
-    streams_list_.push_back(angle_set->GetStream());
-    gpu_kernel::Arguments<SweepKind::CBC> args(
-      problem_, groupset_, *angle_set, *fluds, surface_source_active_);
-    kernel_args_list_.push_back(args);
-    unsigned int stride_size =
-      gpu_kernel::RoundUp(static_cast<unsigned int>(args.flud_data.stride_size));
-    unsigned int block_size_x = std::min(stride_size, gpu_kernel::threshold);
-    unsigned int block_size_y = gpu_kernel::threshold / block_size_x;
-    unsigned int grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
-    block_sizes_.emplace_back(block_size_x, block_size_y);
-    grid_size_x_list_.push_back(grid_size_x);
+
+    fluds->SetSaveAngularFlux(problem_.SaveAngularFluxEnabled());
+    angle_set->RefreshDeviceData();
+
+    // This is the same block shape as AAHDSweepChunk::Sweep, with x covering the angle-group stride
+    // and y covering the cells.
+    const auto stride_size = gpu_kernel::RoundUp(static_cast<unsigned int>(fluds->GetStrideSize()));
+    const auto block_size_x = std::min(stride_size, gpu_kernel::threshold);
+    const auto block_size_y = gpu_kernel::threshold / block_size_x;
+    const auto grid_size_x = (stride_size + gpu_kernel::threshold - 1) / gpu_kernel::threshold;
+    angle_set_launches_.push_back({crb::Dim3(block_size_x, block_size_y),
+                                   grid_size_x,
+                                   fluds,
+                                   fluds->GetSavedAngularFluxDevicePointer()});
+  }
+  // RefreshKernelArguments builds the arguments before each sweep.
+  host_arguments_.reserve(angle_sets_.size());
+
+  const auto& boundaries = problem_.GetSweepBoundaries();
+  needs_boundary_upload_ =
+    std::any_of(boundaries.begin(),
+                boundaries.end(),
+                [&groupset](const auto& entry)
+                { return entry.second->CountDelayedAngularDOFsOld(groupset.id) != 0; });
+
+  if (not angle_sets_.empty())
+  {
+    std::vector<AngleSet*> base_angle_sets(angle_sets_.begin(), angle_sets_.end());
+    async_comm_ = std::make_unique<CBCD_AsynchronousCommunicator>(
+      base_angle_sets, angle_sets_.front()->GetSweepCommunicator());
+    for (auto* angle_set : angle_sets_)
+      angle_set->SetCommunicator(*async_comm_);
   }
 }
 
-void
-CBCDSweepChunk::Sweep(const std::vector<std::uint32_t>& cell_local_ids, std::size_t angle_set_id)
+CBCDSweepChunk::~CBCDSweepChunk()
 {
-  auto* fluds = fluds_list_[angle_set_id];
-  auto* device_saved_psi = fluds->GetSavedAngularFluxDevicePointer();
-  auto& stream = streams_list_[angle_set_id];
-  auto& host_cell_local_ids = fluds->GetLocalCellIDs();
-  std::copy(cell_local_ids.begin(), cell_local_ids.end(), host_cell_local_ids.begin());
-  const auto& args = kernel_args_list_[angle_set_id];
-  crb::Dim3 block_size = block_sizes_[angle_set_id];
-  auto num_ready_cells = static_cast<unsigned int>(cell_local_ids.size());
-  unsigned int grid_size_x = grid_size_x_list_[angle_set_id];
-  unsigned int grid_size_y = (num_ready_cells + block_size.y - 1) / block_size.y;
-  crb::Dim3 grid_size(grid_size_x, grid_size_y);
-  auto* host_cell_local_ids_data = host_cell_local_ids.data();
+  StopCommunicator();
+}
+
+void
+CBCDSweepChunk::StartCommunicator(const std::size_t num_workers)
+{
+  if (lanes_.size() != num_workers)
+  {
+    // A launch has at most one batch slot per angle set of its worker.
+    std::vector<std::size_t> num_owned(num_workers, 0);
+    for (std::size_t angle_set_id = 0; angle_set_id < angle_sets_.size(); ++angle_set_id)
+      ++num_owned[CBCD_AngleSetWorker(angle_set_id, num_workers)];
+    const auto max_owned = *std::max_element(num_owned.begin(), num_owned.end());
+    lanes_.clear();
+    for (std::size_t worker = 0; worker < num_workers; ++worker)
+    {
+      auto lane = std::make_unique<FusedLane>();
+      lane->batch_slots.reserve(max_owned);
+      lanes_.push_back(std::move(lane));
+    }
+  }
+  if (async_comm_)
+    async_comm_->Start(num_workers);
+}
+
+void
+CBCDSweepChunk::StopCommunicator()
+{
+  if (async_comm_)
+    async_comm_->Stop();
+}
+
+void
+CBCDSweepChunk::RefreshKernelArguments()
+{
+  CALI_CXX_MARK_SCOPE("CBCDSweepChunk::RefreshKernelArguments");
+
+  host_arguments_.clear();
+  for (std::size_t angle_set_id = 0; angle_set_id < angle_sets_.size(); ++angle_set_id)
+  {
+    auto& launch = angle_set_launches_[angle_set_id];
+    host_arguments_.push_back(gpu_kernel::Arguments<SweepKind::CBC>(
+      problem_, groupset_, *angle_sets_[angle_set_id], *launch.fluds, IsSurfaceSourceActive()));
+    host_arguments_.back().flud_data.nonlocal_incoming_psi = async_comm_->GetIncomingPacketValues();
+    launch.device_saved_psi = launch.fluds->GetSavedAngularFluxDevicePointer();
+  }
+  if (device_arguments_.size() != host_arguments_.size())
+    device_arguments_ =
+      crb::DeviceMemory<gpu_kernel::Arguments<SweepKind::CBC>>(host_arguments_.size());
+  crb::copy(device_arguments_, host_arguments_, host_arguments_.size());
+}
+
+void
+CBCDSweepChunk::AddBatchSlot(const std::size_t worker_id,
+                             const std::size_t angle_set_id,
+                             const std::uint32_t* local_cell_ids,
+                             const std::uint32_t num_ready_cells)
+{
+  CALI_CXX_MARK_SCOPE("CBCDSweepChunk::AddBatchSlot");
+
+  auto& lane = *lanes_[worker_id];
+  auto& launch = angle_set_launches_[angle_set_id];
+  const auto num_cell_blocks =
+    (std::uint64_t{num_ready_cells} + launch.threads_per_block.y - 1) / launch.threads_per_block.y;
+  const auto block_begin = lane.batch_slots.empty() ? 0 : lane.batch_slots.back().block_end;
+  lane.batch_slots.push_back({device_arguments_.get() + angle_set_id,
+                              local_cell_ids,
+                              launch.device_saved_psi,
+                              block_begin + num_cell_blocks * launch.num_stride_blocks,
+                              num_ready_cells,
+                              launch.threads_per_block.x,
+                              launch.num_stride_blocks});
+}
+
+void
+CBCDSweepChunk::SubmitFusedLaunch(const std::size_t worker_id)
+{
+  auto& lane = *lanes_[worker_id];
+  if (lane.in_flight or lane.batch_slots.empty())
+    return;
+  CALI_CXX_MARK_SCOPE("CBCDSweepChunk::SubmitFusedLaunch");
+  const auto num_blocks = lane.batch_slots.back().block_end;
+  const auto num_batch_slots = static_cast<std::uint32_t>(lane.batch_slots.size());
+  const auto* batch_slots = lane.batch_slots.data();
+  // The grid can be capped at 65535 blocks because the kernel strides over the blocks.
+  crb::Dim3 grid_size(static_cast<unsigned int>(std::min<std::uint64_t>(num_blocks, 65535)));
+  crb::Dim3 block_size(gpu_kernel::threshold);
+  auto& stream = lane.stream;
 #if defined(__NVCC__) || defined(__HIPCC__)
-  gpu_kernel::SweepKernel<SweepKind::CBC><<<grid_size, block_size, 0, stream>>>(
-    args, host_cell_local_ids_data, num_ready_cells, device_saved_psi);
+  gpu_kernel::CBCDFusedSweepKernel<<<grid_size, block_size, 0, stream>>>(
+    batch_slots, num_batch_slots, num_blocks);
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  stream.synchronize();
-  stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
-                      [=](sycl::nd_item<3> work_index)
-                      {
-                        gpu_kernel::SweepKernel<SweepKind::CBC>(
-                          args, host_cell_local_ids_data, num_ready_cells, device_saved_psi);
-                      });
+  stream.parallel_for(
+    sycl::nd_range<3>(grid_size * block_size, block_size),
+    [=](sycl::nd_item<3> work_index)
+    { gpu_kernel::CBCDFusedSweepKernel(batch_slots, num_batch_slots, num_blocks); });
 #endif
+  lane.in_flight = true;
 }
 
 } // namespace opensn
