@@ -590,9 +590,6 @@ MultiGroupXS::ComputeDiffusionParameters()
   if (diffusion_initialized_)
     return;
 
-  constexpr double sigma_tr_min = 1.0e-12;
-  constexpr double diffusion_coeff_max = 1.0 / 3.0 / sigma_tr_min;
-
   // Initialize diffusion data
   sigma_tr_.resize(num_groups_, 0.0);
   diffusion_coeff_.resize(num_groups_, 1.0);
@@ -631,13 +628,13 @@ MultiGroupXS::ComputeDiffusionParameters()
     sigma_tr = sigma_t_[g] - sigma_1;
 
     // Cap the diffusion coefficient for when the transport cross section is near zero
-    if (std::fabs(sigma_tr) < sigma_tr_min)
+    if (std::fabs(sigma_tr) < TRANSPORT_XS_TOLERANCE)
     {
       log.Log(level) << "Transport cross section near zero for group " << g << " (" << mode
-                     << "sigma_tr = " << sigma_tr << ", sigma_tr_min = " << sigma_tr_min
+                     << "sigma_tr = " << sigma_tr << ", sigma_tr_min = " << TRANSPORT_XS_TOLERANCE
                      << "). Setting the " << mode << "diffusion coefficient to "
-                     << diffusion_coeff_max << " for this group.";
-      diffusion = diffusion_coeff_max;
+                     << MAX_DIFFUSION_COEFFICIENT << " for this group.";
+      diffusion = MAX_DIFFUSION_COEFFICIENT;
     }
     else
       diffusion = 1.0 / 3.0 / sigma_tr;
