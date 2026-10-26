@@ -1,0 +1,476 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/nbsphinx-code-cells.css?v=2aa19091" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../../genindex.html" />
+    <link rel="search" title="Search" href="../../../search.html" />
+    <link rel="next" title="5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" href="scdsa.html" />
+    <link rel="prev" title="5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration" href="tgdsa.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../../index.html">Tutorials</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="../../foundations/index.html">1. Foundations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../modeling/index.html">2. Modeling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../problems/index.html">3. Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../workflows/index.html">4. Workflows</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Numerical Methods</a><ul class="current">
+<li class="toctree-l3"><a class="reference internal" href="../angular_discretization/index.html">5.1. Angular Discretization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../iterative_methods/index.html">5.2. Iterative Methods</a></li>
+<li class="toctree-l3 current"><a class="reference internal" href="index.html">5.3. Acceleration</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="tgdsa.html">5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem</a></li>
+<li class="toctree-l4"><a class="reference internal" href="scdsa.html">5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmfd.html">5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="smm.html">5.3.5. SMM: Second-Moment Method Acceleration</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../../capi/rst/index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
+          <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Numerical Methods</a></li>
+          <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.3. </span>Acceleration</a></li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.2. </span>WGDSA and TGDSA in a Multigroup Source-Detector Problem</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="WGDSA-and-TGDSA-in-a-Multigroup-Source-Detector-Problem">
+<h1><span class="section-number">5.3.2. </span>WGDSA and TGDSA in a Multigroup Source-Detector Problem<a class="headerlink" href="#WGDSA-and-TGDSA-in-a-Multigroup-Source-Detector-Problem" title="Link to this heading"></a></h1>
+<p><img alt="Multigroup source-detector geometry in an HDPE moderator" src="../../../_images/wgdsa_tgdsa_geometry.png" /></p>
+<p>This tutorial compares within-group diffusion synthetic acceleration (WGDSA) and two-grid diffusion synthetic acceleration (TGDSA) in a multigroup source-detector problem. A compact volumetric source and a He-3 detector are separated by a strongly scattering HDPE moderator. Four otherwise identical solves use no acceleration, WGDSA alone, TGDSA alone, and both together.</p>
+<section id="Reduced-multigroup-model">
+<h2><span class="section-number">5.3.2.1. </span>Reduced multigroup model<a class="headerlink" href="#Reduced-multigroup-model" title="Link to this heading"></a></h2>
+<p>The geometry follows a source–detector configuration: a 2 cm square source is centered near the lower-left corner and a separate 2 cm square He-3 detector is near the upper-right corner. The HDPE, Cf-252, and He-3 data were reduced from the 69-group WIMS tutorial library to 12 groups. Total and absorption cross sections use an unweighted fine-group average, while transfer terms are averaged over source groups and summed over destination groups. This makes the data suitable for demonstrating
+solver behavior, but not for design analysis. The source spectrum is a similarly collapsed Cf-252 Watt spectrum.</p>
+<p>The reduced HDPE data include thermal upscatter: groups 4 through 11 scatter neutrons back into higher-energy groups, most strongly from group 11 into group 10 and from group 10 into group 9. The thermal groups are therefore coupled in both directions. The He-3 detector behaves very differently. Its total cross section is below <span class="math notranslate nohighlight">\(0.01\ \mathrm{cm}^{-1}\)</span> in groups 0 through 3, a mean free path of more than 100 cm in a 2 cm region, so it is nearly transparent to fast neutrons. In groups 4
+through 11 more than 99% of its total cross section is absorption.</p>
+<p>The mesh uses a 2-by-2 KBA decomposition, so run the generated script with four MPI processes. Sixteen directions keep the comparison inexpensive while retaining a genuine parallel transport sweep.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">KBAGraphPartitioner</span><span class="p">,</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">SteadyStateSourceSolver</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.source</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumetricSource</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
+
+<span class="n">comm</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">COMM_WORLD</span>
+<span class="n">rank</span> <span class="o">=</span> <span class="n">comm</span><span class="o">.</span><span class="n">rank</span>
+<span class="n">tutorial_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">parent</span> <span class="k">if</span> <span class="s2">&quot;__file__&quot;</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">()</span> <span class="k">else</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span>
+<span class="n">num_groups</span> <span class="o">=</span> <span class="mi">12</span>
+<span class="n">source_spectrum</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="mf">8.70673882298e-1</span><span class="p">,</span> <span class="mf">1.27603333571e-1</span><span class="p">,</span> <span class="mf">1.69874391340e-3</span><span class="p">,</span>
+    <span class="mf">2.39751217396e-5</span><span class="p">,</span> <span class="mf">6.37406413603e-8</span><span class="p">,</span> <span class="mf">8.61581497551e-10</span><span class="p">,</span>
+    <span class="mf">1.06916189569e-10</span><span class="p">,</span> <span class="mf">2.94232444417e-10</span><span class="p">,</span> <span class="mf">5.81630205686e-11</span><span class="p">,</span>
+    <span class="mf">2.77856961803e-11</span><span class="p">,</span> <span class="mf">4.45769378270e-12</span><span class="p">,</span> <span class="mf">1.77083905175e-12</span><span class="p">,</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Mesh-and-materials">
+<h2><span class="section-number">5.3.2.2. </span>Mesh and materials<a class="headerlink" href="#Mesh-and-materials" title="Link to this heading"></a></h2>
+<p>Block 0 is the moderator, block 1 is the detector, and block 2 is the source region. Logical volumes make the regions independent of external mesh files or command-line parameters.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_xs</span><span class="p">(</span><span class="n">filename</span><span class="p">):</span>
+    <span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
+    <span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">tutorial_dir</span> <span class="o">/</span> <span class="n">filename</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">xs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">make_mesh</span><span class="p">():</span>
+    <span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.5</span> <span class="o">*</span> <span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">41</span><span class="p">)]</span>
+    <span class="n">partitioner</span> <span class="o">=</span> <span class="n">KBAGraphPartitioner</span><span class="p">(</span>
+        <span class="n">nx</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">ny</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">xcuts</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">],</span> <span class="n">ycuts</span><span class="o">=</span><span class="p">[</span><span class="mf">10.0</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
+        <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">],</span> <span class="n">partitioner</span><span class="o">=</span><span class="n">partitioner</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">SetOrthogonalBoundaries</span><span class="p">()</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="n">detector</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+        <span class="n">xmin</span><span class="o">=</span><span class="mf">14.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">16.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">14.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">16.0</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">source</span> <span class="o">=</span> <span class="n">RPPLogicalVolume</span><span class="p">(</span>
+        <span class="n">xmin</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">xmax</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">ymin</span><span class="o">=</span><span class="mf">2.0</span><span class="p">,</span> <span class="n">ymax</span><span class="o">=</span><span class="mf">4.0</span><span class="p">,</span> <span class="n">infz</span><span class="o">=</span><span class="kc">True</span>
+    <span class="p">)</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">detector</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">mesh</span><span class="o">.</span><span class="n">SetBlockIDFromLogicalVolume</span><span class="p">(</span><span class="n">source</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">mesh</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Build-one-solver-with-optional-WGDSA-and-TGDSA">
+<h2><span class="section-number">5.3.2.3. </span>Build one solver with optional WGDSA and TGDSA<a class="headerlink" href="#Build-one-solver-with-optional-WGDSA-and-TGDSA" title="Link to this heading"></a></h2>
+<p>All 12 groups are placed in one groupset, as in the <a class="reference internal" href="tgdsa.html"><span class="doc">graphite TGDSA tutorial</span></a>, so the across-groupset iteration is a single pass. With one group per groupset, there would be no scattering between groups of the same groupset for TGDSA to correct. Classic Richardson source iteration then lags the entire scattering source by one iteration. That source has two parts that converge slowly in this strongly scattering, upscattering moderator:</p>
+<ul class="simple">
+<li><p><strong>Within-group scattering.</strong> WGDSA solves a diffusion correction for each group separately, driven by the change in that group’s self-scatter source.</p></li>
+<li><p><strong>Scattering between groups.</strong> TGDSA collapses the change in the scattering source between different groups of the groupset to a single one-group diffusion problem, then multiplies the diffusion solution by a fixed spectrum to correct every group.</p></li>
+</ul>
+<p>TGDSA computes a separate spectrum for each material, including the detector. The spectrum is the infinite-medium shape of the slowest-converging energy error mode of the iteration being accelerated. The spectrum treats within-group scattering as converged: it is the dominant eigenvector of the Jacobi iteration over the scattering between groups, and the TGDSA residual contains only that scattering. OpenSn uses the same spectrum and residual with or without WGDSA. TGDSA therefore does not
+correct within-group scattering, which is exactly the part WGDSA accelerates, so the two corrections are complementary. When both are enabled, OpenSn applies them after each transport sweep in that order: the WGDSA correction first, then the TGDSA correction computed from the updated flux.</p>
+<p>The two Boolean arguments control only <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> and <code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code>; every case uses the same iteration and tolerance.</p>
+<p>The reported sweep count is the total for the single groupset. Wall time is split into three phases, each the maximum across ranks: model setup (cross sections, mesh, and transport problem, including any diffusion operators that OpenSn builds with the problem), solver initialization, and the source iterations themselves.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">solve</span><span class="p">(</span><span class="n">use_wgdsa</span><span class="p">,</span> <span class="n">use_tgdsa</span><span class="p">):</span>
+    <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="n">start</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Wtime</span><span class="p">()</span>
+    <span class="n">moderator_xs</span> <span class="o">=</span> <span class="n">load_xs</span><span class="p">(</span><span class="s2">&quot;wgdsa_multigroup_moderator.cxs&quot;</span><span class="p">)</span>
+    <span class="n">source_xs</span> <span class="o">=</span> <span class="n">load_xs</span><span class="p">(</span><span class="s2">&quot;wgdsa_multigroup_source.cxs&quot;</span><span class="p">)</span>
+    <span class="n">detector_xs</span> <span class="o">=</span> <span class="n">load_xs</span><span class="p">(</span><span class="s2">&quot;wgdsa_multigroup_detector.cxs&quot;</span><span class="p">)</span>
+
+    <span class="n">groupset</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
+            <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span>
+        <span class="p">),</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;classic_richardson&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+        <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">5000</span><span class="p">,</span>
+    <span class="p">}</span>
+    <span class="k">if</span> <span class="n">use_wgdsa</span><span class="p">:</span>
+        <span class="n">groupset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;apply_wgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;wgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+                <span class="s2">&quot;wgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s2">&quot;wgdsa_solver_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="n">use_tgdsa</span><span class="p">:</span>
+        <span class="n">groupset</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+            <span class="p">{</span>
+                <span class="s2">&quot;apply_tgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+                <span class="s2">&quot;tgdsa_l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-8</span><span class="p">,</span>
+                <span class="s2">&quot;tgdsa_l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
+                <span class="s2">&quot;tgdsa_solver_policy&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+            <span class="p">}</span>
+        <span class="p">)</span>
+
+    <span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+        <span class="n">mesh</span><span class="o">=</span><span class="n">make_mesh</span><span class="p">(),</span>
+        <span class="n">num_groups</span><span class="o">=</span><span class="n">num_groups</span><span class="p">,</span>
+        <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span><span class="n">groupset</span><span class="p">],</span>
+        <span class="n">xs_map</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">moderator_xs</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">detector_xs</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">source_xs</span><span class="p">},</span>
+        <span class="p">],</span>
+        <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span>
+            <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="n">source_spectrum</span><span class="p">)</span>
+        <span class="p">],</span>
+        <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;xmax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+            <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;ymax&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;vacuum&quot;</span><span class="p">},</span>
+        <span class="p">],</span>
+        <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;verbose_inner_iterations&quot;</span><span class="p">:</span> <span class="kc">False</span><span class="p">},</span>
+    <span class="p">)</span>
+
+    <span class="n">solver</span> <span class="o">=</span> <span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">)</span>
+
+    <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="n">model_done</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Wtime</span><span class="p">()</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+    <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="n">init_done</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Wtime</span><span class="p">()</span>
+    <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">comm</span><span class="o">.</span><span class="n">Barrier</span><span class="p">()</span>
+    <span class="n">end</span> <span class="o">=</span> <span class="n">MPI</span><span class="o">.</span><span class="n">Wtime</span><span class="p">()</span>
+    <span class="n">times</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="n">comm</span><span class="o">.</span><span class="n">allreduce</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">op</span><span class="o">=</span><span class="n">MPI</span><span class="o">.</span><span class="n">MAX</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">t</span> <span class="ow">in</span> <span class="p">(</span><span class="n">model_done</span> <span class="o">-</span> <span class="n">start</span><span class="p">,</span> <span class="n">init_done</span> <span class="o">-</span> <span class="n">model_done</span><span class="p">,</span> <span class="n">end</span> <span class="o">-</span> <span class="n">init_done</span><span class="p">)</span>
+    <span class="p">]</span>
+
+    <span class="n">average</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+    <span class="n">average</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="n">group_flux</span> <span class="o">=</span> <span class="n">average</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">return</span> <span class="n">problem</span><span class="p">,</span> <span class="nb">sum</span><span class="p">(</span><span class="n">group_flux</span><span class="p">),</span> <span class="n">group_flux</span><span class="p">[</span><span class="mi">11</span><span class="p">],</span> <span class="n">solver</span><span class="o">.</span><span class="n">GetNumSweeps</span><span class="p">(),</span> <span class="n">times</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="Compare-the-solutions,-sweep-counts,-and-runtimes">
+<h2><span class="section-number">5.3.2.4. </span>Compare the solutions, sweep counts, and runtimes<a class="headerlink" href="#Compare-the-solutions,-sweep-counts,-and-runtimes" title="Link to this heading"></a></h2>
+<p>Neither correction changes the converged transport solution. The primary correctness check is agreement of each accelerated energy-summed, volume-averaged scalar flux with the unaccelerated one, and the thermal group 11 is a second check. Transport sweeps measure convergence work, while wall time shows the practical effect of each acceleration. Timing is printed rather than asserted because it depends on the machine and MPI configuration.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">cases</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;Unaccelerated&quot;</span><span class="p">:</span> <span class="n">solve</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;WGDSA alone&quot;</span><span class="p">:</span> <span class="n">solve</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">False</span><span class="p">),</span>
+    <span class="s2">&quot;TGDSA alone&quot;</span><span class="p">:</span> <span class="n">solve</span><span class="p">(</span><span class="kc">False</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+    <span class="s2">&quot;WGDSA+TGDSA&quot;</span><span class="p">:</span> <span class="n">solve</span><span class="p">(</span><span class="kc">True</span><span class="p">,</span> <span class="kc">True</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="n">combined_problem</span> <span class="o">=</span> <span class="n">cases</span><span class="p">[</span><span class="s2">&quot;WGDSA+TGDSA&quot;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="n">_</span><span class="p">,</span> <span class="n">unaccelerated_flux</span><span class="p">,</span> <span class="n">unaccelerated_g11</span><span class="p">,</span> <span class="n">unaccelerated_sweeps</span><span class="p">,</span> <span class="n">unaccelerated_times</span> <span class="o">=</span> <span class="n">cases</span><span class="p">[</span>
+    <span class="s2">&quot;Unaccelerated&quot;</span>
+<span class="p">]</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">g11</span><span class="p">,</span> <span class="n">sweeps</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> total average flux=</span><span class="si">{</span><span class="n">flux</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> group 11 average flux=</span><span class="si">{</span><span class="n">g11</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> sweeps=</span><span class="si">{</span><span class="n">sweeps</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> model setup time (s)=</span><span class="si">{</span><span class="n">times</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> solver initialization time (s)=</span><span class="si">{</span><span class="n">times</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> iteration time (s)=</span><span class="si">{</span><span class="n">times</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> total wall time (s)=</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">times</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> time per sweep (s)=</span><span class="si">{</span><span class="n">times</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">sweeps</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="p">(</span><span class="n">_</span><span class="p">,</span> <span class="n">flux</span><span class="p">,</span> <span class="n">g11</span><span class="p">,</span> <span class="n">sweeps</span><span class="p">,</span> <span class="n">times</span><span class="p">)</span> <span class="ow">in</span> <span class="n">cases</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="k">if</span> <span class="n">name</span> <span class="o">==</span> <span class="s2">&quot;Unaccelerated&quot;</span><span class="p">:</span>
+        <span class="k">continue</span>
+    <span class="n">relative_difference</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">flux</span> <span class="o">-</span> <span class="n">unaccelerated_flux</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">unaccelerated_flux</span><span class="p">)</span>
+    <span class="n">g11_relative_difference</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">g11</span> <span class="o">-</span> <span class="n">unaccelerated_g11</span><span class="p">)</span> <span class="o">/</span> <span class="nb">abs</span><span class="p">(</span><span class="n">unaccelerated_g11</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> total flux relative difference=</span><span class="si">{</span><span class="n">relative_difference</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> group 11 relative difference=</span><span class="si">{</span><span class="n">g11_relative_difference</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> iteration speedup=</span><span class="si">{</span><span class="n">unaccelerated_times</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">times</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s2"> total speedup=</span><span class="si">{</span><span class="nb">sum</span><span class="p">(</span><span class="n">unaccelerated_times</span><span class="p">)</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="nb">sum</span><span class="p">(</span><span class="n">times</span><span class="p">)</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">relative_difference</span> <span class="o">&lt;</span> <span class="mf">1.0e-6</span>
+    <span class="k">assert</span> <span class="n">g11_relative_difference</span> <span class="o">&lt;</span> <span class="mf">1.0e-6</span>
+    <span class="k">assert</span> <span class="n">sweeps</span> <span class="o">&lt;</span> <span class="n">unaccelerated_sweeps</span>
+
+<span class="k">assert</span> <span class="n">cases</span><span class="p">[</span><span class="s2">&quot;WGDSA+TGDSA&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">cases</span><span class="p">[</span><span class="s2">&quot;WGDSA alone&quot;</span><span class="p">][</span><span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>A representative four-process run gives the following comparison:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Solve</p></th>
+<th class="head"><p>Energy-summed average flux</p></th>
+<th class="head"><p>Group-11 average flux</p></th>
+<th class="head"><p>Transport sweeps</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>No acceleration</p></td>
+<td><p>0.1844789433</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862683\times10^{-2}\)</span></p></td>
+<td><p>2844</p></td>
+</tr>
+<tr class="row-odd"><td><p>WGDSA</p></td>
+<td><p>0.1844789433</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862683\times10^{-2}\)</span></p></td>
+<td><p>1145</p></td>
+</tr>
+<tr class="row-even"><td><p>TGDSA</p></td>
+<td><p>0.1844789435</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862690\times10^{-2}\)</span></p></td>
+<td><p>186</p></td>
+</tr>
+<tr class="row-odd"><td><p>WGDSA+TGDSA</p></td>
+<td><p>0.1844789435</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862690\times10^{-2}\)</span></p></td>
+<td><p>81</p></td>
+</tr>
+</tbody>
+</table>
+<p>Relative to the unaccelerated solve, the energy-summed fluxes differ by <span class="math notranslate nohighlight">\(2.9\times10^{-12}\)</span> (WGDSA), <span class="math notranslate nohighlight">\(1.4\times10^{-9}\)</span> (TGDSA), and <span class="math notranslate nohighlight">\(1.4\times10^{-9}\)</span> (WGDSA+TGDSA), and the group-11 fluxes by at most <span class="math notranslate nohighlight">\(3.2\times10^{-9}\)</span>. All are well within the <span class="math notranslate nohighlight">\(10^{-8}\)</span> iteration tolerance. Agreement among the solves alone does not show that they are converged. As an independent check, the same problem was solved with one groupset per group and the across-groupset iteration
+converged to a pointwise change below <span class="math notranslate nohighlight">\(10^{-10}\)</span>, which took about 800 across-groupset iterations. That solve gives an energy-summed flux of 0.1844789433, which agrees with the unaccelerated result to <span class="math notranslate nohighlight">\(7\times10^{-11}\)</span> and with the TGDSA and WGDSA+TGDSA results to <span class="math notranslate nohighlight">\(1.3\times10^{-9}\)</span>. The fluxes and sweep counts were identical in five repeated runs. WGDSA removes about 60% of the sweeps, TGDSA about 93%, and the combination about 97%.</p>
+<p>TGDSA alone removes far more sweeps than WGDSA alone. The slowly converging error in this problem is therefore mainly the coupling between the thermal groups, which TGDSA corrects, rather than within-group scattering, which WGDSA corrects. Adding WGDSA to TGDSA reduces the sweeps further, from 186 to 81, because TGDSA leaves the within-group part of the error to the source iteration.</p>
+<p>The wall-time breakdown below is the median of five four-process runs:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Solve</p></th>
+<th class="head"><p>Model setup (s)</p></th>
+<th class="head"><p>Solver initialization (s)</p></th>
+<th class="head"><p>Source iterations (s)</p></th>
+<th class="head"><p>Total (s)</p></th>
+<th class="head"><p>Time per sweep (ms)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>No acceleration</p></td>
+<td><p>0.029</p></td>
+<td><p>&lt;0.001</p></td>
+<td><p>12.863</p></td>
+<td><p>12.891</p></td>
+<td><p>4.52</p></td>
+</tr>
+<tr class="row-odd"><td><p>WGDSA</p></td>
+<td><p>0.096</p></td>
+<td><p>&lt;0.001</p></td>
+<td><p>18.663</p></td>
+<td><p>18.755</p></td>
+<td><p>16.30</p></td>
+</tr>
+<tr class="row-even"><td><p>TGDSA</p></td>
+<td><p>0.041</p></td>
+<td><p>&lt;0.001</p></td>
+<td><p>1.157</p></td>
+<td><p>1.196</p></td>
+<td><p>6.22</p></td>
+</tr>
+<tr class="row-odd"><td><p>WGDSA+TGDSA</p></td>
+<td><p>0.098</p></td>
+<td><p>&lt;0.001</p></td>
+<td><p>1.794</p></td>
+<td><p>1.892</p></td>
+<td><p>22.15</p></td>
+</tr>
+</tbody>
+</table>
+<p>Setup is at most about 5% of any total. The WGDSA cases take about 0.07 s longer to set up because the problem builds and assembles a within-group diffusion operator for all 12 groups. TGDSA alone adds about 0.01 s, for the two-grid spectra and the one-group diffusion operator.</p>
+<p>The TGDSA correction adds about 1.7 ms to each sweep and WGDSA about 11.8 ms, so a WGDSA sweep costs 3.6 times as much as an unaccelerated one. WGDSA alone therefore remains slower than the baseline (a speedup of 0.70) despite its 2.5-fold reduction in sweeps. TGDSA alone is the fastest: each of its sweeps costs 1.4 times as much as an unaccelerated one, and its 15-fold reduction in sweeps gives a speedup of 11.4 for the iterations and 11.0 overall. The combination needs the fewest sweeps, 2.3
+times fewer than TGDSA alone, but each combined sweep costs 3.6 times as much as a TGDSA sweep, so its speedup is 7.3 for the iterations and 6.9 overall. Whether WGDSA pays for its cost depends on how strongly within-group scattering limits convergence, and in this problem it does not. Absolute wall times vary from machine to machine, so the speedups, rather than the times themselves, measure the improvement from each acceleration.</p>
+</section>
+<section id="Export-and-visualize-the-scalar-flux">
+<h2><span class="section-number">5.3.2.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>
+<p>All four solutions agree, so the combined WGDSA+TGDSA result is used as the representative flux field. The following code exports the 12 group scalar fluxes to VTK. It remains in Markdown so regression tests do not create output files.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
+
+<span class="n">FieldFunctionGridBased</span><span class="o">.</span><span class="n">ExportMultipleToPVTU</span><span class="p">(</span>
+    <span class="n">combined_problem</span><span class="o">.</span><span class="n">GetScalarFluxFieldFunction</span><span class="p">(),</span> <span class="s2">&quot;Flux/WGDSA_TGDSA_Flux&quot;</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p><img alt="Energy-summed and thermal-group scalar flux from the source-detector WGDSA+TGDSA solve" src="../../../_images/wgdsa_tgdsa_flux.png" /></p>
+<p><em>Scalar flux from the combined WGDSA+TGDSA solve on a logarithmic scale: the sum over all 12 groups (left) and the thermal group 11 (right). Each 0.5 cm cell is drawn with its piecewise-linear discontinuous (PWLD) solution, the bilinear field defined by the cell’s four nodal values. Dashed squares mark the source and the He-3 detector. The thermal flux is depressed inside the absorbing source and detector regions.</em></p>
+</section>
+<section id="Finalize-(for-Jupyter-Notebook-only)">
+<h2><span class="section-number">5.3.2.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<p>In script mode, PyOpenSn handles finalization automatically. In a Jupyter kernel, finalize OpenSn before MPI.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+
+    <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Finalize</span><span class="p">()</span>
+        <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tgdsa.html" class="btn btn-neutral float-left" title="5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="scdsa.html" class="btn btn-neutral float-right" title="5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

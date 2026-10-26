@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.1.1. Operator Construction Methods &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.1.1. Angular Operator Construction Methods &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,7 +29,7 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="5.1.2. Very Strong Forward-Peaked Scattering" href="forward_peaked_g099.html" />
+    <link rel="next" title="5.1.2. Isotropic Scattering in a P4 Representation" href="isotropic_scattering_p4.html" />
     <link rel="prev" title="5.1. Angular Discretization" href="index.html" /> 
 </head>
 
@@ -63,11 +63,14 @@
 <li class="toctree-l2"><a class="reference internal" href="../../workflows/index.html">4. Workflows</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="../index.html">5. Numerical Methods</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">5.1. Angular Discretization</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">5.1.1. Operator Construction Methods</a></li>
-<li class="toctree-l4"><a class="reference internal" href="forward_peaked_g099.html">5.1.2. Very Strong Forward-Peaked Scattering</a></li>
-<li class="toctree-l4"><a class="reference internal" href="delta_forward.html">5.1.3. Delta-Forward Scattering and Galerkin Quadrature Methods</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.1.1. Angular Operator Construction Methods</a></li>
+<li class="toctree-l4"><a class="reference internal" href="isotropic_scattering_p4.html">5.1.2. Isotropic Scattering in a P4 Representation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="anisotropic_boundary_delta_forward.html">5.1.3. Anisotropic Boundary Sources with Delta-Forward Scattering</a></li>
+<li class="toctree-l4"><a class="reference internal" href="forward_peaked_g099.html">5.1.4. Strongly Forward-Peaked Scattering</a></li>
 </ul>
 </li>
+<li class="toctree-l3"><a class="reference internal" href="../iterative_methods/index.html">5.2. Iterative Methods</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../acceleration/index.html">5.3. Acceleration</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../applications/index.html">6. Applications</a></li>
@@ -97,7 +100,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Numerical Methods</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.1. </span>Angular Discretization</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.1.1. </span>Operator Construction Methods</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.1.1. </span>Angular Operator Construction Methods</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -106,12 +109,13 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="Operator-Construction-Methods">
-<h1><span class="section-number">5.1.1. </span>Operator Construction Methods<a class="headerlink" href="#Operator-Construction-Methods" title="Link to this heading"></a></h1>
+  <section id="Angular-Operator-Construction-Methods">
+<h1><span class="section-number">5.1.1. </span>Angular Operator Construction Methods<a class="headerlink" href="#Angular-Operator-Construction-Methods" title="Link to this heading"></a></h1>
+<p><img alt="Mappings between discrete angular flux and flux moments" src="../../../_images/operator_mapping.png" /></p>
 <p>In discrete-ordinates transport, we need operators to map between the angular flux (defined at discrete directions) and flux moments (expanded in spherical harmonics). The two key operators are:</p>
 <ul class="simple">
-<li><p><strong>Discrete-to-Moment (D)</strong>: computes flux moments from the angular flux.</p></li>
-<li><p><strong>Moment-to-Discrete (M)</strong>: reconstructs the angular flux from flux moments.</p></li>
+<li><p><strong>Discrete-to-Moment (:math:`D`)</strong>: computes flux moments from the angular flux.</p></li>
+<li><p><strong>Moment-to-Discrete (:math:`M`)</strong>: reconstructs the angular flux from flux moments.</p></li>
 </ul>
 <p>OpenSn provides various methods for constructing these operators:</p>
 <ol class="arabic simple">
@@ -119,42 +123,38 @@
 <li><p><code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">galerkin_three</span></code></p></li>
 </ol>
-<p>This tutorial demonstrates each method and compares their properties.</p>
-<p>To run the code, simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">--execute</span> <span class="pre">&lt;basename&gt;.ipynb</span></code>.</p>
-<p>To convert it to a python file (named <code class="docutils literal notranslate"><span class="pre">&lt;basename&gt;.py</span></code>), simply type: <code class="docutils literal notranslate"><span class="pre">jupyter</span> <span class="pre">nbconvert</span> <span class="pre">--to</span> <span class="pre">python</span> <span class="pre">&lt;basename&gt;.ipynb</span></code></p>
+<p>This tutorial demonstrates each method with a 3D Gauss–Legendre–Chebyshev product quadrature, then repeats the diagnostic with an SLDFESQ quadrature to show when operator construction has a visible effect.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">mpi4py</span><span class="w"> </span><span class="kn">import</span> <span class="n">MPI</span>
 
-
-<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">,</span> <span class="n">SLDFEsqQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span>
 <br/></pre></div>
 </div>
 </div>
 <section id="Helper-function">
 <h2><span class="section-number">5.1.1.1. </span>Helper function<a class="headerlink" href="#Helper-function" title="Link to this heading"></a></h2>
-<p>We define a helper function to evaluate the orthogonality of the D2M and M2D operators. Ideally, the product <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> should equal the identity matrix, which means the operators are consistent inverses of each other. For cases where <span class="math notranslate nohighlight">\(N_{mom} \leq N_{dir}\)</span>, <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> will be the left inverse of <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>.</p>
-<p>OpenSn does not store <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> as it is seen in literature. Instead, <span class="math notranslate nohighlight">\(\mathbf{D}^T\)</span> is stored, and you will see various transposes done to convert OpenSn’s <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> into the literature defined <span class="math notranslate nohighlight">\(\mathbf{D}\)</span>.</p>
+<p>We define a helper function to evaluate the orthogonality of the <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(M\)</span> operators. Ideally, the product <span class="math notranslate nohighlight">\(D \cdot M\)</span> should equal the identity matrix, which means the operators are consistent inverses of each other. For cases where <span class="math notranslate nohighlight">\(N_{mom} \leq N_{dir}\)</span>, <span class="math notranslate nohighlight">\(D\)</span> will be the left inverse of <span class="math notranslate nohighlight">\(M\)</span>.</p>
+<p>OpenSn stores the discrete-to-moment operator in direction-by-moment order, which is <span class="math notranslate nohighlight">\(D^T\)</span> relative to the literature form used here. The transpose below converts the stored array to <span class="math notranslate nohighlight">\(D\)</span> before forming <span class="math notranslate nohighlight">\(D \cdot M\)</span>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_orthogonality</span><span class="p">(</span><span class="n">D2M</span><span class="p">,</span> <span class="n">M2D</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check how close D @ M is to the identity matrix.&quot;&quot;&quot;</span>
-    <span class="n">product</span> <span class="o">=</span> <span class="n">D2M</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">M2D</span>
-    <span class="n">n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">check_orthogonality</span><span class="p">(</span><span class="n">D_transpose</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Check how close the literature-form D @ M product is to identity.&quot;&quot;&quot;</span>
+    <span class="n">product</span> <span class="o">=</span> <span class="n">D_transpose</span><span class="o">.</span><span class="n">T</span> <span class="o">@</span> <span class="n">M</span>
     <span class="n">diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">product</span><span class="p">)</span>
     <span class="n">mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="n">product</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">fill_diagonal</span><span class="p">(</span><span class="n">mask</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
     <span class="n">max_off_diag</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">product</span><span class="p">[</span><span class="n">mask</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="k">if</span> <span class="n">product</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">size</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="mf">0.0</span>
     <span class="n">max_diag_dev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">diag</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">label</span><span class="si">}</span><span class="s2">:&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  D2M shape: </span><span class="si">{</span><span class="n">D2M</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, M2D shape: </span><span class="si">{</span><span class="n">M2D</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max off-diagonal of D2M^T @ M2D: </span><span class="si">{</span><span class="n">max_off_diag</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Stored D^T shape: </span><span class="si">{</span><span class="n">D_transpose</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">, M shape: </span><span class="si">{</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max off-diagonal of D @ M: </span><span class="si">{</span><span class="n">max_off_diag</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;  Max diagonal deviation from 1:   </span><span class="si">{</span><span class="n">max_diag_dev</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">max_off_diag</span><span class="p">,</span> <span class="n">max_diag_dev</span>
@@ -166,10 +166,10 @@
 <h2><span class="section-number">5.1.1.2. </span>Standard method<a class="headerlink" href="#Standard-method" title="Link to this heading"></a></h2>
 <p>The <strong>Standard</strong> method builds the operators directly from the spherical harmonics evaluated at the quadrature points:</p>
 <div class="math notranslate nohighlight">
-\[\mathbf{D2M}_{n,m} = w_n \, Y_{\ell}^{m}(\hat{\Omega}_n)\]</div>
+\[D_{k,d} = w_d \, Y_{\ell, m}(\vec{\Omega}_d)\]</div>
 <div class="math notranslate nohighlight">
-\[\mathbf{M2D}_{n,m} = \frac{2\ell + 1}{\sum_n w_n} \, Y_{\ell}^{m}(\hat{\Omega}_n)\]</div>
-<p>This is the default method and works with any quadrature set and any scattering order. However, for a finite quadrature, <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> is not guaranteed to be the identity.</p>
+\[M_{d,k} = \frac{2\ell + 1}{\sum_d w_d} \, Y_{\ell,m}(\vec{\Omega}_d)\]</div>
+<p>This is the default method and works with any quadrature set and any scattering order. However, for a finite quadrature, <span class="math notranslate nohighlight">\(D \cdot M\)</span> is not guaranteed to be the identity.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -178,19 +178,21 @@
     <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;standard&#39;</span>
 <span class="p">)</span>
 
-<span class="n">D2M_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+<span class="n">D_transpose_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M_pquad_std</span> <span class="o">=</span> <span class="n">pquad_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
 
-<span class="n">off_pquad_std</span><span class="p">,</span> <span class="n">diag_pquad_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_std</span><span class="p">,</span> <span class="n">M2D_pquad_std</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span><span class="p">)</span>
+<span class="n">off_pquad_std</span><span class="p">,</span> <span class="n">diag_pquad_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">D_transpose_pquad_std</span><span class="p">,</span> <span class="n">M_pquad_std</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Galerkin-One-method">
 <h2><span class="section-number">5.1.1.3. </span>Galerkin One method<a class="headerlink" href="#Galerkin-One-method" title="Link to this heading"></a></h2>
-<p>The <strong>Galerkin One</strong> method builds the M2D operator the same way as the Standard method, then computes D2M by directly inverting the M2D matrix. This requires the operator to be square, i.e., the number of directions must equal the number of moments.</p>
+<p>The <strong>Galerkin One</strong> method builds the <span class="math notranslate nohighlight">\(M\)</span> operator the same way as the Standard method, then computes <span class="math notranslate nohighlight">\(D\)</span> by directly inverting the <span class="math notranslate nohighlight">\(M\)</span> matrix. This requires the operator to be square, i.e., the number of directions must equal the number of moments.</p>
 <p>When using <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code>, the <code class="docutils literal notranslate"><span class="pre">scattering_order</span></code> parameter is optional. If omitted, OpenSn automatically selects the scattering order so that the number of spherical harmonic moments equals the number of quadrature directions, yielding a square (and thus invertible) system.</p>
-<p>This method produces operators that satisfy <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M} = \mathbf{I}\)</span> to machine precision, as long as <span class="math notranslate nohighlight">\(\mathbf{M}\)</span> is well-conditioned.</p>
+<p>This method produces operators that satisfy <span class="math notranslate nohighlight">\(D \cdot M = \mathbf{I}\)</span> to machine precision, as long as the square <span class="math notranslate nohighlight">\(M\)</span> operator is well-conditioned.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -199,18 +201,21 @@
     <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;galerkin_one&#39;</span>
 <span class="p">)</span>
 
-<span class="n">D2M_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+<span class="n">D_transpose_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M_pquad_g1</span> <span class="o">=</span> <span class="n">pquad_g1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
 
-<span class="n">off_pquad_g1</span><span class="p">,</span> <span class="n">diag_pquad_g1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_g1</span><span class="p">,</span> <span class="n">M2D_pquad_g1</span><span class="p">,</span> <span class="s2">&quot;Galerkin One&quot;</span><span class="p">)</span>
+<span class="n">off_pquad_g1</span><span class="p">,</span> <span class="n">diag_pquad_g1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">D_transpose_pquad_g1</span><span class="p">,</span> <span class="n">M_pquad_g1</span><span class="p">,</span> <span class="s2">&quot;Galerkin One&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
 <section id="Galerkin-Three-method">
 <h2><span class="section-number">5.1.1.4. </span>Galerkin Three method<a class="headerlink" href="#Galerkin-Three-method" title="Link to this heading"></a></h2>
-<p>The <strong>Galerkin Three</strong> method provides a middle ground. It orthogonalizes the spherical harmonics to form a set of approximate spherical harmonics that are orthogonal with respect to the given quadrature rule. Both D2M and M2D are built from these approximate, orthogonalized harmonics.</p>
-<p>Unlike <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code>, this method does not require a square operator, so it works with any scattering order. Due to the construction of <span class="math notranslate nohighlight">\(\mathbf{D}\)</span> and <span class="math notranslate nohighlight">\(\mathbf{M}\)</span>, it guarantees <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M} = \mathbf{I}\)</span>.</p>
+<p>The <strong>Galerkin Three</strong> method provides a middle ground. It orthogonalizes the spherical harmonics to form a set of approximate spherical harmonics that are orthogonal with respect to the given quadrature rule. Both <span class="math notranslate nohighlight">\(D\)</span> and <span class="math notranslate nohighlight">\(M\)</span> are built from these approximate, orthogonalized harmonics.</p>
+<p>Unlike <code class="docutils literal notranslate"><span class="pre">galerkin_one</span></code>, this method does not require a square operator, so the requested scattering order does not have to match the number of directions. The quadrature still limits which harmonics can be selected. For the 3D product quadrature used here (four polar and eight azimuthal angles), the selection rules retain at most 32 moments, one per direction, and no harmonic above degree 7. Requesting a higher order omits the higher-degree harmonics without an error, and
+<code class="docutils literal notranslate"><span class="pre">GetScatteringOrder()</span></code> still reports the requested order, so inspect <code class="docutils literal notranslate"><span class="pre">GetMomentToHarmonicsIndexMap()</span></code> to confirm which <span class="math notranslate nohighlight">\((\ell, m)\)</span> pairs were retained whenever you change the scattering order. The orthogonalized basis makes the composed moment-space operator <span class="math notranslate nohighlight">\(D \cdot M\)</span> equal to <span class="math notranslate nohighlight">\(\mathbf{I}\)</span> over the retained moments only, so this check cannot reveal harmonics that were not selected.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -219,17 +224,19 @@
     <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s1">&#39;galerkin_three&#39;</span>
 <span class="p">)</span>
 
-<span class="n">D2M_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
+<span class="n">D_transpose_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
+<span class="n">M_pquad_g3</span> <span class="o">=</span> <span class="n">pquad_g3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
 
-<span class="n">off_pquad_g3</span><span class="p">,</span> <span class="n">diag_pquad_g3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_pquad_g3</span><span class="p">,</span> <span class="n">M2D_pquad_g3</span><span class="p">,</span> <span class="s2">&quot;Galerkin Three&quot;</span><span class="p">)</span>
+<span class="n">off_pquad_g3</span><span class="p">,</span> <span class="n">diag_pquad_g3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">D_transpose_pquad_g3</span><span class="p">,</span> <span class="n">M_pquad_g3</span><span class="p">,</span> <span class="s2">&quot;Galerkin Three&quot;</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
-<section id="Summary-comparison">
-<h2><span class="section-number">5.1.1.5. </span>Summary comparison<a class="headerlink" href="#Summary-comparison" title="Link to this heading"></a></h2>
-<p>The table below compares the orthogonality of <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span> for each method using a 3D-Product quadrature set with 4 Polar angles and 8 Azimuthal angles. Smaller values indicate operators that are closer to being exact inverses of each other.</p>
+<section id="Product-quadrature-comparison">
+<h2><span class="section-number">5.1.1.5. </span>Product-quadrature comparison<a class="headerlink" href="#Product-quadrature-comparison" title="Link to this heading"></a></h2>
+<p>The table below compares <span class="math notranslate nohighlight">\(D \cdot M\)</span> for each method using a 3D product quadrature with four polar and eight azimuthal angles. This quadrature integrates the selected third-order moments accurately, so all three methods approach the identity to machine precision.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -239,79 +246,133 @@
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Standard&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin One&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin Three&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_pquad_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_pquad_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">pquad_results</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;STANDARD&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_pquad_std</span><span class="p">,</span> <span class="n">diag_pquad_std</span><span class="p">),</span>
+    <span class="s2">&quot;GALERKIN_ONE&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_pquad_g1</span><span class="p">,</span> <span class="n">diag_pquad_g1</span><span class="p">),</span>
+    <span class="s2">&quot;GALERKIN_THREE&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_pquad_g3</span><span class="p">,</span> <span class="n">diag_pquad_g3</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="n">off_diagonal</span><span class="p">,</span> <span class="n">diagonal_deviation</span><span class="p">)</span> <span class="ow">in</span> <span class="n">pquad_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PQUAD_</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_MAX_OFF_DIAGONAL=</span><span class="si">{</span><span class="n">off_diagonal</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;PQUAD_</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_MAX_DIAG_DEVIATION=</span><span class="si">{</span><span class="n">diagonal_deviation</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span> <span class="k">for</span> <span class="n">result</span> <span class="ow">in</span> <span class="n">pquad_results</span><span class="o">.</span><span class="n">values</span><span class="p">())</span>
 </pre></div>
 </div>
 </div>
+<p>The product-quadrature calculation gives:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Maximum off-diagonal</p></th>
+<th class="head"><p>Maximum diagonal deviation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Standard</p></td>
+<td><p><span class="math notranslate nohighlight">\(1.79\times10^{-15}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(8.88\times10^{-16}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Galerkin One</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.96\times10^{-15}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(1.44\times10^{-15}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Galerkin Three</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.88\times10^{-16}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(1.11\times10^{-15}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>All values are at floating-point roundoff and satisfy the <span class="math notranslate nohighlight">\(10^{-12}\)</span> regression threshold. Exact roundoff-level values can vary slightly by platform.</p>
 </section>
-<section id="Comparison-2">
-<h2><span class="section-number">5.1.1.6. </span>Comparison 2<a class="headerlink" href="#Comparison-2" title="Link to this heading"></a></h2>
-<p>We will now show how these operators can differ from eachother using a different quadrature set.</p>
-<p>First, we apply the Standard method to an LDFE quadrature set with 1 level of global refinement.</p>
+<section id="When-operator-choice-matters:-SLDFESQ">
+<h2><span class="section-number">5.1.1.6. </span>When operator choice matters: SLDFESQ<a class="headerlink" href="#When-operator-choice-matters:-SLDFESQ" title="Link to this heading"></a></h2>
+<p>The product rule above integrates the selected third-order moments accurately, so all three constructions approach the identity. To expose the difference between the methods, we reuse the same diagnostic with a level-1 SLDFESQ quadrature. The standard and Galerkin Three cases request order 10 and retain 121 moments. Galerkin One instead selects 384 moments to match the 384 directions and form a square operator.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">SLDFEsqQuadrature3DXYZ</span>
-
-<span class="n">ldfe_std</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sldfesq_std</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
     <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;standard&quot;</span>
 <span class="p">)</span>
-
-<span class="n">D2M_ldfe_std</span> <span class="o">=</span> <span class="n">ldfe_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_ldfe_std</span> <span class="o">=</span> <span class="n">ldfe_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
-
-<span class="n">off_ldfe_std</span><span class="p">,</span> <span class="n">diag_ldfe_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_std</span><span class="p">,</span> <span class="n">M2D_ldfe_std</span><span class="p">,</span> <span class="s2">&quot;Standard&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Next, we do the same with the Galerkin One method.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ldfe_gq1</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+<span class="n">sldfesq_g1</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
     <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;galerkin_one&quot;</span>
 <span class="p">)</span>
-
-<span class="n">D2M_ldfe_gq1</span> <span class="o">=</span> <span class="n">ldfe_gq1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_ldfe_gq1</span> <span class="o">=</span> <span class="n">ldfe_gq1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
-
-<span class="n">off_ldfe_gq1</span><span class="p">,</span> <span class="n">diag_ldfe_gq1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_gq1</span><span class="p">,</span> <span class="n">M2D_ldfe_gq1</span><span class="p">,</span> <span class="s2">&quot;Galerkin One&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-<p>Finally, we apply the Galerkin Three method.</p>
-<div class="nbinput nblast docutils container">
-<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
-</pre></div>
-</div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ldfe_gq3</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
+<span class="n">sldfesq_g3</span> <span class="o">=</span> <span class="n">SLDFEsqQuadrature3DXYZ</span><span class="p">(</span>
     <span class="n">level</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">operator_method</span><span class="o">=</span><span class="s2">&quot;galerkin_three&quot;</span>
 <span class="p">)</span>
 
-<span class="n">D2M_ldfe_gq3</span> <span class="o">=</span> <span class="n">ldfe_gq3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">()</span>
-<span class="n">M2D_ldfe_gq3</span> <span class="o">=</span> <span class="n">ldfe_gq3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">()</span>
-
-<span class="n">off_ldfe_gq3</span><span class="p">,</span> <span class="n">diag_ldfe_gq3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span><span class="n">D2M_ldfe_gq3</span><span class="p">,</span> <span class="n">M2D_ldfe_gq3</span><span class="p">,</span> <span class="s2">&quot;Galerkin Three&quot;</span><span class="p">)</span>
+<span class="n">off_sldfesq_std</span><span class="p">,</span> <span class="n">diag_sldfesq_std</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">sldfesq_std</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">(),</span>
+    <span class="n">sldfesq_std</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">(),</span>
+    <span class="s2">&quot;Standard&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">off_sldfesq_g1</span><span class="p">,</span> <span class="n">diag_sldfesq_g1</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">sldfesq_g1</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">(),</span>
+    <span class="n">sldfesq_g1</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">(),</span>
+    <span class="s2">&quot;Galerkin One&quot;</span><span class="p">,</span>
+<span class="p">)</span>
+<span class="n">off_sldfesq_g3</span><span class="p">,</span> <span class="n">diag_sldfesq_g3</span> <span class="o">=</span> <span class="n">check_orthogonality</span><span class="p">(</span>
+    <span class="n">sldfesq_g3</span><span class="o">.</span><span class="n">GetDiscreteToMomentOperator</span><span class="p">(),</span>
+    <span class="n">sldfesq_g3</span><span class="o">.</span><span class="n">GetMomentToDiscreteOperator</span><span class="p">(),</span>
+    <span class="s2">&quot;Galerkin Three&quot;</span><span class="p">,</span>
+<span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
-<section id="Summary-Comparison">
-<h2><span class="section-number">5.1.1.7. </span>Summary Comparison<a class="headerlink" href="#Summary-Comparison" title="Link to this heading"></a></h2>
-<p>The table below compares the orthogonality of <span class="math notranslate nohighlight">\(\mathbf{D} \cdot \mathbf{M}\)</span>. It can be seen that the deviation of each matrix varies, depending on the construction chosen.</p>
+<section id="SLDFESQ-comparison">
+<h2><span class="section-number">5.1.1.7. </span>SLDFESQ comparison<a class="headerlink" href="#SLDFESQ-comparison" title="Link to this heading"></a></h2>
+<p>Here the standard weighted projection departs appreciably from the identity. Both Galerkin constructions produce consistent moment-space mappings: Galerkin One uses a square 384-moment space, while Galerkin Three orthogonalizes the requested 121-moment space. This contrast shows why operator choice should be checked against both the quadrature and the retained moment order.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Method&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max off-diagonal&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="s1">&#39;Max diag deviation&#39;</span><span class="si">:</span><span class="s2">&gt;20</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;-&quot;</span> <span class="o">*</span> <span class="mi">62</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Standard&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin One&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_gq1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_gq1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin Three&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_ldfe_gq3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_ldfe_gq3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Standard&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_sldfesq_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_sldfesq_std</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin One&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_sldfesq_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_sldfesq_g1</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Galerkin Three&#39;</span><span class="si">:</span><span class="s2">&lt;20</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">off_sldfesq_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">diag_sldfesq_g3</span><span class="si">:</span><span class="s2">&gt;20.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">sldfesq_results</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;STANDARD&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_sldfesq_std</span><span class="p">,</span> <span class="n">diag_sldfesq_std</span><span class="p">),</span>
+    <span class="s2">&quot;GALERKIN_ONE&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_sldfesq_g1</span><span class="p">,</span> <span class="n">diag_sldfesq_g1</span><span class="p">),</span>
+    <span class="s2">&quot;GALERKIN_THREE&quot;</span><span class="p">:</span> <span class="p">(</span><span class="n">off_sldfesq_g3</span><span class="p">,</span> <span class="n">diag_sldfesq_g3</span><span class="p">),</span>
+<span class="p">}</span>
+<span class="k">for</span> <span class="n">method</span><span class="p">,</span> <span class="p">(</span><span class="n">off_diagonal</span><span class="p">,</span> <span class="n">diagonal_deviation</span><span class="p">)</span> <span class="ow">in</span> <span class="n">sldfesq_results</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SLDFESQ_</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_MAX_OFF_DIAGONAL=</span><span class="si">{</span><span class="n">off_diagonal</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;SLDFESQ_</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">_MAX_DIAG_DEVIATION=</span><span class="si">{</span><span class="n">diagonal_deviation</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="k">assert</span> <span class="nb">min</span><span class="p">(</span><span class="n">sldfesq_results</span><span class="p">[</span><span class="s2">&quot;STANDARD&quot;</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mf">0.1</span>
+<span class="k">assert</span> <span class="nb">max</span><span class="p">(</span><span class="n">sldfesq_results</span><span class="p">[</span><span class="s2">&quot;GALERKIN_ONE&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-9</span>
+<span class="k">assert</span> <span class="nb">max</span><span class="p">(</span><span class="n">sldfesq_results</span><span class="p">[</span><span class="s2">&quot;GALERKIN_THREE&quot;</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span>
 </pre></div>
 </div>
 </div>
+<p>The SLDFESQ calculation gives:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Method</p></th>
+<th class="head"><p>Maximum off-diagonal</p></th>
+<th class="head"><p>Maximum diagonal deviation</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Standard</p></td>
+<td><p><span class="math notranslate nohighlight">\(5.216\times10^{-1}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(3.048\times10^{-1}\)</span></p></td>
+</tr>
+<tr class="row-odd"><td><p>Galerkin One</p></td>
+<td><p><span class="math notranslate nohighlight">\(1.18\times10^{-11}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(3.12\times10^{-12}\)</span></p></td>
+</tr>
+<tr class="row-even"><td><p>Galerkin Three</p></td>
+<td><p><span class="math notranslate nohighlight">\(7.22\times10^{-16}\)</span></p></td>
+<td><p><span class="math notranslate nohighlight">\(3.33\times10^{-15}\)</span></p></td>
+</tr>
+</tbody>
+</table>
+<p>The standard construction has a visible departure from the identity. Galerkin One reduces both errors below <span class="math notranslate nohighlight">\(10^{-9}\)</span>, while Galerkin Three reaches floating-point roundoff for the retained 121-moment space.</p>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
 <h2><span class="section-number">5.1.1.8. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
@@ -321,15 +382,12 @@
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
+    <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">finalize_env</span><span class="p">():</span>
-    <span class="n">Finalize</span><span class="p">()</span>
-    <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
-
-<span class="n">ipython_instance</span> <span class="o">=</span> <span class="n">get_ipython</span><span class="p">()</span>
-<span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-    <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">get_ipython</span><span class="p">()</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">Finalize</span><span class="p">()</span>
+        <span class="n">MPI</span><span class="o">.</span><span class="n">Finalize</span><span class="p">()</span>
 </pre></div>
 </div>
 </div>
@@ -341,7 +399,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="5.1. Angular Discretization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="forward_peaked_g099.html" class="btn btn-neutral float-right" title="5.1.2. Very Strong Forward-Peaked Scattering" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="isotropic_scattering_p4.html" class="btn btn-neutral float-right" title="5.1.2. Isotropic Scattering in a P4 Representation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

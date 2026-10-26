@@ -1,0 +1,260 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "id": "title",
+   "metadata": {},
+   "source": [
+    "# GMRES Convergence Controls\n",
+    "\n",
+    "![Highly scattering vacuum slab used for the GMRES study](images/gmres_scattering_slab.png)\n",
+    "\n",
+    "**Goal:** Show how the inner tolerance and restart interval affect GMRES accuracy, transport sweeps, and wall time."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "problem-text",
+   "metadata": {},
+   "source": [
+    "## Scattering slab\n",
+    "\n",
+    "A finite slab with vacuum boundaries and a scattering ratio of 0.99 gives GMRES enough spatial error modes for its controls to matter. Every case uses the same 1000-cell mesh, 32-direction quadrature, and source. A tightly converged solve supplies the reference for comparing solver settings, and an independent analytic $S_{32}$ solution checks that reference for correctness."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "solve",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "import numpy as np\n",
+    "from mpi4py import MPI\n",
+    "from pyopensn.aquad import GLProductQuadrature1DSlab\n",
+    "from pyopensn.context import Finalize\n",
+    "from pyopensn.mesh import OrthogonalMeshGenerator\n",
+    "from pyopensn.post import VolumePostprocessor\n",
+    "from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver\n",
+    "from pyopensn.source import VolumetricSource\n",
+    "from pyopensn.xs import MultiGroupXS\n",
+    "\n",
+    "comm = MPI.COMM_WORLD\n",
+    "rank = comm.rank\n",
+    "\n",
+    "\n",
+    "def solve(tolerance, restart):\n",
+    "    mesh = OrthogonalMeshGenerator(\n",
+    "        node_sets=[[10.0 * i / 1000 for i in range(1001)]]\n",
+    "    ).Execute()\n",
+    "    mesh.SetUniformBlockID(0)\n",
+    "    xs = MultiGroupXS()\n",
+    "    xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.99)\n",
+    "    quadrature = GLProductQuadrature1DSlab(\n",
+    "        n_polar=32, scattering_order=0\n",
+    "    )\n",
+    "    problem = DiscreteOrdinatesProblem(\n",
+    "        mesh=mesh,\n",
+    "        num_groups=1,\n",
+    "        groupsets=[\n",
+    "            {\n",
+    "                \"groups_from_to\": (0, 0),\n",
+    "                \"angular_quadrature\": quadrature,\n",
+    "                \"inner_linear_method\": \"petsc_gmres\",\n",
+    "                \"l_abs_tol\": tolerance,\n",
+    "                \"l_max_its\": 500,\n",
+    "                \"gmres_restart_interval\": restart,\n",
+    "            }\n",
+    "        ],\n",
+    "        xs_map=[{\"block_ids\": [0], \"xs\": xs}],\n",
+    "        volumetric_sources=[\n",
+    "            VolumetricSource(block_ids=[0], group_strength=[1.0])\n",
+    "        ],\n",
+    "        boundary_conditions=[\n",
+    "            {\"name\": \"zmin\", \"type\": \"vacuum\"},\n",
+    "            {\"name\": \"zmax\", \"type\": \"vacuum\"},\n",
+    "        ],\n",
+    "        options={\"verbose_inner_iterations\": False},\n",
+    "    )\n",
+    "\n",
+    "    solver = SteadyStateSourceSolver(problem=problem)\n",
+    "    comm.Barrier()\n",
+    "    start = MPI.Wtime()\n",
+    "    solver.Initialize()\n",
+    "    solver.Execute()\n",
+    "    comm.Barrier()\n",
+    "    elapsed = comm.allreduce(MPI.Wtime() - start, op=MPI.MAX)\n",
+    "\n",
+    "    average = VolumePostprocessor(problem=problem, value_type=\"avg\")\n",
+    "    average.Execute()\n",
+    "    flux = sum(average.GetValue()[0])\n",
+    "    return flux, solver.GetNumSweeps(), elapsed"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "reference-text",
+   "metadata": {},
+   "source": [
+    "## Independent analytic reference\n",
+    "\n",
+    "The tightly converged run shows only how cheaper GMRES settings compare with a stricter setting of the same discretization. To check the answer itself, we solve the same $S_{32}$ equations analytically. In a homogeneous slab with isotropic scattering and a uniform source $q$, the discrete-ordinates equations\n",
+    "\n",
+    "$$\n",
+    "\\mu_n\\frac{d\\psi_n}{dx}+\\sigma_t\\psi_n=\\frac{\\sigma_s}{2}\\sum_{m}w_m\\psi_m+\\frac{q}{2}\n",
+    "$$\n",
+    "\n",
+    "form a linear system of ordinary differential equations with constant coefficients. The solution is the infinite-medium flux $\\phi_\\infty=q/\\sigma_a$ plus exponential modes of the homogeneous system. The vacuum conditions $\\psi_n(0)=0$ for $\\mu_n>0$ and $\\psi_n(L)=0$ for $\\mu_n<0$ fix the mode amplitudes, and integrating the modes exactly gives the slab-average scalar flux without spatial discretization error. The function below uses NumPy's Gauss--Legendre rule ($\\sum_n w_n=2$) rather than OpenSn's quadrature, so the reference is independent of the code under test."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "reference",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def analytic_slab_average(n_directions, sigma_t, c, q, length):\n",
+    "    \"\"\"Slab-average scalar flux of the exact S_N solution with vacuum boundaries.\"\"\"\n",
+    "    mu, w = np.polynomial.legendre.leggauss(n_directions)\n",
+    "    sigma_s = c * sigma_t\n",
+    "    phi_infinite = q / (sigma_t - sigma_s)\n",
+    "\n",
+    "    # Exponential modes of the homogeneous system d(psi)/dx = A psi\n",
+    "    A = (\n",
+    "        -sigma_t * np.eye(n_directions)\n",
+    "        + 0.5 * sigma_s * np.outer(np.ones(n_directions), w)\n",
+    "    ) / mu[:, None]\n",
+    "    lam, V = np.linalg.eig(A)\n",
+    "    assert np.allclose(lam.imag, 0.0) and np.allclose(V.imag, 0.0)\n",
+    "    lam, V = lam.real, V.real\n",
+    "\n",
+    "    # Anchor each mode at the boundary where it is largest to avoid overflow\n",
+    "    x_anchor = np.where(lam > 0.0, length, 0.0)\n",
+    "    x_boundary = np.where(mu > 0.0, 0.0, length)\n",
+    "    boundary_matrix = V * np.exp(lam * (x_boundary[:, None] - x_anchor))\n",
+    "    amplitudes = np.linalg.solve(\n",
+    "        boundary_matrix, np.full(n_directions, -0.5 * phi_infinite)\n",
+    "    )\n",
+    "\n",
+    "    mode_integrals = -np.expm1(-np.abs(lam) * length) / np.abs(lam)\n",
+    "    return phi_infinite + (w @ V) @ (amplitudes * mode_integrals) / length\n",
+    "\n",
+    "\n",
+    "analytic_flux = analytic_slab_average(\n",
+    "    n_directions=32, sigma_t=1.0, c=0.99, q=1.0, length=10.0\n",
+    ")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "study-text",
+   "metadata": {},
+   "source": [
+    "## Vary tolerance and restart\n",
+    "\n",
+    "The tolerance cases use a restart interval of 30. The restart cases use a tolerance of $10^{-8}$. Sweep counts measure transport work; wall time is machine-dependent."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "study",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "reference_flux, reference_sweeps, reference_time = solve(1.0e-10, 50)\n",
+    "cases = [\n",
+    "    (\"Tolerance 1e-4\", 1.0e-4, 30),\n",
+    "    (\"Tolerance 1e-6\", 1.0e-6, 30),\n",
+    "    (\"Tolerance 1e-8\", 1.0e-8, 30),\n",
+    "    (\"Restart 5\", 1.0e-8, 5),\n",
+    "    (\"Restart 20\", 1.0e-8, 20),\n",
+    "    (\"Restart 50\", 1.0e-8, 50),\n",
+    "]\n",
+    "results = {label: solve(tolerance, restart) for label, tolerance, restart in cases}\n",
+    "differences = {\n",
+    "    label: abs(flux - reference_flux) / abs(reference_flux)\n",
+    "    for label, (flux, _, _) in results.items()\n",
+    "}\n",
+    "reference_error = abs(reference_flux - analytic_flux) / analytic_flux\n",
+    "\n",
+    "if rank == 0:\n",
+    "    print(f\"GMRES analytic S32 average flux={analytic_flux:.12e}\")\n",
+    "    print(f\"GMRES reference relative error vs analytic={reference_error:.12e}\")\n",
+    "    print(f\"GMRES reference total average flux={reference_flux:.12e}\")\n",
+    "    print(f\"GMRES reference sweeps={reference_sweeps}\")\n",
+    "    print(f\"GMRES reference wall time (s)={reference_time:.6f}\")\n",
+    "    for label, _, _ in cases:\n",
+    "        flux, sweeps, elapsed = results[label]\n",
+    "        print(f\"GMRES {label} relative flux difference={differences[label]:.12e}\")\n",
+    "        print(f\"GMRES {label} sweeps={sweeps}\")\n",
+    "        print(f\"GMRES {label} wall time (s)={elapsed:.6f}\")\n",
+    "\n",
+    "assert reference_error < 1.0e-7\n",
+    "assert max(differences.values()) < 1.0e-3\n",
+    "assert results[\"Tolerance 1e-4\"][1] <= results[\"Tolerance 1e-8\"][1]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "results-text",
+   "metadata": {},
+   "source": [
+    "A representative one-process run gives:\n",
+    "\n",
+    "| Case | Relative flux difference | Sweeps | Wall time (s) |\n",
+    "|---|---:|---:|---:|\n",
+    "| Reference ($10^{-10}$, restart 50) | 0 | 17 | 0.0183 |\n",
+    "| Tolerance $10^{-4}$ | $3.74\\times10^{-9}$ | 11 | 0.0119 |\n",
+    "| Tolerance $10^{-6}$ | $1.40\\times10^{-11}$ | 13 | 0.0136 |\n",
+    "| Tolerance $10^{-8}$ | $1.34\\times10^{-13}$ | 15 | 0.0155 |\n",
+    "| Restart 5 | $1.52\\times10^{-9}$ | 41 | 0.0418 |\n",
+    "| Restart 20 | $1.34\\times10^{-13}$ | 15 | 0.0157 |\n",
+    "| Restart 50 | $1.34\\times10^{-13}$ | 15 | 0.0158 |\n",
+    "\n",
+    "Tighter tolerances require more sweeps. A restart interval of 5 discards useful Krylov information and nearly triples the work relative to intervals of 20 or 50. Exact timings depend on the machine.\n",
+    "\n",
+    "The analytic $S_{32}$ slab-average flux is 25.87632598208. The reference run differs from it by a relative $5.84\\times10^{-9}$, which is spatial discretization error: refining the mesh from 125 to 2000 cells reduces this difference by a factor approaching eight per halving of the cell width, consistent with third-order convergence of the cell-averaged flux. The notebook requires agreement within $10^{-7}$, above this discretization error and the $10^{-10}$ solver tolerance but far below the error a wrong source normalization, cross section, or boundary condition would produce."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "id": "finalize-text",
+   "metadata": {},
+   "source": [
+    "## Finalize (for Jupyter Notebook only)\n",
+    "\n",
+    "In script mode, PyOpenSn handles finalization automatically. In a Jupyter kernel, finalize OpenSn before MPI."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "id": "finalize",
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "if \"opensn_console\" not in globals():\n",
+    "    from IPython import get_ipython\n",
+    "\n",
+    "    if get_ipython() is not None:\n",
+    "        Finalize()\n",
+    "        MPI.Finalize()"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3"
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 5
+}
