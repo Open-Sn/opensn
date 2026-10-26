@@ -64,6 +64,8 @@ struct LBSOptions
   bool use_precursors = true;
   bool use_src_moments = false;
   bool save_angular_flux = false;
+  /// Flag for rebuilding flux moments and outflows from stored angular fluxes in a fixed order.
+  bool deterministic_sweeps = false;
 
   bool adjoint = false;
 

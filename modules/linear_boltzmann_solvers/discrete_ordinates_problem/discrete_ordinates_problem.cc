@@ -1264,7 +1264,9 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
     auto& psi_new = psi_new_local_.at(groupset.id);
     auto& psi_old = psi_old_local_.at(groupset.id);
 
-    if (options_.save_angular_flux || save_old)
+    // Deterministic sweeps rebuild their destinations from the stored angular flux. Device sweeps
+    // copy it to the host with the other sweep results.
+    if (options_.save_angular_flux or save_old or options_.deterministic_sweeps)
     {
       if (psi_new.size() != num_ang_unknowns)
         psi_new.assign(num_ang_unknowns, 0.0);
@@ -1323,9 +1325,10 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
     auto& psi = psi_new_local_[gs];
     const auto& uk_man = groupset.psi_uk_man_;
 
-    // Build reversed angle mapping
+    // Build reversed angle mapping. The angular flux is stored for save_angular_flux and for
+    // deterministic sweeps.
     std::map<std::size_t, std::size_t> reversed_angle_map;
-    if (options_.save_angular_flux)
+    if (not psi.empty())
     {
       const auto opposite = groupset.quadrature->MapOppositeDirections();
       for (std::size_t idir = 0; idir < opposite.size(); ++idir)
@@ -1363,7 +1366,7 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
         } // for moment m
 
         // Reorient angular flux
-        if (options_.save_angular_flux)
+        if (not psi.empty())
         {
           for (const auto& [idir, jdir] : reversed_angle_map)
           {

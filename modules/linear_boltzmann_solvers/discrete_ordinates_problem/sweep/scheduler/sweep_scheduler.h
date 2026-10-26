@@ -48,9 +48,20 @@ struct RuleValues
 class SweepScheduler
 {
 public:
+  /**
+   * Scheduler for one groupset's sweeps.
+   *
+   * \param scheduler_type Scheduling algorithm.
+   * \param angle_agg Angle aggregation of the groupset.
+   * \param sweep_chunk Sweep chunk that sweeps each angle set.
+   * \param deterministic_sweeps Whether each sweep ends by rebuilding the scalar flux moments and
+   *        outflows from the stored angular flux in a fixed order (the `deterministic_sweeps`
+   *        option), so that they do not depend on the order in which angle sets ran.
+   */
   SweepScheduler(SchedulingAlgorithm scheduler_type,
                  AngleAggregation& angle_agg,
-                 SweepChunk& sweep_chunk);
+                 SweepChunk& sweep_chunk,
+                 bool deterministic_sweeps);
 
   void Sweep();
 
@@ -79,6 +90,8 @@ private:
   SchedulingAlgorithm scheduler_type_;
   AngleAggregation& angle_agg_;
   SweepChunk& sweep_chunk_;
+  /// Whether each sweep ends by rebuilding its destinations from the stored angular flux.
+  const bool deterministic_sweeps_;
 
   std::vector<RuleValues> rule_values_;
 

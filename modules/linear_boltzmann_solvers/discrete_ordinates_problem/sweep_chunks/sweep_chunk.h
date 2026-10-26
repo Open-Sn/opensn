@@ -86,6 +86,14 @@ public:
 
   virtual bool IsTimeDependent() const { return false; }
 
+  /**
+   * Overwrite this groupset's scalar flux moments and outflows with sums over the stored angular
+   * flux in a fixed order: angle sets in aggregation order, then their directions.
+   *
+   * \param angle_agg Angle aggregation of the groupset; its order fixes the summation order.
+   */
+  virtual void SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg);
+
   virtual ~SweepChunk() = default;
 
   /**
@@ -97,6 +105,29 @@ public:
   std::vector<MomentCallbackFunc> moment_callbacks;
 
 protected:
+  /**
+   * Overwrite the scalar flux moments and outflows with fixed-order sums over an angular flux.
+   *
+   * \param angle_agg Angle aggregation of the groupset; its order fixes the summation order.
+   * \param psi Angular flux laid out like destination_psi_.
+   */
+  void ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg,
+                                          const std::vector<double>& psi);
+
+  /**
+   * Overwrite the scalar flux moments and outflows of a time-dependent sweep.
+   *
+   * The moments are those of psi^{n+theta} = theta psi^{n+1} + (1 - theta) psi^n, while
+   * destination_psi_ holds psi^{n+1}.
+   *
+   * \param angle_agg Angle aggregation of the groupset; its order fixes the summation order.
+   * \param psi_old Angular flux psi^n at the start of the time step.
+   * \param theta Time-integration parameter of the theta scheme.
+   */
+  void ComputeTimeDependentDestinationsFromAngularFlux(const AngleAggregation& angle_agg,
+                                                       const std::vector<double>& psi_old,
+                                                       double theta);
+
   const std::shared_ptr<Mesh> grid_;
   const SpatialDiscretization& discretization_;
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
@@ -112,6 +143,8 @@ protected:
   const size_t groupset_group_stride_;
   std::vector<double>& destination_phi_;
   std::vector<double>& destination_psi_;
+  /// Angular flux at time n + theta, used by ComputeTimeDependentDestinationsFromAngularFlux.
+  std::vector<double> psi_theta_;
   bool surface_source_active_ = false;
   bool include_rhs_time_term_ = true;
   const Cell* cell_;

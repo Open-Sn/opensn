@@ -1220,6 +1220,13 @@ WrapLBS(py::module& slv)
           - save_angular_flux: bool, default=False
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
+          - deterministic_sweeps: bool, default=False
+            Make every sweep bitwise reproducible from run to run: the scalar flux moments and
+            face outflows are summed on the host from stored angular fluxes in a fixed angle order
+            instead of in the order that MPI messages and GPU threads complete. Stores the angular
+            flux in host memory without enabling ``save_angular_flux``. GPU sweeps also copy it to
+            the host after every sweep, which makes them roughly 2-5 times slower. Meant for
+            debugging and reproducible comparisons.
           - adjoint: bool, default=False
           - csda_enabled: bool, default=False
             Enable CSDA charged-particle transport for CEPXS data loaded with
@@ -1453,8 +1460,9 @@ WrapLBS(py::module& slv)
     Create field functions for selected angular flux components.
 
     Note: You must enable angular flux storage (``save_angular_flux=True``) in
-    the problem options. For transient problems this is required. Otherwise
-    the returned field functions will remain zero.
+    the problem options. For transient problems this is required. The angular
+    flux is also stored when ``deterministic_sweeps=True``. If neither option
+    is set, the returned field functions will remain zero.
 
     Example
     -------
@@ -1792,6 +1800,11 @@ WrapLBS(py::module& slv)
           - save_angular_flux: bool, default=False
             Store angular flux state (`psi`) for transient mode, angular-flux
             field functions, and angular-flux I/O.
+          - deterministic_sweeps: bool, default=False
+            Make every sweep bitwise reproducible from run to run: the scalar flux moments and
+            face outflows are summed from stored angular fluxes in a fixed angle order instead of
+            in the order that MPI messages arrive. Stores the angular flux in host memory without
+            enabling ``save_angular_flux``. Meant for debugging and reproducible comparisons.
           - csda_enabled: bool, default=False
             Enable CSDA charged-particle transport for CEPXS data loaded with
             ``csda_format=True``. CSDA is not supported for this curvilinear

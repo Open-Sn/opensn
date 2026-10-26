@@ -57,7 +57,8 @@ SweepWGSContext::SweepWGSContext(DiscreteOrdinatesProblem& do_problem,
     sweep_scheduler(GetSchedulingAlgorithm(
                       do_problem.GetSweepType(), do_problem.UseGPUs(), do_problem.UseFusedAAO()),
                     *groupset.angle_agg,
-                    *sweep_chunk)
+                    *sweep_chunk,
+                    do_problem.GetOptions().deterministic_sweeps)
 {
 }
 
