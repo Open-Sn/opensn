@@ -83,6 +83,9 @@ if __name__ == "__main__":
     cmfd = CMFDAcceleration(
         problem=phys,
         aggregation_size=8,
+        allow_mixed_material_aggregation=globals().get(
+            "allow_mixed_material_aggregation", False
+        ),
         relaxation=1.0,
         balance_residual_tolerance=10.0 * k_tolerance,
     )
@@ -91,18 +94,26 @@ if __name__ == "__main__":
         acceleration=cmfd,
         max_iters=400,
         k_tol=k_tolerance,
+        compute_balance=True,
     )
     k_solver.Initialize()
     k_solver.Execute()
 
     k = k_solver.GetEigenvalue()
     sweeps = k_solver.GetNumSweeps()
+    # The eigenvector scale is arbitrary, so measure the balance residual relative to the
+    # production rate.
+    balance_table = k_solver.ComputeBalanceTable()
+    relative_balance = balance_table["balance"] / balance_table["production_rate"]
     if rank == 0:
         print(f"Python k-eigenvalue: {k}")
         print(f"Python converged: {int(k_solver.IsConverged())}")
         print(f"Python CMFD skipped corrections: {cmfd.GetNumSkippedCorrections()}")
         print(f"Python sweeps: {sweeps}")
+        print(f"Python relative balance: {relative_balance:.16e}")
 
     expected_k = 0.5969127
     if abs(k - expected_k) > 2.0e-6:
         raise RuntimeError(f"Expected k={expected_k}, got {k}")
+    if abs(relative_balance) > 10.0 * k_tolerance:
+        raise RuntimeError(f"Expected particle balance closure, got {relative_balance}")

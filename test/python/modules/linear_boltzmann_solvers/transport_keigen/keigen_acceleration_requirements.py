@@ -25,9 +25,10 @@ configuration that satisfies it:
 11. CMFD in RZ geometry (accepted).
 12. SCDSA with sdm="pwlc" in 1D spherical geometry (rejected: the correction diverges), and
 13. SCDSA with sdm="pwld" in 1D spherical geometry (accepted).
+14. Mixed-material aggregation requested with an identity CMFD mesh (rejected).
 
 Checks:
-  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 13) that behave as described.
+  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 14) that behave as described.
 """
 
 import os
@@ -232,6 +233,24 @@ if __name__ == "__main__":
     problem = curvilinear_problem(sph_grid, fissile, sph_quad())
     passed += on_all_ranks(
         outcome(pi(problem, SCDSAAcceleration(problem=problem, sdm="pwld"))) == "accepted"
+    )
+
+    # Case 14
+    problem = xy_problem(xy_grid, fissile, 1, [groupset((0, 0), xy_quad())])
+    passed += on_all_ranks(
+        outcome(
+            pi(
+                problem,
+                CMFDAcceleration(
+                    problem=problem,
+                    coarse_mesh="identity",
+                    allow_mixed_material_aggregation=True,
+                ),
+            ),
+            "accepts allow_mixed_material_aggregation=true only with local_aggregation or "
+            "global_aggregation",
+        )
+        == "rejected"
     )
 
     MPIAllReduce(0)
