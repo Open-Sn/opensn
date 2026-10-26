@@ -1,0 +1,21 @@
+NUM_GROUPS 2
+NUM_MOMENTS 1
+
+SIGMA_T_BEGIN
+0 1.0
+1 0.7
+SIGMA_T_END
+
+SIGMA_A_BEGIN
+0 0.3
+1 0.4
+SIGMA_A_END
+
+TRANSFER_MOMENTS_BEGIN
+# Isotropic scattering matrix, M_GFROM_GTO_VAL ell g_from g_to value.
+# Group 0 has self-scatter and downscatter into group 1.
+M_GFROM_GTO_VAL 0 0 0 0.2
+M_GFROM_GTO_VAL 0 0 1 0.5
+M_GFROM_GTO_VAL 0 1 0 0.0
+M_GFROM_GTO_VAL 0 1 1 0.3
+TRANSFER_MOMENTS_END
