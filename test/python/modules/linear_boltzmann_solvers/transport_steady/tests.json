@@ -482,7 +482,7 @@
   },
   {
     "file": "transport_2d_aah_message_split.py",
-    "comment": "2D AAH sweep with messages split at max_mpi_message_size = 1025 bytes matches the default split",
+    "comment": "2D AAH sweep with messages split at max_mpi_message_size = 1025 bytes matches the unsplit default",
     "num_procs": 2,
     "checks": [
       {
