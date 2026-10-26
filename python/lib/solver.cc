@@ -1130,8 +1130,9 @@ WrapLBS(py::module& slv)
         A list containing tables for each boundary specification. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
-              Boundary type specification.
+          - type: {'vacuum', 'isotropic', 'reflecting', 'periodic', 'arbitrary'} (required)
+              Boundary type specification. ``periodic`` requires both matching faces of
+              an orthogonal Cartesian pair and is supported by CPU AAH/CBC sweeps.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
           - start_time: float, optional
@@ -1349,8 +1350,9 @@ WrapLBS(py::module& slv)
         A list of boundary condition dictionaries. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
-              Boundary type specification.
+          - type: {'vacuum', 'isotropic', 'reflecting', 'periodic', 'arbitrary'} (required)
+              Boundary type specification. ``periodic`` requires both matching faces of
+              an orthogonal Cartesian pair and is supported by CPU AAH/CBC sweeps.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
           - start_time: float, optional
@@ -1695,8 +1697,9 @@ WrapLBS(py::module& slv)
         A list containing tables for each boundary specification. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting', 'arbitrary'} (required)
-              Boundary type specification.
+          - type: {'vacuum', 'isotropic', 'reflecting', 'periodic', 'arbitrary'} (required)
+              Boundary type specification. ``periodic`` requires both matching faces of
+              an orthogonal Cartesian pair and is supported by CPU AAH/CBC sweeps.
           - group_strength: List[float], optional
               Required when ``type='isotropic'``. Isotropic strength per group.
           - start_time: float, optional
