@@ -31,7 +31,7 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "SOURCE_STEP_FINAL_NORMALIZED_POWER",
+        "key": "SOURCE_STEP_FINAL_NORMALIZED_AMPLITUDE",
         "goldvalue": 1.18953934,
         "rel_tol": 1e-5
       }
