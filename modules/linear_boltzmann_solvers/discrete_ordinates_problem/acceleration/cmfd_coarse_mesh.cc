@@ -637,7 +637,8 @@ CMFDCoarseMesh::BuildIdentity(const Mesh& grid)
 
 CMFDCoarseMesh
 CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
-                                      const std::size_t target_fine_cells_per_coarse_cell)
+                                      const std::size_t target_fine_cells_per_coarse_cell,
+                                      const bool allow_mixed_materials)
 {
   OpenSnInvalidArgumentIf(target_fine_cells_per_coarse_cell == 0,
                           "CMFD aggregation size must be greater than zero.");
@@ -658,7 +659,9 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
     CMFDCoarseCell coarse_cell;
     coarse_cell.global_id = local_coarse_count++;
     coarse_cell.partition_id = opensn::mpi_comm.rank();
-    coarse_cell.block_id = seed_cell->block_id;
+    // A mixed-material aggregate has no single representative block ID. Zero is only topology
+    // metadata in that case; CMFD obtains every coefficient from the constituent fine cells.
+    coarse_cell.block_id = allow_mixed_materials ? 0 : seed_cell->block_id;
 
     std::deque<uint64_t> queue;
     queue.push_back(seed_cell->global_id);
@@ -681,7 +684,8 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
           continue;
 
         const auto& neighbor = grid.GetGlobalCell(face.neighbor_id);
-        if (neighbor.block_id != seed_cell->block_id or assigned.count(neighbor.global_id) > 0 or
+        if ((not allow_mixed_materials and neighbor.block_id != seed_cell->block_id) or
+            assigned.count(neighbor.global_id) > 0 or
             coarse_cell.fine_cell_ids.size() + queue.size() >= target_fine_cells_per_coarse_cell)
           continue;
 
@@ -728,14 +732,16 @@ CMFDCoarseMesh::BuildLocalAggregation(const Mesh& grid,
 // bounded set of merge-loser cells actually needed and assemble the final coarse mesh.
 CMFDCoarseMesh
 CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
-                                       const std::size_t target_fine_cells_per_coarse_cell)
+                                       const std::size_t target_fine_cells_per_coarse_cell,
+                                       const bool allow_mixed_materials)
 {
   OpenSnInvalidArgumentIf(target_fine_cells_per_coarse_cell == 0,
                           "CMFD aggregation size must be greater than zero.");
 
   // Phase 1: local-only aggregation (BuildLocalAggregation already builds exterior faces too,
   // which gives cross-rank adjacency for free).
-  CMFDCoarseMesh provisional = BuildLocalAggregation(grid, target_fine_cells_per_coarse_cell);
+  CMFDCoarseMesh provisional =
+    BuildLocalAggregation(grid, target_fine_cells_per_coarse_cell, allow_mixed_materials);
 
   // Phase 2: gather a coarse-cell topology summary onto every rank.
   const auto topology = GatherCoarseTopology(provisional);

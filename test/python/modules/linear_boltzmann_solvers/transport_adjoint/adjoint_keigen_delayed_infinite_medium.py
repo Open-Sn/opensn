@@ -279,12 +279,14 @@ def solve(grid, materials, adjoint, groupsets=1, cmfd=False, use_precursors=True
         solver = SteadyStateSourceSolver(problem=phys)
     elif cmfd:
         # The settings of keigenvalue_transport_1d_1g_cmfd.py.
+        mixed_materials = len(materials) > 1
         acceleration = CMFDAcceleration(
             problem=phys,
             current_closure="partial",
             coarse_mesh="local_aggregation",
-            aggregation_size=2,
-            group_aggregation_size=1,
+            aggregation_size=4 if mixed_materials else 2,
+            allow_mixed_material_aggregation=mixed_materials,
+            group_aggregation_size=2 if mixed_materials else 1,
             relaxation=0.5,
             inactive_iterations=0,
             update_wgs_max_its=1,
@@ -361,7 +363,7 @@ if __name__ == "__main__":
             results["RATIO_ADJ_REF="] = f"{ratio_adjoint_ref:.10f}"
             results["RATIO_FWD_REL_ERR="] = f"{abs(ratio_forward / ratio_forward_ref - 1.0):.6e}"
             results["RATIO_ADJ_REL_ERR="] = f"{abs(ratio_adjoint / ratio_adjoint_ref - 1.0):.6e}"
-    elif scenario in ("two_materials", "two_materials_source"):
+    elif scenario in ("two_materials", "two_materials_cmfd", "two_materials_source"):
         materials = two_materials()
         L, F = infinite_medium_operators(materials[0])
         F_b = infinite_medium_operators(materials[1])[1]
@@ -374,10 +376,15 @@ if __name__ == "__main__":
         grid = OrthogonalMeshGenerator(node_sets=[nodes]).Execute()
         grid.SetBlockIDFromFunction(lambda centroid, block_id: int(centroid.z / 0.05) % 2)
         prefix = f"ADJOINT_DELAYED_{scenario.upper()}_"
-        if scenario == "two_materials":
+        if scenario in ("two_materials", "two_materials_cmfd"):
             k_inf = k_infinite(medium)
-            k_forward, ratio_forward, range_forward = solve(grid, materials, adjoint=False)
-            k_adjoint, ratio_adjoint, range_adjoint = solve(grid, materials, adjoint=True)
+            use_cmfd = scenario == "two_materials_cmfd"
+            k_forward, ratio_forward, range_forward = solve(
+                grid, materials, adjoint=False, cmfd=use_cmfd
+            )
+            k_adjoint, ratio_adjoint, range_adjoint = solve(
+                grid, materials, adjoint=True, cmfd=use_cmfd
+            )
             ratio_forward_ref = production_ratio_reference(medium, adjoint=False)
             ratio_adjoint_ref = production_ratio_reference(medium, adjoint=True)
             results["K_INF="] = f"{k_inf:.10f}"

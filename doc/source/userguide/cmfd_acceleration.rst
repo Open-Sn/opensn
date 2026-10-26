@@ -84,11 +84,12 @@ These are the options most users should tune.
 
 ``coarse_mesh``
   Coarse-mesh construction method. The default is ``"local_aggregation"``.
-  ``"local_aggregation"`` builds connected same-block aggregates locally on
-  each MPI rank. ``"global_aggregation"`` builds connected same-block
-  aggregates that may span MPI ranks and can reduce the coarse problem size on
-  larger distributed meshes. ``"identity"`` creates one CMFD cell per transport
-  cell and is mainly useful for debugging and method comparisons.
+  ``"local_aggregation"`` builds connected aggregates locally on each MPI rank.
+  ``"global_aggregation"`` builds connected aggregates that may span MPI ranks
+  and can reduce the coarse problem size on larger distributed meshes. Both
+  preserve material-block boundaries by default. ``"identity"`` creates one
+  CMFD cell per transport cell and is mainly useful for debugging and method
+  comparisons.
 
   Both aggregation modes are logical CMFD coarse-space constructions. They do
   not repartition the transport mesh, create a new mesh, or change
@@ -106,17 +107,88 @@ These are the options most users should tune.
 
   ``"global_aggregation"`` currently has these restrictions:
 
-  * a coarse cell contains only connected fine cells from the same mesh block;
+  * a coarse cell contains only connected fine cells and, by default, stays
+    within one mesh block;
   * connectivity is based on face-neighbor adjacency;
   * disconnected regions with the same block id become separate coarse cells;
   * ``aggregation_size`` is a target maximum, so boundary and disconnected
     aggregates may contain fewer fine cells;
-  * no material homogenization across different blocks is performed.
+  * setting ``allow_mixed_material_aggregation=True`` permits cross-block
+    aggregation; such coarse cells are homogenized as described below.
 
   The global mode gathers enough distributed cell and face metadata to build
   the logical coarse graph consistently on all ranks. This is usually worthwhile
   when rank-local aggregation creates too many small coarse cells, but it can
   increase setup memory and communication compared with ``"local_aggregation"``.
+
+  .. rubric:: Spatial homogenization
+
+  CMFD coefficients are homogenized from the constituent fine cells of every
+  coarse cell, whether the coarse mesh is ``"identity"``, material pure, or
+  mixed material. For a fine cell :math:`i` and transport group :math:`g`,
+  define the integrated scalar flux
+
+  .. math::
+
+     \Phi_{i,g}=\int_{V_i}\phi_g(\mathbf r)\,dV,
+     \qquad
+     W_{C,G}=\sum_{i\in C}\sum_{g\in G}\Phi_{i,g},
+
+  where :math:`C` is a coarse cell and :math:`G` is a CMFD energy group.
+  OpenSn collapses a transfer coefficient, such as scattering or production, as
+
+  .. math::
+
+     \Sigma^C_{G\leftarrow G'} =
+     \frac{\displaystyle\sum_{i\in C}\sum_{g\in G}\sum_{g'\in G'}
+     \Sigma^i_{g\leftarrow g'}\Phi_{i,g'}}{W_{C,G'}}.
+
+  The removal coefficient uses total interaction minus within-:math:`G`
+  scattering in the numerator. These signed weights preserve the fine-mesh
+  reaction, transfer, and production rates of the transport iterate exactly,
+  including where the scalar flux is negative, so the converged CMFD operator
+  reproduces the transport balance. No sign or positivity condition is imposed
+  on the collapsed coefficients; for example, transport-corrected data with a
+  negative self-scatter are homogenized as given.
+
+  :math:`W_{C,G}` is replaced only when it is zero, non-finite, or within
+  :math:`64\epsilon` of :math:`\sum_{i\in C}\sum_{g\in G}|\Phi_{i,g}|`
+  (cancellation). OpenSn then uses the physical volumes
+  :math:`V_i=\sum_n V_{i,n}` in place of :math:`\Phi_{i,g}` for that coarse group,
+  and the coarse rates of that group no longer match the transport rates. OpenSn
+  reports the number of coarse energy groups using this fallback once per
+  execution. The operator assembled at the start of each solver ``Execute()``,
+  before any transport iterate exists, uses volume weights throughout.
+
+  The diffusion coefficient only sets the interface coupling that the current
+  correction completes, so it uses the weight magnitudes :math:`|\Phi_{i,g}|`
+  (equal to :math:`\Phi_{i,g}` wherever the flux is positive), which keeps it
+  positive. OpenSn first spatially homogenizes the transport cross section for
+  each fine group,
+
+  .. math::
+
+     \overline{\Sigma}_{tr,C,g} =
+     \frac{\sum_{i\in C}\Sigma_{tr,i,g}|\Phi_{i,g}|}
+          {\sum_{i\in C}|\Phi_{i,g}|},
+
+  forms :math:`D_{C,g}=1/(3\overline{\Sigma}_{tr,C,g})`, and then weights
+  :math:`D_{C,g}` by :math:`\sum_{i\in C}|\Phi_{i,g}|` over the fine groups in
+  :math:`G`. This order is important: directly averaging material diffusion
+  coefficients would average the inverse transport cross section and gives a
+  different result in mixed materials. A zero or near-zero homogenized transport
+  cross section uses the same bounded diffusion coefficient as the material
+  cross-section implementation, :math:`D=1/(3\times10^{-12})`. Each coarse cell
+  has one diffusion coefficient per coarse group, and both sides of an interface
+  use it.
+
+  Delayed production is included when ``use_precursors=True``. In adjoint mode,
+  scattering and prompt and delayed production are transposed before
+  homogenization; the diagonal transport coefficient is unchanged.
+
+  Homogenization is recomputed before every active CMFD correction from the
+  transport iterate of that power iteration. It does not modify the problem's
+  material cross sections or the fine-mesh transport operator.
 
 ``current_closure``
   Face-current closure used in the CMFD operator. Valid choices are
@@ -154,7 +226,7 @@ These are the options most users should tune.
   inside it, so in optically thick regions large aggregates accelerate little;
   use smaller aggregates (or ``coarse_mesh="identity"``) there.
 
-  Aggregates never cross mesh-block boundaries, so on finely divided
+  By default, aggregates never cross mesh-block boundaries, so on finely divided
   heterogeneous geometry (for example, pin cells with separate fuel, clad, and
   moderator blocks) many aggregates are smaller than the target, and the
   realized number of fine cells per coarse cell (printed at initialization) can
@@ -163,6 +235,15 @@ These are the options most users should tune.
   stalls at roughly the unaccelerated sweep rate. Smaller aggregates remove
   this limit; combining them with ``group_aggregation_size`` keeps the direct
   coarse solve affordable.
+
+``allow_mixed_material_aggregation``
+  When ``True``, permits ``"local_aggregation"`` and ``"global_aggregation"``
+  coarse cells to cross mesh-block boundaries; their coefficients are
+  homogenized as described above. The default is ``False``, which keeps every
+  aggregate within one mesh block. This option changes the generated coarse topology:
+  for the same ``aggregation_size``, removing material boundaries generally
+  produces fewer, larger aggregates. Retune ``aggregation_size`` when comparing
+  the two policies.
 
 ``group_aggregation_size``
   Number of transport energy groups per CMFD coarse energy group. This is not
@@ -336,7 +417,10 @@ also reports ``correction = skipped`` with a reason, for example:
 
 Set ``verbose=True`` on ``CMFDAcceleration`` to print stable ``CMFD_ACCEL``
 diagnostic lines for early iterations and periodic later iterations. These are
-intended for regression tests and performance studies.
+intended for regression tests and performance studies. The timing category
+reports restriction, homogenization, the neighbor coarse-flux and
+diffusion-coefficient exchange, operator assembly, coarse solve,
+prolongation/update, and transport time separately.
 
 Correction Safeties And Warnings
 ================================
@@ -385,7 +469,9 @@ The CMFD accelerator currently supports:
 * one shared all-groups CMFD coarse system applied after the AGS transport
   update,
 * identity coarse meshes,
-* rank-local same-material cell aggregation,
+* rank-local and cross-rank (``global_aggregation``) cell aggregation, within
+  one mesh block by default or across blocks with
+  ``allow_mixed_material_aggregation=True``,
 * optional energy-group aggregation in the CMFD low-order system,
 * reflecting and non-reflecting boundary treatment,
 * scalar-flux correction limiting,

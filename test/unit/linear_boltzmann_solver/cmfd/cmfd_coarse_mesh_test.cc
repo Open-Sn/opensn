@@ -1,9 +1,11 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "test/unit/common/mesh_builders.h"
 #include "gtest/gtest.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
+#include <algorithm>
 #include <cmath>
 #include <limits>
 
@@ -178,6 +180,27 @@ TEST(CMFDCoarseMesh, LocalAggregationMergesFineFacesOnSameCoarseInterface)
   EXPECT_TRUE(global_found_merged_face != 0);
 }
 
+TEST(CMFDCoarseMesh, MixedMaterialLocalAggregationCrossesBlockBoundaries)
+{
+  const auto num_fine_cells = 4U * static_cast<unsigned int>(opensn::mpi_comm.size());
+  auto grid = BuildLineMesh(static_cast<double>(num_fine_cells), num_fine_cells, 0.0);
+  for (auto& cell : grid->GetLocalCells())
+    cell->block_id = static_cast<unsigned int>(cell->global_id % 2);
+  for (const auto ghost_id : grid->GetGhostGlobalIDs())
+  {
+    auto& cell = grid->GetGlobalCell(ghost_id);
+    cell.block_id = static_cast<unsigned int>(cell.global_id % 2);
+  }
+
+  const auto material_pure = CMFDCoarseMesh::BuildLocalAggregation(*grid, 4, false);
+  const auto mixed = CMFDCoarseMesh::BuildLocalAggregation(*grid, 4, true);
+
+  EXPECT_EQ(material_pure.NumLocalCells(), 4);
+  ASSERT_EQ(mixed.NumLocalCells(), 1);
+  EXPECT_EQ(mixed.LocalCell(0).fine_cell_ids.size(), 4);
+  EXPECT_EQ(mixed.LocalFineCellMemberships().size(), 4);
+}
+
 TEST(CMFDCoarseMesh, GlobalAggregationBuildsConnectedCoarseCells)
 {
   const std::size_t target_fine_cells_per_coarse_cell = 2;
@@ -215,6 +238,28 @@ TEST(CMFDCoarseMesh, GlobalAggregationBuildsConnectedCoarseCells)
   opensn::mpi_comm.all_reduce(
     local_owned_fine_cells, global_owned_fine_cells, mpi::op::sum<std::size_t>());
   EXPECT_EQ(global_owned_fine_cells, grid->GetGlobalNumberOfCells());
+}
+
+TEST(CMFDCoarseMesh, MixedMaterialGlobalAggregationCanMergeAcrossRanks)
+{
+  if (opensn::mpi_comm.size() < 2)
+    GTEST_SKIP() << "Cross-rank aggregation requires at least two MPI ranks.";
+
+  const auto num_fine_cells = 4U * static_cast<unsigned int>(opensn::mpi_comm.size());
+  auto grid = BuildLineMesh(static_cast<double>(num_fine_cells), num_fine_cells, 0.0);
+  for (auto& cell : grid->GetLocalCells())
+    cell->block_id = static_cast<unsigned int>(cell->global_id % 2);
+  for (const auto ghost_id : grid->GetGhostGlobalIDs())
+  {
+    auto& cell = grid->GetGlobalCell(ghost_id);
+    cell.block_id = static_cast<unsigned int>(cell.global_id % 2);
+  }
+
+  const auto material_pure = CMFDCoarseMesh::BuildGlobalAggregation(*grid, 8, false);
+  const auto mixed = CMFDCoarseMesh::BuildGlobalAggregation(*grid, 8, true);
+
+  EXPECT_EQ(material_pure.NumGlobalCells(), num_fine_cells);
+  EXPECT_EQ(mixed.NumGlobalCells(), (static_cast<std::size_t>(opensn::mpi_comm.size()) + 1) / 2);
 }
 
 TEST(CMFDBalance, RelativeResidualIsIndependentOfFluxScale)
