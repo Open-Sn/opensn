@@ -882,6 +882,19 @@ These are useful for:
 * response studies,
 * source-driven workflows that reuse previously computed fields.
 
+Flux-moment and angular-flux files are written one per rank (``<file_base><rank>.h5``)
+and must be read with the same rank count and mesh partition. Angular-flux files
+also record each groupset's quadrature directions and weights, and a file whose
+quadrature differs from the problem's is rejected even when the number of
+directions matches. Problem-owned solution files also record whether the solution
+is forward or adjoint and, for an adjoint, whether it is in the internal sweep or
+physical orientation. Response and sensitivity postprocessors require files with
+the expected role; adjoint files must have physical orientation. Files written before the quadrature
+was recorded are read with a warning by general-purpose readers, but they do not
+have enough provenance to be used as validated response or sensitivity buffers.
+Reading is collective: a file that is missing, malformed, nonfinite, or incompatible
+on any rank raises the error on every rank, and the destination is left unchanged.
+
 For restartable solver state, prefer the restart options documented above over
 manual angular-flux files. Manual angular-flux files are useful when the
 workflow explicitly wants to manage angular fluxes, but restart dumps also carry

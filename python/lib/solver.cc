@@ -486,7 +486,9 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True if all flux moments are in a single file.
+        True to read the single file ``<file_base>.h5`` instead of the per-rank file
+        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
+        before any file is opened.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")
@@ -507,7 +509,9 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True if all source moments are in a single file.
+        True to read the single file ``<file_base>.h5`` instead of the per-rank file
+        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
+        before any file is opened.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")
@@ -526,7 +530,9 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True if all flux moments are in a single file.
+        True to read the single file ``<file_base>.h5`` instead of the per-rank file
+        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
+        before any file is opened.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")

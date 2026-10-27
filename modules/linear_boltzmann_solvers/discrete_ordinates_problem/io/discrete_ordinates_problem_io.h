@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
 #include "hdf5.h"
 #include <array>
 #include <cstdint>
@@ -48,12 +49,18 @@ public:
    * \param do_problem Discrete ordinates problem
    * \param file_base File name base
    * \param opt_src Optional angular flux source vector
+   * \param role Solution role. For problem-owned data, unspecified is inferred from the problem.
+   * \param orientation Adjoint orientation. For problem-owned data, unspecified is inferred.
+   *
+   * Each groupset records its quadrature directions and weights so that a reader can check them.
    */
   static void WriteAngularFluxes(
     DiscreteOrdinatesProblem& do_problem,
     const std::string& file_base,
     std::optional<const std::reference_wrapper<std::vector<std::vector<double>>>> opt_src =
-      std::nullopt);
+      std::nullopt,
+    FluxSolutionRole role = FluxSolutionRole::UNSPECIFIED,
+    AdjointFluxOrientation orientation = AdjointFluxOrientation::UNSPECIFIED);
 
   /**
    * Read an angular flux vector from a file.
@@ -61,12 +68,20 @@ public:
    * \param do_problem Discrete ordinates problem
    * \param file_base File name base
    * \param opt_dest Optional angular flux destination vector
+   * \param expected_role Required solution role, or unspecified to accept any role.
+   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.
+   *
+   * The file must have been written with the same rank count, partition, and quadrature; files
+   * that record their quadrature are checked against the problem's. Collective: a file that
+   * cannot be read or does not match the problem raises an error on every rank, and the
+   * destination is left unchanged.
    */
   static void ReadAngularFluxes(
     DiscreteOrdinatesProblem& do_problem,
     const std::string& file_base,
-    std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest =
-      std::nullopt);
+    std::optional<std::reference_wrapper<std::vector<std::vector<double>>>> opt_dest = std::nullopt,
+    FluxSolutionRole expected_role = FluxSolutionRole::UNSPECIFIED,
+    AdjointFluxOrientation expected_orientation = AdjointFluxOrientation::UNSPECIFIED);
 
   /**
    * Surface Angular flux

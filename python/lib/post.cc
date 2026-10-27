@@ -166,7 +166,10 @@ WrapPostprocessors(py::module& post)
     adjoint_angular_fluxes : str, optional
         Adjoint angular-flux file prefix. Empty (default) uses the current psi.
     flux_moments_single_file : bool, optional
-        Read flux moments from a single file instead of one file per rank. Default False.
+        Read flux moments from the single file ``<prefix>.h5`` instead of the per-rank file
+        ``<prefix><rank>.h5``. Default False. Serial runs only: in a multi-rank run, reading the
+        flux moments (``Execute`` or ``ApplyKEigenvalueScaling``) raises ``ValueError`` before
+        any file is opened.
     )"
   );
   xs_sens.def(
