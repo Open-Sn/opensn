@@ -189,6 +189,18 @@ To compile the console application:
    when referring to class or function names. Additionally, avoid redefining any
    **OpenSn** class or function names to prevent naming conflicts.
 
+GPU builds
+^^^^^^^^^^
+
+GPU sweeps need one GPU backend, chosen at configure time with
+``-DOPENSN_WITH_CUDA=ON``, ``-DOPENSN_WITH_HIP=ON``, or
+``-DOPENSN_WITH_SYCL=ON``, and the device architecture, for example
+``-DCMAKE_CUDA_ARCHITECTURES=90`` or ``-DCMAKE_HIP_ARCHITECTURES=gfx942``.
+``-DOPENSN_USE_GPU_AWARE_MPI=ON`` passes device buffers directly to MPI. CMake
+then checks that the MPI library supports the backend, and on Cray MPICH it links
+the needed GPU transport library. See :doc:`../userguide/running_problems` for
+the run-time settings.
+
 Module
 ^^^^^^
 

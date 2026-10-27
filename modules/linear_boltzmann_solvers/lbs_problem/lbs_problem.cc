@@ -595,8 +595,10 @@ LBSProblem::GetOptionsBlock()
   InputParameters params;
 
   params.AddOptionalParameter("max_mpi_message_size",
-                              32768,
-                              "The maximum MPI message size used during sweep initialization.");
+                              4194304,
+                              "The maximum size in bytes of one sweep MPI message. Larger "
+                              "angular-flux transfers are split into messages of at most this "
+                              "size.");
   params.AddOptionalParameter(
     "restart_writes_enabled", false, "Flag that controls writing of restart dumps");
   params.AddOptionalParameter("write_delayed_psi_to_restart",

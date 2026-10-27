@@ -56,7 +56,7 @@ struct LBSRestartOptions
 /// Struct for storing LBS options.
 struct LBSOptions
 {
-  int max_mpi_message_size = 32768;
+  int max_mpi_message_size = 4194304;
 
   LBSRestartOptions restart;
 

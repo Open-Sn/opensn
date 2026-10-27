@@ -6,8 +6,7 @@ The mesh is a strip of 2 x 1169 cells split along x between two ranks. With pola
 aggregation each angle set holds the 8 polar angles of one azimuth, so every sweep message
 across the interface carries 1169 faces x 2 PWLD nodes x 1 group x 8 angles = 18704 doubles.
 max_mpi_message_size = 1025 bytes (any value of at least 1024 is accepted) splits each such
-message into blocks of at most 128 doubles; the default of 32768 bytes into blocks of at most
-4096 doubles.
+message into blocks of at most 128 doubles. The default of 4194304 bytes sends it as one message.
 
 Claim: both solutions agree to roundoff, since the blocks carry the same doubles (only the
 order in which angle sets complete may change). The pure absorber is solved exactly by one
@@ -46,7 +45,10 @@ def volume_value(field_function, logical_volume, operation):
     return interpolation.GetValue()
 
 
-def solve(grid, xs, whole_domain, max_mpi_message_size):
+def solve(grid, xs, whole_domain, max_mpi_message_size=None):
+    options = {}
+    if max_mpi_message_size is not None:
+        options["max_mpi_message_size"] = max_mpi_message_size
     problem = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=1,
@@ -64,7 +66,7 @@ def solve(grid, xs, whole_domain, max_mpi_message_size):
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],
         volumetric_sources=[VolumetricSource(logical_volume=whole_domain, group_strength=[1.0])],
-        options={"max_mpi_message_size": max_mpi_message_size},
+        options=options,
     )
     solver = SteadyStateSourceSolver(problem=problem, compute_balance=True)
     solver.Initialize()
@@ -95,7 +97,7 @@ if __name__ == "__main__":
     xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)
     whole_domain = RPPLogicalVolume(infx=True, infy=True, infz=True)
 
-    sum_default, max_default, _ = solve(grid, xs, whole_domain, 32768)
+    sum_default, max_default, _ = solve(grid, xs, whole_domain)
     sum_split, max_split, balance = solve(grid, xs, whole_domain, 1025)
 
     difference = max(

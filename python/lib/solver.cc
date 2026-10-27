@@ -1166,7 +1166,9 @@ WrapLBS(py::module& slv)
         A list of volumetric sources.
     options : Dict, default={}
         A block of optional configuration parameters, including:
-          - max_mpi_message_size: int, default=32768
+          - max_mpi_message_size: int, default=4194304
+              Maximum size in bytes of one sweep MPI message. Larger angular-flux transfers
+              are split into messages of at most this size.
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
@@ -1731,7 +1733,9 @@ WrapLBS(py::module& slv)
         A list of volumetric sources.
     options : dict, optional
         A block of optional configuration parameters applied at problem creation, including:
-          - max_mpi_message_size: int, default=32768
+          - max_mpi_message_size: int, default=4194304
+              Maximum size in bytes of one sweep MPI message. Larger angular-flux transfers
+              are split into messages of at most this size.
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
