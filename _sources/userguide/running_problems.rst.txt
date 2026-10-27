@@ -45,6 +45,14 @@ to run in parallel.
    information, make sure that the run configuration is compatible with the
    intended decomposition.
 
+The ``max_mpi_message_size`` problem option sets the largest MPI message, in
+bytes, that an AAH sweep sends, on the CPU and on the GPU. Larger angular-flux
+transfers are split into messages of at most this size. The default, 4194304
+bytes (4 MiB), sends most transfers whole. Small limits split large transfers
+into many messages, and each one adds posting, matching, and polling work. With
+a 32 KiB limit, GPU sweeps on a few nodes ran up to 2.8 times slower. Messages
+below the limit are not affected, so the default rarely needs changing.
+
 Running with GPUs
 =================
 
@@ -91,6 +99,31 @@ Practical guidance:
    GPU acceleration is mainly a sweep-execution choice, not a different problem
    formulation. The same mesh, materials, groupsets, sources, and solver setup
    should usually be validated on CPU first.
+
+GPU-aware MPI
+-------------
+
+With ``-DOPENSN_USE_GPU_AWARE_MPI=ON``, AAH sweeps on the GPU pass device
+buffers directly to MPI instead of copying them through host memory. The MPI
+library must support the GPU backend. CMake checks the library when it can:
+
+* Cray MPICH: CMake links the GPU Transport Layer library (``libmpi_gtl_hsa``
+  for HIP, ``libmpi_gtl_cuda`` for CUDA). Set ``MPICH_GPU_SUPPORT_ENABLED=1``
+  when running. Without it, Cray MPICH treats device pointers as host memory.
+* MPICH: configuration fails if the library was configured without the backend,
+  for example ``--without-cuda``. If it was configured without
+  ``--with-cuda``, ``--with-hip``, or ``--with-ze``, CMake reports that support
+  could not be verified, since MPICH then enables the backend only if its
+  configure step detected the GPU runtime.
+* Open MPI: configuration fails if ``mpi-ext.h`` defines
+  ``MPIX_CUDA_AWARE_SUPPORT`` (CUDA) or ``MPIX_ROCM_AWARE_SUPPORT`` (HIP) as 0,
+  which means the library was built without that support. CMake warns if the
+  macro is not defined, as in Open MPI versions without the extension.
+
+On AMD MI300A nodes with Cray MPICH, GPU-aware AAH sweeps have shown
+intermittent GPU memory access faults with Cray MPICH's intra-node GPU IPC
+path. Set ``MPICH_GPU_IPC_ENABLED=0`` to use its other intra-node path. In
+OpenSn scaling runs this cost no measurable time.
 
 Typical execution pattern
 =========================

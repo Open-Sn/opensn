@@ -60,6 +60,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#install-dependencies">Install dependencies</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#configure-and-build-opensn">Configure and build OpenSn</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#console-application">Console application</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#gpu-builds">GPU builds</a></li>
 <li class="toctree-l4"><a class="reference internal" href="#module">Module</a></li>
 </ul>
 </li>
@@ -264,6 +265,17 @@ into the <code class="docutils literal notranslate"><span class="pre">__main__</
 when referring to class or function names. Additionally, avoid redefining any
 <strong>OpenSn</strong> class or function names to prevent naming conflicts.</p>
 </div>
+</section>
+<section id="gpu-builds">
+<h3>GPU builds<a class="headerlink" href="#gpu-builds" title="Link to this heading"></a></h3>
+<p>GPU sweeps need one GPU backend, chosen at configure time with
+<code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_CUDA=ON</span></code>, <code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_HIP=ON</span></code>, or
+<code class="docutils literal notranslate"><span class="pre">-DOPENSN_WITH_SYCL=ON</span></code>, and the device architecture, for example
+<code class="docutils literal notranslate"><span class="pre">-DCMAKE_CUDA_ARCHITECTURES=90</span></code> or <code class="docutils literal notranslate"><span class="pre">-DCMAKE_HIP_ARCHITECTURES=gfx942</span></code>.
+<code class="docutils literal notranslate"><span class="pre">-DOPENSN_USE_GPU_AWARE_MPI=ON</span></code> passes device buffers directly to MPI. CMake
+then checks that the MPI library supports the backend, and on Cray MPICH it links
+the needed GPU transport library. See <a class="reference internal" href="../userguide/running_problems.html"><span class="doc">Running Problems</span></a> for
+the run-time settings.</p>
 </section>
 <section id="module">
 <h3>Module<a class="headerlink" href="#module" title="Link to this heading"></a></h3>

@@ -82,7 +82,10 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">28. Running Problems</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#basic-command-line-usage">28.1. Basic command-line usage</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#running-under-mpi">28.2. Running under MPI</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#running-with-gpus">28.3. Running with GPUs</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#running-with-gpus">28.3. Running with GPUs</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gpu-aware-mpi">28.3.1. GPU-aware MPI</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#typical-execution-pattern">28.4. Typical execution pattern</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#inputs-logs-and-outputs">28.5. Inputs, logs, and outputs</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#restart-and-repeated-solves">28.6. Restart and repeated solves</a></li>
@@ -164,6 +167,13 @@ to run in parallel.</p>
 information, make sure that the run configuration is compatible with the
 intended decomposition.</p>
 </div>
+<p>The <code class="docutils literal notranslate"><span class="pre">max_mpi_message_size</span></code> problem option sets the largest MPI message, in
+bytes, that an AAH sweep sends, on the CPU and on the GPU. Larger angular-flux
+transfers are split into messages of at most this size. The default, 4194304
+bytes (4 MiB), sends most transfers whole. Small limits split large transfers
+into many messages, and each one adds posting, matching, and polling work. With
+a 32 KiB limit, GPU sweeps on a few nodes ran up to 2.8 times slower. Messages
+below the limit are not affected, so the default rarely needs changing.</p>
 </section>
 <section id="running-with-gpus">
 <h2><span class="section-number">28.3. </span>Running with GPUs<a class="headerlink" href="#running-with-gpus" title="Link to this heading"></a></h2>
@@ -207,6 +217,30 @@ with each MPI rank.</p></li>
 formulation. The same mesh, materials, groupsets, sources, and solver setup
 should usually be validated on CPU first.</p>
 </div>
+<section id="gpu-aware-mpi">
+<h3><span class="section-number">28.3.1. </span>GPU-aware MPI<a class="headerlink" href="#gpu-aware-mpi" title="Link to this heading"></a></h3>
+<p>With <code class="docutils literal notranslate"><span class="pre">-DOPENSN_USE_GPU_AWARE_MPI=ON</span></code>, AAH sweeps on the GPU pass device
+buffers directly to MPI instead of copying them through host memory. The MPI
+library must support the GPU backend. CMake checks the library when it can:</p>
+<ul class="simple">
+<li><p>Cray MPICH: CMake links the GPU Transport Layer library (<code class="docutils literal notranslate"><span class="pre">libmpi_gtl_hsa</span></code>
+for HIP, <code class="docutils literal notranslate"><span class="pre">libmpi_gtl_cuda</span></code> for CUDA). Set <code class="docutils literal notranslate"><span class="pre">MPICH_GPU_SUPPORT_ENABLED=1</span></code>
+when running. Without it, Cray MPICH treats device pointers as host memory.</p></li>
+<li><p>MPICH: configuration fails if the library was configured without the backend,
+for example <code class="docutils literal notranslate"><span class="pre">--without-cuda</span></code>. If it was configured without
+<code class="docutils literal notranslate"><span class="pre">--with-cuda</span></code>, <code class="docutils literal notranslate"><span class="pre">--with-hip</span></code>, or <code class="docutils literal notranslate"><span class="pre">--with-ze</span></code>, CMake reports that support
+could not be verified, since MPICH then enables the backend only if its
+configure step detected the GPU runtime.</p></li>
+<li><p>Open MPI: configuration fails if <code class="docutils literal notranslate"><span class="pre">mpi-ext.h</span></code> defines
+<code class="docutils literal notranslate"><span class="pre">MPIX_CUDA_AWARE_SUPPORT</span></code> (CUDA) or <code class="docutils literal notranslate"><span class="pre">MPIX_ROCM_AWARE_SUPPORT</span></code> (HIP) as 0,
+which means the library was built without that support. CMake warns if the
+macro is not defined, as in Open MPI versions without the extension.</p></li>
+</ul>
+<p>On AMD MI300A nodes with Cray MPICH, GPU-aware AAH sweeps have shown
+intermittent GPU memory access faults with Cray MPICH’s intra-node GPU IPC
+path. Set <code class="docutils literal notranslate"><span class="pre">MPICH_GPU_IPC_ENABLED=0</span></code> to use its other intra-node path. In
+OpenSn scaling runs this cost no measurable time.</p>
+</section>
 </section>
 <section id="typical-execution-pattern">
 <h2><span class="section-number">28.4. </span>Typical execution pattern<a class="headerlink" href="#typical-execution-pattern" title="Link to this heading"></a></h2>
