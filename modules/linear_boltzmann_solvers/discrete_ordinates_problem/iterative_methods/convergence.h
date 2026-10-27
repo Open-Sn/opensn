@@ -1,9 +1,12 @@
 // SPDX-FileCopyrightText: 2024 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
+#pragma once
+
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
-#include <vector>
+#include <limits>
 #include <optional>
+#include <vector>
 
 namespace opensn
 {
@@ -27,5 +30,48 @@ double ComputePointwisePhiChange(
 double ComputeL2PhiChange(
   LBSProblem& lbs_problem,
   std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+
+/**
+ * Convergence test for a linearly converging iteration that measures the change between successive
+ * iterates. For such an iteration the error is about change / (1 - rho), with rho the convergence
+ * rate, so a change passes a tolerance tol when change < tol (1 - rho).
+ *
+ * The rate is estimated as the larger of the last two ratios of successive changes, so that one
+ * unusually small ratio of an irregularly converging (for example, accelerated) iteration does not
+ * end it early; it is zero for the first change. A relative change below the round-off level
+ * kRoundoffRelativeChange always passes.
+ *
+ * An accelerated iteration can also take a single step that barely changes the iterate while its
+ * error is still large. Converged() therefore tests the larger of the latest change and the change
+ * expected from the previous one, rho times the previous change.
+ */
+class ConvergenceRateEstimator
+{
+public:
+  /// Relative change below which successive iterates differ only by round-off.
+  static constexpr double kRoundoffRelativeChange = 100.0 * std::numeric_limits<double>::epsilon();
+
+  /// Records the change of the latest iteration and returns the rate estimate, in [0, 1].
+  double Update(double change);
+
+  /// Rate estimate after the last Update().
+  double GetRate() const { return rate_; }
+
+  /// Whether `change` passes `tolerance` at the current rate estimate.
+  bool Passes(double change, double tolerance) const;
+
+  /**
+   * Whether the iteration has converged to `tolerance`: the larger of the latest change and the
+   * change expected from the previous one passes it.
+   */
+  bool Converged(double tolerance) const;
+
+private:
+  unsigned int num_changes_ = 0;
+  double previous_change_ = 0.0;
+  double previous_ratio_ = 0.0;
+  double rate_ = 0.0;
+  double expected_change_ = 0.0;
+};
 
 } // namespace opensn

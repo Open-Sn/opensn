@@ -3,6 +3,10 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
+#include "framework/logging/log.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/utils/error.h"
@@ -87,6 +91,34 @@ DiscreteOrdinatesSolver::CheckKEigenRequirements(std::vector<std::string>& error
                         "solver.");
   if (do_problem_->GetOptions().csda_enabled)
     errors.emplace_back("CSDA is only supported by the steady-state fixed-source solver.");
+}
+
+void
+DiscreteOrdinatesSolver::WarnIfTransportSolveNotConverged(const std::string& what) const
+{
+  IterationSummary summary;
+  std::string label;
+  if (do_problem_->GetNumGroupsets() > 1)
+  {
+    auto ags_solver = do_problem_->GetAGSSolver();
+    OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+    summary = ags_solver->GetLastSolveSummary();
+    label = "AGS";
+  }
+  else
+  {
+    const auto context =
+      std::dynamic_pointer_cast<WGSContext>(do_problem_->GetWGSSolver(0)->GetContext());
+    OpenSnLogicalErrorIf(not context, GetName() + ": Cast to WGSContext failed.");
+    summary = context->last_solve;
+    label = "WGS";
+  }
+
+  if (summary.status != IterationStatus::LIMIT and summary.status != IterationStatus::FAILED)
+    return;
+  log.Log0Warning() << GetName() << ": " << what << " did not converge ("
+                    << FormatIterationSummary(label, summary)
+                    << "). Increase the iteration limit or loosen the tolerance.";
 }
 
 } // namespace opensn

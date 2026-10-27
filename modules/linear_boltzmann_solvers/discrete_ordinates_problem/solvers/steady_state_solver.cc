@@ -85,6 +85,7 @@ SteadyStateSourceSolver::ExecuteSolver()
 
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();
+  WarnIfTransportSolveNotConverged("The steady-state solve");
 
   if (do_problem_->HasUncollidedFlux())
     do_problem_->ComputeFluxFromUncollided();

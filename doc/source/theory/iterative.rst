@@ -87,9 +87,22 @@ is estimated as
 .. math:: \varrho = \frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\| \Phi^{(i)} - \Phi^{(i-1)} \|} \,.
 
 OpenSn's classic Richardson solver and pointwise AGS convergence check use
-the ratio of successive maximum pointwise relative changes for this estimate.
+ratios of successive maximum pointwise relative changes for this estimate.
 These changes are not squared, so no square root is taken. The estimate is
-set to zero on the first iteration.
+zero on the first iteration and is otherwise the larger of the last two
+ratios, so that one unusually small ratio of an irregularly converging
+(for example, DSA-accelerated) iteration does not end it early. For the same
+reason the change tested is the larger of the latest change and the change
+expected from the previous one, :math:`\varrho` times the previous change.
+No fixed floor is applied to the tolerance; only changes below the round-off
+level of a relative change (:math:`100\,\epsilon_{\text{machine}}`) pass
+regardless of :math:`\varrho`.
+
+Power iteration applies the same idea to the eigenvalue: the relative change
+of :math:`k` must be below :math:`(1-\varrho)\,` ``k_tol`` in two consecutive
+iterations, with :math:`\varrho` estimated from the change of the flux
+normalized by its fission production, so that ``k_tol`` bounds the error of
+:math:`k` rather than only its change.
 
 Krylov Subspace Method:
 ~~~~~~~~~~~~~~~~~~~~~~~
@@ -870,8 +883,13 @@ the accepted candidate is prolonged as a ratio:
 
 If :math:`\Phi^{\text{HO}}_{I,g_c}` is too small, the ratio is taken to
 be one. A candidate correction is rejected if it produces non-finite
-scalar fluxes, a non-finite or non-positive k-eigenvalue, or scalar-flux
-undershoots beyond the allowed tolerance. If no acceptable correction is
+scalar fluxes or a non-finite or non-positive k-eigenvalue, or if any
+other ratio is non-finite or non-positive. Such a ratio would change the
+sign of the scalar flux in coarse cell :math:`I` and coarse group
+:math:`g_c`; negative values already present in
+:math:`\phi^{\text{HO}}` are only rescaled. Damping moves every ratio
+toward one, so a sufficiently damped correction passes this check. If no
+acceptable correction is
 found, OpenSn keeps the unaccelerated transport update for that outer
 iteration. The starting damping factor is fixed from one outer iteration
 to the next; there is no adaptive relaxation history in the current

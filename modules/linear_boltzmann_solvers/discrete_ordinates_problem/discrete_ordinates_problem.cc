@@ -920,17 +920,21 @@ DiscreteOrdinatesProblem::SetWGSSolveSettings(const size_t groupset_id,
 }
 
 ScopedRestore
-DiscreteOrdinatesProblem::PreserveWGSSolveSettings()
+DiscreteOrdinatesProblem::PreserveTransportSolveSettings()
 {
   std::vector<std::pair<unsigned int, double>> saved;
   saved.reserve(groupsets_.size());
   for (const auto& groupset : groupsets_)
     saved.emplace_back(groupset.max_iterations, groupset.residual_tolerance);
+  const auto ags_solver = ags_solver_;
+  const unsigned int ags_max_iterations = ags_solver ? ags_solver->GetMaxIterations() : 0;
   return ScopedRestore(
-    [this, saved]
+    [this, saved, ags_solver, ags_max_iterations]
     {
       for (std::size_t gs = 0; gs < saved.size(); ++gs)
         SetWGSSolveSettings(gs, saved[gs].first, saved[gs].second);
+      if (ags_solver)
+        ags_solver->SetMaxIterations(ags_max_iterations);
     });
 }
 

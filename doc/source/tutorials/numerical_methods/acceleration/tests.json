@@ -11,7 +11,7 @@
       {
         "type": "KeyValuePair",
         "key": "Unaccelerated total average flux=",
-        "goldvalue": 1.844789433e-01,
+        "goldvalue": 1.844789434e-01,
         "rel_tol": 1.0e-8
       },
       {
@@ -36,25 +36,25 @@
         "type": "IntCompareCheck",
         "key": "Unaccelerated sweeps=",
         "wordnum": 2,
-        "gold": 2844
+        "gold": 2892
       },
       {
         "type": "IntCompareCheck",
         "key": "WGDSA alone sweeps=",
         "wordnum": 3,
-        "gold": 1145
+        "gold": 712
       },
       {
         "type": "IntCompareCheck",
         "key": "TGDSA alone sweeps=",
         "wordnum": 3,
-        "gold": 186
+        "gold": 132
       },
       {
         "type": "IntCompareCheck",
         "key": "WGDSA+TGDSA sweeps=",
         "wordnum": 2,
-        "gold": 81
+        "gold": 107
       }
     ]
   },

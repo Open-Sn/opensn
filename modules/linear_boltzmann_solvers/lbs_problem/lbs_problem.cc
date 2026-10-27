@@ -638,7 +638,12 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter(
     "verbose_outer_iterations", true, "Flag to control verbosity of outer iterations.");
   params.AddOptionalParameter(
-    "max_ags_iterations", 100, "Maximum number of across-groupset iterations.");
+    "max_ags_iterations",
+    100,
+    "Maximum number of across-groupset iterations per transport solve. A value set here is used "
+    "by every solver. If it is not set, each solver uses its own default: 100 for the "
+    "steady-state and transient solvers, and 1 in each power iteration of the power iteration "
+    "k-eigenvalue solver.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
   params.AddOptionalParameter("ags_convergence_check",
                               "l2",
@@ -751,7 +756,8 @@ LBSProblem::ParseOptions(const InputParameters& input)
      [this](const ParameterBlock& spec)
      { options_.verbose_inner_iterations = spec.GetValue<bool>(); }},
     {"max_ags_iterations",
-     [this](const ParameterBlock& spec) { options_.max_ags_iterations = spec.GetValue<int>(); }},
+     [this](const ParameterBlock& spec)
+     { options_.max_ags_iterations = static_cast<unsigned int>(spec.GetValue<int>()); }},
     {"ags_tolerance",
      [this](const ParameterBlock& spec) { options_.ags_tolerance = spec.GetValue<double>(); }},
     {"ags_convergence_check",

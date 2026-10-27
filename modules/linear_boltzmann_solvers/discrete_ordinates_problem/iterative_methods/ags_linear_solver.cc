@@ -64,11 +64,10 @@ AGSLinearSolver::Solve()
   // to function and for keigen-value problems
   const auto saved_qmoms = lbs_problem_.GetQMomentsLocal();
 
-  double pw_change_prev = 1.0;
+  ConvergenceRateEstimator rate_estimator;
   double last_error = 0.0;
   bool converged = false;
   bool failed = false;
-  bool child_limited = false;
   unsigned int num_iterations = 0;
   const bool reports_as_iteration = is_multi_groupset;
   CALI_CXX_MARK_LOOP_BEGIN(ags_iteration, "AGSIteration");
@@ -101,13 +100,12 @@ AGSLinearSolver::Solve()
     {
       double pw_change = ComputePointwisePhiChange(lbs_problem_, phi_old_);
       last_error = pw_change;
-      double rho = (iter == 0) ? 0.0 : (pw_change / pw_change_prev);
-      pw_change_prev = pw_change;
+      const double rho = rate_estimator.Update(pw_change);
 
       AppendNumericField(iter_stats, "pw_change", pw_change, Scientific(6));
       AppendNumericField(iter_stats, "rho_est", rho, Fixed(4));
 
-      if (pw_change < std::max(tolerance_ * (1.0 - rho), 1.0e-10))
+      if (rate_estimator.Converged(tolerance_))
         converged = true;
     }
     else
@@ -132,14 +130,11 @@ AGSLinearSolver::Solve()
     // Restore qmoms
     lbs_problem_.SetQMomentsFrom(saved_qmoms);
 
+    // A within-group solve that stops at its iteration limit is an inexact inner solve; the
+    // across-groupset iteration continues and its own convergence test decides.
     if (wgs_status == IterationStatus::FAILED)
     {
       failed = true;
-      break;
-    }
-    else if (wgs_status == IterationStatus::LIMIT)
-    {
-      child_limited = true;
       break;
     }
     else if (converged)
@@ -149,9 +144,7 @@ AGSLinearSolver::Solve()
   }
   CALI_CXX_MARK_LOOP_END(ags_iteration);
 
-  const auto inner_status = failed
-                              ? IterationStatus::FAILED
-                              : (child_limited ? IterationStatus::LIMIT : IterationStatus::NONE);
+  const auto inner_status = failed ? IterationStatus::FAILED : IterationStatus::NONE;
   last_solve_.num_iterations = reports_as_iteration ? num_iterations : 0;
   last_solve_.status = reports_as_iteration
                          ? IterationStatusFromSolve(converged, true, inner_status)

@@ -142,6 +142,12 @@ In practical terms:
 * the groupset solves alone are not enough,
 * stopping after one pass through the groupsets is not a converged solve.
 
+The power iteration k-eigen solver is the exception: unless the problem sets
+``max_ags_iterations``, it does one pass through the groupsets per power
+iteration, and the power iteration converges the coupling between groupsets
+together with the fission source. A ``max_ags_iterations`` set in the problem
+options applies to every power iteration as well.
+
 This is one of the most important best-practice points in multi-groupset
 transport problems.
 
@@ -209,6 +215,8 @@ Use other inner methods intentionally:
   method or a method-study baseline
 * ``petsc_richardson`` when a stationary PETSc iteration is specifically
   desired
+* ``petsc_fgmres`` with WGDSA or TGDSA: flexible GMRES tolerates the inexact
+  DSA diffusion solve, which standard GMRES does not
 * ``petsc_bicgstab`` when GMRES memory or restart behavior is problematic and a
   nonsymmetric Krylov alternative is worth trying
 

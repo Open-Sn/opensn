@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
 #include <cmath>
 #include <limits>
+#include <stdexcept>
 
 using namespace opensn;
 
@@ -238,4 +239,21 @@ TEST(CMFDBalance, DegenerateAndNonfiniteBalancesCannotConverge)
     values[0].first = std::numeric_limits<double>::quiet_NaN();
   EXPECT_TRUE(std::isinf(CMFDRelativeBalanceResidual(values)));
   EXPECT_DOUBLE_EQ(CMFDRelativeBalanceResidual({{0.0, 1.0e-200}}), 0.0);
+}
+
+TEST(CMFDCorrection, SignChangingRatiosAreCountedAndExistingSignsAreKept)
+{
+  const double nan = std::numeric_limits<double>::quiet_NaN();
+  const double inf = std::numeric_limits<double>::infinity();
+  // Positive and negative uncorrected values that the correction only rescales.
+  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 3.0}, {5.0, -0.5, 1.0e-300}), 0U);
+  // Flipped signs, a zero, and non-finite corrected values change or destroy the fine flux.
+  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 3.0, 4.0, 5.0}, {-1.0, 2.0, 0.0, nan, inf}),
+            5U);
+  // A negligible uncorrected value is not rescaled, so its corrected value is irrelevant.
+  EXPECT_EQ(CMFDCountSignChangingRatios({0.0, 1.0e-15, -1.0e-15}, {-1.0, -1.0, 1.0}), 0U);
+  // A non-finite uncorrected value has no admissible ratio.
+  EXPECT_EQ(CMFDCountSignChangingRatios({nan}, {1.0}), 1U);
+  EXPECT_EQ(CMFDCountSignChangingRatios({}, {}), 0U);
+  EXPECT_THROW(CMFDCountSignChangingRatios({1.0}, {1.0, 2.0}), std::invalid_argument);
 }

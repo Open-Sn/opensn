@@ -41,8 +41,9 @@ private:
   std::vector<double> phi_temp_;
   std::vector<double> Sf_ell_;
   std::vector<double> Sf0_ell_;
-  std::vector<double> phi0_ell_;
-  std::vector<double> phi0_star_;
+  /// Transport flux (all moments) before and after the last transport update.
+  std::vector<double> phi_ell_;
+  std::vector<double> phi_star_;
   std::vector<double> Ss0_res_;
   std::vector<double> epsilon_k_;
   std::vector<double> epsilon_kp1_;

@@ -147,6 +147,7 @@
   },
   {
     "file": "fuel_fission_rate.py",
+    "comment": "The gold is the converged fuel fission rate, 0.2412588247 (l_abs_tol=1e-10, k_tol=1e-12). The tutorial settings (l_abs_tol=1e-5, k_tol=1e-8) reproduce it to 2.2e-9; abs_tol=1e-8 is about 4 k_tol relative.",
     "num_procs": 1,
     "checks": [
       {
@@ -156,8 +157,8 @@
       {
         "type": "KeyValuePair",
         "key": "Fuel fission rate=",
-        "goldvalue": 0.241259364,
-        "abs_tol": 1.0e-7
+        "goldvalue": 0.2412588247,
+        "abs_tol": 1.0e-8
       }
     ]
   },

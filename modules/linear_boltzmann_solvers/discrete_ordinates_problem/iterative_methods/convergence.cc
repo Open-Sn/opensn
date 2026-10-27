@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/runtime.h"
 #include "framework/mesh/mesh/mesh.h"
+#include <algorithm>
 #include <numeric>
 
 namespace opensn
@@ -100,6 +101,36 @@ ComputeL2PhiChange(LBSProblem& lbs_problem,
   mpi_comm.all_reduce<double>(norm, global_norm, mpi::op::sum<double>());
 
   return std::sqrt(global_norm);
+}
+
+double
+ConvergenceRateEstimator::Update(const double change)
+{
+  ++num_changes_;
+  expected_change_ = rate_ * previous_change_;
+  if (num_changes_ == 1)
+    rate_ = 0.0;
+  else
+  {
+    const double ratio = previous_change_ > 0.0 ? change / previous_change_ : 1.0;
+    rate_ = num_changes_ == 2 ? ratio : std::max(ratio, previous_ratio_);
+    rate_ = std::clamp(rate_, 0.0, 1.0);
+    previous_ratio_ = ratio;
+  }
+  previous_change_ = change;
+  return rate_;
+}
+
+bool
+ConvergenceRateEstimator::Passes(const double change, const double tolerance) const
+{
+  return change < kRoundoffRelativeChange or change < tolerance * (1.0 - rate_);
+}
+
+bool
+ConvergenceRateEstimator::Converged(const double tolerance) const
+{
+  return Passes(std::max(previous_change_, expected_change_), tolerance);
 }
 
 } // namespace opensn

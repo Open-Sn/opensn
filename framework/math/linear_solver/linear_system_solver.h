@@ -18,6 +18,7 @@ public:
     CLASSIC_RICHARDSON,
     PETSC_RICHARDSON,
     PETSC_GMRES,
+    PETSC_FGMRES,
     PETSC_BICGSTAB
   };
 
@@ -38,6 +39,8 @@ public:
         return "PETSC_RICHARDSON";
       case IterativeMethod::PETSC_GMRES:
         return "PETSC_GMRES";
+      case IterativeMethod::PETSC_FGMRES:
+        return "PETSC_FGMRES";
       case IterativeMethod::PETSC_BICGSTAB:
         return "PETSC_BICGSTAB";
       default:

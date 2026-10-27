@@ -9,6 +9,7 @@
 #include <map>
 #include <filesystem>
 #include <memory>
+#include <optional>
 
 namespace opensn
 {
@@ -69,7 +70,9 @@ struct LBSOptions
   bool verbose_inner_iterations = true;
   bool verbose_outer_iterations = true;
   bool ags_pointwise_convergence = false;
-  unsigned int max_ags_iterations = 100;
+  /// Maximum across-groupset iterations per transport solve. Unset unless the user sets it; each
+  /// solver then applies its own default.
+  std::optional<unsigned int> max_ags_iterations;
   double ags_tolerance = 1.0e-6;
 
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule

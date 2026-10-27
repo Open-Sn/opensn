@@ -21,7 +21,10 @@ DiscreteOrdinatesKEigenAcceleration::GetInputParameters()
 
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "An existing discrete ordinates problem");
-  params.AddOptionalParameter("l_abs_tol", 1.0e-10, "Absolute residual tolerance");
+  params.AddOptionalParameter(
+    "l_abs_tol",
+    1.0e-10,
+    "Residual tolerance of the diffusion solves, relative to the right-hand-side norm");
   params.AddOptionalParameter("max_iters", 100, "Maximum allowable iterations");
   params.AddOptionalParameter("verbose", false, "If true, enables verbose output");
   params.AddOptionalParameter("petsc_options", std::string("ssss"), "Additional PETSc options");

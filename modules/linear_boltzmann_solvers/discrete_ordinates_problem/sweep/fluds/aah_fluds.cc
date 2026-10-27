@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/logging/log.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/math.h"
 #include "framework/runtime.h"
 #include <utility>
@@ -514,6 +515,75 @@ AAH_FLUDS::SetDelayedLocalPsiOldToNew()
   delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
   delayed_local_psiE_ = delayed_local_psiE_old_;
   delayed_local_psiE_view_ = std::span<double>(delayed_local_psiE_);
+}
+
+void
+AAH_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+{
+  const auto& grid = *spds_.GetGrid();
+  const auto& spls = spds_.GetLocalSubgrid();
+  const auto& face_orientations = spds_.GetCellFaceOrientations();
+
+  // Visit the incoming faces in sweep order and count them like the sweep kernels do: local faces
+  // per cell, non-local faces over the whole ordering. These counters select the FLUDS slots.
+  int nonlocal_face_counter = -1;
+  for (std::size_t so_index = 0; so_index < spls.size(); ++so_index)
+  {
+    const auto cell_local_id = static_cast<std::uint32_t>(spls[so_index]);
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    int local_face_counter = -1;
+    for (unsigned int f = 0; f < cell.faces.size(); ++f)
+    {
+      const auto& face = cell.faces[f];
+      if (face_orientations[cell_local_id][f] != FaceOrientation::INCOMING or not face.has_neighbor)
+        continue;
+
+      const auto num_face_nodes =
+        common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_.size();
+      // Storage, per-direction block stride, and the offset of each face node's group block within
+      // a direction block, as in UpwindPsi and NLUpwindPsi.
+      double* delayed_psi = nullptr;
+      std::size_t block_stride = 0;
+      std::vector<std::size_t> node_offsets(num_face_nodes);
+      if (grid.IsCellLocal(face.neighbor_id))
+      {
+        ++local_face_counter;
+        if (common_data_.so_cell_inco_face_face_category_[so_index][local_face_counter] >= 0)
+          continue;
+        const auto& face_dofs =
+          common_data_.so_cell_inco_face_dof_indices_[so_index][local_face_counter];
+        delayed_psi = delayed_local_psi_.data();
+        block_stride = delayed_local_psi_Gn_block_strideG_;
+        for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
+          node_offsets[fj] = (face_dofs.slot_address * common_data_.delayed_local_psi_stride_ +
+                              static_cast<std::size_t>(face_dofs.upwind_dof_mapping[fj])) *
+                             num_groups_;
+      }
+      else
+      {
+        ++nonlocal_face_counter;
+        if (common_data_.nonlocal_inc_face_prelocI_slot_dof_[nonlocal_face_counter].first >= 0)
+          continue;
+        const auto& [prelocI, slot_dofs] =
+          common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonlocal_face_counter];
+        delayed_psi = delayed_prelocI_outgoing_psi_[prelocI].data();
+        block_stride = common_data_.delayed_prelocI_face_dof_count_[prelocI] * num_groups_;
+        for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
+          node_offsets[fj] =
+            static_cast<std::size_t>(slot_dofs.first + slot_dofs.second[fj]) * num_groups_;
+      }
+
+      for (unsigned int fj = 0; fj < num_face_nodes; ++fj)
+        for (unsigned int g = 0; g < num_groups_; ++g)
+        {
+          const double delta = correction(cell_local_id, f, fj, g);
+          if (delta == 0.0)
+            continue;
+          for (std::size_t n = 0; n < num_angles_; ++n)
+            delayed_psi[block_stride * n + node_offsets[fj] + g] += delta;
+        }
+    }
+  }
 }
 
 } // namespace opensn

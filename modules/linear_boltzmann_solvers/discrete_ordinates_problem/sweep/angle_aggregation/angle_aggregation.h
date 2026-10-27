@@ -149,6 +149,13 @@ public:
   /// Copies the new delayed angular fluxes to the old.
   void SetDelayedPsiNew2Old();
 
+  /**
+   * Adds an isotropic nodal correction to every new delayed angular flux of this groupset: the
+   * lagged incoming fluxes of opposing reflecting boundaries and of broken cyclic dependencies
+   * within and between locations.
+   */
+  void AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction);
+
 private:
   int groupset_id_;
   bool num_ang_unknowns_avail_;

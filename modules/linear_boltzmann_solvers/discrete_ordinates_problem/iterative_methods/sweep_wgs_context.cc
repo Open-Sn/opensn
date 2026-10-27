@@ -98,7 +98,16 @@ SweepWGSContext::SetPreconditioner(KSP& solver)
     OpenSnPETScCall(PCShellSetContext(pc, &(*this)));
   }
 
-  OpenSnPETScCall(KSPSetPCSide(ksp, PC_LEFT));
+  // Flexible GMRES admits a preconditioner that changes between applications, such as DSA with an
+  // inexact diffusion solve, but only as a right preconditioner. Its convergence test then sees the
+  // unpreconditioned residual, so it is scaled by the right-hand-side norm.
+  if (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_FGMRES)
+  {
+    OpenSnPETScCall(KSPSetPCSide(ksp, PC_RIGHT));
+    residual_scale_type = ResidualScaleType::RHS_NORM;
+  }
+  else
+    OpenSnPETScCall(KSPSetPCSide(ksp, PC_LEFT));
   OpenSnPETScCall(KSPSetUp(ksp));
 }
 
@@ -159,6 +168,7 @@ SweepWGSContext::PostSolveCallback()
   if ((groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON and
        do_problem.GetOptions().csda_enabled) or
       groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
+      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_FGMRES or
       groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB or
       (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
        groupset.max_iterations > 1))

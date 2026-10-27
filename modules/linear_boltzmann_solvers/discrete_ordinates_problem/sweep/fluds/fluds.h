@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
+#include <functional>
 #include <set>
 #include <span>
 #include <vector>
@@ -68,6 +69,19 @@ public:
   }
   virtual void SetDelayedOutgoingPsiOldToNew() {}
   virtual void SetDelayedOutgoingPsiNewToOld() {}
+
+  /// Isotropic nodal correction: (cell local id, face, face node, group index within the
+  /// groupset) -> value added to the angular flux in every direction.
+  using DelayedFluxCorrection =
+    std::function<double(std::uint32_t, unsigned int, unsigned int, unsigned int)>;
+
+  /**
+   * Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux, that is,
+   * to the lagged values the next sweep reads where a cyclic dependency was broken, within this
+   * location or between locations. The correction is evaluated at the face node of the downwind
+   * cell that reads the value. The default has no delayed angular fluxes.
+   */
+  virtual void AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction) {}
 
   virtual ~FLUDS() = default;
 

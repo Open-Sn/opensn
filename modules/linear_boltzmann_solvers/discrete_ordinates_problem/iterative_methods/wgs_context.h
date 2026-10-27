@@ -21,7 +21,7 @@ class DiscreteOrdinatesProblem;
 /**
  * Runs a restore function once: on Restore(), or else when destroyed. Returned by the operations
  * that change problem-owned solver settings temporarily, e.g. WGSContext::OverrideSourceScopes()
- * and DiscreteOrdinatesProblem::PreserveWGSSolveSettings().
+ * and DiscreteOrdinatesProblem::PreserveTransportSolveSettings().
  *
  * The destructor must not throw, since it also runs during stack unwinding, so it logs a failed
  * restore instead. Call Restore() on the normal path when a failure must propagate.

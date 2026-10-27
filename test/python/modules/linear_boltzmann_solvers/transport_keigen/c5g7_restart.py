@@ -88,9 +88,11 @@ if __name__ == "__main__":
         },
         sweep_type="CBC",
     )
+    # The restart state is already converged, so a k_tol well below the 1e-4 acceptance tolerance
+    # stops after the minimum number of iterations.
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
-        k_tol=1.0e-8,
+        k_tol=1.0e-6,
     )
     k_solver.Initialize()
     k_solver.Execute()

@@ -441,6 +441,7 @@ TransientSolver::AdvanceSolver()
     do_problem_->SetTime(current_time_);
     throw;
   }
+  WarnIfTransportSolveNotConverged("Time step " + std::to_string(step_ + 1));
 
   if (verbose_)
   {

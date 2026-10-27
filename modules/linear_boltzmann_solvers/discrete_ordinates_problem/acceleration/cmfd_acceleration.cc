@@ -13,6 +13,7 @@
 #include "framework/utils/timer.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/convergence.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
@@ -36,24 +37,39 @@ namespace
 /// Consecutive skipped corrections after which CMFD warns that it is not accelerating.
 constexpr unsigned int persistent_skip_warning_count = 5;
 
+/**
+ * Half transmissibility of a coarse cell to one of its faces, D A / |d|, with d the vector from the
+ * cell centroid to the face centroid. It is the usual D A / (d.n) for a face the centroid projects
+ * onto orthogonally. On irregular aggregates d can be nearly parallel to the face, where d.n would
+ * make the coupling grow without bound; |d| keeps it bounded without weakening it on skewed faces.
+ *
+ * This is the orthogonal-correction decomposition of the face-normal gradient used by finite-volume
+ * methods on non-orthogonal meshes (Jasak, PhD thesis, Imperial College, 1996; Moukalled, Mangani
+ * and Darwish, The Finite Volume Method in Computational Fluid Dynamics, Springer, 2016, ch. 8).
+ * The non-orthogonal remainder, which those methods add as an explicit correction, needs no
+ * separate term here: the CMFD current correction (D-hat) makes the coarse currents reproduce the
+ * transport currents for any coupling, so the coupling affects only the stability of the iteration.
+ */
 double
-ProjectedDistanceToFace(const Vector3& cell_centroid,
-                        const Vector3& face_centroid,
-                        const Vector3& face_normal)
+HalfTransmissibility(const double diffusion_coefficient,
+                     const Vector3& cell_centroid,
+                     const Vector3& face_centroid,
+                     const double face_area)
 {
-  return std::max(1.0e-12, std::fabs((face_centroid - cell_centroid).Dot(face_normal)));
+  const double distance = (face_centroid - cell_centroid).Norm();
+  OpenSnLogicalErrorIf(distance <= 0.0,
+                       "CMFD coarse face centroid coincides with its cell centroid.");
+  return diffusion_coefficient * face_area / distance;
 }
 
+/// Diffusion coupling of two coarse cells across a face: the harmonic combination of the two
+/// half transmissibilities.
 double
-InterfaceDiffusionCoefficient(const double owner_diffusion_coefficient,
-                              const double neighbor_diffusion_coefficient,
-                              const double owner_distance_to_face,
-                              const double neighbor_distance_to_face,
-                              const double face_area)
+InterfaceDiffusionCoefficient(const double owner_half_transmissibility,
+                              const double neighbor_half_transmissibility)
 {
-  const double denominator = owner_distance_to_face / owner_diffusion_coefficient +
-                             neighbor_distance_to_face / neighbor_diffusion_coefficient;
-  return face_area / std::max(1.0e-12, denominator);
+  const double sum = owner_half_transmissibility + neighbor_half_transmissibility;
+  return sum > 0.0 ? owner_half_transmissibility * neighbor_half_transmissibility / sum : 0.0;
 }
 
 double
@@ -99,6 +115,29 @@ MetricValue(const T value)
   std::ostringstream out;
   out << value;
   return out.str();
+}
+
+/**
+ * Relative L2 change between two coarse scalar-flux iterates, each normalized by its fission
+ * production so that the arbitrary eigenvector scale of power iteration does not enter.
+ */
+double
+NormalizedCoarseFluxChange(const std::vector<double>& phi_old,
+                           const double production_old,
+                           const std::vector<double>& phi_new,
+                           const double production_new)
+{
+  double local_sums[2] = {0.0, 0.0};
+  for (std::size_t i = 0; i < phi_new.size(); ++i)
+  {
+    const double shape_new = phi_new[i] / production_new;
+    const double difference = shape_new - phi_old[i] / production_old;
+    local_sums[0] += difference * difference;
+    local_sums[1] += shape_new * shape_new;
+  }
+  double global_sums[2] = {0.0, 0.0};
+  opensn::mpi_comm.all_reduce(local_sums, 2, global_sums, mpi::op::sum<double>());
+  return std::sqrt(global_sums[0] / std::max(global_sums[1], 1.0e-300));
 }
 
 double
@@ -166,11 +205,6 @@ CMFDAcceleration::GetInputParameters()
     "[developer/debug] Minimum CMFD correction damping factor considered during correction "
     "limiting. If no admissible correction is found above this damping, the CMFD correction is "
     "skipped for the current transport update.");
-  params.AddOptionalParameter("negative_flux_tolerance",
-                              1.0e-6,
-                              "[developer/debug] Allowed scalar-flux undershoot for accepting a "
-                              "CMFD correction. Corrections that drive scalar flux below this "
-                              "guard are damped or skipped.");
   params.AddOptionalParameter(
     "inactive_iterations",
     0,
@@ -228,7 +262,6 @@ CMFDAcceleration::GetInputParameters()
   params.ConstrainParameterRange("pi_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("correction_max_attempts", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("correction_min_damping", AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("negative_flux_tolerance", AllowableRangeLowLimit::New(0.0));
   params.ConstrainParameterRange("inactive_iterations", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("update_wgs_max_its", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("update_wgs_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
@@ -261,7 +294,17 @@ CMFDAcceleration::GetInputParameters()
   params.ChangeExistingParamToOptional(
     "pi_k_tol",
     1.0e-8,
-    "[developer/debug] k-eigenvalue tolerance for CMFD coarse power iterations.");
+    "[developer/debug] Tolerance on the relative change of the coarse k-eigenvalue between CMFD "
+    "coarse power iterations.");
+  params.AddOptionalParameter(
+    "pi_phi_tol",
+    1.0e-6,
+    "[developer/debug] Tolerance on the coarse scalar-flux error of the CMFD coarse power "
+    "iteration, estimated as the relative L2 change of the production-normalized flux divided by "
+    "(1 - rho), with the convergence rate rho estimated from successive changes. The coarse power "
+    "iteration stops when both this tolerance and pi_k_tol are met, which takes at least two "
+    "iterations, or after pi_max_its iterations.");
+  params.ConstrainParameterRange("pi_phi_tol", AllowableRangeLowLimit::New(0.0, false));
 
   return params;
 }
@@ -282,12 +325,12 @@ CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
     relaxation_(params.GetParamValue<double>("relaxation")),
     correction_max_attempts_(params.GetParamValue<unsigned int>("correction_max_attempts")),
     correction_min_damping_(params.GetParamValue<double>("correction_min_damping")),
-    negative_flux_tolerance_(params.GetParamValue<double>("negative_flux_tolerance")),
     inactive_iterations_(params.GetParamValue<unsigned int>("inactive_iterations")),
     update_wgs_max_its_(params.GetParamValue<unsigned int>("update_wgs_max_its")),
     update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
     balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
     l_rel_tol_(params.GetParamValue<double>("l_rel_tol")),
+    pi_phi_tol_(params.GetParamValue<double>("pi_phi_tol")),
     coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
     coarse_direct_solve_threshold_(
       static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
@@ -555,6 +598,8 @@ CMFDAcceleration::PostPowerIteration()
   OpenSnLogicalErrorIf(coarse_production_old == 0.0,
                        "CMFDAcceleration cannot iterate with zero coarse production.");
   int coarse_pi_iterations = 0;
+  bool coarse_pi_converged = false;
+  ConvergenceRateEstimator rate_estimator;
   int coarse_ksp_iterations = 0;
   bool coarse_linear_solves_converged = true;
   t0 = NowSeconds();
@@ -569,13 +614,23 @@ CMFDAcceleration::PostPowerIteration()
                          "CMFDAcceleration cannot update k with zero coarse production.");
     const double k_eff_new = coarse_production_new / coarse_production_old * k_eff;
     const double k_change = std::fabs(k_eff_new / k_eff - 1.0);
+    // The eigenvalue settles much faster than the flux shape, and at a high dominance ratio rho
+    // one power iteration changes the shape by only about (1 - rho) times its error. Stopping on
+    // either change alone ends the coarse solve while the fundamental-mode shape is still
+    // unconverged, so the change is compared with the tolerance scaled by (1 - rho), with rho
+    // estimated from successive changes; the first change has no rate estimate yet.
+    rate_estimator.Update(NormalizedCoarseFluxChange(
+      coarse_phi_m, coarse_production_old, coarse_phi, coarse_production_new));
 
     k_eff = k_eff_new;
     coarse_phi_m = coarse_phi;
     coarse_production_old = coarse_production_new;
 
-    if (k_change < pi_k_tol_)
+    if (m > 0 and k_change < pi_k_tol_ and rate_estimator.Converged(pi_phi_tol_))
+    {
+      coarse_pi_converged = true;
       break;
+    }
   }
   const double coarse_pi_time = NowSeconds() - t0;
   const double coarse_phi_change = RelativeL2Difference(coarse_phi, coarse_phi_new_);
@@ -692,6 +747,7 @@ CMFDAcceleration::PostPowerIteration()
     LogMetric("update_time", MaxAcrossRanks(update_time));
     LogMetric("post_time", MaxAcrossRanks(post_time));
     LogMetric("coarse_pi_iterations", coarse_pi_iterations);
+    LogMetric("coarse_pi_converged", coarse_pi_converged ? 1 : 0);
     LogMetric("coarse_ksp_iterations", coarse_ksp_iterations);
     LogMetric("coarse_linear_solves_converged", coarse_linear_solves_converged ? 1 : 0);
     LogMetric("operator_balance_residual", transport_balance_residual.relative_l2);
@@ -1234,17 +1290,21 @@ CMFDAcceleration::AssembleOperator()
         {
           const auto& neighbor_xs = *xs_map.at(face.neighbor_block_id);
 
-          const double owner_distance_to_face =
-            ProjectedDistanceToFace(coarse_cell.centroid, face.centroid, face.normal);
-          const double neighbor_distance_to_face =
-            ProjectedDistanceToFace(face.neighbor_centroid, face.centroid, face.normal);
+          // Diffusion coupling (D-tilde). The transport closure term reproduces the transport
+          // currents whatever the coupling, so a face without a usable two-point coupling is closed
+          // by that term alone.
           const std::vector<double> unweighted_spectrum;
           const double coeff = InterfaceDiffusionCoefficient(
-            CondensedDiffusionCoefficient(xs, coarse_phi_new_fine_, coarse_cell, cg),
-            CondensedDiffusionCoefficient(neighbor_xs, unweighted_spectrum, coarse_cell, cg),
-            owner_distance_to_face,
-            neighbor_distance_to_face,
-            face.area);
+            HalfTransmissibility(
+              CondensedDiffusionCoefficient(xs, coarse_phi_new_fine_, coarse_cell, cg),
+              coarse_cell.centroid,
+              face.centroid,
+              face.area),
+            HalfTransmissibility(
+              CondensedDiffusionCoefficient(neighbor_xs, unweighted_spectrum, coarse_cell, cg),
+              face.neighbor_centroid,
+              face.centroid,
+              face.area));
           const bool partial_closure = current_closure_ == "partial";
           bool partial_current_closure_available = false;
           double partial_diag = 0.0;
@@ -1718,8 +1778,6 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
                        "CMFD input transport update has an invalid k-eigenvalue.");
   OpenSnLogicalErrorIf(transport_diagnostics.has_nonfinite_flux,
                        "CMFD input transport update has non-finite scalar flux values.");
-  const double min_allowed_scalar_flux = std::min(
-    -negative_flux_tolerance_, transport_diagnostics.min_scalar_flux - negative_flux_tolerance_);
 
   for (; attempts < correction_max_attempts_; ++attempts)
   {
@@ -1732,6 +1790,20 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
     std::vector<double> candidate_coarse_phi(coarse_phi_new_.size(), 0.0);
     for (size_t i = 0; i < candidate_coarse_phi.size(); ++i)
       candidate_coarse_phi[i] = coarse_phi_new_[i] + coarse_delta_phi[i];
+
+    // The correction scales the fine flux by these coarse ratios. A ratio that is not finite and
+    // positive would change the sign of the transport flux, so damp the correction instead. Signs
+    // the transport update already has are kept: the ratios only rescale them.
+    std::size_t sign_changing_ratios = 0;
+    opensn::mpi_comm.all_reduce(CMFDCountSignChangingRatios(coarse_phi_new_, candidate_coarse_phi),
+                                sign_changing_ratios,
+                                mpi::op::sum<std::size_t>());
+    if (sign_changing_ratios > 0)
+    {
+      rejection_reason = "sign_change_guard";
+      damping *= 0.5;
+      continue;
+    }
 
     auto candidate_phi_new = transport_phi_new;
     CMFDProlongateScalarFluxRatio(do_problem_,
@@ -1747,8 +1819,7 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
     const double candidate_k_eff =
       candidate_fission_production / old_fission_production * solver_->GetEigenvalue();
     diagnostics = AnalyzeFluxUpdate(candidate_phi_new, candidate_k_eff);
-    if (not diagnostics.has_invalid_k and not diagnostics.has_nonfinite_flux and
-        diagnostics.min_scalar_flux >= min_allowed_scalar_flux)
+    if (not diagnostics.has_invalid_k and not diagnostics.has_nonfinite_flux)
     {
       phi_new_local_ = std::move(candidate_phi_new);
       applied_damping = damping;
@@ -1756,12 +1827,7 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
       return candidate_k_eff;
     }
 
-    if (diagnostics.has_invalid_k)
-      rejection_reason = "invalid_k";
-    else if (diagnostics.has_nonfinite_flux)
-      rejection_reason = "nonfinite_flux";
-    else
-      rejection_reason = "negative_flux_guard";
+    rejection_reason = diagnostics.has_invalid_k ? "invalid_k" : "nonfinite_flux";
 
     damping *= 0.5;
   }

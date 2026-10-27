@@ -109,18 +109,20 @@ class LBSGroupset;
 
 /**
  * Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular
- * fluxes of opposing reflecting boundaries, as the isotropic angular correction
- * delta psi = delta phi (quadrature weights sum to one).
+ * fluxes of a groupset, as the isotropic angular correction delta psi = delta phi (quadrature
+ * weights sum to one). Lagged fluxes are those of opposing reflecting boundaries and those where
+ * the sweep broke a cyclic dependency, within a location or between locations. Each is corrected
+ * with delta phi at the face node of the downwind cell that reads it.
  *
- * Source iteration carries the lagged boundary angular fluxes as unknowns alongside phi. A DSA
- * update that corrects phi but not these fluxes leaves the boundary error to re-enter on the next
- * sweep, which can make source iteration with DSA diverge.
+ * The iteration carries the lagged angular fluxes as unknowns alongside phi. An acceleration
+ * update that corrects phi but not these fluxes leaves their error to re-enter on the next sweep,
+ * which can make source iteration with DSA diverge.
  *
  * `delta_phi_local` has the layout of the local flux-moment vector.
  */
-void ApplyDSACorrectionToDelayedBoundaryFlux(DiscreteOrdinatesProblem& do_problem,
-                                             const LBSGroupset& groupset,
-                                             const std::vector<double>& delta_phi_local);
+void ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
+                                            const LBSGroupset& groupset,
+                                            const std::vector<double>& delta_phi_local);
 
 /**
  * Returns D / (1 + 3 D tau), the diffusion coefficient with time absorption tau added to

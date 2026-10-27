@@ -16,12 +16,40 @@
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/convergence.h"
 #include "caliper/cali.h"
 #include <cmath>
 #include <iomanip>
 
 namespace opensn
 {
+namespace
+{
+
+/**
+ * Relative L2 change between two flux iterates, each normalized by its fission production so that
+ * the arbitrary eigenvector scale of power iteration does not enter.
+ */
+double
+NormalizedFluxChange(const std::vector<double>& phi_old,
+                     const double production_old,
+                     const std::vector<double>& phi_new,
+                     const double production_new)
+{
+  double local_sums[2] = {0.0, 0.0};
+  for (std::size_t i = 0; i < phi_new.size(); ++i)
+  {
+    const double shape_new = phi_new[i] / production_new;
+    const double difference = shape_new - phi_old[i] / production_old;
+    local_sums[0] += difference * difference;
+    local_sums[1] += shape_new * shape_new;
+  }
+  double global_sums[2] = {0.0, 0.0};
+  mpi_comm.all_reduce(local_sums, 2, global_sums, mpi::op::sum<double>());
+  return std::sqrt(global_sums[0] / std::max(global_sums[1], 1.0e-300));
+}
+
+} // namespace
 
 InputParameters
 PowerIterationKEigenSolver::GetInputParameters()
@@ -35,8 +63,11 @@ PowerIterationKEigenSolver::GetInputParameters()
   params.AddOptionalParameter(
     "k_tol",
     1.0e-10,
-    "Tolerance on the relative change of the k-eigenvalue between power iterations; it must hold "
-    "for two consecutive iterations. Values below 1.0e-12 are treated as 1.0e-12.");
+    "Tolerance on the estimated relative error of the k-eigenvalue: the relative change of k "
+    "between power iterations must be below k_tol (1 - rho) in two consecutive iterations, where "
+    "rho is the convergence rate of the power iteration, estimated from the change of the "
+    "production-normalized flux between iterations. Values below 1.0e-12 are treated as "
+    "1.0e-12.");
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   return params;
 }
@@ -129,9 +160,18 @@ PowerIterationKEigenSolver::ExecuteSolver()
 
   const auto scopes = PrepareProblem();
 
-  // Acceleration methods change the within-group solve settings of the problem's groupsets; restore
-  // them when this solve returns or throws.
-  auto wgs_settings = do_problem_->PreserveWGSSolveSettings();
+  // This solver and its acceleration method change the within-group and across-groupset solve
+  // settings of the problem; restore them when this solve returns or throws.
+  auto transport_settings = do_problem_->PreserveTransportSolveSettings();
+  {
+    // Unless the problem sets max_ags_iterations, each power iteration makes one pass over the
+    // groupsets: the fission source is lagged anyway, so the power iteration converges the
+    // coupling between groupsets together with the fission source.
+    auto ags_solver = do_problem_->GetAGSSolver();
+    OpenSnLogicalErrorIf(not ags_solver, GetName() + ": AGS solver not available.");
+    if (do_problem_->GetNumGroupsets() > 1)
+      ags_solver->SetMaxIterations(do_problem_->GetOptions().max_ags_iterations.value_or(1));
+  }
 
   // The acceleration is built from the problem's current runtime objects for each Execute(), so a
   // problem setter between calls (e.g. SetXSMap) cannot leave it with stale operators.
@@ -148,6 +188,8 @@ PowerIterationKEigenSolver::ExecuteSolver()
   double k_eff_prev = k_eff_;
   double k_eff_change = 1.0;
   bool previous_k_change_converged = false;
+  ConvergenceRateEstimator rate_estimator;
+  std::vector<double> phi_previous;
 
   // Start power iterations
   unsigned int nit = 0;
@@ -161,6 +203,10 @@ PowerIterationKEigenSolver::ExecuteSolver()
 
     OpenSnLogicalErrorIf(k_eff_ <= 0.0 or not std::isfinite(k_eff_),
                          GetName() + ": invalid k_eff encountered: " + std::to_string(k_eff_));
+
+    // The iterate at the start of this power iteration, for the convergence-rate estimate
+    phi_previous = phi_old_local_;
+    const double production_previous = ComputeFissionProduction(*do_problem_, phi_previous);
 
     // Set the fission source
     {
@@ -207,10 +253,18 @@ PowerIterationKEigenSolver::ExecuteSolver()
     nit += 1;
     num_power_iterations_ = nit;
 
-    // The change must be below the tolerance in two consecutive iterations. A single small change
-    // also occurs where a non-monotone k sequence turns around (accelerated iterations can
-    // overshoot), which is not convergence.
-    const bool k_change_converged = k_eff_change < std::max(k_tolerance_, 1.0e-12);
+    // The k error of a power iteration converging at rate rho is about its change / (1 - rho), so
+    // the change is compared with k_tol (1 - rho). The rate is estimated from the change of the
+    // production-normalized flux, which is smoother than the k sequence. The change must pass in
+    // two consecutive iterations: a single small change also occurs where a non-monotone k sequence
+    // turns around (accelerated iterations can overshoot), which is not convergence.
+    rate_estimator.Update(
+      NormalizedFluxChange(phi_previous,
+                           production_previous,
+                           phi_new_local_,
+                           ComputeFissionProduction(*do_problem_, phi_new_local_)));
+    const bool k_change_converged =
+      rate_estimator.Passes(k_eff_change, std::max(k_tolerance_, 1.0e-12));
     converged = k_change_converged and previous_k_change_converged and
                 (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
     previous_k_change_converged = k_change_converged;
@@ -260,7 +314,7 @@ PowerIterationKEigenSolver::ExecuteSolver()
   converged_ = converged;
 
   // Restore here so that a failure propagates; the guard only logs one during unwinding.
-  wgs_settings.Restore();
+  transport_settings.Restore();
 
   // If restarts are enabled, always write a restart dump upon convergence or
   // when we reach the iteration limit

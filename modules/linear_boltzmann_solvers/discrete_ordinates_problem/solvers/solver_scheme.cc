@@ -82,7 +82,9 @@ MakeAGSSolver(DiscreteOrdinatesProblem& problem,
   }
   else
   {
-    ags_solver->SetMaxIterations(options.max_ags_iterations);
+    // The default for fixed-source and time-dependent solves; the power iteration solver applies
+    // its own default while it executes.
+    ags_solver->SetMaxIterations(options.max_ags_iterations.value_or(100));
     ags_solver->SetVerbosity(options.verbose_inner_iterations);
   }
   ags_solver->SetTolerance(options.ags_tolerance);
