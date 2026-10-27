@@ -78,8 +78,9 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#angle-aggregation-compatibility">6.5. Angle Aggregation Compatibility</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#polar">6.5.1. <code class="docutils literal notranslate"><span class="pre">polar</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#single">6.5.2. <code class="docutils literal notranslate"><span class="pre">single</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#azimuthal">6.5.3. <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#quadrant-and-octant">6.5.2. <code class="docutils literal notranslate"><span class="pre">quadrant</span></code> and <code class="docutils literal notranslate"><span class="pre">octant</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#single">6.5.3. <code class="docutils literal notranslate"><span class="pre">single</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#azimuthal">6.5.4. <code class="docutils literal notranslate"><span class="pre">azimuthal</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#examples">6.6. Examples</a><ul>
@@ -686,6 +687,8 @@ Aggregation compatibility depends on both:</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">'polar'</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'single'</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">'azimuthal'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'quadrant'</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">'octant'</span></code></p></li>
 </ul>
 <p>The default groupset aggregation is <code class="docutils literal notranslate"><span class="pre">'single'</span></code>, which is compatible with
 every quadrature, mesh, and geometry.</p>
@@ -714,10 +717,94 @@ supported on a fully unstructured 3D (non-extruded) mesh.</p>
 <li><p>fully unstructured 3D (non-extruded) meshes</p></li>
 </ul>
 <p>For those quadratures, and for fully unstructured 3D meshes, use the default
-<code class="docutils literal notranslate"><span class="pre">'single'</span></code> aggregation.</p>
+<code class="docutils literal notranslate"><span class="pre">'single'</span></code> aggregation. On Cartesian orthogonal meshes, triangular and SLDFE
+quadratures can also use <code class="docutils literal notranslate"><span class="pre">'quadrant'</span></code> or <code class="docutils literal notranslate"><span class="pre">'octant'</span></code> aggregation.</p>
+</section>
+<section id="quadrant-and-octant">
+<h3><span class="section-number">6.5.2. </span><code class="docutils literal notranslate"><span class="pre">quadrant</span></code> and <code class="docutils literal notranslate"><span class="pre">octant</span></code><a class="headerlink" href="#quadrant-and-octant" title="Link to this heading"></a></h3>
+<p><code class="docutils literal notranslate"><span class="pre">quadrant</span></code> aggregation places every direction with the same signs of
+<span class="math notranslate nohighlight">\(\Omega_x\)</span> and <span class="math notranslate nohighlight">\(\Omega_y\)</span> in one angle set, so a quadrature with
+directions in all four quadrants gives four angle sets. <code class="docutils literal notranslate"><span class="pre">octant</span></code> is the
+corresponding 3D mode. It groups by the signs of <span class="math notranslate nohighlight">\(\Omega_x\)</span>,
+<span class="math notranslate nohighlight">\(\Omega_y\)</span>, and <span class="math notranslate nohighlight">\(\Omega_z\)</span>, giving eight angle sets.</p>
+<p>On an orthogonal mesh every face normal lies along a coordinate axis, so the
+sign of <span class="math notranslate nohighlight">\(\boldsymbol{\Omega} \cdot \mathbf{n}\)</span> on each face is the same
+for every direction in a quadrant or octant. Those directions therefore share
+one sweep ordering, including the dependencies between partitions. This holds
+for any partitioning, including graph partitioners such as ParMETIS that
+produce non-planar partition boundaries. Cycles between partitions are handled
+exactly as for <code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation, for both AAH and CBC sweeps, provided
+<code class="docutils literal notranslate"><span class="pre">allow_cycles</span></code> is enabled (the default).</p>
+<p>The solution is the same as with <code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation, up to iteration
+tolerance and floating-point rounding. Only the sweep organization changes:
+fewer, larger angle sets mean fewer sweep orderings to build and store, which
+usually lowers memory use and shortens sweeps on both CPUs and GPUs.</p>
+<p>Requirements:</p>
+<ul>
+<li><p><code class="docutils literal notranslate"><span class="pre">quadrant</span></code> requires a 2D Cartesian mesh and <code class="docutils literal notranslate"><span class="pre">octant</span></code> a 3D Cartesian
+mesh, in both cases of orthogonal type, as created by
+<code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>. Unstructured meshes, meshes imported from mesh
+files (for example Gmsh, VTK, or OBJ), and meshes from
+<code class="docutils literal notranslate"><span class="pre">ExtruderMeshGenerator</span></code> are rejected, even when their faces happen to be
+axis-aligned.</p></li>
+<li><p>Curvilinear problems (<code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code>) do not
+support these modes.</p></li>
+<li><p>Every direction must lie strictly inside one quadrant or octant:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">quadrant</span></code>: <span class="math notranslate nohighlight">\(\Omega_x \neq 0\)</span> and <span class="math notranslate nohighlight">\(\Omega_y \neq 0\)</span> for
+every direction. <span class="math notranslate nohighlight">\(\Omega_z\)</span> is not restricted, because a 2D mesh has
+no faces normal to <span class="math notranslate nohighlight">\(z\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">octant</span></code>: <span class="math notranslate nohighlight">\(\Omega_x \neq 0\)</span>, <span class="math notranslate nohighlight">\(\Omega_y \neq 0\)</span>, and
+<span class="math notranslate nohighlight">\(\Omega_z \neq 0\)</span> for every direction.</p></li>
+</ul>
+<p>A direction with, for example, <span class="math notranslate nohighlight">\(\Omega_x = 0\)</span> runs parallel to every
+mesh face whose normal points along <span class="math notranslate nohighlight">\(x\)</span>. Those faces are neither
+upwind nor downwind for it, so it cannot share a sweep ordering with the
+directions on either side of it. If the quadrature contains such a
+direction, the problem reports it, and the zero component, during setup.
+A component counts as zero when its magnitude is at most
+<span class="math notranslate nohighlight">\(10^{-12}\)</span>.</p>
+</li>
+</ul>
+<p>Quadrature compatibility:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code> and <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code>: always
+compatible. <code class="docutils literal notranslate"><span class="pre">n_polar</span></code> must be even and <code class="docutils literal notranslate"><span class="pre">n_azimuthal</span></code> a multiple of 4, so
+no direction has a zero <span class="math notranslate nohighlight">\(\Omega_x\)</span>, <span class="math notranslate nohighlight">\(\Omega_y\)</span>, or
+<span class="math notranslate nohighlight">\(\Omega_z\)</span>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">GLCTriangularQuadrature2DXY</span></code>, <code class="docutils literal notranslate"><span class="pre">GLCTriangularQuadrature3DXYZ</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SLDFEsqQuadrature2DXY</span></code>, and <code class="docutils literal notranslate"><span class="pre">SLDFEsqQuadrature3DXYZ</span></code>: compatible.</p></li>
+<li><p>Lebedev quadratures: not compatible. Every Lebedev rule includes the six
+directions along the coordinate axes, such as <span class="math notranslate nohighlight">\((1, 0, 0)\)</span>, so they
+require <code class="docutils literal notranslate"><span class="pre">'single'</span></code> aggregation.</p></li>
+</ul>
+<p>Example:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+
+<span class="n">nodes</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="o">/</span> <span class="mi">10</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">11</span><span class="p">)]</span>
+<span class="n">grid</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span><span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">,</span> <span class="n">nodes</span><span class="p">])</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">grid</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">quad</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">phys</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
+            <span class="s2">&quot;angle_aggregation_type&quot;</span><span class="p">:</span> <span class="s2">&quot;octant&quot;</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
+<span class="p">)</span>
+</pre></div>
+</div>
 </section>
 <section id="single">
-<h3><span class="section-number">6.5.2. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.5.3. </span><code class="docutils literal notranslate"><span class="pre">single</span></code><a class="headerlink" href="#single" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">single</span></code> aggregation treats each direction independently. It is the most
 generally compatible option and is the safe choice for non-product quadratures.
 Regardless of quadrature type, single angle aggregation is required on fully
@@ -749,7 +836,7 @@ unstructured 3D (non-extruded) meshes.</p>
 </div>
 </section>
 <section id="azimuthal">
-<h3><span class="section-number">6.5.3. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.5.4. </span><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code><a class="headerlink" href="#azimuthal" title="Link to this heading"></a></h3>
 <p><code class="docutils literal notranslate"><span class="pre">azimuthal</span></code> aggregation is only valid for product quadratures on 2D RZ and
 1D spherical geometry; it is not available for Cartesian problems.</p>
 <p>For curvilinear problems, the solver accepts:</p>
@@ -861,8 +948,13 @@ angles, the first few weights, and the operator sizes after changing
 <li><p>For standard 1D slab problems, start with <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSlab</span></code>.</p></li>
 <li><p>For standard Cartesian 2D and 3D problems, start with
 <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DXY</span></code> or <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature3DXYZ</span></code>.</p></li>
-<li><p>For Cartesian problems using Lebedev, triangular, or SLDFE quadratures, keep
-the default <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code>.</p></li>
+<li><p>For Cartesian problems using Lebedev quadratures, keep the default
+<code class="docutils literal notranslate"><span class="pre">angle_aggregation_type='single'</span></code>. Triangular and SLDFE quadratures also
+use <code class="docutils literal notranslate"><span class="pre">'single'</span></code>, except on orthogonal meshes, where they can use
+<code class="docutils literal notranslate"><span class="pre">'quadrant'</span></code> (2D) or <code class="docutils literal notranslate"><span class="pre">'octant'</span></code> (3D).</p></li>
+<li><p>On 2D and 3D Cartesian orthogonal meshes, consider <code class="docutils literal notranslate"><span class="pre">'quadrant'</span></code> or
+<code class="docutils literal notranslate"><span class="pre">'octant'</span></code> aggregation for faster sweeps and lower memory use, with the
+same solution as <code class="docutils literal notranslate"><span class="pre">'single'</span></code>.</p></li>
 <li><p>For 2D RZ problems, use <code class="docutils literal notranslate"><span class="pre">GLCProductQuadrature2DRZ</span></code> with
 <code class="docutils literal notranslate"><span class="pre">DiscreteOrdinatesCurvilinearProblem</span></code>.</p></li>
 <li><p>For 1D spherical problems, use <code class="docutils literal notranslate"><span class="pre">GLProductQuadrature1DSpherical</span></code> with

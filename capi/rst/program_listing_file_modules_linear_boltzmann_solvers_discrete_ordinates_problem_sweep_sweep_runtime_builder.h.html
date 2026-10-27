@@ -130,6 +130,20 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">detail</span>
 <span class="p">{</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Group the directions of a quadrature by quadrant (`dimension` 2: signs of Omega_x, Omega_y) or</span>
+<span class="cm"> * octant (`dimension` 3: signs of Omega_x, Omega_y, Omega_z). Bit d of a group&#39;s orthant index is</span>
+<span class="cm"> * set when Omega_d is positive; empty groups are dropped, so the result has at most 2^dimension</span>
+<span class="cm"> * groups ordered by orthant index. Directions keep their quadrature order within a group.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Throws std::logic_error if `dimension` is not 2 or 3, or if a direction is not strictly inside</span>
+<span class="cm"> * one quadrant/octant, i.e. |Omega_x| or |Omega_y| (or, in 3D, |Omega_z|) is at most</span>
+<span class="cm"> * FACE_ORIENTATION_TOLERANCE.</span>
+<span class="cm"> */</span>
+<span class="n">UniqueSOGroupings</span><span class="w"> </span><span class="nf">GroupDirectionsByOrthant</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem_name</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">);</span>
+
 <span class="kt">void</span><span class="w"> </span><span class="nf">BuildAAHGPUFludsCommonData</span><span class="p">(</span><span class="n">SweepRuntime</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runtime</span><span class="p">,</span>
 <span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">discretization</span><span class="p">,</span>
 <span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid_nodal_mappings</span><span class="p">);</span>

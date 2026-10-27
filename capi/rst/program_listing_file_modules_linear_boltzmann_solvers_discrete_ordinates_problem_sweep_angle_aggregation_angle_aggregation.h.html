@@ -114,21 +114,28 @@
 <span class="w">  </span><span class="n">SINGLE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
 <span class="w">  </span><span class="n">POLAR</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
 <span class="w">  </span><span class="n">AZIMUTHAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span><span class="p">,</span>
+<span class="w">  </span><span class="n">QUADRANT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">,</span>
+<span class="w">  </span><span class="n">OCTANT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span>
 <span class="p">};</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Angle aggregation has to cater for running the 8 corners of a 3D partitioning, the 4 corners of a</span>
-<span class="cm"> * 2D partitioning (the latter 2 both being polar angle aggregation) as well as single angle</span>
-<span class="cm"> * aggregation.</span>
+<span class="cm"> * Angle aggregation partitions the directions of a quadrature into angle sets. All directions in</span>
+<span class="cm"> * an angle set share one SPDS (sweep ordering), so the set is swept together. The</span>
+<span class="cm"> * AngleAggregationType determines the partition:</span>
 <span class="cm"> *</span>
-<span class="cm"> * At the most fundamental level this manifests as a number of angle indices that share a SPDS,</span>
-<span class="cm"> * however SPDS do not have to be unique which allows the notion of polar angle sets. For single</span>
-<span class="cm"> * angle aggregation each SPDS is associated with a single angle index. For polar angle aggregation</span>
-<span class="cm"> * a single SPDS can have multiple indices associated with the same azimuthal angle but different</span>
-<span class="cm"> * polar angles. We call this manifestation a &quot;AngleSet&quot;.</span>
+<span class="cm"> * - SINGLE: one direction per angle set.</span>
+<span class="cm"> * - POLAR: directions with the same azimuthal angle in the same polar hemisphere.</span>
+<span class="cm"> * - AZIMUTHAL: the inward or outward directions of a curvilinear direction set, in angular order.</span>
+<span class="cm"> * - QUADRANT: directions in the same quadrant (same signs of Omega_x and Omega_y), on a 2D</span>
+<span class="cm"> *   orthogonal mesh.</span>
+<span class="cm"> * - OCTANT: directions in the same octant (same signs of Omega_x, Omega_y, and Omega_z), on a 3D</span>
+<span class="cm"> *   orthogonal mesh.</span>
 <span class="cm"> *</span>
-<span class="cm"> * The octant based separation is achieved via the notion of &quot;AngleSetGroup&quot; which will group angle</span>
-<span class="cm"> * sets for each quadrant or octant (depending on 2D or 3D).</span>
+<span class="cm"> * On an orthogonal mesh, directions in the same quadrant/octant have the same orientation</span>
+<span class="cm"> * (incoming or outgoing) on every face.</span>
+<span class="cm"> *</span>
+<span class="cm"> * The angle sets of a groupset are stored in a flat list (GetAngleSetGroups()) that the sweep</span>
+<span class="cm"> * scheduler iterates over.</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AngleAggregation</span>
 <span class="p">{</span>

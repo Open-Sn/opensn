@@ -305,6 +305,8 @@ for the groupset.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;polar&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> (default)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;quadrant&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;octant&quot;</span></code></p></li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -319,14 +321,26 @@ for the groupset.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code> keeps the angle treatment as simple as possible,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;polar&quot;</span></code> is a structured/product-quadrature-oriented choice,</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;azimuthal&quot;</span></code> is available when azimuthal grouping is a better fit for the
-chosen structured workflow.</p></li>
+chosen curvilinear workflow,</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;quadrant&quot;</span></code> combines all directions with the same x/y signs into four
+angle sets on a 2D Cartesian orthogonal mesh, and</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;octant&quot;</span></code> combines all directions with the same x/y/z signs into eight
+angle sets on a 3D Cartesian orthogonal mesh.</p></li>
 </ul>
+<p><code class="docutils literal notranslate"><span class="pre">&quot;quadrant&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;octant&quot;</span></code> give the same solution as <code class="docutils literal notranslate"><span class="pre">&quot;single&quot;</span></code>, up to
+iteration tolerance and rounding, and usually sweep faster with less memory.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Angle aggregation is not just a performance knob. It is a sweep-organization
 choice that must remain compatible with both the mesh and the quadrature.
 In particular, fully unstructured 3D meshes require
 <code class="docutils literal notranslate"><span class="pre">angle_aggregation_type=&quot;single&quot;</span></code>, the default.</p>
+<p>Quadrant and octant aggregation require a mesh from
+<code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code> and a quadrature whose directions all lie
+strictly inside one quadrant or octant: <span class="math notranslate nohighlight">\(\Omega_x \neq 0\)</span> and
+<span class="math notranslate nohighlight">\(\Omega_y \neq 0\)</span> for <code class="docutils literal notranslate"><span class="pre">&quot;quadrant&quot;</span></code>, and also <span class="math notranslate nohighlight">\(\Omega_z \neq 0\)</span>
+for <code class="docutils literal notranslate"><span class="pre">&quot;octant&quot;</span></code>. This rules out Lebedev quadratures, which include
+directions along the coordinate axes.</p>
 <p>See <a class="reference internal" href="angular_quadratures.html"><span class="doc">Angular Quadratures</span></a> for the detailed compatibility rules between
 quadrature family, mesh type, and aggregation type.</p>
 </div>

@@ -851,10 +851,15 @@ and ending at <code class="docutils literal notranslate"><span class="pre">num_g
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>angle_aggregation_type: {‘polar’, ‘single’, ‘azimuthal’}, default=’single’</dt><dd><p>Angle aggregation method to use during sweeping.</p>
-</dd>
-</dl>
+<li><p>angle_aggregation_type: {‘polar’, ‘single’, ‘azimuthal’, ‘quadrant’, ‘octant’},
+default=’single’</p>
+<blockquote>
+<div><p>Angle aggregation method to use during sweeping. <code class="docutils literal notranslate"><span class="pre">'quadrant'</span></code> (2D) and
+<code class="docutils literal notranslate"><span class="pre">'octant'</span></code> (3D) put all directions in the same quadrant or octant in one angle
+set. They require a Cartesian orthogonal mesh and a quadrature in which every
+direction has nonzero <code class="docutils literal notranslate"><span class="pre">Omega_x</span></code> and <code class="docutils literal notranslate"><span class="pre">Omega_y</span></code> (and, for <code class="docutils literal notranslate"><span class="pre">'octant'</span></code>,
+<code class="docutils literal notranslate"><span class="pre">Omega_z</span></code>), so each direction lies strictly inside one quadrant or octant.</p>
+</div></blockquote>
 </li>
 <li><p>inner_linear_method: {‘classic_richardson’, ‘petsc_richardson’,
 ‘petsc_gmres’, ‘petsc_bicgstab’}, default=’petsc_richardson’</p>

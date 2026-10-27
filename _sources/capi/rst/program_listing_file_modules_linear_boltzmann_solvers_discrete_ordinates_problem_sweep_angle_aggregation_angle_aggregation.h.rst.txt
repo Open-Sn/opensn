@@ -39,21 +39,28 @@ Program Listing for File angle_aggregation.h
      SINGLE = 1,
      POLAR = 2,
      AZIMUTHAL = 3,
+     QUADRANT = 4,
+     OCTANT = 5,
    };
    
    /**
-    * Angle aggregation has to cater for running the 8 corners of a 3D partitioning, the 4 corners of a
-    * 2D partitioning (the latter 2 both being polar angle aggregation) as well as single angle
-    * aggregation.
+    * Angle aggregation partitions the directions of a quadrature into angle sets. All directions in
+    * an angle set share one SPDS (sweep ordering), so the set is swept together. The
+    * AngleAggregationType determines the partition:
     *
-    * At the most fundamental level this manifests as a number of angle indices that share a SPDS,
-    * however SPDS do not have to be unique which allows the notion of polar angle sets. For single
-    * angle aggregation each SPDS is associated with a single angle index. For polar angle aggregation
-    * a single SPDS can have multiple indices associated with the same azimuthal angle but different
-    * polar angles. We call this manifestation a "AngleSet".
+    * - SINGLE: one direction per angle set.
+    * - POLAR: directions with the same azimuthal angle in the same polar hemisphere.
+    * - AZIMUTHAL: the inward or outward directions of a curvilinear direction set, in angular order.
+    * - QUADRANT: directions in the same quadrant (same signs of Omega_x and Omega_y), on a 2D
+    *   orthogonal mesh.
+    * - OCTANT: directions in the same octant (same signs of Omega_x, Omega_y, and Omega_z), on a 3D
+    *   orthogonal mesh.
     *
-    * The octant based separation is achieved via the notion of "AngleSetGroup" which will group angle
-    * sets for each quadrant or octant (depending on 2D or 3D).
+    * On an orthogonal mesh, directions in the same quadrant/octant have the same orientation
+    * (incoming or outgoing) on every face.
+    *
+    * The angle sets of a groupset are stored in a flat list (GetAngleSetGroups()) that the sweep
+    * scheduler iterates over.
     */
    class AngleAggregation
    {

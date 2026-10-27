@@ -92,9 +92,18 @@
 <dl class="cpp class">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16AngleAggregationE">
 <span class="target" id="classopensn_1_1_angle_aggregation"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AngleAggregation</span></span></span><a class="headerlink" href="#_CPPv4N6opensn16AngleAggregationE" title="Link to this definition"></a><br /></dt>
-<dd><p>Angle aggregation has to cater for running the 8 corners of a 3D partitioning, the 4 corners of a 2D partitioning (the latter 2 both being polar angle aggregation) as well as single angle aggregation. </p>
-<p>At the most fundamental level this manifests as a number of angle indices that share a <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a>, however <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> do not have to be unique which allows the notion of polar angle sets. For single angle aggregation each <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> is associated with a single angle index. For polar angle aggregation a single <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> can have multiple indices associated with the same azimuthal angle but different polar angles. We call this manifestation a “AngleSet”.</p>
-<p>The octant based separation is achieved via the notion of “AngleSetGroup” which will group angle sets for each quadrant or octant (depending on 2D or 3D). </p>
+<dd><p>Angle aggregation partitions the directions of a quadrature into angle sets. </p>
+<p>All directions in an angle set share one <a class="reference internal" href="classopensn_1_1_s_p_d_s.html#classopensn_1_1_s_p_d_s"><span class="std std-ref">SPDS</span></a> (sweep ordering), so the set is swept together. The <a class="reference internal" href="enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d.html#namespaceopensn_1a497e0584a70f5f46177be586f7525e3d"><span class="std std-ref">AngleAggregationType</span></a> determines the partition:</p>
+<p><ul class="simple">
+<li><p>SINGLE: one direction per angle set.</p></li>
+<li><p>POLAR: directions with the same azimuthal angle in the same polar hemisphere.</p></li>
+<li><p>AZIMUTHAL: the inward or outward directions of a curvilinear direction set, in angular order.</p></li>
+<li><p>QUADRANT: directions in the same quadrant (same signs of Omega_x and Omega_y), on a 2D orthogonal mesh.</p></li>
+<li><p>OCTANT: directions in the same octant (same signs of Omega_x, Omega_y, and Omega_z), on a 3D orthogonal mesh.</p></li>
+</ul>
+</p>
+<p>On an orthogonal mesh, directions in the same quadrant/octant have the same orientation (incoming or outgoing) on every face.</p>
+<p>The angle sets of a groupset are stored in a flat list (<a class="reference internal" href="#classopensn_1_1_angle_aggregation_1a6e494e9e5e68cedf2c4a6e2599bd5256"><span class="std std-ref">GetAngleSetGroups()</span></a>) that the sweep scheduler iterates over. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
 <dl class="cpp type">

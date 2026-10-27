@@ -55,6 +55,20 @@ Program Listing for File sweep_runtime_builder.h
    namespace detail
    {
    
+   /**
+    * Group the directions of a quadrature by quadrant (`dimension` 2: signs of Omega_x, Omega_y) or
+    * octant (`dimension` 3: signs of Omega_x, Omega_y, Omega_z). Bit d of a group's orthant index is
+    * set when Omega_d is positive; empty groups are dropped, so the result has at most 2^dimension
+    * groups ordered by orthant index. Directions keep their quadrature order within a group.
+    *
+    * Throws std::logic_error if `dimension` is not 2 or 3, or if a direction is not strictly inside
+    * one quadrant/octant, i.e. |Omega_x| or |Omega_y| (or, in 3D, |Omega_z|) is at most
+    * FACE_ORIENTATION_TOLERANCE.
+    */
+   UniqueSOGroupings GroupDirectionsByOrthant(const std::string& problem_name,
+                                              const AngularQuadrature& quadrature,
+                                              unsigned int dimension);
+   
    void BuildAAHGPUFludsCommonData(SweepRuntime& runtime,
                                    const SpatialDiscretization& discretization,
                                    const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
