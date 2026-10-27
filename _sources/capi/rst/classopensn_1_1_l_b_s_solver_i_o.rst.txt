@@ -6,6 +6,16 @@ Class LBSSolverIO
 - Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_io_lbs_problem_io.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_l_b_s_solver_i_o_1_1_file_mesh_nodes`
+
+
 Class Documentation
 -------------------
 

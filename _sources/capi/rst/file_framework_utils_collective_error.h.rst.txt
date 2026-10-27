@@ -1,0 +1,58 @@
+
+.. _file_framework_utils_collective_error.h:
+
+File collective_error.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_utils>` (``framework/utils``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/utils/collective_error.h``)
+---------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_utils_collective_error.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``exception``
+
+- ``framework/runtime.h`` (:ref:`file_framework_runtime.h`)
+
+- ``stdexcept``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a9aba412bd2ce4c70404e9181f4060e4e`
+

@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a1d5fc890484b3b612007efe82c31163a:
+
+Enum AdjointFluxOrientation
+===========================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_io_lbs_problem_io.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::AdjointFluxOrientation
+   :project: opensn

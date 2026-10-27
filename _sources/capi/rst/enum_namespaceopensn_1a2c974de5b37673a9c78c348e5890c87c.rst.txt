@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1a2c974de5b37673a9c78c348e5890c87c:
+
+Enum FluxSolutionRole
+=====================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_io_lbs_problem_io.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::FluxSolutionRole
+   :project: opensn

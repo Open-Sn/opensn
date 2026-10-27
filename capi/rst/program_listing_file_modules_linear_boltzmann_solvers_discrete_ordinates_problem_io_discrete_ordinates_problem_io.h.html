@@ -90,6 +90,7 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
@@ -135,12 +136,18 @@
 <span class="cm">   * \param do_problem Discrete ordinates problem</span>
 <span class="cm">   * \param file_base File name base</span>
 <span class="cm">   * \param opt_src Optional angular flux source vector</span>
+<span class="cm">   * \param role Solution role. For problem-owned data, unspecified is inferred from the problem.</span>
+<span class="cm">   * \param orientation Adjoint orientation. For problem-owned data, unspecified is inferred.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Each groupset records its quadrature directions and weights so that a reader can check them.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">WriteAngularFluxes</span><span class="p">(</span>
 <span class="w">    </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_src</span><span class="w"> </span><span class="o">=</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FluxSolutionRole</span><span class="w"> </span><span class="n">role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FluxSolutionRole</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">AdjointFluxOrientation</span><span class="w"> </span><span class="n">orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AdjointFluxOrientation</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Read an angular flux vector from a file.</span>
@@ -148,12 +155,20 @@
 <span class="cm">   * \param do_problem Discrete ordinates problem</span>
 <span class="cm">   * \param file_base File name base</span>
 <span class="cm">   * \param opt_dest Optional angular flux destination vector</span>
+<span class="cm">   * \param expected_role Required solution role, or unspecified to accept any role.</span>
+<span class="cm">   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The file must have been written with the same rank count, partition, and quadrature; files</span>
+<span class="cm">   * that record their quadrature are checked against the problem&#39;s. Collective: a file that</span>
+<span class="cm">   * cannot be read or does not match the problem raises an error on every rank, and the</span>
+<span class="cm">   * destination is left unchanged.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReadAngularFluxes</span><span class="p">(</span>
 <span class="w">    </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_dest</span><span class="w"> </span><span class="o">=</span>
-<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_dest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FluxSolutionRole</span><span class="w"> </span><span class="n">expected_role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FluxSolutionRole</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">AdjointFluxOrientation</span><span class="w"> </span><span class="n">expected_orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AdjointFluxOrientation</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Surface Angular flux</span>

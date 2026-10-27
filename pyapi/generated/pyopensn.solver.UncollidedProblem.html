@@ -356,7 +356,9 @@ within each group (inner index = moment, outer index = group).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
-<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all flux moments are in a single file.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True to read the single file <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;.h5</span></code> instead of the per-rank file
+<code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. Serial runs only: a multi-rank run raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+before any file is opened.</p></li>
 </ul>
 </dd>
 </dl>
@@ -370,7 +372,9 @@ within each group (inner index = moment, outer index = group).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
-<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all flux moments are in a single file.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True to read the single file <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;.h5</span></code> instead of the per-rank file
+<code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. Serial runs only: a multi-rank run raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+before any file is opened.</p></li>
 </ul>
 </dd>
 </dl>
@@ -384,7 +388,9 @@ within each group (inner index = moment, outer index = group).</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
-<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True if all source moments are in a single file.</p></li>
+<li><p><strong>single_file_flag</strong> (<em>bool</em>) – True to read the single file <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;.h5</span></code> instead of the per-rank file
+<code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. Serial runs only: a multi-rank run raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>
+before any file is opened.</p></li>
 </ul>
 </dd>
 </dl>

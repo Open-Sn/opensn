@@ -91,6 +91,8 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstddef&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
@@ -101,6 +103,22 @@
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">Mesh</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">SpatialDiscretization</span><span class="p">;</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">FluxSolutionRole</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">UNSPECIFIED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">FORWARD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">ADJOINT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">};</span>
+
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AdjointFluxOrientation</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">UNSPECIFIED</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span>
+<span class="w">  </span><span class="n">SOLVER</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
+<span class="w">  </span><span class="n">PHYSICAL</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="p">};</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSSolverIO</span>
 <span class="p">{</span>
@@ -119,26 +137,58 @@
 <span class="cm">   * \param lbs_problem LBS problem</span>
 <span class="cm">   * \param file_base File name base</span>
 <span class="cm">   * \param opt_src Optional source vector to write instead of the problem-owned flux moments.</span>
+<span class="cm">   * \param role Solution role. For problem-owned data, unspecified is inferred from the problem.</span>
+<span class="cm">   * \param orientation Adjoint orientation. For problem-owned data, unspecified is inferred.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">WriteFluxMoments</span><span class="p">(</span>
 <span class="w">    </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_src</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FluxSolutionRole</span><span class="w"> </span><span class="n">role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FluxSolutionRole</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">AdjointFluxOrientation</span><span class="w"> </span><span class="n">orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AdjointFluxOrientation</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Read a flux moments vector from a file.</span>
 <span class="cm">   *</span>
 <span class="cm">   * \param lbs_problem LBS problem</span>
 <span class="cm">   * \param file_base File name base</span>
-<span class="cm">   * \param single_file Single data file or data file per rank?</span>
+<span class="cm">   * \param single_file Read the single file `&lt;file_base&gt;.h5` instead of the per-rank file</span>
+<span class="cm">   * `&lt;file_base&gt;&lt;rank&gt;.h5`. Serial runs only: throws std::invalid_argument on every rank of a</span>
+<span class="cm">   * multi-rank run, before any file is opened.</span>
 <span class="cm">   * \param opt_dest Optional destination vector to populate instead of the problem-owned flux</span>
 <span class="cm">   * moments.</span>
+<span class="cm">   * \param expected_role Required solution role, or unspecified to accept any role.</span>
+<span class="cm">   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The file must have been written with the same rank count and partition. Collective: a file</span>
+<span class="cm">   * that cannot be read or does not match the problem raises an error on every rank, and the</span>
+<span class="cm">   * destination is left unchanged.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReadFluxMoments</span><span class="p">(</span>
 <span class="w">    </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">single_file</span><span class="p">,</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_dest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_dest</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">,</span>
+<span class="w">    </span><span class="n">FluxSolutionRole</span><span class="w"> </span><span class="n">expected_role</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">FluxSolutionRole</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">,</span>
+<span class="w">    </span><span class="n">AdjointFluxOrientation</span><span class="w"> </span><span class="n">expected_orientation</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AdjointFluxOrientation</span><span class="o">::</span><span class="n">UNSPECIFIED</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// The cells of a flux-moment or angular-flux file and the local node of each file node.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">FileMeshNodes</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_ids</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// For each file cell, the local cell node matching each file node, in file order.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">node_maps</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Reads and validates the &quot;mesh&quot; group of a flux-moment or angular-flux file. Every file cell</span>
+<span class="cm">   * must be a distinct local cell whose nodes match the file node locations one to one, and the</span>
+<span class="cm">   * dataset sizes must match the metadata. Throws on the calling rank only.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">FileMeshNodes</span><span class="w"> </span><span class="nf">ReadFileMeshNodes</span><span class="p">(</span><span class="n">hid_t</span><span class="w"> </span><span class="n">file</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_name</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
+<span class="w">                                         </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">discretization</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

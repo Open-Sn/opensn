@@ -365,6 +365,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_l_b_s_solver_i_o_1_1_file_mesh_nodes.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_lebedev_orders_1_1_quadrature_point.rst
 
 .. toctree::
@@ -1919,6 +1924,11 @@ Enums
 .. toctree::
    :maxdepth: 1
 
+   enum_namespaceopensn_1a1d5fc890484b3b612007efe82c31163a.rst
+
+.. toctree::
+   :maxdepth: 1
+
    enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d.rst
 
 .. toctree::
@@ -1975,6 +1985,11 @@ Enums
    :maxdepth: 1
 
    enum_namespaceopensn_1aba1a0522f5ba1fa6e03e601c3212372b.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   enum_namespaceopensn_1a2c974de5b37673a9c78c348e5890c87c.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2793,6 +2808,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_utils_collective_error.h.rst
 
 .. toctree::
    :maxdepth: 1

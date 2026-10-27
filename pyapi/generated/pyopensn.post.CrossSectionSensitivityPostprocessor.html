@@ -160,7 +160,10 @@ most one of the two.</p></li>
 <li><p><strong>adjoint_flux_moments</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint flux-moment file prefix. Empty (default) uses the current phi.</p></li>
 <li><p><strong>forward_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Forward angular-flux file prefix. Empty (default) uses the current psi.</p></li>
 <li><p><strong>adjoint_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint angular-flux file prefix. Empty (default) uses the current psi.</p></li>
-<li><p><strong>flux_moments_single_file</strong> (<em>bool</em><em>, </em><em>optional</em>) – Read flux moments from a single file instead of one file per rank. Default False.</p></li>
+<li><p><strong>flux_moments_single_file</strong> (<em>bool</em><em>, </em><em>optional</em>) – Read flux moments from the single file <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;.h5</span></code> instead of the per-rank file
+<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;&lt;rank&gt;.h5</span></code>. Default False. Serial runs only: in a multi-rank run, reading the
+flux moments (<code class="docutils literal notranslate"><span class="pre">Execute</span></code> or <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code>) raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before
+any file is opened.</p></li>
 </ul>
 </dd>
 </dl>

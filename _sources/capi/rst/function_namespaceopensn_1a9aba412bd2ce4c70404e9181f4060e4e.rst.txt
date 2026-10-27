@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9aba412bd2ce4c70404e9181f4060e4e:
+
+Template Function opensn::RunWithCollectiveErrors
+=================================================
+
+- Defined in :ref:`file_framework_utils_collective_error.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::RunWithCollectiveErrors(const Function&)
+   :project: opensn

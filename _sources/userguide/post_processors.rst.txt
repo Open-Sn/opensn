@@ -661,8 +661,10 @@ solve, write one of them to disk and point the postprocessor at it:
 * ``forward_flux_moments`` / ``adjoint_flux_moments`` — file prefixes
   written by ``WriteFluxMoments``; used for ``"scatter"`` and
   ``"production"``, and by ``ApplyKEigenvalueScaling`` below.
-* ``flux_moments_single_file`` — set ``True`` if the flux moments were
-  written to a single file instead of one file per rank.
+* ``flux_moments_single_file`` — set ``True`` to read the flux moments
+  from the single file ``<prefix>.h5`` instead of one file per rank
+  (``<prefix><rank>.h5``). This is supported only in serial runs; a
+  multi-rank run raises an error before opening any file.
 
 Leaving a prefix empty (the default) uses the problem's current state for
 that term.

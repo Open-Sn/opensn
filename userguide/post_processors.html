@@ -746,8 +746,10 @@ written by <code class="docutils literal notranslate"><span class="pre">WriteAng
 <li><p><code class="docutils literal notranslate"><span class="pre">forward_flux_moments</span></code> / <code class="docutils literal notranslate"><span class="pre">adjoint_flux_moments</span></code> — file prefixes
 written by <code class="docutils literal notranslate"><span class="pre">WriteFluxMoments</span></code>; used for <code class="docutils literal notranslate"><span class="pre">&quot;scatter&quot;</span></code> and
 <code class="docutils literal notranslate"><span class="pre">&quot;production&quot;</span></code>, and by <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code> below.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">flux_moments_single_file</span></code> — set <code class="docutils literal notranslate"><span class="pre">True</span></code> if the flux moments were
-written to a single file instead of one file per rank.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">flux_moments_single_file</span></code> — set <code class="docutils literal notranslate"><span class="pre">True</span></code> to read the flux moments
+from the single file <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;.h5</span></code> instead of one file per rank
+(<code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;&lt;rank&gt;.h5</span></code>). This is supported only in serial runs; a
+multi-rank run raises an error before opening any file.</p></li>
 </ul>
 <p>Leaving a prefix empty (the default) uses the problem’s current state for
 that term.</p>

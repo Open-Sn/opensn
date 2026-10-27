@@ -40,6 +40,8 @@ Includes
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
 
+- ``modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_io_lbs_problem_io.h`)
+
 - ``optional``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
