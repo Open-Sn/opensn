@@ -48,7 +48,19 @@
       {
         "type": "KeyValuePair",
         "key": "Computed infinite-medium eigenvalue=",
-        "goldvalue": 1.0,
+        "goldvalue": 1.1203262727273,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Spectrum max relative error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1.0e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Average nu relative error=",
+        "goldvalue": 0.0,
         "abs_tol": 1.0e-10
       },
       {
