@@ -70,15 +70,16 @@ DiscreteOrdinatesKEigenAcceleration::CheckRequirements(std::vector<std::string>&
 }
 
 void
-DiscreteOrdinatesKEigenAcceleration::RequireMultipleAAHSweeps(
-  std::vector<std::string>& errors) const
+DiscreteOrdinatesKEigenAcceleration::RequireMultipleSweeps(std::vector<std::string>& errors) const
 {
-  // If using the AAH solver with one sweep, a few iterations need to be done
-  // to get rid of the junk in the unconverged lagged angular fluxes.
+  const auto& sweep_type = do_problem_.GetSweepType();
   for (const auto& groupset : groupsets_)
-    if (do_problem_.GetSweepType() == "AAH" and groupset.max_iterations == 1)
+    if (groupset.max_iterations == 1 and
+        (sweep_type == "AAH" or
+         (sweep_type == "CBC" and groupset.angle_agg->GetNumDelayedAngularDOFs().second != 0)))
       errors.emplace_back(
-        GetName() + ": the AAH sweep is not stable with one sweep per iteration (groupset " +
+        GetName() + ": the " + sweep_type +
+        " sweep is not stable with one sweep per iteration (groupset " +
         std::to_string(groupset.id) +
         " has l_max_its=1) because of the lagged angular fluxes. Use more sweeps; the number "
         "required is problem dependent.");

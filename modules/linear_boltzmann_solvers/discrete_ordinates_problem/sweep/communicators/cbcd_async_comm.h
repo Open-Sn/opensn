@@ -3,136 +3,243 @@
 
 #pragma once
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h"
-#include "framework/data_types/byte_array.h"
-#include "mpicpp-lite/mpicpp-lite.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/lock_free_queues.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
+#include <atomic>
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
-#include <unordered_map>
+#include <memory>
 #include <vector>
 
 namespace opensn
 {
 
-namespace mpi = mpicpp_lite;
-
+class AngleSet;
 class SweepCommunicator;
-class ByteArray;
-class FLUDS;
-class CBCD_FLUDS;
 
-/// Device CBC asynchronous communicator.
-class CBCD_AsynchronousCommunicator : public AsynchronousCommunicator
+/**
+ * Return the sweep worker that owns an angle set.
+ * The ASYNC_FIFO scheduler assigns the angle sets of a groupset to its workers cyclically. The
+ * communicator sizes its single-producer queues for the same assignment.
+ *
+ * \param angle_set_id Angle-set index.
+ * \param num_workers Number of sweep workers.
+ * \return Index of the owning worker.
+ */
+constexpr std::size_t
+CBCD_AngleSetWorker(std::size_t angle_set_id, std::size_t num_workers)
+{
+  return angle_set_id % num_workers;
+}
+
+/// One outgoing nonlocal face published by a sweep worker.
+struct CBCD_OutgoingFaceRecord
+{
+  /// Index of the angle set that produced the face.
+  std::size_t angle_set_id = 0;
+  /// Index of the face among the faces that the destination rank receives from this angle set.
+  std::uint32_t destination_face_index = 0;
+  /// Device angular fluxes of the face in destination-node order, valid until the sweep ends.
+  const double* psi_values = nullptr;
+  /// Number of angular-flux values of the face.
+  std::size_t num_psi_values = 0;
+};
+
+/**
+ * Outgoing nonlocal faces of a groupset's angle sets, queued by destination and sweep worker.
+ * Each (destination, worker) pair has its own single-producer, single-consumer queue. The worker
+ * that owns an angle set produces its faces, and the communicator's progress thread consumes
+ * them. Every queue holds all of its faces of one sweep, so a producer never waits.
+ */
+class CBCD_OutgoingQueues
 {
 public:
-  explicit CBCD_AsynchronousCommunicator(std::size_t groupset_id,
-                                         std::size_t angle_set_id,
-                                         FLUDS& fluds,
-                                         const SweepCommunicator& sweep_communicator);
+  using Queue = LockFreeSPSCSlotQueue<CBCD_OutgoingFaceRecord>;
+
+  /// Outgoing queues toward one destination.
+  struct Channel
+  {
+    /// Rank of the destination in the sweep communicator.
+    int peer_rank = 0;
+    /// One queue per sweep worker. Queues of workers without faces for this destination are empty.
+    std::vector<std::unique_ptr<Queue>> worker_queues;
+    /// Workers with at least one outgoing face toward this destination.
+    std::vector<std::size_t> active_workers;
+  };
 
   /**
-   * Return writable outgoing face-psi storage for a downwind face.
+   * Set the destinations and the number of faces each angle set sends to each of them.
    *
-   * The storage is zero-initialized only when a destination-face entry is first created.
-   *
-   * \param location_id Destination location ID.
-   * \param cell_global_id Downstream cell global ID.
-   * \param face_id Downstream face ID.
-   * \param data_size Number of psi values for the destination face.
-   * \return Outgoing face-psi storage for the specified destination face.
+   * \param peer_ranks Sweep-communicator ranks of the destinations, indexed by channel.
+   * \param channels_by_angle_set For each angle set, its channels indexed by the angle set's
+   *        destination index.
+   * \param faces_by_angle_set For each angle set, its number of faces per sweep indexed by the
+   *        angle set's destination index.
    */
-  std::vector<double>& InitGetDownwindMessageData(int location_id,
-                                                  std::uint64_t cell_global_id,
-                                                  unsigned int face_id,
-                                                  std::size_t data_size);
+  void Initialize(const std::vector<int>& peer_ranks,
+                  std::vector<std::vector<std::size_t>> channels_by_angle_set,
+                  std::vector<std::vector<std::size_t>> faces_by_angle_set);
 
-  /// Start or progress pending nonblocking sends.
-  bool SendData();
+  /**
+   * Size the worker queues for a number of sweep workers.
+   * The queues are rebuilt only when the number of workers changes.
+   *
+   * \param num_workers Number of sweep workers.
+   */
+  void Configure(std::size_t num_workers);
 
-  /// Receive available nonlocal face psi and return cells with newly received face data.
-  std::vector<std::uint64_t> ReceiveData();
-
-  /// Clear queued outgoing messages and send buffers.
-  void Reset()
+  /**
+   * Publish one completed outgoing nonlocal face.
+   * Only the worker that owns the angle set may call this during a sweep.
+   *
+   * \param destination_index Index of the destination in the angle set's destination list.
+   * \param worker_id Sweep worker index.
+   * \param angle_set_id Angle-set index.
+   * \param destination_face_index Index of the face among the destination's faces.
+   * \param psi_values Device angular fluxes of the face, in destination-node order.
+   * \param num_psi_values Number of angular-flux values.
+   */
+  void Enqueue(std::size_t destination_index,
+               std::size_t worker_id,
+               std::size_t angle_set_id,
+               std::uint32_t destination_face_index,
+               const double* psi_values,
+               std::size_t num_psi_values)
   {
-    outgoing_message_queue_.clear();
-    send_buffer_.clear();
+    assert(angle_set_id < channels_by_angle_set_.size());
+    const auto& channels = channels_by_angle_set_[angle_set_id];
+    assert(destination_index < channels.size());
+    auto& queue = *channels_[channels[destination_index]].worker_queues[worker_id];
+    auto& record = queue.ReserveSlot();
+    record.angle_set_id = angle_set_id;
+    record.destination_face_index = destination_face_index;
+    record.psi_values = psi_values;
+    record.num_psi_values = num_psi_values;
+    queue.PublishSlot();
   }
 
-protected:
-  /// Validated angle-set MPI message tag.
-  const int message_tag_;
-  /// CBCD FLUDS receiving nonlocal face psi.
-  CBCD_FLUDS& cbcd_fluds_;
+  /// Return the channels indexed by destination.
+  std::vector<Channel>& GetChannels() { return channels_; }
 
-  /// Key for one outgoing nonlocal face message.
-  struct MessageKey
+  /// Return the channels indexed by destination.
+  const std::vector<Channel>& GetChannels() const { return channels_; }
+
+  /// Return true when every queue is empty.
+  bool AllEmpty() const;
+
+private:
+  /// Channels indexed by destination.
+  std::vector<Channel> channels_;
+  /// For each angle set, its channels indexed by the angle set's destination index.
+  std::vector<std::vector<std::size_t>> channels_by_angle_set_;
+  /// For each angle set, its number of faces per sweep indexed by its destination index.
+  std::vector<std::vector<std::size_t>> faces_by_angle_set_;
+  /// Number of sweep workers the queues are sized for (0 before the first Configure).
+  std::size_t num_workers_ = 0;
+};
+
+/**
+ * Interprocess communicator for CBC sweeps on GPU devices.
+ * One communicator serves every angle set of a groupset. Sweep workers publish completed outgoing
+ * faces to single-producer queues. A progress thread packs them into device packets, exchanges
+ * the packets with GPU-aware MPI, and notifies the receiving angle sets through single-consumer
+ * mailboxes.
+ */
+class CBCD_AsynchronousCommunicator
+{
+public:
+  /**
+   * Construct the communicator of a groupset's angle sets.
+   * The queue capacities and buffer sizes are derived from the angle sets' FLUDS common data.
+   * Ranks that exchange angular fluxes require GPU-aware MPI, which a multi-rank problem declares
+   * by configuring OpenSn with OPENSN_USE_GPU_AWARE_MPI. This throws when MPI thread support is
+   * below MPI_THREAD_SERIALIZED.
+   *
+   * \param angle_sets Angle sets served by this communicator. Must not be empty.
+   * \param sweep_communicator Sweep communication context.
+   */
+  CBCD_AsynchronousCommunicator(const std::vector<AngleSet*>& angle_sets,
+                                const SweepCommunicator& sweep_communicator);
+
+  ~CBCD_AsynchronousCommunicator();
+
+  /// Return the device buffer of received angular fluxes, valid until destruction.
+  double* GetIncomingPacketValues() const;
+
+  /// Publish one completed outgoing nonlocal face (see CBCD_OutgoingQueues::Enqueue).
+  void EnqueueOutgoing(std::size_t destination_index,
+                       std::size_t worker_id,
+                       std::size_t angle_set_id,
+                       std::uint32_t destination_face_index,
+                       const double* psi_values,
+                       std::size_t num_psi_values)
   {
-    /// Destination location.
-    int location_id = 0;
-    /// Downstream cell global ID.
-    std::uint64_t cell_global_id = 0;
-    /// Downstream face ID.
-    unsigned int face_id = 0;
-    bool operator==(const MessageKey&) const = default;
-  };
+    outgoing_.Enqueue(destination_index,
+                      worker_id,
+                      angle_set_id,
+                      destination_face_index,
+                      psi_values,
+                      num_psi_values);
+  }
+
+  /// Return true when the angle set has received incoming faces that are not yet processed.
+  bool HasIncoming(std::size_t angle_set_id) const
+  {
+    return not incoming_dependencies_[angle_set_id]->Empty();
+  }
 
   /**
-   * Hash functor for `MessageKey`.
+   * Process the angle set's received incoming faces.
+   * Only the worker that owns the angle set may call this during a sweep.
    *
-   * Adapted from Wolfgang Brehm's answer to mitigate systematic hash collisions in unordered maps
-   * keyed by aggregate types (https://stackoverflow.com/a/50978188).
+   * \param angle_set_id Angle-set index.
+   * \param callback Called with the local ID of the downwind cell of each received face.
+   * \return True when at least one face was processed.
    */
-  struct MessageKeyHash
+  template <typename Callback>
+  bool ProcessIncomingDependencies(std::size_t angle_set_id, Callback callback)
   {
-    /// Return a mixed hash for a message key.
-    std::size_t operator()(const MessageKey& key) const noexcept
-    {
-      auto seed = Mix(static_cast<std::uint64_t>(static_cast<std::uint32_t>(key.location_id)));
-      seed = Combine(seed, Mix(key.cell_global_id));
-      seed = Combine(seed, Mix(static_cast<std::uint64_t>(key.face_id)));
-      return static_cast<std::size_t>(seed);
-    }
+    return incoming_dependencies_[angle_set_id]->ProcessReady(callback) > 0;
+  }
 
-  private:
-    static std::uint64_t Combine(std::uint64_t seed, std::uint64_t value) noexcept
-    {
-      constexpr std::uint64_t offset = 0x9e3779b97f4a7c15ULL;
-      return Mix(seed ^ (value + offset + (seed << 6) + (seed >> 2)));
-    }
+  /// Mark an angle set complete after all of its outgoing faces have been published.
+  void SignalAngleSetComplete(std::size_t angle_set_id);
 
-    static std::uint64_t Mix(std::uint64_t value) noexcept
-    {
-      constexpr std::uint64_t multiplier = 0xe9846afb1a615dULL;
-      value ^= value >> 32;
-      value *= multiplier;
-      value ^= value >> 32;
-      value *= multiplier;
-      value ^= value >> 28;
-      return value;
-    }
-  };
+  /**
+   * Start a sweep on the progress thread.
+   * The worker queues are rebuilt when the number of workers changes.
+   *
+   * \param num_workers Number of sweep workers.
+   */
+  void Start(std::size_t num_workers);
 
-  /// Queued outgoing face psi by destination face.
-  std::unordered_map<MessageKey, std::vector<double>, MessageKeyHash> outgoing_message_queue_;
+  /// Wait until every angle set is complete and all of the sweep's data has been exchanged.
+  void Stop();
 
-  /// Destination-batched nonblocking send buffer.
-  struct BufferItem
-  {
-    /// Destination location.
-    int destination = 0;
-    /// Active nonblocking send request.
-    mpi::Request mpi_request;
-    /// Nonblocking-send state.
-    bool send_initiated = false;
-    /// Send completion state.
-    bool completed = false;
-    /// Serialized face-psi data.
-    ByteArray data_array;
-  };
+private:
+  struct PacketExchange;
 
-  /// Active nonblocking send buffers.
-  std::vector<BufferItem> send_buffer_;
+  /// Progress-thread body: exchange packets until Stop is requested and the sweep is drained.
+  void CommThreadLoop();
+  /// Return true when every angle set is complete and every outgoing queue is empty.
+  bool AllAngleSetsComplete() const;
+
+  const SweepCommunicator& sweep_communicator_;
+  /// Outgoing queues of the sweep workers.
+  CBCD_OutgoingQueues outgoing_;
+  /// Mailboxes of received downwind-cell IDs from the progress thread, indexed by angle set.
+  std::vector<std::unique_ptr<LockFreeSPSCSlotQueue<std::uint32_t>>> incoming_dependencies_;
+  /// Device buffers, MPI requests, and progress state of the packet exchange.
+  std::unique_ptr<PacketExchange> packet_exchange_;
+  /// Set by Stop to let the progress thread exit once the sweep is drained.
+  std::atomic<bool> stop_requested_{false};
+  /// Completion flags indexed by angle set.
+  std::vector<std::atomic<bool>> angle_set_complete_;
+  /// True between Start and Stop.
+  bool sweep_active_ = false;
+  /// Pool holding the progress thread, reused across sweeps.
+  SPMD_ThreadPool comm_pool_;
 };
 
 } // namespace opensn
