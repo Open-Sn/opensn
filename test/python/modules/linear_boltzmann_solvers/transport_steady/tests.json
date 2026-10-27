@@ -620,6 +620,24 @@
     ]
   },
   {
+    "file": "orthant_angle_aggregation.py",
+    "comment": "Quadrant/octant aggregation: analytic infinite medium on KBA partitions; heterogeneous AAH/CBC solutions on cyclic ParMETIS partitions match single-angle aggregation and conserve particles",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "ORTHANT_2D_EXACT_ERROR", "goldvalue": 0.0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ORTHANT_3D_EXACT_ERROR", "goldvalue": 0.0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_2D_AAH_SINGLE_DIFFERENCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_2D_AAH_RELATIVE_BALANCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_2D_CBC_SINGLE_DIFFERENCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_2D_CBC_RELATIVE_BALANCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_3D_AAH_SINGLE_DIFFERENCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_3D_AAH_RELATIVE_BALANCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_3D_CBC_SINGLE_DIFFERENCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_PARMETIS_3D_CBC_RELATIVE_BALANCE", "goldvalue": 0.0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "ORTHANT_CONFIGURATION_REJECTIONS", "goldvalue": 3, "abs_tol": 0}
+    ]
+  },
+  {
     "file": "transport_3d_1a_extruder_cbc_gpu.py",
     "comment": "3D LinearBSolver Test - PWLD (CBC)",
     "num_procs": 4,

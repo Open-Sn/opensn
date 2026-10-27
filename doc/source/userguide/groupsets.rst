@@ -172,6 +172,8 @@ Supported aggregation types exposed in OpenSn are:
 * ``"polar"``
 * ``"single"`` (default)
 * ``"azimuthal"``
+* ``"quadrant"``
+* ``"octant"``
 
 Example:
 
@@ -188,7 +190,14 @@ Practical interpretation:
 * ``"single"`` keeps the angle treatment as simple as possible,
 * ``"polar"`` is a structured/product-quadrature-oriented choice,
 * ``"azimuthal"`` is available when azimuthal grouping is a better fit for the
-  chosen structured workflow.
+  chosen curvilinear workflow,
+* ``"quadrant"`` combines all directions with the same x/y signs into four
+  angle sets on a 2D Cartesian orthogonal mesh, and
+* ``"octant"`` combines all directions with the same x/y/z signs into eight
+  angle sets on a 3D Cartesian orthogonal mesh.
+
+``"quadrant"`` and ``"octant"`` give the same solution as ``"single"``, up to
+iteration tolerance and rounding, and usually sweep faster with less memory.
 
 .. note::
 
@@ -196,6 +205,13 @@ Practical interpretation:
    choice that must remain compatible with both the mesh and the quadrature.
    In particular, fully unstructured 3D meshes require
    ``angle_aggregation_type="single"``, the default.
+
+   Quadrant and octant aggregation require a mesh from
+   ``OrthogonalMeshGenerator`` and a quadrature whose directions all lie
+   strictly inside one quadrant or octant: :math:`\Omega_x \neq 0` and
+   :math:`\Omega_y \neq 0` for ``"quadrant"``, and also :math:`\Omega_z \neq 0`
+   for ``"octant"``. This rules out Lebedev quadratures, which include
+   directions along the coordinate axes.
 
    See :doc:`angular_quadratures` for the detailed compatibility rules between
    quadrature family, mesh type, and aggregation type.

@@ -9,6 +9,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/ags_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/math/functions/function.h"
@@ -27,6 +28,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <algorithm>
+#include <array>
 #include <cassert>
 #include <cmath>
 #include <iomanip>
@@ -440,14 +442,29 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
       " meshes require DiscreteOrdinatesCurvilinearProblem; DiscreteOrdinatesProblem supports "
       "only Cartesian meshes.");
 
-  // Azimuthal angle aggregation orders the directions of the curvilinear angular-derivative term.
+  // Validate angle aggregations whose shared sweep ordering depends on the mesh geometry.
   for (const auto& groupset : groupsets_)
+  {
     if (groupset.angleagg_method == AngleAggregationType::AZIMUTHAL and
         geometry_type_ != GeometryType::TWOD_CYLINDRICAL and
         geometry_type_ != GeometryType::ONED_SPHERICAL)
       errors.emplace_back("Groupset " + std::to_string(groupset.id) +
                           ": AZIMUTHAL angle aggregation is only valid for TWOD_CYLINDRICAL and "
                           "ONED_SPHERICAL geometries.");
+
+    const bool quadrant = groupset.angleagg_method == AngleAggregationType::QUADRANT;
+    const bool octant = groupset.angleagg_method == AngleAggregationType::OCTANT;
+    if (quadrant and geometry_type_ != GeometryType::TWOD_CARTESIAN)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": QUADRANT angle aggregation requires a 2D Cartesian mesh.");
+    if (octant and geometry_type_ != GeometryType::THREED_CARTESIAN)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": OCTANT angle aggregation requires a 3D Cartesian mesh.");
+    if ((quadrant or octant) and grid_->GetType() != MeshType::ORTHOGONAL)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) + ": " +
+                          (quadrant ? "QUADRANT" : "OCTANT") +
+                          " angle aggregation requires an orthogonal mesh.");
+  }
 
   // TGDSA corrects the error mode coupled across the groups of a groupset.
   for (const auto& groupset : groupsets_)
@@ -473,6 +490,33 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
                           ") for groupset #" + std::to_string(groupset.id) +
                           " does not match dimensionality of mesh (" + std::to_string(grid_dim) +
                           ").");
+
+    // Each direction must lie strictly inside one quadrant (x, y) or octant (x, y, z). A zero
+    // component makes the direction parallel to the faces normal to that axis.
+    const bool quadrant = groupset.angleagg_method == AngleAggregationType::QUADRANT;
+    const bool orthant_aggregation =
+      quadrant or groupset.angleagg_method == AngleAggregationType::OCTANT;
+    if (orthant_aggregation and (quad_dim == 2 or quad_dim == 3))
+      for (size_t n = 0; n < groupset.quadrature->GetNumAngles(); ++n)
+      {
+        const auto& omega = groupset.quadrature->GetOmega(n);
+        const std::array<double, 3> components = {omega.x, omega.y, omega.z};
+        const auto* const zero =
+          std::find_if(components.begin(),
+                       components.begin() + quad_dim,
+                       [](double value) { return std::abs(value) <= FACE_ORIENTATION_TOLERANCE; });
+        if (zero != components.begin() + quad_dim)
+        {
+          const char axis = "xyz"[zero - components.begin()];
+          errors.emplace_back("Groupset " + std::to_string(groupset.id) + ": " +
+                              (quadrant ? "QUADRANT" : "OCTANT") +
+                              " angle aggregation cannot use direction " + std::to_string(n) + " " +
+                              omega.PrintStr() + ": Omega_" + axis +
+                              " is zero, so the direction is not inside any one " +
+                              (quadrant ? "quadrant" : "octant") + ".");
+          break;
+        }
+      }
   }
 
   // The fused scheduler is only for GPU AAH sweeps.
