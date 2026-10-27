@@ -200,10 +200,18 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span>
     <span class="n">PowerIterationKEigenSolver</span><span class="p">,</span>
     <span class="n">TransientSolver</span><span class="p">,</span>
 <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">fission_rate</span><span class="p">(</span><span class="n">problem</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Volume-integrated fission rate summed over all groups.&quot;&quot;&quot;</span>
+    <span class="n">rate</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">xs_multiplier</span><span class="o">=</span><span class="s2">&quot;sigma_f&quot;</span><span class="p">)</span>
+    <span class="n">rate</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+    <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="n">rate</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
 <br/></pre></div>
 </div>
 </div>
@@ -447,19 +455,19 @@
 <section id="Update-Cross-Sections-and-Advance-in-Time-(Transient-Solve)">
 <h2><span class="section-number">3.4.1.10. </span>Update Cross Sections and Advance in Time (Transient Solve)<a class="headerlink" href="#Update-Cross-Sections-and-Advance-in-Time-(Transient-Solve)" title="Link to this heading"></a></h2>
 <p>Swap from <code class="docutils literal notranslate"><span class="pre">xs_crit</span></code> to <code class="docutils literal notranslate"><span class="pre">xs_super</span></code>, then march with backward Euler (<code class="docutils literal notranslate"><span class="pre">theta=1.0</span></code>) using a Python time stepping loop.</p>
-<p>Diagnostic printouts show per-step time advancement and fission production.</p>
+<p>Diagnostic printouts show per-step time advancement and the total fission rate <span class="math notranslate nohighlight">\(F(t)=\sum_g\int_V\Sigma_{f,g}\,\phi_g\,dV\)</span>, computed with a <code class="docutils literal notranslate"><span class="pre">VolumePostprocessor</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[46]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">phys</span><span class="o">.</span><span class="n">SetXSMap</span><span class="p">(</span><span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs_super</span><span class="p">}])</span>
 
-<span class="c1"># Baseline fission production at transient start (post-swap, t=0+)</span>
+<span class="c1"># Baseline fission rate at transient start (post-swap, t=0+)</span>
 <span class="n">t0</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
-<span class="n">fp0</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeFissionProduction</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">)</span>
+<span class="n">fission_rate_t0</span> <span class="o">=</span> <span class="n">fission_rate</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Transient start time t0 = </span><span class="si">{</span><span class="n">t0</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial fission production fp0 (post-swap) = </span><span class="si">{</span><span class="n">fp0</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initial fission rate F(t0) (post-swap) = </span><span class="si">{</span><span class="n">fission_rate_t0</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="n">transient_solver</span><span class="o">.</span><span class="n">SetTimeStep</span><span class="p">(</span><span class="mf">1.0e-2</span><span class="p">)</span>
 <span class="n">transient_solver</span><span class="o">.</span><span class="n">SetTheta</span><span class="p">(</span><span class="mf">1.0</span><span class="p">)</span>
@@ -470,21 +478,21 @@
     <span class="n">t_before</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
     <span class="n">transient_solver</span><span class="o">.</span><span class="n">Advance</span><span class="p">()</span>
     <span class="n">t_after</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
-    <span class="n">fp</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeFissionProduction</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">)</span>
+    <span class="n">fission_rate_t</span> <span class="o">=</span> <span class="n">fission_rate</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span>
             <span class="sa">f</span><span class="s2">&quot;Time step = </span><span class="si">{</span><span class="n">step</span><span class="si">:</span><span class="s2">03d</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;start time = </span><span class="si">{</span><span class="n">t_before</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, &quot;</span>
             <span class="sa">f</span><span class="s2">&quot;end time = </span><span class="si">{</span><span class="n">t_after</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2">, &quot;</span>
-            <span class="sa">f</span><span class="s2">&quot;fission production @end = </span><span class="si">{</span><span class="n">fp</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot;fission rate @end = </span><span class="si">{</span><span class="n">fission_rate_t</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span>
         <span class="p">)</span>
     <span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
 
 <span class="k">if</span> <span class="n">step</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;No transient steps executed. Reinitialize solver state or increase t_end.&quot;</span><span class="p">)</span>
 
-<span class="n">fp_end</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">ComputeFissionProduction</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">)</span>
-<span class="n">t1</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
+<span class="n">fission_rate_tf</span> <span class="o">=</span> <span class="n">fission_rate</span><span class="p">(</span><span class="n">phys</span><span class="p">)</span>
+<span class="n">tf</span> <span class="o">=</span> <span class="n">phys</span><span class="o">.</span><span class="n">GetTime</span><span class="p">()</span>
 <br/></pre></div>
 </div>
 </div>
@@ -494,29 +502,30 @@
 <div class="output_area docutils container">
 <div class="highlight"><pre>
 Transient start time t0 = 0.000000
-Initial fission production fp0 (post-swap) = 1.84320000e+02
-Time step = 000, start time = 0.000000, end time = 0.010000, fission production @end = 1.84422441e+02
-Time step = 001, start time = 0.010000, end time = 0.020000, fission production @end = 1.84533161e+02
-Time step = 002, start time = 0.020000, end time = 0.030000, fission production @end = 1.84643948e+02
-Time step = 003, start time = 0.030000, end time = 0.040000, fission production @end = 1.84754801e+02
-Time step = 004, start time = 0.040000, end time = 0.050000, fission production @end = 1.84865720e+02
-Time step = 005, start time = 0.050000, end time = 0.060000, fission production @end = 1.84976706e+02
-Time step = 006, start time = 0.060000, end time = 0.070000, fission production @end = 1.85087759e+02
-Time step = 007, start time = 0.070000, end time = 0.080000, fission production @end = 1.85198878e+02
-Time step = 008, start time = 0.080000, end time = 0.090000, fission production @end = 1.85310064e+02
-Time step = 009, start time = 0.090000, end time = 0.100000, fission production @end = 1.85421317e+02
-Time step = 010, start time = 0.100000, end time = 0.110000, fission production @end = 1.85532636e+02
+Initial fission rate F(t0) (post-swap) = 9.21600000e+01
+Time step = 000, start time = 0.000000, end time = 0.010000, fission rate @end = 9.22153292e+01
+Time step = 001, start time = 0.010000, end time = 0.020000, fission rate @end = 9.22706916e+01
+Time step = 002, start time = 0.020000, end time = 0.030000, fission rate @end = 9.23260872e+01
+Time step = 003, start time = 0.030000, end time = 0.040000, fission rate @end = 9.23815162e+01
+Time step = 004, start time = 0.040000, end time = 0.050000, fission rate @end = 9.24369783e+01
+Time step = 005, start time = 0.050000, end time = 0.060000, fission rate @end = 9.24924738e+01
+Time step = 006, start time = 0.060000, end time = 0.070000, fission rate @end = 9.25480026e+01
+Time step = 007, start time = 0.070000, end time = 0.080000, fission rate @end = 9.26035648e+01
+Time step = 008, start time = 0.080000, end time = 0.090000, fission rate @end = 9.26591603e+01
+Time step = 009, start time = 0.090000, end time = 0.100000, fission rate @end = 9.27147891e+01
+Time step = 010, start time = 0.100000, end time = 0.110000, fission rate @end = 9.27704514e+01
 </pre></div></div>
 </div>
 </section>
 <section id="Post-processing:-Prompt-Only-Growth-Check">
 <h2><span class="section-number">3.4.1.11. </span>Post-processing: Prompt-Only Growth Check<a class="headerlink" href="#Post-processing:-Prompt-Only-Growth-Check" title="Link to this heading"></a></h2>
-<p>For this simple one-group setup we compare the fission-production fraction to:</p>
+<p>For this simple one-group setup we compare the fission-rate ratio to:</p>
 <div class="math notranslate nohighlight">
 \[\frac{P(t)}{P(0)} = e^{\alpha t}, \quad \alpha = \nu\Sigma_f - \Sigma_a\]</div>
+<p>Here <span class="math notranslate nohighlight">\(P(t)\)</span> is the total fission rate <span class="math notranslate nohighlight">\(F(t)\)</span> from the <code class="docutils literal notranslate"><span class="pre">VolumePostprocessor</span></code>. Power is proportional to this rate for a fixed energy release per fission, and the volume integral includes every group and every cell, so the ratio stays meaningful in multigroup problems and when the flux shape changes during the transient.</p>
 <p>In the notebook, we evaluate this over the transient interval</p>
 <div class="math notranslate nohighlight">
-\[\Delta t = t_1 - t_0\]</div>
+\[\Delta t = t_f - t_0\]</div>
 <p>:</p>
 <div class="math notranslate nohighlight">
 \[\text{ratio}_{\mathrm{analytic}} = e^{\alpha\Delta t}\]</div>
@@ -524,11 +533,11 @@ Time step = 010, start time = 0.100000, end time = 0.110000, fission production 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratio_analytic</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">delta_t</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The numerical fraction is computed directly from fission production:</p>
+<p>The numerical ratio is computed directly from the fission rate:</p>
 <div class="math notranslate nohighlight">
-\[\text{ratio}_{\mathrm{numeric}} = \frac{\text{fp\_end}}{\text{fp0}}\]</div>
+\[\text{ratio}_{\mathrm{numeric}} = \frac{F(t_f)}{F(t_0)}\]</div>
 <p>Code equivalent:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratio_numeric</span> <span class="o">=</span> <span class="n">fp_end</span> <span class="o">/</span> <span class="n">fp0</span> <span class="k">if</span> <span class="n">fp0</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="mf">0.0</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">ratio_numeric</span> <span class="o">=</span> <span class="n">fission_rate_tf</span> <span class="o">/</span> <span class="n">fission_rate_t0</span> <span class="k">if</span> <span class="n">fission_rate_t0</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="mf">0.0</span>
 </pre></div>
 </div>
 <p>Then we compare <span class="math notranslate nohighlight">\(\text{ratio}_{\mathrm{numeric}}\text{ vs. }\text{ratio}_{\mathrm{analytic}}\)</span>.</p>
@@ -543,21 +552,21 @@ Time step = 010, start time = 0.100000, end time = 0.110000, fission production 
 <span class="n">sigma_f</span> <span class="o">=</span> <span class="mf">0.180000</span>
 <span class="n">alpha</span> <span class="o">=</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">sigma_f</span> <span class="o">-</span> <span class="n">sigma_a</span>
 
-<span class="n">delta_t</span> <span class="o">=</span> <span class="n">t1</span> <span class="o">-</span> <span class="n">t0</span>
+<span class="n">delta_t</span> <span class="o">=</span> <span class="n">tf</span> <span class="o">-</span> <span class="n">t0</span>
 <span class="n">ratio_analytic</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="n">alpha</span> <span class="o">*</span> <span class="n">delta_t</span><span class="p">)</span>
-<span class="n">ratio_numeric</span> <span class="o">=</span> <span class="n">fp_end</span> <span class="o">/</span> <span class="n">fp0</span> <span class="k">if</span> <span class="n">fp0</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="mf">0.0</span>
+<span class="n">ratio_numeric</span> <span class="o">=</span> <span class="n">fission_rate_tf</span> <span class="o">/</span> <span class="n">fission_rate_t0</span> <span class="k">if</span> <span class="n">fission_rate_t0</span> <span class="o">&gt;</span> <span class="mf">0.0</span> <span class="k">else</span> <span class="mf">0.0</span>
 
 <span class="n">rel_err</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ratio_numeric</span> <span class="o">-</span> <span class="n">ratio_analytic</span><span class="p">)</span> <span class="o">/</span> <span class="nb">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ratio_analytic</span><span class="p">),</span> <span class="mf">1.0e-16</span><span class="p">)</span>
 <span class="n">tol</span> <span class="o">=</span> <span class="mf">5.0e-3</span>  <span class="c1"># matches prompt-analytic regression tolerance</span>
 
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed transient time = </span><span class="si">{</span><span class="n">delta_t</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FP ratio numeric      = </span><span class="si">{</span><span class="n">ratio_numeric</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;FP ratio analytic     = </span><span class="si">{</span><span class="n">ratio_analytic</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative error        = </span><span class="si">{</span><span class="n">rel_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Elapsed transient time      = </span><span class="si">{</span><span class="n">delta_t</span><span class="si">:</span><span class="s2">.6f</span><span class="si">}</span><span class="s2"> s&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fission-rate ratio numeric  = </span><span class="si">{</span><span class="n">ratio_numeric</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fission-rate ratio analytic = </span><span class="si">{</span><span class="n">ratio_analytic</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Relative error              = </span><span class="si">{</span><span class="n">rel_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
 <span class="k">assert</span> <span class="n">rel_err</span> <span class="o">&lt;</span> <span class="n">tol</span><span class="p">,</span> <span class="p">(</span>
-    <span class="sa">f</span><span class="s2">&quot;FP ratio check failed: rel_err=</span><span class="si">{</span><span class="n">rel_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &gt;= tol=</span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
+    <span class="sa">f</span><span class="s2">&quot;Fission-rate ratio check failed: rel_err=</span><span class="si">{</span><span class="n">rel_err</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &gt;= tol=</span><span class="si">{</span><span class="n">tol</span><span class="si">:</span><span class="s2">.3e</span><span class="si">}</span><span class="s2"> &quot;</span>
     <span class="sa">f</span><span class="s2">&quot;(numeric=</span><span class="si">{</span><span class="n">ratio_numeric</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">, analytic=</span><span class="si">{</span><span class="n">ratio_analytic</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">, delta_t=</span><span class="si">{</span><span class="n">delta_t</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">)&quot;</span>
 <span class="p">)</span>
 
@@ -571,10 +580,11 @@ Time step = 010, start time = 0.100000, end time = 0.110000, fission production 
 </div>
 <div class="output_area docutils container">
 <div class="highlight"><pre>
-Elapsed transient time = 0.110000 s
-FP ratio numeric      = 1.00657897e+00
-FP ratio analytic     = 1.00662183e+00
-Relative error        = 4.257e-05
+Elapsed transient time      = 0.110000 s
+Fission-rate ratio numeric  = 1.00662382e+00
+Fission-rate ratio analytic = 1.00662183e+00
+Relative error              = 1.981e-06
+KEIGEN_TO_TRANSIENT_OK 1
 </pre></div></div>
 </div>
 </section>

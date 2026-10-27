@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>4.2.3. An Infinite-Medium Eigenvalue &mdash; OpenSn 1.0.1 documentation</title>
+  <title>4.2.3. A Multigroup Infinite-Medium Eigenvalue &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -65,7 +65,7 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">4.2. Verification</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="particle_balance.html">4.2.1. Global Particle Balance</a></li>
 <li class="toctree-l4"><a class="reference internal" href="transient_particle_balance.html">4.2.2. Transient Particle Balance</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">4.2.3. An Infinite-Medium Eigenvalue</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">4.2.3. A Multigroup Infinite-Medium Eigenvalue</a></li>
 <li class="toctree-l4"><a class="reference internal" href="spatial_convergence.html">4.2.4. Spatial Convergence</a></li>
 </ul>
 </li>
@@ -102,7 +102,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">4. </span>Workflows</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">4.2. </span>Verification</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">4.2.3. </span>An Infinite-Medium Eigenvalue</li>
+      <li class="breadcrumb-item active"><span class="section-number">4.2.3. </span>A Multigroup Infinite-Medium Eigenvalue</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,15 +111,96 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="An-Infinite-Medium-Eigenvalue">
-<h1><span class="section-number">4.2.3. </span>An Infinite-Medium Eigenvalue<a class="headerlink" href="#An-Infinite-Medium-Eigenvalue" title="Link to this heading"></a></h1>
-<p>This tutorial verifies a one-group <span class="math notranslate nohighlight">\(k\)</span>-eigenvalue calculation against an analytic infinite-medium result and checks its normalized particle balance.</p>
-<section id="Define-an-exactly-critical-material">
-<h2><span class="section-number">4.2.3.1. </span>Define an exactly critical material<a class="headerlink" href="#Define-an-exactly-critical-material" title="Link to this heading"></a></h2>
-<p>The one-group material has <span class="math notranslate nohighlight">\(\Sigma_t=\Sigma_a=1\)</span>, <span class="math notranslate nohighlight">\(\Sigma_f=0.5\)</span>, and <span class="math notranslate nohighlight">\(\nu=2\)</span>. With reflecting boundaries there is no net leakage, so</p>
+  <section id="A-Multigroup-Infinite-Medium-Eigenvalue">
+<h1><span class="section-number">4.2.3. </span>A Multigroup Infinite-Medium Eigenvalue<a class="headerlink" href="#A-Multigroup-Infinite-Medium-Eigenvalue" title="Link to this heading"></a></h1>
+<p>This tutorial verifies a four-group <span class="math notranslate nohighlight">\(k\)</span>-eigenvalue calculation against the exact infinite-medium solution. It checks the eigenvalue, the converged energy spectrum, the spectrum-averaged neutron yield, and the normalized particle balance.</p>
+<section id="The-infinite-medium-reference">
+<h2><span class="section-number">4.2.3.1. </span>The infinite-medium reference<a class="headerlink" href="#The-infinite-medium-reference" title="Link to this heading"></a></h2>
+<p>In an infinite homogeneous medium with isotropic scattering, the flux is uniform in space and isotropic, so the multigroup transport equation reduces to a balance for each group:</p>
 <div class="math notranslate nohighlight">
-\[k_\infty=\frac{\nu\Sigma_f}{\Sigma_a}=1.\]</div>
-<p>The analytic value is formed directly from the cross-section properties exposed by <code class="docutils literal notranslate"><span class="pre">MultiGroupXS</span></code>.</p>
+\[\Sigma_{t,g}\phi_g=\sum_{g'}\Sigma_s(g'\to g)\,\phi_{g'}+\frac{\chi_g}{k}\sum_{g'}\nu\Sigma_{f,g'}\phi_{g'}.\]</div>
+<p>In matrix form this is <span class="math notranslate nohighlight">\(A\phi=k^{-1}\chi\,(\nu\Sigma_f)^{T}\phi\)</span> with <span class="math notranslate nohighlight">\(A=\operatorname{diag}(\Sigma_t)-\Sigma_s^{T}\)</span>, where <span class="math notranslate nohighlight">\(\Sigma_s[g',g]=\Sigma_s(g'\to g)\)</span>. A single fission spectrum <span class="math notranslate nohighlight">\(\chi\)</span> makes the production operator rank one, so the fundamental mode has the closed form</p>
+<div class="math notranslate nohighlight">
+\[\phi_\infty\propto A^{-1}\chi,\qquad k_\infty=(\nu\Sigma_f)^{T}A^{-1}\chi.\]</div>
+<p>Here <span class="math notranslate nohighlight">\(A^{-1}\chi\)</span> is the group flux produced by one fission neutron, and <span class="math notranslate nohighlight">\(k_\infty\)</span> is the number of fission neutrons that flux produces. With one group, the result reduces to <span class="math notranslate nohighlight">\(k_\infty=\nu\Sigma_f/\Sigma_a\)</span>.</p>
+<p>The four-group material below includes fast fission, downscatter across several groups, upscatter between the two thermal groups, and a group-dependent <span class="math notranslate nohighlight">\(\nu\)</span>:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>Group</p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\Sigma_t\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\Sigma_s(g\to 0,1,2,3)\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\Sigma_a\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\Sigma_f\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\nu\)</span></p></th>
+<th class="head"><p><span class="math notranslate nohighlight">\(\chi\)</span></p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>0 (fast)</p></td>
+<td><p>0.20</p></td>
+<td><p>0.150, 0.040, 0.002, 0</p></td>
+<td><p>0.008</p></td>
+<td><p>0.003</p></td>
+<td><p>2.70</p></td>
+<td><p>0.95</p></td>
+</tr>
+<tr class="row-odd"><td><p>1 (epithermal)</p></td>
+<td><p>0.35</p></td>
+<td><p>0, 0.300, 0.030, 0.005</p></td>
+<td><p>0.015</p></td>
+<td><p>0.006</p></td>
+<td><p>2.50</p></td>
+<td><p>0.05</p></td>
+</tr>
+<tr class="row-even"><td><p>2 (thermal)</p></td>
+<td><p>0.90</p></td>
+<td><p>0, 0, 0.650, 0.150</p></td>
+<td><p>0.100</p></td>
+<td><p>0.060</p></td>
+<td><p>2.44</p></td>
+<td><p>0</p></td>
+</tr>
+<tr class="row-odd"><td><p>3 (cold thermal)</p></td>
+<td><p>1.20</p></td>
+<td><p>0, 0, 0.060, 0.900</p></td>
+<td><p>0.240</p></td>
+<td><p>0.100</p></td>
+<td><p>2.43</p></td>
+<td><p>0</p></td>
+</tr>
+</tbody>
+</table>
+<p>Cross sections are in <span class="math notranslate nohighlight">\(\text{cm}^{-1}\)</span>, and <span class="math notranslate nohighlight">\(\Sigma_a=\Sigma_t-\sum_{g'}\Sigma_s(g\to g')\)</span>. A slab with reflecting boundaries on both faces reproduces the infinite medium exactly, so neither the mesh nor the angular quadrature introduces discretization error, and OpenSn should match the closed form to the solver tolerances.</p>
+<p>The cell below evaluates the reference directly from these values with NumPy, independently of OpenSn.</p>
+<div class="nbinput nblast docutils container">
+<div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
+</pre></div>
+</div>
+<div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+
+<span class="n">sigma_t</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.20</span><span class="p">,</span> <span class="mf">0.35</span><span class="p">,</span> <span class="mf">0.90</span><span class="p">,</span> <span class="mf">1.20</span><span class="p">])</span>
+<span class="c1"># sigma_s[g_from, g_to]</span>
+<span class="n">sigma_s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span>
+    <span class="p">[</span>
+        <span class="p">[</span><span class="mf">0.150</span><span class="p">,</span> <span class="mf">0.040</span><span class="p">,</span> <span class="mf">0.002</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.300</span><span class="p">,</span> <span class="mf">0.030</span><span class="p">,</span> <span class="mf">0.005</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.650</span><span class="p">,</span> <span class="mf">0.150</span><span class="p">],</span>
+        <span class="p">[</span><span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.000</span><span class="p">,</span> <span class="mf">0.060</span><span class="p">,</span> <span class="mf">0.900</span><span class="p">],</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+<span class="n">sigma_f</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.003</span><span class="p">,</span> <span class="mf">0.006</span><span class="p">,</span> <span class="mf">0.060</span><span class="p">,</span> <span class="mf">0.100</span><span class="p">])</span>
+<span class="n">nu</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">2.70</span><span class="p">,</span> <span class="mf">2.50</span><span class="p">,</span> <span class="mf">2.44</span><span class="p">,</span> <span class="mf">2.43</span><span class="p">])</span>
+<span class="n">chi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mf">0.95</span><span class="p">,</span> <span class="mf">0.05</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">])</span>
+<span class="n">sigma_a</span> <span class="o">=</span> <span class="n">sigma_t</span> <span class="o">-</span> <span class="n">sigma_s</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">sigma_t</span><span class="p">)</span> <span class="o">-</span> <span class="n">sigma_s</span><span class="o">.</span><span class="n">T</span>
+<span class="n">phi_ref</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">chi</span><span class="p">)</span>
+<span class="n">analytic_keff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">nu</span> <span class="o">*</span> <span class="n">sigma_f</span><span class="p">)</span> <span class="o">@</span> <span class="n">phi_ref</span><span class="p">)</span>
+<span class="n">spectrum_ref</span> <span class="o">=</span> <span class="n">phi_ref</span> <span class="o">/</span> <span class="n">phi_ref</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">analytic_average_nu</span> <span class="o">=</span> <span class="nb">float</span><span class="p">((</span><span class="n">nu</span> <span class="o">*</span> <span class="n">sigma_f</span><span class="p">)</span> <span class="o">@</span> <span class="n">phi_ref</span> <span class="o">/</span> <span class="p">(</span><span class="n">sigma_f</span> <span class="o">@</span> <span class="n">phi_ref</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -128,6 +209,7 @@
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLProductQuadrature1DSlab</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.context</span><span class="w"> </span><span class="kn">import</span> <span class="n">Finalize</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.mesh</span><span class="w"> </span><span class="kn">import</span> <span class="n">OrthogonalMeshGenerator</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span> <span class="n">PowerIterationKEigenSolver</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.xs</span><span class="w"> </span><span class="kn">import</span> <span class="n">MultiGroupXS</span>
 
@@ -137,13 +219,31 @@
 <span class="n">mesh</span><span class="o">.</span><span class="n">SetUniformBlockID</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
 
 <span class="n">xs</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
-<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;simple_fissile_1g.xs&quot;</span><span class="p">)</span>
-<span class="n">analytic_keff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">xs</span><span class="o">.</span><span class="n">nu_sigma_f</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">xs</span><span class="o">.</span><span class="n">sigma_a</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">xs</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="s2">&quot;infinite_medium_4g.xs&quot;</span><span class="p">)</span>
+
+<span class="c1"># The file and the reference arrays must describe the same material.</span>
+<span class="k">for</span> <span class="n">name</span><span class="p">,</span> <span class="n">expected</span> <span class="ow">in</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;sigma_t&quot;</span><span class="p">,</span> <span class="n">sigma_t</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;sigma_a&quot;</span><span class="p">,</span> <span class="n">sigma_a</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;sigma_f&quot;</span><span class="p">,</span> <span class="n">sigma_f</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;nu_sigma_f&quot;</span><span class="p">,</span> <span class="n">nu</span> <span class="o">*</span> <span class="n">sigma_f</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;chi&quot;</span><span class="p">,</span> <span class="n">chi</span><span class="p">),</span>
+<span class="p">]:</span>
+    <span class="k">assert</span> <span class="n">np</span><span class="o">.</span><span class="n">allclose</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">xs</span><span class="p">,</span> <span class="n">name</span><span class="p">),</span> <span class="n">expected</span><span class="p">,</span> <span class="n">rtol</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="n">atol</span><span class="o">=</span><span class="mf">1.0e-12</span><span class="p">),</span> <span class="n">name</span>
+
 <span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLProductQuadrature1DSlab</span><span class="p">(</span><span class="n">n_polar</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="n">scattering_order</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
     <span class="n">mesh</span><span class="o">=</span><span class="n">mesh</span><span class="p">,</span>
-    <span class="n">num_groups</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
-    <span class="n">groupsets</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">}],</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span>
+            <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+            <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+            <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-12</span><span class="p">,</span>
+            <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">500</span><span class="p">,</span>
+        <span class="p">}</span>
+    <span class="p">],</span>
     <span class="n">xs_map</span><span class="o">=</span><span class="p">[{</span><span class="s2">&quot;block_ids&quot;</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;xs&quot;</span><span class="p">:</span> <span class="n">xs</span><span class="p">}],</span>
     <span class="n">boundary_conditions</span><span class="o">=</span><span class="p">[</span>
         <span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;zmin&quot;</span><span class="p">,</span> <span class="s2">&quot;type&quot;</span><span class="p">:</span> <span class="s2">&quot;reflecting&quot;</span><span class="p">},</span>
@@ -159,9 +259,15 @@
 </div>
 </div>
 </section>
-<section id="Verify-the-eigenvalue-and-balance">
-<h2><span class="section-number">4.2.3.2. </span>Verify the eigenvalue and balance<a class="headerlink" href="#Verify-the-eigenvalue-and-balance" title="Link to this heading"></a></h2>
-<p>For a <span class="math notranslate nohighlight">\(k\)</span>-eigenvalue solve, <code class="docutils literal notranslate"><span class="pre">ComputeBalanceTable</span></code> divides fission production by the converged eigenvalue before forming the balance. The separate fission-rate and fission-production methods also make the material’s average neutron yield visible through their ratio.</p>
+<section id="Verify-the-eigenvalue,-spectrum,-and-balance">
+<h2><span class="section-number">4.2.3.2. </span>Verify the eigenvalue, spectrum, and balance<a class="headerlink" href="#Verify-the-eigenvalue,-spectrum,-and-balance" title="Link to this heading"></a></h2>
+<p>The solve converges tightly (<code class="docutils literal notranslate"><span class="pre">k_tol=1e-12</span></code> and an inner GMRES tolerance of <span class="math notranslate nohighlight">\(10^{-12}\)</span>). Each check below requires agreement to <span class="math notranslate nohighlight">\(10^{-10}\)</span>, a margin above the solver tolerances; by comparison, changing a single transfer entry by <span class="math notranslate nohighlight">\(0.001\)</span> <span class="math notranslate nohighlight">\(\text{cm}^{-1}\)</span> shifts <span class="math notranslate nohighlight">\(k\)</span> by about <span class="math notranslate nohighlight">\(2\times10^{-3}\)</span>. The checks are:</p>
+<ul class="simple">
+<li><p>the computed eigenvalue against <span class="math notranslate nohighlight">\(k_\infty\)</span>;</p></li>
+<li><p>the group spectrum from a <code class="docutils literal notranslate"><span class="pre">VolumePostprocessor</span></code>, normalized to unit sum, against the normalized <span class="math notranslate nohighlight">\(A^{-1}\chi\)</span>;</p></li>
+<li><p>the spectrum-averaged neutron yield <span class="math notranslate nohighlight">\(\bar\nu=\sum_g\nu\Sigma_{f,g}\phi_g/\sum_g\Sigma_{f,g}\phi_g\)</span>, formed from <code class="docutils literal notranslate"><span class="pre">ComputeFissionProduction</span></code> and <code class="docutils literal notranslate"><span class="pre">ComputeFissionRate</span></code>, which tests the energy weighting of the fission source;</p></li>
+<li><p>the normalized balance from <code class="docutils literal notranslate"><span class="pre">ComputeBalanceTable</span></code>, which divides fission production by the converged eigenvalue before forming the balance.</p></li>
+</ul>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
@@ -175,18 +281,31 @@
 <span class="n">keff</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">())</span>
 <span class="n">balance</span> <span class="o">=</span> <span class="n">solver</span><span class="o">.</span><span class="n">ComputeBalanceTable</span><span class="p">()</span>
 <span class="n">balance_residual</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">balance</span><span class="p">[</span><span class="s2">&quot;balance&quot;</span><span class="p">]))</span>
+
+<span class="n">group_average</span> <span class="o">=</span> <span class="n">VolumePostprocessor</span><span class="p">(</span><span class="n">problem</span><span class="o">=</span><span class="n">problem</span><span class="p">,</span> <span class="n">value_type</span><span class="o">=</span><span class="s2">&quot;avg&quot;</span><span class="p">)</span>
+<span class="n">group_average</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
+<span class="n">group_flux</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">group_average</span><span class="o">.</span><span class="n">GetValue</span><span class="p">()[</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">spectrum</span> <span class="o">=</span> <span class="n">group_flux</span> <span class="o">/</span> <span class="n">group_flux</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+<span class="n">spectrum_error</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">spectrum</span> <span class="o">-</span> <span class="n">spectrum_ref</span><span class="p">)</span> <span class="o">/</span> <span class="n">spectrum_ref</span><span class="p">))</span>
+
 <span class="n">fission_rate</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">ComputeFissionRate</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">))</span>
 <span class="n">fission_production</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">problem</span><span class="o">.</span><span class="n">ComputeFissionProduction</span><span class="p">(</span><span class="s2">&quot;new&quot;</span><span class="p">))</span>
 <span class="n">average_nu</span> <span class="o">=</span> <span class="n">fission_production</span> <span class="o">/</span> <span class="n">fission_rate</span>
+<span class="n">average_nu_error</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">average_nu</span> <span class="o">-</span> <span class="n">analytic_average_nu</span><span class="p">)</span> <span class="o">/</span> <span class="n">analytic_average_nu</span>
 
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytic infinite-medium eigenvalue=</span><span class="si">{</span><span class="n">analytic_keff</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed infinite-medium eigenvalue=</span><span class="si">{</span><span class="n">keff</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Group  Computed spectrum  Analytic spectrum&quot;</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">spectrum</span><span class="p">)):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">g</span><span class="si">:</span><span class="s2">5d</span><span class="si">}</span><span class="s2">  </span><span class="si">{</span><span class="n">spectrum</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="si">:</span><span class="s2">.12f</span><span class="si">}</span><span class="s2">     </span><span class="si">{</span><span class="n">spectrum_ref</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="si">:</span><span class="s2">.12f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Analytic infinite-medium eigenvalue=</span><span class="si">{</span><span class="n">analytic_keff</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Computed infinite-medium eigenvalue=</span><span class="si">{</span><span class="n">keff</span><span class="si">:</span><span class="s2">.12e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Spectrum max relative error=</span><span class="si">{</span><span class="n">spectrum_error</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Average nu relative error=</span><span class="si">{</span><span class="n">average_nu_error</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Eigenvalue balance residual=</span><span class="si">{</span><span class="n">balance_residual</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fission production-to-rate ratio=</span><span class="si">{</span><span class="n">average_nu</span><span class="si">:</span><span class="s2">.8e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 <span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">keff</span> <span class="o">-</span> <span class="n">analytic_keff</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0e-10</span>
+<span class="k">assert</span> <span class="n">spectrum_error</span> <span class="o">&lt;</span> <span class="mf">1.0e-10</span>
+<span class="k">assert</span> <span class="n">average_nu_error</span> <span class="o">&lt;</span> <span class="mf">1.0e-10</span>
 <span class="k">assert</span> <span class="n">balance_residual</span> <span class="o">&lt;</span> <span class="mf">1.0e-10</span>
-<span class="k">assert</span> <span class="nb">abs</span><span class="p">(</span><span class="n">average_nu</span> <span class="o">-</span> <span class="mf">2.0</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mf">1.0e-12</span>
 
 <span class="k">if</span> <span class="s2">&quot;opensn_console&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="nb">globals</span><span class="p">():</span>
     <span class="kn">from</span><span class="w"> </span><span class="nn">IPython</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_ipython</span>
