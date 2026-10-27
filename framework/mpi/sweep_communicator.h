@@ -28,26 +28,26 @@ public:
       throw std::invalid_argument("SweepCommunicator: Number of groupsets must be positive.");
     }
 
-    int* tag_upper_bound = nullptr;
+    std::optional<int> tag_upper_bound;
     int found = 0;
     try
     {
-      OpenSnMPICall(MPI_Comm_get_attr(static_cast<MPI_Comm>(communicator_),
-                                      MPI_TAG_UB,
-                                      static_cast<void*>(&tag_upper_bound),
-                                      &found));
+      tag_upper_bound = communicator_.attr<int>(mpi::tag_ub);
     }
     catch (...)
     {
       communicator_.free();
       throw;
     }
-    if (found == 0 or tag_upper_bound == nullptr or *tag_upper_bound < 0)
+    if (tag_upper_bound.has_value())
+    {
+      tag_upper_bound_ = tag_upper_bound.value();
+    }
+    else
     {
       communicator_.free();
       throw std::runtime_error("SweepCommunicator: Failed to query MPI_TAG_UB.");
     }
-    tag_upper_bound_ = *tag_upper_bound;
   }
 
   SweepCommunicator(const SweepCommunicator&) = delete;
@@ -76,10 +76,10 @@ public:
 
   // Divide the MPI tag space evenly among groupsets. Large groupset or angle-set counts can
   // exhaust the MPI-standard minimum MPI_TAG_UB of 32767.
-  int BuildMessageTag(std::size_t groupset_id,
-                      std::size_t angle_set_id,
-                      std::size_t stride = 1,
-                      std::size_t offset = 0) const
+  mpi::Tag BuildMessageTag(std::size_t groupset_id,
+                           std::size_t angle_set_id,
+                           std::size_t stride = 1,
+                           std::size_t offset = 0) const
   {
     if (groupset_id >= num_groupsets_)
       throw std::out_of_range("SweepCommunicator: Groupset ID is out of range.");
@@ -91,7 +91,8 @@ public:
     if (offset >= tags_per_groupset or angle_set_id > (tags_per_groupset - offset - 1) / stride)
       throw std::out_of_range("SweepCommunicator: Message tag exceeds the groupset tag range.");
 
-    return static_cast<int>(groupset_id * tags_per_groupset + angle_set_id * stride + offset);
+    return mpi::Tag{
+      static_cast<int>(groupset_id * tags_per_groupset + angle_set_id * stride + offset)};
   }
 
 private:

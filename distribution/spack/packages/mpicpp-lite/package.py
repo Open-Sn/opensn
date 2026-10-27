@@ -6,9 +6,9 @@ class MpicppLite(CMakePackage):
 
     homepage = "https://github.com/andrsd/mpicpp-lite"
     git = "https://github.com/andrsd/mpicpp-lite.git"
-    url = "https://github.com/andrsd/mpicpp-lite/archive/refs/tags/v2.7.1.tar.gz"
+    url = "https://github.com/andrsd/mpicpp-lite/archive/refs/tags/v3.1.0.tar.gz"
 
-    version("2.7.1", tag="v2.7.1")
+    version("3.1.0", tag="v3.1.0")
 
     depends_on("cmake@3.12:", type="build")
     depends_on("mpi")

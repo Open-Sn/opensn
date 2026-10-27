@@ -61,7 +61,7 @@ public:
 
 protected:
   /// Validated angle-set MPI message tag.
-  const int message_tag_;
+  const mpi::Tag message_tag_;
   /// CBCD FLUDS receiving nonlocal face psi.
   CBCD_FLUDS& cbcd_fluds_;
 
