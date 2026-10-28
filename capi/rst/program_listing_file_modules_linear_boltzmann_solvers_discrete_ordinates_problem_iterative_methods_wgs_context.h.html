@@ -108,7 +108,7 @@
 <span class="cm">/**</span>
 <span class="cm"> * Runs a restore function once: on Restore(), or else when destroyed. Returned by the operations</span>
 <span class="cm"> * that change problem-owned solver settings temporarily, e.g. WGSContext::OverrideSourceScopes()</span>
-<span class="cm"> * and DiscreteOrdinatesProblem::PreserveWGSSolveSettings().</span>
+<span class="cm"> * and DiscreteOrdinatesProblem::PreserveTransportSolveSettings().</span>
 <span class="cm"> *</span>
 <span class="cm"> * The destructor must not throw, since it also runs during stack unwinding, so it logs a failed</span>
 <span class="cm"> * restore instead. Call Restore() on the normal path when a failure must propagate.</span>

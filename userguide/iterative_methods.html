@@ -74,7 +74,8 @@
 <li class="toctree-l4"><a class="reference internal" href="#classic-richardson">8.3.2. <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#petsc-richardson">8.3.3. <code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#petsc-gmres">8.3.4. <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#petsc-bicgstab">8.3.5. <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#petsc-fgmres">8.3.5. <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#petsc-bicgstab">8.3.6. <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#convergence-controls">8.4. Convergence Controls</a><ul>
@@ -270,6 +271,16 @@ transient step summaries.</p></li>
 </ul>
 <p>These settings control how the solver coordinates multiple groupsets and how
 much iteration information is printed.</p>
+<p>A within-groupset solve that stops at its own iteration limit is treated as an
+inexact inner solve: the across-groupset iteration continues until
+<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> is met or <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> is reached. If
+<code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> is not set, each solver uses its own default: <code class="docutils literal notranslate"><span class="pre">100</span></code>
+for the steady-state and transient solvers, and <code class="docutils literal notranslate"><span class="pre">1</span></code> in each power iteration
+of the power iteration k-eigen solver. A value set in the problem options is
+used by every solver. The steady-state
+and transient solvers print a warning when their transport solve ends without
+converging (the across-groupset iteration with several groupsets, otherwise the
+within-groupset solve).</p>
 </section>
 <section id="solver-level-controls">
 <h3><span class="section-number">8.2.3. </span>Solver-level controls<a class="headerlink" href="#solver-level-controls" title="Link to this heading"></a></h3>
@@ -304,6 +315,7 @@ much iteration information is printed.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;classic_richardson&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_richardson&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_gmres&quot;</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_fgmres&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;petsc_bicgstab&quot;</span></code></p></li>
 </ul>
 <p>These are selected with <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> in each groupset.</p>
@@ -420,8 +432,31 @@ memory.</p>
 </pre></div>
 </div>
 </section>
+<section id="petsc-fgmres">
+<h3><span class="section-number">8.3.5. </span><code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code><a class="headerlink" href="#petsc-fgmres" title="Link to this heading"></a></h3>
+<p>This uses PETSc flexible GMRES (FGMRES) around the transport operator, with
+the preconditioner applied on the right.</p>
+<p>Why use it:</p>
+<ul class="simple">
+<li><p>with <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code>. The DSA preconditioner solves its
+diffusion system only to <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>/<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>, so it
+differs slightly between applications. Standard GMRES assumes a fixed
+preconditioner and can then report convergence while the transport solution is
+still in error; flexible GMRES remains exact.
+With standard GMRES, the transport error follows the DSA tolerance once that
+tolerance is looser than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, and a groupset that uses
+<code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> with such a DSA tolerance prints a
+warning suggesting <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code> no larger than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> also avoids the error, at the
+cost of tighter diffusion solves.</p></li>
+</ul>
+<p>It uses <code class="docutils literal notranslate"><span class="pre">gmres_restart_interval</span></code> like GMRES and stores about twice as many
+restart vectors. Its residual test uses the unpreconditioned residual scaled by
+the right-hand-side norm. Without a DSA preconditioner it behaves like
+<code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>.</p>
+</section>
 <section id="petsc-bicgstab">
-<h3><span class="section-number">8.3.5. </span><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code><a class="headerlink" href="#petsc-bicgstab" title="Link to this heading"></a></h3>
+<h3><span class="section-number">8.3.6. </span><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code><a class="headerlink" href="#petsc-bicgstab" title="Link to this heading"></a></h3>
 <p>This uses PETSc BiCGStab around the transport operator.</p>
 <p>Why use it:</p>
 <ul class="simple">
@@ -592,15 +627,23 @@ solve, and usually somewhat tighter.</p>
 </section>
 <section id="max-ags-iterations">
 <h3><span class="section-number">8.5.4. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>
-<p>This is the hard cap on AGS passes.</p>
+<p>This is the hard cap on AGS passes in one transport solve.</p>
 <p>What it tests:</p>
 <ul class="simple">
 <li><p>nothing by itself; it simply limits the total number of across-groupset
 iterations</p></li>
 </ul>
-<p>Reasonable values:</p>
+<p>Defaults:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">100</span></code> is a good default</p></li>
+<li><p>if the option is not set, the steady-state and transient solvers use <code class="docutils literal notranslate"><span class="pre">100</span></code>
+and the power iteration k-eigen solver uses <code class="docutils literal notranslate"><span class="pre">1</span></code> in each power iteration</p></li>
+<li><p>a value set in the problem options is used by every solver, including the
+power iteration solver, which then makes up to that many passes in every power
+iteration</p></li>
+</ul>
+<p>Reasonable values for fixed-source and time-dependent solves:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">100</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">20</span></code> to <code class="docutils literal notranslate"><span class="pre">50</span></code> is often enough for easier multi-groupset problems</p></li>
 <li><p>if this limit is reached regularly, the real issue is usually strong
 cross-groupset coupling, an overly aggressive groupset split, or the need for
@@ -763,17 +806,35 @@ iteration on top of the transport solve.</p>
 <p>What it does:</p>
 <ul class="simple">
 <li><p>sets the fission source from the previous iterate</p></li>
-<li><p>performs the transport solve through AGS and the groupset inner solves</p></li>
+<li><p>performs the transport solve through AGS and the groupset inner solves, with
+one across-groupset pass unless the problem sets <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
 <li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
-<li><p>repeats until the relative eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two
-consecutive power iterations, or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is reached</p></li>
+<li><p>repeats until the relative eigenvalue change is below
+<span class="math notranslate nohighlight">\((1-\rho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive power iterations, or
+<code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is reached</p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code> is the stopping tolerance on the relative eigenvalue change
-<span class="math notranslate nohighlight">\(|k_n - k_{n-1}| / k_n\)</span> between successive power iterations; it must hold
-for two consecutive iterations, because an accelerated eigenvalue sequence can
-overshoot and show one small change where it turns around. <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> to
+<p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code> is the tolerance on the estimated relative error of the eigenvalue.
+A power iteration converging at rate <span class="math notranslate nohighlight">\(\rho\)</span> changes <span class="math notranslate nohighlight">\(k\)</span> by only
+about <span class="math notranslate nohighlight">\(1-\rho\)</span> times its error per iteration, so the relative change
+<span class="math notranslate nohighlight">\(|k_n - k_{n-1}| / k_n\)</span> must be below <span class="math notranslate nohighlight">\((1-\rho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>, with
+<span class="math notranslate nohighlight">\(\rho\)</span> estimated from the change of the production-normalized flux. For a
+problem with a dominance ratio close to one this takes more iterations than a
+test on the change alone, which stops with an error of about <span class="math notranslate nohighlight">\(1/(1-\rho)\)</span>
+times <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>. The test must hold for two consecutive iterations, because an
+accelerated eigenvalue sequence can overshoot and show one small change where it
+turns around. <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> to
 <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> is a reasonable production range, with <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> being common
 when a fairly tight <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> is desired.</p>
+<p>With more than one groupset, each power iteration makes one across-groupset
+pass unless the problem options set <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>, in which case it
+makes up to that many. The fission source of a power iteration is itself only an
+estimate, so converging the scattering coupling between groupsets inside each
+power iteration does not change the converged eigenpair; it only adds sweeps.
+With a single pass, the power iteration converges the coupling between
+groupsets together with the fission source, and its rate estimate, taken from
+the change of the flux, includes both. Strong upscattering split across many
+groupsets can slow the power iteration; a few passes per power iteration then
+reduce the number of power iterations.</p>
 <p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is the hard cap on power iterations. <code class="docutils literal notranslate"><span class="pre">500</span></code> to <code class="docutils literal notranslate"><span class="pre">1000</span></code> is a
 reasonable starting range. If that cap is reached often, the issue is usually
 not the cap itself but the overall transport convergence strategy.</p>

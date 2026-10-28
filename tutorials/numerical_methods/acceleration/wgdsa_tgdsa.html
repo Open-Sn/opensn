@@ -341,29 +341,29 @@ correct within-group scattering, which is exactly the part WGDSA accelerates, so
 <tbody>
 <tr class="row-even"><td><p>No acceleration</p></td>
 <td><p>0.1844789433</p></td>
-<td><p><span class="math notranslate nohighlight">\(2.208862683\times10^{-2}\)</span></p></td>
-<td><p>2844</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862684\times10^{-2}\)</span></p></td>
+<td><p>2892</p></td>
 </tr>
 <tr class="row-odd"><td><p>WGDSA</p></td>
 <td><p>0.1844789433</p></td>
-<td><p><span class="math notranslate nohighlight">\(2.208862683\times10^{-2}\)</span></p></td>
-<td><p>1145</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862684\times10^{-2}\)</span></p></td>
+<td><p>712</p></td>
 </tr>
 <tr class="row-even"><td><p>TGDSA</p></td>
-<td><p>0.1844789435</p></td>
-<td><p><span class="math notranslate nohighlight">\(2.208862690\times10^{-2}\)</span></p></td>
-<td><p>186</p></td>
+<td><p>0.1844789434</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862687\times10^{-2}\)</span></p></td>
+<td><p>132</p></td>
 </tr>
 <tr class="row-odd"><td><p>WGDSA+TGDSA</p></td>
-<td><p>0.1844789435</p></td>
-<td><p><span class="math notranslate nohighlight">\(2.208862690\times10^{-2}\)</span></p></td>
-<td><p>81</p></td>
+<td><p>0.1844789434</p></td>
+<td><p><span class="math notranslate nohighlight">\(2.208862686\times10^{-2}\)</span></p></td>
+<td><p>107</p></td>
 </tr>
 </tbody>
 </table>
-<p>Relative to the unaccelerated solve, the energy-summed fluxes differ by <span class="math notranslate nohighlight">\(2.9\times10^{-12}\)</span> (WGDSA), <span class="math notranslate nohighlight">\(1.4\times10^{-9}\)</span> (TGDSA), and <span class="math notranslate nohighlight">\(1.4\times10^{-9}\)</span> (WGDSA+TGDSA), and the group-11 fluxes by at most <span class="math notranslate nohighlight">\(3.2\times10^{-9}\)</span>. All are well within the <span class="math notranslate nohighlight">\(10^{-8}\)</span> iteration tolerance. Agreement among the solves alone does not show that they are converged. As an independent check, the same problem was solved with one groupset per group and the across-groupset iteration
-converged to a pointwise change below <span class="math notranslate nohighlight">\(10^{-10}\)</span>, which took about 800 across-groupset iterations. That solve gives an energy-summed flux of 0.1844789433, which agrees with the unaccelerated result to <span class="math notranslate nohighlight">\(7\times10^{-11}\)</span> and with the TGDSA and WGDSA+TGDSA results to <span class="math notranslate nohighlight">\(1.3\times10^{-9}\)</span>. The fluxes and sweep counts were identical in five repeated runs. WGDSA removes about 60% of the sweeps, TGDSA about 93%, and the combination about 97%.</p>
-<p>TGDSA alone removes far more sweeps than WGDSA alone. The slowly converging error in this problem is therefore mainly the coupling between the thermal groups, which TGDSA corrects, rather than within-group scattering, which WGDSA corrects. Adding WGDSA to TGDSA reduces the sweeps further, from 186 to 81, because TGDSA leaves the within-group part of the error to the source iteration.</p>
+<p>Relative to the unaccelerated solve, the energy-summed fluxes differ by <span class="math notranslate nohighlight">\(3.0\times10^{-11}\)</span> (WGDSA), <span class="math notranslate nohighlight">\(4.9\times10^{-10}\)</span> (TGDSA), and <span class="math notranslate nohighlight">\(4.6\times10^{-10}\)</span> (WGDSA+TGDSA), and the group-11 fluxes by at most <span class="math notranslate nohighlight">\(1.1\times10^{-9}\)</span>. All are well within the <span class="math notranslate nohighlight">\(10^{-8}\)</span> iteration tolerance. Agreement among the solves alone does not show that they are converged. As an independent check, the same problem was solved with one groupset per group and the across-groupset iteration
+converged to a pointwise change below <span class="math notranslate nohighlight">\(10^{-10}\)</span>. That solve gives an energy-summed flux of 0.1844789434, which agrees with the unaccelerated and WGDSA results to <span class="math notranslate nohighlight">\(4.4\times10^{-10}\)</span> and with the TGDSA and WGDSA+TGDSA results to <span class="math notranslate nohighlight">\(4.4\times10^{-11}\)</span>. The fluxes and sweep counts were identical in five repeated runs. WGDSA removes about 75% of the sweeps, TGDSA about 95%, and the combination about 96%.</p>
+<p>TGDSA alone removes far more sweeps than WGDSA alone. The slowly converging error in this problem is therefore mainly the coupling between the thermal groups, which TGDSA corrects, rather than within-group scattering, which WGDSA corrects. Adding WGDSA to TGDSA reduces the sweeps further, from 132 to 107, because TGDSA leaves the within-group part of the error to the source iteration.</p>
 <p>The wall-time breakdown below is the median of five four-process runs:</p>
 <table class="docutils align-default">
 <thead>
@@ -377,38 +377,38 @@ converged to a pointwise change below <span class="math notranslate nohighlight"
 </thead>
 <tbody>
 <tr class="row-even"><td><p>No acceleration</p></td>
-<td><p>0.029</p></td>
+<td><p>0.035</p></td>
 <td><p>&lt;0.001</p></td>
-<td><p>12.863</p></td>
-<td><p>12.891</p></td>
-<td><p>4.52</p></td>
+<td><p>12.269</p></td>
+<td><p>12.304</p></td>
+<td><p>4.24</p></td>
 </tr>
 <tr class="row-odd"><td><p>WGDSA</p></td>
-<td><p>0.096</p></td>
+<td><p>0.082</p></td>
 <td><p>&lt;0.001</p></td>
-<td><p>18.663</p></td>
-<td><p>18.755</p></td>
-<td><p>16.30</p></td>
+<td><p>24.797</p></td>
+<td><p>24.879</p></td>
+<td><p>34.83</p></td>
 </tr>
 <tr class="row-even"><td><p>TGDSA</p></td>
-<td><p>0.041</p></td>
+<td><p>0.055</p></td>
 <td><p>&lt;0.001</p></td>
-<td><p>1.157</p></td>
-<td><p>1.196</p></td>
-<td><p>6.22</p></td>
+<td><p>0.852</p></td>
+<td><p>0.906</p></td>
+<td><p>6.45</p></td>
 </tr>
 <tr class="row-odd"><td><p>WGDSA+TGDSA</p></td>
-<td><p>0.098</p></td>
+<td><p>0.103</p></td>
 <td><p>&lt;0.001</p></td>
-<td><p>1.794</p></td>
-<td><p>1.892</p></td>
-<td><p>22.15</p></td>
+<td><p>3.454</p></td>
+<td><p>3.557</p></td>
+<td><p>32.28</p></td>
 </tr>
 </tbody>
 </table>
-<p>Setup is at most about 5% of any total. The WGDSA cases take about 0.07 s longer to set up because the problem builds and assembles a within-group diffusion operator for all 12 groups. TGDSA alone adds about 0.01 s, for the two-grid spectra and the one-group diffusion operator.</p>
-<p>The TGDSA correction adds about 1.7 ms to each sweep and WGDSA about 11.8 ms, so a WGDSA sweep costs 3.6 times as much as an unaccelerated one. WGDSA alone therefore remains slower than the baseline (a speedup of 0.70) despite its 2.5-fold reduction in sweeps. TGDSA alone is the fastest: each of its sweeps costs 1.4 times as much as an unaccelerated one, and its 15-fold reduction in sweeps gives a speedup of 11.4 for the iterations and 11.0 overall. The combination needs the fewest sweeps, 2.3
-times fewer than TGDSA alone, but each combined sweep costs 3.6 times as much as a TGDSA sweep, so its speedup is 7.3 for the iterations and 6.9 overall. Whether WGDSA pays for its cost depends on how strongly within-group scattering limits convergence, and in this problem it does not. Absolute wall times vary from machine to machine, so the speedups, rather than the times themselves, measure the improvement from each acceleration.</p>
+<p>Setup is at most about 6% of any total. The WGDSA cases take about 0.05 s longer to set up because the problem builds and assembles a within-group diffusion operator for all 12 groups. TGDSA alone adds about 0.02 s, for the two-grid spectra and the one-group diffusion operator.</p>
+<p>The TGDSA correction adds about 2.2 ms to each sweep and WGDSA about 30.6 ms, so a WGDSA sweep costs 8.2 times as much as an unaccelerated one. WGDSA alone therefore remains slower than the baseline (a speedup of 0.47) despite its 4.1-fold reduction in sweeps. TGDSA alone is the fastest: each of its sweeps costs 1.5 times as much as an unaccelerated one, and its 22-fold reduction in sweeps gives a speedup of 12.4 for the iterations and 11.7 overall. The combination needs the fewest sweeps, 1.2
+times fewer than TGDSA alone, but each combined sweep costs 5.0 times as much as a TGDSA sweep, so its speedup is 3.2 for the iterations and 3.2 overall. Whether WGDSA pays for its cost depends on how strongly within-group scattering limits convergence, and in this problem it does not. Absolute wall times vary from machine to machine, so the speedups, rather than the times themselves, measure the improvement from each acceleration.</p>
 </section>
 <section id="Export-and-visualize-the-scalar-flux">
 <h2><span class="section-number">5.3.2.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>

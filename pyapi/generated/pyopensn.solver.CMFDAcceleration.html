@@ -194,7 +194,8 @@ structure in the low-order system. To target <code class="docutils literal notra
 <li><p><strong>relaxation</strong> (<em>float</em><em>, </em><em>default=1.0</em>) – Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
 This is the requested correction strength. The correction limiter may damp or
 skip an individual correction if the requested update would produce an invalid
-k-eigenvalue, non-finite flux, or excessive negative scalar flux. The default
+k-eigenvalue or non-finite flux, or would change the sign of the scalar flux in
+some coarse cell and coarse group. The default
 applies the full correction. A value below 1 is more conservative, but even an
 ideal correction then leaves about <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">relaxation</span></code> of the error; reduce it when
 corrections are repeatedly damped or skipped.</p></li>
@@ -231,20 +232,22 @@ for solver experiments, especially with <code class="docutils literal notranslat
 <li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
 Increase only if the coarse k solve is not converging enough to give useful
 corrections.</p></li>
-<li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
-is separate from the outer <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> k tolerance.</p></li>
+<li><p><strong>pi_k_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-8</em>) – Developer/debug. Tolerance on the relative change of the coarse k-eigenvalue between
+CMFD coarse power iterations. This is separate from the outer
+<code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver</span></code> k tolerance.</p></li>
+<li><p><strong>pi_phi_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Developer/debug. Tolerance on the estimated coarse flux-shape error of the CMFD coarse
+power iteration: the relative L2 change of the production-normalized coarse flux divided
+by <code class="docutils literal notranslate"><span class="pre">1</span> <span class="pre">-</span> <span class="pre">rho</span></code>, with the convergence rate <code class="docutils literal notranslate"><span class="pre">rho</span></code> estimated from successive changes. The
+coarse power iteration stops when both <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">pi_phi_tol</span></code> are met (at least
+two iterations) or after <code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> iterations.</p></li>
 <li><p><strong>correction_max_attempts</strong> (<em>int</em><em>, </em><em>default=10</em>) – Developer/debug. Maximum CMFD correction damping attempts before skipping the
 correction for the current transport update. Each failed attempt halves the
-damping. If the log reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span> <span class="pre">(negative_flux_guard)</span></code>,
+damping. If the log reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span> <span class="pre">(sign_change_guard)</span></code>,
 first reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> or use finer spatial/energy aggregation; changing
 this option is mainly for diagnostics.</p></li>
 <li><p><strong>correction_min_damping</strong> (<em>float</em><em>, </em><em>default=1.0e-4</em>) – Developer/debug. Minimum CMFD correction damping factor considered during correction
 limiting. If no admissible correction is found above this damping, CMFD skips
 the correction for that transport update.</p></li>
-<li><p><strong>negative_flux_tolerance</strong> (<em>float</em><em>, </em><em>default=1.0e-6</em>) – Developer/debug. Allowed scalar-flux undershoot for accepting a CMFD correction.
-Corrections producing scalar flux below this guard are damped or skipped. Raising
-this value can hide unstable corrections and should be accompanied by final-k and
-scalar-flux checks.</p></li>
 <li><p><strong>inactive_iterations</strong> (<em>int</em><em>, </em><em>default=0</em>) – Developer/debug. Number of initial power iterations before applying CMFD
 corrections. These iterations retain the WGS settings configured on the problem.
 CMFD applies its transport update controls starting with the first active iteration.</p></li>

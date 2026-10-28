@@ -105,6 +105,7 @@
 <span class="w">    </span><span class="n">CLASSIC_RICHARDSON</span><span class="p">,</span>
 <span class="w">    </span><span class="n">PETSC_RICHARDSON</span><span class="p">,</span>
 <span class="w">    </span><span class="n">PETSC_GMRES</span><span class="p">,</span>
+<span class="w">    </span><span class="n">PETSC_FGMRES</span><span class="p">,</span>
 <span class="w">    </span><span class="n">PETSC_BICGSTAB</span>
 <span class="w">  </span><span class="p">};</span>
 
@@ -125,6 +126,8 @@
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;PETSC_RICHARDSON&quot;</span><span class="p">;</span>
 <span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterativeMethod</span><span class="o">::</span><span class="no">PETSC_GMRES</span><span class="p">:</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;PETSC_GMRES&quot;</span><span class="p">;</span>
+<span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterativeMethod</span><span class="o">::</span><span class="no">PETSC_FGMRES</span><span class="p">:</span>
+<span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;PETSC_FGMRES&quot;</span><span class="p">;</span>
 <span class="w">      </span><span class="k">case</span><span class="w"> </span><span class="no">IterativeMethod</span><span class="o">::</span><span class="no">PETSC_BICGSTAB</span><span class="p">:</span>
 <span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="s">&quot;PETSC_BICGSTAB&quot;</span><span class="p">;</span>
 <span class="w">      </span><span class="k">default</span><span class="o">:</span>

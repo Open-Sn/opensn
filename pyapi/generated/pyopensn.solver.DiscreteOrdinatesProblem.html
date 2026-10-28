@@ -868,9 +868,11 @@ direction has nonzero <code class="docutils literal notranslate"><span class="pr
 </div></blockquote>
 </li>
 <li><p>inner_linear_method: {‘classic_richardson’, ‘petsc_richardson’,
-‘petsc_gmres’, ‘petsc_bicgstab’}, default=’petsc_richardson’</p>
+‘petsc_gmres’, ‘petsc_fgmres’, ‘petsc_bicgstab’}, default=’petsc_richardson’</p>
 <blockquote>
-<div><p>Iterative method used for inner linear solves.</p>
+<div><p>Iterative method used for inner linear solves. <code class="docutils literal notranslate"><span class="pre">'petsc_fgmres'</span></code> is flexible
+GMRES with right preconditioning; it remains exact when the WGDSA/TGDSA
+preconditioner solves its diffusion system only approximately.</p>
 </div></blockquote>
 </li>
 <li><dl class="simple">
@@ -899,7 +901,8 @@ direction has nonzero <code class="docutils literal notranslate"><span class="pr
 </dl>
 </li>
 <li><dl class="simple">
-<dt>wgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>WGDSA linear absolute tolerance.</p>
+<dt>wgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
+right-hand side (the name is historical).</p>
 </dd>
 </dl>
 </li>
@@ -937,7 +940,8 @@ PETSc KSP/PC setup.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>tgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>TGDSA linear absolute tolerance.</p>
+<dt>tgdsa_l_abs_tol: float, default=1.0e-4</dt><dd><p>Residual tolerance of the TGDSA diffusion solve, relative to the norm of its
+right-hand side (the name is historical).</p>
 </dd>
 </dl>
 </li>
@@ -1122,7 +1126,11 @@ or omit them; at least one material must supply the shared structure.</p></li>
 Print inner iteration details, including WGS and AGS iterations.</p></li>
 <li><p>verbose_outer_iterations: bool, default=True
 Print outer solver progress, including PI/NLKE iterations and transient steps.</p></li>
-<li><p>max_ags_iterations: int, default=100</p></li>
+<li><p>max_ags_iterations: int, optional
+Maximum across-groupset iterations per transport solve. A value set here is used by
+every solver. If it is not set, each solver uses its own default: 100 for the
+steady-state and transient solvers, and 1 in each power iteration of
+<a class="reference internal" href="pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>.</p></li>
 <li><p>ags_tolerance: float, default=1.0e-6</p></li>
 <li><p>ags_convergence_check: {‘l2’, ‘pointwise’}, default=’l2’</p></li>
 <li><p>power_default_kappa: float, default=3.20435e-11</p></li>

@@ -59,6 +59,13 @@ Program Listing for File discrete_ordinates_solver.h
      /// Appends the requirements common to k-eigenvalue solvers. Collective.
      void CheckKEigenRequirements(std::vector<std::string>& errors) const;
    
+     /**
+      * Logs a warning on rank 0 if the last transport solve stopped without converging: the
+      * across-groupset iteration when the problem has more than one groupset, otherwise the
+      * within-group solve. `what` names the solve in the message, for example "Time step 3".
+      */
+     void WarnIfTransportSolveNotConverged(const std::string& what) const;
+   
      std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
    
    public:

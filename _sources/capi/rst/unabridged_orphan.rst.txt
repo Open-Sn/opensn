@@ -1105,6 +1105,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   classopensn_1_1_convergence_rate_estimator.rst
+
+.. toctree::
+   :maxdepth: 1
+
    classopensn_1_1_cross_section_sensitivity_postprocessor.rst
 
 .. toctree::

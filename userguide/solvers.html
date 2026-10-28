@@ -869,8 +869,10 @@ problem with outer power iteration.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">problem</span></code>: an existing
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></code></a></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_iters</span></code>: maximum power iterations</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code>: tolerance on the relative change of <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> between power
-iterations; values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">k_tol</span></code>: tolerance on the estimated relative error of <code class="docutils literal notranslate"><span class="pre">k_eff</span></code>: the
+relative change of <code class="docutils literal notranslate"><span class="pre">k_eff</span></code> between power iterations divided by
+<span class="math notranslate nohighlight">\(1-\rho\)</span>, with <span class="math notranslate nohighlight">\(\rho\)</span> the estimated convergence rate; values
+below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">reset_phi0</span></code>: whether to reset scalar fluxes to 1.0 before solving</p></li>
 </ul>
 <p>The problem must be in steady-state mode and have no external sources: no
@@ -911,8 +913,10 @@ acceleration.</p>
 <li><p>forms the fission source from the current iterate</p></li>
 <li><p>solves the transport problem with the problem’s AGS/groupset iteration</p></li>
 <li><p>updates <code class="docutils literal notranslate"><span class="pre">k_eff</span></code></p></li>
-<li><p>repeats until the relative eigenvalue change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two
-consecutive iterations, or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> is reached. A single small change
+<li><p>repeats until the relative eigenvalue change is below
+<span class="math notranslate nohighlight">\((1-\rho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive iterations, or <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>
+is reached. The convergence rate <span class="math notranslate nohighlight">\(\rho\)</span> is estimated from the change of
+the production-normalized flux between iterations. A single small change
 also occurs where an accelerated eigenvalue sequence overshoots and turns
 around, so one is not taken as convergence. With an acceleration method, the
 method must also allow convergence (for CMFD, see

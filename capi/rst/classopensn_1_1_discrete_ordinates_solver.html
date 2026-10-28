@@ -165,6 +165,13 @@
 <dd><p>Appends the requirements common to k-eigenvalue solvers. Collective. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn23DiscreteOrdinatesSolver32WarnIfTransportSolveNotConvergedERKNSt6stringE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_solver_1aaf7abaac4ddbb6146ee04d15bb67ea8f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WarnIfTransportSolveNotConverged</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">what</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn23DiscreteOrdinatesSolver32WarnIfTransportSolveNotConvergedERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Logs a warning on rank 0 if the last transport solve stopped without converging: the across-groupset iteration when the problem has more than one groupset, otherwise the within-group solve. </p>
+<p><code class="docutils literal notranslate"><span class="pre">what</span></code> names the solve in the message, for example “Time step 3”. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-attributes">Protected Attributes</p>

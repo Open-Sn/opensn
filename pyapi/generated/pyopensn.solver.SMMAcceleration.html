@@ -133,7 +133,8 @@ SMM acceleration only supports problems with isotropic scattering.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – Existing DiscreteOrdinatesProblem instance.</p></li>
-<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Absolute residual tolerance.</p></li>
+<li><p><strong>l_abs_tol</strong> (<em>float</em><em>, </em><em>default=1.0e-10</em>) – Residual tolerance of the diffusion solves, relative to the norm of their right-hand
+side (the name is historical).</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default=100</em>) – Maximum allowable iterations.</p></li>
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, enables verbose output.</p></li>
 <li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;ssss&quot;</em>) – Additional PETSc options.</p></li>

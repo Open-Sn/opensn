@@ -134,6 +134,13 @@
 <span class="w">  </span><span class="c1">/// Appends the requirements common to k-eigenvalue solvers. Collective.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckKEigenRequirements</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Logs a warning on rank 0 if the last transport solve stopped without converging: the</span>
+<span class="cm">   * across-groupset iteration when the problem has more than one groupset, otherwise the</span>
+<span class="cm">   * within-group solve. `what` names the solve in the message, for example &quot;Time step 3&quot;.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">WarnIfTransportSolveNotConverged</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">what</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>

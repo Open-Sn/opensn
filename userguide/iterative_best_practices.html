@@ -272,6 +272,11 @@ iteration.</p>
 <li><p>the groupset solves alone are not enough,</p></li>
 <li><p>stopping after one pass through the groupsets is not a converged solve.</p></li>
 </ul>
+<p>The power iteration k-eigen solver is the exception: unless the problem sets
+<code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>, it does one pass through the groupsets per power
+iteration, and the power iteration converges the coupling between groupsets
+together with the fission source. A <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> set in the problem
+options applies to every power iteration as well.</p>
 <p>This is one of the most important best-practice points in multi-groupset
 transport problems.</p>
 <p>Why:</p>
@@ -337,6 +342,8 @@ memory usage. Tune <code class="docutils literal notranslate"><span class="pre">
 method or a method-study baseline</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code> when a stationary PETSc iteration is specifically
 desired</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> with WGDSA or TGDSA: flexible GMRES tolerates the inexact
+DSA diffusion solve, which standard GMRES does not</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> when GMRES memory or restart behavior is problematic and a
 nonsymmetric Krylov alternative is worth trying</p></li>
 </ul>

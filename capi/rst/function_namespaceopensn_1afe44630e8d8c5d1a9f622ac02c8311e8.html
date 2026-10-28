@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::ApplyDSACorrectionToDelayedBoundaryFlux &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::ApplyDSACorrectionToDelayedAngularFlux &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -68,7 +68,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1af06d1ab7a9c35fb0bbf2d9251c748d.html">Function opensn::AddTimeAbsorptionToDiffusionCoefficient</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad6c141021758d85d7b0ab620c671c65c.html">Function opensn::AppendNumericField(std::ostream&amp;, const std::string&amp;, const std::size_t, const bool)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a342b161d6ffcc3980ca41dc5d5a38659.html">Function opensn::AppendNumericField(std::ostream&amp;, const std::string&amp;, const double, const NumericFormat, const bool)</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ApplyDSACorrectionToDelayedBoundaryFlux</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ApplyDSACorrectionToDelayedAngularFlux</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4b34773f7d28fd41bb4f55c0549eca18.html">Function opensn::AssertReadableFile</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206.html">Function opensn::AssocLegendre</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a327d93dfb09c6e4b27ff28cd3b8f1e77.html">Function opensn::BuildBlockCellExtents</a></li>
@@ -107,6 +107,7 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a4370cfd213e9e69d9d8f10c5c6c7aec9.html">Function opensn::CheckPlaneLineIntersect</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aa2e0f8b0d2a01c4da06dad248d229bfc.html">Function opensn::CheckPlaneTetIntersect</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a3245523263defd9529aa855d5d5d0564.html">Function opensn::CheckPointInTriangle</a></li>
+<li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ab88e86d8adc0a219519f4e0ece9597f5.html">Function opensn::CMFDCountSignChangingRatios</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a1908c2e0eac473c1ac1e53f3b62ffef3.html">Function opensn::CMFDProlongateScalarFluxRatio</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a7663509cae88ed8876c4c9b9ecd4f7f8.html">Function opensn::CMFDRelativeBalanceResidual</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1adf1a3da59a6e53ac9c5775d31c928702.html">Function opensn::CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem&amp;, unsigned int, unsigned int, unsigned int, const CMFDCoarseMesh&amp;, const std::vector&lt;double&gt;&amp;)</a></li>
@@ -358,7 +359,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::ApplyDSACorrectionToDelayedBoundaryFlux</li>
+      <li class="breadcrumb-item active">Function opensn::ApplyDSACorrectionToDelayedAngularFlux</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -367,18 +368,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-applydsacorrectiontodelayedboundaryflux">
-<span id="exhale-function-namespaceopensn-1abceb062850a19351f0b3cc28b39a9ed9"></span><h1>Function opensn::ApplyDSACorrectionToDelayedBoundaryFlux<a class="headerlink" href="#function-opensn-applydsacorrectiontodelayedboundaryflux" title="Link to this heading"></a></h1>
+  <section id="function-opensn-applydsacorrectiontodelayedangularflux">
+<span id="exhale-function-namespaceopensn-1afe44630e8d8c5d1a9f622ac02c8311e8"></span><h1>Function opensn::ApplyDSACorrectionToDelayedAngularFlux<a class="headerlink" href="#function-opensn-applydsacorrectiontodelayedangularflux" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-acceleration-acceleration-h"><span class="std std-ref">File acceleration.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn39ApplyDSACorrectionToDelayedBoundaryFluxER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEE">
-<span class="target" id="namespaceopensn_1abceb062850a19351f0b3cc28b39a9ed9"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ApplyDSACorrectionToDelayedBoundaryFlux</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">delta_phi_local</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn39ApplyDSACorrectionToDelayedBoundaryFluxER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
-<dd><p>Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular fluxes of opposing reflecting boundaries, as the isotropic angular correction delta psi = delta phi (quadrature weights sum to one). </p>
-<p>Source iteration carries the lagged boundary angular fluxes as unknowns alongside phi. A DSA update that corrects phi but not these fluxes leaves the boundary error to re-enter on the next sweep, which can make source iteration with DSA diverge.</p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn38ApplyDSACorrectionToDelayedAngularFluxER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEE">
+<span class="target" id="namespaceopensn_1afe44630e8d8c5d1a9f622ac02c8311e8"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ApplyDSACorrectionToDelayedAngularFlux</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">delta_phi_local</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn38ApplyDSACorrectionToDelayedAngularFluxER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular fluxes of a groupset, as the isotropic angular correction delta psi = delta phi (quadrature weights sum to one). </p>
+<p>Lagged fluxes are those of opposing reflecting boundaries and those where the sweep broke a cyclic dependency, within a location or between locations. Each is corrected with delta phi at the face node of the downwind cell that reads it.</p>
+<p>The iteration carries the lagged angular fluxes as unknowns alongside phi. An acceleration update that corrects phi but not these fluxes leaves their error to re-enter on the next sweep, which can make source iteration with DSA diverge.</p>
 <p><code class="docutils literal notranslate"><span class="pre">delta_phi_local</span></code> has the layout of the local flux-moment vector. </p>
 </dd></dl>
 

@@ -198,12 +198,12 @@
 <span class="w">  </span><span class="nf">SetWGSSolveSettings</span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iterations</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">residual_tolerance</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Saves the within-group iteration limit and residual tolerance of every groupset. The returned</span>
-<span class="cm">   * guard restores them with SetWGSSolveSettings() when destroyed. Solvers hold it while</span>
-<span class="cm">   * acceleration methods change these settings, so that the settings outlive neither the solve</span>
-<span class="cm">   * nor an exception.</span>
+<span class="cm">   * Saves the within-group iteration limit and residual tolerance of every groupset and the</span>
+<span class="cm">   * across-groupset iteration limit. The returned guard restores them when destroyed. Solvers hold</span>
+<span class="cm">   * it while acceleration methods change these settings, so that the settings outlive neither the</span>
+<span class="cm">   * solve nor an exception.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="w"> </span><span class="n">PreserveWGSSolveSettings</span><span class="p">();</span>
+<span class="w">  </span><span class="p">[[</span><span class="n">nodiscard</span><span class="p">]]</span><span class="w"> </span><span class="n">ScopedRestore</span><span class="w"> </span><span class="n">PreserveTransportSolveSettings</span><span class="p">();</span>
 
 <span class="w">  </span><span class="n">WGSContext</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetWGSContext</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">);</span>
 <span class="w">  </span><span class="cm">/** @} */</span>

@@ -468,15 +468,24 @@ CMFD convergence check = ..., transport-current balance residual = ...
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">keff</span> <span class="o">=</span> <span class="n">k_solver</span><span class="o">.</span><span class="n">GetEigenvalue</span><span class="p">()</span>
 <span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD k-eigenvalue = </span><span class="si">{</span><span class="n">keff</span><span class="si">:</span><span class="s2">.8f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD solve converged = </span><span class="si">{</span><span class="nb">int</span><span class="p">(</span><span class="n">k_solver</span><span class="o">.</span><span class="n">IsConverged</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD power iterations = </span><span class="si">{</span><span class="n">k_solver</span><span class="o">.</span><span class="n">GetNumPowerIterations</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD applied corrections = </span><span class="si">{</span><span class="n">cmfd</span><span class="o">.</span><span class="n">GetNumAppliedCorrections</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;CMFD skipped corrections = </span><span class="si">{</span><span class="n">cmfd</span><span class="o">.</span><span class="n">GetNumSkippedCorrections</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </section>
+<section id="Check-the-CMFD-diagnostics">
+<h2><span class="section-number">3.2.2.11. </span>Check the CMFD diagnostics<a class="headerlink" href="#Check-the-CMFD-diagnostics" title="Link to this heading"></a></h2>
+<p>After the solve, confirm that the power iteration converged and look at how CMFD behaved. <code class="docutils literal notranslate"><span class="pre">GetNumSkippedCorrections()</span></code> counts the power iterations whose CMFD correction was rejected (see the next section). A healthy run applies a correction in every power iteration, as this one does. A run that converges but skips many corrections is close to unaccelerated power iteration and should be investigated.</p>
+<p>The eigenvalue is accurate to roughly the outer tolerance, not to every printed digit. The power iteration stops once the change in k falls below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> (here <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>), while k is still approaching its limit, so the result lies within a few times <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> of the tightly converged value, 1.1715511 (obtained with <code class="docutils literal notranslate"><span class="pre">k_tol=1.0e-10</span></code> and <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance=1.0e-8</span></code>). Tighten <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> when you need more digits.</p>
+</section>
 <section id="CMFD-diagnostics-and-contingencies">
-<h2><span class="section-number">3.2.2.11. </span>CMFD diagnostics and contingencies<a class="headerlink" href="#CMFD-diagnostics-and-contingencies" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.2.2.12. </span>CMFD diagnostics and contingencies<a class="headerlink" href="#CMFD-diagnostics-and-contingencies" title="Link to this heading"></a></h2>
 <p>CMFD is designed to avoid applying corrections it does not trust. If a correction is skipped, the power iteration uses the unaccelerated transport update for that iteration and continues.</p>
 <section id="Coarse-linear-solve-did-not-converge">
-<h3><span class="section-number">3.2.2.11.1. </span>Coarse linear solve did not converge<a class="headerlink" href="#Coarse-linear-solve-did-not-converge" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.2.2.12.1. </span>Coarse linear solve did not converge<a class="headerlink" href="#Coarse-linear-solve-did-not-converge" title="Link to this heading"></a></h3>
 <p>Message:</p>
 <div class="highlight-text notranslate"><div class="highlight"><pre><span></span>correction = skipped (coarse_linear_solve_not_converged)
 </pre></div>
@@ -490,13 +499,13 @@ CMFD convergence check = ..., transport-current balance residual = ...
 <li><p>Watch whether skipped corrections persist. Occasional early skips are less concerning than repeated skips after the flux shape has stabilized.</p></li>
 </ol>
 </section>
-<section id="Negative-flux-guard-rejected-the-correction">
-<h3><span class="section-number">3.2.2.11.2. </span>Negative-flux guard rejected the correction<a class="headerlink" href="#Negative-flux-guard-rejected-the-correction" title="Link to this heading"></a></h3>
+<section id="Sign-change-guard-rejected-the-correction">
+<h3><span class="section-number">3.2.2.12.2. </span>Sign-change guard rejected the correction<a class="headerlink" href="#Sign-change-guard-rejected-the-correction" title="Link to this heading"></a></h3>
 <p>Message:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>correction = skipped (negative_flux_guard)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>correction = skipped (sign_change_guard)
 </pre></div>
 </div>
-<p>Meaning: every damping attempt produced a scalar-flux update that violated the negative-flux guard.</p>
+<p>Meaning: every damping attempt would have changed the sign of the scalar flux in at least one coarse cell and coarse group.</p>
 <p>What to do:</p>
 <ol class="arabic simple">
 <li><p>Reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code>, for example from <code class="docutils literal notranslate"><span class="pre">1.0</span></code> to <code class="docutils literal notranslate"><span class="pre">0.5</span></code>.</p></li>
@@ -506,7 +515,7 @@ CMFD convergence check = ..., transport-current balance residual = ...
 </ol>
 </section>
 <section id="k-looks-converged-but-CMFD-keeps-iterating">
-<h3><span class="section-number">3.2.2.11.3. </span>k looks converged but CMFD keeps iterating<a class="headerlink" href="#k-looks-converged-but-CMFD-keeps-iterating" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.2.2.12.3. </span>k looks converged but CMFD keeps iterating<a class="headerlink" href="#k-looks-converged-but-CMFD-keeps-iterating" title="Link to this heading"></a></h3>
 <p>Meaning: <code class="docutils literal notranslate"><span class="pre">k_eff_change</span></code> is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code>, but the restricted transport-current balance residual is still above <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>.</p>
 <p>What to do:</p>
 <ol class="arabic simple">
@@ -517,7 +526,7 @@ CMFD convergence check = ..., transport-current balance residual = ...
 </ol>
 </section>
 <section id="CMFD-is-slower-than-PI">
-<h3><span class="section-number">3.2.2.11.4. </span>CMFD is slower than PI<a class="headerlink" href="#CMFD-is-slower-than-PI" title="Link to this heading"></a></h3>
+<h3><span class="section-number">3.2.2.12.4. </span>CMFD is slower than PI<a class="headerlink" href="#CMFD-is-slower-than-PI" title="Link to this heading"></a></h3>
 <p>Check these in order:</p>
 <ol class="arabic simple">
 <li><p>Is the coarse system too large? Increase <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> or <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code>.</p></li>
@@ -529,12 +538,12 @@ CMFD convergence check = ..., transport-current balance residual = ...
 </section>
 </section>
 <section id="Applying-the-same-CMFD-setup-to-production-problems">
-<h2><span class="section-number">3.2.2.12. </span>Applying the same CMFD setup to production problems<a class="headerlink" href="#Applying-the-same-CMFD-setup-to-production-problems" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.2.2.13. </span>Applying the same CMFD setup to production problems<a class="headerlink" href="#Applying-the-same-CMFD-setup-to-production-problems" title="Link to this heading"></a></h2>
 <p>For large production problems, the CMFD construction is the same. The main changes are the mesh, material list, and production quadrature. Treat <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, target coarse groups, and <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> as the first production tuning knobs. For <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>, the default (<code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>) is a reasonable starting point for many problems; loosen it deliberately for large 3D cases where it would otherwise force iterations well past the requested outer k tolerance, rather than
 assuming tighter is always safer. Leave developer/debug controls alone unless the log gives a concrete reason to change them.</p>
 </section>
 <section id="Finalize-Jupyter-runs">
-<h2><span class="section-number">3.2.2.13. </span>Finalize Jupyter runs<a class="headerlink" href="#Finalize-Jupyter-runs" title="Link to this heading"></a></h2>
+<h2><span class="section-number">3.2.2.14. </span>Finalize Jupyter runs<a class="headerlink" href="#Finalize-Jupyter-runs" title="Link to this heading"></a></h2>
 <p>In script mode PyOpenSn finalizes automatically. In an interactive Jupyter kernel, explicit finalization is needed. The event hook below follows the convention used by the other OpenSn tutorial notebooks.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:

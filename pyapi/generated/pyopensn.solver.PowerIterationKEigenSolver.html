@@ -211,7 +211,7 @@ again clears the previous initialized state first.</p>
 <dt class="sig sig-object py" id="pyopensn.solver.PowerIterationKEigenSolver.IsConverged">
 <span class="sig-name descname"><span class="pre">IsConverged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.PowerIterationKEigenSolver.IsConverged" title="Link to this definition"></a></dt>
 <dd><p>Return True if the last <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Execute" title="pyopensn.solver.PowerIterationKEigenSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> met the convergence criteria.</p>
-<p>Convergence requires the k-eigenvalue change to fall below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> and, when an
+<p>Convergence requires the k-eigenvalue test on <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> to pass and, when an
 acceleration method is attached, its own convergence check (for CMFD, the balance
 residual) to pass. Returns False if <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> was reached first.</p>
 </dd></dl>
@@ -229,9 +229,11 @@ created for the same <code class="docutils literal notranslate"><span class="pre
 acceleration method against the problem and raises a <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> listing every
 violation.</p></li>
 <li><p><strong>max_iters</strong> (<em>int</em><em>, </em><em>default = 1000</em>) – Maximum power iterations allowed.</p></li>
-<li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the relative change of the k-eigenvalue between power iterations. The
-iteration converges when the change is below <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive iterations.
-Values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code>.</p></li>
+<li><p><strong>k_tol</strong> (<em>float</em><em>, </em><em>default = 1.0e-10</em>) – Tolerance on the estimated relative error of the k-eigenvalue. The iteration converges
+when the relative change of k between power iterations is below <code class="docutils literal notranslate"><span class="pre">k_tol</span> <span class="pre">*</span> <span class="pre">(1</span> <span class="pre">-</span> <span class="pre">rho)</span></code>
+in two consecutive iterations, where <code class="docutils literal notranslate"><span class="pre">rho</span></code> is the convergence rate estimated from the
+change of the production-normalized flux. Values below <code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code> are treated as
+<code class="docutils literal notranslate"><span class="pre">1.0e-12</span></code>.</p></li>
 <li><p><strong>reset_phi0</strong> (<em>bool</em><em>, </em><em>default=True</em>) – If true, reinitializes scalar fluxes to 1.0.</p></li>
 <li><p><strong>compute_balance</strong> (<em>bool</em><em>, </em><em>default=False</em>) – If true, print the balance table, with production scaled by <code class="docutils literal notranslate"><span class="pre">1/k_eff</span></code>, after
 <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Execute" title="pyopensn.solver.PowerIterationKEigenSolver.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a> completes.</p></li>
@@ -239,6 +241,8 @@ Values below <code class="docutils literal notranslate"><span class="pre">1.0e-1
 </dd>
 </dl>
 <p class="rubric">Notes</p>
+<p>With more than one groupset, each power iteration makes one across-groupset pass unless the
+problem sets <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>.</p>
 <p>If the problem was constructed with <code class="docutils literal notranslate"><span class="pre">options={'read_restart_path':</span> <span class="pre">...}</span></code>,
 restart data is read during <a class="reference internal" href="#pyopensn.solver.PowerIterationKEigenSolver.Initialize" title="pyopensn.solver.PowerIterationKEigenSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>. If it was constructed with
 <code class="docutils literal notranslate"><span class="pre">options={'restart_writes_enabled':</span> <span class="pre">True,</span> <span class="pre">...}</span></code>, timed restart dumps may

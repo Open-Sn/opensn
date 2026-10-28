@@ -227,6 +227,7 @@ Supported values are:
 * ``"classic_richardson"``
 * ``"petsc_richardson"``
 * ``"petsc_gmres"``
+* ``"petsc_fgmres"``
 * ``"petsc_bicgstab"``
 
 Example:
@@ -413,14 +414,19 @@ TGDSA requires a groupset with at least two groups; it is rejected for a
 single-group groupset. For a material without scattering between the groups of
 the groupset, a flat two-grid spectrum is used and a warning is printed.
 
-DSA with reflecting boundaries and time dependence
+DSA with lagged angular fluxes and time dependence
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-With opposing reflecting boundaries, the incoming angular flux on those
-boundaries is lagged by one iteration and carried as an additional unknown of
-the groupset iteration. The DSA scalar-flux correction is applied to these
-lagged angular fluxes as well (as an isotropic correction), so that WGDSA
-remains effective for both Richardson and Krylov inner solvers.
+Some incoming angular fluxes are lagged by one iteration and carried as
+additional unknowns of the groupset iteration: those on opposing reflecting
+boundaries, and those where the ``AAH`` sweep breaks a cyclic dependency, either
+within a partition or between partitions. Cycles between partitions occur on
+several ranks even for orthogonal meshes. The DSA scalar-flux correction is
+applied to all of these lagged angular fluxes as well (as an isotropic
+correction evaluated at the face node that reads the lagged value). Without it,
+the uncorrected lagged error re-enters on the next sweep and source iteration
+with DSA can diverge in highly scattering media; with it, WGDSA and TGDSA remain
+effective for both Richardson and Krylov inner solvers.
 
 In time-dependent problems the diffusion operators include the time
 absorption :math:`1/(v\theta\Delta t)` of the transport operator and are rebuilt

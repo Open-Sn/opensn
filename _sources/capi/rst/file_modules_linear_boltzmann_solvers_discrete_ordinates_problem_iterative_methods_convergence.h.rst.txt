@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``limits``
+
 - ``modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_groupset_lbs_groupset.h`)
 
 - ``optional``
@@ -46,6 +48,13 @@ Namespaces
 
 
 - :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_class_classopensn_1_1_convergence_rate_estimator`
 
 
 Functions

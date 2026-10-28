@@ -294,8 +294,9 @@ upscattering.</p>
 <dt><code class="docutils literal notranslate"><span class="pre">relaxation</span></code></dt><dd><p>Strictly positive relaxation factor for the scalar-flux correction. The default is
 <code class="docutils literal notranslate"><span class="pre">1.0</span></code>, the full correction, which the partial-current closure usually
 tolerates. The correction limiter may reduce the damping for a single update or
-skip that update if the correction would produce non-finite values, an invalid
-k-eigenvalue, or an unacceptable scalar-flux undershoot. A relaxation factor
+skip that update if the correction would produce non-finite values or an
+invalid k-eigenvalue, or would change the sign of the scalar flux in some
+coarse cell and coarse group. A relaxation factor
 <span class="math notranslate nohighlight">\(\omega &lt; 1\)</span> is more conservative and can reduce oscillation, but even an
 ideal correction then leaves about a fraction <span class="math notranslate nohighlight">\(1-\omega\)</span> of the error,
 which increases the number of outer iterations.
@@ -355,12 +356,13 @@ returns.
 Increase this only when debugging startup behavior where
 very early CMFD corrections are repeatedly rejected.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">correction_max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">correction_min_damping</span></code>, <code class="docutils literal notranslate"><span class="pre">negative_flux_tolerance</span></code></dt><dd><p>Internal correction-limiter controls. These determine how many damping
-attempts are made and how much scalar-flux undershoot is tolerated before a
-correction is skipped. Leave these at their defaults unless you are debugging
-rejected corrections. Raising the allowed undershoot or lowering the minimum
-damping can hide instability; changing these should be accompanied by checks
-of final k and scalar-flux behavior.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">correction_max_attempts</span></code>, <code class="docutils literal notranslate"><span class="pre">correction_min_damping</span></code></dt><dd><p>Internal correction-limiter controls. They set how many times a rejected
+correction is halved before it is skipped. A correction is rejected when it
+would change the sign of the scalar flux in some coarse cell and coarse
+group, or when it produces a non-finite flux or an invalid k-eigenvalue.
+Leave these at their defaults unless you are debugging rejected corrections.
+Lowering the minimum damping can hide instability; changing these should be
+accompanied by checks of final k and scalar-flux behavior.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, <code class="docutils literal notranslate"><span class="pre">l_rel_tol</span></code>, and <code class="docutils literal notranslate"><span class="pre">max_iters</span></code></dt><dd><p>Coarse linear solver tolerances and maximum iterations. Defaults are
 <code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code>, <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>, and <code class="docutils literal notranslate"><span class="pre">100</span></code>. An iterative coarse solve converges when
@@ -376,11 +378,20 @@ direct-solve threshold is intended to avoid automatic LU factorization of
 very large coarse systems; direct solves are limited by host memory and
 factorization cost.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> and <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code></dt><dd><p>Coarse k-eigenvalue power-iteration controls. <code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> must be at least 1.
-Defaults are <code class="docutils literal notranslate"><span class="pre">50</span></code> and <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>. These control the inner CMFD coarse k solve and are separate from
-<code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver(k_tol=...)</span></code>. If the coarse k solve is too loose,
-CMFD corrections can be noisy; if it is too tight, coarse-solve work can
-dominate runtime.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code>, <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code>, and <code class="docutils literal notranslate"><span class="pre">pi_phi_tol</span></code></dt><dd><p>Coarse k-eigenvalue power-iteration controls. <code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> must be at least 1.
+Defaults are <code class="docutils literal notranslate"><span class="pre">50</span></code>, <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code>, and <code class="docutils literal notranslate"><span class="pre">1.0e-6</span></code>. These control the inner CMFD
+coarse k solve and are separate from <code class="docutils literal notranslate"><span class="pre">PowerIterationKEigenSolver(k_tol=...)</span></code>.
+The coarse power iteration stops when the relative change of the coarse
+eigenvalue is below <code class="docutils literal notranslate"><span class="pre">pi_k_tol</span></code> and the estimated error of the coarse flux
+shape is below <code class="docutils literal notranslate"><span class="pre">pi_phi_tol</span></code>, or after <code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code> iterations. The shape
+error is estimated as the relative L2 change of the production-normalized
+coarse flux divided by <span class="math notranslate nohighlight">\(1-\rho\)</span>, where <span class="math notranslate nohighlight">\(\rho\)</span> is the convergence
+rate estimated from successive changes, so at least two iterations are done.
+The eigenvalue converges much faster than the shape; stopping on the
+eigenvalue alone leaves the slowly converging fundamental mode unaccelerated,
+and the number of power iterations then grows with the dominance ratio of the
+problem. Each coarse iteration is one coarse linear solve (a back substitution
+with the direct coarse solver).</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code></dt><dd><p>PETSc coarse-solver selection controls. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU
 solve for coarse systems below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code> global
@@ -407,11 +418,13 @@ tuning.</p>
 <section id="multi-groupset-behavior">
 <h2><span class="section-number">9.4. </span>Multi-Groupset Behavior<a class="headerlink" href="#multi-groupset-behavior" title="Link to this heading"></a></h2>
 <p>CMFD is constructed as one accelerator for the transport problem, not one
-accelerator per groupset. For problems with multiple groupsets, the transport
-solver advances the groupsets through the normal AGS process, then CMFD
-restricts the full all-groups scalar flux to one shared coarse system. The
-coarse solve therefore couples all transport groups represented in the problem,
-regardless of how those groups are partitioned into groupsets.</p>
+accelerator per groupset. For problems with multiple groupsets, each transport
+update is one across-groupset (AGS) pass over the groupsets, or up to
+<code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code> passes if the problem options set it, each with
+<code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> within-group iterations; CMFD then restricts the full
+all-groups scalar flux to one shared coarse system. The coarse solve therefore
+couples all transport groups represented in the problem, regardless of how those
+groups are partitioned into groupsets, so one pass per update is enough.</p>
 </section>
 <section id="diagnostics">
 <h2><span class="section-number">9.5. </span>Diagnostics<a class="headerlink" href="#diagnostics" title="Link to this heading"></a></h2>
@@ -425,7 +438,7 @@ CMFD convergence check = not_satisfied, transport-current balance residual = 2.3
 <p>The PI solver declares convergence only when both the eigenvalue tolerance and
 the CMFD convergence check are satisfied. If a correction is rejected, the line
 also reports <code class="docutils literal notranslate"><span class="pre">correction</span> <span class="pre">=</span> <span class="pre">skipped</span></code> with a reason, for example:</p>
-<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMFD convergence check = not_satisfied, transport-current balance residual = 7.140531e-04 (balance_residual_tolerance = 1.000000e-05), correction = skipped (negative_flux_guard)
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>CMFD convergence check = not_satisfied, transport-current balance residual = 7.140531e-04 (balance_residual_tolerance = 1.000000e-05), correction = skipped (sign_change_guard)
 </pre></div>
 </div>
 <p>Set <code class="docutils literal notranslate"><span class="pre">verbose=True</span></code> on <code class="docutils literal notranslate"><span class="pre">CMFDAcceleration</span></code> to print stable <code class="docutils literal notranslate"><span class="pre">CMFD_ACCEL</span></code>
@@ -448,12 +461,15 @@ switch to <code class="docutils literal notranslate"><span class="pre">coarse_so
 increase <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> or use <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code> with a
 stronger iterative PETSc configuration.</p>
 </dd>
-<dt><code class="docutils literal notranslate"><span class="pre">negative_flux_guard</span></code></dt><dd><p>Every attempted correction, after damping, drove the scalar flux below the
-allowed undershoot. First reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> or use finer spatial/energy
-aggregation. Repeated negative-flux skips are usually a sign that the coarse
-correction is too aggressive for the current transport state. Changing
-<code class="docutils literal notranslate"><span class="pre">negative_flux_tolerance</span></code> is a developer/debug action and should be followed
-by checks of scalar flux and final k agreement.</p>
+<dt><code class="docutils literal notranslate"><span class="pre">sign_change_guard</span></code></dt><dd><p>Every attempted correction, after damping, would have changed the sign of the
+scalar flux in at least one coarse cell and coarse group. CMFD scales the
+transport flux of each coarse cell and coarse group by the ratio of the
+corrected to the uncorrected coarse flux, so a ratio that is not positive
+would flip the sign of that flux. Negative values the transport update
+already has, which discontinuous discretizations can produce, are only
+rescaled and do not trigger the guard. First reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> or use
+finer spatial/energy aggregation. Repeated skips are usually a sign that the
+coarse correction is too aggressive for the current transport state.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">invalid_k</span></code> or <code class="docutils literal notranslate"><span class="pre">nonfinite_flux</span></code></dt><dd><p>The candidate correction produced a non-positive/non-finite k-eigenvalue or
 non-finite scalar flux. Treat this as an unstable correction: reduce

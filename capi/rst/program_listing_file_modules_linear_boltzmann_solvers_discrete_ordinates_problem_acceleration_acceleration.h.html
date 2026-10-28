@@ -196,18 +196,20 @@
 
 <span class="cm">/**</span>
 <span class="cm"> * Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular</span>
-<span class="cm"> * fluxes of opposing reflecting boundaries, as the isotropic angular correction</span>
-<span class="cm"> * delta psi = delta phi (quadrature weights sum to one).</span>
+<span class="cm"> * fluxes of a groupset, as the isotropic angular correction delta psi = delta phi (quadrature</span>
+<span class="cm"> * weights sum to one). Lagged fluxes are those of opposing reflecting boundaries and those where</span>
+<span class="cm"> * the sweep broke a cyclic dependency, within a location or between locations. Each is corrected</span>
+<span class="cm"> * with delta phi at the face node of the downwind cell that reads it.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Source iteration carries the lagged boundary angular fluxes as unknowns alongside phi. A DSA</span>
-<span class="cm"> * update that corrects phi but not these fluxes leaves the boundary error to re-enter on the next</span>
-<span class="cm"> * sweep, which can make source iteration with DSA diverge.</span>
+<span class="cm"> * The iteration carries the lagged angular fluxes as unknowns alongside phi. An acceleration</span>
+<span class="cm"> * update that corrects phi but not these fluxes leaves their error to re-enter on the next sweep,</span>
+<span class="cm"> * which can make source iteration with DSA diverge.</span>
 <span class="cm"> *</span>
 <span class="cm"> * `delta_phi_local` has the layout of the local flux-moment vector.</span>
 <span class="cm"> */</span>
-<span class="kt">void</span><span class="w"> </span><span class="nf">ApplyDSACorrectionToDelayedBoundaryFlux</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
-<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">delta_phi_local</span><span class="p">);</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">ApplyDSACorrectionToDelayedAngularFlux</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                            </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                                            </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">delta_phi_local</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Returns D / (1 + 3 D tau), the diffusion coefficient with time absorption tau added to</span>

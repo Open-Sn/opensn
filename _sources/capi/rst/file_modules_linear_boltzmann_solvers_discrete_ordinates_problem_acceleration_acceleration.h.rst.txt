@@ -86,7 +86,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a1af06d1ab7a9c35fb0bbf2d9251c748d`
 
-- :ref:`exhale_function_namespaceopensn_1abceb062850a19351f0b3cc28b39a9ed9`
+- :ref:`exhale_function_namespaceopensn_1afe44630e8d8c5d1a9f622ac02c8311e8`
 
 - :ref:`exhale_function_namespaceopensn_1a8fba5f186af670c66e80a9c08731086f`
 

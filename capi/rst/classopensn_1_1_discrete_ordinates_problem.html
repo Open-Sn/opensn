@@ -406,10 +406,10 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem24PreserveWGSSolveSettingsEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a4baa9a57ba6b5b3d181ed0bb61b5a257"></span><a class="reference internal" href="classopensn_1_1_scoped_restore.html#_CPPv4N6opensn13ScopedRestoreE" title="opensn::ScopedRestore"><span class="n"><span class="pre">ScopedRestore</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreserveWGSSolveSettings</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem24PreserveWGSSolveSettingsEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Saves the within-group iteration limit and residual tolerance of every groupset. </p>
-<p>The returned guard restores them with <a class="reference internal" href="#classopensn_1_1_discrete_ordinates_problem_1aa5dc6d73ff51aade2f65aea26bea2870"><span class="std std-ref">SetWGSSolveSettings()</span></a> when destroyed. Solvers hold it while acceleration methods change these settings, so that the settings outlive neither the solve nor an exception. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem30PreserveTransportSolveSettingsEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a1e42dff91b43a2ed6e007d85d5800a4a"></span><a class="reference internal" href="classopensn_1_1_scoped_restore.html#_CPPv4N6opensn13ScopedRestoreE" title="opensn::ScopedRestore"><span class="n"><span class="pre">ScopedRestore</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PreserveTransportSolveSettings</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem30PreserveTransportSolveSettingsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Saves the within-group iteration limit and residual tolerance of every groupset and the across-groupset iteration limit. </p>
+<p>The returned guard restores them when destroyed. Solvers hold it while acceleration methods change these settings, so that the settings outlive neither the solve nor an exception. </p>
 </dd></dl>
 
 <dl class="cpp function">

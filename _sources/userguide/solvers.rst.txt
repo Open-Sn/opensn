@@ -763,8 +763,10 @@ The constructor takes:
 * ``problem``: an existing
   :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`
 * ``max_iters``: maximum power iterations
-* ``k_tol``: tolerance on the relative change of ``k_eff`` between power
-  iterations; values below ``1.0e-12`` are treated as ``1.0e-12``
+* ``k_tol``: tolerance on the estimated relative error of ``k_eff``: the
+  relative change of ``k_eff`` between power iterations divided by
+  :math:`1-\rho`, with :math:`\rho` the estimated convergence rate; values
+  below ``1.0e-12`` are treated as ``1.0e-12``
 * ``reset_phi0``: whether to reset scalar fluxes to 1.0 before solving
 
 The problem must be in steady-state mode and have no external sources: no
@@ -809,8 +811,10 @@ At a high level, the solver:
 2. forms the fission source from the current iterate
 3. solves the transport problem with the problem's AGS/groupset iteration
 4. updates ``k_eff``
-5. repeats until the relative eigenvalue change is below ``k_tol`` in two
-   consecutive iterations, or ``max_iters`` is reached. A single small change
+5. repeats until the relative eigenvalue change is below
+   :math:`(1-\rho)\,` ``k_tol`` in two consecutive iterations, or ``max_iters``
+   is reached. The convergence rate :math:`\rho` is estimated from the change of
+   the production-normalized flux between iterations. A single small change
    also occurs where an accelerated eigenvalue sequence overshoots and turns
    around, so one is not taken as convergence. With an acceleration method, the
    method must also allow convergence (for CMFD, see

@@ -88,9 +88,12 @@
 <div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2024 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
 <span class="c1">// SPDX-License-Identifier: MIT</span>
 
+<span class="cp">#pragma once</span>
+
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -114,6 +117,49 @@
 <span class="kt">double</span><span class="w"> </span><span class="nf">ComputeL2PhiChange</span><span class="p">(</span>
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_phi_old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Convergence test for a linearly converging iteration that measures the change between successive</span>
+<span class="cm"> * iterates. For such an iteration the error is about change / (1 - rho), with rho the convergence</span>
+<span class="cm"> * rate, so a change passes a tolerance tol when change &lt; tol (1 - rho).</span>
+<span class="cm"> *</span>
+<span class="cm"> * The rate is estimated as the larger of the last two ratios of successive changes, so that one</span>
+<span class="cm"> * unusually small ratio of an irregularly converging (for example, accelerated) iteration does not</span>
+<span class="cm"> * end it early; it is zero for the first change. A relative change below the round-off level</span>
+<span class="cm"> * kRoundoffRelativeChange always passes.</span>
+<span class="cm"> *</span>
+<span class="cm"> * An accelerated iteration can also take a single step that barely changes the iterate while its</span>
+<span class="cm"> * error is still large. Converged() therefore tests the larger of the latest change and the change</span>
+<span class="cm"> * expected from the previous one, rho times the previous change.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">ConvergenceRateEstimator</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Relative change below which successive iterates differ only by round-off.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">kRoundoffRelativeChange</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">100.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;::</span><span class="n">epsilon</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Records the change of the latest iteration and returns the rate estimate, in [0, 1].</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">Update</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">change</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Rate estimate after the last Update().</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetRate</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">rate_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Whether `change` passes `tolerance` at the current rate estimate.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Passes</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Whether the iteration has converged to `tolerance`: the larger of the latest change and the</span>
+<span class="cm">   * change expected from the previous one passes it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Converged</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_changes_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">previous_change_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">previous_ratio_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">expected_change_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

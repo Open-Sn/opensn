@@ -106,6 +106,15 @@
 <span class="target" id="classopensn_1_1_f_l_u_d_s"></span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FLUDS</span></span></span><a class="headerlink" href="#_CPPv4N6opensn5FLUDSE" title="Link to this definition"></a><br /></dt>
 <dd><p>Subclassed by <a class="reference internal" href="classopensn_1_1_a_a_h_d___f_l_u_d_s.html#classopensn_1_1_a_a_h_d___f_l_u_d_s"><span class="std std-ref">opensn::AAHD_FLUDS</span></a>, <a class="reference internal" href="classopensn_1_1_a_a_h___f_l_u_d_s.html#classopensn_1_1_a_a_h___f_l_u_d_s"><span class="std std-ref">opensn::AAH_FLUDS</span></a>, <a class="reference internal" href="classopensn_1_1_c_b_c_d___f_l_u_d_s.html#classopensn_1_1_c_b_c_d___f_l_u_d_s"><span class="std std-ref">opensn::CBCD_FLUDS</span></a>, <a class="reference internal" href="classopensn_1_1_c_b_c___f_l_u_d_s.html#classopensn_1_1_c_b_c___f_l_u_d_s"><span class="std std-ref">opensn::CBC_FLUDS</span></a></p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-types">Public Types</p>
+<dl class="cpp type">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn5FLUDS21DelayedFluxCorrectionE">
+<span class="target" id="classopensn_1_1_f_l_u_d_s_1aba10aba7cfdea11175f10853ca0a235f"></span><span class="k"><span class="pre">using</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">DelayedFluxCorrection</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">function</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">(</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">)</span></span><span class="p"><span class="pre">&gt;</span></span><a class="headerlink" href="#_CPPv4N6opensn5FLUDS21DelayedFluxCorrectionE" title="Link to this definition"></a><br /></dt>
+<dd><p>Isotropic nodal correction: (cell local id, face, face node, group index within the groupset) -&gt; value added to the angular flux in every direction. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn5FLUDS5FLUDSEj6size_tRK4SPDS">
@@ -231,6 +240,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn5FLUDS29SetDelayedOutgoingPsiNewToOldEv">
 <span class="target" id="classopensn_1_1_f_l_u_d_s_1abafcb65e36c3f27d26881bcc040977bb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDelayedOutgoingPsiNewToOld</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn5FLUDS29SetDelayedOutgoingPsiNewToOldEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn5FLUDS26AddToNewDelayedAngularFluxERK21DelayedFluxCorrection">
+<span class="target" id="classopensn_1_1_f_l_u_d_s_1a1b679abe2659af78f5192a243ac2c002"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">AddToNewDelayedAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn5FLUDS21DelayedFluxCorrectionE" title="opensn::FLUDS::DelayedFluxCorrection"><span class="n"><span class="pre">DelayedFluxCorrection</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">correction</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn5FLUDS26AddToNewDelayedAngularFluxERK21DelayedFluxCorrection" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux, that is, to the lagged values the next sweep reads where a cyclic dependency was broken, within this location or between locations. </p>
+<p>The correction is evaluated at the face node of the downwind cell that reads the value. The default has no delayed angular fluxes. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn5FLUDSD0Ev">
