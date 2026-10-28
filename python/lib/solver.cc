@@ -1086,9 +1086,11 @@ WrapLBS(py::module& slv)
               direction has nonzero ``Omega_x`` and ``Omega_y`` (and, for ``'octant'``,
               ``Omega_z``), so each direction lies strictly inside one quadrant or octant.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
-            'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+            'petsc_gmres', 'petsc_fgmres', 'petsc_bicgstab'}, default='petsc_richardson'
 
-              Iterative method used for inner linear solves.
+              Iterative method used for inner linear solves. ``'petsc_fgmres'`` is flexible
+              GMRES with right preconditioning; it remains exact when the WGDSA/TGDSA
+              preconditioner solves its diffusion system only approximately.
           - l_abs_tol: float, default=1.0e-6
               Inner linear solver absolute residual tolerance.
           - l_max_its: int, default=200
@@ -1100,7 +1102,8 @@ WrapLBS(py::module& slv)
           - apply_wgdsa: bool, default=False
               Enable within-group DSA for this groupset.
           - wgdsa_l_abs_tol: float, default=1.0e-4
-              WGDSA linear absolute tolerance.
+              Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
+              right-hand side (the name is historical).
           - wgdsa_l_max_its: int, default=30
               WGDSA maximum iterations.
           - wgdsa_verbose: bool, default=False
@@ -1117,7 +1120,8 @@ WrapLBS(py::module& slv)
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
-              TGDSA linear absolute tolerance.
+              Residual tolerance of the TGDSA diffusion solve, relative to the norm of its
+              right-hand side (the name is historical).
           - tgdsa_l_max_its: int, default=30
               TGDSA maximum iterations.
           - tgdsa_verbose: bool, default=False
@@ -1228,7 +1232,11 @@ WrapLBS(py::module& slv)
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
             Print outer solver progress, including PI/NLKE iterations and transient steps.
-          - max_ags_iterations: int, default=100
+          - max_ags_iterations: int, optional
+            Maximum across-groupset iterations per transport solve. A value set here is used by
+            every solver. If it is not set, each solver uses its own default: 100 for the
+            steady-state and transient solvers, and 1 in each power iteration of
+            :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
           - power_default_kappa: float, default=3.20435e-11
@@ -1653,9 +1661,11 @@ WrapLBS(py::module& slv)
               Angle aggregation method to use during sweeping. Curvilinear problems do not
               support ``'polar'``.
           - inner_linear_method: {'classic_richardson', 'petsc_richardson',
-            'petsc_gmres', 'petsc_bicgstab'}, default='petsc_richardson'
+            'petsc_gmres', 'petsc_fgmres', 'petsc_bicgstab'}, default='petsc_richardson'
 
-              Iterative method used for inner linear solves.
+              Iterative method used for inner linear solves. ``'petsc_fgmres'`` is flexible
+              GMRES with right preconditioning; it remains exact when the WGDSA/TGDSA
+              preconditioner solves its diffusion system only approximately.
           - l_abs_tol: float, default=1.0e-6
               Inner linear solver absolute residual tolerance.
           - l_max_its: int, default=200
@@ -1667,7 +1677,8 @@ WrapLBS(py::module& slv)
           - apply_wgdsa: bool, default=False
               Enable within-group DSA for this groupset.
           - wgdsa_l_abs_tol: float, default=1.0e-4
-              WGDSA linear absolute tolerance.
+              Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
+              right-hand side (the name is historical).
           - wgdsa_l_max_its: int, default=30
               WGDSA maximum iterations.
           - wgdsa_verbose: bool, default=False
@@ -1684,7 +1695,8 @@ WrapLBS(py::module& slv)
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
-              TGDSA linear absolute tolerance.
+              Residual tolerance of the TGDSA diffusion solve, relative to the norm of its
+              right-hand side (the name is historical).
           - tgdsa_l_max_its: int, default=30
               TGDSA maximum iterations.
           - tgdsa_verbose: bool, default=False
@@ -1788,7 +1800,11 @@ WrapLBS(py::module& slv)
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
             Print outer solver progress, including PI/NLKE iterations and transient steps.
-          - max_ags_iterations: int, default=100
+          - max_ags_iterations: int, optional
+            Maximum across-groupset iterations per transport solve. A value set here is used by
+            every solver. If it is not set, each solver uses its own default: 100 for the
+            steady-state and transient solvers, and 1 in each power iteration of
+            :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
           - power_default_kappa: float, default=3.20435e-11
@@ -2353,9 +2369,11 @@ WrapPIteration(py::module& slv)
     max_iters: int, default = 1000
         Maximum power iterations allowed.
     k_tol: float, default = 1.0e-10
-        Tolerance on the relative change of the k-eigenvalue between power iterations. The
-        iteration converges when the change is below ``k_tol`` in two consecutive iterations.
-        Values below ``1.0e-12`` are treated as ``1.0e-12``.
+        Tolerance on the estimated relative error of the k-eigenvalue. The iteration converges
+        when the relative change of k between power iterations is below ``k_tol * (1 - rho)``
+        in two consecutive iterations, where ``rho`` is the convergence rate estimated from the
+        change of the production-normalized flux. Values below ``1.0e-12`` are treated as
+        ``1.0e-12``.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
     compute_balance: bool, default=False
@@ -2364,6 +2382,9 @@ WrapPIteration(py::module& slv)
 
     Notes
     -----
+    With more than one groupset, each power iteration makes one across-groupset pass unless the
+    problem sets ``max_ags_iterations``.
+
     If the problem was constructed with ``options={'read_restart_path': ...}``,
     restart data is read during :meth:`Initialize`. If it was constructed with
     ``options={'restart_writes_enabled': True, ...}``, timed restart dumps may
@@ -2398,7 +2419,7 @@ WrapPIteration(py::module& slv)
     R"(
     Return True if the last :meth:`Execute` met the convergence criteria.
 
-    Convergence requires the k-eigenvalue change to fall below ``k_tol`` and, when an
+    Convergence requires the k-eigenvalue test on ``k_tol`` to pass and, when an
     acceleration method is attached, its own convergence check (for CMFD, the balance
     residual) to pass. Returns False if ``max_iters`` was reached first.
     )"
@@ -2494,7 +2515,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, default=1.0e-10
-        Absolute residual tolerance.
+        Residual tolerance of the diffusion solves, relative to the norm of their right-hand
+        side (the name is historical).
     max_iters: int, default=100
         Maximum allowable iterations.
     verbose: bool, default=False
@@ -2548,7 +2570,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
     l_abs_tol: float, default=1.0e-10
-        Absolute residual tolerance.
+        Residual tolerance of the diffusion solves, relative to the norm of their right-hand
+        side (the name is historical).
     max_iters: int, default=100
         Maximum allowable iterations.
     verbose: bool, default=False
@@ -2643,7 +2666,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
         This is the requested correction strength. The correction limiter may damp or
         skip an individual correction if the requested update would produce an invalid
-        k-eigenvalue, non-finite flux, or excessive negative scalar flux. The default
+        k-eigenvalue or non-finite flux, or would change the sign of the scalar flux in
+        some coarse cell and coarse group. The default
         applies the full correction. A value below 1 is more conservative, but even an
         ideal correction then leaves about ``1 - relaxation`` of the error; reduce it when
         corrections are repeatedly damped or skipped.
@@ -2690,23 +2714,25 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Increase only if the coarse k solve is not converging enough to give useful
         corrections.
     pi_k_tol: float, default=1.0e-8
-        Developer/debug. k-eigenvalue tolerance for CMFD coarse power iterations. This
-        is separate from the outer ``PowerIterationKEigenSolver`` k tolerance.
+        Developer/debug. Tolerance on the relative change of the coarse k-eigenvalue between
+        CMFD coarse power iterations. This is separate from the outer
+        ``PowerIterationKEigenSolver`` k tolerance.
+    pi_phi_tol: float, default=1.0e-6
+        Developer/debug. Tolerance on the estimated coarse flux-shape error of the CMFD coarse
+        power iteration: the relative L2 change of the production-normalized coarse flux divided
+        by ``1 - rho``, with the convergence rate ``rho`` estimated from successive changes. The
+        coarse power iteration stops when both ``pi_k_tol`` and ``pi_phi_tol`` are met (at least
+        two iterations) or after ``pi_max_its`` iterations.
     correction_max_attempts: int, default=10
         Developer/debug. Maximum CMFD correction damping attempts before skipping the
         correction for the current transport update. Each failed attempt halves the
-        damping. If the log reports ``correction = skipped (negative_flux_guard)``,
+        damping. If the log reports ``correction = skipped (sign_change_guard)``,
         first reduce ``relaxation`` or use finer spatial/energy aggregation; changing
         this option is mainly for diagnostics.
     correction_min_damping: float, default=1.0e-4
         Developer/debug. Minimum CMFD correction damping factor considered during correction
         limiting. If no admissible correction is found above this damping, CMFD skips
         the correction for that transport update.
-    negative_flux_tolerance: float, default=1.0e-6
-        Developer/debug. Allowed scalar-flux undershoot for accepting a CMFD correction.
-        Corrections producing scalar flux below this guard are damped or skipped. Raising
-        this value can hide unstable corrections and should be accompanied by final-k and
-        scalar-flux checks.
     inactive_iterations: int, default=0
         Developer/debug. Number of initial power iterations before applying CMFD
         corrections. These iterations retain the WGS settings configured on the problem.

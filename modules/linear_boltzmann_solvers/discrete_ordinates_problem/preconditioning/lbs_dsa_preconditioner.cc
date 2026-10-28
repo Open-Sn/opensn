@@ -71,7 +71,7 @@ ApplyDSAPreconditioner(WGSContext& gs_context, Vec phi_input, Vec pc_output)
   {
     for (size_t i = 0; i < delta_phi.size(); ++i)
       delta_phi[i] = phi_new_local[i] - delta_phi[i];
-    ApplyDSACorrectionToDelayedBoundaryFlux(do_problem, groupset, delta_phi);
+    ApplyDSACorrectionToDelayedAngularFlux(do_problem, groupset, delta_phi);
   }
 
   // Copy STL vector to PETSc Vec

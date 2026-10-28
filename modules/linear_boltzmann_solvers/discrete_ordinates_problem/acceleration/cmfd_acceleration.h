@@ -134,12 +134,12 @@ private:
   const double relaxation_;
   const unsigned int correction_max_attempts_;
   const double correction_min_damping_;
-  const double negative_flux_tolerance_;
   const unsigned int inactive_iterations_;
   const unsigned int update_wgs_max_its_;
   const double update_wgs_abs_tol_;
   const double balance_residual_tolerance_;
   const double l_rel_tol_;
+  const double pi_phi_tol_;
   const std::string coarse_solver_policy_;
   const std::size_t coarse_direct_solve_threshold_;
   const unsigned int first_group_ = 0;

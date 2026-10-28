@@ -186,8 +186,9 @@ These are the options most users should tune.
   Strictly positive relaxation factor for the scalar-flux correction. The default is
   ``1.0``, the full correction, which the partial-current closure usually
   tolerates. The correction limiter may reduce the damping for a single update or
-  skip that update if the correction would produce non-finite values, an invalid
-  k-eigenvalue, or an unacceptable scalar-flux undershoot. A relaxation factor
+  skip that update if the correction would produce non-finite values or an
+  invalid k-eigenvalue, or would change the sign of the scalar flux in some
+  coarse cell and coarse group. A relaxation factor
   :math:`\omega < 1` is more conservative and can reduce oscillation, but even an
   ideal correction then leaves about a fraction :math:`1-\omega` of the error,
   which increases the number of outer iterations.
@@ -252,13 +253,14 @@ defaults.
   Increase this only when debugging startup behavior where
   very early CMFD corrections are repeatedly rejected.
 
-``correction_max_attempts``, ``correction_min_damping``, ``negative_flux_tolerance``
-  Internal correction-limiter controls. These determine how many damping
-  attempts are made and how much scalar-flux undershoot is tolerated before a
-  correction is skipped. Leave these at their defaults unless you are debugging
-  rejected corrections. Raising the allowed undershoot or lowering the minimum
-  damping can hide instability; changing these should be accompanied by checks
-  of final k and scalar-flux behavior.
+``correction_max_attempts``, ``correction_min_damping``
+  Internal correction-limiter controls. They set how many times a rejected
+  correction is halved before it is skipped. A correction is rejected when it
+  would change the sign of the scalar flux in some coarse cell and coarse
+  group, or when it produces a non-finite flux or an invalid k-eigenvalue.
+  Leave these at their defaults unless you are debugging rejected corrections.
+  Lowering the minimum damping can hide instability; changing these should be
+  accompanied by checks of final k and scalar-flux behavior.
 
 ``l_abs_tol``, ``l_rel_tol``, and ``max_iters``
   Coarse linear solver tolerances and maximum iterations. Defaults are
@@ -275,12 +277,21 @@ defaults.
   very large coarse systems; direct solves are limited by host memory and
   factorization cost.
 
-``pi_max_its`` and ``pi_k_tol``
+``pi_max_its``, ``pi_k_tol``, and ``pi_phi_tol``
   Coarse k-eigenvalue power-iteration controls. ``pi_max_its`` must be at least 1.
-  Defaults are ``50`` and ``1.0e-8``. These control the inner CMFD coarse k solve and are separate from
-  ``PowerIterationKEigenSolver(k_tol=...)``. If the coarse k solve is too loose,
-  CMFD corrections can be noisy; if it is too tight, coarse-solve work can
-  dominate runtime.
+  Defaults are ``50``, ``1.0e-8``, and ``1.0e-6``. These control the inner CMFD
+  coarse k solve and are separate from ``PowerIterationKEigenSolver(k_tol=...)``.
+  The coarse power iteration stops when the relative change of the coarse
+  eigenvalue is below ``pi_k_tol`` and the estimated error of the coarse flux
+  shape is below ``pi_phi_tol``, or after ``pi_max_its`` iterations. The shape
+  error is estimated as the relative L2 change of the production-normalized
+  coarse flux divided by :math:`1-\rho`, where :math:`\rho` is the convergence
+  rate estimated from successive changes, so at least two iterations are done.
+  The eigenvalue converges much faster than the shape; stopping on the
+  eigenvalue alone leaves the slowly converging fundamental mode unaccelerated,
+  and the number of power iterations then grows with the dominance ratio of the
+  problem. Each coarse iteration is one coarse linear solve (a back substitution
+  with the direct coarse solver).
 
 ``coarse_solver_policy`` and ``coarse_direct_solve_threshold``
   PETSc coarse-solver selection controls. ``"auto"`` uses a direct PETSc LU
@@ -308,11 +319,13 @@ Multi-Groupset Behavior
 =======================
 
 CMFD is constructed as one accelerator for the transport problem, not one
-accelerator per groupset. For problems with multiple groupsets, the transport
-solver advances the groupsets through the normal AGS process, then CMFD
-restricts the full all-groups scalar flux to one shared coarse system. The
-coarse solve therefore couples all transport groups represented in the problem,
-regardless of how those groups are partitioned into groupsets.
+accelerator per groupset. For problems with multiple groupsets, each transport
+update is one across-groupset (AGS) pass over the groupsets, or up to
+``max_ags_iterations`` passes if the problem options set it, each with
+``update_wgs_max_its`` within-group iterations; CMFD then restricts the full
+all-groups scalar flux to one shared coarse system. The coarse solve therefore
+couples all transport groups represented in the problem, regardless of how those
+groups are partitioned into groupsets, so one pass per update is enough.
 
 Diagnostics
 ===========
@@ -332,7 +345,7 @@ also reports ``correction = skipped`` with a reason, for example:
 
 .. code-block:: text
 
-   CMFD convergence check = not_satisfied, transport-current balance residual = 7.140531e-04 (balance_residual_tolerance = 1.000000e-05), correction = skipped (negative_flux_guard)
+   CMFD convergence check = not_satisfied, transport-current balance residual = 7.140531e-04 (balance_residual_tolerance = 1.000000e-05), correction = skipped (sign_change_guard)
 
 Set ``verbose=True`` on ``CMFDAcceleration`` to print stable ``CMFD_ACCEL``
 diagnostic lines for early iterations and periodic later iterations. These are
@@ -357,13 +370,16 @@ The most common skip reasons are:
   increase ``max_iters`` or use ``coarse_solver_policy="petsc_options"`` with a
   stronger iterative PETSc configuration.
 
-``negative_flux_guard``
-  Every attempted correction, after damping, drove the scalar flux below the
-  allowed undershoot. First reduce ``relaxation`` or use finer spatial/energy
-  aggregation. Repeated negative-flux skips are usually a sign that the coarse
-  correction is too aggressive for the current transport state. Changing
-  ``negative_flux_tolerance`` is a developer/debug action and should be followed
-  by checks of scalar flux and final k agreement.
+``sign_change_guard``
+  Every attempted correction, after damping, would have changed the sign of the
+  scalar flux in at least one coarse cell and coarse group. CMFD scales the
+  transport flux of each coarse cell and coarse group by the ratio of the
+  corrected to the uncorrected coarse flux, so a ratio that is not positive
+  would flip the sign of that flux. Negative values the transport update
+  already has, which discontinuous discretizations can produce, are only
+  rescaled and do not trigger the guard. First reduce ``relaxation`` or use
+  finer spatial/energy aggregation. Repeated skips are usually a sign that the
+  coarse correction is too aggressive for the current transport state.
 
 ``invalid_k`` or ``nonfinite_flux``
   The candidate correction produced a non-positive/non-finite k-eigenvalue or

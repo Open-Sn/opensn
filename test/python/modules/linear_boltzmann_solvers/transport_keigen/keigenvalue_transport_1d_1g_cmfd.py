@@ -115,7 +115,6 @@ if __name__ == "__main__":
             update_wgs_abs_tol=get_option("cmfd_update_wgs_abs_tol", 1.0e-12),
             correction_max_attempts=get_option("cmfd_correction_max_attempts", 10),
             correction_min_damping=get_option("cmfd_correction_min_damping", 1.0e-4),
-            negative_flux_tolerance=get_option("cmfd_negative_flux_tolerance", 1.0e-6),
             verbose=get_option("cmfd_verbose", False),
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )

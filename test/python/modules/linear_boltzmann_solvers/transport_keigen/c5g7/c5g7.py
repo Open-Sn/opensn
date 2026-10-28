@@ -169,7 +169,6 @@ if __name__ == "__main__":
             coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "direct"),
             correction_max_attempts=int(get_option("cmfd_correction_max_attempts", 10)),
             correction_min_damping=float(get_option("cmfd_correction_min_damping", 1.0e-4)),
-            negative_flux_tolerance=float(get_option("cmfd_negative_flux_tolerance", 1.0e-6)),
             balance_residual_tolerance=float(
                 get_option("cmfd_balance_residual_tolerance", 1.0e-6)
             ),

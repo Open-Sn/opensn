@@ -530,4 +530,15 @@ AngleAggregation::SetDelayedPsiNew2Old()
     angle_set->GetFLUDS().SetDelayedOutgoingPsiNewToOld();
 }
 
+void
+AngleAggregation::AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction)
+{
+  for (const auto& [bid, bndry] : boundaries_)
+    bndry->AddToNewDelayedAngularFlux(groupset_id_, correction);
+
+  // Intra-location and inter-location cycles
+  for (auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().AddToNewDelayedAngularFlux(correction);
+}
+
 } // namespace opensn

@@ -58,7 +58,7 @@ ClassicRichardson::Solve()
   saved_q_moments_local_ = do_problem.GetQMomentsLocal();
   psi_old_ = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
 
-  double pw_phi_change_prev = 1.0;
+  ConvergenceRateEstimator rate_estimator;
   double last_pw_phi_change = 0.0;
   bool converged = false;
   unsigned int num_iterations = 0;
@@ -76,8 +76,8 @@ ClassicRichardson::Solve()
     }
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
-    // Scalar flux before acceleration, to form the DSA correction applied to the lagged
-    // boundary angular fluxes.
+    // Scalar flux before acceleration, to form the DSA correction applied to the lagged angular
+    // fluxes.
     const bool correct_delayed_psi =
       (groupset.apply_wgdsa or groupset.apply_tgdsa) and not psi_old_.empty();
     if (correct_delayed_psi)
@@ -116,19 +116,19 @@ ClassicRichardson::Solve()
       const auto& phi_new = do_problem.GetPhiNewLocal();
       for (size_t i = 0; i < phi_new.size(); ++i)
         phi_unaccelerated_[i] = phi_new[i] - phi_unaccelerated_[i];
-      ApplyDSACorrectionToDelayedBoundaryFlux(do_problem, groupset, phi_unaccelerated_);
+      ApplyDSACorrectionToDelayedAngularFlux(do_problem, groupset, phi_unaccelerated_);
     }
 
     double pw_phi_change = ComputePointwisePhiChange(do_problem, groupset.id);
     last_pw_phi_change = pw_phi_change;
-    double rho = (k == 0) ? 0.0 : (pw_phi_change / pw_phi_change_prev);
-    pw_phi_change_prev = pw_phi_change;
+    const double rho = rate_estimator.Update(pw_phi_change);
 
     psi_new_ = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
     double pw_psi_change = ComputePointwiseChange(psi_new_, psi_old_);
 
-    if ((pw_phi_change < std::max(groupset.residual_tolerance * (1.0 - rho), 1.0e-10)) &&
-        (pw_psi_change < std::max(groupset.residual_tolerance, 1.0e-10)))
+    if (rate_estimator.Converged(groupset.residual_tolerance) and
+        (pw_psi_change <
+         std::max(groupset.residual_tolerance, ConvergenceRateEstimator::kRoundoffRelativeChange)))
     {
       converged = true;
     }

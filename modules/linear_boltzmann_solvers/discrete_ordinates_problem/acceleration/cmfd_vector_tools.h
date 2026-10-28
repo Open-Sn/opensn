@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <cstddef>
 #include <utility>
 #include <vector>
 
@@ -29,6 +30,21 @@ std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_pr
                                            unsigned int num_groups,
                                            const CMFDCoarseMesh& coarse_mesh,
                                            const std::vector<double>& phi);
+
+/**
+ * Count the coarse values whose prolongation ratio would not preserve the sign of the fine flux.
+ *
+ * CMFDProlongateScalarFluxRatio scales the fine flux of each coarse cell and coarse group by
+ * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A ratio that is
+ * not finite and positive would change the sign of, or destroy, the fine flux it scales.
+ *
+ * \param coarse_phi_old Coarse scalar flux before the correction.
+ * \param coarse_phi_new Corrected coarse scalar flux.
+ * \return The number of local coarse values with a ratio that is not finite and positive.
+ * \throw std::invalid_argument If the two vectors differ in size.
+ */
+std::size_t CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
+                                        const std::vector<double>& coarse_phi_new);
 
 /**
  * Scale fine scalar-flux moments by coarse-cell, coarse-group ratios.

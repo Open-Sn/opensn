@@ -266,7 +266,7 @@
   },
   {
     "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
-    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
+    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps; no CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, which the CMFD correction only rescales",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -288,7 +288,7 @@
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
         "goldvalue": 0,
-        "abs_tol": 1
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_agg_cbc"
@@ -944,7 +944,7 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_cmfd_energy_agg.py",
-    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using spatial and energy-group aggregated CMFD acceleration and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
+    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using spatial and energy-group aggregated CMFD acceleration and CBC sweeps; no CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, which the CMFD correction only rescales",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -972,7 +972,7 @@
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
         "goldvalue": 0,
-        "abs_tol": 1
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_energy_agg_cbc"
@@ -1010,7 +1010,7 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_cmfd_multigroupset.py",
-    "comment": "3D 2G heterogeneous qblock CMFD regression with one groupset per group, P1 transport moments, and CBC sweeps; at most one CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, and the negative-flux guard rejects every damped correction of that one update (AAH lags inter-partition dependencies and serial runs skip none; k is unaffected)",
+    "comment": "3D 2G heterogeneous qblock CMFD regression with one groupset per group, P1 transport moments, and CBC sweeps; no CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, which the CMFD correction only rescales",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -1038,7 +1038,7 @@
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
         "goldvalue": 0,
-        "abs_tol": 1
+        "abs_tol": 0
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_multigroupset_cbc"
@@ -1373,6 +1373,56 @@
         "gold": 1,
         "abs_tol": 1e-12
       }
+    ]
+  },
+  {
+    "file": "keigen_scdsa_heterogeneous.py",
+    "comment": "SCDSA with PWLD and PWLC diffusion on a heterogeneous 2D two-group core must reproduce the unaccelerated k-eigenvalue",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "SCDSA_PWLD_K_DIFF_PCM", "goldvalue": 0, "abs_tol": 1e-03},
+      {"type": "KeyValuePair", "key": "SCDSA_PWLC_K_DIFF_PCM", "goldvalue": 0, "abs_tol": 1e-03}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_2g_cmfd_high_dominance.py",
+    "comment": "CMFD (identity coarse mesh, one sweep per power iteration) on a 220 cm reflected 2D core with a high dominance ratio: k must match the unaccelerated k_tol=1e-12 reference, and the power iterations must not grow with the dominance ratio (58 with a converged coarse eigenproblem; 395 when the coarse power iteration stops on k alone)",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_HD_K_ERR", "goldvalue": 0, "abs_tol": 5e-08},
+      {"type": "KeyValuePair", "key": "CMFD_HD_ITERATIONS", "goldvalue": 58, "abs_tol": 22},
+      {"type": "KeyValuePair", "key": "CMFD_HD_SKIPPED", "goldvalue": 0, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "keigen_pi_stopping_criterion.py",
+    "comment": "Unaccelerated power iteration on a slowly converging 1D two-group core must meet k_tol (1e-6 and 1e-8) against a Newton-Krylov reference; checked as error / k_tol",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "PI_KERR_REL_1E6", "goldvalue": 0, "abs_tol": 2.0},
+      {"type": "KeyValuePair", "key": "PI_KERR_REL_1E8", "goldvalue": 0, "abs_tol": 2.0}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_cmfd_irregular_aggregates.py",
+    "comment": "CMFD on irregular rank-local aggregates of a 3D two-group block must converge to k_tol=1e-8 and match the unaccelerated k_tol=1e-10 reference (bounded two-point diffusion coupling on faces nearly parallel to the centroid offset)",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_IRREG_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_IRREG_K_ERR", "goldvalue": 0, "abs_tol": 2e-08}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_2g_cmfd_irregular_aggregates.py",
+    "comment": "CMFD on irregular rank-local aggregates of a 3D two-group block must converge to k_tol=1e-8 and match the unaccelerated k_tol=1e-10 reference (bounded two-point diffusion coupling on faces nearly parallel to the centroid offset) (CBC sweeps)",
+    "outfileprefix": "keigenvalue_transport_3d_2g_cmfd_irregular_aggregates_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_IRREG_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_IRREG_K_ERR", "goldvalue": 0, "abs_tol": 2e-08}
     ]
   }
 ]

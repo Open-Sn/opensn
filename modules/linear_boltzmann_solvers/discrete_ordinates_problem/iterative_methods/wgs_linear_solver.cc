@@ -30,6 +30,8 @@ WGSMethodName(LinearSystemSolver::IterativeMethod method)
       return "Richardson";
     case LinearSystemSolver::IterativeMethod::PETSC_GMRES:
       return "GMRES";
+    case LinearSystemSolver::IterativeMethod::PETSC_FGMRES:
+      return "FGMRES";
     case LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB:
       return "BiCGSTAB";
     default:

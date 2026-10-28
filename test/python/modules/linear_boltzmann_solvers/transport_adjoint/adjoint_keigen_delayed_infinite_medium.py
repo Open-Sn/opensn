@@ -291,7 +291,6 @@ def solve(grid, materials, adjoint, groupsets=1, cmfd=False, use_precursors=True
             update_wgs_abs_tol=1.0e-12,
             correction_max_attempts=10,
             correction_min_damping=1.0e-4,
-            negative_flux_tolerance=1.0e-6,
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )
         solver = PowerIterationKEigenSolver(

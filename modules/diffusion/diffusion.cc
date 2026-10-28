@@ -268,8 +268,11 @@ DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
   OpenSnPETScCall(KSPSetInitialGuessNonzero(
     ksp_, (use_initial_guess and not direct_solve) ? PETSC_TRUE : PETSC_FALSE));
 
-  OpenSnPETScCall(KSPSetTolerances(
-    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
+  // The tolerance is relative to the right-hand side. An absolute tolerance would stop the
+  // correction solves of synthetic acceleration, whose right-hand side vanishes as the transport
+  // iteration converges, before they correct anything.
+  OpenSnPETScCall(
+    KSPSetTolerances(ksp_, options.residual_tolerance, 1.0e-50, 1.0e50, options.max_iters));
 
   if (options.perform_symmetry_check)
   {
@@ -326,8 +329,11 @@ DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
   OpenSnPETScCall(KSPSetInitialGuessNonzero(
     ksp_, (use_initial_guess and not direct_solve) ? PETSC_TRUE : PETSC_FALSE));
 
-  OpenSnPETScCall(KSPSetTolerances(
-    ksp_, options.residual_tolerance, options.residual_tolerance, 1.0e50, options.max_iters));
+  // The tolerance is relative to the right-hand side. An absolute tolerance would stop the
+  // correction solves of synthetic acceleration, whose right-hand side vanishes as the transport
+  // iteration converges, before they correct anything.
+  OpenSnPETScCall(
+    KSPSetTolerances(ksp_, options.residual_tolerance, 1.0e-50, 1.0e50, options.max_iters));
 
   if (options.perform_symmetry_check)
   {

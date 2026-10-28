@@ -5,6 +5,8 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
+#include "framework/mesh/mesh/mesh.h"
+#include <algorithm>
 #include <cstring>
 #include <numeric>
 
@@ -286,6 +288,60 @@ void
 AAHD_FLUDS::SetDelayedLocalPsiNewToOld()
 {
   delayed_local_psi_bank_.SetNewToOld();
+}
+
+void
+AAHD_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+{
+  const auto& grid = *spds_.GetGrid();
+  const auto& face_orientations = spds_.GetCellFaceOrientations();
+  const auto& node_tracker = common_data_.GetNodeTracker();
+  const auto& nonlocal_offsets = common_data_.GetNonLocalDelayedIncomingNodeOffsets();
+
+  // An incoming face node of the reading (downwind) cell maps to its delayed storage slot; each
+  // slot holds every direction and group of the angle set, direction-major.
+  for (const auto& cell : grid.GetLocalCells())
+  {
+    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    {
+      if (face_orientations[cell->local_id][f] != FaceOrientation::INCOMING or
+          not cell->faces[f].has_neighbor)
+        continue;
+      const auto num_face_nodes =
+        common_data_.GetFaceNodalMapping(cell->local_id, f).face_node_mapping_.size();
+      for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
+      {
+        const auto it = node_tracker.find(FaceNode(cell->local_id, f, fnode));
+        if (it == node_tracker.end())
+          continue;
+        const AAHD_NodeIndex& node_index = it->second;
+        if (node_index.IsBoundary() or node_index.IsOutgoing() or not node_index.IsDelayed())
+          continue;
+
+        double* slot = nullptr;
+        if (node_index.IsLocal())
+          slot = delayed_local_psi_view_.data() + node_index.GetIndex() * num_groups_and_angles_;
+        else
+        {
+          const auto loc = static_cast<std::size_t>(std::upper_bound(nonlocal_offsets.begin(),
+                                                                     nonlocal_offsets.end(),
+                                                                     node_index.GetIndex()) -
+                                                    nonlocal_offsets.begin() - 1);
+          slot = delayed_prelocI_outgoing_psi_view_[loc].data() +
+                 (node_index.GetIndex() - nonlocal_offsets[loc]) * num_groups_and_angles_;
+        }
+
+        for (unsigned int g = 0; g < num_groups_; ++g)
+        {
+          const double delta = correction(cell->local_id, f, fnode, g);
+          if (delta == 0.0)
+            continue;
+          for (std::size_t n = 0; n < num_angles_; ++n)
+            slot[n * num_groups_ + g] += delta;
+        }
+      }
+    }
+  }
 }
 
 void

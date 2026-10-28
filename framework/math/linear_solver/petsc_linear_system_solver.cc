@@ -97,6 +97,8 @@ PETScLinearSolver::Setup()
     OpenSnPETScCall(
       KSPGMRESSetBreakdownTolerance(ksp_, tolerance_options.gmres_breakdown_tolerance));
   }
+  else if (method_ == IterativeMethod::PETSC_FGMRES)
+    OpenSnPETScCall(KSPGMRESSetRestart(ksp_, tolerance_options.gmres_restart_interval));
   OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
   SetOptions();
   SetSolverContext();
@@ -143,6 +145,8 @@ PETScLinearSolver::PETScIterativeMethodName()
       return "richardson";
     case IterativeMethod::PETSC_GMRES:
       return "gmres";
+    case IterativeMethod::PETSC_FGMRES:
+      return "fgmres";
     case IterativeMethod::PETSC_BICGSTAB:
       return "bcgs";
     default:

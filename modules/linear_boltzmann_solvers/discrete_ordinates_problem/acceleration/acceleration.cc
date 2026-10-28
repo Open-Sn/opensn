@@ -80,9 +80,9 @@ AddTimeAbsorptionToDiffusionCoefficient(const double D, const double tau)
 }
 
 void
-ApplyDSACorrectionToDelayedBoundaryFlux(DiscreteOrdinatesProblem& do_problem,
-                                        const LBSGroupset& groupset,
-                                        const std::vector<double>& delta_phi_local)
+ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
+                                       const LBSGroupset& groupset,
+                                       const std::vector<double>& delta_phi_local)
 {
   const auto& grid = *do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -99,8 +99,10 @@ ApplyDSACorrectionToDelayedBoundaryFlux(DiscreteOrdinatesProblem& do_problem,
     return delta_phi_local[transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx)];
   };
 
-  for (const auto& [bid, boundary] : do_problem.GetSweepBoundaries())
-    boundary->AddToNewDelayedAngularFlux(groupset.id, correction);
+  OpenSnLogicalErrorIf(
+    not groupset.angle_agg,
+    "ApplyDSACorrectionToDelayedAngularFlux: groupset has no angle aggregation.");
+  groupset.angle_agg->AddToNewDelayedAngularFlux(correction);
 }
 
 } // namespace opensn

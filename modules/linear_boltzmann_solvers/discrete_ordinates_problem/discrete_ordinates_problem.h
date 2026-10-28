@@ -111,12 +111,12 @@ public:
   SetWGSSolveSettings(size_t groupset_id, unsigned int max_iterations, double residual_tolerance);
 
   /**
-   * Saves the within-group iteration limit and residual tolerance of every groupset. The returned
-   * guard restores them with SetWGSSolveSettings() when destroyed. Solvers hold it while
-   * acceleration methods change these settings, so that the settings outlive neither the solve
-   * nor an exception.
+   * Saves the within-group iteration limit and residual tolerance of every groupset and the
+   * across-groupset iteration limit. The returned guard restores them when destroyed. Solvers hold
+   * it while acceleration methods change these settings, so that the settings outlive neither the
+   * solve nor an exception.
    */
-  [[nodiscard]] ScopedRestore PreserveWGSSolveSettings();
+  [[nodiscard]] ScopedRestore PreserveTransportSolveSettings();
 
   WGSContext& GetWGSContext(int groupset_id);
   /** @} */

@@ -501,7 +501,7 @@
   },
   {
     "file": "transport_2d_4a_dsa_ortho.py",
-    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 is checked against the fully converged value 0.1447349 (AGS tolerance 1e-10, FGMRES, DSA tolerance 1e-10, 4 ranks) within the one-pass error",
     "num_procs": 4,
     "checks": [
       {
@@ -520,13 +520,13 @@
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.14473,
-        "abs_tol": 1e-09
+        "abs_tol": 2e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.14473,
-        "abs_tol": 1e-09
+        "abs_tol": 2e-05
       }
     ]
   },
@@ -2224,6 +2224,128 @@
       {"type": "KeyValuePair", "key": "ANISO_R_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
       {"type": "KeyValuePair", "key": "ANISO_T_ORDER", "goldvalue": 2.8, "abs_tol": 0.3},
       {"type": "KeyValuePair", "key": "ANISO_3D_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution (CBC sweeps)",
+    "outfileprefix": "transport_dsa_lagged_interface_cbc",
+    "num_procs": 4,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution (GPU AAH sweeps)",
+    "outfileprefix": "transport_dsa_lagged_interface_gpu",
+    "num_procs": 4,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "ags_inexact_inner_solves.py",
+    "comment": "Three groupsets with up- and downscattering in an infinite medium, each within-group solve limited to one iteration: the across-groupset iteration must still converge to the exact solution (GMRES and Richardson inner solvers)",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "AGS_INEXACT_GMRES_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "AGS_INEXACT_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "ags_inexact_inner_solves.py",
+    "comment": "Three groupsets with up- and downscattering in an infinite medium, each within-group solve limited to one iteration: the across-groupset iteration must still converge to the exact solution (GMRES and Richardson inner solvers, CBC sweeps)",
+    "outfileprefix": "ags_inexact_inner_solves_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "AGS_INEXACT_GMRES_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "AGS_INEXACT_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution",
+    "outfileprefix": "transport_dsa_lagged_interface_fgmres",
+    "num_procs": 4,
+    "args": [
+      "inner_method=\"petsc_fgmres\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution (CBC sweeps)",
+    "outfileprefix": "transport_dsa_lagged_interface_fgmres_cbc",
+    "num_procs": 4,
+    "args": [
+      "inner_method=\"petsc_fgmres\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "transport_dsa_lagged_interface.py",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution (GPU AAH sweeps)",
+    "outfileprefix": "transport_dsa_lagged_interface_fgmres_gpu",
+    "num_procs": 4,
+    "requires_gpu": true,
+    "args": [
+      "inner_method=\"petsc_fgmres\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+    ]
+  },
+  {
+    "file": "iteration_tolerance_verification.py",
+    "comment": "Classic Richardson (l_abs_tol=1e-12) and the pointwise across-groupset iteration (ags_tolerance=1e-12) in infinite media must reach their tolerances against the exact solution",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "ITER_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11}
+    ]
+  },
+  {
+    "file": "iteration_tolerance_verification.py",
+    "comment": "Classic Richardson (l_abs_tol=1e-12) and the pointwise across-groupset iteration (ags_tolerance=1e-12) in infinite media must reach their tolerances against the exact solution (CBC sweeps)",
+    "outfileprefix": "iteration_tolerance_verification_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "ITER_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11}
     ]
   }
 ]

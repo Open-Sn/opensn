@@ -105,6 +105,17 @@ These are specified in the problem ``options`` block:
 These settings control how the solver coordinates multiple groupsets and how
 much iteration information is printed.
 
+A within-groupset solve that stops at its own iteration limit is treated as an
+inexact inner solve: the across-groupset iteration continues until
+``ags_tolerance`` is met or ``max_ags_iterations`` is reached. If
+``max_ags_iterations`` is not set, each solver uses its own default: ``100``
+for the steady-state and transient solvers, and ``1`` in each power iteration
+of the power iteration k-eigen solver. A value set in the problem options is
+used by every solver. The steady-state
+and transient solvers print a warning when their transport solve ends without
+converging (the across-groupset iteration with several groupsets, otherwise the
+within-groupset solve).
+
 Solver-level controls
 ---------------------
 
@@ -139,6 +150,7 @@ The available groupset inner methods are:
 - ``"classic_richardson"``
 - ``"petsc_richardson"``
 - ``"petsc_gmres"``
+- ``"petsc_fgmres"``
 - ``"petsc_bicgstab"``
 
 These are selected with ``inner_linear_method`` in each groupset.
@@ -267,6 +279,31 @@ Example:
        "l_max_its": 300,
        "gmres_restart_interval": 30,
    }
+
+``petsc_fgmres``
+----------------
+
+This uses PETSc flexible GMRES (FGMRES) around the transport operator, with
+the preconditioner applied on the right.
+
+Why use it:
+
+- with ``apply_wgdsa`` or ``apply_tgdsa``. The DSA preconditioner solves its
+  diffusion system only to ``wgdsa_l_abs_tol``/``tgdsa_l_abs_tol``, so it
+  differs slightly between applications. Standard GMRES assumes a fixed
+  preconditioner and can then report convergence while the transport solution is
+  still in error; flexible GMRES remains exact.
+  With standard GMRES, the transport error follows the DSA tolerance once that
+  tolerance is looser than ``l_abs_tol``, and a groupset that uses
+  ``petsc_gmres`` or ``petsc_bicgstab`` with such a DSA tolerance prints a
+  warning suggesting ``petsc_fgmres``. Setting ``wgdsa_l_abs_tol`` and
+  ``tgdsa_l_abs_tol`` no larger than ``l_abs_tol`` also avoids the error, at the
+  cost of tighter diffusion solves.
+
+It uses ``gmres_restart_interval`` like GMRES and stores about twice as many
+restart vectors. Its residual test uses the unpreconditioned residual scaled by
+the right-hand-side norm. Without a DSA preconditioner it behaves like
+``petsc_gmres``.
 
 ``petsc_bicgstab``
 ------------------
@@ -461,16 +498,24 @@ solve, and usually somewhat tighter.
 ``max_ags_iterations``
 ----------------------
 
-This is the hard cap on AGS passes.
+This is the hard cap on AGS passes in one transport solve.
 
 What it tests:
 
 - nothing by itself; it simply limits the total number of across-groupset
   iterations
 
-Reasonable values:
+Defaults:
 
-- ``100`` is a good default
+- if the option is not set, the steady-state and transient solvers use ``100``
+  and the power iteration k-eigen solver uses ``1`` in each power iteration
+- a value set in the problem options is used by every solver, including the
+  power iteration solver, which then makes up to that many passes in every power
+  iteration
+
+Reasonable values for fixed-source and time-dependent solves:
+
+- ``100``
 - ``20`` to ``50`` is often enough for easier multi-groupset problems
 - if this limit is reached regularly, the real issue is usually strong
   cross-groupset coupling, an overly aggressive groupset split, or the need for
@@ -647,17 +692,36 @@ Relevant parameters:
 What it does:
 
 - sets the fission source from the previous iterate
-- performs the transport solve through AGS and the groupset inner solves
+- performs the transport solve through AGS and the groupset inner solves, with
+  one across-groupset pass unless the problem sets ``max_ags_iterations``
 - updates ``k_eff``
-- repeats until the relative eigenvalue change is below ``k_tol`` in two
-  consecutive power iterations, or ``max_iters`` is reached
+- repeats until the relative eigenvalue change is below
+  :math:`(1-\rho)\,` ``k_tol`` in two consecutive power iterations, or
+  ``max_iters`` is reached
 
-``k_tol`` is the stopping tolerance on the relative eigenvalue change
-:math:`|k_n - k_{n-1}| / k_n` between successive power iterations; it must hold
-for two consecutive iterations, because an accelerated eigenvalue sequence can
-overshoot and show one small change where it turns around. ``1.0e-8`` to
+``k_tol`` is the tolerance on the estimated relative error of the eigenvalue.
+A power iteration converging at rate :math:`\rho` changes :math:`k` by only
+about :math:`1-\rho` times its error per iteration, so the relative change
+:math:`|k_n - k_{n-1}| / k_n` must be below :math:`(1-\rho)\,` ``k_tol``, with
+:math:`\rho` estimated from the change of the production-normalized flux. For a
+problem with a dominance ratio close to one this takes more iterations than a
+test on the change alone, which stops with an error of about :math:`1/(1-\rho)`
+times ``k_tol``. The test must hold for two consecutive iterations, because an
+accelerated eigenvalue sequence can overshoot and show one small change where it
+turns around. ``1.0e-8`` to
 ``1.0e-10`` is a reasonable production range, with ``1.0e-10`` being common
 when a fairly tight ``k_eff`` is desired.
+
+With more than one groupset, each power iteration makes one across-groupset
+pass unless the problem options set ``max_ags_iterations``, in which case it
+makes up to that many. The fission source of a power iteration is itself only an
+estimate, so converging the scattering coupling between groupsets inside each
+power iteration does not change the converged eigenpair; it only adds sweeps.
+With a single pass, the power iteration converges the coupling between
+groupsets together with the fission source, and its rate estimate, taken from
+the change of the flux, includes both. Strong upscattering split across many
+groupsets can slow the power iteration; a few passes per power iteration then
+reduce the number of power iterations.
 
 ``max_iters`` is the hard cap on power iterations. ``500`` to ``1000`` is a
 reasonable starting range. If that cap is reached often, the issue is usually

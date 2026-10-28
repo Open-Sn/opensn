@@ -46,7 +46,9 @@ LBSGroupset::GetInputParameters()
                               "Flag to turn on within-group Diffusion Synthetic Acceleration for "
                               "this groupset");
   params.AddOptionalParameter(
-    "wgdsa_l_abs_tol", 1.0e-4, "Within-group DSA linear absolute tolerance");
+    "wgdsa_l_abs_tol",
+    1.0e-4,
+    "Within-group DSA diffusion-solve residual tolerance, relative to the right-hand-side norm");
   params.AddOptionalParameter("wgdsa_l_max_its", 30, "Within-group DSA linear maximum iterations");
   params.AddOptionalParameter("wgdsa_solver_policy",
                               "auto",
@@ -65,7 +67,10 @@ LBSGroupset::GetInputParameters()
   // TG DSA options
   params.AddOptionalParameter(
     "apply_tgdsa", false, "Flag to turn on Two-Grid Acceleration for this groupset");
-  params.AddOptionalParameter("tgdsa_l_abs_tol", 1.0e-4, "Two-Grid DSA linear absolute tolerance");
+  params.AddOptionalParameter(
+    "tgdsa_l_abs_tol",
+    1.0e-4,
+    "Two-grid DSA diffusion-solve residual tolerance, relative to the right-hand-side norm");
   params.AddOptionalParameter("tgdsa_l_max_its", 30, "Two-Grid DSA linear maximum iterations");
   params.AddOptionalParameter("tgdsa_solver_policy",
                               "auto",
@@ -88,7 +93,7 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange(
     "inner_linear_method",
     AllowableRangeList::New(
-      {"classic_richardson", "petsc_richardson", "petsc_gmres", "petsc_bicgstab"}));
+      {"classic_richardson", "petsc_richardson", "petsc_gmres", "petsc_fgmres", "petsc_bicgstab"}));
   params.ConstrainParameterRange("l_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("l_max_its", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("gmres_restart_interval", AllowableRangeLowLimit::New(1));
@@ -190,6 +195,8 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
     iterative_method = LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON;
   else if (inner_linear_method == "petsc_gmres")
     iterative_method = LinearSystemSolver::IterativeMethod::PETSC_GMRES;
+  else if (inner_linear_method == "petsc_fgmres")
+    iterative_method = LinearSystemSolver::IterativeMethod::PETSC_FGMRES;
   else if (inner_linear_method == "petsc_bicgstab")
     iterative_method = LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB;
 
@@ -218,6 +225,26 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
 
   wgdsa_string = params.GetParamValue<std::string>("wgdsa_petsc_options");
   tgdsa_string = params.GetParamValue<std::string>("tgdsa_petsc_options");
+
+  // The DSA preconditioner solves its diffusion system only to wgdsa_l_abs_tol/tgdsa_l_abs_tol, so
+  // it changes slightly between applications. GMRES and BiCGStab assume a fixed preconditioner;
+  // when the diffusion tolerance is looser than l_abs_tol, the transport error is then set by the
+  // diffusion tolerance instead of l_abs_tol.
+  const bool loose_dsa_tolerance = (apply_wgdsa and wgdsa_tol > residual_tolerance) or
+                                   (apply_tgdsa and tgdsa_tol > residual_tolerance);
+  if (loose_dsa_tolerance and
+      (iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
+       iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB))
+    log.Log0Warning()
+      << "Groupset " << id << ": inner_linear_method=\"" << inner_linear_method
+      << "\" assumes a fixed preconditioner, but the DSA diffusion solve is "
+         "converged only to the relative tolerance wgdsa_l_abs_tol/tgdsa_l_abs_tol, "
+         "which is looser than l_abs_tol = "
+      << residual_tolerance
+      << ". The transport solution can then be less accurate than l_abs_tol, "
+         "especially on several ranks. Consider inner_linear_method="
+         "\"petsc_fgmres\", or set wgdsa_l_abs_tol and tgdsa_l_abs_tol no larger "
+         "than l_abs_tol.";
 }
 
 #ifndef __OPENSN_WITH_GPU__

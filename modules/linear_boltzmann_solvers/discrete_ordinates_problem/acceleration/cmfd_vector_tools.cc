@@ -20,6 +20,16 @@ namespace opensn
 namespace
 {
 
+// Coarse scalar fluxes at or below this magnitude are treated as zero: prolongation leaves the fine
+// flux of such a coarse value unchanged.
+constexpr double negligible_coarse_flux = 1.0e-14;
+
+bool
+IsNegligibleCoarseFlux(const double coarse_phi)
+{
+  return std::fabs(coarse_phi) <= negligible_coarse_flux;
+}
+
 unsigned int
 NumCoarseGroups(const unsigned int num_groups, const unsigned int group_aggregation_size)
 {
@@ -73,6 +83,24 @@ CMFDRelativeBalanceResidual(const std::vector<std::pair<double, double>>& residu
   mpi_comm.all_reduce(local_rhs_l2, global_rhs_l2, mpi::op::sum<double>());
   return global_rhs_l2 > 0.0 ? std::sqrt(global_residual_l2) / std::sqrt(global_rhs_l2)
                              : std::numeric_limits<double>::infinity();
+}
+
+std::size_t
+CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
+                            const std::vector<double>& coarse_phi_new)
+{
+  OpenSnInvalidArgumentIf(coarse_phi_old.size() != coarse_phi_new.size(),
+                          "Old and new coarse scalar flux vector size mismatch.");
+  std::size_t count = 0;
+  for (std::size_t i = 0; i < coarse_phi_old.size(); ++i)
+  {
+    if (IsNegligibleCoarseFlux(coarse_phi_old[i]))
+      continue;
+    const double ratio = coarse_phi_new[i] / coarse_phi_old[i];
+    if (not std::isfinite(ratio) or ratio <= 0.0)
+      ++count;
+  }
+  return count;
 }
 
 std::vector<double>
@@ -218,8 +246,9 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
       for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
       {
         const double denominator = coarse_phi_old[coarse_offset + cg];
-        const double ratio =
-          std::fabs(denominator) > 1.0e-14 ? coarse_phi_new[coarse_offset + cg] / denominator : 1.0;
+        const double ratio = IsNegligibleCoarseFlux(denominator)
+                               ? 1.0
+                               : coarse_phi_new[coarse_offset + cg] / denominator;
         values.push_back(ratio);
       }
     }

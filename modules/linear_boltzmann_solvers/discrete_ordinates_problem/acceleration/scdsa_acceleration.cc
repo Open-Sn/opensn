@@ -141,10 +141,9 @@ SCDSAAcceleration::PrePowerIteration()
   Sf_ell_ = q_moments_local_;
   CopyOnlyPhi0(Sf_ell_, Sf0_ell_);
 
-  // Init old scalar flux storage. If using a single sweep, set
-  // it to the existing scalar flux
+  // Init old flux storage. If using a single sweep, set it to the existing flux
   if (!extra_sweep_)
-    CopyOnlyPhi0(phi_old_local_, phi0_ell_);
+    phi_ell_ = phi_old_local_;
 }
 
 double
@@ -162,8 +161,8 @@ SCDSAAcceleration::PostPowerIteration()
 
   if (extra_sweep_)
   {
-    // Set the old scalar flux to the scalar flux before the last sweep
-    CopyOnlyPhi0(phi_new_local_, phi0_ell_);
+    // Set the old flux to the flux before the last sweep
+    phi_ell_ = phi_new_local_;
 
     // Do an extra sweep
     q_moments_local_ = Sf_ell_;
@@ -171,18 +170,26 @@ SCDSAAcceleration::PostPowerIteration()
     front_wgs_context_->ApplyInverseTransportOperator(SourceFlags());
   }
 
-  // Store the intermediate scalar flux
-  CopyOnlyPhi0(phi_new_local_, phi0_star_);
+  // Store the intermediate flux. The transport flux stays discontinuous: the low-order solution is
+  // only ever added to it as a correction, so that a continuous (pwlc) diffusion discretization
+  // does not change the transport fixed point.
+  phi_star_ = phi_new_local_;
+  const auto CorrectedFlux = [this](const std::vector<double>& epsilon, std::vector<double>& output)
+  {
+    std::vector<double> correction(phi_star_.size(), 0.0);
+    ProjectBackPhi0(epsilon, correction);
+    output = phi_star_ + correction;
+  };
 
   // Power Iteration Acceleration
-  SetLBSScatterSourcePhi0(phi0_star_ - phi0_ell_, false);
+  solver_->SetLBSScatterSource(phi_star_ - phi_ell_, false);
   CopyOnlyPhi0(q_moments_local_, Ss0_res_);
 
   double production_k = ComputeFissionProduction(do_problem_, phi_new_local_);
 
   for (const auto& vec : {&epsilon_k_, &epsilon_kp1_})
   {
-    vec->resize(phi0_star_.size());
+    vec->resize(Ss0_res_.size());
     std::fill(vec->begin(), vec->end(), 0.0);
   }
 
@@ -191,7 +198,7 @@ SCDSAAcceleration::PostPowerIteration()
 
   for (int k = 0; k < pi_max_its_; ++k)
   {
-    ProjectBackPhi0(epsilon_k_ + phi0_star_, phi_temp_);
+    CorrectedFlux(epsilon_k_, phi_temp_);
     solver_->SetLBSFissionSource(phi_temp_, false);
     do_problem_.ScaleQMoments(1.0 / lambda_k);
 
@@ -212,7 +219,7 @@ SCDSAAcceleration::PostPowerIteration()
       epsilon_k_ = epsilon_kp1_;
     }
 
-    ProjectBackPhi0(epsilon_kp1_ + phi0_star_, phi_old_local_);
+    CorrectedFlux(epsilon_kp1_, phi_old_local_);
 
     const double production_kp1 = ComputeFissionProduction(do_problem_, phi_old_local_);
 
@@ -240,7 +247,7 @@ SCDSAAcceleration::PostPowerIteration()
     production_k = production_kp1;
   } // acceleration loop
 
-  ProjectBackPhi0(epsilon_kp1_ + phi0_star_, phi_new_local_);
+  CorrectedFlux(epsilon_kp1_, phi_new_local_);
   LBSVecOps::GSScopedCopyPrimarySTLvectors(
     do_problem_, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 
