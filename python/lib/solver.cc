@@ -2606,17 +2606,18 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     coarse_mesh: str, default="local_aggregation"
         Common option. Coarse-mesh construction method. Valid choices are:
             - 'identity' : one CMFD coarse cell per transport cell
-            - 'local_aggregation' : connected same-block fine cells aggregated locally
-            - 'global_aggregation' : connected same-block fine cells aggregated across MPI ranks
+            - 'local_aggregation' : connected fine cells aggregated locally
+            - 'global_aggregation' : connected fine cells aggregated across MPI ranks
 
         ``"local_aggregation"`` is the conservative default. ``"global_aggregation"`` can
         reduce the coarse problem size on larger distributed meshes. Global aggregation is a
         logical CMFD coarse-space construction: it does not repartition the transport mesh or
         change fine-cell ownership. Each global coarse cell has one owning rank, while ranks
         owning member fine cells keep membership records for restriction and prolongation.
-        Aggregates are connected by face adjacency, remain within one mesh block, and may be
-        smaller than ``aggregation_size`` near boundaries or disconnected regions. ``"identity"``
-        is primarily for debugging and method comparisons.
+        Aggregates are connected by face adjacency, remain within one mesh block unless
+        ``allow_mixed_material_aggregation=True``, and may be smaller than ``aggregation_size``
+        near boundaries or disconnected regions. ``"identity"`` is primarily for debugging and
+        method comparisons.
     current_closure: str, default="partial"
         Common option. CMFD face-current closure. Valid choices are:
             - 'partial' : partial-current CMFD (pCMFD); each one-sided partial current carries
@@ -2634,6 +2635,12 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         Larger values reduce CMFD matrix size and
         setup/solve cost, but make the spatial correction less detailed. Smaller values
         increase the coarse-system cost but may improve robustness.
+    allow_mixed_material_aggregation: bool, default=False
+        Allow local or global aggregates to cross material-block boundaries. Coarse-cell
+        removal, scattering, production, and diffusion coefficients are always homogenized from
+        fine-cell scalar-flux integrals before every CMFD correction; this option only changes
+        which fine cells may share a coarse cell. Requires ``coarse_mesh`` to be
+        ``"local_aggregation"`` or ``"global_aggregation"``.
     group_aggregation_size: int, default=1
         Common option. Number of transport energy groups per CMFD coarse group, not the
         final number of coarse groups. A value of 1 preserves the full transport group
@@ -2729,6 +2736,120 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
         direct solves for larger coarse systems; choose values based on available host
         memory and acceptable factorization cost.
     )"
+  );
+  cmfd_acceleration.def(
+    "GetNumCoarseCells",
+    &CMFDAcceleration::GetNumCoarseCells,
+    R"(
+    Return the global number of CMFD coarse cells.
+
+    The owning solver builds the coarse mesh at the start of each ``Execute()``; before the first
+    ``Execute()`` the count is zero.
+    )"
+  );
+  cmfd_acceleration.def(
+    "GetHomogenizedRemovalXS",
+    &CMFDAcceleration::GetHomogenizedRemovalXS,
+    R"(
+    Return the removal coefficients of the last assembled CMFD operator for one coarse cell.
+
+    Each ``Execute()`` of the owning solver first assembles a volume-weighted operator. Each
+    active power iteration then reassembles it from the transport iterate produced by that
+    iteration's sweep, before the CMFD correction is applied. Inactive iterations do not
+    reassemble it. After ``Execute()`` returns, the values are those of its last assembly.
+
+    Parameters
+    ----------
+    coarse_cell_global_id: int
+        Global id of a coarse cell owned by the calling rank. Ids run from zero to
+        ``GetNumCoarseCells() - 1``; with ``"local_aggregation"`` and ``"global_aggregation"``
+        each coarse cell is owned by one rank.
+
+    Returns
+    -------
+    List[float]
+        One removal coefficient per CMFD energy group.
+
+    Raises
+    ------
+    ValueError
+        If the coarse cell is not owned by the calling rank.
+    RuntimeError
+        If called before the first ``Execute()`` of the owning solver.
+
+    Notes
+    -----
+    Not collective.
+    )",
+    py::arg("coarse_cell_global_id")
+  );
+  cmfd_acceleration.def(
+    "GetHomogenizedDiffusionCoefficient",
+    &CMFDAcceleration::GetHomogenizedDiffusionCoefficient,
+    R"(
+    Return the diffusion coefficients of the last assembled CMFD operator for one coarse cell.
+
+    The operator lifecycle, exceptions, and collectivity are as for
+    :py:meth:`GetHomogenizedRemovalXS`.
+
+    Parameters
+    ----------
+    coarse_cell_global_id: int
+        Global id of a coarse cell owned by the calling rank.
+
+    Returns
+    -------
+    List[float]
+        One diffusion coefficient per CMFD energy group.
+    )",
+    py::arg("coarse_cell_global_id")
+  );
+  cmfd_acceleration.def(
+    "GetHomogenizedScatteringXS",
+    &CMFDAcceleration::GetHomogenizedScatteringXS,
+    R"(
+    Return the P0 transfer matrix of the last assembled CMFD operator for one coarse cell.
+
+    The diagonal is the within-group transfer, which the operator already accounts for in the
+    removal coefficient. In adjoint mode the matrix is the transpose used by the adjoint
+    operator. The operator lifecycle, exceptions, and collectivity are as for
+    :py:meth:`GetHomogenizedRemovalXS`.
+
+    Parameters
+    ----------
+    coarse_cell_global_id: int
+        Global id of a coarse cell owned by the calling rank.
+
+    Returns
+    -------
+    List[float]
+        Row-major matrix with ``num_coarse_groups**2`` entries; entry ``[g, gp]`` is the
+        transfer from coarse group ``gp`` to ``g``.
+    )",
+    py::arg("coarse_cell_global_id")
+  );
+  cmfd_acceleration.def(
+    "GetHomogenizedProductionXS",
+    &CMFDAcceleration::GetHomogenizedProductionXS,
+    R"(
+    Return the production matrix of the last assembled CMFD operator for one coarse cell.
+
+    Delayed production is included when precursors are enabled. In adjoint mode the matrix is
+    the transpose used by the adjoint operator. The operator lifecycle, exceptions, and
+    collectivity are as for :py:meth:`GetHomogenizedRemovalXS`.
+
+    Parameters
+    ----------
+    coarse_cell_global_id: int
+        Global id of a coarse cell owned by the calling rank.
+
+    Returns
+    -------
+    List[float]
+        Row-major matrix with ``num_coarse_groups**2`` entries; entry ``[g, gp]`` is the
+        production in coarse group ``g`` per unit flux in coarse group ``gp``.
+    )",
+    py::arg("coarse_cell_global_id")
   );
   cmfd_acceleration.def(
     "GetNumAppliedCorrections",

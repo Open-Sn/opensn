@@ -98,6 +98,138 @@
     "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_cbc"
   },
   {
+    "file": "cmfd_homogenization_coefficients.py",
+    "comment": "Analytic two-material two-group check of flux-weighted reaction-rate and diffusion homogenization",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_MAX_ABS_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_COARSE_CELLS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_homogenization_coefficients.py",
+    "comment": "Analytic heterogeneous homogenization coefficients when one coarse cell spans two MPI ranks",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_MAX_ABS_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_COARSE_CELLS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "cmfd_homogenization_coefficients_mpi"
+  },
+  {
+    "file": "cmfd_homogenization_coefficients.py",
+    "comment": "Analytic two-material check of spatial transport-rate homogenization followed by energy collapse",
+    "num_procs": 1,
+    "args": [
+      "collapse_energy=True"
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_MAX_ABS_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_COARSE_CELLS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "cmfd_homogenization_coefficients_energy_collapse"
+  },
+  {
+    "file": "cmfd_homogenization_coefficients.py",
+    "comment": "Adjoint heterogeneous spatial homogenization and energy collapse use transposed transfer and production matrices",
+    "num_procs": 1,
+    "args": [
+      "adjoint=True; collapse_energy=True"
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_MAX_ABS_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_COARSE_CELLS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "cmfd_homogenization_coefficients_adjoint"
+  },
+  {
+    "file": "cmfd_homogenization_coefficients.py",
+    "comment": "Rate-preserving mixed-material homogenization of transport-corrected P0 data with a negative fast-group self-scatter",
+    "num_procs": 1,
+    "args": [
+      "negative_self_scatter=True"
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_MAX_ABS_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_COARSE_CELLS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "cmfd_homogenization_coefficients_negative_self_scatter"
+  },
+  {
+    "file": "cmfd_homogenization_initialization.py",
+    "comment": "Void and near-void diffusion bounds, mixed void/material transport-rate homogenization, and unequal-cell physical-volume fallback",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_FALLBACK_MAX_ERROR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_1d_1g_cmfd_limiter.py",
     "comment": "1D CMFD correction limiter stress test with intentionally over-relaxed corrections",
     "num_procs": 1,
@@ -292,6 +424,41 @@
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_agg_cbc"
+  },
+  {
+    "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
+    "comment": "2D heterogeneous two-group benchmark with mixed-material CMFD aggregation preserves the reference eigenvalue and particle balance",
+    "num_procs": 4,
+    "args": [
+      "allow_mixed_material_aggregation=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python k-eigenvalue:",
+        "goldvalue": 0.5969127,
+        "abs_tol": 2e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python relative balance:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_mixed_aggregation"
   },
   {
     "file": "keigenvalue_transport_3d_openmcxs_U235.py",
@@ -1335,14 +1502,14 @@
   },
   {
     "file": "keigen_acceleration_requirements.py",
-    "comment": "k-eigenvalue acceleration requirements (SCDSA/SMM single groupset, SMM P0, stored psi, and vacuum/reflecting boundaries, AAH sweep count, acceleration built for another problem, NLKE DSA single groupset, CMFD and SCDSA-pwlc rejected in 1D spherical) raise ValueError on every rank at Initialize(); neighboring valid configurations, including CMFD in RZ and SCDSA-pwld in 1D spherical, are accepted",
+    "comment": "k-eigenvalue acceleration requirements (SCDSA/SMM single groupset, SMM P0, stored psi, and vacuum/reflecting boundaries, AAH sweep count, acceleration built for another problem, NLKE DSA single groupset, CMFD and SCDSA-pwlc rejected in 1D spherical, mixed-material aggregation on an identity CMFD mesh) raise ValueError on every rank at Initialize(); neighboring valid configurations, including CMFD in RZ and SCDSA-pwld in 1D spherical, are accepted",
     "num_procs": 2,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "KEIGEN_ACCELERATION_REQUIREMENTS_PASSED",
         "wordnum": 1,
-        "gold": 13,
+        "gold": 14,
         "abs_tol": 1e-12
       }
     ]

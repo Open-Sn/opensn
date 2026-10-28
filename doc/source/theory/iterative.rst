@@ -375,17 +375,18 @@ The implementation is intentionally tied to the discrete-ordinates
 transport data structures. The coarse mesh is built directly from the
 transport mesh. A CMFD coarse cell :math:`I` is either a single
 transport cell (the ``identity`` coarse-mesh option) or an aggregate of
-fine transport cells with the same material block id. By default
+fine transport cells. Aggregates preserve material block ids unless mixed-material
+aggregation is explicitly enabled. By default
 (``local_aggregation``), aggregates are built independently on each MPI
 rank and do not cross rank boundaries; the ``global_aggregation`` option
-instead builds connected same-block aggregates that may span MPI ranks,
+instead builds connected aggregates, same-block unless mixed-material aggregation
+is enabled, that may span MPI ranks,
 merging undersized rank-local aggregates across ranks as needed. A
 coarse face :math:`f` is formed by merging all fine faces
 between the same pair of coarse cells, or between a coarse cell and the
 same boundary id. The coarse-face area, centroid, normal, neighbor id,
 and neighbor material data are computed from the underlying fine faces.
-The coarse grid therefore inherits the geometry of the transport mesh;
-it is not a separate Cartesian overlay.
+The aggregated coarse grid inherits the transport-mesh topology.
 
 This section describes the method at the level used by OpenSn rather
 than as pseudocode for the implementation. The important implementation
@@ -420,38 +421,73 @@ system. With larger block sizes, several adjacent transport groups are
 collapsed into one CMFD group. The number of CMFD energy groups is the
 ceiling of the number of transport groups divided by this block size.
 
-OpenSn condenses the material data used by the low-order system using
-the most recent restricted fine-group flux for the cell-local balance
-terms. This is the standard flux-volume weighting used in CMFD energy
-condensation. For coarse group :math:`g_c`, the removal cross section in
-coarse cell :math:`I` is
+OpenSn homogenizes the material data in space and condenses it in energy
+using the most recent fine-mesh scalar flux. This is the usual
+reaction-rate-preserving weighting used in CMFD :cite:t:`openmoc_cmfd`.
+Let
+
+.. math::
+
+   \Phi_{i,g_f}=\sum_n V_{i,n}\phi_{i,n,g_f},
+   \qquad
+   W_{I,g_c}=\sum_{i\in I}\sum_{g_f\in g_c}\Phi_{i,g_f}.
+
+Unlike the volume-averaged coarse-group flux :math:`\Phi_{I,g_c}` above,
+:math:`\Phi_{i,g_f}` is a volume integral that retains the fine-cell index and
+transport group so that a coarse cell may contain several materials. For
+coarse group :math:`g_c`, the removal cross section in coarse cell
+:math:`I` is
 
 .. math::
 
    \Sigma^r_{I,g_c}
    =
    \frac{
-   \displaystyle \sum_{g_f \in g_c} \Sigma^t_{I,g_f}\Phi_{I,g_f}
+   \displaystyle \sum_{i\in I}\sum_{g_f \in g_c}
+   \Sigma^t_{i,g_f}\Phi_{i,g_f}
    -
-   \displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c}
-   \Sigma^{s,0}_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+   \displaystyle \sum_{i\in I}\sum_{g_f \in g_c}
+   \sum_{g_f^{\prime} \in g_c}
+   \Sigma^{s,0}_{i,g_f^{\prime} \rightarrow g_f}\Phi_{i,g_f^{\prime}}
    }{
-   \displaystyle \sum_{g_f \in g_c}\Phi_{I,g_f}
+   W_{I,g_c}
    } .
 
-Here :math:`\Phi_{I,g_f}` is the restricted scalar flux for the fine
-transport group :math:`g_f` in coarse cell :math:`I`. The diffusion
-coefficient is collapsed as
+The diffusion coefficient only sets the interface coupling that the
+nonlinear current correction completes, so it does not affect the fixed
+point. OpenSn weights it with :math:`|\Phi_{i,g_f}|`, which equals
+:math:`\Phi_{i,g_f}` wherever the flux is positive and keeps the
+coefficient positive. It first homogenizes the transport cross section
+for each fine energy group,
+
+.. math::
+
+   \overline{\Sigma}^{tr}_{I,g_f}
+   =
+   \frac{\displaystyle\sum_{i\in I}
+   \Sigma^{tr}_{i,g_f}|\Phi_{i,g_f}|}
+   {\displaystyle\sum_{i\in I}|\Phi_{i,g_f}|},
+   \qquad
+   D_{I,g_f}=\frac{1}{3\overline{\Sigma}^{tr}_{I,g_f}},
+
+and then condenses the spatially homogenized diffusion coefficients,
 
 .. math::
 
    D_{I,g_c}
    =
    \frac{
-   \displaystyle \sum_{g_f \in g_c} D_{I,g_f}\Phi_{I,g_f}
+   \displaystyle \sum_{g_f \in g_c} D_{I,g_f}
+   \sum_{i\in I}|\Phi_{i,g_f}|
    }{
-   \displaystyle \sum_{g_f \in g_c}\Phi_{I,g_f}
+   \displaystyle \sum_{g_f \in g_c}\sum_{i\in I}|\Phi_{i,g_f}|
    } .
+
+The order matters: averaging material diffusion coefficients first
+would average :math:`1/\Sigma^{tr}` rather than preserving the transport
+reaction rate. If the homogenized transport cross section is below
+:math:`10^{-12}`, OpenSn applies the same near-void bound as the material
+cross-section object, :math:`D=1/(3\times10^{-12})`.
 
 For source coarse group :math:`g_c^{\prime}` and destination coarse
 group :math:`g_c`, the P0 scattering transfer and fission production
@@ -462,35 +498,54 @@ terms are
    \Sigma^{s,0}_{I,g_c^{\prime} \rightarrow g_c}
    =
    \frac{
-   \displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c^{\prime}}
-   \Sigma^{s,0}_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+   \displaystyle \sum_{i\in I}\sum_{g_f \in g_c}
+   \sum_{g_f^{\prime} \in g_c^{\prime}}
+   \Sigma^{s,0}_{i,g_f^{\prime} \rightarrow g_f}\Phi_{i,g_f^{\prime}}
    }{
-   \displaystyle \sum_{g_f^{\prime} \in g_c^{\prime}}\Phi_{I,g_f^{\prime}}
+   W_{I,g_c^{\prime}}
    },
    \qquad
    F_{I,g_c^{\prime} \rightarrow g_c}
    =
    \frac{
-   \displaystyle \sum_{g_f \in g_c}\sum_{g_f^{\prime} \in g_c^{\prime}}
-   F_{I,g_f^{\prime} \rightarrow g_f}\Phi_{I,g_f^{\prime}}
+   \displaystyle \sum_{i\in I}\sum_{g_f \in g_c}
+   \sum_{g_f^{\prime} \in g_c^{\prime}}
+   F_{i,g_f^{\prime} \rightarrow g_f}\Phi_{i,g_f^{\prime}}
    }{
-   \displaystyle \sum_{g_f^{\prime} \in g_c^{\prime}}\Phi_{I,g_f^{\prime}}
+   W_{I,g_c^{\prime}}
    } .
 
-If a condensation denominator is numerically zero, the implementation
-falls back to an unweighted average over the same fine groups. The CMFD
-operator uses only the zeroth scattering moment. Higher scattering
-moments may be present in the high-order transport solve, but the CMFD
-correction accelerates only the scalar balance.
+The production matrix includes delayed production when precursor use is
+enabled. In adjoint mode the scattering, prompt-production, and delayed-
+production operators are transposed before homogenization; the diagonal
+transport coefficient is unchanged.
 
-The cell-local terms in the CMFD matrix use the latest fine-group flux
-restricted to the owner coarse cell. For a diffusion coefficient on the
-neighbor side of an interface, OpenSn uses the neighbor material data
-with an unweighted collapse over the fine groups in the coarse group.
-This avoids exchanging neighbor fine-group spectra when assembling each
-face coupling. The nonlinear current correction described below is then
-responsible for making the assembled face current match the latest
-transport current at the current iterate.
+The signed weights preserve the fine-mesh rates of the transport iterate
+exactly, including where the scalar flux is negative, so no sign
+condition is imposed on the condensed coefficients. The weights of
+coarse group :math:`g_c` are replaced only when :math:`W_{I,g_c}` is
+zero, non-finite, or satisfies
+:math:`|W_{I,g_c}|\le 64\epsilon\sum_{i\in I}\sum_{g_f\in g_c}|\Phi_{i,g_f}|`,
+where :math:`\epsilon` is the double-precision machine epsilon; below
+this bound the sum is indistinguishable from roundoff. The test is
+relative, so it is invariant under rescaling of an eigenvector. The
+implementation then substitutes the physical fine-cell volumes
+:math:`\sum_n V_{i,n}` for the flux weights of that coarse group, whose
+coarse rates then no longer match the transport rates. The same
+physical-volume rule constructs the first operator before a transport
+iterate exists. The CMFD operator uses only the zeroth
+scattering moment. Higher scattering moments may be present in the
+high-order transport solve, but the CMFD correction accelerates only the
+scalar balance. The first scattering moment still enters
+:math:`\Sigma^{tr}` through the transport correction.
+
+The cell-local terms in the CMFD matrix use the latest homogenized data
+owned by the coarse cell. Homogenized diffusion coefficients are
+exchanged between neighboring coarse-cell owners before interface
+couplings are assembled, so both rows that share an interface use the
+same two diffusion coefficients and the same coupling. The nonlinear current correction described
+below is then responsible for making the assembled face current match
+the latest transport current at the current iterate.
 
 Coarse diffusion balance
 ~~~~~~~~~~~~~~~~~~~~~~~~
