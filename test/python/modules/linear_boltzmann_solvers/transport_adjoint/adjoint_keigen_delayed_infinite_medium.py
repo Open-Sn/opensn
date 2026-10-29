@@ -28,6 +28,7 @@ groups, so that the family, its yield and both group indices of the delayed term
   no_precursors: use_precursors=False, so no delayed neutrons are produced: k_inf and the P/R
     references are those of the prompt-only F = chi_p (nu_p sigma_f)^T (k_inf = 0.993), and k and
     P/R are checked as in production.
+  cmfd_no_precursors: cmfd with use_precursors=False; the coarse production is prompt only too.
 
 Two scenarios use two materials, A and B, which alternate cell by cell on a mesh of 20 cells. They
 have the same sigma_t, S, sigma_f and nu = nu_p + nu_d, and the same F, but split F differently
@@ -329,14 +330,14 @@ if __name__ == "__main__":
         results["K_ADJ="] = f"{k_adjoint:.10f}"
         results["K_FWD_REL_ERR="] = f"{abs(k_forward / k_inf - 1.0):.6e}"
         results["K_ADJ_REL_ERR="] = f"{abs(k_adjoint / k_inf - 1.0):.6e}"
-    elif scenario in ("two_groupsets", "cmfd", "production", "no_precursors"):
+    elif scenario in ("two_groupsets", "cmfd", "production", "no_precursors", "cmfd_no_precursors"):
         medium = media["two_families"]
         # Without precursors the references are those of the prompt-only operator.
-        use_precursors = scenario != "no_precursors"
+        use_precursors = scenario not in ("no_precursors", "cmfd_no_precursors")
         k_inf = k_infinite(medium, use_precursors)
         settings = {
             "groupsets": 2 if scenario == "two_groupsets" else 1,
-            "cmfd": scenario == "cmfd",
+            "cmfd": scenario in ("cmfd", "cmfd_no_precursors"),
             "use_precursors": use_precursors,
         }
         k_forward, ratio_forward, _ = solve(grid, [medium], adjoint=False, **settings)

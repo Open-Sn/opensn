@@ -1204,13 +1204,17 @@ WrapLBS(py::module& slv)
           - write_restart_time_interval: int, default=0
             (must be 0 or >=30)
           - use_precursors: bool, default=True
-            Enable delayed-neutron precursor treatment. This is treated as user intent and remains
-            active across later ``SetXSMap`` calls, even if the current XS map temporarily contains
-            no precursor-bearing material. When XS maps are swapped, existing precursor
-            concentrations are remapped by cell and precursor-family index; new families start at
-            zero and removed families are discarded. If any fissionable material in the active map
-            has precursor data and ``use_precursors=True``, all fissionable materials in that map
-            must have precursor data. Non-fissionable materials may have zero precursors.
+            Enable delayed neutrons. With ``False`` every solve (steady-state, k-eigenvalue and
+            transient) uses prompt neutrons only, even if the cross sections have delayed-neutron
+            data; a k-eigenvalue solve then gives the prompt eigenvalue. This is treated as user
+            intent and remains active across later ``SetXSMap`` calls, even if the current XS map
+            temporarily contains no precursor-bearing material. When XS maps are swapped, existing
+            precursor concentrations are remapped by cell and precursor-family index; new families
+            start at zero and removed families are discarded. If any fissionable material in the
+            active map has precursor data and ``use_precursors=True``, all fissionable materials in
+            that map must have precursor data. Non-fissionable materials may have zero precursors.
+          - delayed_neutrons: bool, default=True
+            Alias of ``use_precursors``. Give at most one of the two names.
           - use_source_moments: bool, default=False
             Use the problem's source moments as the fixed source instead of its
             volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)
@@ -1778,11 +1782,14 @@ WrapLBS(py::module& slv)
               ``.restart.h5`` to this stem.
           - write_restart_time_interval: int, default=0
           - use_precursors: bool, default=True
-            Enable delayed-neutron precursor treatment. This remains active across later
+            Enable delayed neutrons. With ``False`` every solve uses prompt neutrons only, even if
+            the cross sections have delayed-neutron data. This remains active across later
             ``SetXSMap`` calls, even if the current map temporarily has no precursor-bearing
             material. When XS maps change, precursor concentrations are remapped by cell and
             precursor-family index; newly introduced families start at zero and removed families
             are discarded.
+          - delayed_neutrons: bool, default=True
+            Alias of ``use_precursors``. Give at most one of the two names.
           - use_source_moments: bool, default=False
             Use the problem's source moments as the fixed source instead of its
             volumetric and point sources. Provide them (e.g. with ``ReadSourceMoments``)

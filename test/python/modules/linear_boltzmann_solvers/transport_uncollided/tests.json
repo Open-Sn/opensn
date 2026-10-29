@@ -939,5 +939,33 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "uncollided_delayed_fission_source.py",
+    "comment": "The first-collision fission source follows use_precursors: with delayed data the flux equals that of the equivalent medium without delayed data, with nu = nu_p + nu_d (True) or nu_p (False)",
+    "num_procs": 1,
+    "env": {
+      "OPENSN_NUM_THREADS": 4
+    },
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedDelayedTotalMaxRelDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedDelayedPromptMaxRelDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedDelayedBalance=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
   }
 ]

@@ -302,11 +302,65 @@ spectrum, the entry for ``(g_to, g_from)`` is :math:`\chi^{g_\text{to}}
    GPRIME_G_VAL 1 1 0.150
    PRODUCTION_MATRIX_END
 
+Delayed-Neutron Data and Solver Behavior
+----------------------------------------
+
+The problem option ``use_precursors`` (alias ``delayed_neutrons``; give only
+one of the two names) selects the fission model of every solve on the problem:
+
+* ``True`` (the default): prompt and delayed neutrons. Steady-state and
+  k-eigenvalue fission sources include the delayed production, and transients
+  produce delayed neutrons through the precursor equations.
+* ``False``: prompt neutrons only, even if the cross sections have
+  delayed-neutron data. Steady-state, k-eigenvalue and transient solves omit
+  delayed neutrons, so a k-eigenvalue solve gives the prompt eigenvalue
+  :math:`k_p`.
+
+Because the option is set when the problem is created, a steady-state or
+k-eigenvalue solution and a transient that follows it on the same problem use
+the same model. The steady state is then an equilibrium of the transient.
+Comparing k from a problem with ``use_precursors=True`` and :math:`k_p` from one
+with ``False`` gives, for example, :math:`\beta_\mathrm{eff} = 1 - k_p/k`.
+
+.. important::
+
+   If ``use_precursors`` is ``True`` and any fissionable material in the
+   active cross-section map contains precursor data, all fissionable materials
+   in that map must contain compatible precursor data. Non-fissionable materials
+   may have zero precursors. This avoids solving a mixed prompt-only and
+   prompt-plus-delayed fission model by accident.
+
+Native OpenSn delayed data is interpreted as follows:
+
+* ``NU_PROMPT`` and ``CHI_PROMPT`` define the prompt fission production matrix.
+* ``NU_DELAYED`` defines the delayed fission production by source group.
+* ``PRECURSOR_FRACTIONAL_YIELDS`` partitions delayed production among precursor
+  families. The yields are normalized when read.
+* ``CHI_DELAYED`` defines each precursor family's delayed emission spectrum by
+  destination group.
+* ``PRECURSOR_DECAY_CONSTANTS`` are used for precursor concentrations and
+  transient evolution; they do not change the steady-state k-eigenvalue.
+
+With delayed neutrons, steady-state source assembly and k-eigenvalue
+normalization add the delayed term
+
+.. math::
+
+   \sum_j \chi_{d,j,g}\,\gamma_j\,\nu_{d,g'}\Sigma_{f,g'}\phi_{g'}
+
+to the prompt production matrix contribution. Here ``j`` is the precursor family
+index, ``g`` is the destination group, and ``g'`` is the source group.
+
+When the native ``PRODUCTION_MATRIX`` form is used, delayed-neutron precursor
+data is currently not allowed in the same material. This avoids ambiguity over
+whether the matrix already contains delayed production.
+
 Loading OpenMC MGXS Files
 =========================
 
 Use :py:meth:`pyopensn.xs.MultiGroupXS.LoadFromOpenMC` to load cross sections
-from an OpenMC multi-group HDF5 library.
+from an OpenMC multi-group HDF5 library. Delayed-neutron data is imported when
+it is present in the OpenMC file.
 
 .. code-block:: python
 
@@ -344,6 +398,12 @@ Example:
    absorption dataset directly. This makes the imported data less sensitive to
    small inconsistencies or statistical noise.
 
+   When delayed-neutron data is present, OpenSn also imports precursor-group
+   information, prompt and delayed fission production, precursor decay
+   constants, and delayed emission spectra (see
+   :ref:`openmc-delayed-neutron-data`). Once imported, ``use_precursors``
+   selects the fission model as described above.
+
 What OpenMC Import Expects
 --------------------------
 
@@ -361,10 +421,59 @@ The imported object may include:
 * fission cross section
 * fission production data
 * fission spectrum
+* delayed-neutron data (see :ref:`openmc-delayed-neutron-data`)
 * any requested named custom one-dimensional XS in ``extra_xs_names``
 
 If the requested dataset or temperature is not present, the load fails with an
 error.
+
+.. _openmc-delayed-neutron-data:
+
+OpenMC Delayed-Neutron Data
+---------------------------
+
+Delayed-neutron data is read when the file's ``delayed_groups`` attribute is
+positive. Each delayed group becomes a precursor family. A fissionable dataset
+must then give its delayed data in one of OpenMC's two vector forms (isotropic
+representation; the matrix forms, with a ``nu-fission`` matrix, are not
+supported):
+
+* **beta form**, used whenever ``beta`` exists (as in OpenMC): ``nu-fission``,
+  ``chi``, ``beta`` and ``decay-rate``. ``beta`` is the delayed fraction of each
+  delayed group, with shape ``[delayed group]`` or ``[delayed group][group]``
+  (by fissioning group). The delayed nu-fission of delayed group :math:`j` is
+  :math:`\beta_{j,g}\,\nu\Sigma_{f,g}`, the prompt nu-fission is the rest, and
+  prompt and delayed neutrons are born with ``chi``.
+* **prompt/delayed form**: ``prompt-nu-fission``, ``delayed-nu-fission``
+  (``[delayed group][group]``), ``chi-prompt``, ``chi-delayed``
+  (``[delayed group][group]``) and ``decay-rate``. As in OpenMC, the total
+  nu-fission is the sum of the prompt and delayed parts; ``nu-fission`` and
+  ``chi`` are not needed. Without ``prompt-nu-fission`` the prompt part is
+  ``nu-fission`` minus the delayed part, and without ``chi-prompt`` the prompt
+  spectrum is ``chi`` (with a warning).
+
+With one delayed group, one-dimensional ``[group]`` arrays are accepted for the
+``[delayed group][group]`` datasets. The spectra are normalized to unit sum.
+Data of the wrong shape, negative values, zero spectra, non-positive decay
+rates, and delayed fractions that exceed the total are rejected.
+
+An OpenSn precursor family has one fractional yield :math:`\gamma_j`, so its
+share of the delayed neutrons is the same for every fissioning group. OpenSn
+sets :math:`\gamma_j` to the family's share of the delayed nu-fission summed
+over the groups,
+
+.. math::
+
+   \gamma_j = \frac{\sum_g \nu_{d,j,g}\Sigma_{f,g}}
+                   {\sum_{j'} \sum_g \nu_{d,j',g}\Sigma_{f,g}} ,
+
+and the delayed nu-fission to the sum over the families. This reproduces the
+data exactly when each family's share does not depend on the fissioning group.
+Otherwise the precursor concentrations, and the delayed production when the
+families' spectra differ, are approximate; the import then warns with the
+largest difference between a family's share in a group and its yield. When all
+delayed neutrons share one spectrum, as in the beta form, the steady-state
+delayed production is exact either way.
 
 Loading CEPXS-BFP Files
 =======================

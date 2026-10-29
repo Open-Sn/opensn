@@ -20,6 +20,49 @@
     ]
   },
   {
+    "file": "keigenvalue_transport_1d_1g_precursor_toggle.py",
+    "comment": "1D delayed k-eigenvalue with use_precursors True and False (prompt k_p = 0.995 k exactly for one group) and the delayed_neutrons alias",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python use_precursors=False k-eigenvalue:",
+        "goldvalue": 0.9945456,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python use_precursors=True k-eigenvalue:",
+        "goldvalue": 0.9995433,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python k_p/k ratio error:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python delayed_neutrons alias k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-13
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python default options k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-13
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python both delayed-neutron options rejected:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "keigenvalue_transport_1d_1g_cmfd.py",
     "comment": "1D keigenvalue test using power iteration with aggregated CMFD acceleration",
     "num_procs": 4,
@@ -529,6 +572,50 @@
         "wordnum": 13,
         "gold": 1.5029618,
         "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_openmcxs_delayed_slab.py",
+    "comment": "1D 2G delayed-neutron slab keigenvalue test using OpenMC MGXS library",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "OPENSN_KEFF",
+        "goldvalue": 0.35819387,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_openmcxs_beta_infinite_medium.py",
+    "comment": "OpenMC MGXS beta-form delayed data (beta by delayed group and group) in an infinite medium: k_inf and prompt k_p, fixed-source flux, and a null transient against numpy references",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "OPENMC_BETA_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "OPENMC_BETA_K_PROMPT_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "OPENMC_BETA_SOURCE_PHI_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "OPENMC_BETA_NULL_TRANSIENT_DRIFT=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   },
