@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
+#include "framework/utils/error.h"
 #include <functional>
 #include <set>
 #include <span>
@@ -75,13 +76,35 @@ public:
   using DelayedFluxCorrection =
     std::function<double(std::uint32_t, unsigned int, unsigned int, unsigned int)>;
 
+  /// Whether this FLUDS stores delayed (lagged) angular fluxes, within or between locations.
+  bool HasDelayedAngularFlux() const
+  {
+    if (not delayed_local_psi_view_.empty())
+      return true;
+    for (const auto& view : delayed_prelocI_outgoing_psi_view_)
+      if (not view.empty())
+        return true;
+    return false;
+  }
+
   /**
    * Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux, that is,
    * to the lagged values the next sweep reads where a cyclic dependency was broken, within this
    * location or between locations. The correction is evaluated at the face node of the downwind
-   * cell that reads the value. The default has no delayed angular fluxes.
+   * cell that reads the value.
+   *
+   * A FLUDS type that stores delayed angular fluxes must override this. The default accepts only a
+   * FLUDS without them and otherwise throws, so that lagged fluxes of a type that does not
+   * implement the correction fail loudly instead of keeping an error that re-enters on the next
+   * sweep.
    */
-  virtual void AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction) {}
+  virtual void CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& /*correction*/)
+  {
+    OpenSnLogicalErrorIf(HasDelayedAngularFlux(),
+                         "This FLUDS type stores delayed (lagged) angular fluxes but does not "
+                         "implement CorrectNewDelayedAngularFlux, so synthetic acceleration cannot "
+                         "correct them.");
+  }
 
   virtual ~FLUDS() = default;
 

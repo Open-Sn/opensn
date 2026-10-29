@@ -38,7 +38,7 @@ public:
                        std::size_t face_dof,
                        std::size_t n);
 
-  void AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
+  void CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
 
   /**
    * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function

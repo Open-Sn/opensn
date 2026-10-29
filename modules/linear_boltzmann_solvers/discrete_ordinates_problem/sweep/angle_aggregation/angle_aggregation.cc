@@ -531,14 +531,14 @@ AngleAggregation::SetDelayedPsiNew2Old()
 }
 
 void
-AngleAggregation::AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction)
+AngleAggregation::CorrectNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction)
 {
   for (const auto& [bid, bndry] : boundaries_)
-    bndry->AddToNewDelayedAngularFlux(groupset_id_, correction);
+    bndry->CorrectNewDelayedAngularFlux(groupset_id_, correction);
 
   // Intra-location and inter-location cycles
   for (auto& angle_set : angle_set_groups_)
-    angle_set->GetFLUDS().AddToNewDelayedAngularFlux(correction);
+    angle_set->GetFLUDS().CorrectNewDelayedAngularFlux(correction);
 }
 
 } // namespace opensn

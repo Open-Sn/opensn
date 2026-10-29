@@ -518,7 +518,7 @@ AAH_FLUDS::SetDelayedLocalPsiOldToNew()
 }
 
 void
-AAH_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+AAH_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
 {
   const auto& grid = *spds_.GetGrid();
   const auto& spls = spds_.GetLocalSubgrid();
