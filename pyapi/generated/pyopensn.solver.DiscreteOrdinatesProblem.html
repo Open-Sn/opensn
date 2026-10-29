@@ -1099,13 +1099,17 @@ loads it once; later initializations continue from the problem’s current state
 <li><p>write_restart_time_interval: int, default=0
 (must be 0 or &gt;=30)</p></li>
 <li><p>use_precursors: bool, default=True
-Enable delayed-neutron precursor treatment. This is treated as user intent and remains
-active across later <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code> calls, even if the current XS map temporarily contains
-no precursor-bearing material. When XS maps are swapped, existing precursor
-concentrations are remapped by cell and precursor-family index; new families start at
-zero and removed families are discarded. If any fissionable material in the active map
-has precursor data and <code class="docutils literal notranslate"><span class="pre">use_precursors=True</span></code>, all fissionable materials in that map
-must have precursor data. Non-fissionable materials may have zero precursors.</p></li>
+Enable delayed neutrons. With <code class="docutils literal notranslate"><span class="pre">False</span></code> every solve (steady-state, k-eigenvalue and
+transient) uses prompt neutrons only, even if the cross sections have delayed-neutron
+data; a k-eigenvalue solve then gives the prompt eigenvalue. This is treated as user
+intent and remains active across later <code class="docutils literal notranslate"><span class="pre">SetXSMap</span></code> calls, even if the current XS map
+temporarily contains no precursor-bearing material. When XS maps are swapped, existing
+precursor concentrations are remapped by cell and precursor-family index; new families
+start at zero and removed families are discarded. If any fissionable material in the
+active map has precursor data and <code class="docutils literal notranslate"><span class="pre">use_precursors=True</span></code>, all fissionable materials in
+that map must have precursor data. Non-fissionable materials may have zero precursors.</p></li>
+<li><p>delayed_neutrons: bool, default=True
+Alias of <code class="docutils literal notranslate"><span class="pre">use_precursors</span></code>. Give at most one of the two names.</p></li>
 <li><p>use_source_moments: bool, default=False
 Use the problem’s source moments as the fixed source instead of its
 volumetric and point sources. Provide them (e.g. with <code class="docutils literal notranslate"><span class="pre">ReadSourceMoments</span></code>)

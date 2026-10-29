@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a7f30277627d8374f844363c3ec7fd990:
+
+Function opensn::ComputeDelayedFissionProduction
+================================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_lbs_problem_compute_lbs_compute.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeDelayedFissionProduction(const MultiGroupXS&, unsigned int, unsigned int)
+   :project: opensn

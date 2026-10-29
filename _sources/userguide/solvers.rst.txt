@@ -184,7 +184,7 @@ Problem options available in Python include:
 * ``read_initial_condition_path``
 * ``write_restart_path``
 * ``write_restart_time_interval``
-* ``use_precursors``
+* ``use_precursors`` (alias ``delayed_neutrons``)
 * ``use_source_moments``
 * ``save_angular_flux``
 * ``adjoint``
@@ -203,7 +203,11 @@ active for the problem. The default is ``True``. This should usually stay
 enabled for transient and k-eigen workflows unless you explicitly want a
 prompt-only model. With ``use_precursors=False``, delayed neutrons are omitted
 from steady-state and k-eigenvalue solves as well as from transients, which
-lowers :math:`k_\text{eff}` by approximately the delayed fraction.
+lowers :math:`k_\text{eff}` by approximately the delayed fraction (a k-eigenvalue
+solve gives the prompt eigenvalue). Every solve on a problem uses the same
+model, so a steady state is an equilibrium of the transient that follows it.
+``delayed_neutrons`` is an alias of ``use_precursors``; give only one of the two
+names.
 
 ``read_restart_path`` reads a full restart for continuing a compatible solve.
 ``read_initial_condition_path`` reads restart data as an initial condition (the

@@ -232,6 +232,15 @@ information.</p>
 object.</p>
 <p class="rubric">Notes</p>
 <p>This method mutates <code class="docutils literal notranslate"><span class="pre">self</span></code> by replacing its current contents.</p>
+<p>When the library has delayed groups, each becomes a precursor family, and the
+delayed data of a fissionable dataset is read in OpenMC’s beta form (<code class="docutils literal notranslate"><span class="pre">beta</span></code>
+with <code class="docutils literal notranslate"><span class="pre">nu-fission</span></code> and <code class="docutils literal notranslate"><span class="pre">chi</span></code>; used whenever <code class="docutils literal notranslate"><span class="pre">beta</span></code> exists) or its
+prompt/delayed form (<code class="docutils literal notranslate"><span class="pre">prompt-nu-fission</span></code>, <code class="docutils literal notranslate"><span class="pre">delayed-nu-fission</span></code>,
+<code class="docutils literal notranslate"><span class="pre">chi-prompt</span></code> and <code class="docutils literal notranslate"><span class="pre">chi-delayed</span></code>), with <code class="docutils literal notranslate"><span class="pre">decay-rate</span></code>. Matrix and angular
+representations are not supported. Each family gets one fractional yield, its
+share of the delayed nu-fission summed over the groups; a warning is logged
+when the data give the families group-dependent shares, which this
+approximates. See the user guide section on OpenMC delayed-neutron data.</p>
 </dd></dl>
 
 <dl class="py method">

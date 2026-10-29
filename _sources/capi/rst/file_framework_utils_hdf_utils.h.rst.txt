@@ -111,6 +111,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ac23ecd54e0cc0c0694dfa47a6b154e8d`
 
+- :ref:`exhale_function_namespaceopensn_1aa14a6b5e10b11318ae37d6262ed96337`
+
 - :ref:`exhale_function_namespaceopensn_1afa1fa5dc197399e0d4d1fb424e89c036`
 
 - :ref:`exhale_function_namespaceopensn_1a3f84090a0c4d828919432242e33fe605`

@@ -326,7 +326,7 @@ flux storage, AGS behavior, and other global settings</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">write_restart_path</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">write_restart_time_interval</span></code></p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">use_precursors</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">use_precursors</span></code> (alias <code class="docutils literal notranslate"><span class="pre">delayed_neutrons</span></code>)</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">use_source_moments</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">adjoint</span></code></p></li>
@@ -345,7 +345,11 @@ active for the problem. The default is <code class="docutils literal notranslate
 enabled for transient and k-eigen workflows unless you explicitly want a
 prompt-only model. With <code class="docutils literal notranslate"><span class="pre">use_precursors=False</span></code>, delayed neutrons are omitted
 from steady-state and k-eigenvalue solves as well as from transients, which
-lowers <span class="math notranslate nohighlight">\(k_\text{eff}\)</span> by approximately the delayed fraction.</p>
+lowers <span class="math notranslate nohighlight">\(k_\text{eff}\)</span> by approximately the delayed fraction (a k-eigenvalue
+solve gives the prompt eigenvalue). Every solve on a problem uses the same
+model, so a steady state is an equilibrium of the transient that follows it.
+<code class="docutils literal notranslate"><span class="pre">delayed_neutrons</span></code> is an alias of <code class="docutils literal notranslate"><span class="pre">use_precursors</span></code>; give only one of the two
+names.</p>
 <p><code class="docutils literal notranslate"><span class="pre">read_restart_path</span></code> reads a full restart for continuing a compatible solve.
 <code class="docutils literal notranslate"><span class="pre">read_initial_condition_path</span></code> reads restart data as an initial condition (the
 two options are alternatives; setting both is rejected); this

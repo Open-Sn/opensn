@@ -100,7 +100,10 @@ The k-eigenvalue solver instead stores
 fission source scaled by :math:`1/k_\mathrm{eff}`. The physical transient removes
 that scaling, so a noncritical eigenstate generally grows or decays even when
 the inputs are unchanged. The stationary guarantee applies to an equilibrated
-critical eigenstate (:math:`k_\mathrm{eff}=1`).
+critical eigenstate (:math:`k_\mathrm{eff}=1`). Replacing the fissionable cross
+sections by ones with :math:`\nu_p` and :math:`\nu_d` divided by
+:math:`k_\mathrm{eff}` makes the eigenstate critical, and the stored precursors
+are then exactly at equilibrium for them.
 With ``use_precursors=False`` the model is prompt only: delayed
 neutrons are omitted from steady-state, k-eigenvalue, and transient solves,
 which lowers :math:`k_\text{eff}` by approximately the delayed fraction.

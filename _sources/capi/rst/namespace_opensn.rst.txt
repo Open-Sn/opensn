@@ -983,6 +983,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a2c8745b535a9a21dc512fc3e3cc02e60`
 
+- :ref:`exhale_function_namespaceopensn_1a7f30277627d8374f844363c3ec7fd990`
+
 - :ref:`exhale_function_namespaceopensn_1ab5a8027c86354f1c4f4c6bca1bc7df44`
 
 - :ref:`exhale_function_namespaceopensn_1aee9196a158eb2c2f70975ad9ceaaa3a5`
@@ -1134,6 +1136,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1aad7fb496a0c5cb480dcaa0cedd36e484`
 
 - :ref:`exhale_function_namespaceopensn_1ac23ecd54e0cc0c0694dfa47a6b154e8d`
+
+- :ref:`exhale_function_namespaceopensn_1aa14a6b5e10b11318ae37d6262ed96337`
 
 - :ref:`exhale_function_namespaceopensn_1afa1fa5dc197399e0d4d1fb424e89c036`
 
@@ -1384,6 +1388,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a4e053d3f1e0ca26faa917f2bae7f283b`
 
 - :ref:`exhale_function_namespaceopensn_1a23fb50509efc9f941b72f74464bf39fd`
+
+- :ref:`exhale_function_namespaceopensn_1acdc60bdae34371a1bf7b164246808ab2`
 
 - :ref:`exhale_function_namespaceopensn_1ae6c13df7c25e90f9bc22f343fc3dacae`
 
