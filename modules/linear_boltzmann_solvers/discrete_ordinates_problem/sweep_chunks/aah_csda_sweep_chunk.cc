@@ -37,6 +37,10 @@ AAHCSDASweepChunk::AAHCSDASweepChunk(DiscreteOrdinatesProblem& problem, LBSGroup
   for (const auto& [begin, end] : FindCSDAProblemChargedGroupRanges(xs_, problem.GetNumGroups()))
     for (auto g = begin; g < end; ++g)
       charged_groups_[g] = true;
+  if (problem.GetOptions().deterministic_sweeps)
+    psi_e_.assign(grid_->GetLocalCellCount() * groupset.quadrature->GetNumAngles() *
+                    groupset.GetNumGroups(),
+                  0.0);
 }
 
 void
@@ -283,6 +287,13 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
         cell_local_id * static_cast<size_t>(problem_.GetNumGroups()) + gs_gi;
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
         destination_phi_e_[cell_g_map + gsg] += wn_d2m * psiE_gsg[gsg];
+      if (not psi_e_.empty())
+        std::copy(
+          psiE_gsg.begin(),
+          psiE_gsg.end(),
+          psi_e_.begin() +
+            static_cast<std::ptrdiff_t>(
+              (cell_local_id * groupset_.quadrature->GetNumAngles() + direction_num) * gs_size));
 
       if (SaveAngularFluxEnabled())
       {
@@ -354,6 +365,32 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
         }
       }
     }
+  }
+}
+
+void
+AAHCSDASweepChunk::SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg)
+{
+  SweepChunk::SetDestinationsFromAngularFlux(angle_agg);
+
+  // The energy-slope moments follow the same fixed angle order.
+  const auto& d2m_op = groupset_.quadrature->GetDiscreteToMomentOperator();
+  const auto num_angles = groupset_.quadrature->GetNumAngles();
+  const auto gs_gi = groupset_.first_group;
+  const auto gs_size = groupset_.GetNumGroups();
+  const auto num_groups = static_cast<size_t>(problem_.GetNumGroups());
+  for (const auto& cell : grid_->GetLocalCells())
+  {
+    double* phi_e = &destination_phi_e_[cell->local_id * num_groups + gs_gi];
+    std::fill_n(phi_e, gs_size, 0.0);
+    for (const auto& angle_set : angle_agg)
+      for (const auto direction_num : angle_set->GetAngleIndices())
+      {
+        const double wn_d2m = d2m_op.data()[direction_num * static_cast<size_t>(num_moments_)];
+        const double* psi_e = &psi_e_[(cell->local_id * num_angles + direction_num) * gs_size];
+        for (size_t gsg = 0; gsg < gs_size; ++gsg)
+          phi_e[gsg] += wn_d2m * psi_e[gsg];
+      }
   }
 }
 

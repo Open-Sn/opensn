@@ -630,6 +630,13 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter(
     "save_angular_flux", false, "Flag indicating whether angular fluxes are to be stored or not.");
   params.AddOptionalParameter(
+    "deterministic_sweeps",
+    false,
+    "Flag for making sweeps bitwise reproducible: the scalar flux moments and outflows are summed "
+    "on the host from stored angular fluxes in a fixed angle order, independent of MPI message "
+    "timing and GPU thread scheduling. Requires host memory for the angular flux; GPU sweeps also "
+    "copy it to the host after every sweep.");
+  params.AddOptionalParameter(
     "adjoint", false, "Flag for enabling adjoint mode on Cartesian geometries.");
   params.AddOptionalParameter(
     "verbose_inner_iterations",
@@ -752,6 +759,8 @@ LBSProblem::ParseOptions(const InputParameters& input)
      [this](const ParameterBlock& spec) { options_.use_src_moments = spec.GetValue<bool>(); }},
     {"save_angular_flux",
      [this](const ParameterBlock& spec) { options_.save_angular_flux = spec.GetValue<bool>(); }},
+    {"deterministic_sweeps",
+     [this](const ParameterBlock& spec) { options_.deterministic_sweeps = spec.GetValue<bool>(); }},
     {"verbose_inner_iterations",
      [this](const ParameterBlock& spec)
      { options_.verbose_inner_iterations = spec.GetValue<bool>(); }},

@@ -21,6 +21,8 @@ public:
 
   bool IsTimeDependent() const override { return true; }
 
+  void SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg) override;
+
 protected:
   template <bool time_dependent, class SweepChunkT>
   friend void CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set);

@@ -147,4 +147,10 @@ template void AAHSweepChunkTD::Sweep_FixedN<8>(AngleSet&);
 
 AAHSweepChunkTD::~AAHSweepChunkTD() = default;
 
+void
+AAHSweepChunkTD::SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg)
+{
+  ComputeTimeDependentDestinationsFromAngularFlux(angle_agg, psi_old_, problem_.GetTheta());
+}
+
 } // namespace opensn

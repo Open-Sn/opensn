@@ -336,6 +336,11 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     }
   }
 
+  // Wait for the saved angular flux callbacks. CUDA and HIP order them before the copies below
+  // through the legacy null stream, but SYCL queues are independent of each other.
+  for (auto& stream : streams_list)
+    stream.synchronize();
+
   // Copy phi and outflow data back to host
   cbcd_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
 

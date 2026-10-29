@@ -251,6 +251,7 @@ The most important options for everyday use are:
 
 * ``adjoint``
 * ``save_angular_flux``
+* ``deterministic_sweeps``
 * ``verbose_inner_iterations``
 * ``verbose_outer_iterations``
 * ``max_ags_iterations``
@@ -315,6 +316,43 @@ This requires CEPXS data loaded with ``csda_format=True`` and a supported
 Cartesian discrete-ordinates problem solved with
 :py:class:`pyopensn.solver.SteadyStateSourceSolver`. See :doc:`csda` for the
 full workflow, output names, and restrictions.
+
+Reproducible sweeps
+-------------------
+
+A sweep adds each direction's contribution to the scalar flux moments and the
+face outflows as soon as that direction is solved. On several MPI ranks the
+order of those additions follows message arrival, and on GPUs it follows thread
+and stream scheduling, so results can change in the last bits from run to run.
+An iteration close to its tolerance can then take a different number of steps.
+
+Set ``options={"deterministic_sweeps": True}`` to make every sweep bitwise
+reproducible. After each sweep, OpenSn recomputes the flux moments and outflows
+on the host from the stored angular flux, in a fixed order: angle sets in
+aggregation order, then their directions. The option applies to every solver and
+to AAH and CBC sweeps. On CPUs this includes time-dependent, CSDA, and
+curvilinear problems. On GPUs it covers the configurations that GPU sweeps
+support, which exclude those three. It is meant for debugging and for
+comparisons that need identical iteration histories, not as a production
+setting.
+
+The option stores the angular flux in host memory, as ``save_angular_flux``
+does, but it does not enable ``save_angular_flux``. Steady-state restart files
+include the angular flux only when both ``save_angular_flux`` and
+``write_angular_flux_to_restart`` are set. Time-dependent restart files always
+include it. ``WriteSurfaceAngularFluxes`` runs only when ``save_angular_flux``
+is set. ``WriteAngularFluxes`` writes whatever angular flux is stored, so it
+also writes the angular flux stored by this option.
+Each sweep makes one extra pass over the stored flux on the host. GPU sweeps
+also copy the angular flux from the device to the host after every sweep, so
+deterministic GPU sweeps are roughly 2-5 times slower than default ones.
+Time-dependent sweeps keep one more angular-flux-sized buffer for the
+time-centered flux, and CSDA sweeps keep the energy-slope angular flux. Without
+the option, these two buffers are not allocated, and the angular flux is stored
+only when ``save_angular_flux`` is set, as time-dependent problems require.
+
+Results still depend on the MPI rank count and partition, and they differ from
+those of the default mode by round-off.
 
 Setting options after construction
 ----------------------------------

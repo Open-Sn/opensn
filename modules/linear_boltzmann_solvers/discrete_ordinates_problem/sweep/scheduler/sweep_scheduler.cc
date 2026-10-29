@@ -50,8 +50,12 @@ CompareCylindrical(const RuleValues& a, const RuleValues& b)
 
 SweepScheduler::SweepScheduler(SchedulingAlgorithm scheduler_type,
                                AngleAggregation& angle_agg,
-                               SweepChunk& sweep_chunk)
-  : scheduler_type_(scheduler_type), angle_agg_(angle_agg), sweep_chunk_(sweep_chunk)
+                               SweepChunk& sweep_chunk,
+                               const bool deterministic_sweeps)
+  : scheduler_type_(scheduler_type),
+    angle_agg_(angle_agg),
+    sweep_chunk_(sweep_chunk),
+    deterministic_sweeps_(deterministic_sweeps)
 {
   if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     InitializeAlgoDOG();
@@ -273,6 +277,10 @@ SweepScheduler::Sweep()
     ScheduleAlgoAAOFused(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
+
+  // Every scheduler has left the scalar flux moments, outflows, and angular flux on the host.
+  if (deterministic_sweeps_)
+    sweep_chunk_.SetDestinationsFromAngularFlux(angle_agg_);
 }
 
 void

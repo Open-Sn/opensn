@@ -2347,5 +2347,219 @@
       {"type": "KeyValuePair", "key": "ITER_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
       {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11}
     ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank AAH fixed-source solves agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_steady_aah",
+    "num_procs": 4,
+    "args": [
+      "case=\"steady\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank CBC fixed-source solves agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_steady_cbc",
+    "num_procs": 4,
+    "args": [
+      "case=\"steady\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank AAH power iterations with CMFD agree bitwise in k, scalar flux and leakage, match the default mode to the k tolerance, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_keigen_cmfd_aah",
+    "num_procs": 4,
+    "args": [
+      "case=\"keigen\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_K_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank RZ fixed-source solves agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_rz",
+    "num_procs": 4,
+    "args": [
+      "case=\"rz\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank AAH theta=0.5 transient steps agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_transient_aah",
+    "num_procs": 4,
+    "args": [
+      "case=\"transient\"",
+      "sweep_type=\"AAH\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank CBC theta=0.5 transient steps agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_transient_cbc",
+    "num_procs": 4,
+    "args": [
+      "case=\"transient\"",
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank CSDA fixed-source solves agree bitwise in scalar flux and leakage, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_csda",
+    "num_procs": 4,
+    "args": [
+      "case=\"csda\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 4-rank adjoint fixed-source solves agree bitwise and match the default mode to round-off; the stored adjoint angular flux is reoriented like that of save_angular_flux",
+    "outfileprefix": "deterministic_sweeps_adjoint",
+    "num_procs": 4,
+    "args": [
+      "case=\"adjoint\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_SAVED_ADJOINT_PSI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 2-rank GPU AAH fixed-source solves agree bitwise, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_steady_aah_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "case=\"steady\"",
+      "sweep_type=\"AAH\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 2-rank GPU fused AAH fixed-source solves agree bitwise, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_steady_aah_fused_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "case=\"steady\"",
+      "sweep_type=\"AAH\"",
+      "use_gpus=True",
+      "fused_aao_sweep=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 2-rank GPU CBC fixed-source solves agree bitwise, match the default mode to round-off, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_steady_cbc_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "case=\"steady\"",
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "deterministic_sweeps.py",
+    "comment": "deterministic_sweeps: repeated 2-rank GPU AAH power iterations with CMFD agree bitwise, match the default mode to the k tolerance, and conserve particles",
+    "outfileprefix": "deterministic_sweeps_keigen_cmfd_aah_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "case=\"keigen\"",
+      "sweep_type=\"AAH\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_PHI_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_LEAKAGE_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_PHI_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_LEAKAGE_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_K_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
   }
 ]

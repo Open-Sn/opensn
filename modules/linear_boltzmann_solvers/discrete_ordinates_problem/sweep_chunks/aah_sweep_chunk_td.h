@@ -26,6 +26,7 @@ public:
 
   void Sweep(AngleSet& angle_set) override;
   bool IsTimeDependent() const override { return true; }
+  void SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg) override;
 
 protected:
   void Sweep_Generic(AngleSet& angle_set);
