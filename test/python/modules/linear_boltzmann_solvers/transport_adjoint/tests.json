@@ -292,6 +292,29 @@
   },
   {
     "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "CMFD-accelerated forward and adjoint k-eigenvalue with use_precursors=False equal the prompt-only k_inf within CMFD's accuracy",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"cmfd_no_precursors\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_cmfd_no_precursors",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_NO_PRECURSORS_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_NO_PRECURSORS_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
     "comment": "Fission production of the adjoint flux with delayed precursors uses the transposed delayed term",
     "num_procs": 2,
     "args": [

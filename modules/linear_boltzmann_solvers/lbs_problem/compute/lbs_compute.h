@@ -9,6 +9,19 @@ namespace opensn
 {
 
 class LBSProblem;
+class MultiGroupXS;
+
+/**
+ * Returns true when delayed neutron production contributes to fission sources: the cross
+ * sections have delayed-neutron data and options.use_precursors is set. Every solve (steady
+ * state, k-eigenvalue and transient) uses the same model.
+ */
+bool UseDelayedNeutronProduction(const LBSProblem& lbs_problem);
+
+/// Computes the delayed fission production from a source group to a destination group.
+double ComputeDelayedFissionProduction(const MultiGroupXS& xs,
+                                       unsigned int to_group,
+                                       unsigned int from_group);
 
 /**
  * Compute the total fission production in the problem.

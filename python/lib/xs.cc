@@ -187,6 +187,16 @@ WrapMultiGroupXS(py::module& xs)
     Notes
     -----
     This method mutates ``self`` by replacing its current contents.
+
+    When the library has delayed groups, each becomes a precursor family, and the
+    delayed data of a fissionable dataset is read in OpenMC's beta form (``beta``
+    with ``nu-fission`` and ``chi``; used whenever ``beta`` exists) or its
+    prompt/delayed form (``prompt-nu-fission``, ``delayed-nu-fission``,
+    ``chi-prompt`` and ``chi-delayed``), with ``decay-rate``. Matrix and angular
+    representations are not supported. Each family gets one fractional yield, its
+    share of the delayed nu-fission summed over the groups; a warning is logged
+    when the data give the families group-dependent shares, which this
+    approximates. See the user guide section on OpenMC delayed-neutron data.
     )",
     py::arg("file_name"),
     py::arg("dataset_name"),

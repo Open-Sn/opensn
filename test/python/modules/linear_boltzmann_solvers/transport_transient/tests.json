@@ -842,6 +842,20 @@
     ]
   },
   {
+    "file": "transient_keigen_1d_delayed_prke_vs_stk_openmc.py",
+    "comment": "1D delayed homogeneous step: PRKE vs space-time kinetics with OpenMC cross sections",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
     "file": "transient_keigen_1d_delayed_fission_prod_count.py",
     "comment": "1D delayed fission production invariant to precursor count (1p vs 2p)",
     "num_procs": 4,
@@ -928,6 +942,20 @@
   {
     "file": "transient_keigen_3d_delayed_prke_vs_stk_2p.py",
     "comment": "3D delayed homogeneous step: PRKE vs space-time kinetics",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "PRKE_STK_PASS",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "transient_keigen_3d_delayed_prke_vs_stk_2p_openmc.py",
+    "comment": "3D delayed homogeneous step: PRKE vs space-time kinetics with OpenMC cross sections",
     "num_procs": 4,
     "checks": [
       {
@@ -1953,6 +1981,51 @@
         "wordnum": 1,
         "gold": 0.0,
         "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "transient_delayed_production_infinite_medium.py",
+    "comment": "Two precursor families in an infinite medium, with use_precursors True (prompt + delayed) and False (prompt only): steady fixed-source flux with 1 or 2 groupsets, k_inf and k_p, null transients from the 1/k-critical eigenstates (theta = 1, 1/2), and the exact first prompt-only step from a supercritical state",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_INF_STEADY_SOURCE_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_INF_KEIGEN_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_INF_NULL_TRANSIENT_MAX_REL_DRIFT=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_INF_PROMPT_STEP_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transient_null_transient_from_keigen.py",
+    "comment": "Null transients from 1/k-critical PI and NLKE eigenstates (2D fuel/reflector, two groups with upscatter, two precursor families, AAH/CBC, theta = 1, 1/2, one or two groupsets, with and without delayed neutrons) and from an OpenMC-MGXS fixed-source steady state stay stationary",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "NULL_KEIGEN_MAX_REL_DRIFT",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   }

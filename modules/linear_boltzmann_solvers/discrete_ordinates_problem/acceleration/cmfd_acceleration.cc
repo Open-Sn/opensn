@@ -929,10 +929,7 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
                                         const unsigned int col_coarse_group) const
 {
   const auto& F = xs.GetProductionMatrix(do_problem_.GetOptions().adjoint);
-  const auto& precursors = xs.GetPrecursors();
-  const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
-  const bool add_delayed_production =
-    do_problem_.GetOptions().use_precursors and not precursors.empty();
+  const bool include_delayed_production = UseDelayedNeutronProduction(do_problem_);
   // In adjoint mode F is transposed, and so is the delayed production.
   const bool adjoint = do_problem_.GetOptions().adjoint;
   const bool has_flux = not fine_coarse_phi.empty();
@@ -947,10 +944,10 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
     for (unsigned int g = FineGroupBegin(row_coarse_group); g < FineGroupEnd(row_coarse_group); ++g)
     {
       numerator += F[g][gp] * phi;
-      if (add_delayed_production)
-        for (const auto& precursor : precursors)
-          numerator += precursor.emission_spectrum[adjoint ? gp : g] * precursor.fractional_yield *
-                       nu_delayed_sigma_f[adjoint ? g : gp] * phi;
+      if (include_delayed_production)
+        numerator += (adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
+                              : ComputeDelayedFissionProduction(xs, g, gp)) *
+                     phi;
     }
   }
   if (std::fabs(denominator) <= 1.0e-30)
@@ -965,10 +962,9 @@ CMFDAcceleration::CondensedProductionXS(const MultiGroupXS& xs,
            ++g)
       {
         numerator += F[g][gp];
-        if (add_delayed_production)
-          for (const auto& precursor : precursors)
-            numerator += precursor.emission_spectrum[adjoint ? gp : g] *
-                         precursor.fractional_yield * nu_delayed_sigma_f[adjoint ? g : gp];
+        if (include_delayed_production)
+          numerator += adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
+                               : ComputeDelayedFissionProduction(xs, g, gp);
       }
     }
   }

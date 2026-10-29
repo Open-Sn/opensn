@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/solver_scheme.h"
@@ -795,6 +796,9 @@ DiscreteOrdinatesProblem::InitializeFCS()
   first_collision_source_moments_local_.assign(local_unknown_count, 0.0);
 
   const auto& moment_to_harmonics = groupsets_.front().quadrature->GetMomentToHarmonicsIndexMap();
+  // The first-collision fission source includes delayed production as the transport fission
+  // source does.
+  const bool include_delayed_production = UseDelayedNeutronProduction(*this);
   for (size_t m = 0; m < num_moments_; ++m)
   {
     const auto ell = moment_to_harmonics[m].ell;
@@ -822,14 +826,10 @@ DiscreteOrdinatesProblem::InitializeFCS()
             for (size_t gp = 0; gp < num_groups_; ++gp)
               rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
 
-            if (options_.use_precursors and not xs.GetPrecursors().empty())
-            {
-              const auto& nu_delayed_sigma_f = xs.GetNuDelayedSigmaF();
+            if (include_delayed_production)
               for (size_t gp = 0; gp < num_groups_; ++gp)
-                for (const auto& precursor : xs.GetPrecursors())
-                  rhs += precursor.emission_spectrum[g] * precursor.fractional_yield *
-                         nu_delayed_sigma_f[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
-            }
+                rhs += ComputeDelayedFissionProduction(xs, g, gp) *
+                       uncollided_flux_moments_local_[lhs_uk_map + gp];
           }
 
           first_collision_source_moments_local_[lhs_uk_map + g] += rhs;

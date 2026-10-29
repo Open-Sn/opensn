@@ -622,7 +622,13 @@ LBSProblem::GetOptionsBlock()
   params.AddOptionalParameter("write_restart_time_interval",
                               0,
                               "Time interval in seconds at which restart data is to be written.");
-  params.AddOptionalParameter("use_precursors", true, "Flag for using delayed neutron precursors.");
+  params.AddOptionalParameter(
+    "use_precursors",
+    true,
+    "Flag for delayed neutrons. When false, every solve uses prompt neutrons only, even if the "
+    "cross sections have delayed-neutron data.");
+  params.AddOptionalParameter(
+    "delayed_neutrons", true, "Alias of use_precursors. Give at most one of the two names.");
   params.AddOptionalParameter("use_source_moments",
                               false,
                               "Flag for ignoring fixed sources and selectively using source "
@@ -725,6 +731,10 @@ LBSProblem::ParseOptions(const InputParameters& input)
                                    ? params_at_assignment
                                    : static_cast<const ParameterBlock&>(input);
 
+  // use_precursors and its alias delayed_neutrons
+  std::optional<bool> use_precursors;
+  std::optional<bool> delayed_neutrons;
+
   using OptionSetter = std::function<void(const ParameterBlock&)>;
   const std::unordered_map<std::string, OptionSetter> option_setters = {
     {"max_mpi_message_size",
@@ -754,7 +764,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
      [this](const ParameterBlock& spec)
      { options_.restart.write_time_interval = std::chrono::seconds(spec.GetValue<int>()); }},
     {"use_precursors",
-     [this](const ParameterBlock& spec) { options_.use_precursors = spec.GetValue<bool>(); }},
+     [&use_precursors](const ParameterBlock& spec) { use_precursors = spec.GetValue<bool>(); }},
+    {"delayed_neutrons",
+     [&delayed_neutrons](const ParameterBlock& spec) { delayed_neutrons = spec.GetValue<bool>(); }},
     {"use_source_moments",
      [this](const ParameterBlock& spec) { options_.use_src_moments = spec.GetValue<bool>(); }},
     {"save_angular_flux",
@@ -800,6 +812,17 @@ LBSProblem::ParseOptions(const InputParameters& input)
     if (setter_it != option_setters.end())
       setter_it->second(spec);
   }
+
+  // Without assigned options the block holds every default, so whether a name was given is taken
+  // from the assignment.
+  const bool delayed_neutrons_given = params_at_assignment.Has("delayed_neutrons");
+  OpenSnInvalidArgumentIf(params_at_assignment.Has("use_precursors") and delayed_neutrons_given,
+                          "options.use_precursors and options.delayed_neutrons are the same "
+                          "option. Give only one of them.");
+  if (delayed_neutrons_given)
+    options_.use_precursors = delayed_neutrons.value_or(options_.use_precursors);
+  else
+    options_.use_precursors = use_precursors.value_or(options_.use_precursors);
 }
 
 std::filesystem::path
