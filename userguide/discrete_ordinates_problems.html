@@ -84,7 +84,8 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#shared-lbs-interface">11.4. Shared LBS Interface</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#problem-options">11.5. Problem Options</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#setting-options-after-construction">11.5.1. Setting options after construction</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#reproducible-sweeps">11.5.1. Reproducible sweeps</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setting-options-after-construction">11.5.2. Setting options after construction</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#id1">11.6. <code class="docutils literal notranslate"><span class="pre">sweep_type</span></code></a></li>
@@ -402,6 +403,7 @@ dedicated update methods instead.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">adjoint</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">deterministic_sweeps</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">verbose_outer_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
@@ -462,8 +464,41 @@ groupset behaves, it usually belongs here.</p>
 Cartesian discrete-ordinates problem solved with
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.SteadyStateSourceSolver</span></code></a>. See <a class="reference internal" href="csda.html"><span class="doc">CSDA Charged-Particle Transport</span></a> for the
 full workflow, output names, and restrictions.</p>
+<section id="reproducible-sweeps">
+<h3><span class="section-number">11.5.1. </span>Reproducible sweeps<a class="headerlink" href="#reproducible-sweeps" title="Link to this heading"></a></h3>
+<p>A sweep adds each direction’s contribution to the scalar flux moments and the
+face outflows as soon as that direction is solved. On several MPI ranks the
+order of those additions follows message arrival, and on GPUs it follows thread
+and stream scheduling, so results can change in the last bits from run to run.
+An iteration close to its tolerance can then take a different number of steps.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">options={&quot;deterministic_sweeps&quot;:</span> <span class="pre">True}</span></code> to make every sweep bitwise
+reproducible. After each sweep, OpenSn recomputes the flux moments and outflows
+on the host from the stored angular flux, in a fixed order: angle sets in
+aggregation order, then their directions. The option applies to every solver and
+to AAH and CBC sweeps. On CPUs this includes time-dependent, CSDA, and
+curvilinear problems. On GPUs it covers the configurations that GPU sweeps
+support, which exclude those three. It is meant for debugging and for
+comparisons that need identical iteration histories, not as a production
+setting.</p>
+<p>The option stores the angular flux in host memory, as <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code>
+does, but it does not enable <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code>. Steady-state restart files
+include the angular flux only when both <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> and
+<code class="docutils literal notranslate"><span class="pre">write_angular_flux_to_restart</span></code> are set. Time-dependent restart files always
+include it. <code class="docutils literal notranslate"><span class="pre">WriteSurfaceAngularFluxes</span></code> runs only when <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code>
+is set. <code class="docutils literal notranslate"><span class="pre">WriteAngularFluxes</span></code> writes whatever angular flux is stored, so it
+also writes the angular flux stored by this option.
+Each sweep makes one extra pass over the stored flux on the host. GPU sweeps
+also copy the angular flux from the device to the host after every sweep, so
+deterministic GPU sweeps are roughly 2-5 times slower than default ones.
+Time-dependent sweeps keep one more angular-flux-sized buffer for the
+time-centered flux, and CSDA sweeps keep the energy-slope angular flux. Without
+the option, these two buffers are not allocated, and the angular flux is stored
+only when <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code> is set, as time-dependent problems require.</p>
+<p>Results still depend on the MPI rank count and partition, and they differ from
+those of the default mode by round-off.</p>
+</section>
 <section id="setting-options-after-construction">
-<h3><span class="section-number">11.5.1. </span>Setting options after construction<a class="headerlink" href="#setting-options-after-construction" title="Link to this heading"></a></h3>
+<h3><span class="section-number">11.5.2. </span>Setting options after construction<a class="headerlink" href="#setting-options-after-construction" title="Link to this heading"></a></h3>
 <p>Problem-wide <code class="docutils literal notranslate"><span class="pre">options</span></code> values are fixed at construction time. For parameter
 studies or staged workflows, rebuild the problem object with a new <code class="docutils literal notranslate"><span class="pre">options</span></code>
 dictionary rather than mutating an existing one. Aspects of the problem that do

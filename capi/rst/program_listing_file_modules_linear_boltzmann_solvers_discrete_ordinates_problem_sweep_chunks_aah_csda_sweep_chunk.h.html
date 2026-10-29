@@ -105,10 +105,14 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">(</span><span class="n">AngleSet</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_set</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroDestinationPhi</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDestinationsFromAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">destination_phi_e_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Energy-slope angular flux by (local cell, direction, groupset group), stored only for</span>
+<span class="w">  </span><span class="c1">/// SetDestinationsFromAngularFlux.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">psi_e_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">EnergyGroupStructure</span><span class="w"> </span><span class="n">energy_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">charged_groups_</span><span class="p">;</span>
 <span class="p">};</span>

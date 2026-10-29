@@ -279,8 +279,9 @@ automatically updated by later solves or timesteps.</p>
 <span class="sig-name descname"><span class="pre">GetAngularFieldFunctionList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><span class="pre">pyopensn.solver.DiscreteOrdinatesProblem</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">groups</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angles</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesProblem.GetAngularFieldFunctionList" title="Link to this definition"></a></dt>
 <dd><p>Create field functions for selected angular flux components.</p>
 <p>Note: You must enable angular flux storage (<code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>) in
-the problem options. For transient problems this is required. Otherwise
-the returned field functions will remain zero.</p>
+the problem options. For transient problems this is required. The angular
+flux is also stored when <code class="docutils literal notranslate"><span class="pre">deterministic_sweeps=True</span></code>. If neither option
+is set, the returned field functions will remain zero.</p>
 <p class="rubric">Example</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
@@ -1114,6 +1115,13 @@ reject a problem with this option.</p></li>
 <li><p>save_angular_flux: bool, default=False
 Store angular flux state (<cite>psi</cite>) for transient mode, angular-flux
 field functions, and angular-flux I/O.</p></li>
+<li><p>deterministic_sweeps: bool, default=False
+Make every sweep bitwise reproducible from run to run: the scalar flux moments and
+face outflows are summed on the host from stored angular fluxes in a fixed angle order
+instead of in the order that MPI messages and GPU threads complete. Stores the angular
+flux in host memory without enabling <code class="docutils literal notranslate"><span class="pre">save_angular_flux</span></code>. GPU sweeps also copy it to
+the host after every sweep, which makes them roughly 2-5 times slower. Meant for
+debugging and reproducible comparisons.</p></li>
 <li><p>adjoint: bool, default=False</p></li>
 <li><p>csda_enabled: bool, default=False
 Enable CSDA charged-particle transport for CEPXS data loaded with

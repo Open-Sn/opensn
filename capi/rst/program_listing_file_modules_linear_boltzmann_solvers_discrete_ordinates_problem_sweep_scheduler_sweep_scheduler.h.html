@@ -135,9 +135,20 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">SweepScheduler</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Scheduler for one groupset&#39;s sweeps.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param scheduler_type Scheduling algorithm.</span>
+<span class="cm">   * \param angle_agg Angle aggregation of the groupset.</span>
+<span class="cm">   * \param sweep_chunk Sweep chunk that sweeps each angle set.</span>
+<span class="cm">   * \param deterministic_sweeps Whether each sweep ends by rebuilding the scalar flux moments and</span>
+<span class="cm">   *        outflows from the stored angular flux in a fixed order (the `deterministic_sweeps`</span>
+<span class="cm">   *        option), so that they do not depend on the order in which angle sets ran.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="n">SweepScheduler</span><span class="p">(</span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type</span><span class="p">,</span>
 <span class="w">                 </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg</span><span class="p">,</span>
-<span class="w">                 </span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">);</span>
+<span class="w">                 </span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk</span><span class="p">,</span>
+<span class="w">                 </span><span class="kt">bool</span><span class="w"> </span><span class="n">deterministic_sweeps</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Sweep</span><span class="p">();</span>
 
@@ -166,6 +177,8 @@
 <span class="w">  </span><span class="n">SchedulingAlgorithm</span><span class="w"> </span><span class="n">scheduler_type_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">AngleAggregation</span><span class="o">&amp;</span><span class="w"> </span><span class="n">angle_agg_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">SweepChunk</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_chunk_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Whether each sweep ends by rebuilding its destinations from the stored angular flux.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">deterministic_sweeps_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">RuleValues</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rule_values_</span><span class="p">;</span>
 

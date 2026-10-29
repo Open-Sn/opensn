@@ -120,6 +120,17 @@
 <dd><p>Zero the portion of the output flux moments vector corresponding to the groupset for this sweep chunk. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17AAHCSDASweepChunk30SetDestinationsFromAngularFluxERK16AngleAggregation">
+<span class="target" id="classopensn_1_1_a_a_h_c_s_d_a_sweep_chunk_1ac07dad88cf5baab38768a430ca505b48"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDestinationsFromAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregationE" title="opensn::AngleAggregation"><span class="n"><span class="pre">AngleAggregation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_agg</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn17AAHCSDASweepChunk30SetDestinationsFromAngularFluxERK16AngleAggregation" title="Link to this definition"></a><br /></dt>
+<dd><p>Overwrite this groupset’s scalar flux moments and outflows with sums over the stored angular flux in a fixed order: angle sets in aggregation order, then their directions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>angle_agg</strong> – Angle aggregation of the groupset; its order fixes the summation order. </p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 </dd></dl>
 

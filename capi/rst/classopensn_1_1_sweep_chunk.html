@@ -187,6 +187,17 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk30SetDestinationsFromAngularFluxERK16AngleAggregation">
+<span class="target" id="classopensn_1_1_sweep_chunk_1a4c6fca0b30bd74ab25bb7d5d8b45fc38"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetDestinationsFromAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregationE" title="opensn::AngleAggregation"><span class="n"><span class="pre">AngleAggregation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_agg</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk30SetDestinationsFromAngularFluxERK16AngleAggregation" title="Link to this definition"></a><br /></dt>
+<dd><p>Overwrite this groupset’s scalar flux moments and outflows with sums over the stored angular flux in a fixed order: angle sets in aggregation order, then their directions. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>angle_agg</strong> – Angle aggregation of the groupset; its order fixes the summation order. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunkD0Ev">
 <span class="target" id="classopensn_1_1_sweep_chunk_1a8688d3682670c7a8981d384f74972399"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SweepChunk</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunkD0Ev" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -199,6 +210,39 @@
 <span class="target" id="classopensn_1_1_sweep_chunk_1a8a6416f0c86a4fa2a1ff2c64525f390e"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="#_CPPv4N6opensn10SweepChunk18MomentCallbackFuncE" title="opensn::SweepChunk::MomentCallbackFunc"><span class="n"><span class="pre">MomentCallbackFunc</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moment_callbacks</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk16moment_callbacksE" title="Link to this definition"></a><br /></dt>
 <dd><p>Functions of type <a class="reference internal" href="#classopensn_1_1_sweep_chunk_1a676d8bc350f83da544eb31bf55a2fd0b"><span class="std std-ref">MomentCallbackFunc</span></a> can be added to the moment_callbacks vector and these can be called from within functions taking a <a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#classopensn_1_1_l_b_s_groupset"><span class="std std-ref">LBSGroupset</span></a> instance. </p>
 <p>The intention is that this function can be used as a general interface to retrieve angular flux values </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk34ComputeDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEE">
+<span class="target" id="classopensn_1_1_sweep_chunk_1a962e35c6e7cb6c2499b7c26fc206994b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeDestinationsFromAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregationE" title="opensn::AngleAggregation"><span class="n"><span class="pre">AngleAggregation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_agg</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk34ComputeDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Overwrite the scalar flux moments and outflows with fixed-order sums over an angular flux. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle_agg</strong> – Angle aggregation of the groupset; its order fixes the summation order. </p></li>
+<li><p><strong>psi</strong> – Angular flux laid out like destination_psi_. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk47ComputeTimeDependentDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEEd">
+<span class="target" id="classopensn_1_1_sweep_chunk_1afca747ab5257649fa868a8261974de8f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeTimeDependentDestinationsFromAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregationE" title="opensn::AngleAggregation"><span class="n"><span class="pre">AngleAggregation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_agg</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi_old</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">theta</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk47ComputeTimeDependentDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEEd" title="Link to this definition"></a><br /></dt>
+<dd><p>Overwrite the scalar flux moments and outflows of a time-dependent sweep. </p>
+<p>The moments are those of psi^{n+theta} = theta psi^{n+1} + (1 - theta) psi^n, while destination_psi_ holds psi^{n+1}.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle_agg</strong> – Angle aggregation of the groupset; its order fixes the summation order. </p></li>
+<li><p><strong>psi_old</strong> – Angular flux psi^n at the start of the time step. </p></li>
+<li><p><strong>theta</strong> – Time-integration parameter of the theta scheme. </p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -278,6 +322,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk16destination_psi_E">
 <span class="target" id="classopensn_1_1_sweep_chunk_1a877ad404804d5881ebe8b64f7629d4aa"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">destination_psi_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk16destination_psi_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk10psi_theta_E">
+<span class="target" id="classopensn_1_1_sweep_chunk_1afaf86390581c1a88d1a41509d6469cb4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">psi_theta_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk10psi_theta_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Angular flux at time n + theta, used by ComputeTimeDependentDestinationsFromAngularFlux. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk22surface_source_active_E">

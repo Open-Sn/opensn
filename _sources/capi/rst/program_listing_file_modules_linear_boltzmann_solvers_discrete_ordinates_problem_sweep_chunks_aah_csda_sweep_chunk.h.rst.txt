@@ -30,10 +30,14 @@ Program Listing for File aah_csda_sweep_chunk.h
    
      void Sweep(AngleSet& angle_set) override;
      void ZeroDestinationPhi() override;
+     void SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg) override;
    
    private:
      DiscreteOrdinatesProblem& problem_;
      std::vector<double>& destination_phi_e_;
+     /// Energy-slope angular flux by (local cell, direction, groupset group), stored only for
+     /// SetDestinationsFromAngularFlux.
+     std::vector<double> psi_e_;
      EnergyGroupStructure energy_;
      std::vector<bool> charged_groups_;
    };
