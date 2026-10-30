@@ -34,7 +34,7 @@ PieceWiseLinearContinuous::OrderNodes()
   // ls_node_id = local scope node id
   std::set<uint64_t> ls_node_ids_set;
   for (const auto& cell : grid_->GetLocalCells())
-    for (uint64_t node_id : cell->vertex_ids)
+    for (uint64_t node_id : cell.vertex_ids)
       ls_node_ids_set.insert(node_id);
 
   // Build node partition subscriptions
@@ -223,10 +223,10 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = GetCellMapping(*cell);
+    const auto& cell_mapping = GetCellMapping(cell);
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(*cell, i);
+      const auto ir = MapDOF(cell, i);
 
       if (dof_handler.IsMapLocal(ir))
       {
@@ -235,7 +235,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(*cell, j);
+          const auto jr = MapDOF(cell, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;
@@ -262,11 +262,11 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto& cell_mapping = GetCellMapping(*cell);
+    const auto& cell_mapping = GetCellMapping(cell);
 
     for (unsigned int i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto ir = MapDOF(*cell, i);
+      const auto ir = MapDOF(cell, i);
 
       if (not dof_handler.IsMapLocal(ir))
       {
@@ -287,7 +287,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
         auto& node_links = cur_ir_link->second;
         for (unsigned int j = 0; j < cell_mapping.GetNumNodes(); ++j)
         {
-          const auto jr = MapDOF(*cell, j);
+          const auto jr = MapDOF(cell, j);
 
           if (IS_VALUE_IN_VECTOR(node_links, jr))
             continue;

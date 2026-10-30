@@ -94,7 +94,7 @@ ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
                               unsigned int face_node,
                               unsigned int group_idx)
   {
-    const auto& cell = *grid.GetLocalCells()[cell_local_id];
+    const auto& cell = grid.GetLocalCells()[cell_local_id];
     const auto node = sdm.GetCellMapping(cell).MapFaceNode(face, face_node);
     return delta_phi_local[transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx)];
   };
