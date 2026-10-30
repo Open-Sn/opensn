@@ -129,7 +129,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
   // Execute partitioner
   auto cell_pids = partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
 
-  RebalancePartitions(cell_pids, num_partitions);
+  GraphPartitioner::FillEmptyPartitions(cell_graph, cell_pids, num_partitions);
 
   return cell_pids;
 }
@@ -305,49 +305,6 @@ MeshGenerator::BroadcastPIDs(std::vector<int>& cell_pids,
 {
   // Broadcast partitioning to all locations
   communicator.broadcast(cell_pids, root);
-}
-
-void
-MeshGenerator::RebalancePartitions(std::vector<int>& cell_pids, const int num_partitions)
-{
-  // Count the number of cells in each partition
-  std::vector<int> cells_per_partition(num_partitions, 0);
-  for (const auto partition : cell_pids)
-    ++cells_per_partition[partition];
-
-  // Check if any partition has zero cells
-  if (std::none_of(cells_per_partition.begin(),
-                   cells_per_partition.end(),
-                   [](const int count) { return count == 0; }))
-  {
-    return;
-  }
-
-  // Redistributed cells from heavy partitions
-  const auto total_cells = static_cast<int>(cell_pids.size());
-  const int target = total_cells / num_partitions;
-
-  for (int partition = 0; partition < num_partitions; ++partition)
-  {
-    while (cells_per_partition[partition] > target)
-    {
-      const auto it = std::min_element(cells_per_partition.begin(), cells_per_partition.end());
-      const auto min_partition = static_cast<int>(std::distance(cells_per_partition.begin(), it));
-      if (min_partition == partition or cells_per_partition[min_partition] >= target)
-        break;
-
-      for (auto& cell_pid : cell_pids)
-      {
-        if (cell_pid == partition)
-        {
-          cell_pid = min_partition;
-          --cells_per_partition[partition];
-          ++cells_per_partition[min_partition];
-          break;
-        }
-      }
-    }
-  }
 }
 
 } // namespace opensn
