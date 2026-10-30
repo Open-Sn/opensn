@@ -57,6 +57,17 @@ UniqueSOGroupings GroupDirectionsByOrthant(const std::string& problem_name,
                                            const AngularQuadrature& quadrature,
                                            unsigned int dimension);
 
+/**
+ * Direction from which the SPDS of a sweep ordering (a group of quadrature directions) is built.
+ * The directions of a polar, quadrant or octant group give every face the same orientation on the
+ * meshes those aggregation types allow, so their normalized mean direction gives the same sweep
+ * ordering as any member, and its face weights stand for the whole group when cyclic dependencies
+ * are broken. Other groups use their first direction.
+ */
+Vector3 SweepOrderingOmega(const AngularQuadrature& quadrature,
+                           const DirIDs& so_grouping,
+                           AngleAggregationType agg_type);
+
 void BuildAAHGPUFludsCommonData(SweepRuntime& runtime,
                                 const SpatialDiscretization& discretization,
                                 const std::vector<CellFaceNodalMapping>& grid_nodal_mappings);
