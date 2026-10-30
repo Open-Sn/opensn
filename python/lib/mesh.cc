@@ -600,6 +600,24 @@ WrapGraphPartitioner(py::module& mesh)
         Location of the internal y-cuts. Requires ``ny - 1`` entries.
     zcuts: List[float], default=[]
         Location of the internal z-cuts. Requires ``nz - 1`` entries.
+
+    Notes
+    -----
+    The cuts divide the domain into an ``nx`` x ``ny`` x ``nz`` array of
+    brick-shaped cellsets. Each cell goes to the cellset that contains its
+    centroid. A centroid that lies on a cut goes to the cellset above it.
+
+    Cuts must be finite and strictly increasing, and every slab between cuts
+    must contain cell centroids. An axis on which the mesh has no extent must
+    have one partition. A 2D mesh needs ``nz=1``, and a 1D mesh, which lies
+    along ``z``, needs ``nx=1`` and ``ny=1``. Mesh generation raises
+    ``ValueError`` when one of these rules is broken.
+
+    With ``nx * ny * nz`` equal to the number of MPI ranks, the rank-level
+    sweep graph is acyclic for every direction. With more cellsets than ranks,
+    each rank owns an equal brick-shaped subdomain of cellsets when the
+    cellset counts allow one. Otherwise, ranks take consecutive cellsets and a
+    warning is logged.
     )"
   );
 
