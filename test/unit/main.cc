@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 #include "framework/runtime.h"
+#include "framework/gpu/device_binding.h"
 #include "test/unit/mpi_env.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include "petsc.h"
@@ -10,6 +11,7 @@ main(int argc, char** argv)
   mpicpp_lite::Environment mpi_env;
   opensn::mpi_comm = MPI_COMM_WORLD;
 
+  opensn::BindDevice(MPI_COMM_WORLD);
   PetscInitialize(nullptr, nullptr, nullptr, nullptr);
 
   testing::InitGoogleTest(&argc, argv);

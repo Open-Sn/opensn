@@ -13,7 +13,10 @@
 
 namespace caribou {
 
-/** @brief Get number of GPUs associated to the current host.*/
+/**
+ * @brief Get number of GPUs that the current process can use.
+ * @note Returns 0 when the runtime finds no GPU or no usable driver.
+ */
 inline std::uint32_t get_num_gpus(void) { return impl::get_num_gpus(); }
 
 /**
@@ -48,6 +51,15 @@ inline std::string get_pci_bus_id(std::uint32_t device_id) { return impl::get_pc
  * @param device_id Index of the device, in ``[0, caribou::get_num_gpus())``.
  */
 inline std::uint32_t get_num_compute_units(std::uint32_t device_id) { return impl::get_num_compute_units(device_id); }
+
+/**
+ * @brief Get the UUID of GPU @p device_id as 32 lowercase hexadecimal digits.
+ * @details A MIG instance has its own UUID, while it shares the PCI bus ID of its GPU.
+ * @note For SYCL implementation, the query relies on the ``sycl_ext_intel_device_info`` extension. A
+ * ``sycl::exception`` with ``sycl::errc::feature_not_supported`` is thrown if the device does not support it.
+ * @param device_id Index of the device, in ``[0, caribou::get_num_gpus())``.
+ */
+inline std::string get_uuid(std::uint32_t device_id) { return impl::get_uuid(device_id); }
 
 /**
  * @brief Get warp/subgroup size.
