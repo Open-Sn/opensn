@@ -95,6 +95,23 @@ GroupDirectionsByOrthant(const std::string& problem_name,
   return groupings;
 }
 
+Vector3
+SweepOrderingOmega(const AngularQuadrature& quadrature,
+                   const DirIDs& so_grouping,
+                   AngleAggregationType agg_type)
+{
+  const bool shared_orientation = agg_type == AngleAggregationType::POLAR or
+                                  agg_type == AngleAggregationType::QUADRANT or
+                                  agg_type == AngleAggregationType::OCTANT;
+  if (so_grouping.size() == 1 or not shared_orientation)
+    return quadrature.GetOmega(so_grouping.front());
+
+  Vector3 sum;
+  for (const auto dir_id : so_grouping)
+    sum += quadrature.GetOmega(dir_id);
+  return sum.Normalized();
+}
+
 } // namespace detail
 
 namespace
@@ -390,7 +407,10 @@ BuildSweepOrderingGroups(
 
 template <typename CreateSPDS>
 void
-BuildSPDSForSweepOrderings(SweepRuntime& runtime, CreateSPDS create_spds)
+BuildSPDSForSweepOrderings(
+  SweepRuntime& runtime,
+  const std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& aggregation_map,
+  CreateSPDS create_spds)
 {
   struct WorkItem
   {
@@ -404,8 +424,11 @@ BuildSPDSForSweepOrderings(SweepRuntime& runtime, CreateSPDS create_spds)
     const auto& info = runtime.quadrature_unq_so_grouping_map.at(quadrature);
     const auto& unique_so_groupings = info.first;
     size_t sweep_ordering_id = 0;
+    const auto agg_type = aggregation_map.at(quadrature);
     for (const auto& so_grouping : unique_so_groupings)
-      work.push_back({quadrature, sweep_ordering_id++, quadrature->GetOmega(so_grouping.front())});
+      work.push_back({quadrature,
+                      sweep_ordering_id++,
+                      detail::SweepOrderingOmega(*quadrature, so_grouping, agg_type)});
   }
 
   for (auto& [quadrature, spds_list] : runtime.quadrature_spds_map)
@@ -429,13 +452,16 @@ BuildSPDSForSweepOrderings(SweepRuntime& runtime, CreateSPDS create_spds)
 std::vector<std::shared_ptr<AAH_SPDS>> GetAAHSPDSList(const SweepRuntime& runtime);
 
 void
-BuildAAHSPDS(SweepRuntime& runtime,
-             const std::shared_ptr<Mesh>& grid,
-             const SPDSFaceNeighborInfoVec& face_neighbor_info,
-             const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
-             bool use_gpus)
+BuildAAHSPDS(
+  SweepRuntime& runtime,
+  const std::shared_ptr<Mesh>& grid,
+  const SPDSFaceNeighborInfoVec& face_neighbor_info,
+  const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
+  const std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& aggregation_map,
+  bool use_gpus)
 {
   BuildSPDSForSweepOrderings(runtime,
+                             aggregation_map,
                              [&grid, &face_neighbor_info, &allow_cycles_map](
                                const std::shared_ptr<AngularQuadrature>& quadrature,
                                size_t sweep_ordering_id,
@@ -457,12 +483,15 @@ BuildAAHSPDS(SweepRuntime& runtime,
 }
 
 void
-BuildCBCSPDS(SweepRuntime& runtime,
-             const std::shared_ptr<Mesh>& grid,
-             const SPDSFaceNeighborInfoVec& face_neighbor_info,
-             const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map)
+BuildCBCSPDS(
+  SweepRuntime& runtime,
+  const std::shared_ptr<Mesh>& grid,
+  const SPDSFaceNeighborInfoVec& face_neighbor_info,
+  const std::map<std::shared_ptr<AngularQuadrature>, bool>& allow_cycles_map,
+  const std::map<std::shared_ptr<AngularQuadrature>, AngleAggregationType>& aggregation_map)
 {
   BuildSPDSForSweepOrderings(runtime,
+                             aggregation_map,
                              [&grid, &face_neighbor_info, &allow_cycles_map](
                                const std::shared_ptr<AngularQuadrature>& quadrature,
                                size_t,
@@ -894,11 +923,19 @@ BuildSweepRuntime(const std::string& problem_name,
   {
     RunAAHSetupCollectively(
       [&]
-      { BuildAAHSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, use_gpus); });
+      {
+        BuildAAHSPDS(runtime,
+                     grid,
+                     face_neighbor_info,
+                     quadrature_allow_cycles_map,
+                     quadrature_aggregation_map,
+                     use_gpus);
+      });
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")
-    BuildCBCSPDS(runtime, grid, face_neighbor_info, quadrature_allow_cycles_map);
+    BuildCBCSPDS(
+      runtime, grid, face_neighbor_info, quadrature_allow_cycles_map, quadrature_aggregation_map);
   else
     OpenSnInvalidArgument("Unsupported sweep type \"" + sweep_type + "\"");
 

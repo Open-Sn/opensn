@@ -261,13 +261,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 6.55396,
+        "goldvalue": 6.55387,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value2=",
-        "goldvalue": 1.02943,
+        "goldvalue": 1.0294,
         "abs_tol": 0.0001
       }
     ]
@@ -281,13 +281,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 6.55396,
+        "goldvalue": 6.55387,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value2=",
-        "goldvalue": 1.02943,
+        "goldvalue": 1.0294,
         "abs_tol": 0.0001
       }
     ]
@@ -301,13 +301,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 6.55396,
+        "goldvalue": 6.55387,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value2=",
-        "goldvalue": 1.02943,
+        "goldvalue": 1.0294,
         "abs_tol": 0.0001
       }
     ]
@@ -321,13 +321,13 @@
       {
         "type": "KeyValuePair",
         "key": "Max-value1=",
-        "goldvalue": 6.55396,
+        "goldvalue": 6.55387,
         "abs_tol": 0.0001
       },
       {
         "type": "KeyValuePair",
         "key": "Max-value2=",
-        "goldvalue": 1.02943,
+        "goldvalue": 1.0294,
         "abs_tol": 0.0001
       }
     ]

@@ -9,7 +9,6 @@
 #include <boost/graph/directed_graph.hpp>
 #include <cstdint>
 #include <memory>
-#include <stack>
 
 namespace opensn
 {
@@ -102,11 +101,19 @@ public:
     return cell_face_orientations_;
   }
 
+  /// Largest strongly connected component whose feedback arc set is found exactly.
+  static constexpr size_t MAX_EXACT_FAS_SCC_SIZE = 12;
+
   /**
    * Removes cyclic dependencies from the given graph.
    *
-   * \param g The graph from which cyclic dependencies are to be removed.
-   * \return FAS as a vector of graph edges.
+   * Each strongly connected component with at most MAX_EXACT_FAS_SCC_SIZE vertices is broken by a
+   * feedback arc set (FAS) of minimum total edge weight. Larger components use a greedy
+   * approximation.
+   *
+   * \param g The graph from which cyclic dependencies are to be removed. The FAS edges are
+   *        removed from it, leaving it acyclic.
+   * \return FAS as a vector of graph edges. Each removed (source, target) pair appears once.
    */
   std::vector<std::pair<Vertex, Vertex>> RemoveCyclicDependencies(Graph& g);
 
@@ -138,39 +145,38 @@ protected:
     std::vector<int>& location_successors,
     std::vector<std::vector<std::pair<std::uint32_t, double>>>& cell_successors);
 
-  /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.
-  std::vector<std::vector<Vertex>> FindSCCs(Graph& g);
-
   /**
-   * Tarjan's algorithm for finding SCCs in a graph.
+   * Finds a feedback arc set (FAS) of one strongly connected component with the greedy heuristic of
+   * Eades, Lin and Smyth (1993), using edge weights.
    *
-   * \param u The current vertex being processed.
-   * \param g The graph being analyzed.
-   * \param time Global timer for discovery times.
-   * \param disc Vector of discovery times for each vertex.
-   * \param low Vector of low values for each vertex.
-   * \param on_stack Vector tracking whether each vertex is in the stack.
-   * \param stack Vertex stack.
-   * \param SCCs Output vector to store the resulting SCCs.
-   */
-  void SCCAlgorithm(Vertex u,
-                    Graph& g,
-                    int& time,
-                    std::vector<int>& disc,
-                    std::vector<int>& low,
-                    std::vector<bool>& on_stack,
-                    std::stack<Vertex>& stack,
-                    std::vector<std::vector<Vertex>>& SCCs);
-
-  /**
-   * Finds an approximate minimum feedback arc set (FAS) to break cycles in the graph.
+   * The heuristic orders the vertices by repeatedly moving a sink to the end of the ordering, a
+   * source to the front, or, when neither remains, the vertex with the largest outgoing minus
+   * incoming edge weight to the front. The FAS is the set of edges that point backward in that
+   * ordering. It is not a minimum-weight FAS in general.
    *
-   * \param g The graph being analyzed.
+   * \param g The graph being analyzed. It is not modified.
    * \param scc_vertices Vertices within the current strongly connected component.
-   * \return Vector of pairs representing edges to remove to break cycles.
+   * \return Edges whose removal breaks every cycle within the component.
    */
   std::vector<std::pair<Vertex, Vertex>> FindApproxMinimumFAS(Graph& g,
                                                               std::vector<Vertex>& scc_vertices);
+
+  /**
+   * Finds a minimum-weight feedback arc set (FAS) of one strongly connected component.
+   *
+   * Every ordering of the vertices breaks all cycles by removing its backward edges, and the
+   * ordering with the least backward weight removes a minimum-weight FAS. That ordering is found
+   * by dynamic programming over vertex subsets: the least backward weight of a subset S is the
+   * minimum, over the vertex v of S placed last, of the least backward weight of S without v plus
+   * the weight of the edges from v into the rest of S. This takes O(2^n n) time and memory for n
+   * vertices.
+   *
+   * \param g The graph being analyzed.
+   * \param scc_vertices Vertices of the component, at most MAX_EXACT_FAS_SCC_SIZE of them.
+   * \return Edges whose removal breaks every cycle within the component.
+   */
+  static std::vector<std::pair<Vertex, Vertex>>
+  FindExactMinimumFAS(const Graph& g, const std::vector<Vertex>& scc_vertices);
 
 protected:
   /// Angular direction vector.

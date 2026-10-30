@@ -9,9 +9,11 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/strong_components.hpp>
 #include <algorithm>
+#include <bit>
 #include <vector>
 #include <queue>
 #include <limits>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -190,7 +192,9 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
     }
   }
 
-  // Build the final vertex sequence s = s1 followed by s2
+  // Build the final vertex sequence s = s1 followed by s2. Sinks were appended to s2 in removal
+  // order, and each later sink precedes the earlier ones, so s2 is reversed.
+  std::reverse(s2.begin(), s2.end());
   std::vector<Vertex> s;
   s.reserve(s1.size() + s2.size());
   for (auto u : s1)
@@ -223,10 +227,78 @@ SPDS::FindApproxMinimumFAS(Graph& g, std::vector<Vertex>& scc_vertices)
 }
 
 std::vector<std::pair<Vertex, Vertex>>
+SPDS::FindExactMinimumFAS(const Graph& g, const std::vector<Vertex>& scc_vertices)
+{
+  const size_t n = scc_vertices.size();
+  if (n > MAX_EXACT_FAS_SCC_SIZE)
+    throw std::logic_error("SPDS: Strongly connected component is too large for an exact FAS.");
+
+  // Edge existence and summed weight between component vertices, by position in scc_vertices.
+  std::vector<std::vector<bool>> has_edge(n, std::vector<bool>(n, false));
+  std::vector<std::vector<double>> weight(n, std::vector<double>(n, 0.0));
+  auto weightmap = boost::get(boost::edge_weight, g);
+  for (size_t i = 0; i < n; ++i)
+    for (auto e : boost::make_iterator_range(boost::out_edges(scc_vertices[i], g)))
+    {
+      const auto it = std::find(scc_vertices.begin(), scc_vertices.end(), boost::target(e, g));
+      const auto j = static_cast<size_t>(it - scc_vertices.begin());
+      if (it == scc_vertices.end() or j == i)
+        continue;
+      has_edge[i][j] = true;
+      weight[i][j] += weightmap[e];
+    }
+
+  // An ordering of the vertices removes exactly its backward edges, and some ordering removes a
+  // minimum-weight FAS. cost[S] is the least backward weight over the orderings of the subset S.
+  // Placing v last in S adds the weight of the edges from v into S \ {v}. out_weight[S * n + v]
+  // holds the weight of the edges from v into S. It is built from the value for S without its
+  // lowest vertex.
+  const size_t num_subsets = size_t{1} << n;
+  std::vector<double> cost(num_subsets, std::numeric_limits<double>::infinity());
+  std::vector<std::uint8_t> last_vertex(num_subsets, 0);
+  std::vector<double> out_weight(num_subsets * n, 0.0);
+  cost[0] = 0.0;
+  for (size_t subset = 1; subset < num_subsets; ++subset)
+  {
+    const auto lowest = static_cast<size_t>(std::countr_zero(subset));
+    const size_t without_lowest = subset & (subset - 1);
+    for (size_t v = 0; v < n; ++v)
+      out_weight[subset * n + v] = out_weight[without_lowest * n + v] + weight[v][lowest];
+
+    for (size_t v = 0; v < n; ++v)
+    {
+      if ((subset & (size_t{1} << v)) == 0)
+        continue;
+      const size_t rest = subset & ~(size_t{1} << v);
+      const double c = cost[rest] + out_weight[rest * n + v];
+      if (c < cost[subset])
+      {
+        cost[subset] = c;
+        last_vertex[subset] = static_cast<std::uint8_t>(v);
+      }
+    }
+  }
+
+  std::vector<size_t> position(n);
+  size_t subset = num_subsets - 1;
+  for (size_t k = n; k-- > 0;)
+  {
+    const size_t v = last_vertex[subset];
+    position[v] = k;
+    subset &= ~(size_t{1} << v);
+  }
+
+  std::vector<std::pair<Vertex, Vertex>> edges_to_remove;
+  for (size_t i = 0; i < n; ++i)
+    for (size_t j = 0; j < n; ++j)
+      if (has_edge[i][j] and position[j] < position[i])
+        edges_to_remove.emplace_back(scc_vertices[i], scc_vertices[j]);
+  return edges_to_remove;
+}
+
+std::vector<std::pair<Vertex, Vertex>>
 SPDS::RemoveCyclicDependencies(Graph& g)
 {
-  using OutEdgeIterator = boost::graph_traits<Graph>::out_edge_iterator;
-
   std::vector<std::pair<Vertex, Vertex>> edges_to_remove;
 
   const auto num_v = boost::num_vertices(g);
@@ -258,47 +330,11 @@ SPDS::RemoveCyclicDependencies(Graph& g)
 
     for (auto scc : sccs)
     {
-      if (scc.size() == 2) // Bi-connected
-      {
-        Vertex u = scc[0];
-        Vertex v = scc[1];
-
-        std::pair<OutEdgeIterator, OutEdgeIterator> edge_range = boost::out_edges(u, g);
-        for (OutEdgeIterator it = edge_range.first; it != edge_range.second; ++it)
-          if (boost::target(*it, g) == v)
-            tmp_edges_to_remove.emplace_back(u, v);
-      }
-      else if (scc.size() == 3) // Tri-connected
-      {
-        bool found = false;
-        for (auto u : scc)
-        {
-          std::pair<OutEdgeIterator, OutEdgeIterator> edge_range = boost::out_edges(u, g);
-          for (OutEdgeIterator it = edge_range.first; it != edge_range.second; ++it)
-          {
-            Vertex v = boost::target(*it, g);
-            for (auto w : scc)
-            {
-              if (v == w)
-              {
-                tmp_edges_to_remove.emplace_back(u, v);
-                found = true;
-                break;
-              }
-            }
-            if (found)
-              break;
-          }
-          if (found)
-            break;
-        }
-      }
-      else // N-connected
-      {
-        auto ncscc_tmp_edges_to_remove = FindApproxMinimumFAS(g, scc);
-        for (const auto& edge : ncscc_tmp_edges_to_remove)
-          tmp_edges_to_remove.emplace_back(edge);
-      }
+      const auto scc_edges_to_remove = scc.size() <= MAX_EXACT_FAS_SCC_SIZE
+                                         ? FindExactMinimumFAS(g, scc)
+                                         : FindApproxMinimumFAS(g, scc);
+      for (const auto& edge : scc_edges_to_remove)
+        tmp_edges_to_remove.emplace_back(edge);
     }
 
     for (const auto& edge : tmp_edges_to_remove)
