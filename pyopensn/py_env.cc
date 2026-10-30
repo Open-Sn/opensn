@@ -4,6 +4,7 @@
 #include "python/lib/py_env.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include "framework/gpu/device_binding.h"
 #include "framework/utils/memory.h"
 #include "framework/utils/timer.h"
 #include "mpi4py/mpi4py.h"
@@ -38,6 +39,8 @@ PyEnv::PyEnv()
     throw std::runtime_error("MPI must be initialized with thread_level \"multiple\". See "
                              "mpi4py.rc for more information\n");
   }
+  // select this rank's GPU before PETSc, which selects its GPU while it initializes
+  BindDevice(mpi_comm);
   // initialize PETSc and OpenSn
   ::PetscOptionsSetValue(NULL, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
