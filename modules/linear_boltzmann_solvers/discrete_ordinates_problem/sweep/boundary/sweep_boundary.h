@@ -131,11 +131,12 @@ public:
   /**
    * Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux of this
    * boundary. Used by diffusion synthetic acceleration to correct the lagged incoming angular flux
-   * consistently with the scalar-flux correction. No-op for boundaries without delayed flux.
+   * consistently with the scalar-flux correction. Every boundary type implements it, as a no-op if
+   * it has no delayed angular flux, so that a new boundary type with lagged fluxes cannot leave
+   * them uncorrected by omission.
    */
-  virtual void AddToNewDelayedAngularFlux(int groupset_id, const DelayedFluxCorrection& correction)
-  {
-  }
+  virtual void CorrectNewDelayedAngularFlux(int groupset_id,
+                                            const DelayedFluxCorrection& correction) = 0;
 
   virtual const Vector3* GetNormalForReflection() const { return nullptr; }
 

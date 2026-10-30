@@ -291,7 +291,7 @@ AAHD_FLUDS::SetDelayedLocalPsiNewToOld()
 }
 
 void
-AAHD_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+AAHD_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
 {
   const auto& grid = *spds_.GetGrid();
   const auto& face_orientations = spds_.GetCellFaceOrientations();

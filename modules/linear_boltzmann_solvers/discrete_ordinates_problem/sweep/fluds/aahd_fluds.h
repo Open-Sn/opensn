@@ -186,7 +186,7 @@ public:
   /// Set delayed local new psi to old psi.
   void SetDelayedLocalPsiNewToOld() override;
   /// Add an isotropic nodal correction to the new delayed local and non-local incoming psi.
-  void AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
+  void CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
   /// \}
 
   /// \name Sweep preparation and clean up

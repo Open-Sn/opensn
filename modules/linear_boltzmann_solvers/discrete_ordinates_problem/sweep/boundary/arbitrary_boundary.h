@@ -38,6 +38,12 @@ public:
   std::uint64_t
   GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
 
+  void CorrectNewDelayedAngularFlux(int /*groupset_id*/,
+                                    const DelayedFluxCorrection& /*correction*/) override
+  {
+    // This boundary has no delayed angular flux to correct.
+  }
+
 private:
   /// Function that dictates the angular flux.
   std::shared_ptr<AngularFluxTimeFunction> angular_flux_function_;
