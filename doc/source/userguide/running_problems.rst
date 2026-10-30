@@ -91,8 +91,28 @@ Practical guidance:
   possible.
 * If a GPU run fails immediately, check the build configuration, and whether the
   problem is steady-state or transient.
-* The batch system or manual GPU binding determines which GPU is associated
-  with each MPI rank.
+
+Each MPI rank selects its GPU at startup, and PETSc uses the same GPU:
+
+* Ranks on a node that see the same GPUs share them in turn by node-local rank.
+  With four GPUs, node-local ranks 0-3 use GPUs 0-3, rank 4 uses GPU 0, and so
+  on.
+* A batch system or launcher that assigns GPUs to ranks does so by restricting
+  the GPUs each rank sees, for example with ``CUDA_VISIBLE_DEVICES``,
+  ``ROCR_VISIBLE_DEVICES``, or ``HIP_VISIBLE_DEVICES`` (Slurm's
+  ``--gpu-bind``, for instance). A rank given one GPU uses it; ranks given the
+  same GPUs share them in turn.
+* OpenSn passes the selected GPU to PETSc as ``-device_select_cuda`` or
+  ``-device_select_hip``. Do not select a different PETSc device, for example
+  through ``PETSC_OPTIONS``.
+* With SYCL, the SYCL runtime selects the GPU. Restrict the GPUs each rank sees
+  (for example with ``ONEAPI_DEVICE_SELECTOR``) to assign them.
+* An MPI library built with GPU support can create a context on the first GPU
+  each rank sees while MPI initializes, before OpenSn selects a GPU. When
+  ranks share GPUs, every rank then also holds memory on the node's first GPU.
+  MPICH, for example, does so to register its host buffers. Restricting the
+  GPUs each rank sees avoids this, and so does setting
+  ``MPIR_CVAR_ENABLE_GPU_REGISTER=0`` for MPICH.
 
 .. note::
 
