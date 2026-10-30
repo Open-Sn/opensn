@@ -1299,28 +1299,69 @@
     ]
   },
   {
-    "file": "transport_1d_4_dsa_ortho_inf.py",
-    "comment": "1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG",
-    "num_procs": 1,
+    "file": "richardson_zero_moment_convergence.py",
+    "comment": "Classic Richardson pointwise test converges at its tolerance when higher flux moments are zero (infinite medium, exact reference)",
+    "num_procs": 2,
     "checks": [
       {
         "type": "StrCompare",
-        "key": "AGS iteration = 52",
-        "wordnum": 16,
-        "gold": "converged;"
+        "key": "status = converged"
       },
       {
-        "type": "StrCompare",
-        "key": "AGS iteration = 52",
-        "wordnum": 20,
-        "gold": "converged"
+        "type": "KeyValuePair",
+        "key": "PHI_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 2e-06
+      }
+    ]
+  },
+  {
+    "file": "richardson_lagged_psi_convergence.py",
+    "comment": "Classic Richardson lagged angular-flux test converges at its tolerance when lagged fluxes are near zero (tet cube with inter-rank sweep cycles; particle balance of both solves, GMRES reference)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RICHARDSON_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
       },
       {
-        "type": "FloatCompare",
-        "key": "AGS iteration = 52",
-        "wordnum": 11,
-        "gold": 9.454622e-07,
-        "abs_tol": 1e-09
+        "type": "KeyValuePair",
+        "key": "PHI_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RICHARDSON_REL_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_REL_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_4_dsa_ortho_inf.py",
+    "comment": "1D infinite medium of graphite (168 groups, reflecting faces) with WGDSA and TGDSA: the across-groupset iteration converges and the scalar flux matches the exact multigroup balance (diag(sigma_t) - S_0)^-1 q",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
       }
     ]
   },
@@ -2328,16 +2369,17 @@
   },
   {
     "file": "iteration_tolerance_verification.py",
-    "comment": "Classic Richardson (l_abs_tol=1e-12) and the pointwise across-groupset iteration (ags_tolerance=1e-12) in infinite media must reach their tolerances against the exact solution",
+    "comment": "Classic Richardson (l_abs_tol=1e-12), the pointwise across-groupset iteration (ags_tolerance=1e-12), and the l2 across-groupset iteration (ags_tolerance=1e-8, rho 0.95) in infinite media must reach their tolerances against the exact solution",
     "num_procs": 2,
     "checks": [
       {"type": "KeyValuePair", "key": "ITER_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
-      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11}
+      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ITER_AGS_L2_ERR_OVER_TOL", "goldvalue": 0, "abs_tol": 1.0}
     ]
   },
   {
     "file": "iteration_tolerance_verification.py",
-    "comment": "Classic Richardson (l_abs_tol=1e-12) and the pointwise across-groupset iteration (ags_tolerance=1e-12) in infinite media must reach their tolerances against the exact solution (CBC sweeps)",
+    "comment": "Classic Richardson (l_abs_tol=1e-12), the pointwise across-groupset iteration (ags_tolerance=1e-12), and the l2 across-groupset iteration (ags_tolerance=1e-8, rho 0.95) in infinite media must reach their tolerances against the exact solution (CBC sweeps)",
     "outfileprefix": "iteration_tolerance_verification_cbc",
     "num_procs": 2,
     "args": [
@@ -2345,7 +2387,8 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "ITER_RICHARDSON_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
-      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11}
+      {"type": "KeyValuePair", "key": "ITER_AGS_POINTWISE_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-11},
+      {"type": "KeyValuePair", "key": "ITER_AGS_L2_ERR_OVER_TOL", "goldvalue": 0, "abs_tol": 1.0}
     ]
   },
   {
@@ -2560,6 +2603,146 @@
       {"type": "KeyValuePair", "key": "DETERMINISTIC_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-08},
       {"type": "KeyValuePair", "key": "DETERMINISTIC_K_REPEAT_MATCH=", "goldvalue": 1, "abs_tol": 0},
       {"type": "KeyValuePair", "key": "DETERMINISTIC_VS_DEFAULT_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-08}
+    ]
+  },
+  {
+    "file": "solver_is_converged.py",
+    "comment": "IsConverged() of the steady-state, transient and nonlinear k-eigenvalue solvers for converged and iteration-limited solves, and NLKE GetNumSweeps()",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "STEADY_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STEADY_LIMIT_NOT_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STEADY_NOT_CONVERGED_BEFORE_EXECUTE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "STEADY_SINGLE_SWEEP_NOT_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LIMIT_NOT_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_FAILURE_PERSISTS=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_NOT_CONVERGED_BEFORE_STEP=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_RESET_BY_INITIALIZE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NLKE_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NLKE_SWEEPS_COUNTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "NLKE_LIMIT_NOT_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "restart_delayed_psi_layout.py",
+    "comment": "Restart lagged angular flux layout fingerprint: a matching layout is loaded, a same-size different layout (angle aggregation, with sweep cycles or with opposing reflecting boundaries) is skipped in a steady restart and rejected in a transient restart",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_MATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_MISMATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_NONE_SENSITIVE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_MATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_MISMATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_NONE_SENSITIVE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_MATCH_ACCEPTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_MISMATCH_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_RESUME_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
     ]
   }
 ]

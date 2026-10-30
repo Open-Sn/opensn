@@ -1473,11 +1473,11 @@
   },
   {
     "file": "keigenvalue_transport_2d_2g_cmfd_high_dominance.py",
-    "comment": "CMFD (identity coarse mesh, one sweep per power iteration) on a 220 cm reflected 2D core with a high dominance ratio: k must match the unaccelerated k_tol=1e-12 reference, and the power iterations must not grow with the dominance ratio (58 with a converged coarse eigenproblem; 395 when the coarse power iteration stops on k alone)",
+    "comment": "CMFD (identity coarse mesh, one sweep per power iteration) on a 220 cm reflected 2D core with a high dominance ratio: k must match the unaccelerated k_tol=1e-12 reference, and the power iterations must not grow with the dominance ratio (76 with a converged coarse eigenproblem; 296 when the coarse power iteration stops on k alone)",
     "num_procs": 4,
     "checks": [
       {"type": "KeyValuePair", "key": "CMFD_HD_K_ERR", "goldvalue": 0, "abs_tol": 5e-08},
-      {"type": "KeyValuePair", "key": "CMFD_HD_ITERATIONS", "goldvalue": 58, "abs_tol": 22},
+      {"type": "KeyValuePair", "key": "CMFD_HD_ITERATIONS", "goldvalue": 76, "abs_tol": 22},
       {"type": "KeyValuePair", "key": "CMFD_HD_SKIPPED", "goldvalue": 0, "abs_tol": 0}
     ]
   },

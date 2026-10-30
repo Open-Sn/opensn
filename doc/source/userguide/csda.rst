@@ -161,6 +161,9 @@ Current restrictions are:
 * It is not supported with a precomputed uncollided flux.
 * It is not supported with GPU sweeps.
 * It is not supported with ``sweep_type="CBC"``.
+* It is not supported with within-group or two-grid DSA (``apply_wgdsa`` or
+  ``apply_tgdsa`` in any groupset). Their diffusion operators omit the CSDA
+  slowing-down term.
 * It is not supported by
   :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`.
 * Each contiguous charged-particle group range, identified by nonzero stopping

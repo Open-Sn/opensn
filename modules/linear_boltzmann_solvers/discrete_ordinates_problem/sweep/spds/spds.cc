@@ -532,7 +532,7 @@ SPDS::PrintGhostedGraph() const
           {
             if (omega_.Dot(face.normal) > tolerance)
               std::cout << "  " << cell->global_id << " -> " << face.neighbor_id << "\n";
-            else if (omega_.Dot(face.normal) < tolerance)
+            else if (omega_.Dot(face.normal) < -tolerance)
               std::cout << "  " << face.neighbor_id << " -> " << cell->global_id << "\n";
           } // if outgoing
         }
@@ -549,7 +549,7 @@ SPDS::PrintGhostedGraph() const
           {
             if (omega_.Dot(face.normal) > tolerance)
               std::cout << "  " << cell.global_id << " -> " << face.neighbor_id << "\n";
-            else if (omega_.Dot(face.normal) < tolerance)
+            else if (omega_.Dot(face.normal) < -tolerance)
               std::cout << "  " << face.neighbor_id << " -> " << cell.global_id << "\n";
           } // if outgoing
         }

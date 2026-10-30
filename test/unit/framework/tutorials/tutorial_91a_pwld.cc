@@ -276,10 +276,10 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
 
       // Mass Matrix and Source
       auto sigma_tg = sigma_t[g];
-      for (int i = 0; i < num_nodes; ++i)
+      for (size_t i = 0; i < num_nodes; ++i)
       {
         double temp = 0.0;
-        for (int j = 0; j < num_nodes; ++j)
+        for (size_t j = 0; j < num_nodes; ++j)
         {
           auto Mij = M(i, j);
           Atemp(i, j) = A(i, j) + Mij * sigma_tg;
@@ -448,11 +448,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
 
     std::stringstream outstr;
     outstr << "Iteration " << std::setw(5) << iter << " ";
-    {
-      char buffer[100];
-      snprintf(buffer, 100, "%11.3e\n", rel_change);
-      outstr << buffer;
-    }
+    outstr << std::setw(11) << std::scientific << std::setprecision(3) << rel_change << "\n";
 
     opensn::log.Log() << outstr.str();
 
@@ -506,6 +502,7 @@ SimTest91_PWLD(std::shared_ptr<Mesh> grid)
 
   // Update field function
   std::vector<std::shared_ptr<const FieldFunctionGridBased>> const_ff_list;
+  const_ff_list.reserve(ff_list.size());
   for (const auto& ff_ptr : ff_list)
     const_ff_list.push_back(ff_ptr);
   // FieldFunctionGridBased::ExportMultipleToPVTU("SimTest_91a_PWLD", const_ff_list);

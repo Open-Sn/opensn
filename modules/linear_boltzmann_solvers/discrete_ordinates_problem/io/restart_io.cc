@@ -7,6 +7,7 @@
 #include "framework/utils/hdf_utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <cstdint>
 
 namespace opensn
 {
@@ -84,19 +85,51 @@ DiscreteOrdinatesProblemIO::ReadRestartData(DiscreteOrdinatesProblem& do_problem
   {
     if (gs.angle_agg)
     {
+      // The delayed angular flux is stored in the order of the writer's sweep layout. A file whose
+      // layout fingerprint differs on any rank stores it in other slots: a different feedback arc
+      // set, angle aggregation, quadrature or local cell order. Files without a fingerprint were
+      // written before it existed and are checked by size only.
       const auto delayed_name = "delayed_psi_old_gs" + std::to_string(gs_id);
+      const auto layout_name = "delayed_psi_layout_gs" + std::to_string(gs_id);
       const size_t expected_delayed_size = gs.angle_agg->GetNumDelayedAngularDOFs().first;
-      OpenSnInvalidArgumentIf(full_time_dependent_restart and expected_delayed_size > 0 and
-                                not H5Has(file_id, delayed_name),
-                              do_problem.GetName() + ": time-dependent restart requires `" +
-                                delayed_name + ".");
-      if (H5Has(file_id, delayed_name))
+      const bool has_psi = H5Has(file_id, delayed_name);
+      std::vector<double> psi;
+      bool layout_matches = true;
+      if (H5Aexists(file_id, layout_name.c_str()) > 0)
       {
-        std::vector<double> psi;
+        std::uint64_t file_layout = 0;
+        success &= H5ReadAttribute<std::uint64_t>(file_id, layout_name, file_layout);
+        layout_matches = file_layout == gs.angle_agg->GetDelayedAngularDOFLayoutFingerprint();
+        if (has_psi)
+        {
+          success &= H5ReadDataset1D<double>(file_id, delayed_name, psi);
+          layout_matches &= psi.size() == expected_delayed_size;
+        }
+      }
+      else if (has_psi)
         success &= ReadSizedDoubleVector(
           file_id, delayed_name, psi, expected_delayed_size, do_problem.GetName());
-        if (success)
+      if (full_time_dependent_restart and expected_delayed_size > 0 and not has_psi)
+        layout_matches = false;
+
+      bool all_match = layout_matches;
+      opensn::mpi_comm.all_reduce(all_match, mpi::op::logical_and<bool>());
+      if (all_match)
+      {
+        if (has_psi and success)
           gs.angle_agg->SetOldDelayedAngularDOFsFromSTLVector(psi);
+      }
+      else
+      {
+        OpenSnInvalidArgumentIf(full_time_dependent_restart,
+                                do_problem.GetName() + ": the lagged angular flux `" +
+                                  delayed_name +
+                                  "` of the time-dependent restart does not match this problem's "
+                                  "sweep layout (feedback arc set, angle aggregation, quadrature "
+                                  "or local cell order).");
+        log.Log0Warning() << do_problem.GetName() << ": the lagged angular flux `" << delayed_name
+                          << "` of the restart does not match this problem's sweep layout and "
+                             "is not used. The solve starts from zero lagged angular flux.";
       }
     }
     ++gs_id;
@@ -220,6 +253,10 @@ DiscreteOrdinatesProblemIO::WriteRestartData(const DiscreteOrdinatesProblem& do_
           const auto delayed_name = "delayed_psi_old_gs" + std::to_string(gs_id);
           success &= H5WriteDataset1D<double>(file_id, delayed_name, psi);
         }
+        success &=
+          H5CreateAttribute<std::uint64_t>(file_id,
+                                           "delayed_psi_layout_gs" + std::to_string(gs_id),
+                                           gs.angle_agg->GetDelayedAngularDOFLayoutFingerprint());
       }
       ++gs_id;
     }

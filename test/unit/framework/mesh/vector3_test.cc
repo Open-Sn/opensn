@@ -3,6 +3,9 @@
 
 using namespace opensn;
 
+namespace
+{
+
 void
 ExpectVectorEqual(const Vector3& v, const double x, const double y = 0.0, const double z = 0.0)
 {
@@ -18,6 +21,8 @@ ExpectVectorEqual(const Vector3& a, const Vector3& b)
   EXPECT_DOUBLE_EQ(a.y, b.y);
   EXPECT_DOUBLE_EQ(a.z, b.z);
 }
+
+} // namespace
 
 TEST(Vector3Test, Constructors)
 {
@@ -232,7 +237,7 @@ TEST(Vector3Test, AbsoluteEquals)
   for (std::size_t i = 0; i < 3; ++i)
   {
     Vector3 diff;
-    diff(i) += i + 1;
+    diff(i) += static_cast<double>(i + 1);
     EXPECT_FALSE(a.AbsoluteEquals(diff));
   }
 }

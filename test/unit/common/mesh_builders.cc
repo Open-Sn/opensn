@@ -27,7 +27,7 @@ BuildLineMesh(double length, unsigned int n, double xmin)
   std::vector<double> nodes(n + 1, 0.);
   auto dx = length / n;
   for (std::size_t i = 0; i < n + 1; ++i)
-    nodes[i] = xmin + i * dx;
+    nodes[i] = xmin + static_cast<double>(i) * dx;
 
   ParameterBlock array("node_sets");
   array.AddParameter(ParameterBlock("1", nodes));
@@ -47,7 +47,7 @@ BuildSquareMesh(double length, unsigned int n, double xmin)
   std::vector<double> nodes(n + 1, 0.);
   auto dx = length / n;
   for (std::size_t i = 0; i < n + 1; ++i)
-    nodes[i] = xmin + i * dx;
+    nodes[i] = xmin + static_cast<double>(i) * dx;
 
   ParameterBlock array("node_sets");
   array.AddParameter(ParameterBlock("1", nodes));
@@ -68,7 +68,7 @@ BuildBoxMesh(double length, unsigned int n, double xmin)
   std::vector<double> nodes(n + 1, 0.);
   auto dx = length / n;
   for (std::size_t i = 0; i < n + 1; ++i)
-    nodes[i] = xmin + i * dx;
+    nodes[i] = xmin + static_cast<double>(i) * dx;
 
   ParameterBlock array("node_sets");
   array.AddParameter(ParameterBlock("1", nodes));

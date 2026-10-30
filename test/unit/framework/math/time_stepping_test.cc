@@ -12,6 +12,8 @@ TEST(TimeSteppingTest, SteppingMethodStringName)
   EXPECT_EQ(SteppingMethodStringName(SteppingMethod::CRANK_NICOLSON), "crank_nicholson");
   EXPECT_EQ(SteppingMethodStringName(SteppingMethod::THETA_SCHEME), "theta_scheme");
 
+  // Deliberately out of range: the name lookup must reject a value with no enumerator.
+  // NOLINTNEXTLINE(clang-analyzer-optin.core.EnumCastOutOfRange)
   EXPECT_THROW(SteppingMethodStringName(static_cast<SteppingMethod>(999)), std::logic_error);
 }
 

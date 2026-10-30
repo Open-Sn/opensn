@@ -5,7 +5,7 @@
 """CSDA restrictions that must hold after construction as well as during it.
 
 Checks that a CSDA problem rejects an uncollided flux file, time-dependent mode,
-and CBC sweeps at construction, rejects a later switch to adjoint or
+CBC sweeps, and within-group or two-grid DSA at construction, rejects a later switch to adjoint or
 time-dependent mode, is rejected by the k-eigenvalue solvers, and rejects replacement
 cross sections
 whose charged-particle block would be split across groupsets or whose group
@@ -133,6 +133,14 @@ expect_rejected(
 expect_rejected(
     lambda: DiscreteOrdinatesProblem(**problem_args(sweep_type="CBC")),
     "CSDA is not supported with CBC sweeps", "CBC sweeps")
+
+# The DSA operators omit the CSDA slowing-down operator, so DSA is rejected.
+for option in ("apply_wgdsa", "apply_tgdsa"):
+    groupsets = problem_args()["groupsets"]
+    groupsets[1] = dict(groupsets[1], **{option: True})
+    expect_rejected(
+        lambda: DiscreteOrdinatesProblem(**problem_args(groupsets=groupsets)),
+        f"Groupset 1: {option} is not supported with CSDA", option)
 
 # CSDA requires at least one material to supply energy bounds.
 unbounded = MultiGroupXS()

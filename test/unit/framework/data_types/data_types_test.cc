@@ -111,7 +111,7 @@ TEST(DataTypesTest, 00)
     for (const auto& pid_vec_bytes : recv_data_bytes)
     {
       // auto& pid = pid_vec_bytes.first;
-      auto& vec_bytes = pid_vec_bytes.second;
+      const auto& vec_bytes = pid_vec_bytes.second;
 
       ByteArray byte_array(vec_bytes);
 
@@ -120,7 +120,7 @@ TEST(DataTypesTest, 00)
       {
         const Cell read_cell = Cell::DeSerialize(byte_array, address);
 
-        auto& rcell = read_cell;
+        const auto& rcell = read_cell;
         auto& pcell = poster_child_cell;
 
         if (rcell.GetType() != pcell.GetType())

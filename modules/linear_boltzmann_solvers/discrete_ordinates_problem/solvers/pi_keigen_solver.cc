@@ -358,21 +358,6 @@ PowerIterationKEigenSolver::ComputeBalanceTable() const
   return opensn::ComputeBalanceTable(*do_problem_, 1.0 / k_eff_);
 }
 
-std::size_t
-PowerIterationKEigenSolver::GetNumSweeps() const
-{
-  std::size_t total_num_sweeps = 0;
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
-  }
-  return total_num_sweeps;
-}
-
 void
 PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
                                                 const bool additive)

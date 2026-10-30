@@ -47,6 +47,18 @@ ValidateFiniteScalarFlux(const LBSProblem& lbs_problem, const std::shared_ptr<Li
     "conditions for invalid values or regions without interaction.");
 }
 
+/// L2 norm of a distributed vector over all ranks.
+double
+ComputeGlobalL2Norm(const std::vector<double>& values)
+{
+  double local_sum = 0.0;
+  for (const double value : values)
+    local_sum += value * value;
+  double global_sum = 0.0;
+  mpi_comm.all_reduce<double>(local_sum, global_sum, mpi::op::sum<double>());
+  return std::sqrt(global_sum);
+}
+
 } // namespace
 
 void
@@ -112,10 +124,15 @@ AGSLinearSolver::Solve()
     {
       double norm = ComputeL2PhiChange(lbs_problem_, phi_old_);
       last_error = norm;
+      const double rho = rate_estimator.Update(norm);
 
       AppendNumericField(iter_stats, "l2_change", norm, Scientific(6));
+      AppendNumericField(iter_stats, "rho_est", rho, Fixed(4));
 
-      if (norm < tolerance_)
+      // The L2 change is absolute, so its round-off level scales with the flux norm.
+      const double roundoff_change = ConvergenceRateEstimator::kRoundoffRelativeChange *
+                                     ComputeGlobalL2Norm(lbs_problem_.GetPhiNewLocal());
+      if (rate_estimator.Converged(tolerance_, roundoff_change))
         converged = true;
     }
 

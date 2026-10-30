@@ -6,6 +6,9 @@
 
 using namespace opensn;
 
+namespace
+{
+
 void
 TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> coarse_grid)
 {
@@ -77,6 +80,8 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
     }
   }
 }
+
+} // namespace
 
 TEST(MeshMappingTest, Test1D)
 {

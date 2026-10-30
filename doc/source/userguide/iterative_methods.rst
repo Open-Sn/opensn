@@ -335,7 +335,12 @@ For PETSc-based groupset methods, the residual printed in the log is the scaled
 residual used by OpenSn’s custom convergence test for WGS solves.
 
 For ``classic_richardson``, the convergence test is based on pointwise changes
-in the solution, together with a spectral-radius estimate.
+in the solution, together with a spectral-radius estimate. The change of each
+flux moment is measured relative to the scalar flux at the same node and group,
+or to the moment itself when it is larger. The angular fluxes lagged at opposing
+reflecting boundaries and broken sweep cycles must also change by less than
+``l_abs_tol``, each measured relative to the scalar flux where the sweep reads
+it, or to the lagged value itself when it is larger.
 
 ``l_abs_tol``
 ^^^^^^^^^^^^^
@@ -468,11 +473,19 @@ Allowed values are:
 - ``"l2"``
 - ``"pointwise"``
 
-``l2`` is the default and is usually the simplest first choice.
+``l2`` is the default and is usually the simplest first choice. It measures
+the L2 norm of the change of all flux moments over all spatial unknowns. The
+norm is not normalized by the flux, so ``ags_tolerance`` is in the units of the
+flux. Like the ``pointwise`` check, it stops when that change is below
+:math:`(1-\varrho)\,` ``ags_tolerance``, where :math:`\varrho` is the estimated
+convergence rate, so that the remaining error, about
+:math:`\varrho/(1-\varrho)` times the last change, stays near the tolerance
+even when the groupsets are strongly coupled.
 
 ``pointwise`` is stricter in a different sense: it tracks the maximum local
-relative change in the flux vector. It can be useful when localized solution
-changes matter more than the global norm.
+relative change in the flux vector, measuring each flux moment relative to the
+local scalar flux or to the moment itself, whichever is larger. It can be useful
+when localized solution changes matter more than the global norm.
 
 ``ags_tolerance``
 -----------------
@@ -493,7 +506,11 @@ Reasonable values:
   coupling must be converged tightly
 
 In general, the groupset inner solves should be at least as tight as the AGS
-solve, and usually somewhat tighter.
+solve, and usually somewhat tighter. The change between AGS iterates includes
+the error of the inner solves, so with looser inner solves it stalls above
+``ags_tolerance`` and the iteration runs to ``max_ags_iterations``. The ``l2``
+check is absolute, so compare ``ags_tolerance`` with ``l_abs_tol`` times the
+norm of the flux.
 
 ``max_ags_iterations``
 ----------------------

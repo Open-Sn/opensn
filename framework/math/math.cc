@@ -569,26 +569,4 @@ ComputeL2Change(std::vector<double>& x, std::vector<double>& y)
   return std::sqrt(global_norm);
 }
 
-double
-ComputePointwiseChange(const std::vector<double>& x, const std::vector<double>& y)
-{
-  assert(x.size() == y.size());
-
-  double pw_change = 0.0;
-  for (auto i = 0; i < x.size(); ++i)
-  {
-    const double max_value = std::max(std::fabs(x[i]), std::fabs(y[i]));
-    const double delta = std::fabs(x[i] - y[i]);
-    if (max_value >= std::numeric_limits<double>::min())
-      pw_change = std::max(delta / max_value, pw_change);
-    else
-      pw_change = std::max(delta, pw_change);
-  }
-
-  double global_pw_change = 0.0;
-  mpi_comm.all_reduce<double>(pw_change, global_pw_change, mpi::op::max<double>());
-
-  return global_pw_change;
-}
-
 } // namespace opensn

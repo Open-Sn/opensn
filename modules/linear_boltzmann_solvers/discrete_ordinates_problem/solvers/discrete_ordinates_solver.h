@@ -21,6 +21,10 @@ class DiscreteOrdinatesProblem;
  */
 class DiscreteOrdinatesSolver : public Solver
 {
+public:
+  /// Return the cumulative number of transport sweeps applied by all WGS solvers of the problem.
+  std::size_t GetNumSweeps() const;
+
 protected:
   explicit DiscreteOrdinatesSolver(const InputParameters& params);
 
@@ -48,11 +52,13 @@ protected:
   void CheckKEigenRequirements(std::vector<std::string>& errors) const;
 
   /**
-   * Logs a warning on rank 0 if the last transport solve stopped without converging: the
-   * across-groupset iteration when the problem has more than one groupset, otherwise the
-   * within-group solve. `what` names the solve in the message, for example "Time step 3".
+   * Returns whether the last transport solve converged: the across-groupset iteration when the
+   * problem has more than one groupset, otherwise the within-group solve. Only a solve whose
+   * convergence test passed counts as converged; a single sweep without a test does not. If the
+   * solve did not converge, logs a warning on rank 0. `what` names the solve in the message, for
+   * example "Time step 3".
    */
-  void WarnIfTransportSolveNotConverged(const std::string& what) const;
+  bool CheckTransportSolveConverged(const std::string& what) const;
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 

@@ -71,6 +71,34 @@ GetInflow(const Cell& cell,
   return inflow;
 }
 
+/**
+ * The absorption rate that closes the particle balance of the adjoint problem. The adjoint
+ * equation scatters with the transposed transfer matrix, so the rate removed from group g summed
+ * over groups is sigma_t[g] minus the column-g sum of the transposed P0 transfer matrix. That is
+ * the forward scattering into g, not the forward scattering out of g that defines sigma_a.
+ */
+std::vector<double>
+ComputeAdjointAbsorption(const MultiGroupXS& xs)
+{
+  auto sigma_a = xs.GetSigmaTotal();
+  if (xs.GetTransferMatrices(false).empty())
+    return sigma_a;
+
+  const auto& transfer_matrices = xs.GetTransferMatrices(true);
+  OpenSnLogicalErrorIf(transfer_matrices.empty(),
+                       "ComputeBalanceTable: adjoint transfer matrices were not built.");
+
+  const auto& S0 = transfer_matrices.front();
+  for (size_t row = 0; row < S0.GetNumRows(); ++row)
+  {
+    const auto& cols = S0.rowI_indices[row];
+    const auto& vals = S0.rowI_values[row];
+    for (size_t t = 0; t < cols.size(); ++t)
+      sigma_a.at(cols[t]) -= vals[t];
+  }
+  return sigma_a;
+}
+
 } // namespace
 
 BalanceTable
@@ -123,6 +151,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
       q_moments_local,
       mat_src);
   }
+
+  // Adjoint absorption per cross-section object, built on first use.
+  const bool adjoint = do_problem.IsAdjoint();
+  std::map<const MultiGroupXS*, std::vector<double>> adjoint_sigma_a;
 
   // Compute absorption, material-source and in-flow
   double local_out_flow = 0.0;
@@ -248,7 +280,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
     // Absorption and sources
     const auto& xs = transport_view.GetXS();
-    const auto& sigma_a = xs.GetSigmaAbsorption();
+    if (adjoint and not adjoint_sigma_a.contains(&xs))
+      adjoint_sigma_a[&xs] = ComputeAdjointAbsorption(xs);
+    const auto& sigma_a = adjoint ? adjoint_sigma_a.at(&xs) : xs.GetSigmaAbsorption();
     const auto& inv_vel = xs.GetInverseVelocity();
     const auto& stopping_power = xs_data->GetStoppingPower();
     for (size_t i = 0; i < num_nodes; ++i)

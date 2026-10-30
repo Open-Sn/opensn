@@ -520,6 +520,19 @@ AAH_FLUDS::SetDelayedLocalPsiOldToNew()
 void
 AAH_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
 {
+  AddToNewDelayedValues(correction, false);
+}
+
+void
+AAH_FLUDS::AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction)
+{
+  if (csda_enabled_)
+    AddToNewDelayedValues(correction, true);
+}
+
+void
+AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const bool energy_slope)
+{
   const auto& grid = *spds_.GetGrid();
   const auto& spls = spds_.GetLocalSubgrid();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
@@ -552,7 +565,8 @@ AAH_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
           continue;
         const auto& face_dofs =
           common_data_.so_cell_inco_face_dof_indices_[so_index][local_face_counter];
-        delayed_psi = delayed_local_psi_.data();
+        // The energy slopes share the layout of the angular fluxes.
+        delayed_psi = energy_slope ? delayed_local_psiE_.data() : delayed_local_psi_.data();
         block_stride = delayed_local_psi_Gn_block_strideG_;
         for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
           node_offsets[fj] = (face_dofs.slot_address * common_data_.delayed_local_psi_stride_ +
@@ -566,7 +580,8 @@ AAH_FLUDS::AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
           continue;
         const auto& [prelocI, slot_dofs] =
           common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonlocal_face_counter];
-        delayed_psi = delayed_prelocI_outgoing_psi_[prelocI].data();
+        delayed_psi = energy_slope ? delayed_prelocI_outgoing_psiE_[prelocI].data()
+                                   : delayed_prelocI_outgoing_psi_[prelocI].data();
         block_stride = common_data_.delayed_prelocI_face_dof_count_[prelocI] * num_groups_;
         for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
           node_offsets[fj] =

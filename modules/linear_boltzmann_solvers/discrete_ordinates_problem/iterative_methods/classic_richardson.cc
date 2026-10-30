@@ -124,7 +124,7 @@ ClassicRichardson::Solve()
     const double rho = rate_estimator.Update(pw_phi_change);
 
     psi_new_ = groupset.angle_agg->GetNewDelayedAngularDOFsAsSTLVector();
-    double pw_psi_change = ComputePointwiseChange(psi_new_, psi_old_);
+    double pw_psi_change = ComputePointwisePsiChange(do_problem, groupset, psi_new_, psi_old_);
 
     if (rate_estimator.Converged(groupset.residual_tolerance) and
         (pw_psi_change <

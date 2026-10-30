@@ -143,6 +143,17 @@ public:
   /// Gets the current values of the angular unknowns as an STL vector.
   void SetOldDelayedAngularDOFsFromSTLVector(const std::vector<double>& stl_vector);
 
+  /**
+   * Returns a 64-bit fingerprint of the rank-local layout of the delayed angular unknowns, the
+   * order of the values that GetOldDelayedAngularDOFsAsSTLVector returns. It covers the local
+   * cells in order, each boundary's delayed unknown count and direction-to-slot map, and for each
+   * angle set that has delayed unknowns its directions, group count, local feedback arc set,
+   * delayed location dependencies and delayed buffer sizes.
+   * Two aggregations with equal fingerprints store their delayed unknowns in the same order. The
+   * value is the same on every platform and build (FNV-1a over 64-bit integers).
+   */
+  std::uint64_t GetDelayedAngularDOFLayoutFingerprint() const;
+
   /// Copies the old delayed angular fluxes to the new.
   void SetDelayedPsiOld2New();
 
@@ -155,6 +166,14 @@ public:
    * within and between locations.
    */
   void AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction);
+
+  /**
+   * Returns a vector laid out like GetNewDelayedAngularDOFsAsSTLVector() that holds, for every
+   * delayed angular flux and CSDA energy slope, the nodal value at the face node of the cell that
+   * reads it, for its group. Not collective. The delayed angular fluxes are unchanged on return.
+   */
+  std::vector<double>
+  MapNodalValuesToDelayedAngularDOFs(const FLUDS::DelayedFluxCorrection& nodal_value);
 
 private:
   int groupset_id_;

@@ -67,9 +67,10 @@ MakeGatherIndexDynamic(int row, int N)
 }
 
 /**
- * Scalar runtime-N Gaussian elimination with partial pivoting, for one group's cell-local
- * system. Used for SIMD tail remainders (group-block lengths that don't fill a whole Simd::size
- * lane group) and for cell topologies with no compile-time SimdBatchSolve<N> specialization.
+ * Scalar runtime-N Gaussian elimination without pivoting, for one group's cell-local system.
+ * Like SimdBatchSolve<N>, it eliminates in natural row order. Used for SIMD tail remainders
+ * (group-block lengths that don't fill a whole Simd::size lane group) and for cell topologies
+ * with no compile-time SimdBatchSolve<N> specialization.
  */
 inline void
 GaussEliminateDynamic(int N,

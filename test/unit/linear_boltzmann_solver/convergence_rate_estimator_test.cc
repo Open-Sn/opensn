@@ -98,4 +98,17 @@ TEST(ConvergenceRateEstimator, RoundoffChangeAlwaysConverges)
   EXPECT_TRUE(estimator.Converged(1.0e-20));
 }
 
+TEST(ConvergenceRateEstimator, CallerRoundoffLevelReplacesRelativeLevel)
+{
+  // An absolute change is at round-off relative to the norm of the iterate, not to one.
+  ConvergenceRateEstimator estimator;
+  const double roundoff = 1.0e6 * ConvergenceRateEstimator::kRoundoffRelativeChange;
+  estimator.Update(0.5 * roundoff);
+  estimator.Update(0.4 * roundoff);
+  estimator.Update(0.3 * roundoff);
+  EXPECT_FALSE(estimator.Converged(1.0e-20));
+  EXPECT_TRUE(estimator.Converged(1.0e-20, roundoff));
+  EXPECT_FALSE(estimator.Passes(2.0 * roundoff, 1.0e-20, roundoff));
+}
+
 } // namespace

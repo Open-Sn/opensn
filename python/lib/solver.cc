@@ -1236,8 +1236,8 @@ WrapLBS(py::module& slv)
             Enable CSDA charged-particle transport for CEPXS data loaded with
             ``csda_format=True``. CSDA requires a Cartesian
             :class:`SteadyStateSourceSolver` solve, ``sweep_type='AAH'``, CPU
-            sweeps, and charged-particle group ranges that are not split across
-            groupsets. All materials must supply identical per-group energy bounds
+            sweeps, no ``apply_wgdsa`` or ``apply_tgdsa`` in any groupset, and
+            charged-particle group ranges that are not split across groupsets. All materials must supply identical per-group energy bounds
             or omit them; at least one material must supply the shared structure.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.
@@ -1949,6 +1949,18 @@ WrapSteadyState(py::module& slv)
     )"
   );
   steady_state_solver.def(
+    "IsConverged",
+    &SteadyStateSourceSolver::IsConverged,
+    R"(
+    Return True if the transport solve of the last :meth:`Execute` converged.
+
+    With more than one groupset this is the across-groupset iteration, otherwise the
+    within-group solve of the single groupset. Returns False if the iteration limit was
+    reached or the solve failed, if the solve applied no convergence test (a single sweep,
+    ``petsc_richardson`` with ``l_max_its = 1``), and before the first :meth:`Execute`.
+    )"
+  );
+  steady_state_solver.def(
     "ComputeBalanceTable",
     [](const SteadyStateSourceSolver& self)
     {
@@ -2159,6 +2171,18 @@ WrapTransient(py::module& slv)
     py::overload_cast<std::nullptr_t>(&TransientSolver::SetPostAdvanceCallback),
     "Clear the PostAdvance callback by passing None.");
   transient_solver.def(
+    "IsConverged",
+    &TransientSolver::IsConverged,
+    R"(
+    Return True if the transport solve of every time step since :meth:`Initialize` converged.
+
+    A time step whose solve reaches its iteration limit, fails, or applies no convergence test
+    (a single sweep, ``petsc_richardson`` with ``l_max_its = 1``) makes this False until the
+    next :meth:`Initialize`, so checking it after each :meth:`Advance` identifies the first
+    such step. Returns False before the first time step.
+    )"
+  );
+  transient_solver.def(
     "ComputeBalanceTable",
     [](const TransientSolver& self)
     {
@@ -2303,6 +2327,29 @@ WrapNLKEigen(py::module& slv)
     &NonLinearKEigenSolver::GetEigenvalue,
     R"(
     Return the current k-eigenvalue.
+    )"
+  );
+  non_linear_k_eigen_solver.def(
+    "GetNumSweeps",
+    &NonLinearKEigenSolver::GetNumSweeps,
+    R"(
+    Return the cumulative number of transport sweeps performed by all groupsets, including
+    those of the initial power iterations.
+
+    Returns
+    -------
+    int
+        Total number of transport sweeps.
+    )"
+  );
+  non_linear_k_eigen_solver.def(
+    "IsConverged",
+    &NonLinearKEigenSolver::IsConverged,
+    R"(
+    Return True if the nonlinear solve of the last :meth:`Execute` converged.
+
+    Returns False if the nonlinear solver stopped on its iteration limit or another
+    divergence reason, and before the first :meth:`Execute`.
     )"
   );
   non_linear_k_eigen_solver.def(

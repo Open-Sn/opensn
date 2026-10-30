@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <functional>
+#include <optional>
 #include <vector>
 
 namespace opensn
@@ -31,6 +32,12 @@ public:
   void SetPostAdvanceCallback(std::nullptr_t);
   double GetCurrentTime() const { return current_time_; }
   unsigned int GetStep() const { return step_; }
+  /**
+   * Return true if a time step was taken since the last Initialize() and the transport solve of
+   * every such step converged. A step whose solve did not converge makes this false until the next
+   * Initialize().
+   */
+  bool IsConverged() const { return converged_.value_or(false); }
   BalanceTable ComputeBalanceTable() const;
 
 protected:
@@ -58,6 +65,9 @@ private:
    * Problem.SetXSMap), rather than reflecting only a one-time check made at Initialize().
    */
   void CheckPrecursorStatus();
+
+  /// Unset until a step is taken after Initialize(), then whether every step converged.
+  std::optional<bool> converged_;
 
   /// Previous time step vectors
   std::vector<double> phi_prev_local_;

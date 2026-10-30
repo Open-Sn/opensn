@@ -108,6 +108,7 @@ NonLinearKEigenSolver::ExecuteSolver()
   CaliperRegionScope cali_nlke("NLKE", CaliperNLKEScopeDepth());
 
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
+  converged_ = false;
 
   if (reset_phi0_)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
@@ -136,7 +137,8 @@ NonLinearKEigenSolver::ExecuteSolver()
     nl_solver_.Setup();
   }
   nl_solver_.Solve();
-  if (not nl_solver_.IsConverged())
+  converged_ = nl_solver_.IsConverged();
+  if (not converged_)
     log.Log0Warning() << GetName() << ": Nonlinear solve failed to converge.";
 
   // The adjoint is solved by sweeping the forward directions; map it to the physical adjoint.

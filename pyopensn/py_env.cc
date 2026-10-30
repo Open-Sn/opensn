@@ -39,7 +39,7 @@ PyEnv::PyEnv()
                              "mpi4py.rc for more information\n");
   }
   // initialize PETSc and OpenSn
-  ::PetscOptionsSetValue(NULL, "-options_left", "0");
+  ::PetscOptionsSetValue(nullptr, "-options_left", "0");
   ::PetscOptionsInsertString(nullptr, "-no_signal_handler");
   ::PetscInitialize(nullptr, nullptr, nullptr, nullptr);
   log.SetColorEnabled(false);

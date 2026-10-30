@@ -20,6 +20,9 @@ public:
   /// Return the current k-eigenvalue
   double GetEigenvalue() const;
 
+  /// Return true if the nonlinear solve of the last Execute() converged.
+  bool IsConverged() const { return converged_; }
+
   BalanceTable ComputeBalanceTable() const;
 
 protected:
@@ -33,6 +36,7 @@ private:
 
   bool reset_phi0_;
   unsigned int num_initial_power_its_;
+  bool converged_ = false;
 
 public:
   static InputParameters GetInputParameters();
