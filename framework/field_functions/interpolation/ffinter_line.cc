@@ -300,6 +300,9 @@ FieldFunctionInterpolationLine::ExportToCSV(std::string base_name) const
     log.Log() << "Exported CSV file for field func \"" << ref_ff_->GetName() << "\" to \""
               << filename << "\"";
   }
+
+  // Every rank may read the file once the export returns
+  opensn::mpi_comm.barrier();
 }
 
 } // namespace opensn

@@ -55,6 +55,8 @@ doc/source/capi/rst
 
 test/**/out/
 doc/source/tutorials/**/out/
+test/**/.*.run-*/
+doc/source/tutorials/**/.*.run-*/
 
 #Scratch directory
 scratch/

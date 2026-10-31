@@ -58,6 +58,8 @@ class Check:
     def __init__(self):
         self.annotations = []
         self.last_result_summary = ""
+        # The test's working directory, which holds the files the test wrote
+        self.run_directory = ""
 
     def __str__(self):
         return "Check base class"
@@ -712,7 +714,7 @@ class GoldFileCheck(Check):
         try:
             outfiledir = pathlib.Path(os.path.dirname(filename) + "/")
             if self.candidate_filename != "":
-                filename = str(outfiledir.parent.absolute()) + "/" + self.candidate_filename
+                filename = os.path.join(self.run_directory, self.candidate_filename)
             golddir = str(outfiledir.parent.absolute()) + "/gold/"
 
             goldfilename = os.path.splitext(os.path.basename(filename))[0] + ".gold"

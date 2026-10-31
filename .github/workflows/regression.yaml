@@ -59,6 +59,16 @@ jobs:
           path: ${{ runner.temp }}/logs/*_log.txt
           if-no-files-found: ignore
           retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-failed-test-files-cpu
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
+          if-no-files-found: ignore
+          retention-days: 7
   cuda:
     runs-on: [self-hosted, cuda]
     timeout-minutes: 60
@@ -82,6 +92,16 @@ jobs:
         with:
           name: regression-logs-cuda
           path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-failed-test-files-cuda
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
           if-no-files-found: ignore
           retention-days: 7
   hip:
@@ -109,5 +129,15 @@ jobs:
         with:
           name: regression-logs-hip
           path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-failed-test-files-hip
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
           if-no-files-found: ignore
           retention-days: 7

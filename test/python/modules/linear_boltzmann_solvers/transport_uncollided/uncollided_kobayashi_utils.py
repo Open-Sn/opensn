@@ -78,7 +78,8 @@ else:
     from pyopensn.xs import MultiGroupXS
 
 
-LOCAL_DIR = Path(__file__).resolve().parent
+# Not resolved: tests run from a directory of links, and generated files stay there.
+LOCAL_DIR = Path(os.path.abspath(__file__)).parent
 
 
 def _import_module_from_path(module_name, module_path):
@@ -214,7 +215,7 @@ def make_grid(mesh_filename):
 
 
 def generate_kobayashi_uncollided(mesh_filename, uncollided_filename, case="i"):
-    uncollided_path = Path(__file__).resolve().parent / uncollided_filename
+    uncollided_path = LOCAL_DIR / uncollided_filename
     remove_if_exists(uncollided_path)
 
     grid = make_grid(mesh_filename)
@@ -250,8 +251,8 @@ def run_kobayashi_case(
     results_filename,
     require_existing_uncollided=False,
 ):
-    uncollided_path = Path(__file__).resolve().parent / uncollided_filename
-    results_path = Path(__file__).resolve().parent / results_filename
+    uncollided_path = LOCAL_DIR / uncollided_filename
+    results_path = LOCAL_DIR / results_filename
     if rank == 0:
         remove_if_exists(results_path)
 

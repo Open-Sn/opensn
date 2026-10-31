@@ -42,6 +42,12 @@ class TestConfiguration:
         self.requires_gpu = requires_gpu
         self.env = env
         self.skip_reason_override = None
+        self.run_directory = None  # private working directory, see test_slot.CreateRunDirectory
+        self.saved_output_directory = None  # files of a failed test, see RemoveRunDirectory
+        self.has_dependents = False
+        self.producer = None  # the test this test depends on, see FindDependency
+        self.input_entries = []  # input-directory entries to link, see test_slot.InputEntries
+        self.input_changes = []  # see test_slot.InputDirectoryWatch
 
         check_num = 0
         for check_params in checks_params:
@@ -129,15 +135,19 @@ class TestConfiguration:
 
         return output
 
+    def FindDependency(self, tests):
+        """Returns the test this test depends on, which is in the same directory, or None."""
+        for test in tests:
+            if test.filename == self.dependency and test.file_dir == self.file_dir:
+                return test
+        return None
+
     def CheckDependencies(self, tests):
         """Return true only when the named dependency has completed successfully."""
         if self.dependency is None:
             return True
-        for test in tests:
-            if test.filename == self.dependency:
-                return test.ran and test.passed
-
-        return False
+        producer = self.FindDependency(tests)
+        return producer is not None and producer.ran and producer.passed
 
 
 def ResolveDependencyMatches(test_objects: dict, dependency: str) -> list:
@@ -620,6 +630,24 @@ def RunTests(tests: list, argv):
         runnable_and_schedulable_tests.append(test)
     runnable_tests = runnable_and_schedulable_tests
 
+    dependencies = {(test.file_dir, test.dependency) for test in tests
+                    if test.dependency is not None}
+    for test in tests:
+        test.has_dependents = (test.file_dir, test.filename) in dependencies
+
+    ignored, untracked = test_slot.UntrackedEntries(argv.directory)
+    linked_untracked = set()
+    for test in runnable_tests:
+        test.input_entries = test_slot.InputEntries(test, ignored)
+        for entry in test.input_entries:
+            path = os.path.join(test.file_dir, entry)
+            if path in untracked:
+                linked_untracked.add(os.path.relpath(path))
+    if linked_untracked:
+        warnings.warn("Tests can read these untracked inputs, which a clean checkout does not "
+                      + "have: " + ", ".join(sorted(linked_untracked)))
+    watch = test_slot.InputDirectoryWatch(runnable_tests, test_slots)
+
     print("Executing tests")
     print("  weights  : " + ", ".join(weight_classes_allowed))
     print(f"  selected : {selected_test_count}")
@@ -636,79 +664,93 @@ def RunTests(tests: list, argv):
             + f" requires {cpu_slots} CPU slots but scheduler capacity is {cpu_capacity}."
         )
 
-    while True:
-        # Check test progress
-        cpu_load = 0
-        gpu_load = 0
-        for slot in test_slots:
-            if slot.Probe():
-                cpu_load += GetCpuSlotsForTest(slot.test)
-                if slot.test.requires_gpu:
-                    gpu_load += 1
+    try:
+        while True:
+            # Check test progress
+            cpu_load = 0
+            gpu_load = 0
+            for slot in test_slots:
+                if slot.Probe():
+                    cpu_load += GetCpuSlotsForTest(slot.test)
+                    if slot.test.requires_gpu:
+                        gpu_load += 1
 
-        remaining_tests = [
-            test for test in tests
-            if not test.ran
-            and test.skip_reason_override is None
-            and test.weight_class in weight_classes_allowed
-            and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
-        ]
+            remaining_tests = [
+                test for test in tests
+                if not test.ran
+                and test.skip_reason_override is None
+                and test.weight_class in weight_classes_allowed
+                and ((test.requires_gpu and argv.gpu) or (not test.requires_gpu and not argv.gpu))
+            ]
 
-        if len(remaining_tests) == 0:
-            break
+            if len(remaining_tests) == 0:
+                break
 
-        launched_test = False
-        blocked_reasons = {}
-        for test in remaining_tests:
-            if test.submitted:
-                blocked_reasons[test] = "scheduler bookkeeping error after test submission"
-                continue
-
-            if not test.CheckDependencies(tests):
-                blocked_reasons[test] = f'dependency "{test.dependency}" did not pass'
-                continue
-
-            cpu_slots = GetCpuSlotsForTest(test)
-            if cpu_slots > (cpu_capacity - cpu_load):
-                blocked_reasons[test] = (
-                    f"waiting for {cpu_slots} CPU slots; "
-                    f"{cpu_capacity - cpu_load} currently available"
-                )
-                continue
-
-            if test.requires_gpu and gpu_load >= gpu_capacity:
-                blocked_reasons[test] = (
-                    f"waiting for a GPU slot; {gpu_capacity - gpu_load} currently available"
-                )
-                continue
-
-            cpu_load += cpu_slots
-            if test.requires_gpu:
-                gpu_load += 1
-            new_slot = test_slot.TestSlot(test, argv)
-            test_slots.append(new_slot)
-            launched_test = True
-
-        if cpu_load == 0 and gpu_load == 0 and not launched_test:
-            scheduler_blocked = True
-            warnings.warn(
-                "Stopping test scheduler because remaining tests cannot be launched. "
-                "This indicates either an unsatisfied dependency or an internal scheduler error."
-            )
+            launched_test = False
+            blocked_reasons = {}
             for test in remaining_tests:
-                reason = blocked_reasons.get(
-                    test, "scheduler could not determine the blocking reason"
+                if test.submitted:
+                    blocked_reasons[test] = "scheduler bookkeeping error after test submission"
+                    continue
+
+                if not test.CheckDependencies(tests):
+                    blocked_reasons[test] = f'dependency "{test.dependency}" did not pass'
+                    continue
+
+                cpu_slots = GetCpuSlotsForTest(test)
+                if cpu_slots > (cpu_capacity - cpu_load):
+                    blocked_reasons[test] = (
+                        f"waiting for {cpu_slots} CPU slots; "
+                        f"{cpu_capacity - cpu_load} currently available"
+                    )
+                    continue
+
+                if test.requires_gpu and gpu_load >= gpu_capacity:
+                    blocked_reasons[test] = (
+                        f"waiting for a GPU slot; {gpu_capacity - gpu_load} currently available"
+                    )
+                    continue
+
+                cpu_load += cpu_slots
+                if test.requires_gpu:
+                    gpu_load += 1
+                test.producer = test.FindDependency(tests)
+                new_slot = test_slot.TestSlot(test, argv, watch)
+                test_slots.append(new_slot)
+                launched_test = True
+
+            if cpu_load == 0 and gpu_load == 0 and not launched_test:
+                scheduler_blocked = True
+                warnings.warn(
+                    "Stopping test scheduler because remaining tests cannot be launched. This "
+                    "indicates either an unsatisfied dependency or an internal scheduler error."
                 )
-                test.skip_reason_override = reason
-                warnings.warn("Blocked test: " + GetDisplayName(test))
-                warnings.warn("  Reason: " + reason)
-            break
-        time.sleep(0.1)
+                for test in remaining_tests:
+                    reason = blocked_reasons.get(
+                        test, "scheduler could not determine the blocking reason"
+                    )
+                    test.skip_reason_override = reason
+                    warnings.warn("Blocked test: " + GetDisplayName(test))
+                    warnings.warn("  Reason: " + reason)
+                break
+            time.sleep(0.1)
+    finally:
+        # After an interruption or a runner error, stop the tests that are still running and remove
+        # the working directories of the tests that did not finish
+        for slot in test_slots:
+            slot.Stop()
+        for test in tests:
+            if test.run_directory is not None:
+                test_slot.RemoveRunDirectory(test)
 
     num_tests_failed = 0
     for slot in test_slots:
         if not slot.passed:
             num_tests_failed += 1
+
+    saved_output_directories = sorted(
+        test.saved_output_directory for test in tests if test.saved_output_directory is not None
+    )
 
     end_time = time.perf_counter()
     elapsed_time = end_time - start_time
@@ -725,11 +767,33 @@ def RunTests(tests: list, argv):
     print(f"  tests failed       : {num_tests_failed}")
 
     PrintFailureSummary(test_slots)
+    if saved_output_directories:
+        print("Files written by failed tests:")
+        for directory in saved_output_directories:
+            print(f"    {os.path.relpath(directory)}")
     PrintSlowestTests(test_slots, argv.slowest)
 
     if num_tests_failed > 0 or scheduler_blocked:
         return 1
     return 0
+
+
+def SnapshotTestTree(directory: str) -> dict:
+    """Returns a snapshot of the test tree for CheckTestTreeUnchanged."""
+    return test_slot.SnapshotTree(directory)
+
+
+def CheckTestTreeUnchanged(before: dict, directory: str) -> bool:
+    """Reports files that tests created, modified, or removed outside their private working
+    directories, for example through an absolute path. Returns True if there are none."""
+    changes = test_slot.TreeChanges(before, test_slot.SnapshotTree(directory), directory)
+    if changes:
+        print()
+        print("Tests changed files outside their working directories. Write generated files with")
+        print("paths relative to the working directory:")
+        for change in changes:
+            print(f"    {change}")
+    return not changes
 
 
 def FormatElapsedTime(seconds: float) -> str:
