@@ -8,23 +8,26 @@ sys.path.append(os.path.dirname(__file__))
 
 
 def run(api, rank):
-    GLCProductQuadrature2DXY = api["GLCProductQuadrature2DXY"]
+    GLCProductQuadrature3DXYZ = api["GLCProductQuadrature3DXYZ"]
     FieldFunctionInterpolationVolume = api["FieldFunctionInterpolationVolume"]
     RPPLogicalVolume = api["RPPLogicalVolume"]
+    ExtruderMeshGenerator = api["ExtruderMeshGenerator"]
     FromFileMeshGenerator = api["FromFileMeshGenerator"]
     DiscreteOrdinatesProblem = api["DiscreteOrdinatesProblem"]
     SteadyStateSourceSolver = api["SteadyStateSourceSolver"]
     MultiGroupXS = api["MultiGroupXS"]
     uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-    mesh_path = uncollided_utils.mesh_path
+    extruded_mesh = uncollided_utils.extruded_mesh
     volume_integral = uncollided_utils.volume_integral
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(
+        ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj", num_layers=4
+    )
     grid.SetUniformBlockID(0)
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=0.8, c=0.55)
-    quadrature = GLCProductQuadrature2DXY(
-        n_polar=2,
+    quadrature = GLCProductQuadrature3DXYZ(
+        n_polar=4,
         n_azimuthal=24,
         scattering_order=1,
     )

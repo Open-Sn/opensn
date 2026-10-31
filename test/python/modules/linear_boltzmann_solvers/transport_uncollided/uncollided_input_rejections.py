@@ -21,7 +21,7 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = OrthogonalMeshGenerator(node_sets=[[-1.0, 0.0, 1.0], [-1.0, 0.0, 1.0]]).Execute()
+    grid = OrthogonalMeshGenerator(node_sets=[[-1.0, 0.0, 1.0]] * 3).Execute()
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             num_groups=1,
             groupsets=[{"groups_from_to": [0, 0]}],
             xs_map=[{"block_ids": [0], "xs": xs}],
-            point_sources=[PointSource(location=[0.25, -0.2, 0.0], strength=[1.0])],
+            point_sources=[PointSource(location=[0.25, -0.2, 0.3], strength=[1.0])],
             near_source=[],
         )
     except Exception as error:
@@ -70,7 +70,7 @@ if __name__ == "__main__":
             num_groups=1,
             groupsets=[{"groups_from_to": [0, 0]}],
             xs_map=[{"block_ids": [0], "xs": xs}],
-            point_sources=[PointSource(location=[0.0, 0.25, 0.0], strength=[1.0])],
+            point_sources=[PointSource(location=[0.0, 0.25, 0.3], strength=[1.0])],
             near_source=[whole_domain],
         )
     except Exception as error:
@@ -78,10 +78,26 @@ if __name__ == "__main__":
             "not currently supported for uncollided generation" in str(error)
         )
 
+    two_dimensional_rejected = False
+    planar_grid = OrthogonalMeshGenerator(node_sets=[[-1.0, 0.0, 1.0]] * 2).Execute()
+    planar_grid.SetUniformBlockID(0)
+    try:
+        UncollidedProblem(
+            mesh=planar_grid,
+            num_groups=1,
+            groupsets=[{"groups_from_to": [0, 0]}],
+            xs_map=[{"block_ids": [0], "xs": xs}],
+            point_sources=[PointSource(location=[0.25, -0.2, 0.0], strength=[1.0])],
+            near_source=[whole_domain],
+        )
+    except Exception as error:
+        two_dimensional_rejected = "only three-dimensional meshes are supported" in str(error)
+
     if rank == 0:
         print(f"UncollidedMissingPointSourceRejected={int(missing_point_source_rejected)}")
         print(f"UncollidedNearSourceMismatchRejected={int(near_source_mismatch_rejected)}")
         print(f"UncollidedFaceOrVertexSourceRejected={int(face_or_vertex_source_rejected)}")
+        print(f"UncollidedTwoDimensionalMeshRejected={int(two_dimensional_rejected)}")
         sys.stdout.flush()
 
     if not missing_point_source_rejected:
@@ -92,3 +108,5 @@ if __name__ == "__main__":
         raise RuntimeError(
             "Uncollided generation accepted a point source on a face, edge, or vertex."
         )
+    if not two_dimensional_rejected:
+        raise RuntimeError("Uncollided generation accepted a two-dimensional mesh.")

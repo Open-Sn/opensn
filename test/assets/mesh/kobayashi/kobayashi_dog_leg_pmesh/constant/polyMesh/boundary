@@ -1,0 +1,50 @@
+/* Generated from cfMesh pMesh output for Kobayashi Problem 3. */
+FoamFile
+{
+    version 2.0;
+    format ascii;
+    arch "LSB;label=32;scalar=64";
+    class polyBoundaryMesh;
+    location "constant/polyMesh";
+    object boundary;
+}
+
+6
+(
+xmin
+{
+    type patch;
+    nFaces 624;
+    startFace 48464;
+}
+xmax
+{
+    type patch;
+    nFaces 624;
+    startFace 49088;
+}
+ymin
+{
+    type patch;
+    nFaces 400;
+    startFace 49712;
+}
+ymax
+{
+    type patch;
+    nFaces 400;
+    startFace 50112;
+}
+zmin
+{
+    type patch;
+    nFaces 624;
+    startFace 50512;
+}
+zmax
+{
+    type patch;
+    nFaces 624;
+    startFace 51136;
+}
+)
