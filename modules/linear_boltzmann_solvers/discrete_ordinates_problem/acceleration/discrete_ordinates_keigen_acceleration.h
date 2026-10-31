@@ -114,8 +114,8 @@ protected:
   /// Copies back only the scalar moments to a lbs primary flux vector.
   void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
 
-  /// Appends an error if an AAH groupset does one sweep per iteration (unstable for this method).
-  void RequireMultipleAAHSweeps(std::vector<std::string>& errors) const;
+  /// Appends an error for one-sweep AAH or CBC groupsets with delayed angular fluxes.
+  void RequireMultipleSweeps(std::vector<std::string>& errors) const;
 
   /// Appends an error if the problem has more than one groupset.
   void RequireSingleGroupset(std::vector<std::string>& errors) const;
