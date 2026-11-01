@@ -64,3 +64,43 @@ TEST(FieldFunctionInterpolationVolume, TransformedExtrema)
   interp.Execute();
   EXPECT_NEAR(interp.GetValue(), 13.0, 1.0e-12);
 }
+
+TEST(FieldFunctionGridBased, BatchedPointValues)
+{
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
+  auto linear =
+    std::make_shared<FieldFunctionGridBased>("linear", sdm, Unknown(UnknownType::SCALAR));
+  auto shifted =
+    std::make_shared<FieldFunctionGridBased>("shifted", sdm, Unknown(UnknownType::SCALAR));
+  const auto& unknowns = linear->GetUnknownManager();
+  std::vector<double> linear_values(sdm->GetNumLocalDOFs(unknowns));
+  std::vector<double> shifted_values(linear_values.size());
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const auto& nodes = sdm->GetCellNodeLocations(*cell);
+    for (size_t i = 0; i < nodes.size(); ++i)
+    {
+      const auto dof = sdm->MapDOFLocal(*cell, i, unknowns, 0, 0);
+      linear_values[dof] = nodes[i].z;
+      shifted_values[dof] = 2.0 * nodes[i].z + 3.0;
+    }
+  }
+  linear->UpdateFieldVector(linear_values);
+  shifted->UpdateFieldVector(shifted_values);
+
+  const std::vector<Vector3> points{{0.0, 0.0, 0.25}, {0.0, 0.0, 1.0}, {0.0, 0.0, 2.75}};
+  const FieldFunctionGridBased::FFList fields{linear, shifted};
+  const auto values = FieldFunctionGridBased::GetPointValues(fields, points);
+
+  ASSERT_EQ(values.size(), 2);
+  ASSERT_EQ(values[0].size(), points.size());
+  for (size_t p = 0; p < points.size(); ++p)
+  {
+    ASSERT_EQ(values[0][p].size(), 1);
+    EXPECT_NEAR(values[0][p][0], points[p].z, 1.0e-12);
+    EXPECT_NEAR(values[1][p][0], 2.0 * points[p].z + 3.0, 1.0e-12);
+    EXPECT_NEAR(values[0][p][0], linear->GetPointValue(points[p])[0], 1.0e-12);
+    EXPECT_NEAR(values[1][p][0], shifted->GetPointValue(points[p])[0], 1.0e-12);
+  }
+}

@@ -30,6 +30,9 @@ PYBIND11_MODULE(pyopensn, pyopensn)
   py_source(pyopensn);
   py_xs(pyopensn);
   py_ffunc(pyopensn);
+#ifdef OPENSN_WITH_PRECICE
+  py_coupling(pyopensn);
+#endif
   py_response(pyopensn);
   py_solver(pyopensn);
   py_post(pyopensn);

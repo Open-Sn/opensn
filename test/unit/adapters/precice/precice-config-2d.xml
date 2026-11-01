@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<precice-configuration>
+  <data:scalar name="TransportCellPower" />
+
+  <mesh name="OpenSn-Cells" dimensions="2">
+    <use-data name="TransportCellPower" />
+  </mesh>
+  <mesh name="OpenFOAM-Cells" dimensions="2">
+    <use-data name="TransportCellPower" />
+  </mesh>
+
+  <participant name="OpenSn">
+    <provide-mesh name="OpenSn-Cells" />
+    <receive-mesh name="OpenFOAM-Cells" from="OpenFOAM" />
+    <write-data name="TransportCellPower" mesh="OpenSn-Cells" />
+    <mapping:nearest-neighbor
+      direction="write"
+      from="OpenSn-Cells"
+      to="OpenFOAM-Cells"
+      constraint="conservative" />
+  </participant>
+  <participant name="OpenFOAM">
+    <provide-mesh name="OpenFOAM-Cells" />
+    <read-data name="TransportCellPower" mesh="OpenFOAM-Cells" />
+  </participant>
+
+  <m2n:sockets acceptor="OpenFOAM" connector="OpenSn" />
+
+  <coupling-scheme:serial-explicit>
+    <participants first="OpenSn" second="OpenFOAM" />
+    <max-time-windows value="1" />
+    <time-window-size value="1.0" />
+    <exchange
+      data="TransportCellPower"
+      mesh="OpenFOAM-Cells"
+      from="OpenSn"
+      to="OpenFOAM" />
+  </coupling-scheme:serial-explicit>
+</precice-configuration>

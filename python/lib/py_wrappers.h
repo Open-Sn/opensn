@@ -211,6 +211,12 @@ void WrapFieldFunction(py::module& ffunc);
 void WrapFieldFunctionGridBased(py::module& ffunc);
 void WrapFieldFunctionInterpolation(py::module& ffunc);
 
+#ifdef OPENSN_WITH_PRECICE
+/// Wrap the optional preCICE coupling adapter.
+void py_coupling(py::module& pyopensn);
+void WrapPreciceAdapter(py::module& coupling);
+#endif
+
 /// Wrap the logical volume components of OpenSn.
 void py_logvol(py::module& pyopensn);
 void WrapLogicalVolume(py::module& logvol);

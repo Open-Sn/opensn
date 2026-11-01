@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<precice-configuration>
+  <data:scalar name="TransportCellPower" />
+  <!-- An implicit scheme needs data in both directions. OpenSn receives this field but does not
+       use it; it is where temperature feedback would enter. -->
+  <data:scalar name="Temperature" />
+
+  <mesh name="OpenSn-Cells" dimensions="3">
+    <use-data name="TransportCellPower" />
+    <use-data name="Temperature" />
+  </mesh>
+  <mesh name="OpenFOAM-Cells" dimensions="3">
+    <use-data name="TransportCellPower" />
+    <use-data name="Temperature" />
+  </mesh>
+
+  <participant name="OpenSn">
+    <provide-mesh name="OpenSn-Cells" />
+    <receive-mesh name="OpenFOAM-Cells" from="OpenFOAM" />
+    <write-data name="TransportCellPower" mesh="OpenSn-Cells" />
+    <read-data name="Temperature" mesh="OpenSn-Cells" />
+    <mapping:nearest-neighbor
+      direction="write"
+      from="OpenSn-Cells"
+      to="OpenFOAM-Cells"
+      constraint="conservative" />
+    <mapping:nearest-neighbor
+      direction="read"
+      from="OpenFOAM-Cells"
+      to="OpenSn-Cells"
+      constraint="consistent" />
+  </participant>
+  <participant name="OpenFOAM">
+    <provide-mesh name="OpenFOAM-Cells" />
+    <read-data name="TransportCellPower" mesh="OpenFOAM-Cells" />
+    <write-data name="Temperature" mesh="OpenFOAM-Cells" />
+  </participant>
+
+  <m2n:sockets acceptor="OpenFOAM" connector="OpenSn" />
+
+  <coupling-scheme:parallel-implicit>
+    <participants first="OpenSn" second="OpenFOAM" />
+    <max-time-windows value="2" />
+    <time-window-size value="1.0" />
+    <max-iterations value="3" />
+    <exchange
+      data="TransportCellPower"
+      mesh="OpenFOAM-Cells"
+      from="OpenSn"
+      to="OpenFOAM" />
+    <exchange
+      data="Temperature"
+      mesh="OpenFOAM-Cells"
+      from="OpenFOAM"
+      to="OpenSn" />
+    <absolute-convergence-measure
+      data="TransportCellPower"
+      mesh="OpenFOAM-Cells"
+      limit="1e-12" />
+  </coupling-scheme:parallel-implicit>
+</precice-configuration>

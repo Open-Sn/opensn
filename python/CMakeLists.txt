@@ -31,6 +31,10 @@ target_link_libraries(libopensnpy
     caliper
     pybind11::embed
 )
+if(OPENSN_WITH_PRECICE)
+  target_link_libraries(libopensnpy PUBLIC opensn_precice)
+  target_compile_definitions(libopensnpy PRIVATE OPENSN_WITH_PRECICE)
+endif()
 target_compile_options(libopensnpy PRIVATE ${OPENSN_CXX_FLAGS})
 set_target_properties(
     libopensnpy
