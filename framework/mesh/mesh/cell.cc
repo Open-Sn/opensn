@@ -319,10 +319,15 @@ Cell::operator=(const Cell& other)
   if (cell_type_ != other.cell_type_ or cell_sub_type_ != other.cell_sub_type_)
     throw std::runtime_error("Cannot copy from cells of different types.");
 
+  if (this == &other)
+    return *this;
+
   global_id = other.global_id;
   local_id = other.local_id;
   partition_id = other.partition_id;
+  num_parition = other.num_parition;
   centroid = other.centroid;
+  volume = other.volume;
   block_id = other.block_id;
   vertex_ids = other.vertex_ids;
   faces = other.faces;

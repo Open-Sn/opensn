@@ -335,3 +335,60 @@ TEST(MeshTest, SetBoundaryIDFromInteriorLogicalVolumeSense)
   EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 0.0), 1);
   EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 4.0), 1);
 }
+
+TEST(CellTest, CopyAssignmentCopiesAllMembers)
+{
+  Cell c1(CellType::SLAB, CellType::SLAB);
+  c1.global_id = 12;
+  c1.local_id = 3;
+  c1.partition_id = 1;
+  c1.num_parition = 4;
+  c1.block_id = 5;
+  c1.centroid = Vector3(1.0, 2.0, 3.0);
+  c1.volume = 2.5;
+  c1.vertex_ids = {10, 11};
+
+  CellFace face;
+  face.has_neighbor = true;
+  face.neighbor_id = 99;
+  face.normal = Vector3(0.0, 1.0, 0.0);
+  face.centroid = Vector3(1.0, 2.0, 0.0);
+  face.area = 1.5;
+  face.vertex_ids = {10};
+  c1.faces = {face};
+
+  Cell c2(CellType::SLAB, CellType::SLAB);
+  c2 = c1;
+
+  EXPECT_EQ(c2.global_id, c1.global_id);
+  EXPECT_EQ(c2.local_id, c1.local_id);
+  EXPECT_EQ(c2.partition_id, c1.partition_id);
+  EXPECT_EQ(c2.num_parition, c1.num_parition);
+  EXPECT_EQ(c2.block_id, c1.block_id);
+  EXPECT_DOUBLE_EQ(c2.centroid.x, c1.centroid.x);
+  EXPECT_DOUBLE_EQ(c2.centroid.y, c1.centroid.y);
+  EXPECT_DOUBLE_EQ(c2.centroid.z, c1.centroid.z);
+  EXPECT_DOUBLE_EQ(c2.volume, c1.volume);
+  EXPECT_EQ(c2.vertex_ids, c1.vertex_ids);
+  ASSERT_EQ(c2.faces.size(), 1U);
+  EXPECT_EQ(c2.faces[0].has_neighbor, face.has_neighbor);
+  EXPECT_EQ(c2.faces[0].neighbor_id, face.neighbor_id);
+  EXPECT_DOUBLE_EQ(c2.faces[0].normal.x, face.normal.x);
+  EXPECT_DOUBLE_EQ(c2.faces[0].normal.y, face.normal.y);
+  EXPECT_DOUBLE_EQ(c2.faces[0].normal.z, face.normal.z);
+  EXPECT_DOUBLE_EQ(c2.faces[0].centroid.x, face.centroid.x);
+  EXPECT_DOUBLE_EQ(c2.faces[0].centroid.y, face.centroid.y);
+  EXPECT_DOUBLE_EQ(c2.faces[0].centroid.z, face.centroid.z);
+  EXPECT_DOUBLE_EQ(c2.faces[0].area, face.area);
+  EXPECT_EQ(c2.faces[0].vertex_ids, face.vertex_ids);
+
+  // Self-assignment
+  Cell& c2_alias = c2;
+  c2 = c2_alias;
+  EXPECT_EQ(c2.global_id, 12U);
+  EXPECT_DOUBLE_EQ(c2.volume, 2.5);
+
+  // Different cell types throw
+  Cell c3(CellType::POLYGON, CellType::POLYGON);
+  EXPECT_THROW(c3 = c1, std::runtime_error);
+}
