@@ -342,7 +342,6 @@ TEST(CellTest, CopyAssignmentCopiesAllMembers)
   c1.global_id = 12;
   c1.local_id = 3;
   c1.partition_id = 1;
-  c1.num_parition = 4;
   c1.block_id = 5;
   c1.centroid = Vector3(1.0, 2.0, 3.0);
   c1.volume = 2.5;
@@ -363,7 +362,6 @@ TEST(CellTest, CopyAssignmentCopiesAllMembers)
   EXPECT_EQ(c2.global_id, c1.global_id);
   EXPECT_EQ(c2.local_id, c1.local_id);
   EXPECT_EQ(c2.partition_id, c1.partition_id);
-  EXPECT_EQ(c2.num_parition, c1.num_parition);
   EXPECT_EQ(c2.block_id, c1.block_id);
   EXPECT_DOUBLE_EQ(c2.centroid.x, c1.centroid.x);
   EXPECT_DOUBLE_EQ(c2.centroid.y, c1.centroid.y);

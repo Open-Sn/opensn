@@ -325,7 +325,6 @@ Cell::operator=(const Cell& other)
   global_id = other.global_id;
   local_id = other.local_id;
   partition_id = other.partition_id;
-  num_parition = other.num_parition;
   centroid = other.centroid;
   volume = other.volume;
   block_id = other.block_id;
