@@ -85,6 +85,9 @@ public:
   /// "dirichlet" or "marshak".
   std::string wgdsa_boundary_closure;
   std::string tgdsa_boundary_closure;
+  /// MIP penalty length convention on polyhedra: "cell" or "face".
+  std::string wgdsa_h_perp_convention;
+  std::string tgdsa_h_perp_convention;
   bool wgdsa_verbose;
   bool tgdsa_verbose;
   std::string wgdsa_string;

@@ -76,6 +76,12 @@ public:
    */
   double HPerpendicular(const Cell& cell, unsigned int f);
 
+  /**
+   * Extra factor on the interior-face penalty of polyhedral cells: 2 for the "cell" h_perp
+   * convention (OpenSn's original), 1 for "face".
+   */
+  double PolyhedronInteriorPenaltyScale() const;
+
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
   int MapFaceNodeDisc(const Cell& cur_cell,
                       const Cell& adj_cell,

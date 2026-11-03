@@ -97,6 +97,16 @@ LBSGroupset::GetInputParameters()
                               "dirichlet",
                               "Boundary condition of the TGDSA diffusion correction, with the "
                               "same choices and boundaries as wgdsa_boundary_closure.");
+  params.AddOptionalParameter("wgdsa_h_perp_convention",
+                              "cell",
+                              "Penalty length of the WGDSA MIP operator on polyhedral cells. cell "
+                              "uses OpenSn's cell-wide lengths (3V/S tet, V/S hex) with an extra "
+                              "interior factor 2; face uses the face-dependent orthogonal "
+                              "projections (3V/A_f tet, V/A_f hex) of Turcksin and Ragusa.");
+  params.AddOptionalParameter("tgdsa_h_perp_convention",
+                              "cell",
+                              "Penalty length of the TGDSA MIP operator, with the same choices as "
+                              "wgdsa_h_perp_convention.");
 
   // Constraints
   params.ConstrainParameterRange(
@@ -118,6 +128,10 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("wgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak"}));
+  params.ConstrainParameterRange("wgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face"}));
+  params.ConstrainParameterRange("tgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face"}));
   params.ConstrainParameterRange("tgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
@@ -155,6 +169,8 @@ LBSGroupset::Init(int aid)
   tgdsa_direct_solve_threshold = 20000;
   wgdsa_boundary_closure = "dirichlet";
   tgdsa_boundary_closure = "dirichlet";
+  wgdsa_h_perp_convention = "cell";
+  tgdsa_h_perp_convention = "cell";
   wgdsa_verbose = false;
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
@@ -239,6 +255,8 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   tgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("tgdsa_direct_solve_threshold");
   wgdsa_boundary_closure = params.GetParamValue<std::string>("wgdsa_boundary_closure");
   tgdsa_boundary_closure = params.GetParamValue<std::string>("tgdsa_boundary_closure");
+  wgdsa_h_perp_convention = params.GetParamValue<std::string>("wgdsa_h_perp_convention");
+  tgdsa_h_perp_convention = params.GetParamValue<std::string>("tgdsa_h_perp_convention");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");

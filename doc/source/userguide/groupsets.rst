@@ -39,6 +39,7 @@ The main groupset fields exposed in the Python API are:
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
 * ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 * ``apply_tgdsa``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
@@ -47,6 +48,7 @@ The main groupset fields exposed in the Python API are:
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
 * ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 The simplest valid pattern is one groupset covering all groups:
 
@@ -328,6 +330,7 @@ with associated controls:
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
 * ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
@@ -335,6 +338,7 @@ with associated controls:
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
 * ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
@@ -360,6 +364,7 @@ The main WGDSA controls are:
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
 * ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 
 ``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
 correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
@@ -379,6 +384,16 @@ imposes the natural Marshak condition
 :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
 Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
 ``tgdsa_boundary_closure`` does the same for TGDSA.
+
+``wgdsa_h_perp_convention`` sets the penalty length of the MIP diffusion
+operator on polyhedral cells. ``"cell"`` (the default) uses the cell-wide
+lengths :math:`3V/S` (tetrahedra) and :math:`V/S` (hexahedra), :math:`S` the
+total surface of the cell, with an extra factor 2 on interior faces.
+``"face"`` uses the face-dependent orthogonal projections :math:`3V/A_f` and
+:math:`V/A_f` of Turcksin and Ragusa, so that on a cube of side :math:`h` the
+interior penalty is ``penalty_factor`` :math:`D/h` instead of 12 times that. The
+larger penalty of ``"cell"`` slows DSA on cells a few mean free paths thick.
+``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~
@@ -402,6 +417,7 @@ The main TGDSA controls are:
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
 * ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 ``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA

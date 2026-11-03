@@ -85,6 +85,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     solver->options.direct_solve_threshold = groupset.tgdsa_direct_solve_threshold;
     solver->options.verbose = groupset.tgdsa_verbose;
     solver->options.additional_options_string = groupset.tgdsa_string;
+    solver->options.h_perp_convention = groupset.tgdsa_h_perp_convention;
 
     solver->Initialize();
 

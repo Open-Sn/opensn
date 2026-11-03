@@ -52,6 +52,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     solver->options.direct_solve_threshold = groupset.wgdsa_direct_solve_threshold;
     solver->options.verbose = groupset.wgdsa_verbose;
     solver->options.additional_options_string = groupset.wgdsa_string;
+    solver->options.h_perp_convention = groupset.wgdsa_h_perp_convention;
 
     solver->Initialize();
 

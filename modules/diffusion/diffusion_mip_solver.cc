@@ -144,7 +144,9 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           if (cell->GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
           if (cell->GetType() == CellType::POLYHEDRON)
-            kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
+                           (adj_Dg / hp + Dg / hm) * 0.5,
+                         0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -675,7 +677,9 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           if (cell->GetType() == CellType::POLYGON)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
           if (cell->GetType() == CellType::POLYHEDRON)
-            kappa = fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
+                           (adj_Dg / hp + Dg / hm) * 0.5,
+                         0.25);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -1234,18 +1238,41 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   {
     const auto surface_area = ComputeSurfaceArea();
 
-    if (num_faces == 4) // Tet
-      hp = 3 * volume / surface_area;
-    else if (num_faces == 6 and num_vertices == 8) // Hex
-      hp = volume / surface_area;
-    else // Polyhedron
-      hp = 6 * volume / surface_area;
+    if (options.h_perp_convention == "face")
+    {
+      // Face-dependent orthogonal projections (Turcksin & Ragusa 2014; Hackemack 2016)
+      if (num_faces == 4) // Tet: height of the pyramid over face f
+        hp = 3 * volume / face_area;
+      else if (num_faces == 6 and num_vertices == 8) // Hex: height over face f
+        hp = volume / face_area;
+      else // Polyhedron: diameter of the sphere with the same V/S
+        hp = 6 * volume / surface_area;
+    }
+    else if (options.h_perp_convention == "cell")
+    {
+      if (num_faces == 4) // Tet
+        hp = 3 * volume / surface_area;
+      else if (num_faces == 6 and num_vertices == 8) // Hex
+        hp = volume / surface_area;
+      else // Polyhedron
+        hp = 6 * volume / surface_area;
+    }
+    else
+      throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
+                                  "h_perp_convention \"" +
+                                  options.h_perp_convention + "\" (expected \"cell\" or \"face\")");
   } // Polyhedron
   else
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
                            "Unsupported cell type in call to HPerpendicular");
 
   return hp;
+}
+
+double
+DiffusionMIPSolver::PolyhedronInteriorPenaltyScale() const
+{
+  return options.h_perp_convention == "face" ? 1.0 : 2.0;
 }
 
 int

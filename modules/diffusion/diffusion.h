@@ -37,6 +37,15 @@ public:
     PetscInt direct_solve_threshold = 20000;
     std::string additional_options_string;
     double penalty_factor = 4.0;
+    /**
+     * Penalty length h_perp of polyhedral cells. "cell" (default) uses the cell-wide values
+     * 3V/S (tet), V/S (hex), 6V/S (other), S the total surface area, with an extra factor 2 on the
+     * interior-face penalty. "face" uses the face-dependent orthogonal projections 3V/A_f (tet),
+     * V/A_f (hex), 6V/S (other) of Turcksin & Ragusa (2014) and Hackemack (2016), without the extra
+     * interior factor, so that on a cube of side h the interior penalty is penalty_factor D/h and
+     * the boundary penalty 2 penalty_factor D/h. Slab and polygon cells are unaffected.
+     */
+    std::string h_perp_convention = "cell";
   } options;
 
 public:
