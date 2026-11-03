@@ -50,7 +50,11 @@ public:
      * (FaceSideLength; V/A_f on squares and cubes, so the same operator as "face_x2" on
      * orthogonal hexes) with the factor 2 on interior and boundary faces of polygons and
      * polyhedra; it bounds the PWLD trace inequality exactly and keeps the operator positive
-     * definite on distorted cells where the other lengths do not.
+     * definite on distorted cells where the other lengths do not, but it doubles the penalty on
+     * every tetrahedron (on a tet the side length is half of 3V/A_f). "face_side" takes
+     * the smaller of the "face_x2" length and twice the side length on each face (factor 2 as
+     * "side"): "face_x2" on cubes, tetrahedra and mildly distorted cells, the side length only
+     * where a face has a skinny side simplex.
      */
     std::string h_perp_convention = "cell";
     /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.

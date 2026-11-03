@@ -157,5 +157,40 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
     PetscInt n = 0;
     EXPECT_FALSE(IsPositiveDefinite(MIPMatrix(grid, "cell", bc, n), n));
     EXPECT_TRUE(IsPositiveDefinite(MIPMatrix(grid, "side", bc, n), n));
+    EXPECT_TRUE(IsPositiveDefinite(MIPMatrix(grid, "face_side", bc, n), n));
+  }
+}
+
+// "face_side" = min(face_x2 length, 2 side length) is the face_x2 length on every tetrahedron (the
+// cell centroid is a quarter of the height above each face, so twice the side length is 3V/A_f) and
+// on cubes, where "side" alone would double the tetrahedral penalty.
+TEST(DiffusionMIPSidePenalty, FaceSideIsFaceX2OnTetsAndCubes)
+{
+  const auto mfile =
+    std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
+  for (auto grid : {BuildMeshFromFile(mfile), BuildBoxMesh(1.0, 3, 0.0)})
+  {
+    grid->SetUniformBlockID(0);
+    std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+    const auto& sdm = *sdm_ptr;
+    std::map<uint64_t, BoundaryCondition> bcs;
+    std::map<unsigned int, Multigroup_D_and_sigR> xs;
+    xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
+    std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
+    DiffusionMIPSolver solver(
+      "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
+    for (const auto& cell : grid->GetLocalCells())
+      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      {
+        solver.options.h_perp_convention = "face_x2";
+        const double h_face = solver.HPerpendicular(*cell, f);
+        solver.options.h_perp_convention = "side";
+        const double h_side = solver.HPerpendicular(*cell, f);
+        solver.options.h_perp_convention = "face_side";
+        EXPECT_NEAR(solver.HPerpendicular(*cell, f), h_face, 1.0e-10 * h_face);
+        if (cell->faces.size() == 4)
+          EXPECT_NEAR(h_side, 0.5 * h_face, 1.0e-10 * h_face);
+      }
+    EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
 }

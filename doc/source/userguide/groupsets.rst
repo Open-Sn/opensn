@@ -420,7 +420,13 @@ so this length bounds the discrete trace inequality exactly: the operator stays
 positive definite on strongly distorted cells (slivers, near-degenerate
 quadrilaterals and hexahedra) where the other lengths, including the default,
 can make it indefinite and DSA diverge. On orthogonal hexahedra it is the same
-operator as ``"face_x2"``.
+operator as ``"face_x2"``, but on tetrahedra its length is half the
+``"face_x2"`` one, which doubles the penalty and slows DSA on cells a few mean
+free paths thick. ``"face_side"`` takes, face by face, the smaller of the
+``"face_x2"`` length and twice the side length (factor 2 as ``"side"``): it is
+``"face_x2"`` on cubes, tetrahedra and mildly distorted cells and switches to
+the side length only on faces with a skinny side simplex, which keeps the
+operator positive definite on strongly distorted meshes.
 ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``

@@ -1281,6 +1281,9 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     return surface_area;
   };
 
+  if (options.h_perp_convention == "face_side" and
+      (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
+    return std::min(FaceOrthogonalLength(cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
   if (options.h_perp_convention == "side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
     return FaceSideLength(*grid_, cell, f);
@@ -1334,10 +1337,11 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
         hp = 6 * volume / surface_area;
     }
     else
-      throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
-                                  "h_perp_convention \"" +
-                                  options.h_perp_convention +
-                                  "\" (expected \"cell\", \"face\", \"face_x2\" or \"side\")");
+      throw std::invalid_argument(
+        "acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
+        "h_perp_convention \"" +
+        options.h_perp_convention +
+        "\" (expected \"cell\", \"face\", \"face_x2\", \"side\" or \"face_side\")");
   } // Polyhedron
   else
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
@@ -1389,13 +1393,15 @@ DiffusionMIPSolver::PenaltyFloor(const Vector3& normal) const
 double
 DiffusionMIPSolver::PolyhedronInteriorPenaltyScale() const
 {
-  return options.h_perp_convention == "face" ? 1.0 : 2.0; // "cell", "face_x2", "side": 2
+  return options.h_perp_convention == "face" ? 1.0
+                                             : 2.0; // "cell", "face_x2", "side", "face_side": 2
 }
 
 double
 DiffusionMIPSolver::PolygonPenaltyScale() const
 {
-  return options.h_perp_convention == "side" ? 2.0 : 1.0;
+  return (options.h_perp_convention == "side" or options.h_perp_convention == "face_side") ? 2.0
+                                                                                           : 1.0;
 }
 
 int

@@ -108,7 +108,9 @@ LBSGroupset::GetInputParameters()
                               "face_x2 uses them and keeps the extra interior factor 2; side "
                               "uses twice the smallest height of the face's PWLD side simplices "
                               "on polygons and polyhedra, with the factor 2 on interior and "
-                              "boundary faces (robust on distorted cells).");
+                              "boundary faces (robust on distorted cells); face_side uses the "
+                              "smaller of the face_x2 length and twice the side length (face_x2 "
+                              "on regular cells, robust on distorted ones).");
   params.AddOptionalParameter("tgdsa_h_perp_convention",
                               "cell",
                               "Penalty length of the TGDSA MIP operator, with the same choices as "
@@ -134,10 +136,12 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("wgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
-  params.ConstrainParameterRange("wgdsa_h_perp_convention",
-                                 AllowableRangeList::New({"cell", "face", "face_x2", "side"}));
-  params.ConstrainParameterRange("tgdsa_h_perp_convention",
-                                 AllowableRangeList::New({"cell", "face", "face_x2", "side"}));
+  params.ConstrainParameterRange(
+    "wgdsa_h_perp_convention",
+    AllowableRangeList::New({"cell", "face", "face_x2", "side", "face_side"}));
+  params.ConstrainParameterRange(
+    "tgdsa_h_perp_convention",
+    AllowableRangeList::New({"cell", "face", "face_x2", "side", "face_side"}));
   params.ConstrainParameterRange("tgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
