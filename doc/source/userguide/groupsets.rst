@@ -38,7 +38,7 @@ The main groupset fields exposed in the Python API are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
-* ``wgdsa_vacuum_bc``
+* ``wgdsa_boundary_closure``
 * ``apply_tgdsa``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
@@ -46,7 +46,7 @@ The main groupset fields exposed in the Python API are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
-* ``tgdsa_vacuum_bc``
+* ``tgdsa_boundary_closure``
 
 The simplest valid pattern is one groupset covering all groups:
 
@@ -327,14 +327,14 @@ with associated controls:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
-* ``wgdsa_vacuum_bc``
+* ``wgdsa_boundary_closure``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
-* ``tgdsa_vacuum_bc``
+* ``tgdsa_boundary_closure``
 
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
@@ -359,7 +359,7 @@ The main WGDSA controls are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
-* ``wgdsa_vacuum_bc``
+* ``wgdsa_boundary_closure``
 
 ``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
 correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
@@ -368,13 +368,17 @@ iterative solve otherwise. ``"direct"`` and ``"iterative"`` force those paths,
 and ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup.
 The default threshold is ``20000`` global unknowns.
 
-``wgdsa_vacuum_bc`` sets the boundary condition of the diffusion correction on
-vacuum boundaries. ``"dirichlet"`` (the default) imposes a zero correction
-weakly through the interior-penalty boundary term. ``"marshak"`` imposes the
-natural Marshak condition :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`,
-which adds :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
+``wgdsa_boundary_closure`` sets the boundary condition of the diffusion
+correction on every boundary where the incoming angular flux is prescribed
+(``"vacuum"``, ``"isotropic"`` and ``"arbitrary"``): the incoming flux is the
+same at every iteration, so its error is zero and all three are vacuum
+boundaries for the correction. ``"dirichlet"`` (the default) imposes a zero
+correction weakly through the interior-penalty boundary term. ``"marshak"``
+imposes the natural Marshak condition
+:math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`, which adds
+:math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
 Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
-``tgdsa_vacuum_bc`` does the same for TGDSA.
+``tgdsa_boundary_closure`` does the same for TGDSA.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~
@@ -397,7 +401,7 @@ The main TGDSA controls are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
-* ``tgdsa_vacuum_bc``
+* ``tgdsa_boundary_closure``
 
 ``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA

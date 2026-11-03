@@ -24,7 +24,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 
     // Make boundary conditions
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
-    auto bcs = TranslateBCs(sweep_boundaries, groupset.wgdsa_vacuum_bc == "dirichlet");
+    auto bcs = TranslateBCs(sweep_boundaries, groupset.wgdsa_boundary_closure == "dirichlet");
 
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();

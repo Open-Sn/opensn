@@ -87,10 +87,16 @@ TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
                                               double time_absorption_scale = 0.0,
                                               bool adjoint = false);
 
-/// Translates sweep boundary conditions to that used in diffusion acceleration methods.
+/**
+ * Translates sweep boundary conditions to those of the diffusion correction in acceleration
+ * methods. Reflecting boundaries become zero-current (Neumann) boundaries. Every boundary with a
+ * prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three get
+ * the same condition: the weakly imposed zero (Dirichlet, interior-penalty form) when
+ * `inflow_bcs_are_dirichlet` is true, the natural Marshak condition (ROBIN {0.25, 0.5}) otherwise.
+ */
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
-             bool vacuum_bcs_are_dirichlet = true);
+             bool inflow_bcs_are_dirichlet = true);
 
 /**
  * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.

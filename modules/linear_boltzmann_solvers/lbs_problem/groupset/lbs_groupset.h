@@ -81,9 +81,10 @@ public:
   std::string tgdsa_solver_policy;
   unsigned int wgdsa_direct_solve_threshold;
   unsigned int tgdsa_direct_solve_threshold;
-  /// Vacuum-boundary condition of the DSA correction: "dirichlet" or "marshak".
-  std::string wgdsa_vacuum_bc;
-  std::string tgdsa_vacuum_bc;
+  /// Boundary closure of the DSA correction on vacuum, isotropic and arbitrary boundaries:
+  /// "dirichlet" or "marshak".
+  std::string wgdsa_boundary_closure;
+  std::string tgdsa_boundary_closure;
   bool wgdsa_verbose;
   bool tgdsa_verbose;
   std::string wgdsa_string;
