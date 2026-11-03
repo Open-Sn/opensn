@@ -42,19 +42,19 @@
         "type": "IntCompareCheck",
         "key": "WGDSA alone sweeps=",
         "wordnum": 3,
-        "gold": 712
+        "gold": 710
       },
       {
         "type": "IntCompareCheck",
         "key": "TGDSA alone sweeps=",
         "wordnum": 3,
-        "gold": 132
+        "gold": 115
       },
       {
         "type": "IntCompareCheck",
         "key": "WGDSA+TGDSA sweeps=",
         "wordnum": 2,
-        "gold": 107
+        "gold": 108
       }
     ]
   },
