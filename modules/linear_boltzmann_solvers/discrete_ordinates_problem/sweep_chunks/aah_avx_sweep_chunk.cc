@@ -343,7 +343,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary = not face.has_neighbor;
         const bool is_reflecting =
-          is_boundary && angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting();
+          is_boundary && angle_set.GetBoundaries()[face.neighbor_id]->IsFluxCoupled();
         const double mu_wt_f = wt * face_mu_values[f];
 
         ++out_face_counter;

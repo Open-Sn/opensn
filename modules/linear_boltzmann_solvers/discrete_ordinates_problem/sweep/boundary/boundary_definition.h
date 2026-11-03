@@ -27,7 +27,7 @@ struct BoundaryDefinition
    *
    * The constructor validates the requested boundary type and required/forbidden type-specific
    * parameters. Isotropic boundaries store group strengths, arbitrary boundaries store an
-   * AngularFluxFunction, and vacuum/reflecting boundaries do not store additional payload.
+   * AngularFluxFunction, and vacuum/reflecting/periodic boundaries do not store additional payload.
    * \param params Boundary option parameters containing at least `name` and `type`.
    * \param num_groups Number of solver groups used to validate isotropic strengths.
    */
