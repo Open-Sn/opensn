@@ -27,7 +27,7 @@ ResponseEvaluator::GetInputParameters()
   params.AddRequiredParameter<std::shared_ptr<Problem>>("problem",
                                                         "A handle to an existing LBS problem.");
   params.AddOptionalParameterBlock(
-    "options", ParameterBlock(), "The specification of adjoint buffers and forward to use.");
+    "options", ParameterBlock(), "The specification of data sets and forward sources to use.");
   // "options" follows the "response::OptionsBlock" parameter-block schema.
 
   return params;
@@ -56,8 +56,8 @@ ResponseEvaluator::GetOptionsBlock()
   InputParameters params;
 
   params.AddOptionalParameterArray(
-    "buffers", {}, "An array of tables containing adjoint buffer specifications.");
-  // Each "buffers" entry follows the "response::BufferOptionsBlock" parameter-block schema.
+    "data", {}, "An array of tables containing data specifications.");
+  // Each "data" entry follows the "response::DataOptionsBlock" parameter-block schema.
 
   params.AddOptionalParameter("clear_sources", false, "A flag to clear existing sources.");
   params.AddOptionalParameterBlock(
@@ -70,15 +70,15 @@ ResponseEvaluator::GetOptionsBlock()
 void
 ResponseEvaluator::SetOptions(const InputParameters& params)
 {
-  if (params.IsParameterValid("buffers"))
+  if (params.IsParameterValid("data"))
   {
-    const auto& user_buffer_params = params.GetParam("buffers");
-    user_buffer_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
-    for (int p = 0; p < user_buffer_params.GetNumParameters(); ++p)
+    const auto& user_data_params = params.GetParam("data");
+    user_data_params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
+    for (int p = 0; p < user_data_params.GetNumParameters(); ++p)
     {
-      auto buffer_params = GetBufferOptionsBlock();
-      buffer_params.AssignParameters(user_buffer_params.GetParam(p));
-      SetBufferOptions(buffer_params);
+      auto data_params = GetDataOptionsBlock();
+      data_params.AssignParameters(user_data_params.GetParam(p));
+      SetDataOptions(data_params);
     }
   }
 
@@ -99,45 +99,61 @@ ResponseEvaluator::SetOptions(const InputParameters& params)
 }
 
 InputParameters
-ResponseEvaluator::GetBufferOptionsBlock()
+ResponseEvaluator::GetDataOptionsBlock()
 {
   InputParameters params;
 
   params.AddRequiredParameter<std::string>(
     "name",
-    "A name given to the buffer to identify it when querying the response evaluation routine.");
+    "A name given to the data to identify it when querying the response evaluation routine.");
   params.AddRequiredParameterBlock(
     "file_prefixes",
-    "A table containing file prefixes for flux moments and angular flux binary files. "
-    "These are keyed by \"flux_moments\" and \"angular_fluxes\", respectively.");
+    "A table containing file prefixes for flux moment, angular flux, and surface angular flux "
+    "files. These are keyed by \"flux_moments\", \"angular_fluxes\" and "
+    "\"surface_angular_fluxes\", respectively.");
+  params.AddOptionalParameterArray<std::string>(
+    "surfaces",
+    {},
+    "Surfaces to read from the surface angular flux files: boundary names, interior surface names "
+    "(both stored sides are read), or single interior surface tags ending in _u or _d.");
 
   return params;
 }
 
 void
-ResponseEvaluator::SetBufferOptions(const InputParameters& input)
+ResponseEvaluator::SetDataOptions(const InputParameters& input)
 {
-  auto params = opensn::ResponseEvaluator::GetBufferOptionsBlock();
+  auto params = opensn::ResponseEvaluator::GetDataOptionsBlock();
   params.AssignParameters(input);
 
   const auto name = params.GetParamValue<std::string>("name");
-  OpenSnInvalidArgumentIf(adjoint_buffers_.count(name) > 0,
-                          "An adjoint buffer with name " + name + " already exists.");
+  OpenSnInvalidArgumentIf(flux_data_.count(name) > 0,
+                          "A data object with name " + name + " already exists.");
 
   const auto prefixes = params.GetParam("file_prefixes");
 
-  std::vector<double> phi;
+  FluxMomentData phi;
   if (prefixes.Has("flux_moments"))
     LBSSolverIO::ReadFluxMoments(
       *do_problem_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
 
-  std::vector<std::vector<double>> psi;
+  AngularFluxData psi;
   if (prefixes.Has("angular_fluxes"))
     DiscreteOrdinatesProblemIO::ReadAngularFluxes(
       *do_problem_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
 
-  adjoint_buffers_[name] = {phi, psi};
-  log.Log0Verbose1() << "Adjoint buffer " << name << " added to the stack.";
+  SurfaceAngularFluxData surf_psi;
+  if (prefixes.Has("surface_angular_fluxes"))
+  {
+    const auto surfaces = params.GetParamVectorValue<std::string>("surfaces");
+    OpenSnInvalidArgumentIf(surfaces.empty(),
+                            "\"surfaces\" must be specified when reading surface angular fluxes.");
+    surf_psi = DistributeSurfaceAngularFluxes(
+      prefixes.GetParamValue<std::string>("surface_angular_fluxes"), surfaces, mpi_comm);
+  }
+
+  flux_data_[name] = {std::move(phi), std::move(psi), std::move(surf_psi)};
+  log.Log0Verbose1() << "Flux data " << name << " added to the stack.";
 }
 
 InputParameters
@@ -311,14 +327,14 @@ ResponseEvaluator::ClearForwardSources()
 }
 
 void
-ResponseEvaluator::AddResponseBuffers(const InputParameters& params)
+ResponseEvaluator::AddResponseData(const InputParameters& params)
 {
   params.RequireBlockTypeIs(ParameterBlockType::ARRAY);
   for (size_t p = 0; p < params.GetNumParameters(); ++p)
   {
-    auto spec = ResponseEvaluator::GetBufferOptionsBlock();
+    auto spec = ResponseEvaluator::GetDataOptionsBlock();
     spec.AssignParameters(params.GetParam(p));
-    SetBufferOptions(spec);
+    SetDataOptions(spec);
   }
 }
 
@@ -331,11 +347,12 @@ ResponseEvaluator::AddResponseSources(const InputParameters& params)
 }
 
 double
-ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
+ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
 {
-  const auto& buffer_data = adjoint_buffers_.at(buffer);
-  const auto& phi_dagger = buffer_data.first;
-  const auto& psi_dagger = buffer_data.second;
+  const auto it = flux_data_.find(data_name);
+  OpenSnInvalidArgumentIf(it == flux_data_.end(), "No data named " + data_name + " exist.");
+  const auto& phi_dagger = it->second.phi;
+  const auto& psi_dagger = it->second.psi;
 
   OpenSnLogicalErrorIf(not material_sources_.empty() and phi_dagger.empty(),
                        "If material sources are present, adjoint flux moments "
@@ -486,6 +503,42 @@ ResponseEvaluator::EvaluateResponse(const std::string& buffer) const
   double global_response = 0.0;
   mpi_comm.all_reduce(local_response, global_response, mpi::op::sum<double>());
   return global_response;
+}
+
+double
+ResponseEvaluator::EvaluateSurfaceResponse(const std::string& fwd_data,
+                                           const std::string& adj_data,
+                                           const std::vector<std::string>& surfaces) const
+{
+  const auto GetSurfaceData = [this](const std::string& name) -> const SurfaceAngularFluxData&
+  {
+    const auto it = flux_data_.find(name);
+    OpenSnInvalidArgumentIf(it == flux_data_.end(), "No data named " + name + " exist.");
+    OpenSnInvalidArgumentIf(it->second.surf_psi.surfaces.empty(),
+                            "Data " + name + " contain no surface angular fluxes.");
+    return it->second.surf_psi;
+  };
+  const auto& fwd_surf_psi = GetSurfaceData(fwd_data);
+  const auto& adj_surf_psi = GetSurfaceData(adj_data);
+
+  const auto surface_responses =
+    ComputeSurfaceResponses(fwd_surf_psi, adj_surf_psi, surfaces, mpi_comm);
+
+  double response = 0.0;
+  for (const auto& surface_response : surface_responses)
+  {
+    const auto total = surface_response.outgoing + surface_response.incoming;
+    response += total;
+    if (surface_response.kind == SurfaceKind::interior)
+      log.Log0Verbose1() << "Interior surface " << surface_response.name << ": outgoing "
+                         << surface_response.outgoing << ", incoming " << surface_response.incoming
+                         << ", total " << total;
+    else if (surface_response.kind == SurfaceKind::half_range)
+      log.Log0Verbose1() << "Half-range surface " << surface_response.name << ": " << total;
+    else
+      log.Log0Verbose1() << "Boundary " << surface_response.name << ": " << total;
+  }
+  return response;
 }
 
 std::vector<double>

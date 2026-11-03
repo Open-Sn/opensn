@@ -151,6 +151,168 @@
         "key": "Surface QoI=",
         "goldvalue": 4.943814e-04,
         "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Evaluator QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Reference identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Evaluator identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Reversed-normal identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "response_2d_surf_repartition.py",
+    "outfileprefix": "response_2d_surf_repartition_2",
+    "comment": "Surface response from forward and adjoint surface data written on different partitions (forward cut at the interior plane), 2 ranks; equals forward and adjoint QoI",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Repartitioned Surface QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Repartitioned identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "response_2d_surf_repartition.py",
+    "outfileprefix": "response_2d_surf_repartition_4",
+    "comment": "Surface response from forward and adjoint surface data written on different partitions (forward cut at the interior plane), 4 ranks; equals forward and adjoint QoI",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Repartitioned Surface QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Repartitioned identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "response_2d_surf_half_range.py",
+    "comment": "Half-range surface responses with no return flux (void background, pure-scattering source, absorbing detector), partitioned at the plane; full-range and positive-x half-range responses equal the forward QoI and the negative-x half-range response is zero",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 1.592619e-02,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Adjoint QoI=",
+        "goldvalue": 1.592619e-02,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Full-range identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Half-range identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Returning fraction=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
+  },
+  {
+    "file": "response_2d_surf_restart.py",
+    "comment": "Adjoint surface export is rejected after a restart read until the adjoint solver executes; surface response from a restart-writing solve and from the restarted solve equals the forward QoI",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Forward QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Surface QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Restarted QoI=",
+        "goldvalue": 4.943814e-04,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Surface identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Restarted identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   },
@@ -201,7 +363,7 @@
   },
   {
     "file": "surface_flux_validation.py",
-    "comment": "Surface export rejects boundary/interior tag collisions and planes matching no faces; face keys work on translated fine-scale meshes",
+    "comment": "Surface export rejects boundary/interior name and tag collisions and planes matching no faces; face keys work on translated fine-scale meshes; boundaries named like interior tags read back as boundaries",
     "num_procs": 2,
     "checks": [
       {

@@ -124,7 +124,7 @@ if __name__ == "__main__":
     # Create response evaluator and evaluate response
     evaluator = ResponseEvaluator(problem=phys)
     evaluator.SetOptions(
-        buffers=[{"name": "buff", "file_prefixes": {"flux_moments": "adjoint_2d_4"}}],
+        data=[{"name": "buff", "file_prefixes": {"flux_moments": "adjoint_2d_4"}}],
         sources={"material": [{"block_id": 2, "strength": [3.0]}]},
     )
     adj_qoi = evaluator.EvaluateResponse("buff")

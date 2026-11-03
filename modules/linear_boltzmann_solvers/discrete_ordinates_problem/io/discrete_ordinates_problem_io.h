@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "framework/data_types/vector3.h"
 #include "hdf5.h"
 #include <array>
 #include <cstdint>
@@ -88,6 +89,22 @@ public:
    */
   using FaceCentroidKey = std::tuple<int64_t, int64_t, int64_t>;
 
+  /**
+   * Key a surface face by its centroid. The centroid is summed over the nodes in a canonical
+   * (sorted) order, so the same face yields a bit-identical key from either side of an interior
+   * surface and in every file written for the same mesh. Each component is
+   * `llround((centroid - centroid_origin) / centroid_spacing)`.
+   *
+   * \param nodes Face node locations, in any order. Must not be empty.
+   * \param centroid_origin Origin subtracted from the centroid.
+   * \param centroid_spacing Key spacing. Must be positive and finite.
+   * \param context Description of the face source, used in error messages.
+   */
+  static FaceCentroidKey MakeFaceCentroidKey(std::vector<Vector3> nodes,
+                                             const std::array<double, 3>& centroid_origin,
+                                             double centroid_spacing,
+                                             const std::string& context);
+
   struct SurfaceMap
   {
     std::vector<uint64_t> cell_ids;
@@ -124,9 +141,10 @@ public:
    * requested surface has no local faces.
    *
    * `psi` holds the face-node values of the problem's stored angular flux on the cell that owns the
-   * face; the two sides of an interior surface are stored under separate tags. After an adjoint
-   * steady-state solve the stored angular flux is the adjoint flux for the listed direction, so
-   * forward and adjoint data with the same indices refer to the same direction.
+   * face; the two sides of an interior surface are stored under separate tags. For an adjoint
+   * problem the writer requires the physical orientation that an adjoint solve leaves, so the
+   * stored angular flux is the adjoint flux for the listed direction and forward and adjoint data
+   * with the same indices refer to the same direction.
    */
   struct SurfaceData
   {
@@ -145,7 +163,15 @@ public:
     int groupset_id = 0;
     /// True when the data were written from an adjoint problem.
     bool adjoint = false;
+    /// Number of files in the file set, one per writing rank.
+    uint64_t num_partitions = 0;
+    /// Direction and group counts of the groupset, also set when the surface has no local faces.
+    uint64_t num_directions = 0;
+    uint64_t num_groups = 0;
     std::string surface_name;
+    /// True when the tag is one side, `<name>_u` or `<name>_d`, of an interior surface; false for a
+    /// boundary, whatever its name.
+    bool interior = false;
     SurfaceMap mapping;
     SurfaceData data;
   };
@@ -157,15 +183,24 @@ public:
    * \param file_base File name base
    * \param boundary_surfs Boundary surface names
    * \param interior_surfs Interior surface definitions, keyed by name, as an axis ("x", "y", or
-   * "z") and a coordinate. Each surface must match at least one cell face, must lie on cell faces
-   * inside the mesh, must not coincide with an exterior boundary, and must not share a plane with
-   * another requested surface. Each surface is written with an `_u` tag for face normals aligned
-   * with the positive specified axis and a `_d` tag for the opposite orientation; these tags must
-   * not equal a requested boundary name.
+   * "z") and a coordinate. Each surface must lie inside the mesh, must match at least one cell
+   * face, must not coincide with an exterior boundary, and must not share a plane with another
+   * requested surface. Cells the surface cuts through contribute no faces. Each surface is written
+   * with an `_u` tag for face normals aligned with the positive specified axis and a `_d` tag for
+   * the opposite orientation; neither these tags nor the surface name may equal a requested
+   * boundary name. Each tag's `mesh/<tag>` group records in its `interior` attribute whether the
+   * tag is one side of an interior surface or a boundary, so boundaries may have any name.
    *
-   * Collective over all ranks. Surface selections may differ by rank. Plane-matching tolerances
-   * are relative to the global mesh extent. Each rank writes `<file_base><rank>.h5`, which records
-   * whether the problem is in adjoint mode.
+   * Collective over all ranks. Surface selections may differ by rank, but each file contains only
+   * its rank's tags, and DistributeSurfaceAngularFluxes requires every requested tag in every file
+   * of a set. Plane-matching tolerances are relative to the global mesh extent. Each rank writes
+   * `<file_base><rank>.h5`, which records whether the problem is in adjoint mode and the number of
+   * files written (`num_partitions`).
+   *
+   * Requires `options.save_angular_flux=true`. An adjoint problem must hold its solution in the
+   * physical orientation (`IsAdjointSolutionReoriented()`), which an adjoint steady-state or
+   * k-eigenvalue solve leaves. Restart data are loaded in the internal sweep orientation, so an
+   * adjoint solver must be executed after a restart read. Throws `std::invalid_argument` otherwise.
    */
   static void WriteSurfaceAngularFluxes(
     DiscreteOrdinatesProblem& do_problem,
@@ -174,21 +209,28 @@ public:
     const std::map<std::string, std::pair<std::string, double>>& interior_surfs);
 
   /**
-   * Read a surface angular flux vector from a file.
+   * Read surface angular fluxes from one file of a file set.
    *
-   * \param do_problem Discrete ordinates problem
    * \param file_base File name base
-   * \param surfaces Stored surface tags to read. Boundary tags are their boundary names. Interior
-   * surface tags use `_u` for face normals aligned with the positive specified axis and `_d` for
-   * the opposite orientation.
+   * \param partition File index; the file `<file_base><partition>.h5` is read.
+   * \param surfaces Surface names to read. Must be non-empty. A name that is a stored tag reads
+   * that tag: a boundary name, or one side of an interior surface (`_u` for face normals aligned
+   * with the positive specified axis, `_d` for the opposite orientation). Any other name must be
+   * an interior surface whose tags `<name>_u` and `<name>_d` both exist and are recorded as
+   * interior; both are read, `_u` first. Each tag must be present in the file, possibly without
+   * faces, and the names must not resolve to the same tag twice.
    *
-   * Reads `<file_base><rank>.h5` on each rank; the files must have been written with the same mesh
-   * partitioning. Not collective.
+   * Returns one entry per groupset and resolved tag, groupset-major, with `surface_name` set to
+   * the tag. The file must carry every attribute
+   * written by the current WriteSurfaceAngularFluxes, including `num_partitions`, which must exceed
+   * `partition`. Every dataset size is checked against the face-node counts before data are read,
+   * the data must be finite, and face centroid keys must be unique within each surface. The data
+   * are not checked against a problem, so any rank can read any file of a set, whatever number of
+   * ranks or partitioning wrote it. Not collective. Throws `std::invalid_argument` for an empty
+   * `surfaces` and `std::logic_error` for a missing, malformed, or inconsistent file.
    */
-  static std::vector<SurfaceAngularFlux>
-  ReadSurfaceAngularFluxes(DiscreteOrdinatesProblem& do_problem,
-                           const std::string& file_base,
-                           const std::vector<std::string>& surfaces);
+  static std::vector<SurfaceAngularFlux> ReadSurfaceAngularFluxes(
+    const std::string& file_base, uint64_t partition, const std::vector<std::string>& surfaces);
 };
 
 } // namespace opensn
