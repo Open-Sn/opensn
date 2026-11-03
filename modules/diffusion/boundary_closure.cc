@@ -3,6 +3,7 @@
 
 #include "modules/diffusion/boundary_closure.h"
 #include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
 #include "framework/utils/error.h"
@@ -62,6 +63,53 @@ FaceOrthogonalLength(const Cell& cell, unsigned int f)
       return 6.0 * volume / surface_area;
     default:
       OpenSnLogicalError("FaceOrthogonalLength: unsupported cell type.");
+  }
+  return 0.0;
+}
+
+double
+FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
+{
+  const auto& face = cell.faces.at(f);
+  const Vector3& xc = cell.centroid;
+  switch (cell.GetType())
+  {
+    case CellType::SLAB:
+      return cell.volume;
+    case CellType::POLYGON:
+    {
+      // Side triangle (v0, v1, xc): height over the edge = 2 |T| / |e|.
+      const Vector3& v0 = grid.GlobalVertex(face.vertex_ids.at(0));
+      const Vector3& v1 = grid.GlobalVertex(face.vertex_ids.at(1));
+      const double edge = (v1 - v0).Norm();
+      const double twice_area = std::fabs((v0 - xc).Cross(v1 - xc).z);
+      OpenSnLogicalErrorIf(edge <= 0.0, "FaceSideLength: degenerate face.");
+      return 2.0 * twice_area / edge;
+    }
+    case CellType::POLYHEDRON:
+    {
+      // Side tets (v_k, v_k+1, face centroid, cell centroid): height over their face triangle
+      // = 3 |S_k| / |T_k|.
+      const Vector3& xf = face.centroid;
+      const size_t nv = face.vertex_ids.size();
+      double hmin = std::numeric_limits<double>::max();
+      for (size_t k = 0; k < nv; ++k)
+      {
+        const Vector3& a = grid.GlobalVertex(face.vertex_ids[k]);
+        const Vector3& b = grid.GlobalVertex(face.vertex_ids[(k + 1) % nv]);
+        const Vector3 normal_x2 = (a - xf).Cross(b - xf);
+        const double twice_tri = normal_x2.Norm();
+        if (twice_tri <= 0.0)
+          continue;
+        // 6 |S_k| = |normal_x2 . (xc - xf)|, 2 |T_k| = twice_tri
+        hmin = std::min(hmin, std::fabs(normal_x2.Dot(xc - xf)) / twice_tri);
+      }
+      OpenSnLogicalErrorIf(hmin == std::numeric_limits<double>::max(),
+                           "FaceSideLength: degenerate face.");
+      return 2.0 * hmin;
+    }
+    default:
+      OpenSnLogicalError("FaceSideLength: unsupported cell type.");
   }
   return 0.0;
 }

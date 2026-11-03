@@ -411,7 +411,16 @@ total surface of the cell, with an extra factor 2 on interior faces.
 interior penalty is ``penalty_factor`` :math:`D/h` instead of 12 times that. The
 larger penalty of ``"cell"`` slows DSA on cells a few mean free paths thick.
 ``"face_x2"`` uses the face-dependent lengths with the extra interior factor 2,
-which doubles the stability margin of the operator on tetrahedra.
+which doubles the stability margin of the operator on tetrahedra. These three
+leave polygons (2D) unchanged. ``"side"`` uses, on polygons and polyhedra,
+twice the smallest height of the face's PWLD side simplices (the triangles or
+tetrahedra between the face, its centroid and the cell centroid), with the
+factor 2 on interior and boundary faces. PWLD is linear on each side simplex,
+so this length bounds the discrete trace inequality exactly: the operator stays
+positive definite on strongly distorted cells (slivers, near-degenerate
+quadrilaterals and hexahedra) where the other lengths, including the default,
+can make it indefinite and DSA diverge. On orthogonal hexahedra it is the same
+operator as ``"face_x2"``.
 ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``

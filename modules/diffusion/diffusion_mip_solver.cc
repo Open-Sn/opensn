@@ -146,7 +146,9 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           if (cell->GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYGON)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+            kappa =
+              fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
+                   PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
                            (adj_Dg / hp + Dg / hm) * 0.5,
@@ -245,7 +247,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
             if (cell->GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+              kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
@@ -512,7 +514,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
             if (cell->GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+              kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
@@ -716,7 +718,9 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           if (cell->GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYGON)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+            kappa =
+              fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
+                   PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
                            (adj_Dg / hp + Dg / hm) * 0.5,
@@ -804,7 +808,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
             if (cell->GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+              kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
@@ -1028,7 +1032,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
             if (cell->GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+              kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
@@ -1182,7 +1186,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
             if (cell->GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYGON)
-              kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
+              kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
             if (cell->GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
@@ -1277,6 +1281,10 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     return surface_area;
   };
 
+  if (options.h_perp_convention == "side" and
+      (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
+    return FaceSideLength(*grid_, cell, f);
+
   if (cell.GetType() == CellType::SLAB)
   {
     hp = volume / 2.0;
@@ -1329,7 +1337,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
       throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
                                   "h_perp_convention \"" +
                                   options.h_perp_convention +
-                                  "\" (expected \"cell\", \"face\" or \"face_x2\")");
+                                  "\" (expected \"cell\", \"face\", \"face_x2\" or \"side\")");
   } // Polyhedron
   else
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
@@ -1381,7 +1389,13 @@ DiffusionMIPSolver::PenaltyFloor(const Vector3& normal) const
 double
 DiffusionMIPSolver::PolyhedronInteriorPenaltyScale() const
 {
-  return options.h_perp_convention == "face" ? 1.0 : 2.0; // "cell", "face_x2": 2
+  return options.h_perp_convention == "face" ? 1.0 : 2.0; // "cell", "face_x2", "side": 2
+}
+
+double
+DiffusionMIPSolver::PolygonPenaltyScale() const
+{
+  return options.h_perp_convention == "side" ? 2.0 : 1.0;
 }
 
 int

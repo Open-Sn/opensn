@@ -45,7 +45,12 @@ public:
      * interior factor, so that on a cube of side h the interior penalty is penalty_factor D/h and
      * the boundary penalty 2 penalty_factor D/h. "face_x2" uses the face-dependent lengths and
      * keeps the extra interior factor 2 (interior and boundary penalty 2 penalty_factor D/h on a
-     * cube; the convention of the PWQD development branch). Slab and polygon cells are unaffected.
+     * cube; the convention of the PWQD development branch). These three leave slab and polygon
+     * cells unchanged. "side" uses twice the smallest height of the face's PWLD side simplices
+     * (FaceSideLength; V/A_f on squares and cubes, so the same operator as "face_x2" on
+     * orthogonal hexes) with the factor 2 on interior and boundary faces of polygons and
+     * polyhedra; it bounds the PWLD trace inequality exactly and keeps the operator positive
+     * definite on distorted cells where the other lengths do not.
      */
     std::string h_perp_convention = "cell";
     /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.

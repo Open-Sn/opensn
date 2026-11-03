@@ -94,9 +94,11 @@ public:
 
   /**
    * Extra factor on the interior-face penalty of polyhedral cells: 2 for the "cell" h_perp
-   * convention (OpenSn's original) and for "face_x2", 1 for "face".
+   * convention (OpenSn's original), "face_x2" and "side", 1 for "face".
    */
   double PolyhedronInteriorPenaltyScale() const;
+  /// Factor on the interior and boundary penalties of polygons: 2 for "side", 1 otherwise.
+  double PolygonPenaltyScale() const;
 
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
   int MapFaceNodeDisc(const Cell& cur_cell,

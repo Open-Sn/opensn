@@ -10,6 +10,7 @@
 namespace opensn
 {
 class Cell;
+class Mesh;
 class CellMapping;
 
 /**
@@ -49,6 +50,19 @@ double QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
  * other polygons and polyhedra (S the total surface), the cell length for slabs.
  */
 double FaceOrthogonalLength(const Cell& cell, unsigned int f);
+
+/**
+ * Side length of face `f` of `cell` for the PWLD basis: twice the smallest height of the face's
+ * side simplices over their face part, \f$2 \min_k d |S_k| / |T_k|\f$. In 3D \f$S_k\f$ is the
+ * tetrahedron (edge k of the face, face centroid, cell centroid) and \f$T_k\f$ its triangle on
+ * the face; in 2D \f$S\f$ is the triangle (face edge, cell centroid) and \f$T\f$ the edge.
+ * PWLD is linear on each side simplex, so \f$\|\partial_n v\|^2_{T_k} \le (d / h_k)
+ * \|\nabla v\|^2_{S_k}\f$ exactly, with \f$h_k = d|S_k|/|T_k|\f$, and the side simplices of
+ * different faces are disjoint: a penalty \f$\propto D/h\f$ with this length bounds the
+ * consistency terms on any cell shape. Equal to \f$V/A_f\f$ on a square or a cube. Slab
+ * cells: the cell length.
+ */
+double FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f);
 
 /**
  * Largest generalized eigenvalue \f$\lambda\f$ of \f$N v = \lambda K v\f$ over the range of `K`,

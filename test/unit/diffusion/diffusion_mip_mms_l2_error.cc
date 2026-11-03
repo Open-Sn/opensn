@@ -157,28 +157,35 @@ TEST(DiffusionMIP, MMSL2Convergence)
   const std::array<unsigned int, 5> refinements = {5, 10, 20, 40, 80};
   const double length = 2.0;
 
-  std::vector<double> errors;
-  errors.reserve(refinements.size());
-
-  for (const unsigned int num_cells : refinements)
+  // "cell" is OpenSn's polygon penalty (face lengths, no factor 2); "side" doubles it on squares.
+  for (const std::string convention : {"cell", "side"})
   {
-    auto grid = BuildSquareMesh(length, num_cells, -length / 2.0);
-    grid->SetUniformBlockID(0);
-    grid->SetOrthogonalBoundaries();
+    SCOPED_TRACE(convention);
+    std::vector<double> errors;
+    errors.reserve(refinements.size());
 
-    const auto [full_assembly_error, rhs_assembly_error] = SimTest_IP_MMS_L2error(grid);
-    errors.push_back(full_assembly_error);
+    for (const unsigned int num_cells : refinements)
+    {
+      auto grid = BuildSquareMesh(length, num_cells, -length / 2.0);
+      grid->SetUniformBlockID(0);
+      grid->SetOrthogonalBoundaries();
 
-    EXPECT_NEAR(rhs_assembly_error, full_assembly_error, 1.0e-12);
-  }
+      const auto [full_assembly_error, rhs_assembly_error] =
+        SimTest_IP_MMS_L2error(grid, convention);
+      errors.push_back(full_assembly_error);
 
-  for (size_t k = 1; k < errors.size(); ++k)
-  {
-    EXPECT_LT(errors[k], errors[k - 1]);
+      EXPECT_NEAR(rhs_assembly_error, full_assembly_error, 1.0e-12);
+    }
 
-    const double rate = std::log(errors[k - 1] / errors[k]) / std::log(2.0);
-    opensn::log.Log() << "MIP MMS N=" << refinements[k] << " L2 rate=" << rate;
-    EXPECT_GT(rate, 1.75);
+    for (size_t k = 1; k < errors.size(); ++k)
+    {
+      EXPECT_LT(errors[k], errors[k - 1]);
+
+      const double rate = std::log(errors[k - 1] / errors[k]) / std::log(2.0);
+      opensn::log.Log() << "MIP MMS " << convention << " N=" << refinements[k]
+                        << " L2 rate=" << rate;
+      EXPECT_GT(rate, 1.75);
+    }
   }
 
   opensn::mpi_comm.barrier();
@@ -198,7 +205,7 @@ TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
   const std::array<unsigned int, 3> refinements = {4, 8, 16};
   const double length = 2.0;
 
-  for (const std::string convention : {"cell", "face", "face_x2"})
+  for (const std::string convention : {"cell", "face", "face_x2", "side"})
   {
     SCOPED_TRACE(convention);
     std::vector<double> errors;
@@ -264,12 +271,18 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
       solver.options.h_perp_convention = "face_x2";
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
+      solver.options.h_perp_convention = "side";
+      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
     }
   EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
   solver.options.h_perp_convention = "face";
   EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 1.0);
   solver.options.h_perp_convention = "cell";
   EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
+  EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 1.0);
+  solver.options.h_perp_convention = "side";
+  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
+  EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   solver.options.h_perp_convention = "edge";
   EXPECT_THROW(solver.HPerpendicular(*grid->GetLocalCells().front(), 0), std::invalid_argument);
 }
