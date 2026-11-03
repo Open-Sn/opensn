@@ -150,9 +150,8 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
                    PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
-            kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
-                           (adj_Dg / hp + Dg / hm) * 0.5,
-                         PenaltyFloor(n_f));
+            kappa =
+              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -722,9 +721,8 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
                    PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
-            kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
-                           (adj_Dg / hp + Dg / hm) * 0.5,
-                         PenaltyFloor(n_f));
+            kappa =
+              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -1281,12 +1279,18 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     return surface_area;
   };
 
+  if (options.h_perp_convention != "cell" and options.h_perp_convention != "face_side")
+    throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
+                                "h_perp_convention \"" +
+                                options.h_perp_convention +
+                                "\" (expected \"cell\" or \"face_side\")");
+
+  // "face_side": the face-dependent orthogonal length (3V/A_f tet, V/A_f hex, ...), capped by twice
+  // the smallest height of the face's PWLD side simplices so that faces with a skinny side simplex
+  // get the penalty their trace inequality requires.
   if (options.h_perp_convention == "face_side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
     return std::min(FaceOrthogonalLength(cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
-  if (options.h_perp_convention == "side" and
-      (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
-    return FaceSideLength(*grid_, cell, f);
 
   if (cell.GetType() == CellType::SLAB)
   {
@@ -1317,31 +1321,12 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   {
     const auto surface_area = ComputeSurfaceArea();
 
-    if (options.h_perp_convention == "face" or options.h_perp_convention == "face_x2")
-    {
-      // Face-dependent orthogonal projections (Turcksin & Ragusa 2014; Hackemack 2016)
-      if (num_faces == 4) // Tet: height of the pyramid over face f
-        hp = 3 * volume / face_area;
-      else if (num_faces == 6 and num_vertices == 8) // Hex: height over face f
-        hp = volume / face_area;
-      else // Polyhedron: diameter of the sphere with the same V/S
-        hp = 6 * volume / surface_area;
-    }
-    else if (options.h_perp_convention == "cell")
-    {
-      if (num_faces == 4) // Tet
-        hp = 3 * volume / surface_area;
-      else if (num_faces == 6 and num_vertices == 8) // Hex
-        hp = volume / surface_area;
-      else // Polyhedron
-        hp = 6 * volume / surface_area;
-    }
-    else
-      throw std::invalid_argument(
-        "acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
-        "h_perp_convention \"" +
-        options.h_perp_convention +
-        "\" (expected \"cell\", \"face\", \"face_x2\", \"side\" or \"face_side\")");
+    if (num_faces == 4) // Tet
+      hp = 3 * volume / surface_area;
+    else if (num_faces == 6 and num_vertices == 8) // Hex
+      hp = volume / surface_area;
+    else // Polyhedron
+      hp = 6 * volume / surface_area;
   } // Polyhedron
   else
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
@@ -1391,17 +1376,9 @@ DiffusionMIPSolver::PenaltyFloor(const Vector3& normal) const
 }
 
 double
-DiffusionMIPSolver::PolyhedronInteriorPenaltyScale() const
-{
-  return options.h_perp_convention == "face" ? 1.0
-                                             : 2.0; // "cell", "face_x2", "side", "face_side": 2
-}
-
-double
 DiffusionMIPSolver::PolygonPenaltyScale() const
 {
-  return (options.h_perp_convention == "side" or options.h_perp_convention == "face_side") ? 2.0
-                                                                                           : 1.0;
+  return options.h_perp_convention == "face_side" ? 2.0 : 1.0;
 }
 
 int

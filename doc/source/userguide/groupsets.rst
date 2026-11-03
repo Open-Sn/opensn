@@ -377,12 +377,17 @@ The default threshold is ``20000`` global unknowns.
 correction on every boundary where the incoming angular flux is prescribed
 (``"vacuum"``, ``"isotropic"`` and ``"arbitrary"``): the incoming flux is the
 same at every iteration, so its error is zero and all three are vacuum
-boundaries for the correction. ``"dirichlet"`` (the default) imposes a zero
-correction weakly through the interior-penalty boundary term. ``"marshak"``
-imposes the natural Marshak condition
-:math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`, which adds
-:math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
-``"closure_r"`` blends the two transport-consistent forms face by face,
+boundaries for the correction. ``"marshak"`` (the default) imposes the natural
+Marshak condition :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`,
+which adds :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
+``"dirichlet"`` (OpenSn's original treatment) imposes a zero correction weakly
+through the interior-penalty boundary term; under mesh refinement it limits the
+SI+DSA spectral radius to about 0.5 on bounded domains, which the Marshak
+condition removes. On boundary cells many mean free paths thick the roles
+reverse: the transport error vanishes across most of such a cell, which a zero
+correction matches, while the Marshak condition leaves a boundary mode with a
+spectral radius near 0.47. ``"closure_r"`` combines the two strengths, blending
+two transport-consistent forms face by face,
 
 .. math::
 
@@ -402,31 +407,25 @@ the interior penalty is :math:`\beta_f` of each face instead of 1/4.
 Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
 ``tgdsa_boundary_closure`` does the same for TGDSA.
 
-``wgdsa_h_perp_convention`` sets the penalty length of the MIP diffusion
-operator on polyhedral cells. ``"cell"`` (the default) uses the cell-wide
-lengths :math:`3V/S` (tetrahedra) and :math:`V/S` (hexahedra), :math:`S` the
-total surface of the cell, with an extra factor 2 on interior faces.
-``"face"`` uses the face-dependent orthogonal projections :math:`3V/A_f` and
-:math:`V/A_f` of Turcksin and Ragusa, so that on a cube of side :math:`h` the
-interior penalty is ``penalty_factor`` :math:`D/h` instead of 12 times that. The
-larger penalty of ``"cell"`` slows DSA on cells a few mean free paths thick.
-``"face_x2"`` uses the face-dependent lengths with the extra interior factor 2,
-which doubles the stability margin of the operator on tetrahedra. These three
-leave polygons (2D) unchanged. ``"side"`` uses, on polygons and polyhedra,
-twice the smallest height of the face's PWLD side simplices (the triangles or
-tetrahedra between the face, its centroid and the cell centroid), with the
-factor 2 on interior and boundary faces. PWLD is linear on each side simplex,
-so this length bounds the discrete trace inequality exactly: the operator stays
-positive definite on strongly distorted cells (slivers, near-degenerate
-quadrilaterals and hexahedra) where the other lengths, including the default,
-can make it indefinite and DSA diverge. On orthogonal hexahedra it is the same
-operator as ``"face_x2"``, but on tetrahedra its length is half the
-``"face_x2"`` one, which doubles the penalty and slows DSA on cells a few mean
-free paths thick. ``"face_side"`` takes, face by face, the smaller of the
-``"face_x2"`` length and twice the side length (factor 2 as ``"side"``): it is
-``"face_x2"`` on cubes, tetrahedra and mildly distorted cells and switches to
-the side length only on faces with a skinny side simplex, which keeps the
-operator positive definite on strongly distorted meshes.
+``wgdsa_h_perp_convention`` sets the penalty length :math:`h_\perp` of the MIP
+diffusion operator (penalty ``penalty_factor`` :math:`D/h_\perp` per face,
+averaged over the two cells of an interior face). ``"face_side"`` (the default)
+uses the face-dependent orthogonal projection of Turcksin and Ragusa
+(:math:`3V/A_f` on tetrahedra, :math:`V/A_f` on hexahedra and quadrilaterals,
+:math:`2V/A_f` on triangles, :math:`2dV/S` on other cells), capped by twice the
+smallest height of the face's PWLD side simplices (the triangles or tetrahedra
+between the face, its centroid and the cell centroid), with an extra factor 2
+on interior and boundary faces. PWLD is linear on each side simplex, so the side
+height bounds the discrete trace inequality exactly. On cubes and tetrahedra
+the cap is inactive, and on a face with a skinny side simplex (slivers,
+near-degenerate quadrilaterals and hexahedra) it raises the penalty to what the
+trace inequality requires, which keeps the operator positive definite where the
+uncapped lengths make it indefinite and DSA diverge. ``"cell"`` (OpenSn's
+original treatment) uses the cell-wide lengths :math:`3V/S` (tetrahedra) and
+:math:`V/S` (hexahedra), :math:`S` the total surface of the cell, with the extra
+factor 2 on polyhedra, and the face-dependent polygon lengths without it; on a
+cube this is 12 times the ``"face_side"`` interior penalty, which slows DSA on
+cells a few mean free paths thick.
 ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``

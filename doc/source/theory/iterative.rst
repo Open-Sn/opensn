@@ -194,6 +194,45 @@ Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
 :cite:t:`DSA_wang_ragusa`, :cite:t:`ragusaturcksinMIP_PWL2014`.
 
+The MIP form adds, on every interior face :math:`f`, a penalty
+:math:`\kappa_f \int_f [\![\delta\Phi]\!]\,[\![v]\!]`, with
+:math:`\kappa_f = \max\big(c\,(D^-/h^-_\perp + D^+/h^+_\perp),\, 1/4\big)` and
+:math:`c` the ``penalty_factor`` (4 for PWLD). The penalty must dominate the
+consistency terms :math:`\int_f \{D\,\partial_n \delta\Phi\}[\![v]\!]` for the
+operator to be symmetric positive definite, which requires
+:math:`c/h_\perp` to exceed the normal-derivative trace constant of the basis
+on the face. By default (groupset option ``wgdsa_h_perp_convention =
+"face_side"``) :math:`h_\perp` is the face-dependent orthogonal projection of
+:cite:t:`ragusaturcksinMIP_PWL2014` (:math:`3V/A_f` on tetrahedra, :math:`V/A_f`
+on hexahedra), capped by twice the smallest height :math:`h_k = d\,|S_k|/|T_k|`
+of the PWLD side simplices :math:`S_k` of the face over their face parts
+:math:`T_k`. PWLD is linear on each side simplex, so
+:math:`\|\partial_n v\|^2_{T_k} \le (d/h_k)\,\|\nabla v\|^2_{S_k}` exactly, and
+the side simplices of different faces are disjoint: the cap enforces
+coercivity on any cell shape. On cubes and tetrahedra it is inactive (twice the
+side height is the face length), so it only acts on faces with a skinny side
+simplex, where the plain face length under-penalizes, the operator becomes
+indefinite and DSA diverges. The original OpenSn length (``"cell"``) uses
+:math:`3V/S` and :math:`V/S`, :math:`S` the cell surface, which on a cube is 12
+times the default interior penalty and slows DSA on cells a few mean free paths
+thick.
+
+On boundaries with a prescribed incoming flux the error has no incoming
+component, so the correction is a vacuum problem. The default
+(``wgdsa_boundary_closure = "marshak"``) imposes it through the natural Marshak
+condition :math:`\tfrac14\delta\Phi + \tfrac12 D\,\partial_n\delta\Phi = 0`. The
+original OpenSn treatment (``"dirichlet"``) imposes :math:`\delta\Phi = 0` with
+the interior-penalty boundary term; under mesh refinement this limits the
+SI+DSA spectral radius of a bounded domain to about 0.5, which the Marshak
+condition removes. On boundary cells many mean free paths thick the transport
+error vanishes across most of the cell and the zero-correction condition is the
+better one: the Marshak condition leaves a boundary mode with a spectral radius
+near 0.47 there. ``"closure_r"`` blends the Marshak form on thin boundary cells
+with the half-range transport form (which behaves like the zero-correction
+condition) on thick ones, with a weight chosen face by face from the optical
+thickness of the cell and kept large enough for the operator to remain positive
+definite.
+
 Thermal Upscattering Acceleration
 ---------------------------------
 

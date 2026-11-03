@@ -64,15 +64,17 @@ LBSGroupset::GetInputParameters()
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
   params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
   params.AddOptionalParameter("wgdsa_boundary_closure",
-                              "dirichlet",
+                              "marshak",
                               "Boundary condition of the WGDSA diffusion correction on every "
                               "boundary with a prescribed incoming flux (vacuum, isotropic, "
-                              "arbitrary). dirichlet imposes a zero correction weakly with the "
-                              "interior-penalty term; marshak imposes the natural Marshak "
+                              "arbitrary). marshak (default) imposes the natural Marshak "
                               "condition (1/4 delta + 1/2 D d(delta)/dn = 0); closure_r blends "
                               "the Marshak form on thin boundary cells with the half-range "
-                              "transport form on thick ones, using the groupset's quadrature. "
-                              "Reflecting boundaries are always zero-current.");
+                              "transport form on thick ones, using the groupset's quadrature, "
+                              "and is faster when boundary cells are many mean free paths thick; "
+                              "dirichlet (OpenSn's original) imposes a zero correction weakly "
+                              "with the interior-penalty term. Reflecting boundaries are always "
+                              "zero-current.");
 
   // TG DSA options
   params.AddOptionalParameter(
@@ -96,23 +98,21 @@ LBSGroupset::GetInputParameters()
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
   params.AddOptionalParameter("tgdsa_boundary_closure",
-                              "dirichlet",
+                              "marshak",
                               "Boundary condition of the TGDSA diffusion correction, with the "
                               "same choices and boundaries as wgdsa_boundary_closure.");
   params.AddOptionalParameter("wgdsa_h_perp_convention",
-                              "cell",
-                              "Penalty length of the WGDSA MIP operator on polyhedral cells. cell "
-                              "uses OpenSn's cell-wide lengths (3V/S tet, V/S hex) with an extra "
-                              "interior factor 2; face uses the face-dependent orthogonal "
-                              "projections (3V/A_f tet, V/A_f hex) of Turcksin and Ragusa; "
-                              "face_x2 uses them and keeps the extra interior factor 2; side "
-                              "uses twice the smallest height of the face's PWLD side simplices "
-                              "on polygons and polyhedra, with the factor 2 on interior and "
-                              "boundary faces (robust on distorted cells); face_side uses the "
-                              "smaller of the face_x2 length and twice the side length (face_x2 "
-                              "on regular cells, robust on distorted ones).");
+                              "face_side",
+                              "Penalty length of the WGDSA MIP operator. face_side (default) uses "
+                              "the face-dependent orthogonal length (3V/A_f tet, V/A_f hex) capped "
+                              "by twice the smallest height of the face's PWLD side simplices, "
+                              "with an extra factor 2 on polygons and polyhedra; it keeps the "
+                              "operator positive definite on strongly distorted cells. cell "
+                              "(OpenSn's original) uses the cell-wide lengths (3V/S tet, V/S hex) "
+                              "with the extra factor 2 on polyhedra, a larger penalty that slows "
+                              "DSA on cells a few mean free paths thick.");
   params.AddOptionalParameter("tgdsa_h_perp_convention",
-                              "cell",
+                              "face_side",
                               "Penalty length of the TGDSA MIP operator, with the same choices as "
                               "wgdsa_h_perp_convention.");
 
@@ -136,12 +136,10 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("wgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
-  params.ConstrainParameterRange(
-    "wgdsa_h_perp_convention",
-    AllowableRangeList::New({"cell", "face", "face_x2", "side", "face_side"}));
-  params.ConstrainParameterRange(
-    "tgdsa_h_perp_convention",
-    AllowableRangeList::New({"cell", "face", "face_x2", "side", "face_side"}));
+  params.ConstrainParameterRange("wgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face_side"}));
+  params.ConstrainParameterRange("tgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face_side"}));
   params.ConstrainParameterRange("tgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
@@ -177,10 +175,10 @@ LBSGroupset::Init(int aid)
   tgdsa_solver_policy = "auto";
   wgdsa_direct_solve_threshold = 20000;
   tgdsa_direct_solve_threshold = 20000;
-  wgdsa_boundary_closure = "dirichlet";
-  tgdsa_boundary_closure = "dirichlet";
-  wgdsa_h_perp_convention = "cell";
-  tgdsa_h_perp_convention = "cell";
+  wgdsa_boundary_closure = "marshak";
+  tgdsa_boundary_closure = "marshak";
+  wgdsa_h_perp_convention = "face_side";
+  tgdsa_h_perp_convention = "face_side";
   wgdsa_verbose = false;
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;

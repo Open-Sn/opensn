@@ -157,8 +157,9 @@ TEST(DiffusionMIP, MMSL2Convergence)
   const std::array<unsigned int, 5> refinements = {5, 10, 20, 40, 80};
   const double length = 2.0;
 
-  // "cell" is OpenSn's polygon penalty (face lengths, no factor 2); "side" doubles it on squares.
-  for (const std::string convention : {"cell", "side"})
+  // "cell" is OpenSn's original polygon penalty (face lengths, no factor 2); "face_side" doubles it
+  // on squares.
+  for (const std::string convention : {"cell", "face_side"})
   {
     SCOPED_TRACE(convention);
     std::vector<double> errors;
@@ -191,11 +192,10 @@ TEST(DiffusionMIP, MMSL2Convergence)
   opensn::mpi_comm.barrier();
 }
 
-// The face-dependent penalty length changes only the penalty of polyhedral cells; the manufactured
-// solution (independent of z) must still converge at second order on hexahedra with either
-// convention. With "face" (12 times smaller interior penalty) the error is smaller but the rate
-// approaches 2 from below: 1.70, 1.83, 1.92 at N = 8, 16, 32 (errors 0.0975, 0.0274, 0.00725
-// against 0.118, 0.0301, 0.00758 for "cell"), so only the finest rate of this short sequence is
+// The manufactured solution (independent of z) must converge at second order on hexahedra with both
+// penalty lengths. With "face_side" (6 times smaller interior penalty than "cell" on cubes) the
+// error is smaller but the rate approaches 2 from below: 1.81, 1.86 at N = 8, 16 (errors 0.101,
+// 0.0277 against 0.118, 0.0301 for "cell"), so only the finest rate of this short sequence is
 // held to second order.
 TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
 {
@@ -205,7 +205,7 @@ TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
   const std::array<unsigned int, 3> refinements = {4, 8, 16};
   const double length = 2.0;
 
-  for (const std::string convention : {"cell", "face", "face_x2", "side"})
+  for (const std::string convention : {"cell", "face_side"})
   {
     SCOPED_TRACE(convention);
     std::vector<double> errors;
@@ -235,7 +235,7 @@ TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
   opensn::mpi_comm.barrier();
 }
 
-// On a cube of side h the cell-wide length is V/S = h/6 and the face-dependent one V/A_f = h.
+// On a cube of side h the cell-wide length is V/S = h/6 and the "face_side" one V/A_f = h.
 TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
 {
   const double length = 2.0;
@@ -267,21 +267,12 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
     {
       solver.options.h_perp_convention = "cell";
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h / 6.0, 1.0e-12);
-      solver.options.h_perp_convention = "face";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
-      solver.options.h_perp_convention = "face_x2";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
-      solver.options.h_perp_convention = "side";
+      solver.options.h_perp_convention = "face_side";
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
     }
-  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
-  solver.options.h_perp_convention = "face";
-  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 1.0);
   solver.options.h_perp_convention = "cell";
-  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 1.0);
-  solver.options.h_perp_convention = "side";
-  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
+  solver.options.h_perp_convention = "face_side";
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   solver.options.h_perp_convention = "edge";
   EXPECT_THROW(solver.HPerpendicular(*grid->GetLocalCells().front(), 0), std::invalid_argument);

@@ -38,23 +38,16 @@ public:
     std::string additional_options_string;
     double penalty_factor = 4.0;
     /**
-     * Penalty length h_perp of polyhedral cells. "cell" (default) uses the cell-wide values
-     * 3V/S (tet), V/S (hex), 6V/S (other), S the total surface area, with an extra factor 2 on the
-     * interior-face penalty. "face" uses the face-dependent orthogonal projections 3V/A_f (tet),
-     * V/A_f (hex), 6V/S (other) of Turcksin & Ragusa (2014) and Hackemack (2016), without the extra
-     * interior factor, so that on a cube of side h the interior penalty is penalty_factor D/h and
-     * the boundary penalty 2 penalty_factor D/h. "face_x2" uses the face-dependent lengths and
-     * keeps the extra interior factor 2 (interior and boundary penalty 2 penalty_factor D/h on a
-     * cube; the convention of the PWQD development branch). These three leave slab and polygon
-     * cells unchanged. "side" uses twice the smallest height of the face's PWLD side simplices
-     * (FaceSideLength; V/A_f on squares and cubes, so the same operator as "face_x2" on
-     * orthogonal hexes) with the factor 2 on interior and boundary faces of polygons and
-     * polyhedra; it bounds the PWLD trace inequality exactly and keeps the operator positive
-     * definite on distorted cells where the other lengths do not, but it doubles the penalty on
-     * every tetrahedron (on a tet the side length is half of 3V/A_f). "face_side" takes
-     * the smaller of the "face_x2" length and twice the side length on each face (factor 2 as
-     * "side"): "face_x2" on cubes, tetrahedra and mildly distorted cells, the side length only
-     * where a face has a skinny side simplex.
+     * Penalty length h_perp of the interior-penalty terms. "cell" (OpenSn's original, the default
+     * of this solver) uses the cell-wide values 3V/S (tet), V/S (hex), 6V/S (other polyhedra), S
+     * the total surface area, with an extra factor 2 on polyhedra, and the face-dependent polygon
+     * lengths without that factor. "face_side" uses, on polygons and polyhedra, the face-dependent
+     * orthogonal length (FaceOrthogonalLength: 3V/A_f tet, V/A_f hex, 2V/A_f triangle, V/A_f quad,
+     * 2dV/S other) capped by twice the smallest height of the face's PWLD side simplices
+     * (FaceSideLength), with the factor 2 on interior and boundary faces. On cubes and tetrahedra
+     * the cap is inactive (the penalty is 2 penalty_factor D/h on a cube); on a face with a skinny
+     * side simplex it raises the penalty to what PWLD's exact trace inequality requires, which
+     * keeps the operator positive definite on strongly distorted cells.
      */
     std::string h_perp_convention = "cell";
     /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.

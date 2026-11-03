@@ -1117,14 +1117,15 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
-          - wgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
+          - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
-              arbitrary boundaries. ``dirichlet`` imposes a zero correction weakly
-              (interior-penalty term); ``marshak`` imposes the natural Marshak condition, a
-              face mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on
-              thin boundary cells with the half-range transport form on thick ones and uses
-              the groupset quadrature's half-range moment as the floor of the interior penalty.
-              Reflecting boundaries are zero-current.
+              arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
+              mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on thin
+              boundary cells with the half-range transport form on thick ones, uses the
+              groupset quadrature's half-range moment as the floor of the interior penalty,
+              and is faster than ``marshak`` when boundary cells are many mean free paths
+              thick; ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
+              (interior-penalty term). Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1143,20 +1144,18 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
-          - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
+          - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
-          - wgdsa_h_perp_convention: {'cell', 'face', 'face_x2', 'side', 'face_side'}, default='cell'
-              Penalty length of the WGDSA MIP operator on polyhedral cells. ``cell`` uses
-              the cell-wide lengths 3V/S (tet) and V/S (hex) with an extra interior factor 2;
-              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f;
-              ``face_x2`` uses them with the extra interior factor 2. ``side`` uses twice
-              the smallest height of the face's PWLD side simplices on polygons and
-              polyhedra, with the factor 2 on interior and boundary faces; it keeps the
-              operator positive definite on distorted cells. ``face_side`` uses the smaller
-              of the ``face_x2`` length and twice the side length: ``face_x2`` on regular
-              cells, robust on distorted ones.
-          - tgdsa_h_perp_convention: {'cell', 'face', 'face_x2', 'side', 'face_side'}, default='cell'
+          - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
+              Penalty length of the WGDSA MIP operator. ``face_side`` uses the face-dependent
+              orthogonal length (3V/A_f tet, V/A_f hex) capped by twice the smallest height
+              of the face's PWLD side simplices, with an extra factor 2 on polygons and
+              polyhedra; it keeps the operator positive definite on strongly distorted
+              cells. ``cell`` (OpenSn's original) uses the cell-wide lengths 3V/S (tet) and
+              V/S (hex) with the extra factor 2 on polyhedra, a larger penalty that slows DSA
+              on cells a few mean free paths thick.
+          - tgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
               Penalty length of the TGDSA MIP operator, as ``wgdsa_h_perp_convention``.
     xs_map : List[Dict]
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
@@ -1727,14 +1726,15 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
-          - wgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
+          - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
-              arbitrary boundaries. ``dirichlet`` imposes a zero correction weakly
-              (interior-penalty term); ``marshak`` imposes the natural Marshak condition, a
-              face mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on
-              thin boundary cells with the half-range transport form on thick ones and uses
-              the groupset quadrature's half-range moment as the floor of the interior penalty.
-              Reflecting boundaries are zero-current.
+              arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
+              mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on thin
+              boundary cells with the half-range transport form on thick ones, uses the
+              groupset quadrature's half-range moment as the floor of the interior penalty,
+              and is faster than ``marshak`` when boundary cells are many mean free paths
+              thick; ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
+              (interior-penalty term). Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1753,20 +1753,18 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
-          - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
+          - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
-          - wgdsa_h_perp_convention: {'cell', 'face', 'face_x2', 'side', 'face_side'}, default='cell'
-              Penalty length of the WGDSA MIP operator on polyhedral cells. ``cell`` uses
-              the cell-wide lengths 3V/S (tet) and V/S (hex) with an extra interior factor 2;
-              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f;
-              ``face_x2`` uses them with the extra interior factor 2. ``side`` uses twice
-              the smallest height of the face's PWLD side simplices on polygons and
-              polyhedra, with the factor 2 on interior and boundary faces; it keeps the
-              operator positive definite on distorted cells. ``face_side`` uses the smaller
-              of the ``face_x2`` length and twice the side length: ``face_x2`` on regular
-              cells, robust on distorted ones.
-          - tgdsa_h_perp_convention: {'cell', 'face', 'face_x2', 'side', 'face_side'}, default='cell'
+          - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
+              Penalty length of the WGDSA MIP operator. ``face_side`` uses the face-dependent
+              orthogonal length (3V/A_f tet, V/A_f hex) capped by twice the smallest height
+              of the face's PWLD side simplices, with an extra factor 2 on polygons and
+              polyhedra; it keeps the operator positive definite on strongly distorted
+              cells. ``cell`` (OpenSn's original) uses the cell-wide lengths 3V/S (tet) and
+              V/S (hex) with the extra factor 2 on polyhedra, a larger penalty that slows DSA
+              on cells a few mean free paths thick.
+          - tgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
               Penalty length of the TGDSA MIP operator, as ``wgdsa_h_perp_convention``.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:

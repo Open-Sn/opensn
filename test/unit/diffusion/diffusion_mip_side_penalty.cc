@@ -12,6 +12,7 @@
 #include "framework/math/spatial_discretization/finite_element/unit_cell_matrices.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/runtime.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 
 #include <cmath>
 #include <filesystem>
@@ -113,35 +114,35 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
   }
 }
 
-// "side" and "face_x2" are the same operator on orthogonal hexahedra (non-uniform spacing).
-TEST(DiffusionMIPSidePenalty, EqualsFaceX2OnOrthogonalHexes)
+// "face_side" = min(face length, 2 x side length): on rectangles and boxes the cap is inactive and
+// the length is the cell width normal to the face, V/A_f, with the factor 2 on polygons.
+TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)
 {
-  if (opensn::mpi_comm.size() != 1)
-    return;
-  auto grid = BuildOrthogonalMesh({{0.0, 0.5, 0.75, 1.5}, {0.0, 0.2, 1.0}, {0.0, 0.3, 0.4}});
-  grid->SetUniformBlockID(0);
-  grid->SetOrthogonalBoundaries();
-  for (const auto& bc : std::vector<BoundaryCondition>{{BCType::DIRICHLET, {0, 0, 0}},
-                                                       {BCType::ROBIN, {0.25, 0.5, 0}}})
+  const std::vector<double> x = {0.0, 0.5, 0.75, 1.5}, y = {0.0, 0.2, 1.0}, z = {0.0, 0.3, 0.4};
+  for (const auto& node_sets : std::vector<std::vector<std::vector<double>>>{{x, y}, {x, y, z}})
   {
-    PetscInt n_side = 0, n_face = 0;
-    const auto A_side = MIPMatrix(grid, "side", bc, n_side);
-    const auto A_face = MIPMatrix(grid, "face_x2", bc, n_face);
-    ASSERT_EQ(n_side, n_face);
-    double diff = 0.0, scale = 0.0;
-    for (size_t k = 0; k < A_side.size(); ++k)
-    {
-      diff = std::max(diff, std::fabs(A_side[k] - A_face[k]));
-      scale = std::max(scale, std::fabs(A_face[k]));
-    }
-    EXPECT_LT(diff, 1.0e-12 * scale);
+    auto grid = BuildOrthogonalMesh(node_sets);
+    grid->SetUniformBlockID(0);
+    std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+    const auto& sdm = *sdm_ptr;
+    std::map<uint64_t, BoundaryCondition> bcs;
+    std::map<unsigned int, Multigroup_D_and_sigR> xs;
+    xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
+    std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
+    DiffusionMIPSolver solver(
+      "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
+    solver.options.h_perp_convention = "face_side";
+    for (const auto& cell : grid->GetLocalCells())
+      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+        EXPECT_NEAR(solver.HPerpendicular(*cell, f), cell->volume / cell->faces[f].area, 1.0e-12);
+    EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
 }
 
 // Severely distorted quadrilaterals (Shestakov's random mesh, parameter a = 0.05, 8 x 8 cells of
-// the unit square): the polygon penalty of the other conventions (length V/A_f, no factor 2) leaves
-// the operator indefinite, so DSA diverges; "side" keeps it positive definite with either boundary
-// form.
+// the unit square): OpenSn's original polygon penalty ("cell": length V/A_f, no factor 2) leaves
+// the operator indefinite, so DSA diverges; "face_side" keeps it positive definite with either
+// boundary form, because the side-length cap engages on the faces with a skinny side triangle.
 TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
 {
   if (opensn::mpi_comm.size() != 1)
@@ -156,15 +157,21 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
   {
     PetscInt n = 0;
     EXPECT_FALSE(IsPositiveDefinite(MIPMatrix(grid, "cell", bc, n), n));
-    EXPECT_TRUE(IsPositiveDefinite(MIPMatrix(grid, "side", bc, n), n));
     EXPECT_TRUE(IsPositiveDefinite(MIPMatrix(grid, "face_side", bc, n), n));
   }
+  // The cap is active somewhere: twice the side length is below the face length on some face.
+  double min_ratio = 1.0;
+  for (const auto& cell : grid->GetLocalCells())
+    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      min_ratio =
+        std::min(min_ratio, 2.0 * FaceSideLength(*grid, *cell, f) / FaceOrthogonalLength(*cell, f));
+  EXPECT_LT(min_ratio, 0.1);
 }
 
-// "face_side" = min(face_x2 length, 2 side length) is the face_x2 length on every tetrahedron (the
-// cell centroid is a quarter of the height above each face, so twice the side length is 3V/A_f) and
-// on cubes, where "side" alone would double the tetrahedral penalty.
-TEST(DiffusionMIPSidePenalty, FaceSideIsFaceX2OnTetsAndCubes)
+// On every tetrahedron the cell centroid is a quarter of the height above each face, so the side
+// length is half of 3V/A_f and "face_side" is the face length 3V/A_f itself (the cap is inactive);
+// the same on cubes, where both lengths are V/A_f.
+TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
 {
   const auto mfile =
     std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
@@ -179,18 +186,42 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceX2OnTetsAndCubes)
     std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
     DiffusionMIPSolver solver(
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
+    solver.options.h_perp_convention = "face_side";
     for (const auto& cell : grid->GetLocalCells())
       for (unsigned int f = 0; f < cell->faces.size(); ++f)
       {
-        solver.options.h_perp_convention = "face_x2";
-        const double h_face = solver.HPerpendicular(*cell, f);
-        solver.options.h_perp_convention = "side";
-        const double h_side = solver.HPerpendicular(*cell, f);
-        solver.options.h_perp_convention = "face_side";
+        const double h_face = FaceOrthogonalLength(*cell, f);
         EXPECT_NEAR(solver.HPerpendicular(*cell, f), h_face, 1.0e-10 * h_face);
         if (cell->faces.size() == 4)
-          EXPECT_NEAR(h_side, 0.5 * h_face, 1.0e-10 * h_face);
+          EXPECT_NEAR(FaceSideLength(*grid, *cell, f), 0.5 * h_face, 1.0e-10 * h_face);
       }
-    EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
+  }
+}
+
+// Groupset defaults: Marshak closure and the "face_side" length for WGDSA and TGDSA; the removed
+// penalty lengths are rejected.
+TEST(DiffusionMIPSidePenalty, GroupsetDefaultsAndAllowedValues)
+{
+  auto params = LBSGroupset::GetInputParameters();
+  EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_boundary_closure"), "marshak");
+  EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_boundary_closure"), "marshak");
+  EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_h_perp_convention"), "face_side");
+  EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_h_perp_convention"), "face_side");
+
+  auto grid = BuildBoxMesh(1.0, 2, 0.0);
+  grid->SetUniformBlockID(0);
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+  const auto& sdm = *sdm_ptr;
+  std::map<uint64_t, BoundaryCondition> bcs;
+  std::map<unsigned int, Multigroup_D_and_sigR> xs;
+  xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
+  std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
+  DiffusionMIPSolver solver(
+    "Allowed", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
+  const auto& cell = *grid->GetLocalCells().front();
+  for (const std::string removed : {"face", "face_x2", "side"})
+  {
+    solver.options.h_perp_convention = removed;
+    EXPECT_THROW(solver.HPerpendicular(cell, 0), std::invalid_argument);
   }
 }
