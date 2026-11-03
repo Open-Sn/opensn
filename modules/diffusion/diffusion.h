@@ -46,6 +46,8 @@ public:
      * the boundary penalty 2 penalty_factor D/h. Slab and polygon cells are unaffected.
      */
     std::string h_perp_convention = "cell";
+    /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.
+    double closure_r_s0 = 1.5;
   } options;
 
 public:
@@ -64,6 +66,9 @@ public:
 
   /// Returns the right-hand side petsc vector.
   const Vec& GetRHS() const;
+
+  /// Returns the assembled system matrix (null before Initialize).
+  const Mat& GetSystemMatrix() const { return A_; }
 
   /// Returns the assigned unknown structure.
   const std::map<uint64_t, BoundaryCondition>& GetBCS() const { return bcs_; }

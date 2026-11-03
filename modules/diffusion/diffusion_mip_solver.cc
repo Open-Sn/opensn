@@ -2,6 +2,8 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "modules/diffusion/boundary_closure.h"
+#include "framework/utils/error.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/mesh/mesh/mesh.h"
@@ -13,6 +15,7 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include <limits>
 #include <utility>
 
 namespace opensn
@@ -63,6 +66,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
+    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
     const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
@@ -140,13 +144,13 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           // Compute kappa
           double kappa = 1.0;
           if (cell->GetType() == CellType::SLAB)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYGON)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
                            (adj_Dg / hp + Dg / hm) * 0.5,
-                         0.25);
+                         PenaltyFloor(n_f));
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -350,6 +354,42 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
               } // if f nonzero
             } // for fi
           } // Robin BC
+          else if (bc.type == BCType::CLOSURE_R)
+          {
+            const auto& cf = closure_faces[f];
+            const double sigma_t_h =
+              Dg > 0.0 ? cf.h / (3.0 * Dg) : std::numeric_limits<double>::infinity();
+            const double theta =
+              ClosureRTheta(cf.beta, sigma_t_h, cf.c_grad, num_closure_faces, options.closure_r_s0);
+
+            // beta_f (1 + theta) int_f b_i b_j
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
+            {
+              const int i = cell_mapping.MapFaceNode(f, fi);
+              for (size_t fj = 0; fj < num_face_nodes; ++fj)
+              {
+                const int j = cell_mapping.MapFaceNode(f, fj);
+                double mij = 0.0;
+                for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
+                  mij += fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeValue(j, qp) *
+                         fe_srf_data.JxW(qp);
+                cell_A(i, j) += cf.beta * (1.0 + theta) * mij;
+              }
+            }
+
+            // -(1 - theta)/2 D int_f (b_i n.grad b_j + b_j n.grad b_i)
+            if (theta < 1.0)
+              for (size_t i = 0; i < num_nodes; ++i)
+                for (size_t j = 0; j < num_nodes; ++j)
+                {
+                  Vector3 vec_aij;
+                  for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
+                    vec_aij += (fe_srf_data.ShapeValue(j, qp) * fe_srf_data.ShapeGrad(i, qp) +
+                                fe_srf_data.ShapeValue(i, qp) * fe_srf_data.ShapeGrad(j, qp)) *
+                               fe_srf_data.JxW(qp);
+                  cell_A(i, j) -= 0.5 * (1.0 - theta) * Dg * n_f.Dot(vec_aij);
+                }
+          } // Closure R
         } // boundary face
       } // for face
 
@@ -609,6 +649,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
+    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
     const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
@@ -673,13 +714,13 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           // Compute kappa
           double kappa = 1.0;
           if (cell->GetType() == CellType::SLAB)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYGON)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, 0.25);
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa = fmax(options.penalty_factor * PolyhedronInteriorPenaltyScale() *
                            (adj_Dg / hp + Dg / hm) * 0.5,
-                         0.25);
+                         PenaltyFloor(n_f));
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -835,6 +876,33 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
               } // if f nonzero
             } // for fi
           } // Robin BC
+          else if (bc.type == BCType::CLOSURE_R)
+          {
+            const auto& cf = closure_faces[f];
+            const double sigma_t_h =
+              Dg > 0.0 ? cf.h / (3.0 * Dg) : std::numeric_limits<double>::infinity();
+            const double theta =
+              ClosureRTheta(cf.beta, sigma_t_h, cf.c_grad, num_closure_faces, options.closure_r_s0);
+
+            // beta_f (1 + theta) int_f b_i b_j
+            for (size_t fi = 0; fi < num_face_nodes; ++fi)
+            {
+              const int i = cell_mapping.MapFaceNode(f, fi);
+              for (size_t fj = 0; fj < num_face_nodes; ++fj)
+              {
+                const int j = cell_mapping.MapFaceNode(f, fj);
+                cell_A(i, j) += cf.beta * (1.0 + theta) * intS_shapeI_shapeJ(i, j);
+              }
+            }
+
+            // -(1 - theta)/2 D int_f (b_i n.grad b_j + b_j n.grad b_i)
+            if (theta < 1.0)
+              for (size_t i = 0; i < num_nodes; ++i)
+                for (size_t j = 0; j < num_nodes; ++j)
+                  cell_A(i, j) -=
+                    0.5 * (1.0 - theta) * Dg *
+                    n_f.Dot(intS_shapeI_gradshapeJ(j, i) + intS_shapeI_gradshapeJ(i, j));
+          } // Closure R
         } // boundary face
       } // for face
 
@@ -1267,6 +1335,46 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
                            "Unsupported cell type in call to HPerpendicular");
 
   return hp;
+}
+
+std::pair<std::vector<DiffusionMIPSolver::ClosureFaceData>, unsigned int>
+DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
+{
+  std::vector<ClosureFaceData> data(cell.faces.size());
+  unsigned int count = 0;
+  if (suppress_bcs_)
+    return {data, count};
+
+  const auto& cell_mapping = sdm_.GetCellMapping(cell);
+  for (size_t f = 0; f < cell.faces.size(); ++f)
+  {
+    const auto& face = cell.faces[f];
+    if (face.has_neighbor)
+      continue;
+    const auto bc_it = bcs_.find(face.neighbor_id);
+    if (bc_it == bcs_.end() or bc_it->second.type != BCType::CLOSURE_R)
+      continue;
+    OpenSnLogicalErrorIf(closure_omegas_.empty(),
+                         name_ + ": a CLOSURE_R boundary needs the angular quadrature "
+                                 "(SetBoundaryClosureQuadrature).");
+    ++count;
+
+    auto& cf = data[f];
+    cf.beta = QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, face.normal);
+    cf.h = FaceOrthogonalLength(cell, f);
+
+    cf.c_grad = FaceTraceConstant(
+      cell_mapping, cell, f, unit_cell_matrices_[cell.local_id].intV_gradshapeI_gradshapeJ);
+  }
+  return {data, count};
+}
+
+double
+DiffusionMIPSolver::PenaltyFloor(const Vector3& normal) const
+{
+  if (closure_omegas_.empty())
+    return 0.25;
+  return QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, normal);
 }
 
 double

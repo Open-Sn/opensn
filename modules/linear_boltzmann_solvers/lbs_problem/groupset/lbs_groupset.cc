@@ -69,8 +69,10 @@ LBSGroupset::GetInputParameters()
                               "boundary with a prescribed incoming flux (vacuum, isotropic, "
                               "arbitrary). dirichlet imposes a zero correction weakly with the "
                               "interior-penalty term; marshak imposes the natural Marshak "
-                              "condition (1/4 delta + 1/2 D d(delta)/dn = 0). Reflecting "
-                              "boundaries are always zero-current.");
+                              "condition (1/4 delta + 1/2 D d(delta)/dn = 0); closure_r blends "
+                              "the Marshak form on thin boundary cells with the half-range "
+                              "transport form on thick ones, using the groupset's quadrature. "
+                              "Reflecting boundaries are always zero-current.");
 
   // TG DSA options
   params.AddOptionalParameter(
@@ -127,13 +129,13 @@ LBSGroupset::GetInputParameters()
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("wgdsa_boundary_closure",
-                                 AllowableRangeList::New({"dirichlet", "marshak"}));
+                                 AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("wgdsa_h_perp_convention",
                                  AllowableRangeList::New({"cell", "face"}));
   params.ConstrainParameterRange("tgdsa_h_perp_convention",
                                  AllowableRangeList::New({"cell", "face"}));
   params.ConstrainParameterRange("tgdsa_boundary_closure",
-                                 AllowableRangeList::New({"dirichlet", "marshak"}));
+                                 AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
 
   return params;

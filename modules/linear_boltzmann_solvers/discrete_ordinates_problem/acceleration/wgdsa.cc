@@ -24,7 +24,8 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 
     // Make boundary conditions
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
-    auto bcs = TranslateBCs(sweep_boundaries, groupset.wgdsa_boundary_closure == "dirichlet");
+    const auto closure = DSABoundaryClosureFromString(groupset.wgdsa_boundary_closure);
+    auto bcs = TranslateBCs(sweep_boundaries, closure);
 
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -53,6 +54,9 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     solver->options.verbose = groupset.wgdsa_verbose;
     solver->options.additional_options_string = groupset.wgdsa_string;
     solver->options.h_perp_convention = groupset.wgdsa_h_perp_convention;
+    if (closure == DSABoundaryClosure::CLOSURE_R)
+      solver->SetBoundaryClosureQuadrature(groupset.quadrature->GetOmegas(),
+                                           groupset.quadrature->GetWeights());
 
     solver->Initialize();
 

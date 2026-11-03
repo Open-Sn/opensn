@@ -382,6 +382,23 @@ correction weakly through the interior-penalty boundary term. ``"marshak"``
 imposes the natural Marshak condition
 :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`, which adds
 :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
+``"closure_r"`` blends the two transport-consistent forms face by face,
+
+.. math::
+
+   \beta_f (1 + \theta_f) \int_f \delta\, v
+   - \frac{1 - \theta_f}{2} \int_f D\,(\partial_n \delta\, v + \partial_n v\, \delta),
+
+with :math:`\beta_f = \tfrac12 \sum_d w_d |\Omega_d \cdot n_f| / \sum_d w_d` the half-range
+moment of the groupset's quadrature (about 1/4). On thin boundary cells
+(:math:`\theta_f = 1`) this is the Marshak form; on cells many mean free paths
+thick :math:`\theta_f \to 0` gives the half-range transport form, whose
+leakage coefficient matches the transport sweep. The blend is
+:math:`\theta_f = \max(\min(1, (s_0/\sigma_t h_f)^2), \theta_{coer})` with
+:math:`s_0 = 1.5`, :math:`h_f` the face-dependent orthogonal length and
+:math:`\theta_{coer}` the smallest value that keeps the operator positive
+definite (computed from the cell matrices). With ``"closure_r"`` the floor of
+the interior penalty is :math:`\beta_f` of each face instead of 1/4.
 Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
 ``tgdsa_boundary_closure`` does the same for TGDSA.
 

@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <array>
+#include <string>
 
 namespace opensn
 {
@@ -17,13 +18,27 @@ class MultiGroupXS;
 /**
  * Boundary condition type. We essentially only support two
  * types: Dirichlet and Reflecting, the latter is covered under
- * the ROBIN-type boundary condition.
+ * the ROBIN-type boundary condition. CLOSURE_R is the homogeneous blended vacuum closure of the
+ * DSA correction (modules/diffusion/boundary_closure.h); it takes no values and needs the
+ * angular quadrature (DiffusionMIPSolver::SetBoundaryClosureQuadrature).
  */
 enum class BCType
 {
   DIRICHLET = 1,
-  ROBIN = 2
+  ROBIN = 2,
+  CLOSURE_R = 3
 };
+
+/// Boundary closure of a DSA correction on boundaries with a prescribed incoming flux.
+enum class DSABoundaryClosure
+{
+  DIRICHLET, ///< Zero correction imposed weakly (interior-penalty form)
+  MARSHAK,   ///< Natural Marshak condition, ROBIN {0.25, 0.5}
+  CLOSURE_R  ///< Blend of the Marshak and half-range forms (BCType::CLOSURE_R)
+};
+
+/// Maps "dirichlet", "marshak", "closure_r" to the closure.
+DSABoundaryClosure DSABoundaryClosureFromString(const std::string& name);
 
 /**
  * Simple data structure to specify boundary conditions. Its stores the BC-type in `type` and an
@@ -91,12 +106,11 @@ TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
  * Translates sweep boundary conditions to those of the diffusion correction in acceleration
  * methods. Reflecting boundaries become zero-current (Neumann) boundaries. Every boundary with a
  * prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three get
- * the same condition: the weakly imposed zero (Dirichlet, interior-penalty form) when
- * `inflow_bcs_are_dirichlet` is true, the natural Marshak condition (ROBIN {0.25, 0.5}) otherwise.
+ * the condition selected by `closure`.
  */
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
-             bool inflow_bcs_are_dirichlet = true);
+             DSABoundaryClosure closure = DSABoundaryClosure::DIRICHLET);
 
 /**
  * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.

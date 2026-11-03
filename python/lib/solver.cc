@@ -1117,11 +1117,14 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
-          - wgdsa_boundary_closure: {'dirichlet', 'marshak'}, default='dirichlet'
+          - wgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``dirichlet`` imposes a zero correction weakly
               (interior-penalty term); ``marshak`` imposes the natural Marshak condition, a
-              face mass term with coefficient 1/2. Reflecting boundaries are zero-current.
+              face mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on
+              thin boundary cells with the half-range transport form on thick ones and uses
+              the groupset quadrature's half-range moment as the floor of the interior penalty.
+              Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1140,7 +1143,7 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
-          - tgdsa_boundary_closure: {'dirichlet', 'marshak'}, default='dirichlet'
+          - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'cell', 'face'}, default='cell'
@@ -1718,11 +1721,14 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
-          - wgdsa_boundary_closure: {'dirichlet', 'marshak'}, default='dirichlet'
+          - wgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``dirichlet`` imposes a zero correction weakly
               (interior-penalty term); ``marshak`` imposes the natural Marshak condition, a
-              face mass term with coefficient 1/2. Reflecting boundaries are zero-current.
+              face mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on
+              thin boundary cells with the half-range transport form on thick ones and uses
+              the groupset quadrature's half-range moment as the floor of the interior penalty.
+              Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1741,7 +1747,7 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
-          - tgdsa_boundary_closure: {'dirichlet', 'marshak'}, default='dirichlet'
+          - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'cell', 'face'}, default='cell'

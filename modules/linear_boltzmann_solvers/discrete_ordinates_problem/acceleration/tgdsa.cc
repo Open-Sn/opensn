@@ -29,7 +29,8 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
     // Make boundary conditions
-    auto bcs = TranslateBCs(sweep_boundaries, groupset.tgdsa_boundary_closure == "dirichlet");
+    const auto closure = DSABoundaryClosureFromString(groupset.tgdsa_boundary_closure);
+    auto bcs = TranslateBCs(sweep_boundaries, closure);
 
     // Make TwoGridInfo
     groupset.tg_acceleration_info_.map_mat_id_2_tginfo.clear();
@@ -86,6 +87,9 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     solver->options.verbose = groupset.tgdsa_verbose;
     solver->options.additional_options_string = groupset.tgdsa_string;
     solver->options.h_perp_convention = groupset.tgdsa_h_perp_convention;
+    if (closure == DSABoundaryClosure::CLOSURE_R)
+      solver->SetBoundaryClosureQuadrature(groupset.quadrature->GetOmegas(),
+                                           groupset.quadrature->GetWeights());
 
     solver->Initialize();
 
