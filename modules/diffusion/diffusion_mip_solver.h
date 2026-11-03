@@ -94,7 +94,7 @@ public:
 
   /**
    * Extra factor on the interior-face penalty of polyhedral cells: 2 for the "cell" h_perp
-   * convention (OpenSn's original), 1 for "face".
+   * convention (OpenSn's original) and for "face_x2", 1 for "face".
    */
   double PolyhedronInteriorPenaltyScale() const;
 

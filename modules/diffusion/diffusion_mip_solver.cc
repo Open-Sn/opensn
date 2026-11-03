@@ -1306,7 +1306,7 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   {
     const auto surface_area = ComputeSurfaceArea();
 
-    if (options.h_perp_convention == "face")
+    if (options.h_perp_convention == "face" or options.h_perp_convention == "face_x2")
     {
       // Face-dependent orthogonal projections (Turcksin & Ragusa 2014; Hackemack 2016)
       if (num_faces == 4) // Tet: height of the pyramid over face f
@@ -1328,7 +1328,8 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
     else
       throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
                                   "h_perp_convention \"" +
-                                  options.h_perp_convention + "\" (expected \"cell\" or \"face\")");
+                                  options.h_perp_convention +
+                                  "\" (expected \"cell\", \"face\" or \"face_x2\")");
   } // Polyhedron
   else
     throw std::logic_error("acceleration::DiffusionMIPSolver::HPerpendicular: "
@@ -1380,7 +1381,7 @@ DiffusionMIPSolver::PenaltyFloor(const Vector3& normal) const
 double
 DiffusionMIPSolver::PolyhedronInteriorPenaltyScale() const
 {
-  return options.h_perp_convention == "face" ? 1.0 : 2.0;
+  return options.h_perp_convention == "face" ? 1.0 : 2.0; // "cell", "face_x2": 2
 }
 
 int

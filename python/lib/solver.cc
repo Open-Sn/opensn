@@ -1146,11 +1146,12 @@ WrapLBS(py::module& slv)
           - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
-          - wgdsa_h_perp_convention: {'cell', 'face'}, default='cell'
+          - wgdsa_h_perp_convention: {'cell', 'face', 'face_x2'}, default='cell'
               Penalty length of the WGDSA MIP operator on polyhedral cells. ``cell`` uses
               the cell-wide lengths 3V/S (tet) and V/S (hex) with an extra interior factor 2;
-              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f.
-          - tgdsa_h_perp_convention: {'cell', 'face'}, default='cell'
+              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f;
+              ``face_x2`` uses them with the extra interior factor 2.
+          - tgdsa_h_perp_convention: {'cell', 'face', 'face_x2'}, default='cell'
               Penalty length of the TGDSA MIP operator, as ``wgdsa_h_perp_convention``.
     xs_map : List[Dict]
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
@@ -1750,11 +1751,12 @@ WrapLBS(py::module& slv)
           - tgdsa_boundary_closure: {'dirichlet', 'marshak', 'closure_r'}, default='dirichlet'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
-          - wgdsa_h_perp_convention: {'cell', 'face'}, default='cell'
+          - wgdsa_h_perp_convention: {'cell', 'face', 'face_x2'}, default='cell'
               Penalty length of the WGDSA MIP operator on polyhedral cells. ``cell`` uses
               the cell-wide lengths 3V/S (tet) and V/S (hex) with an extra interior factor 2;
-              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f.
-          - tgdsa_h_perp_convention: {'cell', 'face'}, default='cell'
+              ``face`` uses the face-dependent orthogonal projections 3V/A_f and V/A_f;
+              ``face_x2`` uses them with the extra interior factor 2.
+          - tgdsa_h_perp_convention: {'cell', 'face', 'face_x2'}, default='cell'
               Penalty length of the TGDSA MIP operator, as ``wgdsa_h_perp_convention``.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:

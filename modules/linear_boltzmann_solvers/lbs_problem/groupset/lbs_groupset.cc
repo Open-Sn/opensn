@@ -104,7 +104,8 @@ LBSGroupset::GetInputParameters()
                               "Penalty length of the WGDSA MIP operator on polyhedral cells. cell "
                               "uses OpenSn's cell-wide lengths (3V/S tet, V/S hex) with an extra "
                               "interior factor 2; face uses the face-dependent orthogonal "
-                              "projections (3V/A_f tet, V/A_f hex) of Turcksin and Ragusa.");
+                              "projections (3V/A_f tet, V/A_f hex) of Turcksin and Ragusa; "
+                              "face_x2 uses them and keeps the extra interior factor 2.");
   params.AddOptionalParameter("tgdsa_h_perp_convention",
                               "cell",
                               "Penalty length of the TGDSA MIP operator, with the same choices as "
@@ -131,9 +132,9 @@ LBSGroupset::GetInputParameters()
   params.ConstrainParameterRange("wgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("wgdsa_h_perp_convention",
-                                 AllowableRangeList::New({"cell", "face"}));
+                                 AllowableRangeList::New({"cell", "face", "face_x2"}));
   params.ConstrainParameterRange("tgdsa_h_perp_convention",
-                                 AllowableRangeList::New({"cell", "face"}));
+                                 AllowableRangeList::New({"cell", "face", "face_x2"}));
   params.ConstrainParameterRange("tgdsa_boundary_closure",
                                  AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));

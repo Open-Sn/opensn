@@ -43,7 +43,9 @@ public:
      * interior-face penalty. "face" uses the face-dependent orthogonal projections 3V/A_f (tet),
      * V/A_f (hex), 6V/S (other) of Turcksin & Ragusa (2014) and Hackemack (2016), without the extra
      * interior factor, so that on a cube of side h the interior penalty is penalty_factor D/h and
-     * the boundary penalty 2 penalty_factor D/h. Slab and polygon cells are unaffected.
+     * the boundary penalty 2 penalty_factor D/h. "face_x2" uses the face-dependent lengths and
+     * keeps the extra interior factor 2 (interior and boundary penalty 2 penalty_factor D/h on a
+     * cube; the convention of the PWQD development branch). Slab and polygon cells are unaffected.
      */
     std::string h_perp_convention = "cell";
     /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.

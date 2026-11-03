@@ -410,6 +410,8 @@ total surface of the cell, with an extra factor 2 on interior faces.
 :math:`V/A_f` of Turcksin and Ragusa, so that on a cube of side :math:`h` the
 interior penalty is ``penalty_factor`` :math:`D/h` instead of 12 times that. The
 larger penalty of ``"cell"`` slows DSA on cells a few mean free paths thick.
+``"face_x2"`` uses the face-dependent lengths with the extra interior factor 2,
+which doubles the stability margin of the operator on tetrahedra.
 ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``

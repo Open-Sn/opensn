@@ -198,7 +198,7 @@ TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
   const std::array<unsigned int, 3> refinements = {4, 8, 16};
   const double length = 2.0;
 
-  for (const std::string convention : {"cell", "face"})
+  for (const std::string convention : {"cell", "face", "face_x2"})
   {
     SCOPED_TRACE(convention);
     std::vector<double> errors;
@@ -262,7 +262,11 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h / 6.0, 1.0e-12);
       solver.options.h_perp_convention = "face";
       EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
+      solver.options.h_perp_convention = "face_x2";
+      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
     }
+  EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
+  solver.options.h_perp_convention = "face";
   EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 1.0);
   solver.options.h_perp_convention = "cell";
   EXPECT_DOUBLE_EQ(solver.PolyhedronInteriorPenaltyScale(), 2.0);
