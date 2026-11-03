@@ -155,9 +155,15 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
   for (const auto& bc : std::vector<BoundaryCondition>{{BCType::DIRICHLET, {0, 0, 0}},
                                                        {BCType::ROBIN, {0.25, 0.5, 0}}})
   {
-    PetscInt n = 0;
-    EXPECT_FALSE(IsPositiveDefinite(MIPMatrix(grid, "cell", bc, n), n));
-    EXPECT_TRUE(IsPositiveDefinite(MIPMatrix(grid, "face_side", bc, n), n));
+    // Build each matrix before the call: the order in which function arguments are evaluated is
+    // unspecified, so passing n alongside MIPMatrix(..., n) could pass n before it is set.
+    PetscInt n_cell = 0, n_face_side = 0;
+    const auto A_cell = MIPMatrix(grid, "cell", bc, n_cell);
+    const auto A_face_side = MIPMatrix(grid, "face_side", bc, n_face_side);
+    ASSERT_GT(n_cell, 0);
+    ASSERT_EQ(n_face_side, n_cell);
+    EXPECT_FALSE(IsPositiveDefinite(A_cell, n_cell));
+    EXPECT_TRUE(IsPositiveDefinite(A_face_side, n_face_side));
   }
   // The cap is active somewhere: twice the side length is below the face length on some face.
   double min_ratio = 1.0;

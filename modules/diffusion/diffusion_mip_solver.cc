@@ -1281,9 +1281,8 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 
   if (options.h_perp_convention != "cell" and options.h_perp_convention != "face_side")
     throw std::invalid_argument("acceleration::DiffusionMIPSolver::HPerpendicular: unknown "
-                                "h_perp_convention \"" +
-                                options.h_perp_convention +
-                                "\" (expected \"cell\" or \"face_side\")");
+                                "h_perp_convention '" +
+                                options.h_perp_convention + "' (expected 'cell' or 'face_side')");
 
   // "face_side": the face-dependent orthogonal length (3V/A_f tet, V/A_f hex, ...), capped by twice
   // the smallest height of the face's PWLD side simplices so that faces with a skinny side simplex
