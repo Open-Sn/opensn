@@ -16,9 +16,7 @@ class WGDSA
 {
 public:
   /// Initializes the Within-Group DSA solver.
-  static void Init(DiscreteOrdinatesProblem& do_problem,
-                   LBSGroupset& groupset,
-                   bool vaccum_bcs_are_dirichlet = true);
+  static void Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset);
 
   /// Assembles a delta-phi vector on the first moment.
   static void AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,

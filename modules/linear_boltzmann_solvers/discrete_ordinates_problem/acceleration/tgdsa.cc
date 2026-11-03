@@ -29,7 +29,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
 
     // Make boundary conditions
-    auto bcs = TranslateBCs(sweep_boundaries);
+    auto bcs = TranslateBCs(sweep_boundaries, groupset.tgdsa_vacuum_bc == "dirichlet");
 
     // Make TwoGridInfo
     groupset.tg_acceleration_info_.map_mat_id_2_tginfo.clear();

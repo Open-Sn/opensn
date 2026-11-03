@@ -1117,6 +1117,10 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
+          - wgdsa_vacuum_bc: {'dirichlet', 'marshak'}, default='dirichlet'
+              Vacuum-boundary condition of the WGDSA diffusion correction. ``dirichlet``
+              imposes a zero correction weakly (interior-penalty term); ``marshak`` imposes
+              the natural Marshak condition, a face mass term with coefficient 1/2.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1135,6 +1139,9 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
+          - tgdsa_vacuum_bc: {'dirichlet', 'marshak'}, default='dirichlet'
+              Vacuum-boundary condition of the TGDSA diffusion correction, with the same
+              choices as ``wgdsa_vacuum_bc``.
     xs_map : List[Dict]
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
           - block_ids: List[int] (required)
@@ -1704,6 +1711,10 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve.
+          - wgdsa_vacuum_bc: {'dirichlet', 'marshak'}, default='dirichlet'
+              Vacuum-boundary condition of the WGDSA diffusion correction. ``dirichlet``
+              imposes a zero correction weakly (interior-penalty term); ``marshak`` imposes
+              the natural Marshak condition, a face mass term with coefficient 1/2.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
@@ -1722,6 +1733,9 @@ WrapLBS(py::module& slv)
               PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve.
+          - tgdsa_vacuum_bc: {'dirichlet', 'marshak'}, default='dirichlet'
+              Vacuum-boundary condition of the TGDSA diffusion correction, with the same
+              choices as ``wgdsa_vacuum_bc``.
     xs_map : list of dict
         A list of mappings from block ids to cross-section definitions. Each dictionary supports:
           - block_ids: List[int] (required)

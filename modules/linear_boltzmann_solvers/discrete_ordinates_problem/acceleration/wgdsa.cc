@@ -11,9 +11,7 @@ namespace opensn
 {
 
 void
-WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
-            LBSGroupset& groupset,
-            bool vaccum_bcs_are_dirichlet)
+WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 {
   if (groupset.apply_wgdsa)
   {
@@ -26,7 +24,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem,
 
     // Make boundary conditions
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
-    auto bcs = TranslateBCs(sweep_boundaries, vaccum_bcs_are_dirichlet);
+    auto bcs = TranslateBCs(sweep_boundaries, groupset.wgdsa_vacuum_bc == "dirichlet");
 
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();

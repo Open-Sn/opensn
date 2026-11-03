@@ -38,6 +38,7 @@ The main groupset fields exposed in the Python API are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_vacuum_bc``
 * ``apply_tgdsa``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
@@ -45,6 +46,7 @@ The main groupset fields exposed in the Python API are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_vacuum_bc``
 
 The simplest valid pattern is one groupset covering all groups:
 
@@ -325,12 +327,14 @@ with associated controls:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_vacuum_bc``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_vacuum_bc``
 
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
@@ -355,6 +359,7 @@ The main WGDSA controls are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_vacuum_bc``
 
 ``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
 correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
@@ -362,6 +367,14 @@ diffusion unknown count is at or below ``wgdsa_direct_solve_threshold`` and an
 iterative solve otherwise. ``"direct"`` and ``"iterative"`` force those paths,
 and ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup.
 The default threshold is ``20000`` global unknowns.
+
+``wgdsa_vacuum_bc`` sets the boundary condition of the diffusion correction on
+vacuum boundaries. ``"dirichlet"`` (the default) imposes a zero correction
+weakly through the interior-penalty boundary term. ``"marshak"`` imposes the
+natural Marshak condition :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`,
+which adds :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
+Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
+``tgdsa_vacuum_bc`` does the same for TGDSA.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~
@@ -384,6 +397,7 @@ The main TGDSA controls are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_vacuum_bc``
 
 ``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA

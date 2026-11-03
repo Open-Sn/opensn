@@ -63,6 +63,12 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
   params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
+  params.AddOptionalParameter("wgdsa_vacuum_bc",
+                              "dirichlet",
+                              "Boundary condition of the WGDSA diffusion correction on vacuum "
+                              "boundaries. dirichlet imposes a zero correction weakly with the "
+                              "interior-penalty term; marshak imposes the natural Marshak "
+                              "condition (1/4 delta + 1/2 D d(delta)/dn = 0).");
 
   // TG DSA options
   params.AddOptionalParameter(
@@ -85,6 +91,10 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
+  params.AddOptionalParameter("tgdsa_vacuum_bc",
+                              "dirichlet",
+                              "Boundary condition of the TGDSA diffusion correction on vacuum "
+                              "boundaries, with the same choices as wgdsa_vacuum_bc.");
 
   // Constraints
   params.ConstrainParameterRange(
@@ -104,6 +114,10 @@ LBSGroupset::GetInputParameters()
     "tgdsa_solver_policy",
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("wgdsa_vacuum_bc",
+                                 AllowableRangeList::New({"dirichlet", "marshak"}));
+  params.ConstrainParameterRange("tgdsa_vacuum_bc",
+                                 AllowableRangeList::New({"dirichlet", "marshak"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
 
   return params;
@@ -137,6 +151,8 @@ LBSGroupset::Init(int aid)
   tgdsa_solver_policy = "auto";
   wgdsa_direct_solve_threshold = 20000;
   tgdsa_direct_solve_threshold = 20000;
+  wgdsa_vacuum_bc = "dirichlet";
+  tgdsa_vacuum_bc = "dirichlet";
   wgdsa_verbose = false;
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
@@ -219,6 +235,8 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   tgdsa_solver_policy = params.GetParamValue<std::string>("tgdsa_solver_policy");
   wgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("wgdsa_direct_solve_threshold");
   tgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("tgdsa_direct_solve_threshold");
+  wgdsa_vacuum_bc = params.GetParamValue<std::string>("wgdsa_vacuum_bc");
+  tgdsa_vacuum_bc = params.GetParamValue<std::string>("tgdsa_vacuum_bc");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");
