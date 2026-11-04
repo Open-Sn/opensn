@@ -531,6 +531,77 @@
     ]
   },
   {
+    "file": "transport_2d_4a_dsa_ortho.py",
+    "comment": "Same as transport_2d_4a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults)",
+    "outfileprefix": "transport_2d_4a_dsa_ortho_dirichlet_cell",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"dirichlet\"",
+      "h_perp_convention=\"cell\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
+        "abs_tol": 2e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
+        "abs_tol": 2e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_4a_dsa_ortho.py",
+    "comment": "Same as transport_2d_4a_dsa_ortho with the closure R DSA boundary closure",
+    "outfileprefix": "transport_2d_4a_dsa_ortho_closure_r",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"closure_r\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
+        "abs_tol": 2e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.14473,
+        "abs_tol": 2e-05
+      }
+    ]
+  },
+  {
     "file": "transport_2d_4b_dsa_ortho.py",
     "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
@@ -852,6 +923,79 @@
     "file": "transport_3d_3a_dsa_ortho.py",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
     "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_3a_dsa_ortho.py",
+    "comment": "Same as transport_3d_3a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults)",
+    "outfileprefix": "transport_3d_3a_dsa_ortho_dirichlet_cell",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"dirichlet\"",
+      "h_perp_convention=\"cell\""
+    ],
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_3a_dsa_ortho.py",
+    "comment": "Same as transport_3d_3a_dsa_ortho with the closure R DSA boundary closure",
+    "outfileprefix": "transport_3d_3a_dsa_ortho_closure_r",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"closure_r\""
+    ],
     "weight_class": "intermediate",
     "checks": [
       {

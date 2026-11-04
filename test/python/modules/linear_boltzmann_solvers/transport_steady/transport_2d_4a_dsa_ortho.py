@@ -71,6 +71,14 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLCProductQuadrature2DXY(n_polar=4, n_azimuthal=8, scattering_order=1)
 
+    # Optional DSA boundary closure and MIP penalty length, applied to WGDSA and TGDSA
+    # (defaults "marshak" and "face_side")
+    dsa_options = {}
+    for name in ("boundary_closure", "h_perp_convention"):
+        if name in globals():
+            dsa_options["wgdsa_" + name] = globals()[name]
+            dsa_options["tgdsa_" + name] = globals()[name]
+
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
@@ -84,6 +92,7 @@ if __name__ == "__main__":
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
                 "wgdsa_l_abs_tol": 1.0e-2,
+                **dsa_options,
             },
             {
                 "groups_from_to": [63, num_groups - 1],
@@ -95,6 +104,7 @@ if __name__ == "__main__":
                 "apply_wgdsa": True,
                 "apply_tgdsa": True,
                 "wgdsa_l_abs_tol": 1.0e-2,
+                **dsa_options,
             },
         ],
         xs_map=[
