@@ -6,6 +6,7 @@
 #pragma once
 
 #include <cstddef>  // std::size_t
+#include <new>      // std::bad_alloc
 
 #include "caribou/backend.hpp"
 #include "caribou/sycl/stream.hpp"  // caribou::impl::null_stream
@@ -28,8 +29,11 @@ class HostAllocator {
         if (n == 0) {
             return nullptr;
         }
-        T * result = ::sycl::aligned_alloc_host<T>(4096, n, null_stream);
+        T * result = ::sycl::malloc_host<T>(n, null_stream);
         null_stream.wait_and_throw();
+        if (result == nullptr) {
+            throw std::bad_alloc();
+        }
         return result;
     }
     void deallocate(T * ptr, std::size_t n) noexcept {
