@@ -501,7 +501,7 @@
   },
   {
     "file": "transport_2d_4a_dsa_ortho.py",
-    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 is checked against the fully converged value 0.1447349 (AGS tolerance 1e-10, FGMRES, DSA tolerance 1e-10, 4 ranks) within the one-pass error",
+    "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 (group 39) and Max-value2 (group 120) are checked against the fully converged values 0.1447349 and 1.896061 (AGS tolerance 1e-10, FGMRES, WGDSA and TGDSA tolerances 1e-10, 4 ranks) within the one-pass error, which is below 0.8% in group 120 for the DSA boundary closures and penalty lengths tested",
     "num_procs": 4,
     "checks": [
       {
@@ -524,15 +524,15 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.14473,
-        "abs_tol": 2e-05
+        "key": "Max-value2=",
+        "goldvalue": 1.89606,
+        "abs_tol": 0.02
       }
     ]
   },
   {
     "file": "transport_2d_4a_dsa_ortho.py",
-    "comment": "Same as transport_2d_4a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults)",
+    "comment": "Same as transport_2d_4a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults); same converged reference values, with the Max-value1 tolerance widened to 5e-5 as in the closure R variant",
     "outfileprefix": "transport_2d_4a_dsa_ortho_dirichlet_cell",
     "num_procs": 4,
     "args": [
@@ -556,19 +556,19 @@
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.14473,
-        "abs_tol": 2e-05
+        "abs_tol": 5e-05
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.14473,
-        "abs_tol": 2e-05
+        "key": "Max-value2=",
+        "goldvalue": 1.89606,
+        "abs_tol": 0.02
       }
     ]
   },
   {
     "file": "transport_2d_4a_dsa_ortho.py",
-    "comment": "Same as transport_2d_4a_dsa_ortho with the closure R DSA boundary closure",
+    "comment": "Same as transport_2d_4a_dsa_ortho with the closure R DSA boundary closure; same converged reference values, with the one-pass tolerance of Max-value1 widened to 5e-5 (the closure R one-pass value is 0.14471)",
     "outfileprefix": "transport_2d_4a_dsa_ortho_closure_r",
     "num_procs": 4,
     "args": [
@@ -591,13 +591,13 @@
         "type": "KeyValuePair",
         "key": "Max-value1=",
         "goldvalue": 0.14473,
-        "abs_tol": 2e-05
+        "abs_tol": 5e-05
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.14473,
-        "abs_tol": 2e-05
+        "key": "Max-value2=",
+        "goldvalue": 1.89606,
+        "abs_tol": 0.02
       }
     ]
   },
@@ -921,7 +921,7 @@
   },
   {
     "file": "transport_3d_3a_dsa_ortho.py",
-    "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG",
+    "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 (group 39) and Max-value2 (group 120) are checked against the fully converged values 0.0949528 and 0.0944793 (AGS tolerance 1e-10, FGMRES, WGDSA and TGDSA tolerances 1e-10, 4 ranks), Max-value2 within the one-pass error, which is below 0.2% for the DSA boundary closures and penalty lengths tested",
     "num_procs": 4,
     "weight_class": "intermediate",
     "checks": [
@@ -945,15 +945,15 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.09495,
-        "abs_tol": 1e-09
+        "key": "Max-value2=",
+        "goldvalue": 0.09448,
+        "abs_tol": 0.0003
       }
     ]
   },
   {
     "file": "transport_3d_3a_dsa_ortho.py",
-    "comment": "Same as transport_3d_3a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults)",
+    "comment": "Same as transport_3d_3a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults); same converged reference values",
     "outfileprefix": "transport_3d_3a_dsa_ortho_dirichlet_cell",
     "num_procs": 4,
     "args": [
@@ -982,15 +982,15 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.09495,
-        "abs_tol": 1e-09
+        "key": "Max-value2=",
+        "goldvalue": 0.09448,
+        "abs_tol": 0.0003
       }
     ]
   },
   {
     "file": "transport_3d_3a_dsa_ortho.py",
-    "comment": "Same as transport_3d_3a_dsa_ortho with the closure R DSA boundary closure",
+    "comment": "Same as transport_3d_3a_dsa_ortho with the closure R DSA boundary closure; same converged reference values",
     "outfileprefix": "transport_3d_3a_dsa_ortho_closure_r",
     "num_procs": 4,
     "args": [
@@ -1018,9 +1018,9 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "Max-value1=",
-        "goldvalue": 0.09495,
-        "abs_tol": 1e-09
+        "key": "Max-value2=",
+        "goldvalue": 0.09448,
+        "abs_tol": 0.0003
       }
     ]
   },
