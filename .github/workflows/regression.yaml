@@ -111,3 +111,30 @@ jobs:
           path: ${{ runner.temp }}/logs/*_log.txt
           if-no-files-found: ignore
           retention-days: 7
+  sycl:
+    runs-on: [self-hosted, cuda]
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - name: build
+        shell: bash
+        run: |
+          export MODULEPATH=$MODULEPATH:/home/danny.nguyen/Modules/modulefiles
+          module load cuda/13.3.1 python3/3.12.3 opensn/gcc/13 oneapi/2026.0.0
+          mkdir build && cd build && cmake -DOPENSN_WITH_SYCL=ON -DSYCL_ARCHITECTURE="nvptx64-nvidia-cuda" -DOPENSN_WITH_PYTHON_MODULE=ON .. && make -j && cd ..
+      - name: test
+        shell: bash
+        run: |
+          export MODULEPATH=$MODULEPATH:/home/danny.nguyen/Modules/modulefiles
+          module load cuda/13.3.1 python3/3.12.3 opensn/gcc/13 oneapi/2026.0.0
+          mkdir -p "$RUNNER_TEMP/logs"
+          test/run_tests --gpu -d test/python -j 16 -v 1 \
+            --run-log "$RUNNER_TEMP/logs/regression_sycl_log.txt"
+      - name: upload test logs
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: regression-logs-sycl
+          path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
