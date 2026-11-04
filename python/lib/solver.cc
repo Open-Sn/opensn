@@ -1120,11 +1120,13 @@ WrapLBS(py::module& slv)
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
-              mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on thin
-              boundary cells with the half-range transport form on thick ones, uses the
-              groupset quadrature's half-range moment as the floor of the interior penalty,
-              and is faster than ``marshak`` when boundary cells are many mean free paths
-              thick; ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
+              mass term with coefficient 1/2; ``closure_r`` blends the
+              Marshak form written with the quadrature's partial current (face mass
+              coefficient 2 beta_f, beta_f the quadrature's half-range moment, against the
+              analytic 1/2) on thin boundary cells with the half-range transport form on
+              thick ones, uses beta_f as the floor of the interior penalty, and is faster
+              than ``marshak`` when boundary cells are many mean free paths thick;
+              ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
               (interior-penalty term). Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
@@ -1149,9 +1151,9 @@ WrapLBS(py::module& slv)
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
               Penalty length of the WGDSA MIP operator. ``face_side`` uses the face-dependent
-              orthogonal length (3V/A_f tet, V/A_f hex) capped by twice the smallest height
-              of the face's PWLD side simplices, with an extra factor 2 on polygons and
-              polyhedra; it keeps the operator positive definite on strongly distorted
+              orthogonal length (3V/A_f tet, V/A_f hex) capped by four times the smallest
+              height of the face's PWLD side simplices, with an extra factor 2 on
+              polygons and polyhedra; it keeps the operator positive definite on strongly distorted
               cells. ``cell`` (OpenSn's original) uses the cell-wide lengths 3V/S (tet) and
               V/S (hex) with the extra factor 2 on polyhedra, a larger penalty that slows DSA
               on cells a few mean free paths thick.
@@ -1729,11 +1731,13 @@ WrapLBS(py::module& slv)
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
-              mass term with coefficient 1/2; ``closure_r`` blends the Marshak form on thin
-              boundary cells with the half-range transport form on thick ones, uses the
-              groupset quadrature's half-range moment as the floor of the interior penalty,
-              and is faster than ``marshak`` when boundary cells are many mean free paths
-              thick; ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
+              mass term with coefficient 1/2; ``closure_r`` blends the
+              Marshak form written with the quadrature's partial current (face mass
+              coefficient 2 beta_f, beta_f the quadrature's half-range moment, against the
+              analytic 1/2) on thin boundary cells with the half-range transport form on
+              thick ones, uses beta_f as the floor of the interior penalty, and is faster
+              than ``marshak`` when boundary cells are many mean free paths thick;
+              ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
               (interior-penalty term). Reflecting boundaries are zero-current.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset.
@@ -1758,9 +1762,9 @@ WrapLBS(py::module& slv)
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
               Penalty length of the WGDSA MIP operator. ``face_side`` uses the face-dependent
-              orthogonal length (3V/A_f tet, V/A_f hex) capped by twice the smallest height
-              of the face's PWLD side simplices, with an extra factor 2 on polygons and
-              polyhedra; it keeps the operator positive definite on strongly distorted
+              orthogonal length (3V/A_f tet, V/A_f hex) capped by four times the smallest
+              height of the face's PWLD side simplices, with an extra factor 2 on
+              polygons and polyhedra; it keeps the operator positive definite on strongly distorted
               cells. ``cell`` (OpenSn's original) uses the cell-wide lengths 3V/S (tet) and
               V/S (hex) with the extra factor 2 on polyhedra, a larger penalty that slows DSA
               on cells a few mean free paths thick.

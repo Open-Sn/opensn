@@ -1284,9 +1284,9 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
                                 "h_perp_convention '" +
                                 options.h_perp_convention + "' (expected 'cell' or 'face_side')");
 
-  // "face_side": the face-dependent orthogonal length (3V/A_f tet, V/A_f hex, ...), capped by twice
-  // the smallest height of the face's PWLD side simplices so that faces with a skinny side simplex
-  // get the penalty their trace inequality requires.
+  // "face_side": the face-dependent orthogonal length (3V/A_f tet, V/A_f hex, ...), capped by
+  // 2 FaceSideLength, four times the smallest height of the face's PWLD side simplices, so that
+  // faces with a skinny side simplex get the penalty their trace inequality requires.
   if (options.h_perp_convention == "face_side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
     return std::min(FaceOrthogonalLength(cell, f), 2.0 * FaceSideLength(*grid_, cell, f));

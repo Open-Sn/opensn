@@ -20,9 +20,10 @@ class CellMapping;
  *   b_\theta(\delta, v) = \beta_f (1 + \theta_f) \int_f \delta v
  *     - \frac{1 - \theta_f}{2} \int_f D (\partial_n \delta\, v + \partial_n v\, \delta),
  * \f]
- * which is the natural Marshak condition (coefficient \f$2\beta_f \approx 1/2\f$, no gradient
- * terms) for \f$\theta_f = 1\f$ and the half-range transport moment (coefficient \f$\beta_f\f$,
- * half-strength gradient terms) for \f$\theta_f = 0\f$. The blend is
+ * which for \f$\theta_f = 1\f$ is the Marshak condition with the quadrature's half-range moment
+ * (coefficient \f$2\beta_f\f$, no gradient terms; equal to the Marshak coefficient 1/2 only when
+ * \f$\beta_f = 1/4\f$) and for \f$\theta_f = 0\f$ the half-range transport moment (coefficient
+ * \f$\beta_f\f$, half-strength gradient terms). The blend is
  * \f[
  *   \theta_f = \max\left(\min\left(1, (s_0 / \sigma_t h_f)^2\right), \theta_{coer}\right),
  *   \qquad \frac{(1 - \theta_{coer})^2}{1 + \theta_{coer}} =

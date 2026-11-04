@@ -395,9 +395,17 @@ two transport-consistent forms face by face,
    - \frac{1 - \theta_f}{2} \int_f D\,(\partial_n \delta\, v + \partial_n v\, \delta),
 
 with :math:`\beta_f = \tfrac12 \sum_d w_d |\Omega_d \cdot n_f| / \sum_d w_d` the half-range
-moment of the groupset's quadrature (about 1/4). On thin boundary cells
-(:math:`\theta_f = 1`) this is the Marshak form; on cells many mean free paths
-thick :math:`\theta_f \to 0` gives the half-range transport form, whose
+moment of the groupset's quadrature. On thin boundary cells
+(:math:`\theta_f = 1`) the face term is :math:`2\beta_f \int_f \delta\, v`, the
+Marshak condition written with the partial current of the groupset's quadrature
+(for an isotropic flux the discrete outgoing current is :math:`\beta_f\phi`,
+against :math:`\phi/4` with exact angular integration), so that it matches the
+leakage of the discrete sweep. It equals the analytic Marshak term
+:math:`\tfrac12 \int_f \delta\, v` only when :math:`\beta_f = 1/4`:
+:math:`\beta_f` is 0.253 to 0.261 for GLC product quadratures with four polar
+angles and :math:`1/(2\sqrt{3}) \approx 0.289` for an :math:`S_2` slab
+quadrature. On cells many mean free paths thick :math:`\theta_f \to 0` gives
+the half-range transport form, whose
 leakage coefficient matches the transport sweep. The blend is
 :math:`\theta_f = \max(\min(1, (s_0/\sigma_t h_f)^2), \theta_{coer})` with
 :math:`s_0 = 1.5`, :math:`h_f` the face-dependent orthogonal length and
@@ -412,20 +420,23 @@ diffusion operator (penalty ``penalty_factor`` :math:`D/h_\perp` per face,
 averaged over the two cells of an interior face). ``"face_side"`` (the default)
 uses the face-dependent orthogonal projection of Turcksin and Ragusa
 (:math:`3V/A_f` on tetrahedra, :math:`V/A_f` on hexahedra and quadrilaterals,
-:math:`2V/A_f` on triangles, :math:`2dV/S` on other cells), capped by twice the
-smallest height of the face's PWLD side simplices (the triangles or tetrahedra
-between the face, its centroid and the cell centroid), with an extra factor 2
-on interior and boundary faces. PWLD is linear on each side simplex, so the side
-height bounds the discrete trace inequality exactly. On cubes and tetrahedra
-the cap is inactive, and on a face with a skinny side simplex (slivers,
-near-degenerate quadrilaterals and hexahedra) it raises the penalty to what the
-trace inequality requires, which keeps the operator positive definite where the
-uncapped lengths make it indefinite and DSA diverge. ``"cell"`` (OpenSn's
-original treatment) uses the cell-wide lengths :math:`3V/S` (tetrahedra) and
-:math:`V/S` (hexahedra), :math:`S` the total surface of the cell, with the extra
-factor 2 on polyhedra, and the face-dependent polygon lengths without it; on a
-cube this is 12 times the ``"face_side"`` interior penalty, which slows DSA on
-cells a few mean free paths thick.
+:math:`2V/A_f` on triangles, :math:`2dV/S` on other cells), capped by four
+times the smallest height of the face's PWLD side simplices (the triangles or
+tetrahedra between the face, its centroid and the cell centroid), with an extra
+factor 2 on interior and boundary faces. PWLD is linear on each side simplex, so
+the side height bounds the discrete trace inequality exactly. The cap leaves the
+penalty unchanged on tetrahedra (where it equals the face length) and cubes
+(where it is twice the face length); on a face with a skinny side simplex
+(slivers, near-degenerate quadrilaterals and hexahedra) it raises the penalty to
+what the trace inequality requires, which keeps the operator positive definite
+where the uncapped lengths make it indefinite and DSA diverge. ``"cell"``
+(OpenSn's original treatment) uses the cell-wide lengths :math:`3V/S`
+(tetrahedra) and :math:`V/S` (hexahedra), :math:`S` the total surface of the
+cell, with the extra factor 2 on polyhedra, and the face-dependent polygon
+lengths without it. On a cube of side :math:`a` the two lengths are :math:`a/6`
+(``"cell"``) and :math:`a` (``"face_side"``) with the same factor 2, so when the
+penalty floor is inactive the ``"cell"`` penalty is six times the
+``"face_side"`` one, which slows DSA on cells a few mean free paths thick.
 ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``
