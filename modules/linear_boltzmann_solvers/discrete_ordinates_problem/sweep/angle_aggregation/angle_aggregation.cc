@@ -139,7 +139,7 @@ AngleAggregation::SetupAngleSetDependencies()
         if (it == dir_to_angleset_.end())
           continue;
         AngleSet* current = it->second;
-        if (prev && prev != current)
+        if (prev and prev != current)
           following_angle_sets_map_[prev].insert(current);
         prev = current;
       }
