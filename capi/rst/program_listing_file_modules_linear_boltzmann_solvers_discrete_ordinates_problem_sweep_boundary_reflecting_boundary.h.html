@@ -97,6 +97,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AngularQuadrature</span><span class="p">;</span>
 
 <span class="c1">/// Reflective boundary condition.</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ReflectingBoundary</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepBoundary</span>
@@ -110,6 +111,20 @@
 <span class="w">                     </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_type</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">CoordinateSystemType</span><span class="o">::</span><span class="n">CARTESIAN</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetNormal</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">normal_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Maps each direction of a quadrature to its mirror image across a reflecting boundary with</span>
+<span class="cm">   * outward normal `normal`. In 1D spherical geometry the mirror changes the sign of mu. In RZ</span>
+<span class="cm">   * geometry only the symmetry axis and constant-z planes have mirror directions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \throws std::invalid_argument for an RZ boundary that is neither the axis nor a constant-z</span>
+<span class="cm">   *         plane.</span>
+<span class="cm">   * \throws std::logic_error if a mirror direction is not in the quadrature, or if a direction and</span>
+<span class="cm">   *         its mirror have different weights, which would make the boundary non-conservative.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">MapReflectedDirections</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                                                           </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">normal</span><span class="p">,</span>
+<span class="w">                                                           </span><span class="n">CoordinateSystemType</span><span class="w"> </span><span class="n">coord_type</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">*</span><span class="w"> </span><span class="nf">GetNormalForReflection</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="o">&amp;</span><span class="n">normal_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -138,6 +153,8 @@
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">CountDelayedAngularDOFsNew</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">CountDelayedAngularDOFsOld</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetDelayedAngularSlots</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AppendNewDelayedAngularDOFsToVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                           </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
@@ -173,6 +190,9 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">GetReflectedMap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                       </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">reflected_maps</span><span class="p">)</span><span class="w"> </span><span class="k">override</span>
@@ -271,6 +291,15 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AppendDelayedAngularFields</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">old_store</span><span class="p">,</span><span class="w"> </span><span class="n">Fn</span><span class="w"> </span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds the nodal values to the new delayed values that start `offset` node-direction blocks into</span>
+<span class="cm">   * this groupset&#39;s boundary storage: the angular fluxes (0) or their CSDA energy slopes</span>
+<span class="cm">   * (slope_stride).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddToNewDelayedValues</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                             </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">,</span>
+<span class="w">                             </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">offset</span><span class="p">);</span>
+
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">epsilon_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-8</span><span class="p">;</span>
 <span class="p">};</span>
 

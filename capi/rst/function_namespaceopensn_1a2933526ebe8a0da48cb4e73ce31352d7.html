@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Function opensn::ComputePointwiseChange &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Function opensn::ComputePointwisePsiChange &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -26,8 +26,8 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, int, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)" href="function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e.html" />
-    <link rel="prev" title="Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&amp;, const std::vector&lt;uint64_t&gt;&amp;)" href="function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02.html" /> 
+    <link rel="next" title="Function opensn::ComputePrecursors" href="function_namespaceopensn_1af6184d19080033614eaed52625ebfdac.html" />
+    <link rel="prev" title="Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, std::vector&lt;int&gt;, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)" href="function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -123,10 +123,10 @@
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aaff48373fd5011d4e3dfcc0c1cbe4345.html">Function opensn::ComputeL2PhiChange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73.html">Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&amp;, unsigned int, uint64_t)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02.html">Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&amp;, const std::vector&lt;uint64_t&gt;&amp;)</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ComputePointwiseChange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e.html">Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, int, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366.html">Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687.html">Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, std::vector&lt;int&gt;, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">Function opensn::ComputePointwisePsiChange</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1af6184d19080033614eaed52625ebfdac.html">Function opensn::ComputePrecursors</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a18d2edd68d58fe789c571ebbc05f0fb4.html">Function opensn::ComputeUnitCellIntegrals</a></li>
 <li class="toctree-l4"><a class="reference internal" href="function_namespaceopensn_1a2385799c61ab105543d6b9154a007104.html">Function opensn::ConsolidateGridBlocks</a></li>
@@ -362,7 +362,7 @@
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
           <li class="breadcrumb-item"><a href="index.html">C++ API</a></li>
-      <li class="breadcrumb-item active">Function opensn::ComputePointwiseChange</li>
+      <li class="breadcrumb-item active">Function opensn::ComputePointwisePsiChange</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -371,17 +371,19 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="function-opensn-computepointwisechange">
-<span id="exhale-function-namespaceopensn-1add4c336d68f7f5557eb0b450629548c7"></span><h1>Function opensn::ComputePointwiseChange<a class="headerlink" href="#function-opensn-computepointwisechange" title="Link to this heading"></a></h1>
+  <section id="function-opensn-computepointwisepsichange">
+<span id="exhale-function-namespaceopensn-1a2933526ebe8a0da48cb4e73ce31352d7"></span><h1>Function opensn::ComputePointwisePsiChange<a class="headerlink" href="#function-opensn-computepointwisepsichange" title="Link to this heading"></a></h1>
 <ul class="simple">
-<li><p>Defined in <a class="reference internal" href="file_framework_math_math.h.html#file-framework-math-math-h"><span class="std std-ref">File math.h</span></a></p></li>
+<li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_convergence.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-iterative-methods-convergence-h"><span class="std std-ref">File convergence.h</span></a></p></li>
 </ul>
 <section id="function-documentation">
 <h2>Function Documentation<a class="headerlink" href="#function-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn22ComputePointwiseChangeERKNSt6vectorIdEERKNSt6vectorIdEE">
-<span class="target" id="namespaceopensn_1add4c336d68f7f5557eb0b450629548c7"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ComputePointwiseChange</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">x</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">y</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn22ComputePointwiseChangeERKNSt6vectorIdEERKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn25ComputePointwisePsiChangeER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEERKNSt6vectorIdEE">
+<span class="target" id="namespaceopensn_1a2933526ebe8a0da48cb4e73ce31352d7"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">ComputePointwisePsiChange</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem.html#_CPPv4N6opensn24DiscreteOrdinatesProblemE" title="opensn::DiscreteOrdinatesProblem"><span class="n"><span class="pre">DiscreteOrdinatesProblem</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">do_problem</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_l_b_s_groupset.html#_CPPv4N6opensn11LBSGroupsetE" title="opensn::LBSGroupset"><span class="n"><span class="pre">LBSGroupset</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">groupset</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi_new</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi_old</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn25ComputePointwisePsiChangeER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEERKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Maximum pointwise relative change between the new and old delayed angular unknowns of a groupset (the lagged incoming angular fluxes of opposing reflecting boundaries and broken cyclic dependencies, and their CSDA energy slopes), laid out as <a class="reference internal" href="classopensn_1_1_angle_aggregation.html#classopensn_1_1_angle_aggregation_1a26a39313d7cb22ad8538a067a926506c"><span class="std std-ref">AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector()</span></a> returns them, reduced over all ranks. </p>
+<p>Each entry’s change is relative to the larger of its own magnitude and the magnitude of the new or old scalar flux at the face node of the cell that reads it, for its group. An entry whose scale is below the smallest normal double contributes its absolute change. Collective. </p>
+</dd></dl>
 
 </section>
 </section>
@@ -390,8 +392,8 @@
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02.html" class="btn btn-neutral float-left" title="Function opensn::ComputeLeakage(DiscreteOrdinatesProblem&amp;, const std::vector&lt;uint64_t&gt;&amp;)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e.html" class="btn btn-neutral float-right" title="Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, int, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687.html" class="btn btn-neutral float-left" title="Function opensn::ComputePointwisePhiChange(LBSProblem&amp;, std::vector&lt;int&gt;, std::optional&lt;const std::reference_wrapper&lt;std::vector&lt;double&gt;&gt;&gt;)" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="function_namespaceopensn_1af6184d19080033614eaed52625ebfdac.html" class="btn btn-neutral float-right" title="Function opensn::ComputePrecursors" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

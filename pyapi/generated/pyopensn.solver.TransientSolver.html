@@ -203,6 +203,16 @@ again clears the previous initialized state first.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.TransientSolver.IsConverged">
+<span class="sig-name descname"><span class="pre">IsConverged</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.TransientSolver" title="pyopensn.solver.TransientSolver"><span class="pre">pyopensn.solver.TransientSolver</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#pyopensn.solver.TransientSolver.IsConverged" title="Link to this definition"></a></dt>
+<dd><p>Return True if the transport solve of every time step since <a class="reference internal" href="#pyopensn.solver.TransientSolver.Initialize" title="pyopensn.solver.TransientSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a> converged.</p>
+<p>A time step whose solve reaches its iteration limit, fails, or applies no convergence test
+(a single sweep, <code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code> with <code class="docutils literal notranslate"><span class="pre">l_max_its</span> <span class="pre">=</span> <span class="pre">1</span></code>) makes this False until the
+next <a class="reference internal" href="#pyopensn.solver.TransientSolver.Initialize" title="pyopensn.solver.TransientSolver.Initialize"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Initialize()</span></code></a>, so checking it after each <a class="reference internal" href="#pyopensn.solver.TransientSolver.Advance" title="pyopensn.solver.TransientSolver.Advance"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Advance()</span></code></a> identifies the first
+such step. Returns False before the first time step.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.TransientSolver.SetPostAdvanceCallback">
 <span class="sig-name descname"><span class="pre">SetPostAdvanceCallback</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#pyopensn.solver.TransientSolver.SetPostAdvanceCallback" title="Link to this definition"></a></dt>
 <dd><p>Overloaded function.</p>

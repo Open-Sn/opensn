@@ -280,6 +280,9 @@ additional name for the imported charge response.</p>
 <li><p>It is not supported with a precomputed uncollided flux.</p></li>
 <li><p>It is not supported with GPU sweeps.</p></li>
 <li><p>It is not supported with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;CBC&quot;</span></code>.</p></li>
+<li><p>It is not supported with within-group or two-grid DSA (<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or
+<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> in any groupset). Their diffusion operators omit the CSDA
+slowing-down term.</p></li>
 <li><p>It is not supported by
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p></li>
 <li><p>Each contiguous charged-particle group range, identified by nonzero stopping

@@ -88,6 +88,11 @@ is estimated as
 
 OpenSn's classic Richardson solver and pointwise AGS convergence check use
 ratios of successive maximum pointwise relative changes for this estimate.
+The change of each flux moment is relative to the larger of its own magnitude
+and the scalar flux at the same node and group. A higher moment that is
+negligible next to the scalar flux, such as an anisotropic moment of an
+isotropic solution, holds only round-off; relative to its own magnitude, its
+change would not settle until the iterate is stationary to machine precision.
 These changes are not squared, so no square root is taken. The estimate is
 zero on the first iteration and is otherwise the larger of the last two
 ratios, so that one unusually small ratio of an irregularly converging
@@ -97,6 +102,25 @@ expected from the previous one, :math:`\varrho` times the previous change.
 No fixed floor is applied to the tolerance; only changes below the round-off
 level of a relative change (:math:`100\,\epsilon_{\text{machine}}`) pass
 regardless of :math:`\varrho`.
+
+The default ``l2`` AGS check estimates :math:`\varrho` from ratios of the
+L2 norm of the change of all flux moments and stops when that norm is below
+:math:`(1-\varrho)\,` ``tol``. The norm is not divided by
+:math:`\|\Phi^{(i+1)}\|`, so its round-off level is
+:math:`100\,\epsilon_{\text{machine}}\,\|\Phi^{(i+1)}\|`.
+
+Classic Richardson also requires the lagged angular fluxes to settle: the
+incoming angular fluxes of opposing reflecting boundaries and of broken sweep
+cycles, and in CSDA problems their energy slopes. Their maximum pointwise change
+must be below the larger of ``tol`` and the round-off level; it is not scaled by
+:math:`1-\varrho`. The change of each lagged value is relative to the larger of
+its own magnitude and the scalar flux of its group at the face node of the cell
+that reads it, which is the isotropic angular flux there because the quadrature
+weights sum to one. A lagged flux of a direction that carries little of the local
+flux, such as a backward direction of strongly forward-peaked scattering, is
+perturbed by round-off relative to the local flux in every sweep; relative to its
+own magnitude, its change can stay above the tolerance however long the
+iteration runs.
 
 Power iteration applies the same idea to the eigenvalue: the relative change
 of :math:`k` must be below :math:`(1-\varrho)\,` ``k_tol`` in two consecutive

@@ -107,6 +107,9 @@
 <span class="w">  </span><span class="c1">/// Return the current k-eigenvalue</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetEigenvalue</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="c1">/// Return true if the nonlinear solve of the last Execute() converged.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsConverged</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">converged_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
 <span class="w">  </span><span class="n">BalanceTable</span><span class="w"> </span><span class="nf">ComputeBalanceTable</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
@@ -120,6 +123,7 @@
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">reset_phi0_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_initial_power_its_</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">converged_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>

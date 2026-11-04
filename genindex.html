@@ -848,9 +848,11 @@
 </li>
       <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetNumSkippedCorrections">GetNumSkippedCorrections() (pyopensn.solver.CMFDAcceleration method)</a>
 </li>
-      <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.GetNumSweeps">GetNumSweeps() (pyopensn.solver.PowerIterationKEigenSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver.GetNumSweeps">GetNumSweeps() (pyopensn.solver.NonLinearKEigenSolver method)</a>
 
       <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.GetNumSweeps">(pyopensn.solver.PowerIterationKEigenSolver method)</a>
+</li>
         <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.GetNumSweeps">(pyopensn.solver.SteadyStateSourceSolver method)</a>
 </li>
       </ul></li>
@@ -1136,8 +1138,16 @@
         <li><a href="pyapi/generated/pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem.IsAdjoint">(pyopensn.solver.UncollidedProblem method)</a>
 </li>
       </ul></li>
-      <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.IsConverged">IsConverged() (pyopensn.solver.PowerIterationKEigenSolver method)</a>
+      <li><a href="pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver.IsConverged">IsConverged() (pyopensn.solver.NonLinearKEigenSolver method)</a>
+
+      <ul>
+        <li><a href="pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver.IsConverged">(pyopensn.solver.PowerIterationKEigenSolver method)</a>
 </li>
+        <li><a href="pyapi/generated/pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver.IsConverged">(pyopensn.solver.SteadyStateSourceSolver method)</a>
+</li>
+        <li><a href="pyapi/generated/pyopensn.solver.TransientSolver.html#pyopensn.solver.TransientSolver.IsConverged">(pyopensn.solver.TransientSolver method)</a>
+</li>
+      </ul></li>
       <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.IsTimeDependent">IsTimeDependent() (pyopensn.solver.DiscreteOrdinatesCurvilinearProblem method)</a>
 
       <ul>
@@ -1315,6 +1325,8 @@
       <li><a href="capi/rst/classopensn_1_1_a_a_h___f_l_u_d_s.html#_CPPv4N6opensn9AAH_FLUDS9AAH_FLUDSEj6size_tRK19AAH_FLUDSCommonDatab">opensn::AAH_FLUDS::AAH_FLUDS (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_a_a_h___f_l_u_d_s.html#_CPPv4N6opensn9AAH_FLUDS26AddToNewDelayedAngularFluxERK21DelayedFluxCorrection">opensn::AAH_FLUDS::AddToNewDelayedAngularFlux (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_a_a_h___f_l_u_d_s.html#_CPPv4N6opensn9AAH_FLUDS27AddToNewDelayedAngularSlopeERK21DelayedFluxCorrection">opensn::AAH_FLUDS::AddToNewDelayedAngularSlope (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_a_a_h___f_l_u_d_s.html#_CPPv4N6opensn9AAH_FLUDS23AllocateDelayedLocalPsiEv">opensn::AAH_FLUDS::AllocateDelayedLocalPsi (C++ function)</a>
 </li>
@@ -2062,6 +2074,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregation19GetCoordinateSystemEv">opensn::AngleAggregation::GetCoordinateSystem (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregation37GetDelayedAngularDOFLayoutFingerprintEv">opensn::AngleAggregation::GetDelayedAngularDOFLayoutFingerprint (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregation24GetFollowingAngleSetsMapEv">opensn::AngleAggregation::GetFollowingAngleSetsMap (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregation13GetGroupsetIDEv">opensn::AngleAggregation::GetGroupsetID (C++ function)</a>
@@ -2079,6 +2093,8 @@
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregation16GetSimBoundariesEv">opensn::AngleAggregation::GetSimBoundaries (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregation8iteratorE">opensn::AngleAggregation::iterator (C++ type)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregation34MapNodalValuesToDelayedAngularDOFsERKN5FLUDS21DelayedFluxCorrectionE">opensn::AngleAggregation::MapNodalValuesToDelayedAngularDOFs (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_angle_aggregation.html#_CPPv4NK6opensn16AngleAggregationixENSt6size_tE">opensn::AngleAggregation::operator[] (C++ function)</a>
 </li>
@@ -3486,9 +3502,9 @@
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a95a52d7647aca8c9c10bdeb47a313a02.html#_CPPv4N6opensn14ComputeLeakageER24DiscreteOrdinatesProblemRKNSt6vectorI8uint64_tEE">opensn::ComputeLeakage (C++ function)</a>, <a href="capi/rst/function_namespaceopensn_1ad002bcc4c1dcc2738c4d0fd368900b73.html#_CPPv4N6opensn14ComputeLeakageER24DiscreteOrdinatesProblemj8uint64_t">[1]</a>
 </li>
-      <li><a href="capi/rst/function_namespaceopensn_1add4c336d68f7f5557eb0b450629548c7.html#_CPPv4N6opensn22ComputePointwiseChangeERKNSt6vectorIdEERKNSt6vectorIdEE">opensn::ComputePointwiseChange (C++ function)</a>
-</li>
       <li><a href="capi/rst/function_namespaceopensn_1a51176969ce3442bc4c9492a34225d366.html#_CPPv4N6opensn25ComputePointwisePhiChangeER10LBSProblemNSt8optionalIKNSt17reference_wrapperINSt6vectorIdEEEEEE">opensn::ComputePointwisePhiChange (C++ function)</a>, <a href="capi/rst/function_namespaceopensn_1a5fa684488ae4b880d74974a25dbc7f8e.html#_CPPv4N6opensn25ComputePointwisePhiChangeER10LBSProblemiNSt8optionalIKNSt17reference_wrapperINSt6vectorIdEEEEEE">[1]</a>, <a href="capi/rst/function_namespaceopensn_1aeb1c59f2a4920332ef1b60133ec0f687.html#_CPPv4N6opensn25ComputePointwisePhiChangeER10LBSProblemNSt6vectorIiEENSt8optionalIKNSt17reference_wrapperINSt6vectorIdEEEEEE">[2]</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a2933526ebe8a0da48cb4e73ce31352d7.html#_CPPv4N6opensn25ComputePointwisePsiChangeER24DiscreteOrdinatesProblemRK11LBSGroupsetRKNSt6vectorIdEERKNSt6vectorIdEE">opensn::ComputePointwisePsiChange (C++ function)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1af6184d19080033614eaed52625ebfdac.html#_CPPv4N6opensn17ComputePrecursorsER10LBSProblem">opensn::ComputePrecursors (C++ function)</a>
 </li>
@@ -3498,13 +3514,13 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4N6opensn24ConvergenceRateEstimatorE">opensn::ConvergenceRateEstimator (C++ class)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4NK6opensn24ConvergenceRateEstimator9ConvergedEd">opensn::ConvergenceRateEstimator::Converged (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4NK6opensn24ConvergenceRateEstimator9ConvergedEdd">opensn::ConvergenceRateEstimator::Converged (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4NK6opensn24ConvergenceRateEstimator7GetRateEv">opensn::ConvergenceRateEstimator::GetRate (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4N6opensn24ConvergenceRateEstimator23kRoundoffRelativeChangeE">opensn::ConvergenceRateEstimator::kRoundoffRelativeChange (C++ member)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4NK6opensn24ConvergenceRateEstimator6PassesEdd">opensn::ConvergenceRateEstimator::Passes (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4NK6opensn24ConvergenceRateEstimator6PassesEddd">opensn::ConvergenceRateEstimator::Passes (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_convergence_rate_estimator.html#_CPPv4N6opensn24ConvergenceRateEstimator6UpdateEd">opensn::ConvergenceRateEstimator::Update (C++ function)</a>
 </li>
@@ -4230,11 +4246,15 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver17CheckRequirementsERNSt6vectorINSt6stringEEE">opensn::DiscreteOrdinatesSolver::CheckRequirements (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver28CheckTransportSolveConvergedERKNSt6stringE">opensn::DiscreteOrdinatesSolver::CheckTransportSolveConverged (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4N6opensn23DiscreteOrdinatesSolver23DiscreteOrdinatesSolverERK15InputParameters">opensn::DiscreteOrdinatesSolver::DiscreteOrdinatesSolver (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4N6opensn23DiscreteOrdinatesSolver11do_problem_E">opensn::DiscreteOrdinatesSolver::do_problem_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4N6opensn23DiscreteOrdinatesSolver18GetInputParametersEv">opensn::DiscreteOrdinatesSolver::GetInputParameters (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver12GetNumSweepsEv">opensn::DiscreteOrdinatesSolver::GetNumSweeps (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver26RequireFissionableMaterialERNSt6vectorINSt6stringEEE">opensn::DiscreteOrdinatesSolver::RequireFissionableMaterial (C++ function)</a>
 </li>
@@ -4243,8 +4263,6 @@
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver18RequireSteadyStateERNSt6vectorINSt6stringEEE">opensn::DiscreteOrdinatesSolver::RequireSteadyState (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver13ValidateStateEv">opensn::DiscreteOrdinatesSolver::ValidateState (C++ function)</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_solver.html#_CPPv4NK6opensn23DiscreteOrdinatesSolver32WarnIfTransportSolveNotConvergedERKNSt6stringE">opensn::DiscreteOrdinatesSolver::WarnIfTransportSolveNotConverged (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_distributed_mesh_generator.html#_CPPv4N6opensn24DistributedMeshGeneratorE">opensn::DistributedMeshGenerator (C++ class)</a>
 </li>
@@ -4663,6 +4681,8 @@
       <li><a href="capi/rst/classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE">opensn::FLUDS (C++ class)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDS26AddToNewDelayedAngularFluxERK21DelayedFluxCorrection">opensn::FLUDS::AddToNewDelayedAngularFlux (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDS27AddToNewDelayedAngularSlopeERK21DelayedFluxCorrection">opensn::FLUDS::AddToNewDelayedAngularSlope (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDS23AllocateDelayedLocalPsiEv">opensn::FLUDS::AllocateDelayedLocalPsi (C++ function)</a>
 </li>
@@ -5778,10 +5798,10 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions14writes_enabledE">opensn::LBSRestartOptions::writes_enabled (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_solver_i_o.html#_CPPv4N6opensn11LBSSolverIOE">opensn::LBSSolverIO (C++ class)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_solver_i_o.html#_CPPv4N6opensn11LBSSolverIO13FileMeshNodesE">opensn::LBSSolverIO::FileMeshNodes (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_l_b_s_solver_i_o_1_1_file_mesh_nodes.html#_CPPv4N6opensn11LBSSolverIO13FileMeshNodesE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_solver_i_o.html#_CPPv4N6opensn11LBSSolverIO13FileMeshNodes8cell_idsE">opensn::LBSSolverIO::FileMeshNodes::cell_ids (C++ member)</a>, <a href="capi/rst/structopensn_1_1_l_b_s_solver_i_o_1_1_file_mesh_nodes.html#_CPPv4N6opensn11LBSSolverIO13FileMeshNodes8cell_idsE">[1]</a>
@@ -6605,6 +6625,8 @@
       <li><a href="capi/rst/classopensn_1_1_non_linear_k_eigen_solver.html#_CPPv4N6opensn21NonLinearKEigenSolver18GetInputParametersEv">opensn::NonLinearKEigenSolver::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_non_linear_k_eigen_solver.html#_CPPv4N6opensn21NonLinearKEigenSolver16InitializeSolverEv">opensn::NonLinearKEigenSolver::InitializeSolver (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_non_linear_k_eigen_solver.html#_CPPv4NK6opensn21NonLinearKEigenSolver11IsConvergedEv">opensn::NonLinearKEigenSolver::IsConverged (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_non_linear_k_eigen_solver.html#_CPPv4N6opensn21NonLinearKEigenSolver21NonLinearKEigenSolverERK15InputParameters">opensn::NonLinearKEigenSolver::NonLinearKEigenSolver (C++ function)</a>
 </li>
@@ -7498,8 +7520,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4NK6opensn26PowerIterationKEigenSolver21GetNumPowerIterationsEv">opensn::PowerIterationKEigenSolver::GetNumPowerIterations (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4NK6opensn26PowerIterationKEigenSolver12GetNumSweepsEv">opensn::PowerIterationKEigenSolver::GetNumSweeps (C++ function)</a>
-</li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver10groupsets_E">opensn::PowerIterationKEigenSolver::groupsets_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_power_iteration_k_eigen_solver.html#_CPPv4N6opensn26PowerIterationKEigenSolver16InitializeSolverEv">opensn::PowerIterationKEigenSolver::InitializeSolver (C++ function)</a>
@@ -7772,6 +7792,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary26AddToNewDelayedAngularFluxEiRK21DelayedFluxCorrection">opensn::ReflectingBoundary::AddToNewDelayedAngularFlux (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary27AddToNewDelayedAngularSlopeEiRK21DelayedFluxCorrection">opensn::ReflectingBoundary::AddToNewDelayedAngularSlope (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4NK6opensn18ReflectingBoundary34AppendNewDelayedAngularDOFsToArrayEiR7int64_tPd">opensn::ReflectingBoundary::AppendNewDelayedAngularDOFsToArray (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4NK6opensn18ReflectingBoundary35AppendNewDelayedAngularDOFsToVectorEiRNSt6vectorIdEE">opensn::ReflectingBoundary::AppendNewDelayedAngularDOFsToVector (C++ function)</a>
@@ -7806,6 +7828,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary18facenode_to_index_E">opensn::ReflectingBoundary::facenode_to_index_ (C++ member)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4NK6opensn18ReflectingBoundary22GetDelayedAngularSlotsEi">opensn::ReflectingBoundary::GetDelayedAngularSlots (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary21GetFollowingAngleSetsEiRNSt3setIP8AngleSetEERK16AngleAggregationRK8AngleSet">opensn::ReflectingBoundary::GetFollowingAngleSets (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4NK6opensn18ReflectingBoundary9GetNormalEv">opensn::ReflectingBoundary::GetNormal (C++ function)</a>
@@ -7821,6 +7845,8 @@
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary24InitializeAngleDependentERKNSt6vectorI11LBSGroupsetEE">opensn::ReflectingBoundary::InitializeAngleDependent (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary23InitializeReflectingMapERKNSt6vectorI11LBSGroupsetEE">opensn::ReflectingBoundary::InitializeReflectingMap (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary22MapReflectedDirectionsERK17AngularQuadratureRK7Vector320CoordinateSystemType">opensn::ReflectingBoundary::MapReflectedDirections (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_reflecting_boundary.html#_CPPv4N6opensn18ReflectingBoundary7normal_E">opensn::ReflectingBoundary::normal_ (C++ member)</a>
 </li>
@@ -8730,9 +8756,9 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver18GetInputParametersEv">opensn::SteadyStateSourceSolver::GetInputParameters (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4NK6opensn23SteadyStateSourceSolver12GetNumSweepsEv">opensn::SteadyStateSourceSolver::GetNumSweeps (C++ function)</a>
-</li>
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver16InitializeSolverEv">opensn::SteadyStateSourceSolver::InitializeSolver (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4NK6opensn23SteadyStateSourceSolver11IsConvergedEv">opensn::SteadyStateSourceSolver::IsConverged (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_steady_state_source_solver.html#_CPPv4N6opensn23SteadyStateSourceSolver23SteadyStateSourceSolverERK15InputParameters">opensn::SteadyStateSourceSolver::SteadyStateSourceSolver (C++ function)</a>
 </li>
@@ -8910,6 +8936,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundary26AddToNewDelayedAngularFluxEiRK21DelayedFluxCorrection">opensn::SweepBoundary::AddToNewDelayedAngularFlux (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundary27AddToNewDelayedAngularSlopeEiRK21DelayedFluxCorrection">opensn::SweepBoundary::AddToNewDelayedAngularSlope (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4NK6opensn13SweepBoundary34AppendNewDelayedAngularDOFsToArrayEiR7int64_tPd">opensn::SweepBoundary::AppendNewDelayedAngularDOFsToArray (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4NK6opensn13SweepBoundary35AppendNewDelayedAngularDOFsToVectorEiRNSt6vectorIdEE">opensn::SweepBoundary::AppendNewDelayedAngularDOFsToVector (C++ function)</a>
@@ -8937,6 +8965,8 @@
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundary16evaluation_time_E">opensn::SweepBoundary::evaluation_time_ (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4N6opensn13SweepBoundary15GetBoundaryFluxEiNSt8uint64_tE">opensn::SweepBoundary::GetBoundaryFlux (C++ function)</a>, <a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4NK6opensn13SweepBoundary15GetBoundaryFluxEiNSt8uint64_tE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4NK6opensn13SweepBoundary22GetDelayedAngularSlotsEi">opensn::SweepBoundary::GetDelayedAngularSlots (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_sweep_boundary.html#_CPPv4NK6opensn13SweepBoundary17GetEvaluationTimeEv">opensn::SweepBoundary::GetEvaluationTime (C++ function)</a>
 </li>
@@ -9227,6 +9257,8 @@
       <li><a href="capi/rst/classopensn_1_1_transient_solver.html#_CPPv4NK6opensn15TransientSolver7GetStepEv">opensn::TransientSolver::GetStep (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_transient_solver.html#_CPPv4N6opensn15TransientSolver16InitializeSolverEv">opensn::TransientSolver::InitializeSolver (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_transient_solver.html#_CPPv4NK6opensn15TransientSolver11IsConvergedEv">opensn::TransientSolver::IsConverged (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_transient_solver.html#_CPPv4N6opensn15TransientSolver22SetPostAdvanceCallbackENSt8functionIFvvEEE">opensn::TransientSolver::SetPostAdvanceCallback (C++ function)</a>, <a href="capi/rst/classopensn_1_1_transient_solver.html#_CPPv4N6opensn15TransientSolver22SetPostAdvanceCallbackENSt9nullptr_tE">[1]</a>
 </li>

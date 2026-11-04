@@ -230,6 +230,17 @@
 <span class="w">  </span><span class="c1">/// Gets the current values of the angular unknowns as an STL vector.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOldDelayedAngularDOFsFromSTLVector</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">stl_vector</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns a 64-bit fingerprint of the rank-local layout of the delayed angular unknowns, the</span>
+<span class="cm">   * order of the values that GetOldDelayedAngularDOFsAsSTLVector returns. It covers the local</span>
+<span class="cm">   * cells in order, each boundary&#39;s delayed unknown count and direction-to-slot map, and for each</span>
+<span class="cm">   * angle set that has delayed unknowns its directions, group count, local feedback arc set,</span>
+<span class="cm">   * delayed location dependencies and delayed buffer sizes.</span>
+<span class="cm">   * Two aggregations with equal fingerprints store their delayed unknowns in the same order. The</span>
+<span class="cm">   * value is the same on every platform and build (FNV-1a over 64-bit integers).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetDelayedAngularDOFLayoutFingerprint</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Copies the old delayed angular fluxes to the new.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedPsiOld2New</span><span class="p">();</span>
 
@@ -242,6 +253,14 @@
 <span class="cm">   * within and between locations.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FLUDS</span><span class="o">::</span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns a vector laid out like GetNewDelayedAngularDOFsAsSTLVector() that holds, for every</span>
+<span class="cm">   * delayed angular flux and CSDA energy slope, the nodal value at the face node of the cell that</span>
+<span class="cm">   * reads it, for its group. Not collective. The delayed angular fluxes are unchanged on return.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">MapNodalValuesToDelayedAngularDOFs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FLUDS</span><span class="o">::</span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">nodal_value</span><span class="p">);</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id_</span><span class="p">;</span>

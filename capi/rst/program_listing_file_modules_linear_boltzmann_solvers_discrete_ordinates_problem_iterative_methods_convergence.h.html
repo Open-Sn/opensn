@@ -99,7 +99,15 @@
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">LBSProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Maximum pointwise relative change between the new and old flux moments of the given groupsets</span>
+<span class="cm"> * (all groupsets when none are given), over all local nodes, groups, and moments, reduced over all</span>
+<span class="cm"> * ranks. Each moment&#39;s change is relative to the larger of its own magnitude and the magnitude of</span>
+<span class="cm"> * the scalar flux at the same node and group. An entry whose scale is below the smallest normal</span>
+<span class="cm"> * double contributes its absolute change. Collective.</span>
+<span class="cm"> */</span>
 <span class="kt">double</span><span class="w"> </span><span class="nf">ComputePointwisePhiChange</span><span class="p">(</span>
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
@@ -113,6 +121,20 @@
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groupset_ids</span><span class="p">,</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">reference_wrapper</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span><span class="w"> </span><span class="n">opt_phi_old</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">nullopt</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Maximum pointwise relative change between the new and old delayed angular unknowns of a groupset</span>
+<span class="cm"> * (the lagged incoming angular fluxes of opposing reflecting boundaries and broken cyclic</span>
+<span class="cm"> * dependencies, and their CSDA energy slopes), laid out as</span>
+<span class="cm"> * AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector() returns them, reduced over all ranks.</span>
+<span class="cm"> * Each entry&#39;s change is relative to the larger of its own magnitude and the magnitude of the new</span>
+<span class="cm"> * or old scalar flux at the face node of the cell that reads it, for its group. An entry whose</span>
+<span class="cm"> * scale is below the smallest normal double contributes its absolute change. Collective.</span>
+<span class="cm"> */</span>
+<span class="kt">double</span><span class="w"> </span><span class="nf">ComputePointwisePsiChange</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">psi_new</span><span class="p">,</span>
+<span class="w">                                 </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">psi_old</span><span class="p">);</span>
 
 <span class="kt">double</span><span class="w"> </span><span class="nf">ComputeL2PhiChange</span><span class="p">(</span>
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
@@ -144,14 +166,19 @@
 <span class="w">  </span><span class="c1">/// Rate estimate after the last Update().</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetRate</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">rate_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Whether `change` passes `tolerance` at the current rate estimate.</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Passes</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Whether `change` passes `tolerance` at the current rate estimate. A change below</span>
+<span class="cm">   * `roundoff_change`, the round-off level of the measured change, passes regardless; the default</span>
+<span class="cm">   * suits relative changes, and a caller measuring an absolute change passes its own level.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span>
+<span class="w">  </span><span class="nf">Passes</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">change</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">roundoff_change</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kRoundoffRelativeChange</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Whether the iteration has converged to `tolerance`: the larger of the latest change and the</span>
-<span class="cm">   * change expected from the previous one passes it.</span>
+<span class="cm">   * change expected from the previous one passes it, with `roundoff_change` as in Passes().</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Converged</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Converged</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">roundoff_change</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">kRoundoffRelativeChange</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_changes_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>

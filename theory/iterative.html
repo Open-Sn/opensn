@@ -198,6 +198,11 @@ is estimated as</p>
 \[\varrho = \frac{\| \Phi^{(i+1)} - \Phi^{(i)} \|}{\| \Phi^{(i)} - \Phi^{(i-1)} \|} \,.\]</div>
 <p>OpenSn’s classic Richardson solver and pointwise AGS convergence check use
 ratios of successive maximum pointwise relative changes for this estimate.
+The change of each flux moment is relative to the larger of its own magnitude
+and the scalar flux at the same node and group. A higher moment that is
+negligible next to the scalar flux, such as an anisotropic moment of an
+isotropic solution, holds only round-off; relative to its own magnitude, its
+change would not settle until the iterate is stationary to machine precision.
 These changes are not squared, so no square root is taken. The estimate is
 zero on the first iteration and is otherwise the larger of the last two
 ratios, so that one unusually small ratio of an irregularly converging
@@ -207,6 +212,23 @@ expected from the previous one, <span class="math notranslate nohighlight">\(\va
 No fixed floor is applied to the tolerance; only changes below the round-off
 level of a relative change (<span class="math notranslate nohighlight">\(100\,\epsilon_{\text{machine}}\)</span>) pass
 regardless of <span class="math notranslate nohighlight">\(\varrho\)</span>.</p>
+<p>The default <code class="docutils literal notranslate"><span class="pre">l2</span></code> AGS check estimates <span class="math notranslate nohighlight">\(\varrho\)</span> from ratios of the
+L2 norm of the change of all flux moments and stops when that norm is below
+<span class="math notranslate nohighlight">\((1-\varrho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">tol</span></code>. The norm is not divided by
+<span class="math notranslate nohighlight">\(\|\Phi^{(i+1)}\|\)</span>, so its round-off level is
+<span class="math notranslate nohighlight">\(100\,\epsilon_{\text{machine}}\,\|\Phi^{(i+1)}\|\)</span>.</p>
+<p>Classic Richardson also requires the lagged angular fluxes to settle: the
+incoming angular fluxes of opposing reflecting boundaries and of broken sweep
+cycles, and in CSDA problems their energy slopes. Their maximum pointwise change
+must be below the larger of <code class="docutils literal notranslate"><span class="pre">tol</span></code> and the round-off level; it is not scaled by
+<span class="math notranslate nohighlight">\(1-\varrho\)</span>. The change of each lagged value is relative to the larger of
+its own magnitude and the scalar flux of its group at the face node of the cell
+that reads it, which is the isotropic angular flux there because the quadrature
+weights sum to one. A lagged flux of a direction that carries little of the local
+flux, such as a backward direction of strongly forward-peaked scattering, is
+perturbed by round-off relative to the local flux in every sweep; relative to its
+own magnitude, its change can stay above the tolerance however long the
+iteration runs.</p>
 <p>Power iteration applies the same idea to the eigenvalue: the relative change
 of <span class="math notranslate nohighlight">\(k\)</span> must be below <span class="math notranslate nohighlight">\((1-\varrho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">k_tol</span></code> in two consecutive
 iterations, with <span class="math notranslate nohighlight">\(\varrho\)</span> estimated from the change of the flux

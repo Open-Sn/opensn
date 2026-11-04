@@ -162,51 +162,57 @@
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">CountDelayedAngularDOFsOld</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AppendNewDelayedAngularDOFsToVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns, for each direction of the groupset quadrature, the slot that holds its delayed</span>
+<span class="cm">   * angular flux in this boundary. Empty for a boundary without delayed angular unknowns.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetDelayedAngularSlots</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="p">{};</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">AppendNewDelayedAngularDOFsToVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                                   </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AppendOldDelayedAngularDOFsToVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">AppendOldDelayedAngularDOFsToVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                                   </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">output</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span>
-<span class="w">  </span><span class="nf">AppendNewDelayedAngularDOFsToArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">AppendNewDelayedAngularDOFsToArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span>
-<span class="w">  </span><span class="nf">AppendOldDelayedAngularDOFsToArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="n">AppendOldDelayedAngularDOFsToArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span>
-<span class="w">  </span><span class="nf">SetNewDelayedAngularDOFsFromArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span>
+<span class="w">  </span><span class="n">SetNewDelayedAngularDOFsFromArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span>
-<span class="w">  </span><span class="nf">SetOldDelayedAngularDOFsFromArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span>
+<span class="w">  </span><span class="n">SetOldDelayedAngularDOFsFromArray</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">buffer</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetNewDelayedAngularDOFsFromVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">SetNewDelayedAngularDOFsFromVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span>
 <span class="w">                                                  </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOldDelayedAngularDOFsFromVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">SetOldDelayedAngularDOFsFromVector</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
 <span class="w">                                                  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">values</span><span class="p">,</span>
 <span class="w">                                                  </span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">index</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyDelayedAngularFluxOldToNew</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyDelayedAngularFluxOldToNew</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CopyDelayedAngularFluxNewToOld</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">CopyDelayedAngularFluxNewToOld</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Nodal correction for a lagged boundary angular flux, indexed by (cell local id, face,</span>
@@ -221,6 +227,14 @@
 <span class="cm">   * consistently with the scalar-flux correction. No-op for boundaries without delayed flux.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope</span>
+<span class="cm">   * value of this boundary. No-op for boundaries without delayed slopes.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 

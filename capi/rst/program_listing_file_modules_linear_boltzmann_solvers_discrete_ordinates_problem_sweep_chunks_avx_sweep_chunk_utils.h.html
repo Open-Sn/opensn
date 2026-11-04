@@ -154,9 +154,10 @@
 <span class="p">}</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Scalar runtime-N Gaussian elimination with partial pivoting, for one group&#39;s cell-local</span>
-<span class="cm"> * system. Used for SIMD tail remainders (group-block lengths that don&#39;t fill a whole Simd::size</span>
-<span class="cm"> * lane group) and for cell topologies with no compile-time SimdBatchSolve&lt;N&gt; specialization.</span>
+<span class="cm"> * Scalar runtime-N Gaussian elimination without pivoting, for one group&#39;s cell-local system.</span>
+<span class="cm"> * Like SimdBatchSolve&lt;N&gt;, it eliminates in natural row order. Used for SIMD tail remainders</span>
+<span class="cm"> * (group-block lengths that don&#39;t fill a whole Simd::size lane group) and for cell topologies</span>
+<span class="cm"> * with no compile-time SimdBatchSolve&lt;N&gt; specialization.</span>
 <span class="cm"> */</span>
 <span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
 <span class="n">GaussEliminateDynamic</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">N</span><span class="p">,</span>

@@ -24,7 +24,15 @@ Program Listing for File convergence.h
    {
    
    class LBSProblem;
+   class DiscreteOrdinatesProblem;
    
+   /**
+    * Maximum pointwise relative change between the new and old flux moments of the given groupsets
+    * (all groupsets when none are given), over all local nodes, groups, and moments, reduced over all
+    * ranks. Each moment's change is relative to the larger of its own magnitude and the magnitude of
+    * the scalar flux at the same node and group. An entry whose scale is below the smallest normal
+    * double contributes its absolute change. Collective.
+    */
    double ComputePointwisePhiChange(
      LBSProblem& lbs_problem,
      int groupset_id,
@@ -38,6 +46,20 @@ Program Listing for File convergence.h
      LBSProblem& lbs_problem,
      std::vector<int> groupset_ids,
      std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old = std::nullopt);
+   
+   /**
+    * Maximum pointwise relative change between the new and old delayed angular unknowns of a groupset
+    * (the lagged incoming angular fluxes of opposing reflecting boundaries and broken cyclic
+    * dependencies, and their CSDA energy slopes), laid out as
+    * AngleAggregation::GetNewDelayedAngularDOFsAsSTLVector() returns them, reduced over all ranks.
+    * Each entry's change is relative to the larger of its own magnitude and the magnitude of the new
+    * or old scalar flux at the face node of the cell that reads it, for its group. An entry whose
+    * scale is below the smallest normal double contributes its absolute change. Collective.
+    */
+   double ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
+                                    const LBSGroupset& groupset,
+                                    const std::vector<double>& psi_new,
+                                    const std::vector<double>& psi_old);
    
    double ComputeL2PhiChange(
      LBSProblem& lbs_problem,
@@ -69,14 +91,19 @@ Program Listing for File convergence.h
      /// Rate estimate after the last Update().
      double GetRate() const { return rate_; }
    
-     /// Whether `change` passes `tolerance` at the current rate estimate.
-     bool Passes(double change, double tolerance) const;
+     /**
+      * Whether `change` passes `tolerance` at the current rate estimate. A change below
+      * `roundoff_change`, the round-off level of the measured change, passes regardless; the default
+      * suits relative changes, and a caller measuring an absolute change passes its own level.
+      */
+     bool
+     Passes(double change, double tolerance, double roundoff_change = kRoundoffRelativeChange) const;
    
      /**
       * Whether the iteration has converged to `tolerance`: the larger of the latest change and the
-      * change expected from the previous one passes it.
+      * change expected from the previous one passes it, with `roundoff_change` as in Passes().
       */
-     bool Converged(double tolerance) const;
+     bool Converged(double tolerance, double roundoff_change = kRoundoffRelativeChange) const;
    
    private:
      unsigned int num_changes_ = 0;

@@ -95,6 +95,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -118,6 +119,12 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetPostAdvanceCallback</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">nullptr_t</span><span class="p">);</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetCurrentTime</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">current_time_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="nf">GetStep</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">step_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Return true if a time step was taken since the last Initialize() and the transport solve of</span>
+<span class="cm">   * every such step converged. A step whose solve did not converge makes this false until the next</span>
+<span class="cm">   * Initialize().</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsConverged</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">converged_</span><span class="p">.</span><span class="n">value_or</span><span class="p">(</span><span class="nb">false</span><span class="p">);</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="n">BalanceTable</span><span class="w"> </span><span class="nf">ComputeBalanceTable</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>
@@ -145,6 +152,9 @@
 <span class="cm">   * Problem.SetXSMap), rather than reflecting only a one-time check made at Initialize().</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckPrecursorStatus</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Unset until a step is taken after Initialize(), then whether every step converged.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">converged_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Previous time step vectors</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_prev_local_</span><span class="p">;</span>

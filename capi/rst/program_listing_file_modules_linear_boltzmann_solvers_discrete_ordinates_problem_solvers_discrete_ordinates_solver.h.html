@@ -108,6 +108,10 @@
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesSolver</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">Solver</span>
 <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Return the cumulative number of transport sweeps applied by all WGS solvers of the problem.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">GetNumSweeps</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">DiscreteOrdinatesSolver</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
@@ -135,11 +139,13 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckKEigenRequirements</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Logs a warning on rank 0 if the last transport solve stopped without converging: the</span>
-<span class="cm">   * across-groupset iteration when the problem has more than one groupset, otherwise the</span>
-<span class="cm">   * within-group solve. `what` names the solve in the message, for example &quot;Time step 3&quot;.</span>
+<span class="cm">   * Returns whether the last transport solve converged: the across-groupset iteration when the</span>
+<span class="cm">   * problem has more than one groupset, otherwise the within-group solve. Only a solve whose</span>
+<span class="cm">   * convergence test passed counts as converged; a single sweep without a test does not. If the</span>
+<span class="cm">   * solve did not converge, logs a warning on rank 0. `what` names the solve in the message, for</span>
+<span class="cm">   * example &quot;Time step 3&quot;.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">WarnIfTransportSolveNotConverged</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">what</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckTransportSolveConverged</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">what</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 

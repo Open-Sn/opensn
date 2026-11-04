@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2933526ebe8a0da48cb4e73ce31352d7:
+
+Function opensn::ComputePointwisePsiChange
+==========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_iterative_methods_convergence.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputePointwisePsiChange(DiscreteOrdinatesProblem&, const LBSGroupset&, const std::vector<double>&, const std::vector<double>&)
+   :project: opensn

@@ -413,6 +413,11 @@ At a high level, the steady-state solver:
    degree :math:`\ell` by :math:`(-1)^\ell`), and
 7. updates the completed transport state and balance information
 
+If the transport solve stops at its iteration limit, the solver logs a warning
+and keeps the unconverged result. :py:meth:`IsConverged` returns whether the
+last :py:meth:`Execute` converged, and :py:meth:`GetNumSweeps` returns the
+cumulative number of sweeps.
+
 The corresponding balance summary is available from
 :py:meth:`ComputeBalanceTable`.
 
@@ -711,6 +716,10 @@ Important points:
   choose to use it in your own Python logic
 * transient problems still require ``options={"save_angular_flux": True}`` on
   the problem object
+* a time step whose transport solve stops at its iteration limit logs a warning
+  and continues. :py:meth:`IsConverged` stays ``False`` from that step until the
+  next :py:meth:`Initialize`, so checking it after each :py:meth:`Advance`
+  finds the first such step
 
 .. note::
 
@@ -959,7 +968,10 @@ Statuses and errors
 Like the other PETSc-backed transport solvers, this solver reports PETSc
 convergence reasons through its final status and log output. Iteration limits,
 function-evaluation limits, and failed PETSc convergence reasons are reported as
-solver statuses rather than exceptions.
+solver statuses rather than exceptions. :py:meth:`IsConverged` returns whether
+the nonlinear solve of the last :py:meth:`Execute` converged, and
+:py:meth:`GetNumSweeps` returns the cumulative number of sweeps, including those
+of the initial power iterations.
 
 Invalid numerical states that are not valid solver iterates, such as
 non-positive or non-finite fission production in the initial or final state, are

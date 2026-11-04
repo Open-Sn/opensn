@@ -479,7 +479,12 @@ the right-hand-side norm. Without a DSA preconditioner it behaves like
 <p>For PETSc-based groupset methods, the residual printed in the log is the scaled
 residual used by OpenSn’s custom convergence test for WGS solves.</p>
 <p>For <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code>, the convergence test is based on pointwise changes
-in the solution, together with a spectral-radius estimate.</p>
+in the solution, together with a spectral-radius estimate. The change of each
+flux moment is measured relative to the scalar flux at the same node and group,
+or to the moment itself when it is larger. The angular fluxes lagged at opposing
+reflecting boundaries and broken sweep cycles must also change by less than
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, each measured relative to the scalar flux where the sweep reads
+it, or to the lagged value itself when it is larger.</p>
 <section id="l-abs-tol">
 <h4><span class="section-number">8.4.1.1. </span><code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code><a class="headerlink" href="#l-abs-tol" title="Link to this heading"></a></h4>
 <p>This is the main convergence tolerance for the groupset inner solve.</p>
@@ -601,10 +606,18 @@ algorithm, not just a logging detail</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;l2&quot;</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;pointwise&quot;</span></code></p></li>
 </ul>
-<p><code class="docutils literal notranslate"><span class="pre">l2</span></code> is the default and is usually the simplest first choice.</p>
+<p><code class="docutils literal notranslate"><span class="pre">l2</span></code> is the default and is usually the simplest first choice. It measures
+the L2 norm of the change of all flux moments over all spatial unknowns. The
+norm is not normalized by the flux, so <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> is in the units of the
+flux. Like the <code class="docutils literal notranslate"><span class="pre">pointwise</span></code> check, it stops when that change is below
+<span class="math notranslate nohighlight">\((1-\varrho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code>, where <span class="math notranslate nohighlight">\(\varrho\)</span> is the estimated
+convergence rate, so that the remaining error, about
+<span class="math notranslate nohighlight">\(\varrho/(1-\varrho)\)</span> times the last change, stays near the tolerance
+even when the groupsets are strongly coupled.</p>
 <p><code class="docutils literal notranslate"><span class="pre">pointwise</span></code> is stricter in a different sense: it tracks the maximum local
-relative change in the flux vector. It can be useful when localized solution
-changes matter more than the global norm.</p>
+relative change in the flux vector, measuring each flux moment relative to the
+local scalar flux or to the moment itself, whichever is larger. It can be useful
+when localized solution changes matter more than the global norm.</p>
 </section>
 <section id="ags-tolerance">
 <h3><span class="section-number">8.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
@@ -623,7 +636,11 @@ passes, using either the <code class="docutils literal notranslate"><span class=
 coupling must be converged tightly</p></li>
 </ul>
 <p>In general, the groupset inner solves should be at least as tight as the AGS
-solve, and usually somewhat tighter.</p>
+solve, and usually somewhat tighter. The change between AGS iterates includes
+the error of the inner solves, so with looser inner solves it stalls above
+<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> and the iteration runs to <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>. The <code class="docutils literal notranslate"><span class="pre">l2</span></code>
+check is absolute, so compare <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> with <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> times the
+norm of the flux.</p>
 </section>
 <section id="max-ags-iterations">
 <h3><span class="section-number">8.5.4. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>

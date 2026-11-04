@@ -102,8 +102,8 @@
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SteadyStateSourceSolver</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Return the total number of transport sweeps applied by all WGS solvers.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">GetNumSweeps</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Return true if the transport solve of the last Execute() converged.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsConverged</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">converged_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="n">BalanceTable</span><span class="w"> </span><span class="nf">ComputeBalanceTable</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
@@ -111,6 +111,9 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">CheckRequirements</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">errors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeSolver</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ExecuteSolver</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">converged_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>

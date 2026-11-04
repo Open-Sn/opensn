@@ -22,6 +22,7 @@ Program Listing for File reflecting_boundary.h
    #include <limits>
    namespace opensn
    {
+   class AngularQuadrature;
    
    /// Reflective boundary condition.
    class ReflectingBoundary : public SweepBoundary
@@ -35,6 +36,20 @@ Program Listing for File reflecting_boundary.h
                         CoordinateSystemType coord_type = CoordinateSystemType::CARTESIAN);
    
      const Vector3& GetNormal() const { return normal_; }
+   
+     /**
+      * Maps each direction of a quadrature to its mirror image across a reflecting boundary with
+      * outward normal `normal`. In 1D spherical geometry the mirror changes the sign of mu. In RZ
+      * geometry only the symmetry axis and constant-z planes have mirror directions.
+      *
+      * \throws std::invalid_argument for an RZ boundary that is neither the axis nor a constant-z
+      *         plane.
+      * \throws std::logic_error if a mirror direction is not in the quadrature, or if a direction and
+      *         its mirror have different weights, which would make the boundary non-conservative.
+      */
+     static std::vector<std::uint32_t> MapReflectedDirections(const AngularQuadrature& quadrature,
+                                                              const Vector3& normal,
+                                                              CoordinateSystemType coord_type);
    
      const Vector3* GetNormalForReflection() const override { return &normal_; }
    
@@ -63,6 +78,8 @@ Program Listing for File reflecting_boundary.h
      size_t CountDelayedAngularDOFsNew(int groupset_id) const override;
    
      size_t CountDelayedAngularDOFsOld(int groupset_id) const override;
+   
+     std::vector<std::uint64_t> GetDelayedAngularSlots(int groupset_id) const override;
    
      void AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                               std::vector<double>& output) const override;
@@ -98,6 +115,9 @@ Program Listing for File reflecting_boundary.h
    
      void AddToNewDelayedAngularFlux(int groupset_id,
                                      const DelayedFluxCorrection& correction) override;
+   
+     void AddToNewDelayedAngularSlope(int groupset_id,
+                                      const DelayedFluxCorrection& correction) override;
    
      void GetReflectedMap(int groupset_id,
                           std::vector<std::vector<std::uint32_t>>& reflected_maps) override
@@ -196,6 +216,15 @@ Program Listing for File reflecting_boundary.h
      void AppendDelayedAngularFields(int groupset_id, bool old_store, Fn fn) const;
    
    private:
+     /**
+      * Adds the nodal values to the new delayed values that start `offset` node-direction blocks into
+      * this groupset's boundary storage: the angular fluxes (0) or their CSDA energy slopes
+      * (slope_stride).
+      */
+     void AddToNewDelayedValues(int groupset_id,
+                                const DelayedFluxCorrection& correction,
+                                std::uint64_t offset);
+   
      static constexpr double epsilon_ = 1.0e-8;
    };
    

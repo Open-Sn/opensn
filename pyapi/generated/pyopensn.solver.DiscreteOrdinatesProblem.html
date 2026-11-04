@@ -1131,8 +1131,8 @@ debugging and reproducible comparisons.</p></li>
 Enable CSDA charged-particle transport for CEPXS data loaded with
 <code class="docutils literal notranslate"><span class="pre">csda_format=True</span></code>. CSDA requires a Cartesian
 <a class="reference internal" href="pyopensn.solver.SteadyStateSourceSolver.html#pyopensn.solver.SteadyStateSourceSolver" title="pyopensn.solver.SteadyStateSourceSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">SteadyStateSourceSolver</span></code></a> solve, <code class="docutils literal notranslate"><span class="pre">sweep_type='AAH'</span></code>, CPU
-sweeps, and charged-particle group ranges that are not split across
-groupsets. All materials must supply identical per-group energy bounds
+sweeps, no <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> in any groupset, and
+charged-particle group ranges that are not split across groupsets. All materials must supply identical per-group energy bounds
 or omit them; at least one material must supply the shared structure.</p></li>
 <li><p>verbose_inner_iterations: bool, default=True
 Print inner iteration details, including WGS and AGS iterations.</p></li>

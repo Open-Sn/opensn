@@ -127,6 +127,8 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function</span>
 <span class="cm">   * computes the location where to store this position&#39;s outgoing psi and returns a reference to</span>
@@ -176,6 +178,9 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedLocalPsiNewToOld</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Adds the nodal values to the new delayed angular fluxes, or to their CSDA energy slopes.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddToNewDelayedValues</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">energy_slope</span><span class="p">);</span>
+
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAH_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">csda_enabled_</span><span class="p">;</span>
 

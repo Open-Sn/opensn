@@ -170,6 +170,12 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope</span>
+<span class="cm">   * value. The default has no delayed energy slopes.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">FLUDS</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>

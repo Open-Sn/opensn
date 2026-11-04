@@ -114,6 +114,15 @@
 <p>Solution and time state remain in the shared problem. A solver restores its temporary settings before returning. Validation is collective. </p>
 <p>Subclassed by <a class="reference internal" href="classopensn_1_1_non_linear_k_eigen_solver.html#classopensn_1_1_non_linear_k_eigen_solver"><span class="std std-ref">opensn::NonLinearKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_power_iteration_k_eigen_solver.html#classopensn_1_1_power_iteration_k_eigen_solver"><span class="std std-ref">opensn::PowerIterationKEigenSolver</span></a>, <a class="reference internal" href="classopensn_1_1_steady_state_source_solver.html#classopensn_1_1_steady_state_source_solver"><span class="std std-ref">opensn::SteadyStateSourceSolver</span></a>, <a class="reference internal" href="classopensn_1_1_transient_solver.html#classopensn_1_1_transient_solver"><span class="std std-ref">opensn::TransientSolver</span></a></p>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn23DiscreteOrdinatesSolver12GetNumSweepsEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_solver_1a80a996457edc3f1df0c0042693dd6e03"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumSweeps</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn23DiscreteOrdinatesSolver12GetNumSweepsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the cumulative number of transport sweeps applied by all WGS solvers of the problem. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn23DiscreteOrdinatesSolver18GetInputParametersEv">
@@ -166,10 +175,10 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4NK6opensn23DiscreteOrdinatesSolver32WarnIfTransportSolveNotConvergedERKNSt6stringE">
-<span class="target" id="classopensn_1_1_discrete_ordinates_solver_1aaf7abaac4ddbb6146ee04d15bb67ea8f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">WarnIfTransportSolveNotConverged</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">what</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn23DiscreteOrdinatesSolver32WarnIfTransportSolveNotConvergedERKNSt6stringE" title="Link to this definition"></a><br /></dt>
-<dd><p>Logs a warning on rank 0 if the last transport solve stopped without converging: the across-groupset iteration when the problem has more than one groupset, otherwise the within-group solve. </p>
-<p><code class="docutils literal notranslate"><span class="pre">what</span></code> names the solve in the message, for example “Time step 3”. </p>
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn23DiscreteOrdinatesSolver28CheckTransportSolveConvergedERKNSt6stringE">
+<span class="target" id="classopensn_1_1_discrete_ordinates_solver_1a6f5de8150f0db3f2b63fd575a03d7303"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckTransportSolveConverged</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">what</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn23DiscreteOrdinatesSolver28CheckTransportSolveConvergedERKNSt6stringE" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns whether the last transport solve converged: the across-groupset iteration when the problem has more than one groupset, otherwise the within-group solve. </p>
+<p>Only a solve whose convergence test passed counts as converged; a single sweep without a test does not. If the solve did not converge, logs a warning on rank 0. <code class="docutils literal notranslate"><span class="pre">what</span></code> names the solve in the message, for example “Time step 3”. </p>
 </dd></dl>
 
 </div>
