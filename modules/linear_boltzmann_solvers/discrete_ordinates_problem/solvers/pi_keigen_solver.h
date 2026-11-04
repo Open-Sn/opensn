@@ -23,8 +23,6 @@ public:
   double GetKTolerance() const { return k_tolerance_; }
   /// Return the number of completed power iterations.
   unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
-  /// Return the total number of transport sweeps applied by all WGS solvers.
-  std::size_t GetNumSweeps() const;
   /// Return true if the last Execute() met its convergence criteria before max_iters.
   bool IsConverged() const { return converged_; }
 

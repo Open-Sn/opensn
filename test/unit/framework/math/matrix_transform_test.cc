@@ -17,9 +17,9 @@ TEST(MatrixTransformTest, TransposeNonSquare)
   const std::vector<std::vector<double>> A = {{1.0, 2.0, 3.0}, {4.0, 5.0, 6.0}};
   const auto AT = Transpose(A);
 
-  ASSERT_EQ(AT.size(), 3u);
+  ASSERT_EQ(AT.size(), 3U);
   for (const auto& row : AT)
-    ASSERT_EQ(row.size(), 2u);
+    ASSERT_EQ(row.size(), 2U);
 
   EXPECT_DOUBLE_EQ(AT[0][0], 1.0);
   EXPECT_DOUBLE_EQ(AT[0][1], 4.0);
@@ -34,7 +34,7 @@ TEST(MatrixTransformTest, TransposeSquare)
   const std::vector<std::vector<double>> A = {{1.0, 2.0}, {3.0, 4.0}};
   const auto AT = Transpose(A);
 
-  ASSERT_EQ(AT.size(), 2u);
+  ASSERT_EQ(AT.size(), 2U);
   EXPECT_DOUBLE_EQ(AT[0][0], 1.0);
   EXPECT_DOUBLE_EQ(AT[0][1], 3.0);
   EXPECT_DOUBLE_EQ(AT[1][0], 2.0);
@@ -70,9 +70,9 @@ TEST(MatrixTransformTest, TransposeNDArrayNonSquare)
   const auto AT = Transpose(A);
   const auto dims = AT.dimension();
 
-  ASSERT_EQ(dims.size(), 2u);
-  ASSERT_EQ(dims[0], 3u);
-  ASSERT_EQ(dims[1], 2u);
+  ASSERT_EQ(dims.size(), 2U);
+  ASSERT_EQ(dims[0], 3U);
+  ASSERT_EQ(dims[1], 2U);
   EXPECT_DOUBLE_EQ(AT(0, 0), 1.0);
   EXPECT_DOUBLE_EQ(AT(0, 1), 4.0);
   EXPECT_DOUBLE_EQ(AT(1, 0), 2.0);
@@ -95,7 +95,7 @@ TEST(MatrixTransformTest, InvertIdentity2x2)
   const std::vector<std::vector<double>> I = {{1.0, 0.0}, {0.0, 1.0}};
   const auto Iinv = InvertMatrix(I);
 
-  ASSERT_EQ(Iinv.size(), 2u);
+  ASSERT_EQ(Iinv.size(), 2U);
   EXPECT_NEAR(Iinv[0][0], 1.0, 1e-12);
   EXPECT_NEAR(Iinv[0][1], 0.0, 1e-12);
   EXPECT_NEAR(Iinv[1][0], 0.0, 1e-12);
@@ -108,7 +108,7 @@ TEST(MatrixTransformTest, InvertKnown2x2)
   const std::vector<std::vector<double>> A = {{2.0, 1.0}, {1.0, 1.0}};
   const auto Ainv = InvertMatrix(A);
 
-  ASSERT_EQ(Ainv.size(), 2u);
+  ASSERT_EQ(Ainv.size(), 2U);
   EXPECT_NEAR(Ainv[0][0], 1.0, 1e-12);
   EXPECT_NEAR(Ainv[0][1], -1.0, 1e-12);
   EXPECT_NEAR(Ainv[1][0], -1.0, 1e-12);
@@ -158,9 +158,9 @@ TEST(MatrixTransformTest, InvertNDArrayKnown2x2)
   const auto Ainv = InvertMatrix(A);
   const auto dims = Ainv.dimension();
 
-  ASSERT_EQ(dims.size(), 2u);
-  ASSERT_EQ(dims[0], 2u);
-  ASSERT_EQ(dims[1], 2u);
+  ASSERT_EQ(dims.size(), 2U);
+  ASSERT_EQ(dims[0], 2U);
+  ASSERT_EQ(dims[1], 2U);
   EXPECT_NEAR(Ainv(0, 0), 1.0, 1e-12);
   EXPECT_NEAR(Ainv(0, 1), -1.0, 1e-12);
   EXPECT_NEAR(Ainv(1, 0), -1.0, 1e-12);
@@ -188,8 +188,8 @@ TEST(MatrixTransformTest, OrthogonalizeProducesOrthonormalColumns)
 
   const auto Q = OrthogonalizeMatrixSpan(A, w);
 
-  ASSERT_EQ(Q.size(), 3u);
-  ASSERT_EQ(Q[0].size(), 2u);
+  ASSERT_EQ(Q.size(), 3U);
+  ASSERT_EQ(Q[0].size(), 2U);
 
   // Check norm = 1
   double n00 = 0.0;
@@ -265,9 +265,9 @@ TEST(MatrixTransformTest, OrthogonalizeNDArrayProducesOrthonormalColumns)
   const auto Q = OrthogonalizeMatrixSpan(A, w);
   const auto dims = Q.dimension();
 
-  ASSERT_EQ(dims.size(), 2u);
-  ASSERT_EQ(dims[0], 3u);
-  ASSERT_EQ(dims[1], 2u);
+  ASSERT_EQ(dims.size(), 2U);
+  ASSERT_EQ(dims[0], 3U);
+  ASSERT_EQ(dims[1], 2U);
 
   for (size_t i = 0; i < 2; ++i)
     for (size_t j = 0; j < 2; ++j)

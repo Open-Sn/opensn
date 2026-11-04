@@ -2,14 +2,25 @@
 # -*- coding: utf-8 -*-
 
 """
-1D LinearBSolver test of a block of graphite mimicking an infinite medium. DSA and TG
-SDM: PWLD
-Test: WGS groups [0-62] Iteration    22 Residual 9.6079e-08 CONVERGED
-and   WGS groups [63-167] Iteration    59 Residual 4.73732e-07 CONVERGED
+1D test of an infinite medium of graphite (168 groups) with WGDSA in both groupsets and TGDSA in
+the thermal groupset. SDM: PWLD.
+
+One slab cell with reflecting faces and a source in group 0 is an infinite medium, so the scalar
+flux is the solution of the multigroup balance phi = (diag(sigma_t) - S_0)^-1 q, with S_0 the
+isotropic transfer matrix, which is evaluated here from the cross-section file independently of
+the transport solve. The within-group tolerance (1e-10) is tighter than the across-groupset
+tolerance, which is absolute (1e-6 on a flux norm of about 600), so the across-groupset iteration
+can converge to it.
+
+Checks:
+  AGS_CONVERGED: 1 when the steady-state solve reports convergence.
+  PHI_MAX_REL_ERR: max over nodes and groups of |phi / phi_exact - 1|.
 """
 
 import os
 import sys
+
+import numpy as np
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -64,7 +75,7 @@ if __name__ == "__main__":
                 "groups_from_to": [0, 62],
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 1000,
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
@@ -74,7 +85,7 @@ if __name__ == "__main__":
                 "groups_from_to": [63, num_groups - 1],
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 1000,
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
@@ -87,9 +98,43 @@ if __name__ == "__main__":
             {"block_ids": [1], "xs": xs_air},
         ],
         volumetric_sources=[mg_src],
+        boundary_conditions=[
+            {"name": "zmin", "type": "reflecting"},
+            {"name": "zmax", "type": "reflecting"},
+        ],
     )
 
     # Initialize and Execute Solver
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
+
+    # Infinite-medium reference from the cross-section file: sigma_t and the P0 transfer matrix.
+    sigma_t = np.zeros(num_groups)
+    transfer = np.zeros((num_groups, num_groups))
+    section = None
+    with open("../../../../assets/xs/xs_graphite_pure.xs") as f:
+        for line in f:
+            words = line.split()
+            if not words or words[0].startswith("#"):
+                continue
+            if words[0] in ("SIGMA_T_BEGIN", "TRANSFER_MOMENTS_BEGIN"):
+                section = words[0]
+            elif words[0].endswith("_END"):
+                section = None
+            elif section == "SIGMA_T_BEGIN":
+                sigma_t[int(words[0])] = float(words[1])
+            elif section == "TRANSFER_MOMENTS_BEGIN" and words[1] == "0":
+                # M_GFROM_GTO_VAL moment g_from g_to value
+                transfer[int(words[3]), int(words[2])] += float(words[4])
+    q = np.array(strength)
+    phi_exact = np.linalg.solve(np.diag(sigma_t) - transfer, q)
+
+    # Local unknowns are ordered node, moment, group; scattering order 1 in 1D gives 2 moments.
+    phi = np.array(phys.GetPhiNewLocal())
+    num_moments = 2
+    phi0 = phi.reshape(-1, num_moments, num_groups)[:, 0, :]
+    max_rel_err = float(np.max(np.abs(phi0 / phi_exact - 1.0)))
+    if rank == 0:
+        print(f"AGS_CONVERGED={int(ss_solver.IsConverged())}")
+        print(f"PHI_MAX_REL_ERR={max_rel_err:.6e}")

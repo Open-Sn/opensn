@@ -385,5 +385,42 @@
       {"type": "KeyValuePair", "key": "RZ_ANNULUS_DEV_SINGLE", "goldvalue": 0, "abs_tol": 3e-8},
       {"type": "KeyValuePair", "key": "RZ_GROUPSET_DIFF", "goldvalue": 0, "abs_tol": 1e-10}
     ]
+  },
+  {
+    "file": "transport_2d_cyl_infinite_cylinder_escape.py",
+    "comment": "RZ infinite cylinder, pure absorber with a uniform source: escape fraction and radial flux profile against the independently integrated first-flight solution, and angular convergence",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_TAU1_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_TAU2_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0005
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FLUX_TAU1_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.004
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_FLUX_TAU2_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.004
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RZ_ESCAPE_ANGULAR_CONVERGENCE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

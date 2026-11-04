@@ -93,8 +93,23 @@ DiscreteOrdinatesSolver::CheckKEigenRequirements(std::vector<std::string>& error
     errors.emplace_back("CSDA is only supported by the steady-state fixed-source solver.");
 }
 
-void
-DiscreteOrdinatesSolver::WarnIfTransportSolveNotConverged(const std::string& what) const
+std::size_t
+DiscreteOrdinatesSolver::GetNumSweeps() const
+{
+  std::size_t total_num_sweeps = 0;
+  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
+  {
+    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
+    auto context = wgs_solver->GetContext();
+    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
+    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
+    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
+  }
+  return total_num_sweeps;
+}
+
+bool
+DiscreteOrdinatesSolver::CheckTransportSolveConverged(const std::string& what) const
 {
   IterationSummary summary;
   std::string label;
@@ -114,11 +129,26 @@ DiscreteOrdinatesSolver::WarnIfTransportSolveNotConverged(const std::string& wha
     label = "WGS";
   }
 
-  if (summary.status != IterationStatus::LIMIT and summary.status != IterationStatus::FAILED)
-    return;
-  log.Log0Warning() << GetName() << ": " << what << " did not converge ("
-                    << FormatIterationSummary(label, summary)
-                    << "). Increase the iteration limit or loosen the tolerance.";
+  if (summary.status == IterationStatus::CONVERGED)
+    return true;
+  // A single PETSc Richardson sweep (l_max_its = 1) applies no convergence test.
+  if (summary.status == IterationStatus::NONE)
+    log.Log0Warning() << GetName() << ": " << what
+                      << " applied no convergence test (a single sweep), so it is not reported "
+                         "as converged.";
+  else if (label == "AGS")
+    // The change between across-groupset iterates includes the error of the within-group solves,
+    // so it stalls above ags_tolerance when they are not tight enough.
+    log.Log0Warning() << GetName() << ": " << what << " did not converge ("
+                      << FormatIterationSummary(label, summary)
+                      << "). Increase max_ags_iterations or loosen ags_tolerance, or tighten "
+                         "l_abs_tol of the groupsets: the across-groupset change cannot fall "
+                         "below the error of the within-group solves.";
+  else
+    log.Log0Warning() << GetName() << ": " << what << " did not converge ("
+                      << FormatIterationSummary(label, summary)
+                      << "). Increase the iteration limit or loosen the tolerance.";
+  return false;
 }
 
 } // namespace opensn

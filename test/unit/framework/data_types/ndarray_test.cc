@@ -69,7 +69,7 @@ TEST(NDArrayTest, Iterators)
   arr.set(1.0);
 
   const auto& const_arr = arr;
-  for (auto i = const_arr.cbegin(); i != const_arr.cend(); ++i)
+  for (const auto* i = const_arr.cbegin(); i != const_arr.cend(); ++i)
     EXPECT_DOUBLE_EQ(*i, 1.0);
 }
 

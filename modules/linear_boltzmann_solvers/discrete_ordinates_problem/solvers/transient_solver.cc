@@ -244,6 +244,7 @@ TransientSolver::InitializeSolver()
 
   log.Log() << program_timer.GetTimeString() << " Initializing solver " << GetName() << ".";
   enforce_stop_time_ = false;
+  converged_.reset();
   ApplyTimeParameters();
 
   const auto& options = do_problem_->GetOptions();
@@ -441,7 +442,9 @@ TransientSolver::AdvanceSolver()
     do_problem_->SetTime(current_time_);
     throw;
   }
-  WarnIfTransportSolveNotConverged("Time step " + std::to_string(step_ + 1));
+  const bool step_converged =
+    CheckTransportSolveConverged("Time step " + std::to_string(step_ + 1));
+  converged_ = step_converged and converged_.value_or(true);
 
   if (verbose_)
   {

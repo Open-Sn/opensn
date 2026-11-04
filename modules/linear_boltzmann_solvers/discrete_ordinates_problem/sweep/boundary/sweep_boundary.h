@@ -75,6 +75,12 @@ public:
 
   virtual size_t CountDelayedAngularDOFsOld(int groupset_id) const { return 0; }
 
+  /**
+   * Returns, for each direction of the groupset quadrature, the slot that holds its delayed
+   * angular flux in this boundary. Empty for a boundary without delayed angular unknowns.
+   */
+  virtual std::vector<std::uint64_t> GetDelayedAngularSlots(int groupset_id) const { return {}; }
+
   virtual void AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                                    std::vector<double>& output) const
   {
@@ -134,6 +140,14 @@ public:
    * consistently with the scalar-flux correction. No-op for boundaries without delayed flux.
    */
   virtual void AddToNewDelayedAngularFlux(int groupset_id, const DelayedFluxCorrection& correction)
+  {
+  }
+
+  /**
+   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope
+   * value of this boundary. No-op for boundaries without delayed slopes.
+   */
+  virtual void AddToNewDelayedAngularSlope(int groupset_id, const DelayedFluxCorrection& correction)
   {
   }
 

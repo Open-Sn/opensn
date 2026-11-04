@@ -426,6 +426,83 @@ AngleAggregation::SetNewDelayedAngularDOFsFromSTLVector(const std::vector<double
           val = stl_vector[index++];
 }
 
+std::uint64_t
+AngleAggregation::GetDelayedAngularDOFLayoutFingerprint() const
+{
+  // FNV-1a over a sequence of 64-bit integers, each hashed byte by byte from least significant.
+  std::uint64_t hash = 14695981039346656037ULL;
+  const auto add = [&hash](const std::uint64_t value)
+  {
+    for (int byte = 0; byte < 8; ++byte)
+    {
+      hash ^= (value >> (8 * byte)) & 0xffULL;
+      hash *= 1099511628211ULL;
+    }
+  };
+
+  add(csda_enabled_ ? 1 : 0);
+
+  add(grid_->GetLocalCellCount());
+  for (const auto& cell : grid_->GetLocalCells())
+    add(cell->global_id);
+
+  add(boundaries_.size());
+  for (const auto& [bid, bndry] : boundaries_)
+  {
+    add(bid);
+    add(bndry->CountDelayedAngularDOFsOld(groupset_id_));
+    // The slots follow the angle sets in sweep order, which the angle-set loop below does not
+    // cover when no angle set has delayed unknowns of its own.
+    const auto slots = bndry->GetDelayedAngularSlots(groupset_id_);
+    add(slots.size());
+    for (const auto slot : slots)
+      add(slot);
+  }
+
+  // Angle sets without delayed unknowns add nothing to the layout.
+  for (const auto& angle_set : angle_set_groups_)
+  {
+    auto& fluds = angle_set->GetFLUDS();
+    size_t num_delayed = fluds.DelayedLocalPsiOld().size();
+    for (const auto& loc_vector : fluds.DelayedPrelocIOutgoingPsiOld())
+      num_delayed += loc_vector.size();
+    if (num_delayed == 0)
+      continue;
+
+    const auto& angles = angle_set->GetAngleIndices();
+    add(angles.size());
+    for (const auto angle : angles)
+      add(angle);
+    add(angle_set->GetNumGroups());
+
+    const auto& spds = angle_set->GetSPDS();
+    const auto& local_fas = spds.GetLocalSweepFAS();
+    add(local_fas.size());
+    for (const auto& [from, to] : local_fas)
+    {
+      add(from);
+      add(to);
+    }
+    const auto& delayed_dependencies = spds.GetDelayedLocationDependencies();
+    add(delayed_dependencies.size());
+    for (const auto location : delayed_dependencies)
+      add(static_cast<std::uint64_t>(location));
+
+    add(fluds.DelayedLocalPsiOld().size());
+    add(fluds.DelayedPrelocIOutgoingPsiOld().size());
+    for (const auto& loc_vector : fluds.DelayedPrelocIOutgoingPsiOld())
+      add(loc_vector.size());
+    if (csda_enabled_)
+    {
+      add(fluds.DelayedLocalPsiEOld().size());
+      for (const auto& loc_vector : fluds.DelayedPrelocIOutgoingPsiEOld())
+        add(loc_vector.size());
+    }
+  }
+
+  return hash;
+}
+
 std::vector<double>
 AngleAggregation::GetOldDelayedAngularDOFsAsSTLVector()
 {
@@ -539,6 +616,29 @@ AngleAggregation::AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection&
   // Intra-location and inter-location cycles
   for (auto& angle_set : angle_set_groups_)
     angle_set->GetFLUDS().AddToNewDelayedAngularFlux(correction);
+}
+
+std::vector<double>
+AngleAggregation::MapNodalValuesToDelayedAngularDOFs(
+  const FLUDS::DelayedFluxCorrection& nodal_value)
+{
+  // Add the nodal values to zeroed delayed storage, so that each lands where the sweep reads it,
+  // then restore the delayed angular fluxes.
+  const auto saved = GetNewDelayedAngularDOFsAsSTLVector();
+  SetNewDelayedAngularDOFsFromSTLVector(std::vector<double>(saved.size(), 0.0));
+  for (const auto& [bid, bndry] : boundaries_)
+  {
+    bndry->AddToNewDelayedAngularFlux(groupset_id_, nodal_value);
+    bndry->AddToNewDelayedAngularSlope(groupset_id_, nodal_value);
+  }
+  for (auto& angle_set : angle_set_groups_)
+  {
+    angle_set->GetFLUDS().AddToNewDelayedAngularFlux(nodal_value);
+    angle_set->GetFLUDS().AddToNewDelayedAngularSlope(nodal_value);
+  }
+  auto values = GetNewDelayedAngularDOFsAsSTLVector();
+  SetNewDelayedAngularDOFsFromSTLVector(saved);
+  return values;
 }
 
 } // namespace opensn

@@ -900,5 +900,36 @@
         "abs_tol": 0.0
       }
     ]
+  },
+  {
+    "file": "adjoint_balance_table.py",
+    "comment": "Adjoint balance table: absorption uses sigma_t minus the transposed scattering column sums; exact infinite-medium absorption and closed vacuum-slab balance in both modes",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_BALANCE_INF_ABSORPTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_BALANCE_VAC_REL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FWD_BALANCE_INF_ABSORPTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "FWD_BALANCE_VAC_REL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
   }
 ]

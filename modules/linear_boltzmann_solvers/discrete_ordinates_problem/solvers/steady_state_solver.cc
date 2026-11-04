@@ -62,6 +62,7 @@ SteadyStateSourceSolver::ExecuteSolver()
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_steady_state("SteadyState", CaliperSteadyStateScopeDepth());
   log.Log() << program_timer.GetTimeString() << " Starting solver execution " << GetName() << ".";
+  converged_ = false;
 
   const auto& options = do_problem_->GetOptions();
 
@@ -85,7 +86,7 @@ SteadyStateSourceSolver::ExecuteSolver()
 
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();
-  WarnIfTransportSolveNotConverged("The steady-state solve");
+  converged_ = CheckTransportSolveConverged("The steady-state solve");
 
   if (do_problem_->HasUncollidedFlux())
     do_problem_->ComputeFluxFromUncollided();
@@ -103,21 +104,6 @@ SteadyStateSourceSolver::ExecuteSolver()
     ComputeBalance(*do_problem_);
 
   log.Log() << program_timer.GetTimeString() << " Finished solver execution " << GetName() << ".";
-}
-
-std::size_t
-SteadyStateSourceSolver::GetNumSweeps() const
-{
-  std::size_t total_num_sweeps = 0;
-  for (size_t gsid = 0; gsid < do_problem_->GetNumWGSSolvers(); ++gsid)
-  {
-    auto wgs_solver = do_problem_->GetWGSSolver(gsid);
-    auto context = wgs_solver->GetContext();
-    auto wgs_context = std::dynamic_pointer_cast<WGSContext>(context);
-    OpenSnLogicalErrorIf(not wgs_context, GetName() + ": Cast to WGSContext failed.");
-    total_num_sweeps += wgs_context->counter_applications_of_inv_op;
-  }
-  return total_num_sweeps;
 }
 
 BalanceTable

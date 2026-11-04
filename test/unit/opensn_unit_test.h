@@ -7,7 +7,7 @@ using namespace opensn;
 
 class OpenSnUnitTest : public ::testing::Test
 {
-public:
+protected:
   void SetUp() override;
   void TearDown() override;
 };

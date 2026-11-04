@@ -10,14 +10,14 @@ and one transport sweep per power iteration should converge in a number of power
 does not grow with the core size: the coarse eigenvalue problem resolves the fundamental mode.
 That requires the coarse power iteration to converge the coarse flux shape, not only the coarse
 eigenvalue; stopping on the eigenvalue alone leaves the fundamental mode unaccelerated, and the
-power iteration then needs several hundred iterations here.
+power iteration then needs about 300 iterations here.
 
 Reference: unaccelerated power iteration with converged GMRES within-group solves, k_tol = 1e-12,
 on the same problem (run this input with accel="none", 32 ranks): k = 0.9276389082.
 
 Checks:
   CMFD_HD_K_ERR: |k / K_REFERENCE - 1|.
-  CMFD_HD_ITERATIONS: power iterations; about 60 when the coarse problem is converged.
+  CMFD_HD_ITERATIONS: power iterations; about 76 when the coarse problem is converged.
   CMFD_HD_SKIPPED: skipped CMFD corrections.
 """
 

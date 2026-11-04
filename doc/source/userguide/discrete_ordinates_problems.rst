@@ -300,6 +300,15 @@ compatible; nodal values are matched by global cell ID and node coordinates.
    the same MPI rank count and partition used to write it. Restart files in
    the legacy rank-local format have the same restriction.
 
+The delayed angular-flux buffers are stored in the order of the writer's sweep
+layout, which depends on the partition, the cycle-breaking choices of the sweep
+(the feedback arc set), the angle aggregation, the quadrature, and the order of
+the local cells. Each restart file records a fingerprint of that layout. When
+the reading problem's layout differs on any rank, a steady-state restart logs a
+warning and starts from zero delayed angular flux, which affects only the
+initial iterate, and a full transient restart raises an error. Restart files
+written before the fingerprint was added are checked by size only.
+
 .. note::
 
    Problem options are where users should look for global transport behavior.

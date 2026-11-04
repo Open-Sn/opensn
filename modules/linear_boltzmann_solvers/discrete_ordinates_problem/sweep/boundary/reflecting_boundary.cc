@@ -9,6 +9,7 @@
 #include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <span>
 #include <stdexcept>
 #include <string>
@@ -152,74 +153,90 @@ ReflectingBoundary::ReflectingBoundary(BoundaryBank& bank,
   }
 }
 
+std::vector<std::uint32_t>
+ReflectingBoundary::MapReflectedDirections(const AngularQuadrature& quadrature,
+                                           const Vector3& normal,
+                                           const CoordinateSystemType coord_type)
+{
+  const auto num_angles = quadrature.GetNumAngles();
+  std::vector<std::uint32_t> reflected_anglenum(num_angles);
+
+  const Vector3 ihat(1.0, 0.0, 0.0);
+  const Vector3 jhat(0.0, 1.0, 0.0);
+
+  for (std::uint32_t n = 0; n < num_angles; ++n)
+  {
+    const Vector3& omega_n = quadrature.GetOmega(n);
+    Vector3 omega_reflected;
+
+    switch (coord_type)
+    {
+      case CoordinateSystemType::SPHERICAL:
+        // 1D spherical directions are (sqrt(1 - mu^2), 0, mu); reflection maps mu to -mu.
+        omega_reflected = Vector3(omega_n.x, omega_n.y, -omega_n.z);
+        break;
+      case CoordinateSystemType::CYLINDRICAL:
+      {
+        // Reflection is supported on the symmetry axis and on constant-z planes. Other
+        // orientations, such as the outer radial boundary, have no mirror direction in the
+        // RZ quadrature.
+        OpenSnInvalidArgumentIf(
+          std::fabs(normal.Dot(jhat)) <= 0.999999 and normal.Dot(ihat) >= -0.999999,
+          "ReflectingBoundary: Reflecting boundaries in RZ are supported only on the symmetry "
+          "axis (rmin) and on constant-z planes. Use vacuum or isotropic on other boundaries.");
+        omega_reflected = omega_n - 2.0 * normal * omega_n.Dot(normal);
+        break;
+      }
+      case CoordinateSystemType::CARTESIAN:
+      default:
+        omega_reflected = omega_n - 2.0 * normal * omega_n.Dot(normal);
+        break;
+    }
+
+    bool found = false;
+    for (std::uint32_t nstar = 0; nstar < num_angles; ++nstar)
+    {
+      if (omega_reflected.Dot(quadrature.GetOmega(nstar)) > (1.0 - epsilon_))
+      {
+        reflected_anglenum[n] = nstar;
+        found = true;
+        break;
+      }
+    }
+
+    if (not found)
+    {
+      throw std::logic_error("ReflectingBoundary: Reflected angle not found for angle " +
+                             std::to_string(n) + " with direction " + omega_n.PrintStr() +
+                             ".\nThis can happen for two reasons:\n1) A quadrature is used "
+                             "that is not symmetric about the axis associated with the "
+                             "reflected boundary.\n2) The reflecting boundary is not "
+                             "aligned with a reflecting axis of the quadrature.");
+    }
+
+    // The reflected flux carries the incident current back only if a direction and its mirror
+    // have the same weight. Otherwise the boundary creates or destroys particles.
+    const double weight = quadrature.GetWeight(n);
+    const double reflected_weight = quadrature.GetWeight(reflected_anglenum[n]);
+    const double weight_tolerance = 64.0 * std::numeric_limits<double>::epsilon() *
+                                    std::max({1.0, std::fabs(weight), std::fabs(reflected_weight)});
+    if (std::fabs(weight - reflected_weight) > weight_tolerance)
+      throw std::logic_error("ReflectingBoundary: Angle " + std::to_string(n) + " with direction " +
+                             omega_n.PrintStr() + " and its reflected angle " +
+                             std::to_string(reflected_anglenum[n]) +
+                             " have different quadrature weights. A reflecting boundary requires "
+                             "a quadrature whose weights are symmetric about the boundary.");
+  }
+
+  return reflected_anglenum;
+}
+
 void
 ReflectingBoundary::InitializeReflectingMap(const std::vector<LBSGroupset>& groupsets)
 {
   for (const auto& groupset : groupsets)
-  {
-    const auto& quadrature = groupset.quadrature;
-    auto num_angles = quadrature->GetNumAngles();
-
-    auto& extra_data = extra_data_[groupset.id];
-    auto& reflected_anglenum = extra_data.reflected_anglenum;
-    reflected_anglenum.reserve(num_angles);
-    reflected_anglenum.resize(num_angles);
-
-    const Vector3 ihat(1.0, 0.0, 0.0);
-    const Vector3 jhat(0.0, 1.0, 0.0);
-
-    for (std::uint32_t n = 0; n < num_angles; ++n)
-    {
-      const Vector3& omega_n = quadrature->GetOmega(n);
-      Vector3 omega_reflected;
-
-      switch (coord_type_)
-      {
-        case CoordinateSystemType::SPHERICAL:
-          // 1D spherical directions are (sqrt(1 - mu^2), 0, mu); reflection maps mu to -mu.
-          omega_reflected = Vector3(omega_n.x, omega_n.y, -omega_n.z);
-          break;
-        case CoordinateSystemType::CYLINDRICAL:
-        {
-          // Reflection is supported on the symmetry axis and on constant-z planes. Other
-          // orientations, such as the outer radial boundary, have no mirror direction in the
-          // RZ quadrature.
-          OpenSnInvalidArgumentIf(
-            std::fabs(normal_.Dot(jhat)) <= 0.999999 and normal_.Dot(ihat) >= -0.999999,
-            "ReflectingBoundary: Reflecting boundaries in RZ are supported only on the symmetry "
-            "axis (rmin) and on constant-z planes. Use vacuum or isotropic on other boundaries.");
-          omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
-          break;
-        }
-        case CoordinateSystemType::CARTESIAN:
-        default:
-          omega_reflected = omega_n - 2.0 * normal_ * omega_n.Dot(normal_);
-          break;
-      }
-
-      bool found = false;
-      for (std::uint32_t nstar = 0; nstar < num_angles; ++nstar)
-      {
-        if (omega_reflected.Dot(quadrature->GetOmega(nstar)) > (1.0 - epsilon_))
-        {
-          reflected_anglenum[n] = nstar;
-          found = true;
-          break;
-        }
-      }
-
-      if (not found)
-      {
-        throw std::logic_error("ReflectingBoundary: Reflected angle not found for angle " +
-                               std::to_string(n) + " with direction " +
-                               quadrature->GetOmega(n).PrintStr() +
-                               ".\nThis can happen for two reasons:\n1) A quadrature is used "
-                               "that is not symmetric about the axis associated with the "
-                               "reflected boundary.\n2) The reflecting boundary is not "
-                               "aligned with a reflecting axis of the quadrature.");
-      }
-    }
-  }
+    extra_data_[groupset.id].reflected_anglenum =
+      MapReflectedDirections(*groupset.quadrature, normal_, coord_type_);
 }
 
 void
@@ -357,6 +374,14 @@ ReflectingBoundary::CountDelayedAngularDOFsOld(int groupset_id) const
   return CountDelayedAngularDOFsNew(groupset_id);
 }
 
+std::vector<std::uint64_t>
+ReflectingBoundary::GetDelayedAngularSlots(int groupset_id) const
+{
+  if (not opposing_reflected_)
+    return {};
+  return extra_data_[groupset_id].map_dirnum;
+}
+
 void
 ReflectingBoundary::AppendNewDelayedAngularDOFsToVector(int groupset_id,
                                                         std::vector<double>& output) const
@@ -473,13 +498,27 @@ void
 ReflectingBoundary::AddToNewDelayedAngularFlux(int groupset_id,
                                                const DelayedFluxCorrection& correction)
 {
-  if (not opposing_reflected_)
-    return;
+  if (opposing_reflected_)
+    AddToNewDelayedValues(groupset_id, correction, 0);
+}
 
+void
+ReflectingBoundary::AddToNewDelayedAngularSlope(int groupset_id,
+                                                const DelayedFluxCorrection& correction)
+{
+  if (opposing_reflected_ and delayed_angular_slope_enabled_)
+    AddToNewDelayedValues(groupset_id, correction, extra_data_[groupset_id].slope_stride);
+}
+
+void
+ReflectingBoundary::AddToNewDelayedValues(int groupset_id,
+                                          const DelayedFluxCorrection& correction,
+                                          const std::uint64_t offset)
+{
   const auto& extra_data = extra_data_[groupset_id];
   const auto node_stride = extra_data.node_stride;
   const auto groupset_size = bank_[groupset_id].groupset_size;
-  double* flux = GetBoundaryFlux(groupset_id);
+  double* flux = GetBoundaryFlux(groupset_id, offset);
   for (const auto& [face_node, facenode_idx] : facenode_to_index_)
   {
     const auto cell_local_id = static_cast<std::uint32_t>(face_node.GetCellIndex());

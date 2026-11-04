@@ -15,8 +15,8 @@ class SteadyStateSourceSolver : public DiscreteOrdinatesSolver
 public:
   explicit SteadyStateSourceSolver(const InputParameters& params);
 
-  /// Return the total number of transport sweeps applied by all WGS solvers.
-  std::size_t GetNumSweeps() const;
+  /// Return true if the transport solve of the last Execute() converged.
+  bool IsConverged() const { return converged_; }
 
   BalanceTable ComputeBalanceTable() const;
 
@@ -24,6 +24,9 @@ protected:
   void CheckRequirements(std::vector<std::string>& errors) const override;
   void InitializeSolver() override;
   void ExecuteSolver() override;
+
+private:
+  bool converged_ = false;
 
 public:
   static InputParameters GetInputParameters();

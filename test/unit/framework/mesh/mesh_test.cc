@@ -8,6 +8,9 @@
 
 using namespace opensn;
 
+namespace
+{
+
 /// Helper for the PointInsideCellXD tests
 void
 TestPointInsideCell(const std::shared_ptr<Mesh> grid)
@@ -102,6 +105,8 @@ TestPointInsideCell(const std::shared_ptr<Mesh> grid)
   }
 }
 
+} // namespace
+
 TEST(MeshTest, PointInsideCell1D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, -0.75, 0.0, 1.0, 2.0}});
@@ -119,6 +124,9 @@ TEST(MeshTest, PointInsideCell3D)
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCell(grid_ptr);
 }
+
+namespace
+{
 
 /// Helper for the PointInsideCellFaceXD tests
 void
@@ -189,6 +197,8 @@ TestPointInsideCellFace(const std::shared_ptr<Mesh> grid)
         }
   }
 }
+
+} // namespace
 
 TEST(MeshTest, PointInsideCellFace1D)
 {

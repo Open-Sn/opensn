@@ -37,17 +37,18 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
                                                       : 0;
   const double sigma_t = 0.27;
 
-  // Build harmonic map
+  // Build harmonic map. Degrees and orders are signed because the orders run from -ell to ell.
+  const int max_ell = static_cast<int>(scattering_order);
   std::vector<std::pair<int, int>> m_to_ell_em_map;
   if (dimension == 1)
-    for (int ell = 0; ell <= scattering_order; ++ell)
+    for (int ell = 0; ell <= max_ell; ++ell)
       m_to_ell_em_map.emplace_back(ell, 0);
   else if (dimension == 2)
-    for (int ell = 0; ell <= scattering_order; ++ell)
+    for (int ell = 0; ell <= max_ell; ++ell)
       for (int m = -ell; m <= ell; m += 2)
         m_to_ell_em_map.emplace_back(ell, m);
   else if (dimension == 3)
-    for (int ell = 0; ell <= scattering_order; ++ell)
+    for (int ell = 0; ell <= max_ell; ++ell)
       for (int m = -ell; m <= ell; ++m)
         m_to_ell_em_map.emplace_back(ell, m);
 
@@ -216,7 +217,7 @@ SimTest93_RayTracing(std::shared_ptr<Mesh> grid)
   const size_t num_particles = 100'000;
   for (size_t n = 0; n < num_particles; ++n)
   {
-    if (n % size_t(num_particles / 10.0) == 0)
+    if (n % (num_particles / 10) == 0)
       std::cout << "#particles = " << n << "\n";
     // Create the particle
     const auto omega = SampleRandomDirection();
