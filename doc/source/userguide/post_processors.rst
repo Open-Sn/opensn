@@ -674,9 +674,13 @@ the postprocessor at it:
   written by ``WriteFluxMoments``; used for ``"scatter"`` and
   ``"production"``, and by ``ApplyKEigenvalueScaling`` below.
 * ``flux_moments_single_file`` — set ``True`` to read the flux moments
-  from the single file ``<prefix>.h5`` instead of one file per rank
-  (``<prefix><rank>.h5``). This is supported only in serial runs; a
-  multi-rank run raises an error before opening any file.
+  from the single file ``<prefix>.h5`` instead of the file set
+  ``<prefix><k>.h5``. A single file can be read on any number of ranks.
+
+Flux-moment and angular-flux file sets that record their number of files
+(``num_partitions``) may have been written by any number of ranks with any
+partitioning of the same mesh. Sets written before that number was recorded
+must be read with the rank count that wrote them.
 
 Leaving a prefix empty (the default) uses the problem's current state for
 that term. The postprocessor checks that each term has the right kind of

@@ -26,4 +26,26 @@ BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm)
   return extents;
 }
 
+void
+BroadcastStrings(const mpi::Communicator& comm, std::vector<std::string>& strings, const int root)
+{
+  std::vector<std::uint64_t> lengths;
+  std::vector<char> chars;
+  for (const auto& string : strings)
+  {
+    lengths.push_back(string.size());
+    chars.insert(chars.end(), string.begin(), string.end());
+  }
+  BroadcastVector(comm, lengths, root);
+  BroadcastVector(comm, chars, root);
+  strings.clear();
+  std::uint64_t offset = 0;
+  for (const auto length : lengths)
+  {
+    strings.emplace_back(chars.begin() + static_cast<std::ptrdiff_t>(offset),
+                         chars.begin() + static_cast<std::ptrdiff_t>(offset + length));
+    offset += length;
+  }
+}
+
 } // namespace opensn

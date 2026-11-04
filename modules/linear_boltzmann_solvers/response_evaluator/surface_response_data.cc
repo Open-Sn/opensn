@@ -3,7 +3,10 @@
 
 #include "modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h"
 #include "framework/logging/log.h"
+#include "framework/mpi/mpi_utils.h"
+#include "framework/utils/collective_error.h"
 #include "framework/utils/error.h"
+#include "framework/utils/hdf_utils.h"
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
@@ -30,62 +33,6 @@ const double SAME_PROBLEM_TOLERANCE = 1.0e-12;
  * angular analog of matching face nodes within 1e-6 times the face size.
  */
 const double DIRECTION_MATCH_TOLERANCE = 1.0e-6;
-
-/// Throw on every rank if any rank recorded an error. Collective.
-void
-ThrowIfAnyRankFailed(const mpi::Communicator& comm,
-                     const std::string& local_error,
-                     const std::string& operation)
-{
-  int failed = local_error.empty() ? 0 : 1;
-  comm.all_reduce(failed, mpi::op::max<int>());
-  if (failed == 0)
-    return;
-  if (local_error.empty())
-    throw std::logic_error(operation + " failed on another rank.");
-  throw std::logic_error(operation + " failed on rank " + std::to_string(comm.rank()) + ": " +
-                         local_error);
-}
-
-template <typename T>
-void
-BroadcastVector(const mpi::Communicator& comm, std::vector<T>& values, const int root)
-{
-  std::uint64_t size = values.size();
-  comm.broadcast(size, root);
-  values.resize(size);
-  if (size > 0)
-    comm.broadcast(values.data(), static_cast<int>(size), root);
-}
-
-/// Broadcast `strings` from `root` to every rank of `comm`. Collective.
-void
-BroadcastStrings(const mpi::Communicator& comm, std::vector<std::string>& strings, const int root)
-{
-  std::vector<std::uint64_t> lengths;
-  std::vector<char> chars;
-  for (const auto& string : strings)
-  {
-    lengths.push_back(string.size());
-    chars.insert(chars.end(), string.begin(), string.end());
-  }
-  BroadcastVector(comm, lengths, root);
-  BroadcastVector(comm, chars, root);
-  strings.clear();
-  std::uint64_t offset = 0;
-  for (const auto length : lengths)
-  {
-    strings.emplace_back(chars.begin() + static_cast<std::ptrdiff_t>(offset),
-                         chars.begin() + static_cast<std::ptrdiff_t>(offset + length));
-    offset += length;
-  }
-}
-
-std::string
-PartitionFileName(const std::string& file_base, const std::uint64_t id)
-{
-  return file_base + std::to_string(id) + ".h5";
-}
 
 bool
 SameQuadrature(const std::vector<SurfaceQuadrature>& a, const std::vector<SurfaceQuadrature>& b)
@@ -398,11 +345,12 @@ ExchangeChunk(const mpi::Communicator& comm,
   for (size_t p = 0; p < num_ranks; ++p)
     send_payload += send_counts[2 * p + 1];
   const auto int_max = static_cast<std::uint64_t>(std::numeric_limits<int>::max());
-  ThrowIfAnyRankFailed(comm,
-                       std::max({recv_headers, recv_payload, send_payload}) > int_max
-                         ? "one exchange exceeds the MPI int count range of a rank"
-                         : "",
-                       "Surface angular-flux redistribution");
+  ThrowIfAnyRankFailed<std::logic_error>(
+    comm,
+    std::max({recv_headers, recv_payload, send_payload}) > int_max
+      ? "one exchange exceeds the MPI int count range of a rank"
+      : "",
+    "Surface angular-flux redistribution");
 
   std::vector<int> header_counts(num_ranks), payload_counts(num_ranks);
   std::vector<int> recv_header_counts(num_ranks), recv_payload_counts(num_ranks);
@@ -672,7 +620,7 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
       error = exception.what();
       file_fluxes.clear();
     }
-    ThrowIfAnyRankFailed(comm, error, operation);
+    ThrowIfAnyRankFailed<std::logic_error>(comm, error, operation);
 
     for (size_t s = 0; s < num_surfaces; ++s)
     {
@@ -710,7 +658,7 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
         std::array<int, 2> global_flags = {0, 0};
         comm.all_reduce(local_flags.data(), 2, global_flags.data(), mpi::op::max<int>());
         if (global_flags[0] != 0)
-          ThrowIfAnyRankFailed(comm, error, operation);
+          ThrowIfAnyRankFailed<std::logic_error>(comm, error, operation);
         if (global_flags[1] == 0)
           break;
         error = ExchangeChunk(comm, data.groupsets, chunk, shard);
@@ -752,7 +700,7 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
                 " contains two faces with the same centroid key. Face centroids must differ by "
                 "more than the centroid spacing " +
                 std::to_string(data.centroid_spacing) + ".";
-    ThrowIfAnyRankFailed(comm, error, operation);
+    ThrowIfAnyRankFailed<std::logic_error>(comm, error, operation);
   }
 
   std::uint64_t total_faces = 0;
