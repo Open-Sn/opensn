@@ -981,30 +981,53 @@ These are useful for:
 * response studies,
 * source-driven workflows that reuse previously computed fields.
 
-Flux-moment and angular-flux files are written one per rank (``<file_base><rank>.h5``)
-and must be read with the same rank count and mesh partition. Angular-flux files
+Flux-moment and angular-flux files are written one per rank (``<file_base><rank>.h5``),
+and each file records the number of files in its set (``num_partitions``). They can
+be read with any number of ranks and any partitioning of the same mesh: file k is
+read on rank k mod P, and each cell's values are sent to the rank that owns it, so
+every rank receives exactly its own cells and computes with them. Cells are matched
+by global ID and nodes by location. Files written before the number of files was
+recorded form a set of as many files as the reading run has ranks, so they must be
+read with the rank count that wrote them. A rank may read files that other nodes
+wrote, so the files must be on a file system that every rank can access, or each
+file staged where the rank that reads it can open it. All files of a set must come
+from one write: each file records the identifier of its write (``file_set_id``),
+and a set whose files record different identifiers or different solution
+provenance is rejected, for example after an interrupted overwrite. A writer
+checks every rank's data before any rank replaces its file, so a write whose data
+are rejected leaves an existing set untouched. A write that fails while the files
+are being written can leave the set partly replaced; its files then record
+different identifiers or are incomplete, so the set is rejected when read and must
+be written again. ``ReadFluxMoments``, ``ReadSourceMoments``, and
+``ReadFluxMomentsAndMakeSourceMoments`` can also read a single file
+``<file_base>.h5`` (``single_file_flag=True``) on any number of ranks if it
+records no ``num_partitions`` or records 1. Writing is collective: every rank writes its
+file, and a failed write on any rank raises the error on every rank. Angular-flux files
 also record each groupset's quadrature directions and weights, and a file whose
 quadrature differs from the problem's is rejected even when the number of
 directions matches. Problem-owned solution files also record whether the solution
 is forward or adjoint and, for an adjoint, whether it is in the internal sweep or
 physical orientation. Response and sensitivity postprocessors require files with
-the expected role; adjoint files must have physical orientation. Files written before the quadrature
-was recorded are read with a warning by general-purpose readers, but they do not
-have enough provenance to be used as validated response or sensitivity inputs.
+the expected role; adjoint files must have physical orientation. Files written
+before the quadrature was recorded are read with a warning by general-purpose
+readers, but they do not have enough provenance to be used as validated response
+or sensitivity inputs. Files that record ``num_partitions`` must also record their
+quadrature.
 Reading is collective: a file that is missing, malformed, nonfinite, or incompatible
 on any rank raises the error on every rank, and the destination is left unchanged.
 
-Surface angular-flux files are also written one per rank, but they are not tied to
-the rank count or partition that wrote them. Each file records the number of files
-in its set, and :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
+Surface angular-flux files are also written one per rank, record the number of
+files in their set, and are likewise not tied to the rank count or partition that
+wrote them. :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
 rank's by default, or any file of the set with ``partition``. That call is not
 collective and does not check the data against the problem. To combine a whole
 set, on any number of ranks, and evaluate surface responses, pass the file prefix
 as ``surface_angular_fluxes`` in the ``data`` option of
 :py:class:`pyopensn.response.ResponseEvaluator` and call
-:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`. Any
-rank may read any file of the set, so all files must be on a file system that
-every reading rank can access.
+:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`. File k
+of the set is read on rank k mod P, so the files must be on a file system that
+every rank can access, or each file staged where the rank that reads it can open
+it.
 
 Surface Responses
 -----------------

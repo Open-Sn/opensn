@@ -306,16 +306,22 @@ WrapResEval(py::module& response)
         Prefix map with optional keys:
           - flux_moments: str
               Prefix for the adjoint flux-moment files that :py:meth:`EvaluateResponse` folds
-              against the forward sources. Written with the current rank count and partitioning.
+              against the forward sources.
           - angular_fluxes: str
-              Prefix for the adjoint angular-flux files needed for boundary sources. Written with
-              the current rank count and partitioning.
+              Prefix for the adjoint angular-flux files needed for boundary sources.
+
+              Like the surface files, flux-moment and angular-flux files that record their number
+              of files (``num_partitions``) may have been written by any number of ranks with any
+              partitioning of the same mesh. Sets written before that number was recorded must
+              be read with the rank count that wrote them. Each rank of this run receives the
+              values of its own cells and evaluates its part of the response.
           - surface_angular_fluxes: str
               Prefix for the files written by ``WriteSurfaceAngularFluxes``, used by
               :py:meth:`EvaluateSurfaceResponse`. All files of the prefix are read, whatever
               number of ranks wrote them, and their faces are distributed over the current ranks.
-              Any rank may read any file, so the files must be on a file system that every rank
-              can access.
+        For all three prefixes, a rank may read files that other ranks wrote, possibly on other
+        nodes, so the files must be on a file system that every rank can access, or each file
+        staged where the rank that reads it can open it.
         Flux-moment and angular-flux files must also match the problem's quadrature and groups.
         Adjoint data must be in physical orientation, as written after its solver finished.
         Forward data is also accepted.
@@ -331,8 +337,10 @@ WrapResEval(py::module& response)
         If the name is already used, or ``surfaces`` and ``surface_angular_fluxes`` are not given
         together.
     RuntimeError
-        If a file cannot be read, does not match the problem, or holds adjoint data in solver
-        orientation.
+        On every rank, if a file cannot be read, does not match the problem, or holds adjoint data
+        in solver orientation, if the files of a set record different write identifiers or
+        solution provenance (roles, adjoint orientations, or whether they record them), or if a
+        local cell is in no file.
     )"
   );
   res_eval.def(

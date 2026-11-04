@@ -4,7 +4,12 @@
 #pragma once
 
 #include "framework/runtime.h"
+#include "framework/utils/collective_error.h"
+#include <algorithm>
+#include <cstdint>
+#include <limits>
 #include <map>
+#include <string>
 #include <vector>
 #include <type_traits>
 #include <set>
@@ -18,6 +23,29 @@ namespace opensn
  * ends at extents[i+1]
  */
 std::vector<uint64_t> BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm);
+
+/**
+ * Broadcast `values`, including their number, from rank `root` to every rank of `comm`. Values
+ * are sent in chunks that fit the MPI int count range. Collective. Throws std::runtime_error on
+ * every rank, before any value is sent, if a rank cannot hold the values.
+ */
+template <typename T>
+void
+BroadcastVector(const mpi::Communicator& comm, std::vector<T>& values, const int root)
+{
+  std::uint64_t size = values.size();
+  comm.broadcast(size, root);
+  ThrowIfAnyRankFailed(comm, CaptureError([&] { values.resize(size); }), "Broadcasting a vector");
+  // Every rank has the same size, so every rank makes the same broadcasts.
+  const auto max_chunk = static_cast<std::uint64_t>(std::numeric_limits<int>::max());
+  for (std::uint64_t offset = 0; offset < size; offset += max_chunk)
+    comm.broadcast(
+      values.data() + offset, static_cast<int>(std::min(max_chunk, size - offset)), root);
+}
+
+/// Broadcast `strings` from rank `root` to every rank of `comm`. Collective. Throws
+/// std::runtime_error on every rank if a rank cannot hold them.
+void BroadcastStrings(const mpi::Communicator& comm, std::vector<std::string>& strings, int root);
 
 /**
  * Given a map with keys indicating the destination process-ids and the values for each key a list

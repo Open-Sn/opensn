@@ -3,11 +3,17 @@
 
 #include "modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h"
 #include "framework/logging/log.h"
+#include "framework/mpi/mpi_utils.h"
+#include "framework/mpi/record_exchange.h"
+#include "framework/utils/collective_error.h"
 #include "framework/utils/error.h"
+#include "framework/utils/hdf_utils.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <limits>
+#include <optional>
 #include <set>
 #include <sstream>
 #include <stdexcept>
@@ -30,62 +36,6 @@ const double SAME_PROBLEM_TOLERANCE = 1.0e-12;
  * angular analog of matching face nodes within 1e-6 times the face size.
  */
 const double DIRECTION_MATCH_TOLERANCE = 1.0e-6;
-
-/// Throw on every rank if any rank recorded an error. Collective.
-void
-ThrowIfAnyRankFailed(const mpi::Communicator& comm,
-                     const std::string& local_error,
-                     const std::string& operation)
-{
-  int failed = local_error.empty() ? 0 : 1;
-  comm.all_reduce(failed, mpi::op::max<int>());
-  if (failed == 0)
-    return;
-  if (local_error.empty())
-    throw std::logic_error(operation + " failed on another rank.");
-  throw std::logic_error(operation + " failed on rank " + std::to_string(comm.rank()) + ": " +
-                         local_error);
-}
-
-template <typename T>
-void
-BroadcastVector(const mpi::Communicator& comm, std::vector<T>& values, const int root)
-{
-  std::uint64_t size = values.size();
-  comm.broadcast(size, root);
-  values.resize(size);
-  if (size > 0)
-    comm.broadcast(values.data(), static_cast<int>(size), root);
-}
-
-/// Broadcast `strings` from `root` to every rank of `comm`. Collective.
-void
-BroadcastStrings(const mpi::Communicator& comm, std::vector<std::string>& strings, const int root)
-{
-  std::vector<std::uint64_t> lengths;
-  std::vector<char> chars;
-  for (const auto& string : strings)
-  {
-    lengths.push_back(string.size());
-    chars.insert(chars.end(), string.begin(), string.end());
-  }
-  BroadcastVector(comm, lengths, root);
-  BroadcastVector(comm, chars, root);
-  strings.clear();
-  std::uint64_t offset = 0;
-  for (const auto length : lengths)
-  {
-    strings.emplace_back(chars.begin() + static_cast<std::ptrdiff_t>(offset),
-                         chars.begin() + static_cast<std::ptrdiff_t>(offset + length));
-    offset += length;
-  }
-}
-
-std::string
-PartitionFileName(const std::string& file_base, const std::uint64_t id)
-{
-  return file_base + std::to_string(id) + ".h5";
-}
 
 bool
 SameQuadrature(const std::vector<SurfaceQuadrature>& a, const std::vector<SurfaceQuadrature>& b)
@@ -169,64 +119,113 @@ DescribeHeaderMismatch(const FileSetHeader& reference, const FileSetHeader& head
   return {};
 }
 
-/// Broadcast `header` from rank 0 to every rank of `comm`. Collective.
+/**
+ * Run `function`, which makes no MPI calls, on every rank of `comm`, and raise a failure on any
+ * rank on every rank: as std::invalid_argument if the lowest failing rank's failure was one, so
+ * that Python reports an invalid request as ValueError, and as std::logic_error otherwise.
+ * `operation` is read only after `function` returns. Collective.
+ */
+template <typename Function>
 void
-BroadcastFileSetHeader(const mpi::Communicator& comm, FileSetHeader& header)
+RunKeepingInvalidArgument(const mpi::Communicator& comm,
+                          const Function& function,
+                          const std::string& operation)
+{
+  std::string error;
+  int invalid_argument = 0;
+  try
+  {
+    function();
+  }
+  catch (const std::invalid_argument& exception)
+  {
+    error = DescribeError(exception);
+    invalid_argument = 1;
+  }
+  catch (const std::exception& exception)
+  {
+    error = DescribeError(exception);
+  }
+  catch (...)
+  {
+    error = non_standard_exception_message;
+  }
+  const auto failure = FindFirstRankError(comm, error);
+  if (not failure.has_value())
+    return;
+  comm.broadcast(invalid_argument, failure->first);
+  const auto message =
+    (operation.empty() ? std::string("Reading surface angular fluxes") : operation) +
+    " failed on rank " + std::to_string(failure->first) + ": " + failure->second;
+  if (invalid_argument != 0)
+    throw std::invalid_argument(message);
+  throw std::logic_error(message);
+}
+
+/**
+ * Broadcast `header` from rank 0 to every rank of `comm`. Collective. Packing on rank 0 and
+ * unpacking on every rank run inside CaptureError, so that a failure on one rank, such as an
+ * allocation, is raised as std::logic_error on every rank.
+ */
+void
+BroadcastFileSetHeader(const mpi::Communicator& comm,
+                       FileSetHeader& header,
+                       const std::string& operation)
 {
   std::vector<std::uint64_t> ints;
   std::vector<double> reals;
-  if (comm.rank() == 0)
-  {
-    ints = {header.num_partitions, header.file_set_id, header.adjoint ? 1U : 0U};
-    reals = {header.centroid_origin[0],
-             header.centroid_origin[1],
-             header.centroid_origin[2],
-             header.centroid_spacing};
-    for (const auto& quadrature : header.quadratures)
-    {
-      ints.insert(ints.end(), {quadrature.num_dirs, quadrature.num_groups, quadrature.first_group});
-      reals.insert(reals.end(), quadrature.omegas.begin(), quadrature.omegas.end());
-      reals.insert(reals.end(), quadrature.weights.begin(), quadrature.weights.end());
-    }
-  }
+  ThrowIfAnyRankFailed<std::logic_error>(
+    comm,
+    CaptureError(
+      [&]
+      {
+        if (comm.rank() != 0)
+          return;
+        ints = {header.num_partitions, header.file_set_id, header.adjoint ? 1U : 0U};
+        reals = {header.centroid_origin[0],
+                 header.centroid_origin[1],
+                 header.centroid_origin[2],
+                 header.centroid_spacing};
+        for (const auto& quadrature : header.quadratures)
+        {
+          ints.insert(ints.end(),
+                      {quadrature.num_dirs, quadrature.num_groups, quadrature.first_group});
+          reals.insert(reals.end(), quadrature.omegas.begin(), quadrature.omegas.end());
+          reals.insert(reals.end(), quadrature.weights.begin(), quadrature.weights.end());
+        }
+      }),
+    operation);
   BroadcastVector(comm, ints, 0);
   BroadcastVector(comm, reals, 0);
   BroadcastVector(comm, header.interior, 0);
 
-  header.num_partitions = ints[0];
-  header.file_set_id = ints[1];
-  header.adjoint = ints[2] != 0;
-  header.centroid_origin = {reals[0], reals[1], reals[2]};
-  header.centroid_spacing = reals[3];
-  header.quadratures.resize((ints.size() - 3) / 3);
-  auto real = reals.begin() + 4;
-  for (size_t gs = 0; gs < header.quadratures.size(); ++gs)
-  {
-    auto& quadrature = header.quadratures[gs];
-    quadrature.num_dirs = ints[3 + 3 * gs];
-    quadrature.num_groups = ints[4 + 3 * gs];
-    quadrature.first_group = ints[5 + 3 * gs];
-    const auto num_dirs = static_cast<std::ptrdiff_t>(quadrature.num_dirs);
-    quadrature.omegas.assign(real, real + 3 * num_dirs);
-    real += 3 * num_dirs;
-    quadrature.weights.assign(real, real + num_dirs);
-    real += num_dirs;
-  }
+  ThrowIfAnyRankFailed<std::logic_error>(
+    comm,
+    CaptureError(
+      [&]
+      {
+        header.num_partitions = ints[0];
+        header.file_set_id = ints[1];
+        header.adjoint = ints[2] != 0;
+        header.centroid_origin = {reals[0], reals[1], reals[2]};
+        header.centroid_spacing = reals[3];
+        header.quadratures.resize((ints.size() - 3) / 3);
+        auto real = reals.begin() + 4;
+        for (size_t gs = 0; gs < header.quadratures.size(); ++gs)
+        {
+          auto& quadrature = header.quadratures[gs];
+          quadrature.num_dirs = ints[3 + 3 * gs];
+          quadrature.num_groups = ints[4 + 3 * gs];
+          quadrature.first_group = ints[5 + 3 * gs];
+          const auto num_dirs = static_cast<std::ptrdiff_t>(quadrature.num_dirs);
+          quadrature.omegas.assign(real, real + 3 * num_dirs);
+          real += 3 * num_dirs;
+          quadrature.weights.assign(real, real + num_dirs);
+          real += num_dirs;
+        }
+      }),
+    operation);
 }
-
-/// Faces read from this rank's files, in read order, before they are sent to their owners.
-struct FaceChunk
-{
-  std::vector<FaceCentroidKey> keys;
-  std::vector<std::uint64_t> num_nodes;
-  std::vector<double> coords;
-  std::vector<double> mass;
-  /// Per groupset: one row of direction cosines per face.
-  std::vector<std::vector<double>> mu;
-  /// Per groupset: angular flux by face, node, direction, and group.
-  std::vector<std::vector<double>> psi;
-  std::uint64_t packed_bytes = 0;
-};
 
 /// Number of int64 header values per face: three key components and the node count.
 const size_t FACE_HEADER_SIZE = 4;
@@ -243,7 +242,7 @@ FacePayloadSize(const std::uint64_t n, const std::vector<SurfaceQuadrature>& qua
 
 /**
  * The faces of one surface tag of one file read by
- * `DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes`, taken in bounded chunks.
+ * `DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes`, sent to their owners in bounded chunks.
  */
 class TagFaces
 {
@@ -272,73 +271,67 @@ public:
 
   bool IsDone() const { return next_face_ == keys_.size(); }
 
-  /// Fill `chunk` with the next faces that fit in `budget` packed bytes, at least one face.
-  void FillNextChunk(const std::uint64_t budget, FaceChunk& chunk)
+  /**
+   * Add the next faces that fit in `budget` packed bytes to `batch`, at least one, each as one
+   * record for its owner among `num_ranks` ranks: header {key, node count} and payload {node
+   * coordinates, mass matrix, then per groupset the direction cosines and the angular flux}.
+   * Returns the number of faces added.
+   */
+  std::uint64_t FillChunk(const std::uint64_t budget, const int num_ranks, RecordBatch& batch)
   {
-    std::uint64_t end = next_face_;
-    while (end < keys_.size())
+    const auto& mapping = *groupset_entries_.front()->mapping;
+    std::uint64_t bytes = batch.GetPackedBytes();
+    std::uint64_t added = 0;
+    for (bool first = true; next_face_ < keys_.size(); first = false)
     {
-      const auto bytes = sizeof(std::int64_t) * FACE_HEADER_SIZE +
-                         sizeof(double) * FacePayloadSize(GetNumFaceNodes(end), quadratures_);
-      if (end > next_face_ and chunk.packed_bytes + bytes > budget)
+      const auto f = next_face_;
+      const auto n = GetNumFaceNodes(f);
+      const auto record_bytes = batch.GetRecordBytes(FacePayloadSize(n, quadratures_));
+      if (not first and bytes + record_bytes > budget)
         break;
-      chunk.packed_bytes += bytes;
-      ++end;
+      bytes += record_bytes;
+
+      auto* header = batch.AddRecord(SurfaceFaceOwner(keys_[f], num_ranks));
+      header[0] = std::get<0>(keys_[f]);
+      header[1] = std::get<1>(keys_[f]);
+      header[2] = std::get<2>(keys_[f]);
+      header[3] = static_cast<std::int64_t>(n);
+      for (auto node = node_offset_[f]; node < node_offset_[f + 1]; ++node)
+      {
+        const std::array<double, 3> xyz = {
+          mapping.nodes_x[node], mapping.nodes_y[node], mapping.nodes_z[node]};
+        batch.AppendPayload(xyz.data(), xyz.size());
+      }
+      batch.AppendPayload(mapping.mass_matrix.data() + mass_offset_[f], n * n);
+
+      for (size_t gs = 0; gs < quadratures_.size(); ++gs)
+      {
+        const auto num_dirs = quadratures_[gs].num_dirs;
+        const auto stride = num_dirs * quadratures_[gs].num_groups;
+        const auto& data = groupset_entries_[gs]->data;
+        // The cosine of each direction with the face normal.
+        const auto& omegas = quadratures_[gs].omegas;
+        const double* normal = &mapping.normals[3 * f];
+        mu_.resize(num_dirs);
+        for (std::uint64_t d = 0; d < num_dirs; ++d)
+          mu_[d] = omegas[3 * d] * normal[0] + omegas[3 * d + 1] * normal[1] +
+                   omegas[3 * d + 2] * normal[2];
+        batch.AppendPayload(mu_.data(), num_dirs);
+        // A boundary face carries its upwind values: those of the boundary condition for the
+        // directions that enter the domain.
+        const auto& face_psi = interior_ ? data.psi : data.upwind_psi;
+        batch.AppendPayload(face_psi.data() + node_offset_[f] * stride, n * stride);
+      }
+      ++next_face_;
+      ++added;
     }
-    if (end > next_face_)
-      CopyFacesToChunk(end, chunk);
-    next_face_ = end;
+    return added;
   }
 
 private:
   std::uint64_t GetNumFaceNodes(const std::uint64_t face) const
   {
     return node_offset_[face + 1] - node_offset_[face];
-  }
-
-  /// Copy faces [next_face_, end) into `chunk`.
-  void CopyFacesToChunk(const std::uint64_t end, FaceChunk& chunk) const
-  {
-    const auto& mapping = *groupset_entries_.front()->mapping;
-    for (std::uint64_t f = next_face_; f < end; ++f)
-    {
-      chunk.keys.push_back(keys_[f]);
-      chunk.num_nodes.push_back(GetNumFaceNodes(f));
-      for (auto node = node_offset_[f]; node < node_offset_[f + 1]; ++node)
-        chunk.coords.insert(chunk.coords.end(),
-                            {mapping.nodes_x[node], mapping.nodes_y[node], mapping.nodes_z[node]});
-    }
-
-    const auto& mass = mapping.mass_matrix;
-    chunk.mass.insert(chunk.mass.end(),
-                      mass.begin() + static_cast<std::ptrdiff_t>(mass_offset_[next_face_]),
-                      mass.begin() + static_cast<std::ptrdiff_t>(mass_offset_[end]));
-
-    chunk.mu.resize(quadratures_.size());
-    chunk.psi.resize(quadratures_.size());
-    for (size_t gs = 0; gs < quadratures_.size(); ++gs)
-    {
-      const auto num_dirs = quadratures_[gs].num_dirs;
-      const auto stride = num_dirs * quadratures_[gs].num_groups;
-      const auto& data = groupset_entries_[gs]->data;
-      // A boundary face carries its upwind values: those of the boundary condition for the
-      // directions that enter the domain.
-      const auto& face_psi = interior_ ? data.psi : data.upwind_psi;
-
-      // The cosine of each direction with the face normal.
-      const auto& omegas = quadratures_[gs].omegas;
-      for (std::uint64_t f = next_face_; f < end; ++f)
-      {
-        const double* normal = &mapping.normals[3 * f];
-        for (std::uint64_t d = 0; d < num_dirs; ++d)
-          chunk.mu[gs].push_back(omegas[3 * d] * normal[0] + omegas[3 * d + 1] * normal[1] +
-                                 omegas[3 * d + 2] * normal[2]);
-      }
-      chunk.psi[gs].insert(
-        chunk.psi[gs].end(),
-        face_psi.begin() + static_cast<std::ptrdiff_t>(node_offset_[next_face_] * stride),
-        face_psi.begin() + static_cast<std::ptrdiff_t>(node_offset_[end] * stride));
-    }
   }
 
   const std::vector<SurfaceQuadrature>& quadratures_;
@@ -349,159 +342,125 @@ private:
   std::vector<std::uint64_t> node_offset_ = {0};
   std::vector<std::uint64_t> mass_offset_ = {0};
   std::uint64_t next_face_ = 0;
+  /// Scratch direction cosines of one face and groupset.
+  std::vector<double> mu_;
 };
 
-std::vector<int>
-MakeOffsets(const std::vector<int>& counts)
-{
-  std::vector<int> offsets(counts.size(), 0);
-  for (size_t p = 1; p < counts.size(); ++p)
-    offsets[p] = offsets[p - 1] + counts[p - 1];
-  return offsets;
-}
-
 /**
- * Send the faces of `chunk` to their owners and append the received faces to `shard`. Collective.
- * Returns a description of a local unpacking error, or an empty string.
+ * The files of a surface angular-flux file set as streams for RunFileSetPasses: stream s sends the
+ * faces of surface tag s to their owners (see SurfaceFaceOwner), one record per face, and the
+ * owner appends them to its shard of the tag. The constructor allocates nothing.
  */
-std::string
-ExchangeChunk(const mpi::Communicator& comm,
-              const std::vector<SurfaceQuadrature>& quadratures,
-              FaceChunk& chunk,
-              SurfaceShard& shard)
+class SurfaceFileSource
 {
-  const auto num_ranks = static_cast<size_t>(comm.size());
-  const auto num_faces = chunk.keys.size();
-
-  // Count header and payload values per destination rank.
-  std::vector<size_t> owner(num_faces);
-  std::vector<std::uint64_t> send_counts(2 * num_ranks, 0);
-  for (size_t f = 0; f < num_faces; ++f)
+public:
+  SurfaceFileSource(const std::string& file_base,
+                    const std::vector<std::string>& surface_tags,
+                    const FileSetHeader& header,
+                    const std::vector<SurfaceShard*>& shards,
+                    std::vector<std::uint64_t>& faces_sent,
+                    std::vector<SurfaceAngularFlux>& first_file,
+                    const int num_ranks)
+    : file_base_(file_base),
+      surface_tags_(surface_tags),
+      header_(header),
+      shards_(shards),
+      faces_sent_(faces_sent),
+      first_file_(first_file),
+      num_ranks_(num_ranks)
   {
-    owner[f] = static_cast<size_t>(SurfaceFaceOwner(chunk.keys[f], comm.size()));
-    send_counts[2 * owner[f]] += FACE_HEADER_SIZE;
-    send_counts[2 * owner[f] + 1] += FacePayloadSize(chunk.num_nodes[f], quadratures);
   }
-  std::vector<std::uint64_t> recv_counts(2 * num_ranks, 0);
-  comm.all_to_all(send_counts.data(), 2, recv_counts.data(), 2);
 
-  // The send budget bounds what each rank sends, but a rank receives from every rank, so check the
-  // totals collectively before using int counts.
-  std::uint64_t recv_headers = 0;
-  std::uint64_t recv_payload = 0;
-  for (size_t p = 0; p < num_ranks; ++p)
+  void OpenFile(const std::uint64_t file_id)
   {
-    recv_headers += recv_counts[2 * p];
-    recv_payload += recv_counts[2 * p + 1];
-  }
-  std::uint64_t send_payload = 0;
-  for (size_t p = 0; p < num_ranks; ++p)
-    send_payload += send_counts[2 * p + 1];
-  const auto int_max = static_cast<std::uint64_t>(std::numeric_limits<int>::max());
-  ThrowIfAnyRankFailed(comm,
-                       std::max({recv_headers, recv_payload, send_payload}) > int_max
-                         ? "one exchange exceeds the MPI int count range of a rank"
-                         : "",
-                       "Surface angular-flux redistribution");
-
-  std::vector<int> header_counts(num_ranks), payload_counts(num_ranks);
-  std::vector<int> recv_header_counts(num_ranks), recv_payload_counts(num_ranks);
-  for (size_t p = 0; p < num_ranks; ++p)
-  {
-    header_counts[p] = static_cast<int>(send_counts[2 * p]);
-    payload_counts[p] = static_cast<int>(send_counts[2 * p + 1]);
-    recv_header_counts[p] = static_cast<int>(recv_counts[2 * p]);
-    recv_payload_counts[p] = static_cast<int>(recv_counts[2 * p + 1]);
-  }
-  const auto header_offsets = MakeOffsets(header_counts);
-  const auto payload_offsets = MakeOffsets(payload_counts);
-
-  // Pack in destination order.
-  std::vector<std::int64_t> headers(num_faces * FACE_HEADER_SIZE);
-  std::vector<double> payload(send_payload);
-  {
-    auto header_cursor = header_offsets;
-    auto payload_cursor = payload_offsets;
-    std::uint64_t node_offset = 0;
-    std::uint64_t mass_offset = 0;
-    std::vector<std::uint64_t> psi_offsets(quadratures.size(), 0);
-    for (size_t f = 0; f < num_faces; ++f)
+    // Rank 0 read and checked file 0 to find the set; it is not read again.
+    if (file_id == 0)
     {
-      const auto n = chunk.num_nodes[f];
-      auto* h = &headers[header_cursor[owner[f]]];
-      h[0] = std::get<0>(chunk.keys[f]);
-      h[1] = std::get<1>(chunk.keys[f]);
-      h[2] = std::get<2>(chunk.keys[f]);
-      h[3] = static_cast<std::int64_t>(n);
-      header_cursor[owner[f]] += static_cast<int>(FACE_HEADER_SIZE);
+      file_fluxes_.swap(first_file_);
+      return;
+    }
+    file_fluxes_ =
+      DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base_, file_id, surface_tags_);
+    const auto mismatch =
+      DescribeHeaderMismatch(header_, GetFileHeader(file_fluxes_, surface_tags_.size()));
+    OpenSnLogicalErrorIf(not mismatch.empty(),
+                         PartitionFileName(file_base_, file_id) +
+                           " does not belong to the file set: " + mismatch + ".");
+  }
 
-      auto* out = &payload[payload_cursor[owner[f]]];
-      out = std::copy_n(&chunk.coords[3 * node_offset], 3 * n, out);
-      out = std::copy_n(&chunk.mass[mass_offset], n * n, out);
+  std::string PrepareFile(bool /*has_file*/) { return {}; }
+
+  std::size_t GetHeaderWidth(std::size_t /*stream*/) const { return FACE_HEADER_SIZE; }
+
+  void BeginStream(const std::size_t stream)
+  {
+    faces_.reset();
+    faces_.emplace(file_fluxes_, stream, surface_tags_.size(), header_.quadratures);
+  }
+
+  bool IsStreamDone(std::size_t /*stream*/) const
+  {
+    return not faces_.has_value() or faces_->IsDone();
+  }
+
+  void FillChunk(const std::size_t stream, const std::uint64_t budget, RecordBatch& batch)
+  {
+    if (faces_.has_value())
+      faces_sent_[stream] += faces_->FillChunk(budget, num_ranks_, batch);
+  }
+
+  void Receive(const std::size_t stream, std::uint64_t /*pass*/, const ReceivedRecords& records)
+  {
+    auto& shard = *shards_[stream];
+    const auto& quadratures = header_.quadratures;
+    for (std::size_t r = 0; r < records.GetNumRecords(); ++r)
+    {
+      const auto* header = records.GetHeader(r);
+      const auto n = static_cast<std::uint64_t>(header[3]);
+      OpenSnLogicalErrorIf(
+        header[3] <= 0 or records.GetPayloadSize(r) != FacePayloadSize(n, quadratures),
+        "Received an inconsistent face of surface " + surface_tags_[stream] + ".");
+      const FaceCentroidKey key = {header[0], header[1], header[2]};
+      const double* in = records.GetPayload(r);
+      shard.index.emplace_back(key, shard.GetNumFaces());
+      shard.coords.insert(shard.coords.end(), in, in + 3 * n);
+      in += 3 * n;
+      shard.mass.insert(shard.mass.end(), in, in + n * n);
+      in += n * n;
       for (size_t gs = 0; gs < quadratures.size(); ++gs)
       {
         const auto num_dirs = quadratures[gs].num_dirs;
         const auto size = n * num_dirs * quadratures[gs].num_groups;
-        out = std::copy_n(&chunk.mu[gs][f * num_dirs], num_dirs, out);
-        out = std::copy_n(&chunk.psi[gs][psi_offsets[gs]], size, out);
-        psi_offsets[gs] += size;
+        auto& values = shard.groupsets[gs];
+        values.mu.insert(values.mu.end(), in, in + num_dirs);
+        in += num_dirs;
+        values.psi.insert(values.psi.end(), in, in + size);
+        in += size;
       }
-      payload_cursor[owner[f]] += static_cast<int>(FacePayloadSize(n, quadratures));
-      node_offset += n;
-      mass_offset += n * n;
+      shard.node_offset.push_back(shard.node_offset.back() + n);
+      shard.mass_offset.push_back(shard.mass_offset.back() + n * n);
     }
   }
-  chunk = FaceChunk();
 
-  std::vector<std::int64_t> recv_header_values;
-  comm.all_to_all(headers,
-                  header_counts,
-                  header_offsets,
-                  recv_header_values,
-                  recv_header_counts,
-                  MakeOffsets(recv_header_counts));
-  headers = {};
-  std::vector<double> recv_payload_values;
-  comm.all_to_all(payload,
-                  payload_counts,
-                  payload_offsets,
-                  recv_payload_values,
-                  recv_payload_counts,
-                  MakeOffsets(recv_payload_counts));
-  payload = {};
-
-  // Unpack in arrival order.
-  const double* in = recv_payload_values.data();
-  const double* const in_end = in + recv_payload_values.size();
-  for (size_t h = 0; h < recv_header_values.size(); h += FACE_HEADER_SIZE)
+  /// Release the open file without allocating, since it runs from a destructor.
+  void CloseFile() noexcept
   {
-    const auto n = static_cast<std::uint64_t>(recv_header_values[h + 3]);
-    if (n == 0 or static_cast<std::uint64_t>(in_end - in) < FacePayloadSize(n, quadratures))
-      return "received an inconsistent surface face";
-    const FaceCentroidKey key = {
-      recv_header_values[h], recv_header_values[h + 1], recv_header_values[h + 2]};
-    shard.index.emplace_back(key, shard.GetNumFaces());
-    shard.coords.insert(shard.coords.end(), in, in + 3 * n);
-    in += 3 * n;
-    shard.mass.insert(shard.mass.end(), in, in + n * n);
-    in += n * n;
-    for (size_t gs = 0; gs < quadratures.size(); ++gs)
-    {
-      const auto num_dirs = quadratures[gs].num_dirs;
-      const auto size = n * num_dirs * quadratures[gs].num_groups;
-      auto& values = shard.groupsets[gs];
-      values.mu.insert(values.mu.end(), in, in + num_dirs);
-      in += num_dirs;
-      values.psi.insert(values.psi.end(), in, in + size);
-      in += size;
-    }
-    shard.node_offset.push_back(shard.node_offset.back() + n);
-    shard.mass_offset.push_back(shard.mass_offset.back() + n * n);
+    faces_.reset();
+    std::vector<SurfaceAngularFlux>().swap(file_fluxes_);
   }
-  if (in != in_end)
-    return "received surface payload that does not match its face headers";
-  return {};
-}
+
+private:
+  const std::string& file_base_;
+  const std::vector<std::string>& surface_tags_;
+  const FileSetHeader& header_;
+  const std::vector<SurfaceShard*>& shards_;
+  std::vector<std::uint64_t>& faces_sent_;
+  std::vector<SurfaceAngularFlux>& first_file_;
+  const int num_ranks_;
+
+  std::vector<SurfaceAngularFlux> file_fluxes_;
+  std::optional<TagFaces> faces_;
+};
 
 } // namespace
 
@@ -542,191 +501,117 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
                                const std::uint64_t max_send_bytes)
 {
   OpenSnInvalidArgumentIf(surfaces.empty(), "At least one surface name is required.");
-  OpenSnInvalidArgumentIf(std::set<std::string>(surfaces.begin(), surfaces.end()).size() !=
-                            surfaces.size(),
-                          "Surface names must be unique.");
   OpenSnInvalidArgumentIf(max_send_bytes == 0, "The send budget must be positive.");
-  const std::string operation = "Reading surface angular fluxes from " + file_base;
-  const auto rank = comm.rank();
   const auto num_ranks = comm.size();
 
-  // Rank 0 reads file 0, which resolves the surface names to stored tags and gives the attributes
-  // of the file set. Every other file is read with the same tags.
+  // Every rank checks the request, and rank 0 reads file 0, which resolves the surface names to
+  // stored tags and gives the attributes of the file set. Every other file is read with the same
+  // tags. A failure on any rank is raised on every rank, keeping std::invalid_argument for invalid
+  // requests, such as names that resolve to the same tag twice.
+  std::string operation;
   std::vector<SurfaceAngularFlux> file_fluxes;
   std::vector<std::string> surface_tags;
   FileSetHeader header;
-  // A failure is rethrown on every rank with its type kept for invalid requests, such as names that
-  // resolve to the same tag twice, so that Python reports them as ValueError.
-  std::vector<char> root_error;
-  int root_error_is_invalid_argument = 0;
-  if (rank == 0)
-  {
-    const auto RecordError = [&root_error](const std::exception& error)
+  RunKeepingInvalidArgument(
+    comm,
+    [&]
     {
-      const std::string message = error.what();
-      root_error.assign(message.begin(), message.end());
-    };
-    try
-    {
+      operation = "Reading surface angular fluxes from " + file_base;
+      OpenSnInvalidArgumentIf(std::set<std::string>(surfaces.begin(), surfaces.end()).size() !=
+                                surfaces.size(),
+                              "Surface names must be unique.");
+      if (comm.rank() != 0)
+        return;
       file_fluxes = DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base, 0, surfaces);
       for (const auto& surf_flux : file_fluxes)
         if (surf_flux.groupset_id == 0)
           surface_tags.push_back(surf_flux.surface_name);
       header = GetFileHeader(file_fluxes, surface_tags.size());
-    }
-    catch (const std::invalid_argument& error)
-    {
-      RecordError(error);
-      root_error_is_invalid_argument = 1;
-    }
-    catch (const std::exception& error)
-    {
-      RecordError(error);
-    }
-  }
-  BroadcastVector(comm, root_error, 0);
-  if (not root_error.empty())
-  {
-    comm.broadcast(root_error_is_invalid_argument, 0);
-    auto message = std::string(operation)
-                     .append(" failed: ")
-                     .append(std::string(root_error.begin(), root_error.end()));
-    if (root_error_is_invalid_argument != 0)
-      throw std::invalid_argument(message);
-    throw std::logic_error(message);
-  }
+      // One file per writing rank, so no set has more files than an MPI run has ranks.
+      OpenSnLogicalErrorIf(
+        header.num_partitions > static_cast<std::uint64_t>(std::numeric_limits<int>::max()),
+        PartitionFileName(file_base, 0) + " records a set of " +
+          std::to_string(header.num_partitions) + " files, more than an MPI run can have ranks.");
+    },
+    operation);
 
   BroadcastStrings(comm, surface_tags, 0);
-  BroadcastFileSetHeader(comm, header);
+  BroadcastFileSetHeader(comm, header, operation);
   const auto num_surfaces = surface_tags.size();
 
   // Surface responses pair both sides of an interior surface, so a side is read only with its
   // other side. The tags and kinds are identical on all ranks.
-  for (size_t s = 0; s < num_surfaces; ++s)
-  {
-    if (header.interior[s] == 0)
-      continue;
-    const auto& tag = surface_tags[s];
-    const auto other = tag.substr(0, tag.size() - 2) + (tag.ends_with("_u") ? "_d" : "_u");
-    OpenSnInvalidArgumentIf(
-      std::find(surface_tags.begin(), surface_tags.end(), other) == surface_tags.end(),
-      std::string("Side ")
-        .append(tag)
-        .append(" of an interior surface was requested without its other side ")
-        .append(other)
-        .append(". Request the interior surface by its name, ")
-        .append(tag.substr(0, tag.size() - 2))
-        .append("."));
-  }
+  RunKeepingInvalidArgument(
+    comm,
+    [&]
+    {
+      for (size_t s = 0; s < num_surfaces; ++s)
+      {
+        if (header.interior[s] == 0)
+          continue;
+        const auto& tag = surface_tags[s];
+        const auto other = tag.substr(0, tag.size() - 2) + (tag.ends_with("_u") ? "_d" : "_u");
+        OpenSnInvalidArgumentIf(
+          std::find(surface_tags.begin(), surface_tags.end(), other) == surface_tags.end(),
+          std::string("Side ")
+            .append(tag)
+            .append(" of an interior surface was requested without its other side ")
+            .append(other)
+            .append(". Request the interior surface by its name, ")
+            .append(tag.substr(0, tag.size() - 2))
+            .append("."));
+      }
+    },
+    operation);
   const auto num_partitions = header.num_partitions;
-  const auto num_groupsets = header.quadratures.size();
 
   DistributedSurfaceData data;
-  data.adjoint = header.adjoint;
-  data.num_partitions = num_partitions;
-  data.centroid_origin = header.centroid_origin;
-  data.centroid_spacing = header.centroid_spacing;
-  // Every file of the set must have this quadrature; see DescribeHeaderMismatch.
-  data.groupsets = header.quadratures;
-  for (size_t s = 0; s < num_surfaces; ++s)
-  {
-    auto& shard = data.surfaces[surface_tags[s]];
-    shard.interior = header.interior[s] != 0;
-    shard.groupsets.resize(num_groupsets);
-  }
+  std::vector<SurfaceShard*> shards;
+  std::vector<std::uint64_t> faces_sent;
+  ThrowIfAnyRankFailed<std::logic_error>(comm,
+                                         CaptureError(
+                                           [&]
+                                           {
+                                             data.adjoint = header.adjoint;
+                                             data.num_partitions = num_partitions;
+                                             data.centroid_origin = header.centroid_origin;
+                                             data.centroid_spacing = header.centroid_spacing;
+                                             // Every file of the set must have this quadrature;
+                                             // see DescribeHeaderMismatch.
+                                             data.groupsets = header.quadratures;
+                                             for (const auto& tag : surface_tags)
+                                             {
+                                               auto& shard = data.surfaces[tag];
+                                               shard.interior = header.interior[shards.size()] != 0;
+                                               shard.groupsets.resize(header.quadratures.size());
+                                               shards.push_back(&shard);
+                                             }
+                                             faces_sent.assign(num_surfaces, 0);
+                                           }),
+                                         operation);
 
-  // File k is read by rank k mod P, as its (k / P)-th file, and its faces are sent to their
-  // owners before the next file is read. Every rank runs the loop max_files_per_rank times, so
-  // ranks without a file in a pass still join its collectives.
-  std::string error;
-  std::vector<std::uint64_t> faces_sent(num_surfaces, 0);
-  const auto num_ranks_u64 = static_cast<std::uint64_t>(num_ranks);
-  const auto max_files_per_rank = (num_partitions + num_ranks_u64 - 1) / num_ranks_u64;
-  // This rank's i-th file.
-  for (std::uint64_t i = 0; i < max_files_per_rank; ++i)
-  {
-    const auto file_id = i * num_ranks_u64 + static_cast<std::uint64_t>(rank);
-    const auto file_name = PartitionFileName(file_base, file_id);
-    try
-    {
-      // Rank 0 read file 0 above.
-      if (file_id > 0)
-      {
-        file_fluxes.clear();
-        if (file_id < num_partitions)
-        {
-          file_fluxes =
-            DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base, file_id, surface_tags);
-          const auto mismatch =
-            DescribeHeaderMismatch(header, GetFileHeader(file_fluxes, num_surfaces));
-          OpenSnLogicalErrorIf(not mismatch.empty(),
-                               std::string(file_name)
-                                 .append(" does not belong to the file set: ")
-                                 .append(mismatch)
-                                 .append("."));
-        }
-      }
-    }
-    catch (const std::exception& exception)
-    {
-      error = exception.what();
-      file_fluxes.clear();
-    }
-    ThrowIfAnyRankFailed(comm, error, operation);
-
-    for (size_t s = 0; s < num_surfaces; ++s)
-    {
-      auto& shard = data.surfaces[surface_tags[s]];
-      std::optional<TagFaces> faces;
-      if (error.empty() and not file_fluxes.empty())
-      {
-        try
-        {
-          faces.emplace(file_fluxes, s, num_surfaces, data.groupsets);
-        }
-        catch (const std::exception& exception)
-        {
-          error = exception.what();
-        }
-      }
-      while (true)
-      {
-        FaceChunk chunk;
-        if (error.empty() and faces.has_value() and not faces->IsDone())
-        {
-          try
-          {
-            faces->FillNextChunk(max_send_bytes, chunk);
-          }
-          catch (const std::exception& exception)
-          {
-            error = exception.what();
-            chunk = FaceChunk();
-          }
-        }
-        faces_sent[s] += chunk.keys.size();
-        // Every rank takes part in every exchange until no rank has faces left.
-        std::array<int, 2> local_flags = {error.empty() ? 0 : 1, chunk.keys.empty() ? 0 : 1};
-        std::array<int, 2> global_flags = {0, 0};
-        comm.all_reduce(local_flags.data(), 2, global_flags.data(), mpi::op::max<int>());
-        if (global_flags[0] != 0)
-          ThrowIfAnyRankFailed(comm, error, operation);
-        if (global_flags[1] == 0)
-          break;
-        error = ExchangeChunk(comm, data.groupsets, chunk, shard);
-      }
-    }
-    file_fluxes = {};
-  }
+  // File k is read by rank k mod P, one file at a time, and its faces are sent to their owners
+  // before the next file is read; see RunFileSetPasses.
+  SurfaceFileSource source(
+    file_base, surface_tags, header, shards, faces_sent, file_fluxes, num_ranks);
+  RunFileSetPasses<std::logic_error>(
+    comm, num_partitions, num_surfaces, max_send_bytes, source, operation);
 
   // Every tag must have faces somewhere, and every face sent must have arrived.
-  std::vector<std::uint64_t> local_face_counts(2 * num_surfaces),
-    global_face_counts(2 * num_surfaces);
-  for (size_t s = 0; s < num_surfaces; ++s)
-  {
-    local_face_counts[2 * s] = data.surfaces[surface_tags[s]].GetNumFaces();
-    local_face_counts[2 * s + 1] = faces_sent[s];
-  }
+  std::vector<std::uint64_t> local_face_counts, global_face_counts;
+  ThrowIfAnyRankFailed<std::logic_error>(comm,
+                                         CaptureError(
+                                           [&]
+                                           {
+                                             local_face_counts.resize(2 * num_surfaces);
+                                             global_face_counts.resize(2 * num_surfaces);
+                                             for (size_t s = 0; s < num_surfaces; ++s)
+                                             {
+                                               local_face_counts[2 * s] = shards[s]->GetNumFaces();
+                                               local_face_counts[2 * s + 1] = faces_sent[s];
+                                             }
+                                           }),
+                                         operation);
   comm.all_reduce(local_face_counts.data(),
                   static_cast<int>(local_face_counts.size()),
                   global_face_counts.data(),
@@ -742,25 +627,42 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
                            std::to_string(global_face_counts[2 * s]) + " arrived.");
   }
 
-  for (const auto& surface_tag : surface_tags)
-  {
-    auto& shard = data.surfaces[surface_tag];
-    std::sort(shard.index.begin(), shard.index.end());
-    for (size_t i = 1; i < shard.index.size() and error.empty(); ++i)
-      if (shard.index[i].first == shard.index[i - 1].first)
-        error = "surface " + surface_tag +
-                " contains two faces with the same centroid key. Face centroids must differ by "
-                "more than the centroid spacing " +
-                std::to_string(data.centroid_spacing) + ".";
-    ThrowIfAnyRankFailed(comm, error, operation);
-  }
+  // No two faces of a tag may have the same centroid key.
+  std::string duplicate;
+  const auto error = CaptureError(
+    [&]
+    {
+      for (size_t s = 0; s < num_surfaces and duplicate.empty(); ++s)
+      {
+        auto& index = shards[s]->index;
+        std::sort(index.begin(), index.end());
+        for (size_t i = 1; i < index.size(); ++i)
+          if (index[i].first == index[i - 1].first)
+          {
+            duplicate = "surface " + surface_tags[s] +
+                        " contains two faces with the same centroid key. Face centroids must "
+                        "differ by more than the centroid spacing " +
+                        std::to_string(data.centroid_spacing) + ".";
+            break;
+          }
+      }
+    });
+  ThrowIfAnyRankFailed<std::logic_error>(comm, duplicate.empty() ? error : duplicate, operation);
 
   std::uint64_t total_faces = 0;
   for (size_t s = 0; s < num_surfaces; ++s)
     total_faces += global_face_counts[2 * s];
-  log.Log0Verbose1() << "Read " << total_faces << " surface faces of " << num_surfaces
-                     << " surface(s) from " << num_partitions << " file(s) " << file_base
-                     << "<rank>.h5 onto " << num_ranks << " rank(s).";
+  // Best effort: a failed log must not keep this rank from the caller's next collective.
+  try
+  {
+    log.Log0Verbose1() << "Read " << total_faces << " surface faces of " << num_surfaces
+                       << " surface(s) from " << num_partitions << " file(s) " << file_base
+                       << "<rank>.h5 onto " << num_ranks << " rank(s).";
+  }
+  catch (...) // NOLINT(bugprone-empty-catch)
+  {
+    // The log is dropped without building an error message, which could itself fail.
+  }
   return data;
 }
 
