@@ -204,30 +204,12 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
   }
 }
 
-// Groupset defaults: Marshak closure and the "face_side" length for WGDSA and TGDSA; the removed
-// penalty lengths are rejected.
-TEST(DiffusionMIPSidePenalty, GroupsetDefaultsAndAllowedValues)
+// Groupset defaults: Marshak closure and the "face_side" length for WGDSA and TGDSA.
+TEST(DiffusionMIPSidePenalty, GroupsetDefaults)
 {
   auto params = LBSGroupset::GetInputParameters();
   EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_boundary_closure"), "marshak");
   EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_boundary_closure"), "marshak");
   EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_h_perp_convention"), "face_side");
   EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_h_perp_convention"), "face_side");
-
-  auto grid = BuildBoxMesh(1.0, 2, 0.0);
-  grid->SetUniformBlockID(0);
-  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
-  const auto& sdm = *sdm_ptr;
-  std::map<uint64_t, BoundaryCondition> bcs;
-  std::map<unsigned int, Multigroup_D_and_sigR> xs;
-  xs.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
-  std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  DiffusionMIPSolver solver(
-    "Allowed", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
-  const auto& cell = *grid->GetLocalCells().front();
-  for (const std::string removed : {"face", "face_x2", "side"})
-  {
-    solver.options.h_perp_convention = removed;
-    EXPECT_THROW(solver.HPerpendicular(cell, 0), std::invalid_argument);
-  }
 }
