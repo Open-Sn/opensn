@@ -181,7 +181,7 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
 {
   const auto mfile =
     std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_all_tets.vtu";
-  for (auto grid : {BuildMeshFromFile(mfile), BuildBoxMesh(1.0, 3, 0.0)})
+  for (const auto& grid : {BuildMeshFromFile(mfile), BuildBoxMesh(1.0, 3, 0.0)})
   {
     grid->SetUniformBlockID(0);
     std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
