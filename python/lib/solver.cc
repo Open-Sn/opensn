@@ -1100,7 +1100,11 @@ WrapLBS(py::module& slv)
           - allow_cycles: bool, default=True
               Whether cyclic dependencies are allowed in sweeps.
           - apply_wgdsa: bool, default=False
-              Enable within-group DSA for this groupset.
+              Enable within-group DSA for this groupset. With ``csda_enabled`` and charged-particle
+              groups in the groupset, each group's diffusion operator also removes the CSDA
+              slowing-down rate ``S_g / dE_g``, and the groups are solved one at a time in energy
+              order, coupled by in-groupset scattering and slowing-down. See
+              :ref:`theory_csda_wgdsa`.
           - wgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1116,7 +1120,8 @@ WrapLBS(py::module& slv)
               otherwise. ``petsc_options`` lets ``wgdsa_petsc_options`` control the
               PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
-              Maximum global WGDSA diffusion unknown count for the automatic direct solve.
+              Maximum global WGDSA diffusion unknown count for the automatic direct solve. The
+              CSDA operator solves one group at a time, so the count is that of one group.
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
@@ -1263,8 +1268,10 @@ WrapLBS(py::module& slv)
             Enable CSDA charged-particle transport for CEPXS data loaded with
             ``csda_format=True``. CSDA requires a Cartesian
             :class:`SteadyStateSourceSolver` solve, ``sweep_type='AAH'``, CPU
-            sweeps, no ``apply_wgdsa`` or ``apply_tgdsa`` in any groupset, and
-            charged-particle group ranges that are not split across groupsets. All materials must supply identical per-group energy bounds
+            sweeps, no ``apply_tgdsa`` in any groupset, and charged-particle
+            group ranges that are not split across groupsets. ``apply_wgdsa``
+            uses a CSDA diffusion operator in groupsets with charged-particle
+            groups. All materials must supply identical per-group energy bounds
             or omit them; at least one material must supply the shared structure.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.

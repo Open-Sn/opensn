@@ -212,6 +212,70 @@ iteration state for a CSDA sweep is consequently
 :math:`\{\psi,\psi^E\}`. OpenSn stores the angular moment
 :math:`\varphi^E_{i,g}` by local cell and global group after the sweep.
 
+.. _theory_csda_wgdsa:
+
+Within-group diffusion synthetic acceleration
+---------------------------------------------
+
+A transport sweep of a CSDA groupset solves the energy coupling of the
+slowing-down term exactly, but lags the scattering source of every groupset
+group. With ``apply_wgdsa``, a groupset that contains charged-particle groups
+corrects the scalar flux with a diffusion approximation of the error equation
+that includes the CSDA term. The angular flux is approximated as linearly
+anisotropic, and the energy slope is dropped, so the slowing-down term of group
+:math:`g` contributes the removal :math:`R_g\Phi_g` and the source
+:math:`R_{g-1}\Phi_{g-1}`, with
+
+.. math::
+
+   R_g =
+   \begin{cases}
+   S_g/\Delta E_g, & S_g>0,\\
+   0, & S_g=0.
+   \end{cases}
+
+The removal :math:`R_g` acts on every angular moment, so it enters both the
+removal and the transport cross sections. For the groups of the groupset, in
+energy order, the correction :math:`f_g` solves
+
+.. math::
+   :label: csda-wgdsa
+
+   -\boldsymbol{\nabla}\!\cdot\!D_g\boldsymbol{\nabla}f_g
+   +\left(\sigma_{r,g}+R_g\right)f_g
+   =
+   \sum_{g'}\sigma_{0,g'\rightarrow g}\,\delta\Phi_{g'}
+   +\sum_{g'<g}\sigma_{0,g'\rightarrow g}\,f_{g'}
+   +R_{g-1}f_{g-1},
+
+where :math:`D_g=1/\bigl(3(\sigma_{tr,g}+R_g)\bigr)`, :math:`\sigma_{tr,g}` and
+:math:`\sigma_{r,g}=\max(0,\sigma_{t,g}-\sigma_{0,g\rightarrow g})` are the
+transport and removal cross sections of the standard WGDSA operator, and
+:math:`\delta\Phi` is the change of the scalar flux over the sweep (the
+preconditioned vector when WGDSA preconditions a Krylov solve). All sums run
+over groupset groups. The feed :math:`R_{g-1}f_{g-1}` is present only when the
+material has nonzero stopping power in both groups, as in the sweep.
+
+The operator is lower triangular in energy apart from in-groupset upscatter,
+which enters only through the residual. Solving the groups in order therefore
+solves the coupled system with one single-group MIP diffusion solve per group.
+Without the energy coupling, a correction of group :math:`g` reaches the groups
+below it only through the next sweep, which can amplify the error transiently
+along a charged-particle block before it decays.
+
+The correction is added to the scalar flux and, as an isotropic correction, to
+the lagged angular fluxes. The energy slope is not corrected. The correction
+vanishes when the iteration converges, so it does not change the converged
+solution.
+
+Without :math:`R_g`, the diffusion operator has no removal in groups whose
+within-group scattering equals the total cross section, which CEPXS CSDA data
+contains near the low-energy end of each electron block. Elsewhere it
+underestimates the removal, so the correction overshoots and the iteration can
+diverge.
+
+Two-grid DSA has no CSDA operator and is rejected for CSDA problems.
+
 Deposited-energy fields
 -----------------------
 

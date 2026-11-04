@@ -9,6 +9,35 @@ Runs two aluminum slab cases for comparison:
 - CSDA
 
 Both results are plotted against the Lockwood points for Problem II.3.C2.
+
+The CEPXS-BFP libraries were generated from the input of case II.3.C1 of
+L. J. Lorence, Jr., J. E. Morel, and G. D. Valdez, "Results Guide to CEPXS/ONELD: A
+One-Dimensional Coupled Electron-Photon Discrete Ordinates Code Package," SAND89-2211,
+July 1990. Case II.3.C2 is the same input with LEGENDRE 7. The input::
+
+    TITLE
+    Al
+    CUTOFF .01
+    ENERGY 1.0
+    LEGENDRE 15
+    ELECTRONS
+       LINEAR 40
+    ELECTRON-SOURCE
+       NO-COUPLING
+    MATERIAL Al
+    GEOMETRY 1
+       1 50 .2107
+    DIRECTION
+      NORMAL
+
+The standard library is this input as written. The CSDA library is the same input with a
+MONTE-CARLO card after the title.
+SHA-256 of the checked-in libraries:
+
+- Al_40ge_p15_CEPXS_standard.bxslib:
+  d68db942b342b4c23b8dc682c2468c2bab2312d78f7a419258438bf53dc3b4ba
+- Al_40ge_p15_CEPXS_CSDA.bxslib:
+  33d1af3c5067130c745a54657c3037cb7bc4f7aab557e6088f8ee86c41c17c6b
 """
 
 import csv

@@ -187,6 +187,7 @@ LBSGroupset::Init(int aid)
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
   tgdsa_solver = nullptr;
+  wgdsa_csda_solvers.clear();
 }
 
 LBSGroupset::LBSGroupset() // NOLINT(cppcoreguidelines-pro-type-member-init)

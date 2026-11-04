@@ -97,6 +97,8 @@ public:
 
   std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
   std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
+  /// CSDA WGDSA: one single-group diffusion solver per groupset group, solved in energy order.
+  std::vector<std::shared_ptr<DiffusionMIPSolver>> wgdsa_csda_solvers;
 
   struct TwoGridAccelerationInfo
   {

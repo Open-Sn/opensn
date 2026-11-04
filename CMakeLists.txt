@@ -259,6 +259,15 @@ if(PETSC_USE_COMPLEX)
     "Reconfigure PETSc with --with-scalar-type=real")
 endif()
 
+# OpenSn calls LAPACK through petscblaslapack.h, so it links the BLAS/LAPACK PETSc was built with
+if(NOT TARGET PETSc::BLASLAPACK)
+  message(FATAL_ERROR
+    "No BLAS/LAPACK found for PETSc: PETSc's petscvariables records no BLASLAPACK_LIB and no "
+    "system LAPACK was found.\n"
+    "Set LAPACK_LIBRARIES (and BLA_VENDOR if needed) to the LAPACK PETSc was built with")
+endif()
+message(STATUS "BLAS/LAPACK: ${PETSC_BLASLAPACK_LIBRARIES}")
+
 find_package(caliper REQUIRED)
 if(caliper_FOUND)
   message(STATUS "Found Caliper: ${caliper_DIR}")
@@ -447,9 +456,26 @@ target_link_libraries(libopensn
     Boost::headers
     mpicpp-lite::mpicpp-lite
     MPI::MPI_CXX
+    PRIVATE
+    PETSc::BLASLAPACK
 )
 if (OPENSN_WITH_GPU)
   target_link_libraries(libopensn INTERFACE libopensngpu)
+endif()
+
+if(UNIX AND NOT APPLE)
+  # Keep the symbols of a static BLAS/LAPACK private to libopensn
+  set(_opensn_blaslapack_archives "")
+  foreach(_lib IN LISTS PETSC_BLASLAPACK_LIBRARIES)
+    if(_lib MATCHES "\\.a$")
+      get_filename_component(_name "${_lib}" NAME)
+      list(APPEND _opensn_blaslapack_archives "${_name}")
+    endif()
+  endforeach()
+  if(_opensn_blaslapack_archives)
+    list(JOIN _opensn_blaslapack_archives ":" _opensn_blaslapack_archives)
+    target_link_options(libopensn PRIVATE "LINKER:--exclude-libs,${_opensn_blaslapack_archives}")
+  endif()
 endif()
 
 target_compile_options(libopensn PRIVATE ${OPENSN_CXX_FLAGS})
@@ -489,7 +515,7 @@ function(_opensn_add_rpath_from_lib item)
   endif()
 endfunction()
 
-foreach(_lib IN LISTS PETSC_LIBRARY HDF5_LIBRARIES VTK_LIBRARIES)
+foreach(_lib IN LISTS PETSC_LIBRARY PETSC_BLASLAPACK_LIBRARIES HDF5_LIBRARIES VTK_LIBRARIES)
   _opensn_add_rpath_from_lib("${_lib}")
 endforeach()
 if(TARGET caliper)

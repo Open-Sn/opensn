@@ -30,6 +30,20 @@ public:
                                         const std::vector<double>& delta_phi_local,
                                         std::vector<double>& ref_phi_new);
 
+  /**
+   * Adds the WGDSA correction driven by `phi_change`, the change of the groupset flux moments over
+   * one transport sweep, to the scalar moments of `phi_new`. The two vectors may be the same.
+   *
+   * In a CSDA groupset with charged-particle groups, the diffusion operator of each group also
+   * removes S_g/dE_g, and the groups are solved in energy order. The source of each group is the
+   * scattering residual of all groupset groups plus the in-groupset scattering and CSDA
+   * slowing-down of the corrections already computed for the groups above it.
+   */
+  static void Apply(DiscreteOrdinatesProblem& do_problem,
+                    const LBSGroupset& groupset,
+                    const std::vector<double>& phi_change,
+                    std::vector<double>& phi_new);
+
   /// Cleans up memory consuming items.
   static void CleanUp(LBSGroupset& groupset);
 
