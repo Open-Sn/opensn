@@ -9,7 +9,9 @@ One group, scattering ratio 0.99, a cylinder of radius 10 and height 20 mean fre
 axis and vacuum elsewhere. Source iteration is limited to 60 iterations, which converges only if
 WGDSA works (without it the flux maximum after 60 iterations is 38.4 instead of 46.65). The
 optional arguments boundary_closure and h_perp_convention select the WGDSA boundary closure and
-penalty length, and apply_wgdsa=False turns WGDSA off; the converged flux does not depend on them.
+penalty length; the converged flux does not depend on them. With wgdsa="off", WGDSA is off and the
+limit is 2000 iterations: unaccelerated source iteration converges in 559, which gives the reference
+solution, independent of the DSA code.
 """
 
 import os
@@ -46,6 +48,7 @@ if __name__ == "__main__":
     xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.99)
     src = VolumetricSource(block_ids=[0], group_strength=[1.0])
 
+    apply_wgdsa = globals().get("wgdsa", "on") == "on"
     dsa_options = {}
     for name in ("boundary_closure", "h_perp_convention"):
         if name in globals():
@@ -63,8 +66,8 @@ if __name__ == "__main__":
                 "angle_aggregation_type": "azimuthal",
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-8,
-                "l_max_its": 60,
-                "apply_wgdsa": globals().get("apply_wgdsa", True),
+                "l_max_its": 60 if apply_wgdsa else 2000,
+                "apply_wgdsa": apply_wgdsa,
                 "wgdsa_l_abs_tol": 1.0e-10,
                 "wgdsa_l_max_its": 200,
                 **dsa_options,

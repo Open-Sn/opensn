@@ -425,7 +425,7 @@
   },
   {
     "file": "transport_2d_cyl_dsa_closures.py",
-    "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the fully converged flux (tolerances 1e-13)",
+    "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the unaccelerated source-iteration solution (transport_2d_cyl_dsa_closures_no_dsa)",
     "num_procs": 4,
     "checks": [
       {
@@ -485,6 +485,35 @@
     "num_procs": 4,
     "args": [
       "boundary_closure=\"closure_r\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures.py",
+    "comment": "Reference for transport_2d_cyl_dsa_closures: the same problem without WGDSA, unaccelerated source iteration run to convergence (559 iterations), independent of the DSA code",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_no_dsa",
+    "num_procs": 4,
+    "args": [
+      "wgdsa=\"off\""
     ],
     "checks": [
       {
