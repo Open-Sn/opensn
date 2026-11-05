@@ -60,6 +60,16 @@ jobs:
           path: ${{ runner.temp }}/logs/*_log.txt
           if-no-files-found: ignore
           retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-failed-test-files-build-${{ matrix.tag }}
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
+          if-no-files-found: ignore
+          retention-days: 7
 
   native:
     name: "${{ matrix.compiler }}"
@@ -92,6 +102,16 @@ jobs:
         with:
           name: nightly-logs-native-${{ matrix.tag }}
           path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-failed-test-files-native-${{ matrix.tag }}
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
           if-no-files-found: ignore
           retention-days: 7
 
@@ -143,6 +163,16 @@ jobs:
           path: ${{ runner.temp }}/logs/*_log.txt
           if-no-files-found: ignore
           retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-failed-test-files-cuda-${{ matrix.tag }}
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
+          if-no-files-found: ignore
+          retention-days: 7
 
   sanitize:
     runs-on: [self-hosted]
@@ -168,5 +198,15 @@ jobs:
         with:
           name: nightly-logs-sanitize
           path: ${{ runner.temp }}/logs/*_log.txt
+          if-no-files-found: ignore
+          retention-days: 7
+      - name: upload failed test files
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: nightly-failed-test-files-sanitize
+          path: |
+            test/**/out/*.files
+            doc/source/tutorials/**/out/*.files
           if-no-files-found: ignore
           retention-days: 7

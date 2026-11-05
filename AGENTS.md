@@ -329,6 +329,25 @@ Place inputs beside related tests under `test/python/` and register them in the
 nearest `tests.json`. Set appropriate `num_procs`, `weight_class`, checks,
 tolerances, and a unique `outfileprefix` when reusing an input.
 
+`test/run_tests` runs each test in its own working directory beside the
+input's directory, holding links to that directory's files, so tests running at
+the same time cannot overwrite each other's generated files. Untracked files
+that git ignores are not linked, and the runner warns about other untracked
+files that it links. Write generated
+files by paths relative to the working directory; do not resolve `__file__`
+through its link to the source tree or write by absolute path outside the
+working directory. A relative path that names an input file, or passes
+through an input directory, still writes into the source tree through the
+link, so give generated files new names outside the input directories. A
+consumer sees files its producer wrote once a
+`tests.json` dependency orders them. The runner removes the working directory
+when the test finishes, first moving the files written by a failed test, or by
+a test that others depend on, to `out/<output prefix>.files/`; a consumer cannot
+modify its producer's files there. A test fails if its input directory changes
+while it runs, as do the other tests from that directory running at the time.
+The runner also fails a run in which a file in the test tree was created,
+modified, or removed outside `out/`, working directories, and Python caches.
+
 State the mathematical claim and reference in the input. Prefer, in order:
 
 1. exact or semi-analytic solutions;
