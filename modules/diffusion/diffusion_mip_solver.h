@@ -107,11 +107,14 @@ public:
                       double epsilon = 1.0e-12);
 
 private:
-  /// CLOSURE_R data of a boundary face: half-range moment, orthogonal length, trace constant.
+  /// CLOSURE_R data of a boundary face.
   struct ClosureFaceData
   {
+    /// Half-range moment beta_f of the quadrature about the face normal.
     double beta = 0.0;
+    /// Orthogonal length h_perp of the cell from the face.
     double h = 0.0;
+    /// Trace constant C_grad of the face.
     double c_grad = 0.0;
   };
 

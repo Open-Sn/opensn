@@ -65,7 +65,6 @@ FaceOrthogonalLength(const Cell& cell, unsigned int f)
     default:
       OpenSnLogicalError("FaceOrthogonalLength: unsupported cell type.");
   }
-  return 0.0;
 }
 
 double
@@ -115,7 +114,6 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
     default:
       OpenSnLogicalError("FaceSideLength: unsupported cell type.");
   }
-  return 0.0;
 }
 
 double

@@ -22,7 +22,6 @@ DSABoundaryClosureFromString(const std::string& name)
     return DSABoundaryClosure::CLOSURE_R;
   OpenSnInvalidArgument("Unknown DSA boundary closure \"" + name +
                         "\" (expected dirichlet, marshak or closure_r).");
-  return DSABoundaryClosure::DIRICHLET;
 }
 
 std::map<uint64_t, BoundaryCondition>
