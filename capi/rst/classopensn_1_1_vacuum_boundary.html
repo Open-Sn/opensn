@@ -120,6 +120,13 @@
 <dd><p>Get offset to the data region of a given angleset. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14VacuumBoundary28CorrectNewDelayedAngularFluxEiRK21DelayedFluxCorrection">
+<span class="target" id="classopensn_1_1_vacuum_boundary_1a8760edaa75c2811828d1009529f67c79"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CorrectNewDelayedAngularFlux</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">int</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">DelayedFluxCorrection</span></span><span class="p"><span class="pre">&amp;</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn14VacuumBoundary28CorrectNewDelayedAngularFluxEiRK21DelayedFluxCorrection" title="Link to this definition"></a><br /></dt>
+<dd><p>Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux of this boundary. </p>
+<p>Used by diffusion synthetic acceleration to correct the lagged incoming angular flux consistently with the scalar-flux correction. Every boundary type implements it, as a no-op if it has no delayed angular flux, so that a new boundary type with lagged fluxes cannot leave them uncorrected by omission. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 

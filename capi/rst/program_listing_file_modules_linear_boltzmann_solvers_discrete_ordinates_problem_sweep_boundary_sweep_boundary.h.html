@@ -224,15 +224,16 @@
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Adds an isotropic nodal correction to every new (latest-iterate) delayed angular flux of this</span>
 <span class="cm">   * boundary. Used by diffusion synthetic acceleration to correct the lagged incoming angular flux</span>
-<span class="cm">   * consistently with the scalar-flux correction. No-op for boundaries without delayed flux.</span>
+<span class="cm">   * consistently with the scalar-flux correction. Every boundary type implements it, as a no-op if</span>
+<span class="cm">   * it has no delayed angular flux, so that a new boundary type with lagged fluxes cannot leave</span>
+<span class="cm">   * them uncorrected by omission.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularFlux</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">  </span><span class="p">}</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CorrectNewDelayedAngularFlux</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                            </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope</span>
-<span class="cm">   * value of this boundary. No-op for boundaries without delayed slopes.</span>
+<span class="cm">   * Adds a nodal value, as CorrectNewDelayedAngularFlux does, to every new delayed CSDA</span>
+<span class="cm">   * energy-slope value of this boundary. No-op for boundaries without delayed slopes.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span>
 <span class="w">  </span><span class="p">{</span>
