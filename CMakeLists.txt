@@ -150,6 +150,7 @@ endif()
 # Python interface
 option(OPENSN_WITH_PYTHON "Build with python support" ON)
 option(OPENSN_WITH_PYTHON_MODULE "Build with python module" OFF)
+option(OPENSN_WITH_PRECICE "Build the optional preCICE coupling adapter" OFF)
 # Follow the standard BUILD_TESTING setting when one is provided.
 if(DEFINED BUILD_TESTING)
   set(_opensn_build_testing_default ${BUILD_TESTING})
@@ -261,6 +262,11 @@ endif()
 find_package(caliper REQUIRED)
 if(caliper_FOUND)
   message(STATUS "Found Caliper: ${caliper_DIR}")
+endif()
+
+if(OPENSN_WITH_PRECICE)
+  find_package(precice 3.4 CONFIG REQUIRED)
+  message(STATUS "preCICE coupling adapter enabled")
 endif()
 
 # google test
@@ -510,6 +516,10 @@ if (OPENSN_WITH_GPU)
   set_target_properties(libopensngpu PROPERTIES EXPORT_NAME opensngpu)
 endif()
 
+if(OPENSN_WITH_PRECICE)
+  add_subdirectory(adapters/precice)
+endif()
+
 if(OPENSN_WITH_PYTHON)
   add_subdirectory(python)
 
@@ -585,6 +595,14 @@ install(
     DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn
     FILES_MATCHING PATTERN "*.h"
 )
+
+if(OPENSN_WITH_PRECICE)
+  install(
+      DIRECTORY ${CMAKE_SOURCE_DIR}/adapters/precice
+      DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/opensn/adapters
+      FILES_MATCHING PATTERN "*.h"
+  )
+endif()
 
 install(
     DIRECTORY ${CMAKE_SOURCE_DIR}/external/mpicpp-lite

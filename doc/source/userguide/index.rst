@@ -18,6 +18,7 @@ OpenSn User Guide (Draft)
    Boundary Conditions and Sources <boundary_conditions_sources>
    Discrete-Ordinates Problems <discrete_ordinates_problems>
    CSDA Charged-Particle Transport <csda>
+   preCICE Multiphysics Coupling <precice_coupling>
    Solvers <solvers>
    Example Problems <example_problems>
    Post Processors <post_processors>

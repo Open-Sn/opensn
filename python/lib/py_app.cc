@@ -58,6 +58,10 @@ PyApp::PyApp(const mpi::Communicator& comm)
   Console::BindModule(WrapFieldFunctionGridBased);
   Console::BindModule(WrapFieldFunctionInterpolation);
 
+#ifdef OPENSN_WITH_PRECICE
+  Console::BindModule(WrapPreciceAdapter);
+#endif
+
   Console::BindModule(WrapResEval);
 
   Console::BindModule(WrapProblem);

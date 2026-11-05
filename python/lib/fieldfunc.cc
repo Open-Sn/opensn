@@ -9,6 +9,7 @@
 #include "framework/field_functions/interpolation/ffinter_line.h"
 #include "framework/field_functions/interpolation/ffinter_volume.h"
 #include <pybind11/functional.h>
+#include <pybind11/stl.h>
 #include <algorithm>
 #include <map>
 #include <memory>
@@ -111,6 +112,32 @@ WrapFieldFunctionGridBased(py::module& ffunc)
           Base name.
     )",
     py::arg("ff_list"), py::arg("base_name")
+  );
+  field_func_grid_based.def_static(
+    "GetPointValues",
+    &FieldFunctionGridBased::GetPointValues,
+    R"(
+    Evaluate multiple grid-based field functions at multiple points.
+
+    Each point is located once for all fields, and the results for all points and fields are
+    combined in two MPI reductions, instead of one pair of reductions per point and field. Point
+    location still tests each point against the locally owned cells. All field functions must use
+    the same mesh, and all MPI ranks must call this method with the same points in the same order.
+    A point on a face shared by several cells gets the average of their values. Collective.
+
+    Parameters
+    ----------
+    field_functions: List[pyopensn.fieldfunc.FieldFunctionGridBased]
+        Field functions to evaluate.
+    points: List[pyopensn.math.Vector3]
+        Evaluation points.
+
+    Returns
+    -------
+    List[List[List[float]]]
+        Values indexed by field function, point, and component.
+    )",
+    py::arg("field_functions"), py::arg("points")
   );
   field_func_grid_based.def(
     "CanUpdate",

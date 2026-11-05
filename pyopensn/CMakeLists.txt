@@ -42,3 +42,6 @@ target_link_libraries(__init__
     MPI::MPI_CXX
     caliper
 )
+if(OPENSN_WITH_PRECICE)
+  target_compile_definitions(__init__ PRIVATE OPENSN_WITH_PRECICE)
+endif()

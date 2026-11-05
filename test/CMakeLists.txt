@@ -23,6 +23,11 @@ target_link_libraries(opensn-unit
     GTest::gmock_main
     GTest::gtest_main
 )
+if(OPENSN_WITH_PRECICE)
+  # The exchange tests run a reference preCICE receiver beside the OpenSn participant.
+  target_link_libraries(opensn-unit PRIVATE opensn_precice precice::precice)
+  target_compile_definitions(opensn-unit PRIVATE OPENSN_WITH_PRECICE)
+endif()
 
 target_compile_definitions(opensn-unit
   PRIVATE

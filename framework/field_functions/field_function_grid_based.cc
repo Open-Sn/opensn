@@ -227,6 +227,117 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   return global_point_value;
 }
 
+std::vector<std::vector<std::vector<double>>>
+FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
+                                       const std::vector<Vector3>& points)
+{
+  const std::string fname = "FieldFunctionGridBased::GetPointValues";
+  OpenSnInvalidArgumentIf(field_functions.empty(), fname + ": Field-function list is empty.");
+  OpenSnInvalidArgumentIf(not field_functions.front(),
+                          fname + ": Field-function list contains null.");
+
+  const auto& master = *field_functions.front();
+  const auto master_grid = master.discretization_->GetGrid();
+  for (const auto& field_function : field_functions)
+  {
+    OpenSnInvalidArgumentIf(not field_function, fname + ": Field-function list contains null.");
+    OpenSnInvalidArgumentIf(field_function->discretization_->GetGrid() != master_grid,
+                            fname + ": Field functions use different meshes.");
+  }
+
+  std::vector<size_t> component_offsets(field_functions.size() + 1, 0);
+  for (size_t f = 0; f < field_functions.size(); ++f)
+    component_offsets[f + 1] =
+      component_offsets[f] + field_functions[f]->GetUnknownManager().GetTotalUnknownStructureSize();
+  const size_t num_components = component_offsets.back();
+
+  OpenSnInvalidArgumentIf(num_components != 0 and
+                            points.size() > std::numeric_limits<size_t>::max() / num_components,
+                          fname + ": Result size exceeds addressable memory.");
+  const size_t num_values = points.size() * num_components;
+  OpenSnInvalidArgumentIf(points.size() > static_cast<size_t>(std::numeric_limits<int>::max()) or
+                            num_values > static_cast<size_t>(std::numeric_limits<int>::max()),
+                          fname + ": MPI reduction count limit exceeded.");
+
+  std::vector<size_t> local_num_point_hits(points.size(), 0);
+  std::vector<double> local_values(num_values, 0.0);
+  const auto& [xyz_min, xyz_max] = master.local_grid_bounding_box_;
+
+  for (size_t p = 0; p < points.size(); ++p)
+  {
+    const auto& point = points[p];
+    if (point.x < xyz_min.x or point.x > xyz_max.x or point.y < xyz_min.y or point.y > xyz_max.y or
+        point.z < xyz_min.z or point.z > xyz_max.z)
+      continue;
+
+    for (const auto& cell : master_grid->GetLocalCells())
+    {
+      if (not master_grid->CheckPointInsideCell(*cell, point))
+        continue;
+
+      ++local_num_point_hits[p];
+      const auto& master_mapping = master.discretization_->GetCellMapping(*cell);
+      Vector<double> master_shape_values;
+      master_mapping.ShapeValues(point, master_shape_values);
+      for (size_t f = 0; f < field_functions.size(); ++f)
+      {
+        const auto& field_function = *field_functions[f];
+        const auto& discretization = *field_function.discretization_;
+        const auto& unknown_manager = field_function.GetUnknownManager();
+        const auto& cell_mapping = discretization.GetCellMapping(*cell);
+        const auto& field_vector = *field_function.ghosted_field_vector_;
+        Vector<double> alternate_shape_values;
+        const Vector<double>* shape_values = &master_shape_values;
+        if (field_function.discretization_ != master.discretization_)
+        {
+          cell_mapping.ShapeValues(point, alternate_shape_values);
+          shape_values = &alternate_shape_values;
+        }
+
+        const size_t num_nodes = cell_mapping.GetNumNodes();
+        const size_t field_num_components = unknown_manager.GetTotalUnknownStructureSize();
+        for (size_t c = 0; c < field_num_components; ++c)
+          for (size_t j = 0; j < num_nodes; ++j)
+          {
+            const auto dof_map = discretization.MapDOFLocal(*cell, j, unknown_manager, 0, c);
+            const size_t value_index = p * num_components + component_offsets[f] + c;
+            local_values[value_index] += field_vector[dof_map] * (*shape_values)(j);
+          }
+      }
+    }
+  }
+
+  std::vector<size_t> global_num_point_hits(points.size(), 0);
+  if (not points.empty())
+    mpi_comm.all_reduce(local_num_point_hits.data(),
+                        static_cast<int>(points.size()),
+                        global_num_point_hits.data(),
+                        mpi::op::sum<size_t>());
+  for (size_t p = 0; p < points.size(); ++p)
+    OpenSnLogicalErrorIf(global_num_point_hits[p] == 0,
+                         fname + ": No cell identified containing point " + std::to_string(p) +
+                           ".");
+
+  std::vector<double> global_values(num_values, 0.0);
+  if (not global_values.empty())
+    mpi_comm.all_reduce(local_values.data(),
+                        static_cast<int>(num_values),
+                        global_values.data(),
+                        mpi::op::sum<double>());
+
+  std::vector<std::vector<std::vector<double>>> result(field_functions.size());
+  for (size_t f = 0; f < field_functions.size(); ++f)
+  {
+    const size_t field_num_components = component_offsets[f + 1] - component_offsets[f];
+    result[f].assign(points.size(), std::vector<double>(field_num_components, 0.0));
+    for (size_t p = 0; p < points.size(); ++p)
+      for (size_t c = 0; c < field_num_components; ++c)
+        result[f][p][c] = global_values[p * num_components + component_offsets[f] + c] /
+                          static_cast<double>(global_num_point_hits[p]);
+  }
+  return result;
+}
+
 double
 FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int component) const
 {

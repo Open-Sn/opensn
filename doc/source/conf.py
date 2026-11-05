@@ -22,6 +22,25 @@ for path in (str(project_dir), str(binary_dir)):
 
 import pyopensn  # noqa: E402
 
+# The coupling module exists only in builds configured with OPENSN_WITH_PRECICE=ON. Without it,
+# document a placeholder so the API index still builds.
+if not hasattr(pyopensn, "coupling"):
+    import types
+
+    _coupling = types.ModuleType("pyopensn.coupling", "Multiphysics coupling module.")
+
+    class PreciceAdapter:
+        """One-way OpenSn preCICE volume-coupling participant.
+
+        Not available in this build. Configure OpenSn with ``OPENSN_WITH_PRECICE=ON`` to build
+        it; see the preCICE coupling section of the user guide.
+        """
+
+    PreciceAdapter.__module__ = "pyopensn.coupling"
+    _coupling.PreciceAdapter = PreciceAdapter
+    pyopensn.coupling = _coupling
+    sys.modules["pyopensn.coupling"] = _coupling
+
 # -- Project information -----------------------------------------------------
 
 project = "OpenSn"
