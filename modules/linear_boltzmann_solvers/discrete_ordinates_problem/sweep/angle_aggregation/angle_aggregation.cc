@@ -628,12 +628,12 @@ AngleAggregation::MapNodalValuesToDelayedAngularDOFs(
   SetNewDelayedAngularDOFsFromSTLVector(std::vector<double>(saved.size(), 0.0));
   for (const auto& [bid, bndry] : boundaries_)
   {
-    bndry->AddToNewDelayedAngularFlux(groupset_id_, nodal_value);
+    bndry->CorrectNewDelayedAngularFlux(groupset_id_, nodal_value);
     bndry->AddToNewDelayedAngularSlope(groupset_id_, nodal_value);
   }
   for (auto& angle_set : angle_set_groups_)
   {
-    angle_set->GetFLUDS().AddToNewDelayedAngularFlux(nodal_value);
+    angle_set->GetFLUDS().CorrectNewDelayedAngularFlux(nodal_value);
     angle_set->GetFLUDS().AddToNewDelayedAngularSlope(nodal_value);
   }
   auto values = GetNewDelayedAngularDOFsAsSTLVector();
