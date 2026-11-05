@@ -144,6 +144,17 @@
 <span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
 <span class="w">                                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">dimension</span><span class="p">);</span>
 
+<span class="cm">/**</span>
+<span class="cm"> * Direction from which the SPDS of a sweep ordering (a group of quadrature directions) is built.</span>
+<span class="cm"> * The directions of a polar, quadrant or octant group give every face the same orientation on the</span>
+<span class="cm"> * meshes those aggregation types allow, so their normalized mean direction gives the same sweep</span>
+<span class="cm"> * ordering as any member, and its face weights stand for the whole group when cyclic dependencies</span>
+<span class="cm"> * are broken. Other groups use their first direction.</span>
+<span class="cm"> */</span>
+<span class="n">Vector3</span><span class="w"> </span><span class="nf">SweepOrderingOmega</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">DirIDs</span><span class="o">&amp;</span><span class="w"> </span><span class="n">so_grouping</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">AngleAggregationType</span><span class="w"> </span><span class="n">agg_type</span><span class="p">);</span>
+
 <span class="kt">void</span><span class="w"> </span><span class="nf">BuildAAHGPUFludsCommonData</span><span class="p">(</span><span class="n">SweepRuntime</span><span class="o">&amp;</span><span class="w"> </span><span class="n">runtime</span><span class="p">,</span>
 <span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">SpatialDiscretization</span><span class="o">&amp;</span><span class="w"> </span><span class="n">discretization</span><span class="p">,</span>
 <span class="w">                                </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellFaceNodalMapping</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">grid_nodal_mappings</span><span class="p">);</span>

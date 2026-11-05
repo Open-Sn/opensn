@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1aaac66bc3f01ab627b95e04a2ebde34ad:
+
+Variable opensn::MAX_EXACT_FAS_SCC_SIZE
+=======================================
+
+- Defined in :ref:`file_framework_graphs_feedback_arc_set.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::MAX_EXACT_FAS_SCC_SIZE
+   :project: opensn

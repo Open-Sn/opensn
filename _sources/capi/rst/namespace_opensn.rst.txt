@@ -1301,6 +1301,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a314e3bf1b467cff4ed3195442a549642`
 
+- :ref:`exhale_function_namespaceopensn_1a2756e9bbc9dfdfbeb86ec4ae8b726e3f`
+
 - :ref:`exhale_function_namespaceopensn_1a10e325f57903a54cb707924c913e7f17`
 
 - :ref:`exhale_function_namespaceopensn_1ad7498692cdd3514d11c457bac5afe9de`
@@ -1474,6 +1476,8 @@ Variables
 - :ref:`exhale_variable_namespaceopensn_1a9e71974189ed8e21bae1b79f423bfdb0`
 
 - :ref:`exhale_variable_namespaceopensn_1aa0e28d1f14e9035faab80fc1ecd1cbb9`
+
+- :ref:`exhale_variable_namespaceopensn_1aaac66bc3f01ab627b95e04a2ebde34ad`
 
 - :ref:`exhale_variable_namespaceopensn_1aa33be9e03229ef1f33db38c90a09e2d9`
 

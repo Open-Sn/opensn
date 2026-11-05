@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2756e9bbc9dfdfbeb86ec4ae8b726e3f:
+
+Function opensn::RemoveCyclicDependencies
+=========================================
+
+- Defined in :ref:`file_framework_graphs_feedback_arc_set.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::RemoveCyclicDependencies(Graph&)
+   :project: opensn

@@ -93,25 +93,12 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/logical_volume/logical_volume.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/graph/directed_graph.hpp&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/graphs/feedback_arc_set.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;stack&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
-
-<span class="k">struct</span><span class="w"> </span><span class="nc">VertexProperties</span>
-<span class="p">{</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">active</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
-<span class="p">};</span>
-
-<span class="k">using</span><span class="w"> </span><span class="n">Graph</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">adjacency_list</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">vecS</span><span class="p">,</span>
-<span class="w">                                    </span><span class="n">boost</span><span class="o">::</span><span class="n">vecS</span><span class="p">,</span>
-<span class="w">                                    </span><span class="n">boost</span><span class="o">::</span><span class="n">bidirectionalS</span><span class="p">,</span>
-<span class="w">                                    </span><span class="n">opensn</span><span class="o">::</span><span class="n">VertexProperties</span><span class="p">,</span>
-<span class="w">                                    </span><span class="n">boost</span><span class="o">::</span><span class="n">property</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">edge_weight_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">;</span>
-<span class="k">using</span><span class="w"> </span><span class="n">Vertex</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">graph_traits</span><span class="o">&lt;</span><span class="n">Graph</span><span class="o">&gt;::</span><span class="n">vertex_descriptor</span><span class="p">;</span>
 
 <span class="k">struct</span><span class="w"> </span><span class="nc">SPDSFaceNeighborInfo</span>
 <span class="p">{</span>
@@ -189,16 +176,8 @@
 <span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">cell_face_orientations_</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Removes cyclic dependencies from the given graph.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param g The graph from which cyclic dependencies are to be removed.</span>
-<span class="cm">   * \return FAS as a vector of graph edges.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="p">,</span><span class="w"> </span><span class="n">Vertex</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">RemoveCyclicDependencies</span><span class="p">(</span><span class="n">Graph</span><span class="o">&amp;</span><span class="w"> </span><span class="n">g</span><span class="p">);</span>
-
 <span class="w">  </span><span class="c1">/// Maps location J to a predecessor location.</span>
-<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">MapLocJToPrelocI</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">locJ</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">MapLocJToPrelocI</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">locJ</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Maps location J to a dependent location.</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="nf">MapLocJToDeplocI</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">locJ</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -224,40 +203,6 @@
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_dependencies</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">location_successors</span><span class="p">,</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;&gt;&amp;</span><span class="w"> </span><span class="n">cell_successors</span><span class="p">);</span>
-
-<span class="w">  </span><span class="c1">/// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">FindSCCs</span><span class="p">(</span><span class="n">Graph</span><span class="o">&amp;</span><span class="w"> </span><span class="n">g</span><span class="p">);</span>
-
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Tarjan&#39;s algorithm for finding SCCs in a graph.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param u The current vertex being processed.</span>
-<span class="cm">   * \param g The graph being analyzed.</span>
-<span class="cm">   * \param time Global timer for discovery times.</span>
-<span class="cm">   * \param disc Vector of discovery times for each vertex.</span>
-<span class="cm">   * \param low Vector of low values for each vertex.</span>
-<span class="cm">   * \param on_stack Vector tracking whether each vertex is in the stack.</span>
-<span class="cm">   * \param stack Vertex stack.</span>
-<span class="cm">   * \param SCCs Output vector to store the resulting SCCs.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SCCAlgorithm</span><span class="p">(</span><span class="n">Vertex</span><span class="w"> </span><span class="n">u</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">Graph</span><span class="o">&amp;</span><span class="w"> </span><span class="n">g</span><span class="p">,</span>
-<span class="w">                    </span><span class="kt">int</span><span class="o">&amp;</span><span class="w"> </span><span class="n">time</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">disc</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">low</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">on_stack</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">stack</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">stack</span><span class="p">,</span>
-<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">SCCs</span><span class="p">);</span>
-
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Finds an approximate minimum feedback arc set (FAS) to break cycles in the graph.</span>
-<span class="cm">   *</span>
-<span class="cm">   * \param g The graph being analyzed.</span>
-<span class="cm">   * \param scc_vertices Vertices within the current strongly connected component.</span>
-<span class="cm">   * \return Vector of pairs representing edges to remove to break cycles.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="p">,</span><span class="w"> </span><span class="n">Vertex</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">FindApproxMinimumFAS</span><span class="p">(</span><span class="n">Graph</span><span class="o">&amp;</span><span class="w"> </span><span class="n">g</span><span class="p">,</span>
-<span class="w">                                                              </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vertex</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">scc_vertices</span><span class="p">);</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Angular direction vector.</span>

@@ -2917,6 +2917,11 @@ Files
 .. toctree::
    :maxdepth: 1
 
+   file_framework_graphs_feedback_arc_set.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
    file_framework_field_functions_interpolation_ffinter_line.h.rst
 
 .. toctree::

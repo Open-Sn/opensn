@@ -16,6 +16,7 @@ Directory graphs
 Files
 -----
 
+- :ref:`file_framework_graphs_feedback_arc_set.h`
 - :ref:`file_framework_graphs_graph_partitioner.h`
 - :ref:`file_framework_graphs_kba_graph_partitioner.h`
 - :ref:`file_framework_graphs_linear_graph_partitioner.h`
