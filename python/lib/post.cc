@@ -4,6 +4,7 @@
 #include "python/lib/py_wrappers.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/cross_section_sensitivity_postprocessor.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/volume_postprocessor.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/postprocessors/surface_postprocessor.h"
 #include <pybind11/stl.h>
 #include <pybind11/numpy.h>
 
@@ -213,6 +214,66 @@ WrapPostprocessors(py::module& post)
     },
     R"(
     Returns the sensitivity values.
+    )"
+  );
+  // Surface post-processor
+  auto sp = py::class_<SurfacePostprocessor, std::shared_ptr<SurfacePostprocessor>>(
+    post,
+    "SurfacePostprocessor",
+    R"(
+    Surface post-processor.
+
+    Wrapper of :cpp:class:`opensn::SurfacePostprocessor`.
+    )"
+  );
+  sp.def(
+    py::init(
+      [](py::kwargs& params)
+      {
+        return SurfacePostprocessor::Create(kwargs_to_param_block(params));
+      }
+    ),
+    R"(
+    Construct a surface post-processor object. Collective.
+
+    Parameters
+    ----------
+    problem : DiscreteOrdinatesProblem
+        A handle to an existing discrete ordinates problem.
+    value_type : str, required
+        Type of value to compute: 'integral', 'max', 'min', or 'avg'.
+    current_type : str, required
+        Type of current to compute: 'incoming', 'outgoing', or 'net'.
+    boundaries : List[str], required
+        Names of the boundaries to restrict the computation to. At least one is required.
+    logical_volumes : List[LogicalVolume], optional
+        Logical volumes restricting the selected boundary faces. Each gives one result row.
+    group : int, optional
+        Single group to compute (mutually exclusive with groupset).
+    groupset : int, optional
+        Single groupset to compute (mutually exclusive with group).
+    )"
+  );
+  sp.def(
+    "Execute",
+    [](SurfacePostprocessor& self){
+      self.Execute();
+    },
+    R"(
+    Execute the postprocessor. Collective.
+    )"
+  );
+  sp.def(
+    "GetValue",
+    [](SurfacePostprocessor& self)
+    {
+      return self.GetValue();
+    },
+    R"(
+    Returns the value of the postprocessor.
+
+    Rows correspond to the spatial restriction (i.e. logical volumes, if specified)
+    Columns correspond to the energy restrictions (i.e. groups, or groups within a groupset if specified)
     )"
   );
   // clang-format on
