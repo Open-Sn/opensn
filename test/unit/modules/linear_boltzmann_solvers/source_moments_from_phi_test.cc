@@ -124,7 +124,7 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
   const auto& moment_map = problem.GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   std::vector<double> q(phi.size(), 0.0);
   for (const auto& cell : problem.GetGrid()->GetLocalCells())
-    for (unsigned int i = 0; i < sdm.GetCellNumNodes(*cell); ++i)
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell); ++i)
       for (unsigned int m = 0; m < problem.GetNumMoments(); ++m)
       {
         const auto ell = moment_map[m].ell;
@@ -133,12 +133,12 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
           double value = 0.0;
           for (unsigned int gp = 0; gp < 2; ++gp)
           {
-            const double phi_gp = phi[sdm.MapDOFLocal(*cell, i, uk_man, m, gp)];
+            const double phi_gp = phi[sdm.MapDOFLocal(cell, i, uk_man, m, gp)];
             value += kTransfer[ell][g][gp] * phi_gp;
             if (ell == 0)
               value += kProduction[g][gp] * phi_gp;
           }
-          q[sdm.MapDOFLocal(*cell, i, uk_man, m, g)] = value;
+          q[sdm.MapDOFLocal(cell, i, uk_man, m, g)] = value;
         }
       }
   return q;

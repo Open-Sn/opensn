@@ -122,7 +122,7 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
     Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)};
   int local_non_orthogonal = 0;
   for (const auto& cell : grid_->GetLocalCells())
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor and
           std::none_of(unit_normal_vectors.begin(),
                        unit_normal_vectors.end(),
@@ -229,7 +229,7 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
   for (const auto& cell : grid_->GetLocalCells())
-    secondary_unit_cell_matrices_[cell->local_id] = ComputeCellUnitIntegrals(*cell);
+    secondary_unit_cell_matrices_[cell.local_id] = ComputeCellUnitIntegrals(cell);
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";

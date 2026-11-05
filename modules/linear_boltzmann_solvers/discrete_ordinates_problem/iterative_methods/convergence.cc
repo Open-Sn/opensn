@@ -56,8 +56,8 @@ ComputePointwisePhiChange(
   double pw_change = 0.0;
   for (const auto& cell : grid_ptr->GetLocalCells())
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    for (auto i = 0; i < cell->vertex_ids.size(); ++i)
+    const auto& transport_view = cell_transport_views[cell.local_id];
+    for (auto i = 0; i < cell.vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
       {
@@ -123,7 +123,7 @@ ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
                                unsigned int face_node,
                                unsigned int group_idx)
     {
-      const auto& cell = *grid.GetLocalCells()[cell_local_id];
+      const auto& cell = grid.GetLocalCells()[cell_local_id];
       const auto node = sdm.GetCellMapping(cell).MapFaceNode(face, face_node);
       const auto dof = transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx);
       return std::max(std::fabs(phi_new[dof]), std::fabs(phi_old[dof]));

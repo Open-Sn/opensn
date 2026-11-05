@@ -54,7 +54,7 @@ AAHCSDASweepChunk::ZeroDestinationPhi()
 
   for (const auto& cell : grid_->GetLocalCells())
   {
-    const auto mapping = cell->local_id * static_cast<size_t>(total_num_groups) + gsi;
+    const auto mapping = cell.local_id * static_cast<size_t>(total_num_groups) + gsi;
     for (unsigned int g = 0; g < gss; ++g)
       destination_phi_e_[mapping + g] = 0.0;
   }
@@ -381,13 +381,13 @@ AAHCSDASweepChunk::SetDestinationsFromAngularFlux(const AngleAggregation& angle_
   const auto num_groups = static_cast<size_t>(problem_.GetNumGroups());
   for (const auto& cell : grid_->GetLocalCells())
   {
-    double* phi_e = &destination_phi_e_[cell->local_id * num_groups + gs_gi];
+    double* phi_e = &destination_phi_e_[cell.local_id * num_groups + gs_gi];
     std::fill_n(phi_e, gs_size, 0.0);
     for (const auto& angle_set : angle_agg)
       for (const auto direction_num : angle_set->GetAngleIndices())
       {
         const double wn_d2m = d2m_op.data()[direction_num * static_cast<size_t>(num_moments_)];
-        const double* psi_e = &psi_e_[(cell->local_id * num_angles + direction_num) * gs_size];
+        const double* psi_e = &psi_e_[(cell.local_id * num_angles + direction_num) * gs_size];
         for (size_t gsg = 0; gsg < gs_size; ++gsg)
           phi_e[gsg] += wn_d2m * psi_e[gsg];
       }

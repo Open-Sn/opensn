@@ -34,7 +34,7 @@ GetGlobalUniqueBoundaryIDs(const std::shared_ptr<Mesh>& grid, mpi::Communicator&
 {
   std::set<std::uint64_t> local_unique_bids_set;
   for (const auto& cell : grid->GetLocalCells())
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor)
         local_unique_bids_set.insert(face.neighbor_id);
 
@@ -221,7 +221,7 @@ DiscreteOrdinatesProblem::ComputeReflectingBoundaryNormal(uint64_t bid) const
   std::array<double, 7> local = {inf, inf, inf, inf, inf, inf, 1.0};
   std::optional<Vector3> first_normal;
   for (const auto& cell : grid_->GetLocalCells())
-    for (const auto& face : cell->faces)
+    for (const auto& face : cell.faces)
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
         if (not first_normal)

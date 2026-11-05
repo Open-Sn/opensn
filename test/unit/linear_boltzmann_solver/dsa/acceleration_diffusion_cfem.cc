@@ -53,7 +53,7 @@ acceleration_Diffusion_CFEM(std::shared_ptr<Mesh> grid)
   // Build unit integrals
   for (const auto& cell : grid->GetLocalCells())
   {
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
   }
 
   // Make solver

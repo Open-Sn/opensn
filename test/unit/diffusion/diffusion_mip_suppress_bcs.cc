@@ -64,7 +64,7 @@ MaxDeviationFromNoBCSolution(const BoundaryCondition& bc, bool suppress_bcs, Ass
 
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
   for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+    unit_cell_matrices[cell.local_id] = ComputeUnitCellIntegrals(sdm, cell);
 
   DiffusionMIPSolver solver("MIPSuppressBCs",
                             sdm,
