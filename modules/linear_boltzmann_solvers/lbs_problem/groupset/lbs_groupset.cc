@@ -103,17 +103,18 @@ LBSGroupset::GetInputParameters()
                               "marshak",
                               "Boundary condition of the TGDSA diffusion correction, with the "
                               "same choices and boundaries as wgdsa_boundary_closure.");
-  params.AddOptionalParameter("wgdsa_h_perp_convention",
-                              "face_side",
-                              "Penalty length of the WGDSA MIP operator. face_side (default) uses "
-                              "the face-dependent orthogonal length (3V/A_f tet, V/A_f hex) capped "
-                              "by four times the smallest height of the face's PWLD side "
-                              "simplices, "
-                              "with an extra factor 2 on polygons and polyhedra; it keeps the "
-                              "operator positive definite on strongly distorted cells. cell "
-                              "(OpenSn's original) uses the cell-wide lengths (3V/S tet, V/S hex) "
-                              "with the extra factor 2 on polyhedra, a larger penalty that slows "
-                              "DSA on cells a few mean free paths thick.");
+  params.AddOptionalParameter(
+    "wgdsa_h_perp_convention",
+    "face_side",
+    "Penalty length of the WGDSA MIP operator. face_side (default) uses the face-dependent "
+    "orthogonal length (3V/A_f tet, V/A_f hex and quad, 2V/A_f triangle) capped by four times the "
+    "smallest height of the face's PWLD side simplices, with an extra factor 2 on polygons and "
+    "polyhedra; the cap keeps the operator positive definite on strongly distorted cells and is "
+    "inactive on regular ones. cell (OpenSn's original) uses the cell-wide lengths (3V/S tet, V/S "
+    "hex) with the extra factor 2, and on polygons the face-dependent lengths without the cap or "
+    "the factor 2. On polyhedra its penalty is larger (six times on cubes), which slows DSA on "
+    "cells a few mean free paths thick; on polygons it is half the face_side penalty and can make "
+    "the operator indefinite on strongly distorted cells.");
   params.AddOptionalParameter("tgdsa_h_perp_convention",
                               "face_side",
                               "Penalty length of the TGDSA MIP operator, with the same choices as "

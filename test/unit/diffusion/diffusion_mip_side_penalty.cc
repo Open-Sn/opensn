@@ -114,6 +114,22 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
   }
 }
 
+// A cell centroid on the line (2D) or plane (3D) of a face flattens that face's side simplices;
+// FaceSideLength rejects it instead of returning a zero length (an infinite penalty).
+TEST(DiffusionMIPSidePenalty, DegenerateSideSimplexThrows)
+{
+  const std::vector<double> x = {0.0, 0.5, 1.0}, y = {0.0, 0.2, 1.0}, z = {0.0, 0.3, 0.4};
+  for (const auto& node_sets : std::vector<std::vector<std::vector<double>>>{{x, y}, {x, y, z}})
+  {
+    auto grid = BuildOrthogonalMesh(node_sets);
+    const auto& cell = *grid->GetLocalCells().front();
+    Cell flat = cell;
+    flat.centroid = flat.faces[0].centroid;
+    EXPECT_NO_THROW(FaceSideLength(*grid, cell, 0));
+    EXPECT_THROW(FaceSideLength(*grid, flat, 0), std::logic_error);
+  }
+}
+
 // "face_side" = min(face length, 2 x side length): on rectangles and boxes the cap is inactive and
 // the length is the cell width normal to the face, V/A_f, with the factor 2 on polygons.
 TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)

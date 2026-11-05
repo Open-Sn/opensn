@@ -436,8 +436,11 @@ cell, with the extra factor 2 on polyhedra, and the face-dependent polygon
 lengths without it. On a cube of side :math:`a` the two lengths are :math:`a/6`
 (``"cell"``) and :math:`a` (``"face_side"``) with the same factor 2, so when the
 penalty floor is inactive the ``"cell"`` penalty is six times the
-``"face_side"`` one, which slows DSA on cells a few mean free paths thick.
-``tgdsa_h_perp_convention`` does the same for TGDSA.
+``"face_side"`` one, which slows DSA on cells a few mean free paths thick. On
+polygons the ``"cell"`` penalty is half the ``"face_side"`` one and can make the
+operator indefinite on strongly distorted cells; ``"face_side"`` applies the
+factor 2 to polygons for uniformity with polyhedra and a larger stability
+margin. ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~

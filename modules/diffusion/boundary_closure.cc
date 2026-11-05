@@ -83,7 +83,9 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
       const Vector3& v1 = grid.GlobalVertex(face.vertex_ids.at(1));
       const double edge = (v1 - v0).Norm();
       const double twice_area = std::fabs((v0 - xc).Cross(v1 - xc).z);
-      OpenSnLogicalErrorIf(edge <= 0.0, "FaceSideLength: degenerate face.");
+      OpenSnLogicalErrorIf(edge <= 0.0 or twice_area <= 0.0,
+                           "FaceSideLength: degenerate face or side triangle (cell centroid on the "
+                           "line of a face).");
       return 2.0 * twice_area / edge;
     }
     case CellType::POLYHEDRON:
@@ -104,8 +106,9 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
         // 6 |S_k| = |normal_x2 . (xc - xf)|, 2 |T_k| = twice_tri
         hmin = std::min(hmin, std::fabs(normal_x2.Dot(xc - xf)) / twice_tri);
       }
-      OpenSnLogicalErrorIf(hmin == std::numeric_limits<double>::max(),
-                           "FaceSideLength: degenerate face.");
+      OpenSnLogicalErrorIf(hmin == std::numeric_limits<double>::max() or hmin <= 0.0,
+                           "FaceSideLength: degenerate face or side tetrahedron (cell centroid on "
+                           "the plane of a face).");
       return 2.0 * hmin;
     }
     default:

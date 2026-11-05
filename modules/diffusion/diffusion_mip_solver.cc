@@ -69,6 +69,12 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
     const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
     const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
+    // Floor of the interior penalty per face (beta_f with closure R, 1/4 otherwise); it does not
+    // depend on the group.
+    std::vector<double> penalty_floors(num_faces);
+    for (size_t f = 0; f < num_faces; ++f)
+      penalty_floors[f] = PenaltyFloor(cell->faces[f].normal);
+
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
@@ -144,14 +150,14 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           // Compute kappa
           double kappa = 1.0;
           if (cell->GetType() == CellType::SLAB)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
           if (cell->GetType() == CellType::POLYGON)
             kappa =
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
-                   PenaltyFloor(n_f));
+                   penalty_floors[f]);
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa =
-              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
@@ -653,6 +659,12 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
     const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
     const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
 
+    // Floor of the interior penalty per face (beta_f with closure R, 1/4 otherwise); it does not
+    // depend on the group.
+    std::vector<double> penalty_floors(num_faces);
+    for (size_t f = 0; f < num_faces; ++f)
+      penalty_floors[f] = PenaltyFloor(cell->faces[f].normal);
+
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
@@ -715,14 +727,14 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           // Compute kappa
           double kappa = 1.0;
           if (cell->GetType() == CellType::SLAB)
-            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+            kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
           if (cell->GetType() == CellType::POLYGON)
             kappa =
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
-                   PenaltyFloor(n_f));
+                   penalty_floors[f]);
           if (cell->GetType() == CellType::POLYHEDRON)
             kappa =
-              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, PenaltyFloor(n_f));
+              fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
 
           DenseMatrix<double> adj_A(num_nodes, num_face_nodes, 0.);
           DenseMatrix<double> adj_AT(num_face_nodes, num_nodes, 0.);
