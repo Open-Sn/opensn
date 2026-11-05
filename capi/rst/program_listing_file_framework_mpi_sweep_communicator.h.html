@@ -115,11 +115,13 @@
 <span class="w">      </span><span class="k">throw</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">invalid_argument</span><span class="p">(</span><span class="s">&quot;SweepCommunicator: Number of groupsets must be positive.&quot;</span><span class="p">);</span>
 <span class="w">    </span><span class="p">}</span>
 
+<span class="w">    </span><span class="c1">// MPI guarantees MPI_TAG_UB only on MPI_COMM_WORLD; communicators made by splitting it need not</span>
+<span class="w">    </span><span class="c1">// carry the attribute, and the bound is the same for all communicators.</span>
 <span class="w">    </span><span class="kt">int</span><span class="o">*</span><span class="w"> </span><span class="n">tag_upper_bound</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">found</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="k">try</span>
 <span class="w">    </span><span class="p">{</span>
-<span class="w">      </span><span class="n">OpenSnMPICall</span><span class="p">(</span><span class="n">MPI_Comm_get_attr</span><span class="p">(</span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">MPI_Comm</span><span class="o">&gt;</span><span class="p">(</span><span class="n">communicator_</span><span class="p">),</span>
+<span class="w">      </span><span class="n">OpenSnMPICall</span><span class="p">(</span><span class="n">MPI_Comm_get_attr</span><span class="p">(</span><span class="n">MPI_COMM_WORLD</span><span class="p">,</span><span class="w"> </span><span class="c1">// NOLINT(bugprone-casting-through-void)</span>
 <span class="w">                                      </span><span class="n">MPI_TAG_UB</span><span class="p">,</span>
 <span class="w">                                      </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="kt">void</span><span class="o">*&gt;</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tag_upper_bound</span><span class="p">),</span>
 <span class="w">                                      </span><span class="o">&amp;</span><span class="n">found</span><span class="p">));</span>

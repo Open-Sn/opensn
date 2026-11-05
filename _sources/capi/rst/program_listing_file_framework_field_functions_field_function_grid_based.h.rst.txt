@@ -93,6 +93,17 @@ Program Listing for File field_function_grid_based.h
       */
      virtual std::vector<double> GetPointValue(const Vector3& point) const;
    
+     /**
+      * Returns component values for multiple field functions at multiple points.
+      *
+      * Point locations and MPI reductions are shared across the field functions. All field functions
+      * must use the same mesh. The outer result index selects the field function, the middle index
+      * selects the point, and the inner index selects the component. A point on a face of a
+      * discontinuous field gets the average over all cells containing it. Collective.
+      */
+     static std::vector<std::vector<std::vector<double>>>
+     GetPointValues(const FFList& field_functions, const std::vector<Vector3>& points);
+   
      /// Evaluates the field function, on a cell, at the specified point, for the given component.
      double Evaluate(const Cell& cell, const Vector3& position, int component) const override;
    

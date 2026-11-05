@@ -40,11 +40,13 @@ Program Listing for File sweep_communicator.h
          throw std::invalid_argument("SweepCommunicator: Number of groupsets must be positive.");
        }
    
+       // MPI guarantees MPI_TAG_UB only on MPI_COMM_WORLD; communicators made by splitting it need not
+       // carry the attribute, and the bound is the same for all communicators.
        int* tag_upper_bound = nullptr;
        int found = 0;
        try
        {
-         OpenSnMPICall(MPI_Comm_get_attr(static_cast<MPI_Comm>(communicator_),
+         OpenSnMPICall(MPI_Comm_get_attr(MPI_COMM_WORLD, // NOLINT(bugprone-casting-through-void)
                                          MPI_TAG_UB,
                                          static_cast<void*>(&tag_upper_bound),
                                          &found));

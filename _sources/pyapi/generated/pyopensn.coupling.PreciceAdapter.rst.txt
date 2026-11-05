@@ -1,0 +1,9 @@
+﻿pyopensn.coupling.PreciceAdapter
+================================
+
+.. currentmodule:: pyopensn.coupling
+
+.. autoclass:: PreciceAdapter
+   :special-members: __init__
+   :members:
+   :inherited-members:

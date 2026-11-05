@@ -508,6 +508,22 @@ Discrete ordinates k-eigen acceleration
    solver.CMFDAcceleration
 
 
+Multiphysics coupling
+---------------------
+
+.. note::
+
+   This module is available only in builds configured with
+   ``OPENSN_WITH_PRECICE=ON``. See :ref:`precice_coupling`.
+
+.. autosummary::
+   :toctree: generated
+   :nosignatures:
+   :template: python.rst
+
+   coupling.PreciceAdapter
+
+
 Settings
 --------
 

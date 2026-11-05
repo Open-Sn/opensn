@@ -168,6 +168,17 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetPointValue</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns component values for multiple field functions at multiple points.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Point locations and MPI reductions are shared across the field functions. All field functions</span>
+<span class="cm">   * must use the same mesh. The outer result index selects the field function, the middle index</span>
+<span class="cm">   * selects the point, and the inner index selects the component. A point on a face of a</span>
+<span class="cm">   * discontinuous field gets the average over all cells containing it. Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span>
+<span class="w">  </span><span class="n">GetPointValues</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FFList</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field_functions</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">points</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Evaluates the field function, on a cell, at the specified point, for the given component.</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">Evaluate</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">position</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">component</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
