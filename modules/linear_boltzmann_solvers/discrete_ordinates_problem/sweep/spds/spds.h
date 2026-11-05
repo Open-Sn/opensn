@@ -6,25 +6,12 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/data_types/vector3.h"
-#include <boost/graph/directed_graph.hpp>
+#include "framework/graphs/feedback_arc_set.h"
 #include <cstdint>
 #include <memory>
-#include <stack>
 
 namespace opensn
 {
-
-struct VertexProperties
-{
-  bool active = true;
-};
-
-using Graph = boost::adjacency_list<boost::vecS,
-                                    boost::vecS,
-                                    boost::bidirectionalS,
-                                    opensn::VertexProperties,
-                                    boost::property<boost::edge_weight_t, double>>;
-using Vertex = boost::graph_traits<Graph>::vertex_descriptor;
 
 struct SPDSFaceNeighborInfo
 {
@@ -102,14 +89,6 @@ public:
     return cell_face_orientations_;
   }
 
-  /**
-   * Removes cyclic dependencies from the given graph.
-   *
-   * \param g The graph from which cyclic dependencies are to be removed.
-   * \return FAS as a vector of graph edges.
-   */
-  std::vector<std::pair<Vertex, Vertex>> RemoveCyclicDependencies(Graph& g);
-
   /// Maps location J to a predecessor location.
   int MapLocJToPrelocI(int locJ) const;
 
@@ -137,40 +116,6 @@ protected:
     std::vector<int>& location_dependencies,
     std::vector<int>& location_successors,
     std::vector<std::vector<std::pair<std::uint32_t, double>>>& cell_successors);
-
-  /// Find bi-, tri-, and n-connected strongly connected components (SCCs) in the given graph.
-  std::vector<std::vector<Vertex>> FindSCCs(Graph& g);
-
-  /**
-   * Tarjan's algorithm for finding SCCs in a graph.
-   *
-   * \param u The current vertex being processed.
-   * \param g The graph being analyzed.
-   * \param time Global timer for discovery times.
-   * \param disc Vector of discovery times for each vertex.
-   * \param low Vector of low values for each vertex.
-   * \param on_stack Vector tracking whether each vertex is in the stack.
-   * \param stack Vertex stack.
-   * \param SCCs Output vector to store the resulting SCCs.
-   */
-  void SCCAlgorithm(Vertex u,
-                    Graph& g,
-                    int& time,
-                    std::vector<int>& disc,
-                    std::vector<int>& low,
-                    std::vector<bool>& on_stack,
-                    std::stack<Vertex>& stack,
-                    std::vector<std::vector<Vertex>>& SCCs);
-
-  /**
-   * Finds an approximate minimum feedback arc set (FAS) to break cycles in the graph.
-   *
-   * \param g The graph being analyzed.
-   * \param scc_vertices Vertices within the current strongly connected component.
-   * \return Vector of pairs representing edges to remove to break cycles.
-   */
-  std::vector<std::pair<Vertex, Vertex>> FindApproxMinimumFAS(Graph& g,
-                                                              std::vector<Vertex>& scc_vertices);
 
 protected:
   /// Angular direction vector.

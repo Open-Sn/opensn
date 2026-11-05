@@ -71,3 +71,46 @@ TEST(OrthantAngleAggregationTest, RejectsAxisDirections)
   EXPECT_THROW(detail::GroupDirectionsByOrthant("OrthantAngleAggregationTest", quadrature, 2),
                std::logic_error);
 }
+
+TEST(OrthantAngleAggregationTest, OrthantGroupSPDSUsesMeanDirection)
+{
+  const GLCProductQuadrature3DXYZ quadrature(4, 8, 0);
+  for (const auto& group : detail::GroupDirectionsByOrthant("Test", quadrature, 3))
+  {
+    Vector3 sum;
+    for (const size_t direction : group)
+      sum += quadrature.GetOmega(direction);
+    const auto expected = sum.Normalized();
+    const auto omega = detail::SweepOrderingOmega(quadrature, group, AngleAggregationType::OCTANT);
+    EXPECT_NEAR(omega.x, expected.x, 1.0e-15);
+    EXPECT_NEAR(omega.y, expected.y, 1.0e-15);
+    EXPECT_NEAR(omega.z, expected.z, 1.0e-15);
+    EXPECT_NEAR(omega.Norm(), 1.0, 1.0e-15);
+    // Every member streams through each coordinate plane in the same direction as the mean.
+    for (const size_t direction : group)
+    {
+      const auto& member = quadrature.GetOmega(direction);
+      EXPECT_GT(member.x * omega.x, 0.0);
+      EXPECT_GT(member.y * omega.y, 0.0);
+      EXPECT_GT(member.z * omega.z, 0.0);
+    }
+  }
+}
+
+TEST(OrthantAngleAggregationTest, OtherGroupsUseFirstDirection)
+{
+  const GLCProductQuadrature3DXYZ quadrature(4, 8, 0);
+  const DirIDs single = {3};
+  const auto omega = detail::SweepOrderingOmega(quadrature, single, AngleAggregationType::POLAR);
+  EXPECT_EQ(omega.x, quadrature.GetOmega(3).x);
+  EXPECT_EQ(omega.y, quadrature.GetOmega(3).y);
+  EXPECT_EQ(omega.z, quadrature.GetOmega(3).z);
+
+  // Azimuthal (curvilinear) groups keep their first direction.
+  const DirIDs pair = {0, 1};
+  const auto azimuthal =
+    detail::SweepOrderingOmega(quadrature, pair, AngleAggregationType::AZIMUTHAL);
+  EXPECT_EQ(azimuthal.x, quadrature.GetOmega(0).x);
+  EXPECT_EQ(azimuthal.y, quadrature.GetOmega(0).y);
+  EXPECT_EQ(azimuthal.z, quadrature.GetOmega(0).z);
+}
