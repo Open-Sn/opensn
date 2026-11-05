@@ -980,7 +980,10 @@
     "if ipython_instance is not None:\n",
     "    ipython_instance.events.register(\"post_execute\", finalize_env)\n",
     "\n",
-    "os.system(\"rm -rf Data Flux AdjFlux\")\n"
+    "# Every rank must finish reading the files before rank 0 removes them\n",
+    "barrier()\n",
+    "if rank == 0:\n",
+    "    os.system(\"rm -rf Data Flux AdjFlux\")\n"
    ]
   }
  ],

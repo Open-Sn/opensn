@@ -193,7 +193,7 @@
 <section id="Geometry">
 <h2><span class="section-number">6.2.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="53f524fd219e43288651f2a907ceb5f2" src="../../../../_images/glovebox_geom1.png" /></p>
+<p><img alt="9ef701e85899458482ab9d62c8116078" src="../../../../_images/glovebox_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -212,9 +212,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="99512d3c443e41239d06874f5d291957" src="../../../../_images/glovebox_mesh1.png" /></p>
-<p><img alt="7ac8fe4692074d65b67314ccf8aeb4e3" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
-<p><img alt="4378a150caa74a6899d8c9e87b1f00fb" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="f1019267b912412abd66e243f8006c69" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="db13ead7c3004c189fa35d882b626192" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="26f14db563ee4c5db2979041446c969f" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">6.2.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -497,7 +497,7 @@
     <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
     <span class="n">axs</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;images/Spectrum.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;Spectrum.png&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -513,9 +513,9 @@
 </div>
 </div>
 <p>Group 3: [1.353, 2.231] MeV</p>
-<p><img alt="5942b0306e2443768e45ffc525a884d6" src="../../../../_images/glovebox_g3.png" /></p>
+<p><img alt="ce298f2814e34eafbf37c6870bb36e6d" src="../../../../_images/glovebox_g3.png" /></p>
 <p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="caf4223398a142c0abf2d1639041dcd1" src="../../../../_images/glovebox_g52.png" /></p>
+<p><img alt="89b04f3c61e34ef495cc3d6ad104b8bc" src="../../../../_images/glovebox_g52.png" /></p>
 </section>
 <section id="Compute-Leakage">
 <h3><span class="section-number">6.2.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
@@ -558,7 +558,7 @@
     <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">fontsize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
     <span class="n">axs</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
 
-    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;images/Lkg.png&quot;</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="s2">&quot;Lkg.png&quot;</span><span class="p">)</span>
 
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage XMin :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmin</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="s1">&#39;Total Leakage XMax :&#39;</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lkg_xmax</span><span class="p">)</span><span class="si">:</span><span class="s2">.6e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -578,7 +578,7 @@
 <div class="line">Total Leakage YMax : 4.702092e-01</div>
 </div>
 <p>Total Leakage : 1.035658e+00</p>
-<p><img alt="b689a582873c4a25906526e8f2b47fd3" src="../../../../_images/Lkg.png" /></p>
+<p><img alt="222d6e2a428546b6ade27c4c72517eef" src="../../../../_images/Lkg.png" /></p>
 </section>
 <section id="Compute-Balance">
 <h3><span class="section-number">6.2.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>
@@ -602,7 +602,10 @@
 <span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
 
-<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data Flux Results&quot;</span><span class="p">)</span>
+<span class="c1"># Every rank must finish reading the files before rank 0 removes them</span>
+<span class="n">barrier</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data Flux Results&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>

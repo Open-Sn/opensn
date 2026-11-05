@@ -153,6 +153,9 @@ is called. No separate <code class="docutils literal notranslate"><span class="p
 <dt class="sig sig-object py" id="pyopensn.fieldfunc.FieldFunctionInterpolationLine.ExportToCSV">
 <span class="sig-name descname"><span class="pre">ExportToCSV</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation" title="pyopensn.fieldfunc.FieldFunctionInterpolation"><span class="pre">pyopensn.fieldfunc.FieldFunctionInterpolation</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">base_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionInterpolationLine.ExportToCSV" title="Link to this definition"></a></dt>
 <dd><p>Export field function interpolation to CSV files.</p>
+<p>Only line interpolations write files; for other interpolation types this does nothing. For a
+line interpolation, rank 0 writes the files. Collective: every rank must call it, and the files
+are complete on every rank when it returns.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>base_name</strong> (<em>str</em>) – Base name of the exported CSVs.</p>

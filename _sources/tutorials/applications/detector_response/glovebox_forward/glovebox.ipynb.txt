@@ -490,7 +490,7 @@
     "    axs[3].legend(fontsize=20)\n",
     "    axs[3].grid()\n",
     "\n",
-    "    plt.savefig(\"images/Spectrum.png\")"
+    "    plt.savefig(\"Spectrum.png\")"
    ]
   },
   {
@@ -579,7 +579,7 @@
     "    axs[1].legend(fontsize=20)\n",
     "    axs[1].grid()\n",
     "\n",
-    "    plt.savefig(\"images/Lkg.png\")\n",
+    "    plt.savefig(\"Lkg.png\")\n",
     "    \n",
     "    print(f\"{'Total Leakage XMin :'} {np.sum(lkg_xmin):.6e}\")\n",
     "    print(f\"{'Total Leakage XMax :'} {np.sum(lkg_xmax):.6e}\")\n",
@@ -647,7 +647,10 @@
     "if ipython_instance is not None:\n",
     "    ipython_instance.events.register(\"post_execute\", finalize_env)\n",
     "\n",
-    "os.system(\"rm -rf Data Flux Results\")"
+    "# Every rank must finish reading the files before rank 0 removes them\n",
+    "barrier()\n",
+    "if rank == 0:\n",
+    "    os.system(\"rm -rf Data Flux Results\")"
    ]
   }
  ],

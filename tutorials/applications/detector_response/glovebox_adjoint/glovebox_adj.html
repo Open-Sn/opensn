@@ -192,7 +192,7 @@
 <section id="Geometry">
 <h2><span class="section-number">6.2.4.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="b8bd4fe1459d409093f75da043f55832" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="8d0beecef7b04c76a8b4966359e1c763" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -211,9 +211,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="805a62d4ba204b86ad482e69dd3386cb" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="827ba4f83b7d4fee857e61fd3420b5e3" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="eb33f0a1f3104fbaa7b3b94499080bc6" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="b7bc94d798fa43c6bb3f58e1c01adeaf" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="c010b153e5024fd48390c878971073fd" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="6611d0280b124bbdb003602e55e95e27" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">6.2.4.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -480,14 +480,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="9de6ee568f5f4c078e31eda0dc8be8c1" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="e5dfb493f6ce4c398140bbee75224ca8" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="fde405bb221d43acad5702ea243450a7" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="efe1452975e744fb93d289e9f515eade" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="def233811b394dc3abb9709d21aeb6f0" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="7819883bf44f438aac71acd5ab831f6d" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="9c7e6bdaec7e4fa486608820007b7d3e" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="8278f8a6c5dc41dc9c206f1a86f930ea" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
@@ -508,7 +508,10 @@
 <span class="k">if</span> <span class="n">ipython_instance</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
     <span class="n">ipython_instance</span><span class="o">.</span><span class="n">events</span><span class="o">.</span><span class="n">register</span><span class="p">(</span><span class="s2">&quot;post_execute&quot;</span><span class="p">,</span> <span class="n">finalize_env</span><span class="p">)</span>
 
-<span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data AdjFlux Results&quot;</span><span class="p">)</span>
+<span class="c1"># Every rank must finish reading the files before rank 0 removes them</span>
+<span class="n">barrier</span><span class="p">()</span>
+<span class="k">if</span> <span class="n">rank</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;rm -rf Data AdjFlux Results&quot;</span><span class="p">)</span>
 <br/></pre></div>
 </div>
 </div>
