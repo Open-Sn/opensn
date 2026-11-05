@@ -1,0 +1,43 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
+#pragma once
+
+#include <boost/graph/adjacency_list.hpp>
+#include <cstddef>
+#include <utility>
+#include <vector>
+
+namespace opensn
+{
+
+struct VertexProperties
+{
+  bool active = true;
+};
+
+/// Weighted directed graph used to order sweep tasks.
+using Graph = boost::adjacency_list<boost::vecS,
+                                    boost::vecS,
+                                    boost::bidirectionalS,
+                                    opensn::VertexProperties,
+                                    boost::property<boost::edge_weight_t, double>>;
+using Vertex = boost::graph_traits<Graph>::vertex_descriptor;
+
+/// Largest strongly connected component whose feedback arc set is found exactly.
+constexpr std::size_t MAX_EXACT_FAS_SCC_SIZE = 12;
+
+/**
+ * Removes cyclic dependencies from the given graph.
+ *
+ * Each strongly connected component with at most MAX_EXACT_FAS_SCC_SIZE vertices is broken by a
+ * feedback arc set (FAS) of minimum total edge weight. Larger components use a greedy
+ * approximation.
+ *
+ * \param g The graph from which cyclic dependencies are to be removed. The FAS edges are
+ *        removed from it, leaving it acyclic.
+ * \return FAS as a vector of graph edges. Each removed (source, target) pair appears once.
+ */
+std::vector<std::pair<Vertex, Vertex>> RemoveCyclicDependencies(Graph& g);
+
+} // namespace opensn
