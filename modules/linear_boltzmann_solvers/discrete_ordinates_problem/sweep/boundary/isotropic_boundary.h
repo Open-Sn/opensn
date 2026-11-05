@@ -36,6 +36,12 @@ public:
   std::uint64_t
   GetOffsetToAngleset(const FaceNode& face_node, AngleSet& anglset, bool is_outgoing) override;
 
+  void CorrectNewDelayedAngularFlux(int /*groupset_id*/,
+                                    const DelayedFluxCorrection& /*correction*/) override
+  {
+    // This boundary has no delayed angular flux to correct.
+  }
+
 protected:
   bool current_state_ = false;
   std::vector<double> active_boundary_flux_;

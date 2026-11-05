@@ -102,7 +102,7 @@ ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
   OpenSnLogicalErrorIf(
     not groupset.angle_agg,
     "ApplyDSACorrectionToDelayedAngularFlux: groupset has no angle aggregation.");
-  groupset.angle_agg->AddToNewDelayedAngularFlux(correction);
+  groupset.angle_agg->CorrectNewDelayedAngularFlux(correction);
 }
 
 } // namespace opensn

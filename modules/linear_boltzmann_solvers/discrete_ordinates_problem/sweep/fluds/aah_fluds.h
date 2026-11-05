@@ -38,7 +38,7 @@ public:
                        std::size_t face_dof,
                        std::size_t n);
 
-  void AddToNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
+  void CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
 
   void AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction) override;
 

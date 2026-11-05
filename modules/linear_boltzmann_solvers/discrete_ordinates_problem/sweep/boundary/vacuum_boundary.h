@@ -36,6 +36,12 @@ public:
       throw std::logic_error("VacuumBoundary does not support outgoing flux.");
     return 0;
   }
+
+  void CorrectNewDelayedAngularFlux(int /*groupset_id*/,
+                                    const DelayedFluxCorrection& /*correction*/) override
+  {
+    // This boundary has no delayed angular flux to correct.
+  }
 };
 
 } // namespace opensn

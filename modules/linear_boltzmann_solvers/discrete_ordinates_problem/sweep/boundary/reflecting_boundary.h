@@ -101,8 +101,8 @@ public:
 
   void CopyDelayedAngularFluxNewToOld(int groupset_id) override;
 
-  void AddToNewDelayedAngularFlux(int groupset_id,
-                                  const DelayedFluxCorrection& correction) override;
+  void CorrectNewDelayedAngularFlux(int groupset_id,
+                                    const DelayedFluxCorrection& correction) override;
 
   void AddToNewDelayedAngularSlope(int groupset_id,
                                    const DelayedFluxCorrection& correction) override;

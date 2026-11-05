@@ -495,8 +495,8 @@ ReflectingBoundary::CopyDelayedAngularFluxNewToOld(int groupset_id)
 }
 
 void
-ReflectingBoundary::AddToNewDelayedAngularFlux(int groupset_id,
-                                               const DelayedFluxCorrection& correction)
+ReflectingBoundary::CorrectNewDelayedAngularFlux(int groupset_id,
+                                                 const DelayedFluxCorrection& correction)
 {
   if (opposing_reflected_)
     AddToNewDelayedValues(groupset_id, correction, 0);

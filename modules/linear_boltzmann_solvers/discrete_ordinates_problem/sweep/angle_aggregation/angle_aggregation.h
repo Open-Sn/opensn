@@ -165,7 +165,7 @@ public:
    * lagged incoming fluxes of opposing reflecting boundaries and of broken cyclic dependencies
    * within and between locations.
    */
-  void AddToNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction);
+  void CorrectNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction);
 
   /**
    * Returns a vector laid out like GetNewDelayedAngularDOFsAsSTLVector() that holds, for every
