@@ -107,8 +107,8 @@ public:
   }
 
   /**
-   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope
-   * value. The default has no delayed energy slopes.
+   * Adds a nodal value, as CorrectNewDelayedAngularFlux does, to every new delayed CSDA
+   * energy-slope value. The default has no delayed energy slopes.
    */
   virtual void AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction) {}
 

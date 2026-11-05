@@ -145,8 +145,8 @@ public:
                                             const DelayedFluxCorrection& correction) = 0;
 
   /**
-   * Adds a nodal value, as AddToNewDelayedAngularFlux does, to every new delayed CSDA energy-slope
-   * value of this boundary. No-op for boundaries without delayed slopes.
+   * Adds a nodal value, as CorrectNewDelayedAngularFlux does, to every new delayed CSDA
+   * energy-slope value of this boundary. No-op for boundaries without delayed slopes.
    */
   virtual void AddToNewDelayedAngularSlope(int groupset_id, const DelayedFluxCorrection& correction)
   {
