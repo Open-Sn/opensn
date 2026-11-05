@@ -422,5 +422,89 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures.py",
+    "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the fully converged flux (tolerances 1e-13)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures.py",
+    "comment": "Same as transport_2d_cyl_dsa_closures with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_dirichlet_cell",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"dirichlet\"",
+      "h_perp_convention=\"cell\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_2d_cyl_dsa_closures.py",
+    "comment": "Same as transport_2d_cyl_dsa_closures with the closure R DSA boundary closure (blended on these 2.5 mfp cells; trace constant with the r weight)",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_closure_r",
+    "num_procs": 4,
+    "args": [
+      "boundary_closure=\"closure_r\""
+    ],
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 23,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value=",
+        "goldvalue": 46.64963588,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Avg-value=",
+        "goldvalue": 21.83873977,
+        "abs_tol": 1e-05
+      }
+    ]
   }
 ]

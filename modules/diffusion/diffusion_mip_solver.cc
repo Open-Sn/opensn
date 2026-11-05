@@ -1372,8 +1372,12 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
     cf.beta = QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, face.normal);
     cf.h = FaceOrthogonalLength(cell, f);
 
-    cf.c_grad = FaceTraceConstant(
-      cell_mapping, cell, f, unit_cell_matrices_[cell.local_id].intV_gradshapeI_gradshapeJ);
+    // The unit cell matrices carry the coordinate weight (r in RZ); the face matrix must too.
+    cf.c_grad = FaceTraceConstant(cell_mapping,
+                                  cell,
+                                  f,
+                                  unit_cell_matrices_[cell.local_id].intV_gradshapeI_gradshapeJ,
+                                  grid_->GetCoordinateSystem());
   }
   return {data, count};
 }

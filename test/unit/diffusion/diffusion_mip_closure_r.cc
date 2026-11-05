@@ -181,6 +181,30 @@ TEST(DiffusionClosureR, TraceConstant)
   }
 }
 
+// In RZ both norms of the trace constant carry the weight r, so the constant does not depend on the
+// distance to the axis: far from it the weighted constant is the Cartesian one. (With an unweighted
+// face matrix against the weighted stiffness it would scale like 1/r.)
+TEST(DiffusionClosureR, TraceConstantRZ)
+{
+  const double r0 = 1000.0;
+  auto grid = BuildOrthogonalMesh({{r0, r0 + 0.5, r0 + 1.0}, {0.0, 0.3, 1.0}});
+  std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const auto& mapping = sdm->GetCellMapping(*cell);
+    const auto K = ComputeUnitCellIntegrals(*sdm, *cell).intV_gradshapeI_gradshapeJ;
+    const auto K_rz = ComputeUnitCellIntegrals(*sdm, *cell, CoordinateSystemType::CYLINDRICAL)
+                        .intV_gradshapeI_gradshapeJ;
+    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    {
+      const double c_xy = FaceTraceConstant(mapping, *cell, f, K);
+      const double c_rz =
+        FaceTraceConstant(mapping, *cell, f, K_rz, CoordinateSystemType::CYLINDRICAL);
+      EXPECT_NEAR(c_rz, c_xy, 2.0e-3 * c_xy);
+    }
+  }
+}
+
 // The assembled operator with every boundary face closed by closure R is symmetric (symmetry check
 // at assembly) and positive definite on thin, intermediate and thick cells.
 TEST(DiffusionClosureR, OperatorIsSPD)

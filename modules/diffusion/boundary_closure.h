@@ -5,6 +5,7 @@
 
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector3.h"
+#include "framework/math/geometry.h"
 #include <vector>
 
 namespace opensn
@@ -78,12 +79,15 @@ double MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMa
  * Trace constant \f$C_{grad} = h_f \max_v \|\partial_n v\|_f^2 / \|\nabla v\|_K^2\f$ of the basis
  * of `cell_mapping` on face `f` of `cell`, from the cell stiffness matrix `stiffness`
  * (\f$\int_K \nabla b_i \cdot \nabla b_j\f$) and the face's normal-derivative mass matrix, with
- * \f$h_f\f$ = FaceOrthogonalLength. Exactly 3 for linear functions on a tetrahedron.
+ * \f$h_f\f$ = FaceOrthogonalLength. Exactly 3 for linear functions on a tetrahedron. Both norms
+ * carry the spatial weight of `coord_sys` (r in RZ); `stiffness` must be computed with the same
+ * weight (ComputeUnitCellIntegrals with `coord_sys`).
  */
 double FaceTraceConstant(const CellMapping& cell_mapping,
                          const Cell& cell,
                          unsigned int f,
-                         const DenseMatrix<double>& stiffness);
+                         const DenseMatrix<double>& stiffness,
+                         CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);
 
 /**
  * Blend \f$\theta_f\f$ of closure R from \f$\beta_f\f$, \f$\sigma_t h_f\f$, \f$C_{grad}\f$, the

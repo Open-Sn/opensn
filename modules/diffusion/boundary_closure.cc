@@ -6,6 +6,7 @@
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/cell_mappings/cell_mapping.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
+#include "framework/math/spatial_weight_function.h"
 #include "framework/utils/error.h"
 #include <petscblaslapack.h>
 #include <algorithm>
@@ -171,8 +172,10 @@ double
 FaceTraceConstant(const CellMapping& cell_mapping,
                   const Cell& cell,
                   unsigned int f,
-                  const DenseMatrix<double>& stiffness)
+                  const DenseMatrix<double>& stiffness,
+                  CoordinateSystemType coord_sys)
 {
+  const auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto num_nodes = cell_mapping.GetNumNodes();
   const auto& normal = cell.faces.at(f).normal;
   const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
@@ -180,7 +183,7 @@ FaceTraceConstant(const CellMapping& cell_mapping,
   for (size_t i = 0; i < num_nodes; ++i)
     for (size_t j = 0; j < num_nodes; ++j)
       for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
-        N(i, j) += normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
+        N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
   return FaceOrthogonalLength(cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
 }
