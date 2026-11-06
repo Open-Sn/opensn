@@ -94,8 +94,8 @@
       {
         "type": "KeyValuePair",
         "key": "Thick cells closure_r 1000 mfp spectral radius=",
-        "goldvalue": 0.009,
-        "abs_tol": 0.03
+        "goldvalue": 0.015,
+        "abs_tol": 0.005
       },
       {
         "type": "KeyValuePair",
