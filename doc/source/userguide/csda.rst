@@ -138,6 +138,29 @@ The legacy custom responses ``cepxs_charge_deposition`` and
 ``cepxs_secondary_production`` remain available. ``charge_deposition`` is an
 additional name for the imported charge response.
 
+Energy Group Structure
+----------------------
+
+CSDA results are more sensitive than standard results to the width of the
+charged-particle groups near the cutoff. The CSDA sweep removes particles from
+the lowest-energy group of each charged-particle block at the rate
+:math:`S_g/\Delta E_g`, as if each particle slows down through the whole group.
+A standard CEPXS library removes them at twice that rate, as if they cross only
+half the group. Low-energy electrons and positrons scatter most
+strongly, so a wide group at the cutoff overestimates backscatter and the
+secondary radiation it produces, and the CSDA and standard results differ most
+there.
+
+Use logarithmic or cutoff-refined electron and positron groups, for example
+``LOG`` instead of ``LINEAR`` under ``ELECTRONS`` in the CEPXS input, especially
+when the source energy is far above the cutoff. For 100 MeV electrons normally
+incident on 1 cm of tungsten with 50 electron groups, S\ :sub:`16`, and
+P\ :sub:`15`, the reverse photon leakage per incident electron is 1.03 with
+linear groups 2 MeV wide and 0.79 with logarithmic groups. The standard library
+gives 0.84 and 0.77, and Monte Carlo gives 0.70. Reverse leakage at such
+energies also depends strongly on the angular quadrature and the scattering
+order, so check convergence in both.
+
 Problem Requirements
 ====================
 
@@ -161,9 +184,9 @@ Current restrictions are:
 * It is not supported with a precomputed uncollided flux.
 * It is not supported with GPU sweeps.
 * It is not supported with ``sweep_type="CBC"``.
-* It is not supported with within-group or two-grid DSA (``apply_wgdsa`` or
-  ``apply_tgdsa`` in any groupset). Their diffusion operators omit the CSDA
-  slowing-down term.
+* It is not supported with two-grid DSA (``apply_tgdsa`` in any groupset). The
+  two-grid operator omits the CSDA slowing-down term. Within-group DSA is
+  supported; see `Within-Group DSA`_.
 * It is not supported by
   :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem`.
 * Each contiguous charged-particle group range, identified by nonzero stopping
@@ -290,6 +313,41 @@ To get the total deposited energy or charge, integrate the
 for a converged solve its integral equals
 ``csda_energy_production_rate + csda_energy_inflow_rate -
 csda_energy_outflow_rate``.
+
+Within-Group DSA
+================
+
+``apply_wgdsa`` corrects the isotropic error of each group after a sweep. In a
+groupset that contains charged-particle groups, OpenSn uses a CSDA diffusion
+operator: each group's removal and transport cross sections include the
+slowing-down rate :math:`S_g/\Delta E_g`, and the group corrections are solved
+one at a time in energy order, each feeding the slowing-down and in-groupset
+scattering sources of the groups below it. Groupsets without charged-particle
+groups use the standard WGDSA operator. See :ref:`theory_csda_wgdsa`.
+
+.. code-block:: python
+
+   groupsets=[
+       {
+           "groups_from_to": (0, xs.num_groups - 1),
+           "angular_quadrature": quadrature,
+           "inner_linear_method": "petsc_gmres",
+           "l_abs_tol": 1.0e-10,
+           "apply_wgdsa": True,
+       },
+   ]
+
+WGDSA works with both ``classic_richardson`` and the Krylov methods, where it is
+the preconditioner. It corrects the scalar flux and, when the sweep lags angular
+fluxes (reflecting boundaries or sweep cycles), adds the same isotropic
+correction to the lagged angular fluxes. It does not correct the higher flux
+moments. Forward-peaked charged-particle scattering leaves much of the slowly
+converging error in those moments, so the iteration reduction is smaller than
+in problems with nearly isotropic scattering.
+
+The CSDA operator performs one diffusion solve per group, so
+``wgdsa_direct_solve_threshold`` applies to the unknown count of a single
+group.
 
 Convergence and Verification
 ============================

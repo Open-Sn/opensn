@@ -18,6 +18,9 @@ is therefore taken as deposited-electron density per areal depth,
 
 so the local field is divided by both the deposited-electron count and the
 material density before plotting against depth in g/cm^2.
+
+With `apply_wgdsa=True` (console argument), the CSDA case also applies the CSDA
+WGDSA preconditioner. The converged result must match the unaccelerated one.
 """
 
 import csv
@@ -138,7 +141,8 @@ def normalize_profile(profile, denominator, rho_g_cm3):
     }
 
 
-def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm3, num_cells):
+def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm3, num_cells,
+             apply_wgdsa=False):
     xs = MultiGroupXS()
     xs.LoadFromCEPXS(resolve_xs_filename(xs_filename), material_id=0, csda_format=csda_enabled)
 
@@ -156,6 +160,8 @@ def run_case(label, xs_filename, csda_enabled, grid, slab_thickness_cm, rho_g_cm
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-12,
                 "l_max_its": 5000,
+                "apply_wgdsa": apply_wgdsa,
+                "wgdsa_l_abs_tol": 1.0e-12,
             },
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],
@@ -288,6 +294,7 @@ def write_csv(path, columns):
 
 
 if __name__ == "__main__":
+    apply_wgdsa = bool(globals().get("apply_wgdsa", False))
     rho_g_cm3 = 1.0
     areal_thickness_g_cm2 = 0.5
     slab_thickness_cm = areal_thickness_g_cm2 / rho_g_cm3
@@ -315,6 +322,7 @@ if __name__ == "__main__":
         slab_thickness_cm,
         rho_g_cm3,
         num_cells,
+        apply_wgdsa=apply_wgdsa,
     )
 
     if rank == 0:

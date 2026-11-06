@@ -45,13 +45,7 @@ ApplyDSAPreconditioner(WGSContext& gs_context, Vec phi_input, Vec pc_output)
   {
     CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
 
-    std::vector<double> delta_phi_local;
-    WGDSA::AssembleDeltaPhiVector(do_problem, groupset, phi_new_local, delta_phi_local);
-
-    groupset.wgdsa_solver->Assemble_b(delta_phi_local);
-    groupset.wgdsa_solver->Solve(delta_phi_local);
-
-    WGDSA::DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new_local);
+    WGDSA::Apply(do_problem, groupset, phi_new_local, phi_new_local);
   }
   // Apply TGDSA
   if (groupset.apply_tgdsa)

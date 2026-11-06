@@ -589,14 +589,11 @@ DiscreteOrdinatesProblem::CheckCSDA(std::vector<std::string>& errors) const
     errors.emplace_back("CSDA is not supported for RZ problems.");
   if (HasUncollidedFlux())
     errors.emplace_back("CSDA is not supported with an uncollided flux file.");
-  // The diffusion operators and the two-grid spectrum come from the total and transfer cross
-  // sections, without the CSDA slowing-down operator. With CSDA data, whose transfer matrices count
-  // secondary particles, that can make the two-grid collapse singular.
+  // The two-grid operator and spectrum come from the total and transfer cross sections, without the
+  // CSDA slowing-down operator. With CSDA data, whose transfer matrices count secondary particles,
+  // that can make the two-grid collapse singular. WGDSA builds a CSDA operator instead.
   for (const auto& groupset : groupsets_)
   {
-    if (groupset.apply_wgdsa)
-      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
-                          ": apply_wgdsa is not supported with CSDA.");
     if (groupset.apply_tgdsa)
       errors.emplace_back("Groupset " + std::to_string(groupset.id) +
                           ": apply_tgdsa is not supported with CSDA.");

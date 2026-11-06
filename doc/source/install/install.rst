@@ -43,6 +43,14 @@ build (if not found on your system):
 4. VTK 9.3.0+
 5. Caliper 2.11+
 
+OpenSn calls LAPACK through PETSc and links the BLAS/LAPACK libraries that
+PETSc was built with, which CMake reads from ``BLASLAPACK_LIB`` in PETSc's
+``lib/petsc/conf/petscvariables``. The configure output reports them on the
+``BLAS/LAPACK:`` line. If PETSc does not record them, CMake searches for a
+system LAPACK with the integer width of PETSc's BLAS (32-bit, or 64-bit when
+PETSc uses 64-bit BLAS indices). In that case, set ``BLA_VENDOR`` or
+``LAPACK_LIBRARIES`` to the LAPACK that PETSc uses.
+
 Install with Docker
 -------------------
 

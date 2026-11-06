@@ -18,6 +18,36 @@ Case II.2.A5:
 This input expects these CEPXS libraries to exist:
 - Al_50ge_30gp_p7_CEPXS_standard.bxslib
 - Al_50ge_30gp_p7_CEPXS_CSDA.bxslib
+
+The CEPXS-BFP libraries were generated from the input of case II.2.A1, which is case II.2.A5
+without its CSDA card (that card treats all electron energy loss as continuous and removes
+straggling). The input::
+
+    TITLE
+    ALUMINUM
+    CUTOFF .02
+    ENERGY 5.0
+    LEGENDRE 7
+    ELECTRONS
+      LINEAR 50
+    PHOTONS
+      LOG 30
+    ELECTRON-SOURCE
+      FULL-COUPLING
+    MATERIAL AL
+    GEOMETRY 1
+      1    100   2.0
+    DIRECTION
+      COSINE-LAW
+
+The standard library is this input as written. The CSDA library is the same input with a
+MONTE-CARLO card after the title.
+SHA-256 of the checked-in libraries:
+
+- Al_50ge_30gp_p7_CEPXS_standard.bxslib:
+  bb6b3e7768ca692b11f5cd4d3b64fb30c5be60db059e465bacc440b44a2eae72
+- Al_50ge_30gp_p7_CEPXS_CSDA.bxslib:
+  446aa2c5c150750e01bcefcf6fd0029d07bdb3fd0bbe63d37a1aedb25f34d556
 """
 
 import csv
