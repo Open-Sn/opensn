@@ -128,6 +128,25 @@ the order in which to execute the available tasks.
 
    Task Dependency Graph for Direction :math:`\vec{\Omega}`.
 
+OpenSn's AAH sweeps launch the angle-sets of all octants at once. On the CPU in
+Cartesian geometry, each process orders its angle-sets by its downstream depth in
+each angle-set's process-dependency graph, deepest first. Ties go to angle-sets
+with :math:`\Omega_x > 0`, then :math:`\Omega_y > 0`, then :math:`\Omega_z > 0`.
+This is the depth-of-graph schedule of :cite:t:`adams2013provably`, which
+completes the full sweep in the minimum possible number of stages when the
+processes own the bricks of a :math:`P_x \times P_y \times P_z` decomposition,
+such as the one ``KBAGraphPartitioner`` produces.
+
+Two cases use a different order. In 2D cylindrical (RZ) geometry, the CPU
+scheduler ranks angle-sets by the sign of :math:`\Omega_x` before the downstream
+depth. It also starts an angle-set only after the angle-set that precedes it in
+the azimuthal sequence of its polar level, because the angular redistribution
+term couples consecutive directions. On GPUs, every angle-set is started as soon
+as its incoming angular fluxes are available, without a priority order.
+
+Partitions other than bricks can have cyclic dependencies between processes.
+Those cycles are broken by lagging the incoming angular fluxes on some process
+boundaries, which can increase iteration counts.
 
 References
 ----------

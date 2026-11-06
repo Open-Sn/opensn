@@ -519,6 +519,12 @@ construction choice for new users.</p>
 </ul>
 <p>If no partitioner is supplied, the mesh generators default to a PETSc-based
 <code class="docutils literal notranslate"><span class="pre">parmetis</span></code> partitioner.</p>
+<p>Every partition must own at least one cell. When a partitioner leaves a
+partition empty, the mesh generator moves about <code class="docutils literal notranslate"><span class="pre">num_cells</span> <span class="pre">/</span> <span class="pre">num_ranks</span></code>
+connected cells into it from the largest partition. This keeps the run
+going, but the result is less balanced and less regular than a direct
+partition. For KBA, give at least as many cellsets as ranks. Generation
+fails when there are fewer cells than ranks.</p>
 <section id="petscgraphpartitioner">
 <h3><span class="section-number">4.5.1. </span>PETScGraphPartitioner<a class="headerlink" href="#petscgraphpartitioner" title="Link to this heading"></a></h3>
 <p>This is the general-purpose graph partitioner invoked through PETSc.</p>
@@ -552,11 +558,34 @@ for problems where you want an alternative to ParMETIS.</p>
 <p>KBA (Koch-Baker-Alcouffe) is an overlayed orthogonal-grid-based partitioner.
 This partitioner overlays a rectangular partitioning structure on the domain
 using user-specified cell counts and cut locations in <code class="docutils literal notranslate"><span class="pre">x</span></code>, <code class="docutils literal notranslate"><span class="pre">y</span></code>, and <code class="docutils literal notranslate"><span class="pre">z</span></code>.
-It is most natural for orthogonal meshes and for meshes that come from
-structured or extruded workflows where a logically rectangular decomposition
-still makes sense.</p>
+The cuts divide the domain into an <code class="docutils literal notranslate"><span class="pre">nx</span></code> x <code class="docutils literal notranslate"><span class="pre">ny</span></code> x <code class="docutils literal notranslate"><span class="pre">nz</span></code> array of
+brick-shaped <em>cellsets</em>, which the KBA literature calls blocks. Each cell
+belongs to the cellset that contains its centroid. A centroid that lies on a
+cut belongs to the cellset above it. This partitioner is most natural for
+orthogonal meshes and for meshes that come from structured or extruded
+workflows where a logically rectangular decomposition still makes sense.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">nz=1</span></code> on a 3D mesh, each cellset is a column through the full height of
+the domain. This is the decomposition of Koch, Baker and Alcouffe. With
+<code class="docutils literal notranslate"><span class="pre">nz=2</span></code> and <code class="docutils literal notranslate"><span class="pre">nz&gt;2</span></code>, the cellsets form the “hybrid” and “volumetric” brick
+decompositions of Adams et al. The theory behind these decompositions is
+described in <a class="reference internal" href="../theory/parallelization.html"><span class="doc">Parallel Sweeps</span></a>.</p>
+<p>The cuts along each axis must be finite and strictly increasing, and every slab
+between consecutive cuts must contain cell centroids. A cut outside the mesh,
+or two cuts with no centroid between them, is an error.</p>
 <p>This is often a very good choice for orthogonal meshes because the user can
-control the partition layout directly.</p>
+control the partition layout directly. With <code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">*</span> <span class="pre">ny</span> <span class="pre">*</span> <span class="pre">nz</span></code> equal to the
+number of MPI ranks, each rank’s subdomain is one cellset, and the subdomains
+never depend on each other in a cycle for any sweep direction. AAH sweeps
+on such a partition need no lagged inter-rank angular fluxes. Graph
+partitioners usually produce partitions that need some.</p>
+<p>With more cellsets than ranks, each rank’s subdomain is an equal brick of
+cellsets when the cellset counts allow one (for example, <code class="docutils literal notranslate"><span class="pre">nx=3,</span> <span class="pre">ny=2</span></code> on
+three ranks gives each rank a column of two cellsets), so a KBA input written
+for many ranks keeps this property on fewer. Otherwise ranks take consecutive
+cellsets, which may not form a brick, and OpenSn logs a warning.</p>
+<p>An axis on which the mesh has no extent must have one partition. A 2D mesh
+needs <code class="docutils literal notranslate"><span class="pre">nz=1</span></code>. A 1D mesh lies along <code class="docutils literal notranslate"><span class="pre">z</span></code>, so it needs <code class="docutils literal notranslate"><span class="pre">nx=1</span></code> and
+<code class="docutils literal notranslate"><span class="pre">ny=1</span></code>. Cutting such an axis is an error.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span> <span class="o">=</span> <span class="n">OrthogonalMeshGenerator</span><span class="p">(</span>
     <span class="n">node_sets</span><span class="o">=</span><span class="p">[</span><span class="n">x_nodes</span><span class="p">,</span> <span class="n">y_nodes</span><span class="p">,</span> <span class="n">z_nodes</span><span class="p">],</span>

@@ -174,17 +174,6 @@
 <span class="w">  </span><span class="c1">/// Broadcasts PIDs to other locations.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span>
 <span class="w">  </span><span class="nf">BroadcastPIDs</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cell_pids</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">root</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">communicator</span><span class="p">);</span>
-
-<span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Rebalance partitions so that all partitions contain cells. If we find a partition</span>
-<span class="cm">   * that has zero cells, move cells from heavier partitions to the partition with zero</span>
-<span class="cm">   * cells. This procedure can easily destroy the spatial locality of the partitioning,</span>
-<span class="cm">   * so it is used as a last resort to keep the code from throwing an exception when it</span>
-<span class="cm">   * finds a partition with zero cells.</span>
-<span class="cm">   * \todo Explore more robust partitioners that can better distribute cells across available PEs.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="n">RebalancePartitions</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cell_pids</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

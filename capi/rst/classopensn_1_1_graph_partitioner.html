@@ -120,6 +120,25 @@
 
 </div>
 <div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn16GraphPartitioner19FillEmptyPartitionsERKNSt6vectorINSt6vectorI8uint64_tEEEERNSt6vectorIiEEi">
+<span class="target" id="classopensn_1_1_graph_partitioner_1aad6b63aaca30b574ac619e5d82abc8de"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FillEmptyPartitions</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">graph</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">cell_pids</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_partitions</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn16GraphPartitioner19FillEmptyPartitionsERKNSt6vectorINSt6vectorI8uint64_tEEEERNSt6vectorIiEEi" title="Link to this definition"></a><br /></dt>
+<dd><p>Gives every empty partition cells so that each partition has at least one. </p>
+<p>When no partition is empty, nothing changes. Each empty partition takes about <code class="docutils literal notranslate"><span class="pre">num_cells</span> <span class="pre">/</span> <span class="pre">num_partitions</span></code> cells from the currently largest partition, which keeps at least one cell. The cells taken are connected. They are collected in breadth-first order within the donor partition, starting from the donor cell farthest from the donor’s lowest-index cell. Nothing changes when there are fewer cells than partitions.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>graph</strong> – <a class="reference internal" href="classopensn_1_1_cell.html#classopensn_1_1_cell"><span class="std std-ref">Cell</span></a> adjacency, giving the neighbor indices of each cell. </p></li>
+<li><p><strong>cell_pids</strong> – Partition id of each cell, updated in place. </p></li>
+<li><p><strong>num_partitions</strong> – Number of partitions. </p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn16GraphPartitioner16GraphPartitionerERK15InputParameters">

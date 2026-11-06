@@ -91,6 +91,7 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/input_parameters.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -107,6 +108,23 @@
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Partition</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">graph</span><span class="p">,</span>
 <span class="w">                                     </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">centroids</span><span class="p">,</span>
 <span class="w">                                     </span><span class="kt">int</span><span class="w"> </span><span class="n">number_of_parts</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Gives every empty partition cells so that each partition has at least one.</span>
+<span class="cm">   *</span>
+<span class="cm">   * When no partition is empty, nothing changes. Each empty partition takes about</span>
+<span class="cm">   * ``num_cells / num_partitions`` cells from the currently largest partition, which keeps at least</span>
+<span class="cm">   * one cell. The cells taken are connected. They are collected in breadth-first order within the</span>
+<span class="cm">   * donor partition, starting from the donor cell farthest from the donor&#39;s lowest-index cell.</span>
+<span class="cm">   * Nothing changes when there are fewer cells than partitions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param graph Cell adjacency, giving the neighbor indices of each cell.</span>
+<span class="cm">   * \param cell_pids Partition id of each cell, updated in place.</span>
+<span class="cm">   * \param num_partitions Number of partitions.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">FillEmptyPartitions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">graph</span><span class="p">,</span>
+<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">cell_pids</span><span class="p">,</span>
+<span class="w">                                  </span><span class="kt">int</span><span class="w"> </span><span class="n">num_partitions</span><span class="p">);</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">GraphPartitioner</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>

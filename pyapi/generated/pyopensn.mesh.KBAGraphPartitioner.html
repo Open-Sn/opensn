@@ -137,6 +137,20 @@
 </ul>
 </dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>The cuts divide the domain into an <code class="docutils literal notranslate"><span class="pre">nx</span></code> x <code class="docutils literal notranslate"><span class="pre">ny</span></code> x <code class="docutils literal notranslate"><span class="pre">nz</span></code> array of
+brick-shaped cellsets. Each cell goes to the cellset that contains its
+centroid. A centroid that lies on a cut goes to the cellset above it.</p>
+<p>Cuts must be finite and strictly increasing, and every slab between cuts
+must contain cell centroids. An axis on which the mesh has no extent must
+have one partition. A 2D mesh needs <code class="docutils literal notranslate"><span class="pre">nz=1</span></code>, and a 1D mesh, which lies
+along <code class="docutils literal notranslate"><span class="pre">z</span></code>, needs <code class="docutils literal notranslate"><span class="pre">nx=1</span></code> and <code class="docutils literal notranslate"><span class="pre">ny=1</span></code>. Mesh generation raises
+<code class="docutils literal notranslate"><span class="pre">ValueError</span></code> when one of these rules is broken.</p>
+<p>With <code class="docutils literal notranslate"><span class="pre">nx</span> <span class="pre">*</span> <span class="pre">ny</span> <span class="pre">*</span> <span class="pre">nz</span></code> equal to the number of MPI ranks, the rank-level
+sweep graph is acyclic for every direction. With more cellsets than ranks,
+each rank owns an equal brick-shaped subdomain of cellsets when the
+cellset counts allow one. Otherwise, ranks take consecutive cellsets and a
+warning is logged.</p>
 </dd></dl>
 
 </dd></dl>

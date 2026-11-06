@@ -126,7 +126,7 @@ order by each processor.</p></li>
 aggregation, partitioning, and scheduling. The interplay of the three
 components is complex and nuanced, and the reader is referred to the
 recommended references for more detailed discussions,
-<span id="id1">Mathis <em>et al.</em> [<a class="reference internal" href="#id97" title="Mark M Mathis, Nancy M Amato, and Marvin L Adams. A general performance model for parallel sweeps on orthogonal grids for particle transport calculations. In Proceedings of the 14th international conference on Supercomputing, 255–263. ACM, 2000.">MAA00</a>]</span>, <span id="id2">Koch <em>et al.</em> [<a class="reference internal" href="#id100" title="Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe. Solution of the first-order form of three-dimensional discrete ordinates equations on a massively parallel machine. In Transactions of the American Nuclear Society, volume 65, 198-199. 1992.">KBA92</a>]</span>, <span id="id3">Baker and Koch [<a class="reference internal" href="#id101" title="Randal S Baker and Kenneth R Koch. An $s_n$ algorithm for the massively parallel cm-200 computer. Nuclear Science and Engineering, 1998.">BK98</a>]</span>, <span id="id4">Bailey and Falgout [<a class="reference internal" href="#id103" title="Teresa S Bailey and Robert D Falgout. Analysis of massively parallel discrete-ordinates transport sweep algorithms with collisions. In International Conference on Mathematics, Computational Methods &amp; Reactor Physics, Saratoga Springs, NY. 2009.">BF09</a>]</span>, <span id="id5">Pautz [<a class="reference internal" href="#id108" title="Shawn D Pautz. An algorithm for parallel $s_n$ sweeps on unstructured meshes. Nuclear Science and Engineering, 140(2):111–136, 2002.">Pau02</a>]</span>, <span id="id6">Zeyao and Lianxiang [<a class="reference internal" href="#id110" title="Mo Zeyao and Fu Lianxiang. Parallel flux sweep algorithm for neutron transport on unstructured grid. The Journal of Supercomputing, 30(1):5–17, 2004.">ZL04</a>]</span>, <span id="id7">Hanebutte and Lewis [<a class="reference internal" href="#id111" title="UR Hanebutte and EE Lewis. A massively parallel discrete ordinates response matrix method for neutron transport. Nuclear Science and Engineering, 1992.">HL92</a>]</span>, <span id="id8">Brown <em>et al.</em> [<a class="reference internal" href="#id113" title="Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S Woodward. Performing three-dimensional neutral particle transport calculations on tera scale computers. In High Performance Computing, volume 99, 11–15. 1999.">BCD+99</a>]</span>, <span id="id9">Brown <em>et al.</em> [<a class="reference internal" href="#id114" title="PN Brown, B Chang, UR Hanebutte, and CS Woodward. The quest for a high performance boltzmann transport solver. In International conference on applications of high-performance computing in engineering n o, volume 6. 2000.">BCHW00</a>]</span>, <span id="id10">Adams <em>et al.</em> [<a class="reference internal" href="#id98" title="Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho. 2013.">AAH+13</a>]</span>, <span id="id11">Hawkins <em>et al.</em> [<a class="reference internal" href="#id99" title="William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger, Nancy M Amato, and Marvin L Adams. Efficient massively parallel transport sweeps. In Transactions of the American Nuclear Society, volume 107, 477-481. 2012.">HSA+12</a>]</span>, <span id="id12">Vermaak <em>et al.</em> [<a class="reference internal" href="#id121" title="Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel. Massively parallel transport sweeps on meshes with cyclic dependencies. Journal of Computational Physics, 425:109892, 2021.">VRAM21</a>]</span>.
+<span id="id1">Mathis <em>et al.</em> [<a class="reference internal" href="#id98" title="Mark M Mathis, Nancy M Amato, and Marvin L Adams. A general performance model for parallel sweeps on orthogonal grids for particle transport calculations. In Proceedings of the 14th international conference on Supercomputing, 255–263. ACM, 2000.">MAA00</a>]</span>, <span id="id2">Koch <em>et al.</em> [<a class="reference internal" href="#id101" title="Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe. Solution of the first-order form of three-dimensional discrete ordinates equations on a massively parallel machine. In Transactions of the American Nuclear Society, volume 65, 198-199. 1992.">KBA92</a>]</span>, <span id="id3">Baker and Koch [<a class="reference internal" href="#id102" title="Randal S Baker and Kenneth R Koch. An $s_n$ algorithm for the massively parallel cm-200 computer. Nuclear Science and Engineering, 1998.">BK98</a>]</span>, <span id="id4">Bailey and Falgout [<a class="reference internal" href="#id104" title="Teresa S Bailey and Robert D Falgout. Analysis of massively parallel discrete-ordinates transport sweep algorithms with collisions. In International Conference on Mathematics, Computational Methods &amp; Reactor Physics, Saratoga Springs, NY. 2009.">BF09</a>]</span>, <span id="id5">Pautz [<a class="reference internal" href="#id109" title="Shawn D Pautz. An algorithm for parallel $s_n$ sweeps on unstructured meshes. Nuclear Science and Engineering, 140(2):111–136, 2002.">Pau02</a>]</span>, <span id="id6">Zeyao and Lianxiang [<a class="reference internal" href="#id111" title="Mo Zeyao and Fu Lianxiang. Parallel flux sweep algorithm for neutron transport on unstructured grid. The Journal of Supercomputing, 30(1):5–17, 2004.">ZL04</a>]</span>, <span id="id7">Hanebutte and Lewis [<a class="reference internal" href="#id112" title="UR Hanebutte and EE Lewis. A massively parallel discrete ordinates response matrix method for neutron transport. Nuclear Science and Engineering, 1992.">HL92</a>]</span>, <span id="id8">Brown <em>et al.</em> [<a class="reference internal" href="#id114" title="Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S Woodward. Performing three-dimensional neutral particle transport calculations on tera scale computers. In High Performance Computing, volume 99, 11–15. 1999.">BCD+99</a>]</span>, <span id="id9">Brown <em>et al.</em> [<a class="reference internal" href="#id115" title="PN Brown, B Chang, UR Hanebutte, and CS Woodward. The quest for a high performance boltzmann transport solver. In International conference on applications of high-performance computing in engineering n o, volume 6. 2000.">BCHW00</a>]</span>, <span id="id10">Adams <em>et al.</em> [<a class="reference internal" href="#id99" title="Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho. 2013.">AAH+13</a>]</span>, <span id="id11">Hawkins <em>et al.</em> [<a class="reference internal" href="#id100" title="William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger, Nancy M Amato, and Marvin L Adams. Efficient massively parallel transport sweeps. In Transactions of the American Nuclear Society, volume 107, 477-481. 2012.">HSA+12</a>]</span>, <span id="id12">Vermaak <em>et al.</em> [<a class="reference internal" href="#id122" title="Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel. Massively parallel transport sweeps on meshes with cyclic dependencies. Journal of Computational Physics, 425:109892, 2021.">VRAM21</a>]</span>.
 The content below is only intended to be a very brief introduction to
 the basic concepts.</p>
 </section>
@@ -195,11 +195,11 @@ processes. For example, consider the simple 2D mesh shown in Figure 1.
 This 4x4 mesh has been decomposed among four processors, with each
 processor being assigned a column of four cells. This columnar
 decomposition is the type of partitioning produced by the KBA algorithm.</p>
-<figure class="align-center" id="id317">
+<figure class="align-center" id="id318">
 <a class="reference internal image-reference" href="../_images/ProcMesh.png"><img alt="../_images/ProcMesh.png" src="../_images/ProcMesh.png" style="width: 671.0px; height: 623.0px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Partitioned, 4x4, XY, Rectangular Mesh</span><a class="headerlink" href="#id317" title="Link to this image"></a></p>
+<p><span class="caption-text">Partitioned, 4x4, XY, Rectangular Mesh</span><a class="headerlink" href="#id318" title="Link to this image"></a></p>
 </figcaption>
 </figure>
 <p>Now, consider the direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span> incident on the
@@ -219,63 +219,81 @@ processor working for as long as possible and to maintain parallel
 efficiency. In the case where multiple angle-sets can be solved
 simultaneously, a scheduling algorithm is required to tell the processor
 the order in which to execute the available tasks.</p>
-<figure class="align-center" id="id318">
+<figure class="align-center" id="id319">
 <a class="reference internal image-reference" href="../_images/ProcGraph.png"><img alt="../_images/ProcGraph.png" src="../_images/ProcGraph.png" style="width: 630.0px; height: 873.0px;" />
 </a>
 <figcaption>
-<p><span class="caption-text">Task Dependency Graph for Direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>.</span><a class="headerlink" href="#id318" title="Link to this image"></a></p>
+<p><span class="caption-text">Task Dependency Graph for Direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>.</span><a class="headerlink" href="#id319" title="Link to this image"></a></p>
 </figcaption>
 </figure>
+<p>OpenSn’s AAH sweeps launch the angle-sets of all octants at once. On the CPU in
+Cartesian geometry, each process orders its angle-sets by its downstream depth in
+each angle-set’s process-dependency graph, deepest first. Ties go to angle-sets
+with <span class="math notranslate nohighlight">\(\Omega_x &gt; 0\)</span>, then <span class="math notranslate nohighlight">\(\Omega_y &gt; 0\)</span>, then <span class="math notranslate nohighlight">\(\Omega_z &gt; 0\)</span>.
+This is the depth-of-graph schedule of <span id="id13">Adams <em>et al.</em> [<a class="reference internal" href="#id99" title="Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho. 2013.">AAH+13</a>]</span>, which
+completes the full sweep in the minimum possible number of stages when the
+processes own the bricks of a <span class="math notranslate nohighlight">\(P_x \times P_y \times P_z\)</span> decomposition,
+such as the one <code class="docutils literal notranslate"><span class="pre">KBAGraphPartitioner</span></code> produces.</p>
+<p>Two cases use a different order. In 2D cylindrical (RZ) geometry, the CPU
+scheduler ranks angle-sets by the sign of <span class="math notranslate nohighlight">\(\Omega_x\)</span> before the downstream
+depth. It also starts an angle-set only after the angle-set that precedes it in
+the azimuthal sequence of its polar level, because the angular redistribution
+term couples consecutive directions. On GPUs, every angle-set is started as soon
+as its incoming angular fluxes are available, without a priority order.</p>
+<p>Partitions other than bricks can have cyclic dependencies between processes.
+Those cycles are broken by lagging the incoming angular fluxes on some process
+boundaries, which can increase iteration counts.</p>
 </section>
 <section id="references">
 <h2><span class="section-number">7.4. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
-<div class="docutils container" id="id13">
+<div class="docutils container" id="id14">
 <div role="list" class="citation-list">
-<div class="citation" id="id97" role="doc-biblioentry">
+<div class="citation" id="id98" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">MAA00</a><span class="fn-bracket">]</span></span>
 <p>Mark M Mathis, Nancy M Amato, and Marvin L Adams. A general performance model for parallel sweeps on orthogonal grids for particle transport calculations. In <em>Proceedings of the 14th international conference on Supercomputing</em>, 255–263. ACM, 2000.</p>
 </div>
-<div class="citation" id="id100" role="doc-biblioentry">
+<div class="citation" id="id101" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">KBA92</a><span class="fn-bracket">]</span></span>
 <p>Kenneth R Koch, Randal S Baker, and Raymond E Alcouffe. Solution of the first-order form of three-dimensional discrete ordinates equations on a massively parallel machine. In <em>Transactions of the American Nuclear Society</em>, volume 65, 198–199. 1992.</p>
 </div>
-<div class="citation" id="id101" role="doc-biblioentry">
+<div class="citation" id="id102" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id3">BK98</a><span class="fn-bracket">]</span></span>
 <p>Randal S Baker and Kenneth R Koch. An $s_n$ algorithm for the massively parallel cm-200 computer. <em>Nuclear Science and Engineering</em>, 1998.</p>
 </div>
-<div class="citation" id="id103" role="doc-biblioentry">
+<div class="citation" id="id104" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id4">BF09</a><span class="fn-bracket">]</span></span>
 <p>Teresa S Bailey and Robert D Falgout. Analysis of massively parallel discrete-ordinates transport sweep algorithms with collisions. In <em>International Conference on Mathematics, Computational Methods &amp; Reactor Physics, Saratoga Springs, NY</em>. 2009.</p>
 </div>
-<div class="citation" id="id108" role="doc-biblioentry">
+<div class="citation" id="id109" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id5">Pau02</a><span class="fn-bracket">]</span></span>
 <p>Shawn D Pautz. An algorithm for parallel $s_n$ sweeps on unstructured meshes. <em>Nuclear Science and Engineering</em>, 140(2):111–136, 2002.</p>
 </div>
-<div class="citation" id="id110" role="doc-biblioentry">
+<div class="citation" id="id111" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id6">ZL04</a><span class="fn-bracket">]</span></span>
 <p>Mo Zeyao and Fu Lianxiang. Parallel flux sweep algorithm for neutron transport on unstructured grid. <em>The Journal of Supercomputing</em>, 30(1):5–17, 2004.</p>
 </div>
-<div class="citation" id="id111" role="doc-biblioentry">
+<div class="citation" id="id112" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id7">HL92</a><span class="fn-bracket">]</span></span>
 <p>UR Hanebutte and EE Lewis. A massively parallel discrete ordinates response matrix method for neutron transport. <em>Nuclear Science and Engineering</em>, 1992.</p>
 </div>
-<div class="citation" id="id113" role="doc-biblioentry">
+<div class="citation" id="id114" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id8">BCD+99</a><span class="fn-bracket">]</span></span>
 <p>Peter N Brown, Britton Chang, Milo R Dorr, Ulf R Hanebutte, and Carol S Woodward. Performing three-dimensional neutral particle transport calculations on tera scale computers. In <em>High Performance Computing</em>, volume 99, 11–15. 1999.</p>
 </div>
-<div class="citation" id="id114" role="doc-biblioentry">
+<div class="citation" id="id115" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id9">BCHW00</a><span class="fn-bracket">]</span></span>
 <p>PN Brown, B Chang, UR Hanebutte, and CS Woodward. The quest for a high performance boltzmann transport solver. In <em>International conference on applications of high-performance computing in engineering n o</em>, volume 6. 2000.</p>
 </div>
-<div class="citation" id="id98" role="doc-biblioentry">
-<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id10">AAH+13</a><span class="fn-bracket">]</span></span>
+<div class="citation" id="id99" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>AAH+13<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#id10">1</a>,<a role="doc-backlink" href="#id13">2</a>)</span>
 <p>Michael P Adams, Marvin L Adams, W Daryl Hawkins, Timmie Smith, Lawrence Rauchwerger, Nancy M Amato, Teresa S Bailey, and Robert D Falgout. Provably optimal parallel transport sweeps on regular grids. In <em>Proc. International Conference on Mathematics and Computational Methods Applied to Nuclear Science &amp; Engineering, Idaho</em>. 2013.</p>
 </div>
-<div class="citation" id="id99" role="doc-biblioentry">
+<div class="citation" id="id100" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id11">HSA+12</a><span class="fn-bracket">]</span></span>
 <p>William Daryl Hawkins, Timmie Smith, Michael P Adams, Lawrence Rauchwerger, Nancy M Amato, and Marvin L Adams. Efficient massively parallel transport sweeps. In <em>Transactions of the American Nuclear Society</em>, volume 107, 477–481. 2012.</p>
 </div>
-<div class="citation" id="id121" role="doc-biblioentry">
+<div class="citation" id="id122" role="doc-biblioentry">
 <span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id12">VRAM21</a><span class="fn-bracket">]</span></span>
 <p>Jan IC Vermaak, Jean C Ragusa, Marvin L Adams, and Jim E Morel. Massively parallel transport sweeps on meshes with cyclic dependencies. <em>Journal of Computational Physics</em>, 425:109892, 2021.</p>
 </div>
