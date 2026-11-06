@@ -194,6 +194,83 @@ Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
 :cite:t:`DSA_wang_ragusa`, :cite:t:`ragusaturcksinMIP_PWL2014`.
 
+The MIP form adds, on every interior face :math:`f`, a penalty
+:math:`\kappa_f \int_f [\![\delta\Phi]\!]\,[\![v]\!]` with
+
+.. math:: \kappa_f = \max\Big(\frac{s\,c}{2}\Big(\frac{D^-}{h^-_\perp}
+          + \frac{D^+}{h^+_\perp}\Big),\ \kappa_{\min}\Big) \,,
+
+where :math:`c` is the ``penalty_factor`` (4 for PWLD), :math:`h_\perp` a
+length of the cell normal to the face, :math:`s = 2` on polyhedra and
+:math:`s = 1` on slabs (with :math:`h_\perp` half the cell width), and
+:math:`\kappa_{\min} = 1/4`, or :math:`\beta_f` (defined below) with the
+``"closure_r"`` boundary closure. On a boundary face with the ``"dirichlet"``
+closure the penalty is :math:`\max(s\,c\,D/h_\perp,\, 1/4)`. The penalty must
+dominate the consistency terms :math:`\int_f \{D\,\partial_n
+\delta\Phi\}[\![v]\!]` for the operator to be symmetric positive definite.
+
+By default (groupset option ``wgdsa_h_perp_convention = "face_side"``)
+:math:`h_\perp` is the face-dependent orthogonal projection of
+:cite:t:`ragusaturcksinMIP_PWL2014` (:math:`3V/A_f` on tetrahedra,
+:math:`V/A_f` on hexahedra and quadrilaterals, :math:`2V/A_f` on triangles),
+capped by four times the smallest height of the face's PWLD side simplices (the
+triangles or tetrahedra between the face and the cell centroid), with
+:math:`s = 2` on polygons too. PWLD is linear on each side simplex, where the
+trace inequality is exact, so the cap keeps the operator positive definite on
+distorted cells, where the uncapped length lets it become indefinite and DSA
+diverge. The cap is inactive on squares, cubes and regular tetrahedra.
+
+The original OpenSn lengths (``"cell"``) are :math:`3V/S` on tetrahedra and
+:math:`V/S` on hexahedra, :math:`S` the cell surface, and on polygons the
+face-dependent lengths without the cap and with :math:`s = 1`. On a cube the
+``"cell"`` penalty is six times the default one, which slows DSA on cells a few
+mean free paths thick. On polygons it is half the default one; the default
+applies the factor 2 there for uniformity with polyhedra and a larger stability
+margin.
+
+On boundaries with a prescribed incoming flux the error has no incoming
+component, so the correction is a vacuum problem. The default
+(``wgdsa_boundary_closure = "marshak"``) imposes it through the natural Marshak
+condition :math:`\tfrac14\delta\Phi + \tfrac12 D\,\partial_n\delta\Phi = 0`. The
+original OpenSn treatment (``"dirichlet"``) imposes :math:`\delta\Phi = 0` with
+the interior-penalty boundary term; under mesh refinement this limits the
+SI+DSA spectral radius of a bounded domain to about 0.5, which the Marshak
+condition removes. On boundary cells many mean free paths thick the transport
+error vanishes across most of the cell and the zero-correction condition is the
+better one: the Marshak condition leaves a boundary mode with a spectral radius
+near 0.47 there.
+
+``"closure_r"`` blends the two face by face. Its boundary term is
+
+.. math:: \beta_f(1+\theta_f)\int_f \delta\Phi\, v
+          - \frac{1-\theta_f}{2}\int_f D\,\big(v\,\partial_n\delta\Phi
+          + \delta\Phi\,\partial_n v\big) \,,
+
+with :math:`\beta_f = \tfrac12 \sum_d w_d |\Omega_d \cdot n_f| / \sum_d w_d` the
+half-range moment of the groupset's angular quadrature for the face normal
+:math:`n_f` (1/4 for exact angular integration). :math:`\theta_f = 1` is the
+Marshak condition written with the partial current of the quadrature (face
+coefficient :math:`2\beta_f`, which matches the leakage of the discrete sweep);
+:math:`\theta_f = 0` is the half-range transport form, which behaves like the
+zero-correction condition on thick cells. With :math:`h_f` the face-dependent
+orthogonal length above (without the cap) and :math:`\tau_f = h_f/(3D_g)` the
+optical thickness of the cell normal to the face in group :math:`g` (infinite
+when :math:`D_g \le 0`),
+
+.. math:: \theta_f = \max\Big(\min\big(1,\, (s_0/\tau_f)^2\big),\
+          \theta_c\Big) \,, \qquad s_0 = 1.5 \,.
+
+The floor :math:`\theta_c` keeps the operator positive definite. Let
+:math:`C_{\mathrm{grad}} = h_f \max_v \|\partial_n v\|_f^2 /
+\|\nabla v\|_K^2` be the trace constant of the cell's basis on the face (over
+:math:`v` orthogonal to the constants), :math:`n_c` the number of
+``"closure_r"`` faces of the cell, and
+:math:`r = 6\beta_f\tau_f/(C_{\mathrm{grad}}\,n_c)`. If :math:`r < 1`,
+:math:`\theta_c = \tfrac12\big(2 + r - \sqrt{r^2 + 8r}\big)`, the root in
+:math:`[0, 1]` of :math:`(1-\theta)^2/(1+\theta) = r`; otherwise
+:math:`\theta_c = 0`. The exact coercivity condition has 12 in place of 6; the
+rule uses it with a safety factor 2.
+
 Thermal Upscattering Acceleration
 ---------------------------------
 

@@ -66,7 +66,7 @@ SCDSAAcceleration::Initialize()
   uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
   // Make boundary conditions
-  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), true);
+  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), DSABoundaryClosure::DIRICHLET);
 
   // Make xs map
   const auto matid_2_mgxs_map =

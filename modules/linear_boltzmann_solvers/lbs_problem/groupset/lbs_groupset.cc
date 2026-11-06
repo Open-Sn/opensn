@@ -63,6 +63,20 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
   params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
+  params.AddOptionalParameter("wgdsa_boundary_closure",
+                              "marshak",
+                              "Boundary condition of the WGDSA diffusion correction on every "
+                              "boundary with a prescribed incoming flux (vacuum, isotropic, "
+                              "arbitrary). marshak (default) imposes the natural Marshak "
+                              "condition (1/4 delta + 1/2 D d(delta)/dn = 0); closure_r blends "
+                              "the Marshak form written with the partial current of the "
+                              "groupset's quadrature (face coefficient 2 beta_f, beta_f its "
+                              "half-range moment, against the analytic 1/2) on thin boundary "
+                              "cells with the half-range transport form on thick ones, and is "
+                              "faster when boundary cells are many mean free paths thick; "
+                              "dirichlet (OpenSn's original) imposes a zero correction weakly "
+                              "with the interior-penalty term. Reflecting boundaries are always "
+                              "zero-current.");
 
   // TG DSA options
   params.AddOptionalParameter(
@@ -85,6 +99,26 @@ LBSGroupset::GetInputParameters()
   params.AddOptionalParameter(
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
+  params.AddOptionalParameter("tgdsa_boundary_closure",
+                              "marshak",
+                              "Boundary condition of the TGDSA diffusion correction, with the "
+                              "same choices and boundaries as wgdsa_boundary_closure.");
+  params.AddOptionalParameter(
+    "wgdsa_h_perp_convention",
+    "face_side",
+    "Penalty length of the WGDSA MIP operator. face_side (default) uses the face-dependent "
+    "orthogonal length (3V/A_f tet, V/A_f hex and quad, 2V/A_f triangle) capped by four times the "
+    "smallest height of the face's PWLD side simplices, with an extra factor 2 on polygons and "
+    "polyhedra; the cap keeps the operator positive definite on strongly distorted cells and is "
+    "inactive on regular ones. cell (OpenSn's original) uses the cell-wide lengths (3V/S tet, V/S "
+    "hex) with the extra factor 2, and on polygons the face-dependent lengths without the cap or "
+    "the factor 2. On polyhedra its penalty is larger (six times on cubes), which slows DSA on "
+    "cells a few mean free paths thick; on polygons it is half the face_side penalty and can make "
+    "the operator indefinite on strongly distorted cells.");
+  params.AddOptionalParameter("tgdsa_h_perp_convention",
+                              "face_side",
+                              "Penalty length of the TGDSA MIP operator, with the same choices as "
+                              "wgdsa_h_perp_convention.");
 
   // Constraints
   params.ConstrainParameterRange(
@@ -104,6 +138,14 @@ LBSGroupset::GetInputParameters()
     "tgdsa_solver_policy",
     AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
   params.ConstrainParameterRange("wgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
+  params.ConstrainParameterRange("wgdsa_boundary_closure",
+                                 AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
+  params.ConstrainParameterRange("wgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face_side"}));
+  params.ConstrainParameterRange("tgdsa_h_perp_convention",
+                                 AllowableRangeList::New({"cell", "face_side"}));
+  params.ConstrainParameterRange("tgdsa_boundary_closure",
+                                 AllowableRangeList::New({"dirichlet", "marshak", "closure_r"}));
   params.ConstrainParameterRange("tgdsa_direct_solve_threshold", AllowableRangeLowLimit::New(1));
 
   return params;
@@ -137,6 +179,10 @@ LBSGroupset::Init(int aid)
   tgdsa_solver_policy = "auto";
   wgdsa_direct_solve_threshold = 20000;
   tgdsa_direct_solve_threshold = 20000;
+  wgdsa_boundary_closure = "marshak";
+  tgdsa_boundary_closure = "marshak";
+  wgdsa_h_perp_convention = "face_side";
+  tgdsa_h_perp_convention = "face_side";
   wgdsa_verbose = false;
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
@@ -219,6 +265,10 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
   tgdsa_solver_policy = params.GetParamValue<std::string>("tgdsa_solver_policy");
   wgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("wgdsa_direct_solve_threshold");
   tgdsa_direct_solve_threshold = params.GetParamValue<unsigned int>("tgdsa_direct_solve_threshold");
+  wgdsa_boundary_closure = params.GetParamValue<std::string>("wgdsa_boundary_closure");
+  tgdsa_boundary_closure = params.GetParamValue<std::string>("tgdsa_boundary_closure");
+  wgdsa_h_perp_convention = params.GetParamValue<std::string>("wgdsa_h_perp_convention");
+  tgdsa_h_perp_convention = params.GetParamValue<std::string>("tgdsa_h_perp_convention");
 
   wgdsa_verbose = params.GetParamValue<bool>("wgdsa_verbose");
   tgdsa_verbose = params.GetParamValue<bool>("tgdsa_verbose");

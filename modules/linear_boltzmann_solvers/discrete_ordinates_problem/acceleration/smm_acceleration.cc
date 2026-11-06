@@ -103,7 +103,7 @@ SMMAcceleration::Initialize()
   UnknownManager diff_uk_man;
   diff_uk_man.AddUnknown(UnknownType::VECTOR_N, num_gs_groups);
 
-  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), false);
+  const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), DSABoundaryClosure::MARSHAK);
 
   // Create the diffusion materials
   const auto xs_map =

@@ -37,6 +37,23 @@ public:
     PetscInt direct_solve_threshold = 20000;
     std::string additional_options_string;
     double penalty_factor = 4.0;
+    /**
+     * Penalty length h_perp of the interior-penalty terms. "cell" (OpenSn's original, the default
+     * of this solver) uses the cell-wide values 3V/S (tet), V/S (hex), 6V/S (other polyhedra), S
+     * the total surface area, with an extra factor 2 on polyhedra, and the face-dependent polygon
+     * lengths without that factor. "face_side" uses, on polygons and polyhedra, the face-dependent
+     * orthogonal length (FaceOrthogonalLength: 3V/A_f tet, V/A_f hex, 2V/A_f triangle, V/A_f quad,
+     * 2dV/S other) capped by 2 FaceSideLength, which is four times the smallest height of the
+     * face's PWLD side simplices, with the factor 2 on interior and boundary faces. The cap leaves
+     * the penalty unchanged on tetrahedra (where it equals the face length) and cubes (twice the
+     * face length; the penalty is 2 penalty_factor D/h on a cube of side h, a sixth of the "cell"
+     * penalty); on a face with a skinny side simplex it raises the penalty to what PWLD's exact
+     * trace inequality requires, which keeps the operator positive definite on strongly distorted
+     * cells.
+     */
+    std::string h_perp_convention = "cell";
+    /// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.
+    double closure_r_s0 = 1.5;
   } options;
 
 public:
@@ -55,6 +72,9 @@ public:
 
   /// Returns the right-hand side petsc vector.
   const Vec& GetRHS() const;
+
+  /// Returns the assembled system matrix (null before Initialize).
+  const Mat& GetSystemMatrix() const { return A_; }
 
   /// Returns the assigned unknown structure.
   const std::map<uint64_t, BoundaryCondition>& GetBCS() const { return bcs_; }

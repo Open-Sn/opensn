@@ -20,6 +20,7 @@
 #include <cmath>
 #include <map>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -41,7 +42,7 @@ MMS_q(const Vector3& pt)
 }
 
 std::pair<double, double>
-SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid)
+SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid, const std::string& h_perp_convention = "cell")
 {
   using MatID2XSMap = std::map<unsigned int, Multigroup_D_and_sigR>;
 
@@ -86,6 +87,7 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid)
   solver.options.verbose = true;
   solver.options.residual_tolerance = 1.0e-10;
   solver.options.perform_symmetry_check = true;
+  solver.options.h_perp_convention = h_perp_convention;
   solver.SetReferenceSolutionFunction(mms_phi);
   solver.SetSourceFunction(mms_q);
   solver.Initialize();
@@ -155,29 +157,123 @@ TEST(DiffusionMIP, MMSL2Convergence)
   const std::array<unsigned int, 5> refinements = {5, 10, 20, 40, 80};
   const double length = 2.0;
 
-  std::vector<double> errors;
-  errors.reserve(refinements.size());
-
-  for (const unsigned int num_cells : refinements)
+  // "cell" is OpenSn's original polygon penalty (face lengths, no factor 2); "face_side" doubles it
+  // on squares.
+  for (const std::string convention : {"cell", "face_side"})
   {
-    auto grid = BuildSquareMesh(length, num_cells, -length / 2.0);
-    grid->SetUniformBlockID(0);
-    grid->SetOrthogonalBoundaries();
+    SCOPED_TRACE(convention);
+    std::vector<double> errors;
+    errors.reserve(refinements.size());
 
-    const auto [full_assembly_error, rhs_assembly_error] = SimTest_IP_MMS_L2error(grid);
-    errors.push_back(full_assembly_error);
+    for (const unsigned int num_cells : refinements)
+    {
+      auto grid = BuildSquareMesh(length, num_cells, -length / 2.0);
+      grid->SetUniformBlockID(0);
+      grid->SetOrthogonalBoundaries();
 
-    EXPECT_NEAR(rhs_assembly_error, full_assembly_error, 1.0e-12);
-  }
+      const auto [full_assembly_error, rhs_assembly_error] =
+        SimTest_IP_MMS_L2error(grid, convention);
+      errors.push_back(full_assembly_error);
 
-  for (size_t k = 1; k < errors.size(); ++k)
-  {
-    EXPECT_LT(errors[k], errors[k - 1]);
+      EXPECT_NEAR(rhs_assembly_error, full_assembly_error, 1.0e-12);
+    }
 
-    const double rate = std::log(errors[k - 1] / errors[k]) / std::log(2.0);
-    opensn::log.Log() << "MIP MMS N=" << refinements[k] << " L2 rate=" << rate;
-    EXPECT_GT(rate, 1.75);
+    for (size_t k = 1; k < errors.size(); ++k)
+    {
+      EXPECT_LT(errors[k], errors[k - 1]);
+
+      const double rate = std::log(errors[k - 1] / errors[k]) / std::log(2.0);
+      opensn::log.Log() << "MIP MMS " << convention << " N=" << refinements[k]
+                        << " L2 rate=" << rate;
+      EXPECT_GT(rate, 1.75);
+    }
   }
 
   opensn::mpi_comm.barrier();
+}
+
+// The manufactured solution (independent of z) must converge at second order on hexahedra with both
+// penalty lengths. With "face_side" (6 times smaller interior penalty than "cell" on cubes) the
+// error is smaller but the rate approaches 2 from below: 1.81, 1.86 at N = 8, 16 (errors 0.101,
+// 0.0277 against 0.118, 0.0301 for "cell"), so only the finest rate of this short sequence is
+// held to second order.
+TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  const std::array<unsigned int, 3> refinements = {4, 8, 16};
+  const double length = 2.0;
+
+  for (const std::string convention : {"cell", "face_side"})
+  {
+    SCOPED_TRACE(convention);
+    std::vector<double> errors;
+    for (const unsigned int num_cells : refinements)
+    {
+      auto grid = BuildBoxMesh(length, num_cells, -length / 2.0);
+      grid->SetUniformBlockID(0);
+      grid->SetOrthogonalBoundaries();
+
+      const auto [full_assembly_error, rhs_assembly_error] =
+        SimTest_IP_MMS_L2error(grid, convention);
+      errors.push_back(full_assembly_error);
+      EXPECT_NEAR(rhs_assembly_error, full_assembly_error, 1.0e-10);
+    }
+
+    for (size_t k = 1; k < errors.size(); ++k)
+    {
+      const double rate = std::log(errors[k - 1] / errors[k]) / std::log(2.0);
+      opensn::log.Log() << "MIP MMS 3D " << convention << " N=" << refinements[k]
+                        << " err=" << errors[k] << " L2 rate=" << rate;
+      EXPECT_LT(errors[k], errors[k - 1]);
+      if (k + 1 == errors.size())
+        EXPECT_GT(rate, 1.75);
+    }
+  }
+
+  opensn::mpi_comm.barrier();
+}
+
+// On a cube of side h the cell-wide length is V/S = h/6 and the "face_side" one V/A_f = h.
+TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
+{
+  const double length = 2.0;
+  const unsigned int num_cells = 4;
+  const double h = length / num_cells;
+  auto grid = BuildBoxMesh(length, num_cells, 0.0);
+  grid->SetUniformBlockID(0);
+  grid->SetOrthogonalBoundaries();
+
+  std::shared_ptr<SpatialDiscretization> sdm_ptr = PieceWiseLinearDiscontinuous::New(grid);
+  const auto& sdm = *sdm_ptr;
+  std::map<uint64_t, BoundaryCondition> bcs;
+  std::map<unsigned int, Multigroup_D_and_sigR> matid_2_xs_map;
+  matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
+  std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
+  for (const auto& cell : grid->GetLocalCells())
+    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+
+  DiffusionMIPSolver solver("HPerp",
+                            sdm,
+                            sdm.UNITARY_UNKNOWN_MANAGER,
+                            bcs,
+                            matid_2_xs_map,
+                            unit_cell_matrices,
+                            false,
+                            false);
+  for (const auto& cell : grid->GetLocalCells())
+    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    {
+      solver.options.h_perp_convention = "cell";
+      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h / 6.0, 1.0e-12);
+      solver.options.h_perp_convention = "face_side";
+      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
+    }
+  solver.options.h_perp_convention = "cell";
+  EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 1.0);
+  solver.options.h_perp_convention = "face_side";
+  EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
+  solver.options.h_perp_convention = "edge";
+  EXPECT_THROW(solver.HPerpendicular(*grid->GetLocalCells().front(), 0), std::invalid_argument);
 }

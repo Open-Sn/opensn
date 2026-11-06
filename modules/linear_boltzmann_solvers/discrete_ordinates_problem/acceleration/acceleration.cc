@@ -11,22 +11,34 @@
 namespace opensn
 {
 
+DSABoundaryClosure
+DSABoundaryClosureFromString(const std::string& name)
+{
+  if (name == "dirichlet")
+    return DSABoundaryClosure::DIRICHLET;
+  if (name == "marshak")
+    return DSABoundaryClosure::MARSHAK;
+  if (name == "closure_r")
+    return DSABoundaryClosure::CLOSURE_R;
+  OpenSnInvalidArgument("Unknown DSA boundary closure \"" + name +
+                        "\" (expected dirichlet, marshak or closure_r).");
+}
+
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
-             bool vacuum_bcs_are_dirichlet)
+             DSABoundaryClosure closure)
 {
   std::map<uint64_t, BoundaryCondition> bcs;
   for (const auto& [bid, lbs_bndry] : sweep_boundaries)
   {
     if (lbs_bndry->GetType() == LBSBoundaryType::REFLECTING)
       bcs[bid] = {BCType::ROBIN, {0.0, 1.0, 0.0}};
-    else if (lbs_bndry->GetType() == LBSBoundaryType::VACUUM)
-      if (vacuum_bcs_are_dirichlet)
-        bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
-      else
-        bcs[bid] = {BCType::ROBIN, {0.25, 0.5}};
-    else // dirichlet
+    else if (closure == DSABoundaryClosure::DIRICHLET) // vacuum, isotropic, arbitrary
       bcs[bid] = {BCType::DIRICHLET, {0.0, 0.0, 0.0}};
+    else if (closure == DSABoundaryClosure::MARSHAK)
+      bcs[bid] = {BCType::ROBIN, {0.25, 0.5}};
+    else
+      bcs[bid] = {BCType::CLOSURE_R, {0.0, 0.0, 0.0}};
   }
 
   return bcs;
