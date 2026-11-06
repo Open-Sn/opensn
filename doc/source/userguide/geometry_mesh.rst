@@ -392,6 +392,13 @@ Available partitioners in the Python API are:
 If no partitioner is supplied, the mesh generators default to a PETSc-based
 ``parmetis`` partitioner.
 
+Every partition must own at least one cell. When a partitioner leaves a
+partition empty, the mesh generator moves about ``num_cells / num_ranks``
+connected cells into it from the largest partition. This keeps the run
+going, but the result is less balanced and less regular than a direct
+partition. For KBA, give at least as many cellsets as ranks. Generation
+fails when there are fewer cells than ranks.
+
 PETScGraphPartitioner
 ---------------------
 
@@ -432,12 +439,39 @@ KBAGraphPartitioner
 KBA (Koch-Baker-Alcouffe) is an overlayed orthogonal-grid-based partitioner.
 This partitioner overlays a rectangular partitioning structure on the domain
 using user-specified cell counts and cut locations in ``x``, ``y``, and ``z``.
-It is most natural for orthogonal meshes and for meshes that come from
-structured or extruded workflows where a logically rectangular decomposition
-still makes sense.
+The cuts divide the domain into an ``nx`` x ``ny`` x ``nz`` array of
+brick-shaped *cellsets*, which the KBA literature calls blocks. Each cell
+belongs to the cellset that contains its centroid. A centroid that lies on a
+cut belongs to the cellset above it. This partitioner is most natural for
+orthogonal meshes and for meshes that come from structured or extruded
+workflows where a logically rectangular decomposition still makes sense.
+
+With ``nz=1`` on a 3D mesh, each cellset is a column through the full height of
+the domain. This is the decomposition of Koch, Baker and Alcouffe. With
+``nz=2`` and ``nz>2``, the cellsets form the "hybrid" and "volumetric" brick
+decompositions of Adams et al. The theory behind these decompositions is
+described in :doc:`../theory/parallelization`.
+
+The cuts along each axis must be finite and strictly increasing, and every slab
+between consecutive cuts must contain cell centroids. A cut outside the mesh,
+or two cuts with no centroid between them, is an error.
 
 This is often a very good choice for orthogonal meshes because the user can
-control the partition layout directly.
+control the partition layout directly. With ``nx * ny * nz`` equal to the
+number of MPI ranks, each rank's subdomain is one cellset, and the subdomains
+never depend on each other in a cycle for any sweep direction. AAH sweeps
+on such a partition need no lagged inter-rank angular fluxes. Graph
+partitioners usually produce partitions that need some.
+
+With more cellsets than ranks, each rank's subdomain is an equal brick of
+cellsets when the cellset counts allow one (for example, ``nx=3, ny=2`` on
+three ranks gives each rank a column of two cellsets), so a KBA input written
+for many ranks keeps this property on fewer. Otherwise ranks take consecutive
+cellsets, which may not form a brick, and OpenSn logs a warning.
+
+An axis on which the mesh has no extent must have one partition. A 2D mesh
+needs ``nz=1``. A 1D mesh lies along ``z``, so it needs ``nx=1`` and
+``ny=1``. Cutting such an axis is an error.
 
 Example:
 
