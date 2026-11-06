@@ -348,13 +348,13 @@ It uses the same general structure as
 :py:class:`pyopensn.solver.DiscreteOrdinatesProblem`, but is intended for
 curvilinear geometry and currently requires:
 
-* a mesh generated with ``coord_sys="cylindrical"``
-* ``GLCProductQuadrature2DRZ`` quadrature
+* a cylindrical mesh with ``GLCProductQuadrature2DRZ`` quadrature, or
+* a 1D spherical mesh with ``GLProductQuadrature1DSpherical`` quadrature
 
 This problem type is experimental, and it should be treated that way in
 production workflows.
 
-CPU curvilinear solves support both ``sweep_type="AAH"`` and
+CPU RZ and 1D spherical curvilinear solves support both ``sweep_type="AAH"`` and
 ``sweep_type="CBC"``. Use ``AAH`` as the default, particularly when cyclic sweep
 dependencies are possible. Choose ``CBC`` only for problems whose sweep graph
 satisfies CBC's acyclicity requirements.

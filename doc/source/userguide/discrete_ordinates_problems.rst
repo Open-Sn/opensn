@@ -1101,9 +1101,10 @@ Requirements and current limitations:
 * ``angle_aggregation_type`` must be ``"single"`` (the default) or
   ``"azimuthal"``. In 1D spherical geometry ``"azimuthal"`` forms one inward and
   one outward angle set.
-* ``sweep_type`` may be ``"AAH"`` or ``"CBC"`` in ``r-z`` geometry. CBC
-  requires an acyclic sweep graph. In 1D spherical geometry only ``"AAH"``
-  is supported.
+* ``sweep_type`` may be ``"AAH"`` or ``"CBC"`` in both geometries on the CPU.
+  CBC requires an acyclic spatial sweep graph, which the 1D radial mesh satisfies.
+  Both sweep types use the same angular redistribution, starting
+  direction, and boundary treatment.
 * In ``r-z``, reflecting boundaries are supported only on the symmetry axis
   (``rmin`` at :math:`r = 0`) and on constant-``z`` boundaries. An inner radial
   boundary at :math:`r > 0` (an annulus) may be vacuum or isotropic.

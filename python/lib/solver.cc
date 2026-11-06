@@ -2004,9 +2004,10 @@ WrapLBS(py::module& slv)
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
     sweep_type : str, optional
-        The sweep type to use: `AAH` (the default) or `CBC` in RZ geometry. 1D spherical
-        geometry supports only `AAH`. Time-dependent mode is not supported for curvilinear
-        problems.
+        The sweep type to use: `AAH` (the default) or `CBC` in RZ and 1D spherical
+        geometry on the CPU. CBC requires an acyclic spatial sweep graph. Both use the
+        same angular redistribution and boundary treatment. Time-dependent mode is not
+        supported for curvilinear problems.
     )"
   );
 }
