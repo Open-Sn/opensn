@@ -11,20 +11,22 @@ if "opensn_console" not in globals():
     rank = MPI.COMM_WORLD.rank
     size = MPI.COMM_WORLD.size
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import UncollidedProblem
     from pyopensn.source import VolumetricSource
     from pyopensn.xs import MultiGroupXS
 
 sys.path.append(os.path.dirname(__file__))
-mesh_path = importlib.import_module("uncollided_unstructured_utils").mesh_path
+extruded_mesh = importlib.import_module("uncollided_unstructured_utils").extruded_mesh
 
 
 if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(
+        ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj", num_layers=4
+    )
     grid.SetUniformBlockID(0)
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)
