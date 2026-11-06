@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_rz.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/aah_sweep_chunk_spherical.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/cbc_sweep_chunk_rz.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_curvilinear_problem/sweep_chunks/cbc_sweep_chunk_spherical.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
 #include "framework/math/quadratures/angular/curvilinear_product_quadrature.h"
@@ -76,8 +77,6 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
       geometry_type_ != GeometryType::ONED_SPHERICAL)
     errors.emplace_back("Invalid geometry type " + std::string(ToString(geometry_type_)) +
                         ". Only TWOD_CYLINDRICAL and ONED_SPHERICAL geometry types are supported.");
-  if (geometry_type_ == GeometryType::ONED_SPHERICAL and sweep_type_ != "AAH")
-    errors.emplace_back("Spherical geometry supports only sweep_type=\"AAH\".");
   if (use_gpus_)
     errors.emplace_back("GPU acceleration is not supported for curvilinear geometries yet.");
 
@@ -245,13 +244,15 @@ DiscreteOrdinatesCurvilinearProblem::GetSecondaryUnitCellMatrices() const
 std::shared_ptr<SweepChunk>
 DiscreteOrdinatesCurvilinearProblem::SetSweepChunk(LBSGroupset& groupset)
 {
-  if (geometry_type_ == GeometryType::ONED_SPHERICAL)
-    return std::make_shared<AAHSweepChunkSpherical>(*this, groupset);
   switch (ParseSweepKind(sweep_type_, GetName()))
   {
     case SweepKind::AAH:
+      if (geometry_type_ == GeometryType::ONED_SPHERICAL)
+        return std::make_shared<AAHSweepChunkSpherical>(*this, groupset);
       return std::make_shared<AAHSweepChunkRZ>(*this, groupset);
     case SweepKind::CBC:
+      if (geometry_type_ == GeometryType::ONED_SPHERICAL)
+        return std::make_shared<CBCSweepChunkSpherical>(*this, groupset);
       return std::make_shared<CBCSweepChunkRZ>(*this, groupset);
   }
 
