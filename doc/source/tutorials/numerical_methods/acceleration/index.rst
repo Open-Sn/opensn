@@ -10,6 +10,8 @@ convergence is separated from the final physical result.
 
    tgdsa
    wgdsa_tgdsa
+   dsa_options
+   dsa_distorted_mesh
    scdsa
    cmfd
    smm
