@@ -59,6 +59,100 @@
     ]
   },
   {
+    "file": "dsa_options.py",
+    "comment": "Spectral radius of one-group SI with WGDSA for the DSA boundary closures and penalty lengths: mesh refinement, scattering ratio and thick boundary cells in a 2D box, penalty lengths in a 3D box; the tolerances allow for the five-ratio estimate and are smaller than the differences between the options",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Refinement dirichlet 64x64 spectral radius=",
+        "goldvalue": 0.546,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Refinement marshak 64x64 spectral radius=",
+        "goldvalue": 0.205,
+        "abs_tol": 0.02
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Scattering ratio marshak c=0.5 spectral radius=",
+        "goldvalue": 0.091,
+        "abs_tol": 0.02
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Thick cells marshak 1000 mfp spectral radius=",
+        "goldvalue": 0.456,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Thick cells closure_r 1000 mfp spectral radius=",
+        "goldvalue": 0.009,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "3D penalty length cell 5 mfp spectral radius=",
+        "goldvalue": 0.638,
+        "abs_tol": 0.04
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "3D penalty length face_side 5 mfp spectral radius=",
+        "goldvalue": 0.473,
+        "abs_tol": 0.04
+      }
+    ]
+  },
+  {
+    "file": "dsa_distorted_mesh.py",
+    "comment": "Spectral radius of one-group SI with WGDSA on regular, moderate and severe Shestakov meshes with both MIP penalty lengths and direct and CG diffusion solves: on the severe mesh the cell length diverges (direct) or stalls (CG) and face_side converges",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Moderate mesh face_side direct spectral radius=",
+        "goldvalue": 0.338,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Severe mesh face_side direct spectral radius=",
+        "goldvalue": 0.653,
+        "abs_tol": 0.04
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Severe mesh face_side iterative spectral radius=",
+        "goldvalue": 0.653,
+        "abs_tol": 0.04
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Severe mesh cell direct spectral radius=",
+        "goldvalue": 1.54,
+        "abs_tol": 0.3
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Severe mesh cell iterative spectral radius=",
+        "goldvalue": 0.971,
+        "abs_tol": 0.02
+      }
+    ]
+  },
+  {
     "file": "tgdsa.py",
     "comment": "168-group graphite source iteration with and without TGDSA",
     "num_procs": 4,
