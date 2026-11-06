@@ -2101,6 +2101,24 @@
   },
   {
     "file": "transport_dsa_reflecting_residual.py",
+    "comment": "WGDSA inward-current residual on lagged reflecting boundaries. A thin (0.1 mfp) infinite medium with c=0.9999 is solved on a 1D slab, a 2D square and a 1D sphere with classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 23-59%. Uses CBC for the sphere.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 2e-05
+      }
+    ],
+    "args": [
+      "sphere_sweep_type=\"CBC\""
+    ],
+    "outfileprefix": "transport_dsa_reflecting_residual_sphere_cbc"
+  },
+  {
+    "file": "transport_dsa_reflecting_residual.py",
     "comment": "WGDSA inward-current residual on lagged reflecting boundaries in 3D. A thin (0.1 mfp) infinite medium with c=0.9999 is solved on an orthogonal cube, unstructured tetrahedra and extruded triangular prisms with classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 5e-4 to 65%.",
     "outfileprefix": "transport_dsa_reflecting_residual_3d",
     "num_procs": 1,
