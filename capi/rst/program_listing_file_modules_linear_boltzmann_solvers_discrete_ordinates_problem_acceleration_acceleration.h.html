@@ -95,6 +95,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -104,13 +105,27 @@
 <span class="cm">/**</span>
 <span class="cm"> * Boundary condition type. We essentially only support two</span>
 <span class="cm"> * types: Dirichlet and Reflecting, the latter is covered under</span>
-<span class="cm"> * the ROBIN-type boundary condition.</span>
+<span class="cm"> * the ROBIN-type boundary condition. CLOSURE_R is the homogeneous blended vacuum closure of the</span>
+<span class="cm"> * DSA correction (modules/diffusion/boundary_closure.h); it takes no values and needs the</span>
+<span class="cm"> * angular quadrature (DiffusionMIPSolver::SetBoundaryClosureQuadrature).</span>
 <span class="cm"> */</span>
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">BCType</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">DIRICHLET</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
-<span class="w">  </span><span class="n">ROBIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span>
+<span class="w">  </span><span class="n">ROBIN</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span>
+<span class="w">  </span><span class="n">CLOSURE_R</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">3</span>
 <span class="p">};</span>
+
+<span class="c1">/// Boundary closure of a DSA correction on boundaries with a prescribed incoming flux.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">DSABoundaryClosure</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">DIRICHLET</span><span class="p">,</span><span class="w"> </span><span class="c1">///&lt; Zero correction imposed weakly (interior-penalty form)</span>
+<span class="w">  </span><span class="n">MARSHAK</span><span class="p">,</span><span class="w">   </span><span class="c1">///&lt; Natural Marshak condition, ROBIN {0.25, 0.5}</span>
+<span class="w">  </span><span class="n">CLOSURE_R</span><span class="w">  </span><span class="c1">///&lt; Blend of the Marshak and half-range forms (BCType::CLOSURE_R)</span>
+<span class="p">};</span>
+
+<span class="c1">/// Maps &quot;dirichlet&quot;, &quot;marshak&quot;, &quot;closure_r&quot; to the closure.</span>
+<span class="n">DSABoundaryClosure</span><span class="w"> </span><span class="nf">DSABoundaryClosureFromString</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">name</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Simple data structure to specify boundary conditions. Its stores the BC-type in `type` and an</span>
@@ -174,10 +189,15 @@
 <span class="w">                                              </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span>
 <span class="w">                                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
-<span class="c1">/// Translates sweep boundary conditions to that used in diffusion acceleration methods.</span>
+<span class="cm">/**</span>
+<span class="cm"> * Translates sweep boundary conditions to those of the diffusion correction in acceleration</span>
+<span class="cm"> * methods. Reflecting boundaries become zero-current (Neumann) boundaries. Every boundary with a</span>
+<span class="cm"> * prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three get</span>
+<span class="cm"> * the condition selected by `closure`.</span>
+<span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span>
 <span class="n">TranslateBCs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">sweep_boundaries</span><span class="p">,</span>
-<span class="w">             </span><span class="kt">bool</span><span class="w"> </span><span class="n">vacuum_bcs_are_dirichlet</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">);</span>
+<span class="w">             </span><span class="n">DSABoundaryClosure</span><span class="w"> </span><span class="n">closure</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DSABoundaryClosure</span><span class="o">::</span><span class="n">DIRICHLET</span><span class="p">);</span>
 
 <span class="cm">/**</span>
 <span class="cm"> * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.</span>

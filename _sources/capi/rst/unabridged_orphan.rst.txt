@@ -230,6 +230,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_diffusion_m_i_p_solver_1_1_closure_face_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_diffusion_solver_1_1_options.rst
 
 .. toctree::
@@ -1969,6 +1974,11 @@ Enums
 .. toctree::
    :maxdepth: 1
 
+   enum_namespaceopensn_1ac878f7ec3b91b251b4b4c886a687e0ee.rst
+
+.. toctree::
+   :maxdepth: 1
+
    enum_namespaceopensn_1ae619abc2491074c99ce1498a6497e676.rst
 
 .. toctree::
@@ -2683,6 +2693,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_carrier.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_diffusion_boundary_closure.h.rst
 
 .. toctree::
    :maxdepth: 1

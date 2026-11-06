@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a492515f691acf2d47441a235a6e1c2a5:
+
+Function opensn::FaceTraceConstant
+==================================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FaceTraceConstant(const CellMapping&, const Cell&, unsigned int, const DenseMatrix<double>&, CoordinateSystemType)
+   :project: opensn

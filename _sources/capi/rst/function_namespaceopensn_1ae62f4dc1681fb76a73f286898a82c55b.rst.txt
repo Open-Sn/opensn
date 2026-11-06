@@ -1,4 +1,4 @@
-.. _exhale_function_namespaceopensn_1a99ef66cb7a79c4f3c264b05be5c69572:
+.. _exhale_function_namespaceopensn_1ae62f4dc1681fb76a73f286898a82c55b:
 
 Function opensn::TranslateBCs
 =============================
@@ -10,5 +10,5 @@ Function Documentation
 ----------------------
 
 
-.. doxygenfunction:: opensn::TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&, bool)
+.. doxygenfunction:: opensn::TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>&, DSABoundaryClosure)
    :project: opensn

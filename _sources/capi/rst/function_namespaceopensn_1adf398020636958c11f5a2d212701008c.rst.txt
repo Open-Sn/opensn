@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1adf398020636958c11f5a2d212701008c:
+
+Function opensn::FaceOrthogonalLength
+=====================================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FaceOrthogonalLength(const Cell&, unsigned int)
+   :project: opensn

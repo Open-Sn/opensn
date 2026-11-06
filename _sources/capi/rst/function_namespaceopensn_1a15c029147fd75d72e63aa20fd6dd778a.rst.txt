@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a15c029147fd75d72e63aa20fd6dd778a:
+
+Function opensn::FaceSideLength
+===============================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::FaceSideLength(const Mesh&, const Cell&, unsigned int)
+   :project: opensn

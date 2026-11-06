@@ -168,6 +168,13 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tgdsa_solver_policy</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">wgdsa_direct_solve_threshold</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">tgdsa_direct_solve_threshold</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Boundary closure of the DSA correction on vacuum, isotropic and arbitrary boundaries:</span>
+<span class="w">  </span><span class="c1">/// &quot;marshak&quot; (default), &quot;closure_r&quot; or &quot;dirichlet&quot; (OpenSn&#39;s original).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">wgdsa_boundary_closure</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tgdsa_boundary_closure</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// MIP penalty length convention: &quot;face_side&quot; (default) or &quot;cell&quot; (OpenSn&#39;s original).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">wgdsa_h_perp_convention</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">tgdsa_h_perp_convention</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">wgdsa_verbose</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">tgdsa_verbose</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">wgdsa_string</span><span class="p">;</span>

@@ -124,6 +124,23 @@
 <span class="w">    </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">direct_solve_threshold</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">20000</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">additional_options_string</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">penalty_factor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">4.0</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * Penalty length h_perp of the interior-penalty terms. &quot;cell&quot; (OpenSn&#39;s original, the default</span>
+<span class="cm">     * of this solver) uses the cell-wide values 3V/S (tet), V/S (hex), 6V/S (other polyhedra), S</span>
+<span class="cm">     * the total surface area, with an extra factor 2 on polyhedra, and the face-dependent polygon</span>
+<span class="cm">     * lengths without that factor. &quot;face_side&quot; uses, on polygons and polyhedra, the face-dependent</span>
+<span class="cm">     * orthogonal length (FaceOrthogonalLength: 3V/A_f tet, V/A_f hex, 2V/A_f triangle, V/A_f quad,</span>
+<span class="cm">     * 2dV/S other) capped by 2 FaceSideLength, which is four times the smallest height of the</span>
+<span class="cm">     * face&#39;s PWLD side simplices, with the factor 2 on interior and boundary faces. The cap leaves</span>
+<span class="cm">     * the penalty unchanged on tetrahedra (where it equals the face length) and cubes (twice the</span>
+<span class="cm">     * face length; the penalty is 2 penalty_factor D/h on a cube of side h, a sixth of the &quot;cell&quot;</span>
+<span class="cm">     * penalty); on a face with a skinny side simplex it raises the penalty to what PWLD&#39;s exact</span>
+<span class="cm">     * trace inequality requires, which keeps the operator positive definite on strongly distorted</span>
+<span class="cm">     * cells.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">h_perp_convention</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s">&quot;cell&quot;</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD.</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">closure_r_s0</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.5</span><span class="p">;</span>
 <span class="w">  </span><span class="p">}</span><span class="w"> </span><span class="n">options</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
@@ -142,6 +159,9 @@
 
 <span class="w">  </span><span class="c1">/// Returns the right-hand side petsc vector.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Vec</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetRHS</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Returns the assembled system matrix (null before Initialize).</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Mat</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetSystemMatrix</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">A_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="c1">/// Returns the assigned unknown structure.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetBCS</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">bcs_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>

@@ -142,6 +142,19 @@
 <span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1a319fde94bd2378a644b91c4b7c2c74d6"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">penalty_factor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4.0</span></span><br /></dt>
 <dd></dd></dl>
 
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver7Options17h_perp_conventionE">
+<span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1af2bb4aa0c46917bb0944d8aa97a37ba8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">h_perp_convention</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;cell&quot;</span></span><br /></dt>
+<dd><p>Penalty length h_perp of the interior-penalty terms. </p>
+<p>“cell” (OpenSn’s original, the default of this solver) uses the cell-wide values 3V/S (tet), V/S (hex), 6V/S (other polyhedra), S the total surface area, with an extra factor 2 on polyhedra, and the face-dependent polygon lengths without that factor. “face_side” uses, on polygons and polyhedra, the face-dependent orthogonal length (FaceOrthogonalLength: 3V/A_f tet, V/A_f hex, 2V/A_f triangle, V/A_f quad, 2dV/S other) capped by 2 FaceSideLength, which is four times the smallest height of the face’s PWLD side simplices, with the factor 2 on interior and boundary faces. The cap leaves the penalty unchanged on tetrahedra (where it equals the face length) and cubes (twice the face length; the penalty is 2 penalty_factor D/h on a cube of side h, a sixth of the “cell” penalty); on a face with a skinny side simplex it raises the penalty to what PWLD’s exact trace inequality requires, which keeps the operator positive definite on strongly distorted cells. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver7Options12closure_r_s0E">
+<span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1ab3db907c900a588751866be368c9f934"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">closure_r_s0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.5</span></span><br /></dt>
+<dd><p>Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD. </p>
+</dd></dl>
+
 </div>
 </dd></dl>
 

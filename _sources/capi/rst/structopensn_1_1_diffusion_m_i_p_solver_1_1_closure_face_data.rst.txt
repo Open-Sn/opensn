@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_diffusion_m_i_p_solver_1_1_closure_face_data:
+
+Struct DiffusionMIPSolver::ClosureFaceData
+==========================================
+
+- Defined in :ref:`file_modules_diffusion_diffusion_mip_solver.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_diffusion_m_i_p_solver`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DiffusionMIPSolver::ClosureFaceData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

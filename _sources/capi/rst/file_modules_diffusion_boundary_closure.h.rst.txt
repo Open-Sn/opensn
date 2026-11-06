@@ -1,0 +1,68 @@
+
+.. _file_modules_diffusion_boundary_closure.h:
+
+File boundary_closure.h
+=======================
+
+|exhale_lsh| :ref:`Parent directory <dir_modules_diffusion>` (``modules/diffusion``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``modules/diffusion/boundary_closure.h``)
+-----------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_modules_diffusion_boundary_closure.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``framework/data_types/dense_matrix.h`` (:ref:`file_framework_data_types_dense_matrix.h`)
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``framework/math/geometry.h`` (:ref:`file_framework_math_geometry.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a424af08ea8d40e3b52aa385036240185`
+
+- :ref:`exhale_function_namespaceopensn_1adf398020636958c11f5a2d212701008c`
+
+- :ref:`exhale_function_namespaceopensn_1a15c029147fd75d72e63aa20fd6dd778a`
+
+- :ref:`exhale_function_namespaceopensn_1a492515f691acf2d47441a235a6e1c2a5`
+
+- :ref:`exhale_function_namespaceopensn_1a9f25b64ab2e8fcabb66b2de6a58353f0`
+
+- :ref:`exhale_function_namespaceopensn_1af5a739f60f3141a7ec2b03b8cf495d99`
+

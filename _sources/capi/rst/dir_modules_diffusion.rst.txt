@@ -16,6 +16,7 @@ Directory diffusion
 Files
 -----
 
+- :ref:`file_modules_diffusion_boundary_closure.h`
 - :ref:`file_modules_diffusion_diffusion.h`
 - :ref:`file_modules_diffusion_diffusion_mip_solver.h`
 - :ref:`file_modules_diffusion_diffusion_pwlc_solver.h`

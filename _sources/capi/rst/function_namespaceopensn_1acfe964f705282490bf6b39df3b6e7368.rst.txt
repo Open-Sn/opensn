@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1acfe964f705282490bf6b39df3b6e7368:
+
+Function opensn::DSABoundaryClosureFromString
+=============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::DSABoundaryClosureFromString(const std::string&)
+   :project: opensn

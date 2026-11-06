@@ -185,6 +185,8 @@ is enough, and when a multi-groupset split makes sense.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
@@ -192,6 +194,8 @@ is enough, and when a multi-groupset split makes sense.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <p>The simplest valid pattern is one groupset covering all groups:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span> <span class="o">=</span> <span class="p">[</span>
@@ -442,12 +446,16 @@ of the flux, not on the full angular flux.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <section id="apply-wgdsa">
 <h4><span class="section-number">7.5.4.1. </span><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code><a class="headerlink" href="#apply-wgdsa" title="Link to this heading"></a></h4>
@@ -470,6 +478,8 @@ option to think about.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code> controls the PETSc solver setup for the WGDSA diffusion
 correction. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses a direct PETSc LU solve when the global WGDSA
@@ -477,6 +487,70 @@ diffusion unknown count is at or below <code class="docutils literal notranslate
 iterative solve otherwise. <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> force those paths,
 and <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> lets <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> define the KSP/PC setup.
 The default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
+<p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code> sets the boundary condition of the diffusion
+correction on every boundary where the incoming angular flux is prescribed
+(<code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code>): the incoming flux is the
+same at every iteration, so its error is zero and all three are vacuum
+boundaries for the correction. <code class="docutils literal notranslate"><span class="pre">&quot;marshak&quot;</span></code> (the default) imposes the natural
+Marshak condition <span class="math notranslate nohighlight">\(\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0\)</span>,
+which adds <span class="math notranslate nohighlight">\(\tfrac12\int_f \delta\, v\)</span> on the face and needs no penalty.
+<code class="docutils literal notranslate"><span class="pre">&quot;dirichlet&quot;</span></code> (OpenSn’s original treatment) imposes a zero correction weakly
+through the interior-penalty boundary term; under mesh refinement it limits the
+SI+DSA spectral radius to about 0.5 on bounded domains, which the Marshak
+condition removes. On boundary cells many mean free paths thick the roles
+reverse: the transport error vanishes across most of such a cell, which a zero
+correction matches, while the Marshak condition leaves a boundary mode with a
+spectral radius near 0.47. <code class="docutils literal notranslate"><span class="pre">&quot;closure_r&quot;</span></code> combines the two strengths, blending
+two transport-consistent forms face by face,</p>
+<div class="math notranslate nohighlight">
+\[\beta_f (1 + \theta_f) \int_f \delta\, v
+- \frac{1 - \theta_f}{2} \int_f D\,(\partial_n \delta\, v + \partial_n v\, \delta),\]</div>
+<p>with <span class="math notranslate nohighlight">\(\beta_f = \tfrac12 \sum_d w_d |\Omega_d \cdot n_f| / \sum_d w_d\)</span> the half-range
+moment of the groupset’s quadrature. On thin boundary cells
+(<span class="math notranslate nohighlight">\(\theta_f = 1\)</span>) the face term is <span class="math notranslate nohighlight">\(2\beta_f \int_f \delta\, v\)</span>, the
+Marshak condition written with the partial current of the groupset’s quadrature
+(for an isotropic flux the discrete outgoing current is <span class="math notranslate nohighlight">\(\beta_f\phi\)</span>,
+against <span class="math notranslate nohighlight">\(\phi/4\)</span> with exact angular integration), so that it matches the
+leakage of the discrete sweep. It equals the analytic Marshak term
+<span class="math notranslate nohighlight">\(\tfrac12 \int_f \delta\, v\)</span> only when <span class="math notranslate nohighlight">\(\beta_f = 1/4\)</span>:
+<span class="math notranslate nohighlight">\(\beta_f\)</span> is 0.253 to 0.261 for GLC product quadratures with four polar
+angles and <span class="math notranslate nohighlight">\(1/(2\sqrt{3}) \approx 0.289\)</span> for an <span class="math notranslate nohighlight">\(S_2\)</span> slab
+quadrature. On cells many mean free paths thick <span class="math notranslate nohighlight">\(\theta_f \to 0\)</span> gives
+the half-range transport form, whose
+leakage coefficient matches the transport sweep. The blend is
+<span class="math notranslate nohighlight">\(\theta_f = \max(\min(1, (s_0/\sigma_t h_f)^2), \theta_{coer})\)</span> with
+<span class="math notranslate nohighlight">\(s_0 = 1.5\)</span>, <span class="math notranslate nohighlight">\(h_f\)</span> the face-dependent orthogonal length and
+<span class="math notranslate nohighlight">\(\theta_{coer}\)</span> the smallest value that keeps the operator positive
+definite (computed from the cell matrices). With <code class="docutils literal notranslate"><span class="pre">&quot;closure_r&quot;</span></code> the floor of
+the interior penalty is <span class="math notranslate nohighlight">\(\beta_f\)</span> of each face instead of 1/4.
+Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
+<code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code> does the same for TGDSA.</p>
+<p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code> sets the penalty length <span class="math notranslate nohighlight">\(h_\perp\)</span> of the MIP
+diffusion operator (penalty <code class="docutils literal notranslate"><span class="pre">penalty_factor</span></code> <span class="math notranslate nohighlight">\(D/h_\perp\)</span> per face,
+averaged over the two cells of an interior face). <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> (the default)
+uses the face-dependent orthogonal projection of Turcksin and Ragusa
+(<span class="math notranslate nohighlight">\(3V/A_f\)</span> on tetrahedra, <span class="math notranslate nohighlight">\(V/A_f\)</span> on hexahedra and quadrilaterals,
+<span class="math notranslate nohighlight">\(2V/A_f\)</span> on triangles, <span class="math notranslate nohighlight">\(2dV/S\)</span> on other cells), capped by four
+times the smallest height of the face’s PWLD side simplices (the triangles or
+tetrahedra between the face, its centroid and the cell centroid), with an extra
+factor 2 on interior and boundary faces. PWLD is linear on each side simplex, so
+the side height bounds the discrete trace inequality exactly. The cap leaves the
+penalty unchanged on tetrahedra (where it equals the face length) and cubes
+(where it is twice the face length); on a face with a skinny side simplex
+(slivers, near-degenerate quadrilaterals and hexahedra) it raises the penalty to
+what the trace inequality requires, which keeps the operator positive definite
+where the uncapped lengths make it indefinite and DSA diverge. <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code>
+(OpenSn’s original treatment) uses the cell-wide lengths <span class="math notranslate nohighlight">\(3V/S\)</span>
+(tetrahedra) and <span class="math notranslate nohighlight">\(V/S\)</span> (hexahedra), <span class="math notranslate nohighlight">\(S\)</span> the total surface of the
+cell, with the extra factor 2 on polyhedra, and the face-dependent polygon
+lengths without it. On a cube of side <span class="math notranslate nohighlight">\(a\)</span> the two lengths are <span class="math notranslate nohighlight">\(a/6\)</span>
+(<code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code>) and <span class="math notranslate nohighlight">\(a\)</span> (<code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code>) with the same factor 2, so when the
+penalty floor is inactive the <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> penalty is six times the
+<code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> one, which slows DSA on cells a few mean free paths thick. On
+polygons the <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> penalty is half the <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> one and can make the
+operator indefinite on strongly distorted cells; <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> applies the
+factor 2 to polygons for uniformity with polyhedra and a larger stability
+margin. <code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code> does the same for TGDSA.</p>
 </section>
 <section id="apply-tgdsa">
 <h4><span class="section-number">7.5.4.2. </span><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code><a class="headerlink" href="#apply-tgdsa" title="Link to this heading"></a></h4>
@@ -496,6 +570,8 @@ story.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA

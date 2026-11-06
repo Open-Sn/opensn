@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a424af08ea8d40e3b52aa385036240185:
+
+Function opensn::ClosureRTheta
+==============================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ClosureRTheta(double, double, double, unsigned int, double)
+   :project: opensn

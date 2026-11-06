@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a9f25b64ab2e8fcabb66b2de6a58353f0:
+
+Function opensn::MaxEigenvalueOnStiffnessRange
+==============================================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>&, const DenseMatrix<double>&)
+   :project: opensn

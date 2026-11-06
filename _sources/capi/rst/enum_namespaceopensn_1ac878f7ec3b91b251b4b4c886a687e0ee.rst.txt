@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1ac878f7ec3b91b251b4b4c886a687e0ee:
+
+Enum DSABoundaryClosure
+=======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_acceleration.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::DSABoundaryClosure
+   :project: opensn

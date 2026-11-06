@@ -38,6 +38,8 @@ The main groupset fields exposed in the Python API are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 * ``apply_tgdsa``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
@@ -45,6 +47,8 @@ The main groupset fields exposed in the Python API are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 The simplest valid pattern is one groupset covering all groups:
 
@@ -325,12 +329,16 @@ with associated controls:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 * ``tgdsa_l_abs_tol``
 * ``tgdsa_l_max_its``
 * ``tgdsa_verbose``
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
@@ -355,6 +363,8 @@ The main WGDSA controls are:
 * ``wgdsa_petsc_options``
 * ``wgdsa_solver_policy``
 * ``wgdsa_direct_solve_threshold``
+* ``wgdsa_boundary_closure``
+* ``wgdsa_h_perp_convention``
 
 ``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
 correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
@@ -362,6 +372,75 @@ diffusion unknown count is at or below ``wgdsa_direct_solve_threshold`` and an
 iterative solve otherwise. ``"direct"`` and ``"iterative"`` force those paths,
 and ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup.
 The default threshold is ``20000`` global unknowns.
+
+``wgdsa_boundary_closure`` sets the boundary condition of the diffusion
+correction on every boundary where the incoming angular flux is prescribed
+(``"vacuum"``, ``"isotropic"`` and ``"arbitrary"``): the incoming flux is the
+same at every iteration, so its error is zero and all three are vacuum
+boundaries for the correction. ``"marshak"`` (the default) imposes the natural
+Marshak condition :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`,
+which adds :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
+``"dirichlet"`` (OpenSn's original treatment) imposes a zero correction weakly
+through the interior-penalty boundary term; under mesh refinement it limits the
+SI+DSA spectral radius to about 0.5 on bounded domains, which the Marshak
+condition removes. On boundary cells many mean free paths thick the roles
+reverse: the transport error vanishes across most of such a cell, which a zero
+correction matches, while the Marshak condition leaves a boundary mode with a
+spectral radius near 0.47. ``"closure_r"`` combines the two strengths, blending
+two transport-consistent forms face by face,
+
+.. math::
+
+   \beta_f (1 + \theta_f) \int_f \delta\, v
+   - \frac{1 - \theta_f}{2} \int_f D\,(\partial_n \delta\, v + \partial_n v\, \delta),
+
+with :math:`\beta_f = \tfrac12 \sum_d w_d |\Omega_d \cdot n_f| / \sum_d w_d` the half-range
+moment of the groupset's quadrature. On thin boundary cells
+(:math:`\theta_f = 1`) the face term is :math:`2\beta_f \int_f \delta\, v`, the
+Marshak condition written with the partial current of the groupset's quadrature
+(for an isotropic flux the discrete outgoing current is :math:`\beta_f\phi`,
+against :math:`\phi/4` with exact angular integration), so that it matches the
+leakage of the discrete sweep. It equals the analytic Marshak term
+:math:`\tfrac12 \int_f \delta\, v` only when :math:`\beta_f = 1/4`:
+:math:`\beta_f` is 0.253 to 0.261 for GLC product quadratures with four polar
+angles and :math:`1/(2\sqrt{3}) \approx 0.289` for an :math:`S_2` slab
+quadrature. On cells many mean free paths thick :math:`\theta_f \to 0` gives
+the half-range transport form, whose
+leakage coefficient matches the transport sweep. The blend is
+:math:`\theta_f = \max(\min(1, (s_0/\sigma_t h_f)^2), \theta_{coer})` with
+:math:`s_0 = 1.5`, :math:`h_f` the face-dependent orthogonal length and
+:math:`\theta_{coer}` the smallest value that keeps the operator positive
+definite (computed from the cell matrices). With ``"closure_r"`` the floor of
+the interior penalty is :math:`\beta_f` of each face instead of 1/4.
+Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
+``tgdsa_boundary_closure`` does the same for TGDSA.
+
+``wgdsa_h_perp_convention`` sets the penalty length :math:`h_\perp` of the MIP
+diffusion operator (penalty ``penalty_factor`` :math:`D/h_\perp` per face,
+averaged over the two cells of an interior face). ``"face_side"`` (the default)
+uses the face-dependent orthogonal projection of Turcksin and Ragusa
+(:math:`3V/A_f` on tetrahedra, :math:`V/A_f` on hexahedra and quadrilaterals,
+:math:`2V/A_f` on triangles, :math:`2dV/S` on other cells), capped by four
+times the smallest height of the face's PWLD side simplices (the triangles or
+tetrahedra between the face, its centroid and the cell centroid), with an extra
+factor 2 on interior and boundary faces. PWLD is linear on each side simplex, so
+the side height bounds the discrete trace inequality exactly. The cap leaves the
+penalty unchanged on tetrahedra (where it equals the face length) and cubes
+(where it is twice the face length); on a face with a skinny side simplex
+(slivers, near-degenerate quadrilaterals and hexahedra) it raises the penalty to
+what the trace inequality requires, which keeps the operator positive definite
+where the uncapped lengths make it indefinite and DSA diverge. ``"cell"``
+(OpenSn's original treatment) uses the cell-wide lengths :math:`3V/S`
+(tetrahedra) and :math:`V/S` (hexahedra), :math:`S` the total surface of the
+cell, with the extra factor 2 on polyhedra, and the face-dependent polygon
+lengths without it. On a cube of side :math:`a` the two lengths are :math:`a/6`
+(``"cell"``) and :math:`a` (``"face_side"``) with the same factor 2, so when the
+penalty floor is inactive the ``"cell"`` penalty is six times the
+``"face_side"`` one, which slows DSA on cells a few mean free paths thick. On
+polygons the ``"cell"`` penalty is half the ``"face_side"`` one and can make the
+operator indefinite on strongly distorted cells; ``"face_side"`` applies the
+factor 2 to polygons for uniformity with polyhedra and a larger stability
+margin. ``tgdsa_h_perp_convention`` does the same for TGDSA.
 
 ``apply_tgdsa``
 ~~~~~~~~~~~~~~~
@@ -384,6 +463,8 @@ The main TGDSA controls are:
 * ``tgdsa_petsc_options``
 * ``tgdsa_solver_policy``
 * ``tgdsa_direct_solve_threshold``
+* ``tgdsa_boundary_closure``
+* ``tgdsa_h_perp_convention``
 
 ``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
 meaning for the TGDSA diffusion correction solve that the corresponding WGDSA

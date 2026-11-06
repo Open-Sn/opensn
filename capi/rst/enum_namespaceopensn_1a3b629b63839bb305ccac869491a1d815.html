@@ -93,7 +93,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6BCTypeE">
 <span class="target" id="namespaceopensn_1a3b629b63839bb305ccac869491a1d815"></span><span class="k"><span class="pre">enum</span></span><span class="w"> </span><span class="k"><span class="pre">class</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">BCType</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6BCTypeE" title="Link to this definition"></a><br /></dt>
 <dd><p>Boundary condition type. </p>
-<p>We essentially only support two types: Dirichlet and Reflecting, the latter is covered under the ROBIN-type boundary condition. </p>
+<p>We essentially only support two types: Dirichlet and Reflecting, the latter is covered under the ROBIN-type boundary condition. CLOSURE_R is the homogeneous blended vacuum closure of the DSA correction (modules/diffusion/boundary_closure.h); it takes no values and needs the angular quadrature (<a class="reference internal" href="classopensn_1_1_diffusion_m_i_p_solver.html#classopensn_1_1_diffusion_m_i_p_solver_1ab7cf0a061dad6e65e1d0859ad5903cbc"><span class="std std-ref">DiffusionMIPSolver::SetBoundaryClosureQuadrature</span></a>). </p>
 <p><em>Values:</em></p>
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6BCType9DIRICHLETE">
@@ -103,6 +103,11 @@
 <dl class="cpp enumerator">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn6BCType5ROBINE">
 <span class="target" id="namespaceopensn_1a3b629b63839bb305ccac869491a1d815abcd811f0b658b589b503a44dcde68c46"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ROBIN</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6BCType5ROBINE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp enumerator">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn6BCType9CLOSURE_RE">
+<span class="target" id="namespaceopensn_1a3b629b63839bb305ccac869491a1d815a7319d5cd49d801734ff1d5c0e3b84d09"></span><span class="k"><span class="pre">enumerator</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CLOSURE_R</span></span></span><a class="headerlink" href="#_CPPv4N6opensn6BCType9CLOSURE_RE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 </dd></dl>

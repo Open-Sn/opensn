@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1af5a739f60f3141a7ec2b03b8cf495d99:
+
+Function opensn::QuadratureHalfRangeMoment
+==========================================
+
+- Defined in :ref:`file_modules_diffusion_boundary_closure.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::QuadratureHalfRangeMoment(const std::vector<Vector3>&, const std::vector<double>&, const Vector3&)
+   :project: opensn

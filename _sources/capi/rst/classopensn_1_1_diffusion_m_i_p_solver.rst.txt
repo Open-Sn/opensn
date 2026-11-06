@@ -6,6 +6,16 @@ Class DiffusionMIPSolver
 - Defined in :ref:`file_modules_diffusion_diffusion_mip_solver.h`
 
 
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_diffusion_m_i_p_solver_1_1_closure_face_data`
+
+
 Inheritance Relationships
 -------------------------
 

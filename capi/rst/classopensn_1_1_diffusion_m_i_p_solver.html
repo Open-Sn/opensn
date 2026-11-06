@@ -87,6 +87,15 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_diffusion_diffusion_mip_solver.h.html#file-modules-diffusion-diffusion-mip-solver-h"><span class="std std-ref">File diffusion_mip_solver.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_diffusion_m_i_p_solver_1_1_closure_face_data.html#exhale-struct-structopensn-1-1-diffusion-m-i-p-solver-1-1-closure-face-data"><span class="std std-ref">Struct DiffusionMIPSolver::ClosureFaceData</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -123,6 +132,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn18DiffusionMIPSolver28SetReferenceSolutionFunctionERK21ScalarSpatialFunction">
 <span class="target" id="classopensn_1_1_diffusion_m_i_p_solver_1a6854fddda07a9e4b405bb7e15cf13c80"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetReferenceSolutionFunction</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="typedef_namespaceopensn_1ae841473082465baefc8ecd55f9a069bf.html#_CPPv4N6opensn21ScalarSpatialFunctionE" title="opensn::ScalarSpatialFunction"><span class="n"><span class="pre">ScalarSpatialFunction</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">function</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn18DiffusionMIPSolver28SetReferenceSolutionFunctionERK21ScalarSpatialFunction" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn18DiffusionMIPSolver28SetBoundaryClosureQuadratureERKNSt6vectorI7Vector3EERKNSt6vectorIdEE">
+<span class="target" id="classopensn_1_1_diffusion_m_i_p_solver_1ab7cf0a061dad6e65e1d0859ad5903cbc"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetBoundaryClosureQuadrature</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">omegas</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">weights</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn18DiffusionMIPSolver28SetBoundaryClosureQuadratureERKNSt6vectorI7Vector3EERKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Sets the angular quadrature (unit directions and weights) of the transport sweep. </p>
+<p>It is required by the CLOSURE_R boundary type, which uses the quadrature’s half-range moment beta_f of each boundary face, and it replaces the constant 1/4 floor of the interior penalty by beta_f of each interior face (the transport operator’s own jump dissipation). Call before assembly. </p>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn18DiffusionMIPSolver23AssembleAand_b_wQpointsERKNSt6vectorIdEE">
@@ -165,6 +181,12 @@
 <p>for S_n transport on 2D arbitrary polygonal meshes”, Journal of Computational Physics 274, pg 356-369, 2014.</p>
 
 Nv = Number of vertices. If Nv &lt;= 4 then the perimeter parameter should be replaced by edge length. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn18DiffusionMIPSolver19PolygonPenaltyScaleEv">
+<span class="target" id="classopensn_1_1_diffusion_m_i_p_solver_1a39c9288f63c533fe830c497eb3d67fe7"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">PolygonPenaltyScale</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn18DiffusionMIPSolver19PolygonPenaltyScaleEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Factor on the interior and boundary penalties of polygons: 2 for “face_side”, 1 for “cell” (OpenSn’s original polygon penalty). </p>
 </dd></dl>
 
 <dl class="cpp function">

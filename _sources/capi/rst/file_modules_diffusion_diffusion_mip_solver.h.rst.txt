@@ -30,9 +30,15 @@ Includes
 --------
 
 
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
 - ``framework/math/functions/function.h`` (:ref:`file_framework_math_functions_function.h`)
 
 - ``modules/diffusion/diffusion.h`` (:ref:`file_modules_diffusion_diffusion.h`)
+
+- ``utility``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 
 
 
@@ -55,6 +61,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_diffusion_m_i_p_solver_1_1_closure_face_data`
 
 - :ref:`exhale_class_classopensn_1_1_diffusion_m_i_p_solver`
 

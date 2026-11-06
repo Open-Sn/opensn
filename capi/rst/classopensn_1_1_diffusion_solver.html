@@ -133,6 +133,12 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn15DiffusionSolver15GetSystemMatrixEv">
+<span class="target" id="classopensn_1_1_diffusion_solver_1aa2f8e0f76f00ce70bd0bd1d7db1db038"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">Mat</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetSystemMatrix</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn15DiffusionSolver15GetSystemMatrixEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the assembled system matrix (null before Initialize). </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn15DiffusionSolver6GetBCSEv">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a8679a4ca76ed9ac89d500737e34e546f"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><a class="reference internal" href="structopensn_1_1_boundary_condition.html#_CPPv4N6opensn17BoundaryConditionE" title="opensn::BoundaryCondition"><span class="n"><span class="pre">BoundaryCondition</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetBCS</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn15DiffusionSolver6GetBCSEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the assigned unknown structure. </p>
@@ -371,6 +377,19 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver7Options14penalty_factorE">
 <span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1a319fde94bd2378a644b91c4b7c2c74d6"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">penalty_factor</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4.0</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver7Options14penalty_factorE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver7Options17h_perp_conventionE">
+<span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1af2bb4aa0c46917bb0944d8aa97a37ba8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">h_perp_convention</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="s"><span class="pre">&quot;cell&quot;</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver7Options17h_perp_conventionE" title="Link to this definition"></a><br /></dt>
+<dd><p>Penalty length h_perp of the interior-penalty terms. </p>
+<p>“cell” (OpenSn’s original, the default of this solver) uses the cell-wide values 3V/S (tet), V/S (hex), 6V/S (other polyhedra), S the total surface area, with an extra factor 2 on polyhedra, and the face-dependent polygon lengths without that factor. “face_side” uses, on polygons and polyhedra, the face-dependent orthogonal length (FaceOrthogonalLength: 3V/A_f tet, V/A_f hex, 2V/A_f triangle, V/A_f quad, 2dV/S other) capped by 2 FaceSideLength, which is four times the smallest height of the face’s PWLD side simplices, with the factor 2 on interior and boundary faces. The cap leaves the penalty unchanged on tetrahedra (where it equals the face length) and cubes (twice the face length; the penalty is 2 penalty_factor D/h on a cube of side h, a sixth of the “cell” penalty); on a face with a skinny side simplex it raises the penalty to what PWLD’s exact trace inequality requires, which keeps the operator positive definite on strongly distorted cells. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver7Options12closure_r_s0E">
+<span class="target" id="structopensn_1_1_diffusion_solver_1_1_options_1ab3db907c900a588751866be368c9f934"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">closure_r_s0</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">1.5</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver7Options12closure_r_s0E" title="Link to this definition"></a><br /></dt>
+<dd><p>Switch point s0 (in mean free paths) of the CLOSURE_R blend, 1 + p/2 with p = 1 for PWLD. </p>
+</dd></dl>
 
 </div>
 </dd></dl>
