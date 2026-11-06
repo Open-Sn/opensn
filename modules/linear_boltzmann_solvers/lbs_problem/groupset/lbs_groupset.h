@@ -82,7 +82,7 @@ public:
   unsigned int wgdsa_direct_solve_threshold;
   unsigned int tgdsa_direct_solve_threshold;
   /// Boundary closure of the DSA correction on vacuum, isotropic and arbitrary boundaries:
-  /// "marshak" (default), "closure_r" or "dirichlet" (OpenSn's original).
+  /// "closure_r" (default), "marshak" or "dirichlet" (OpenSn's original).
   std::string wgdsa_boundary_closure;
   std::string tgdsa_boundary_closure;
   /// MIP penalty length convention: "face_side" (default) or "cell" (OpenSn's original).

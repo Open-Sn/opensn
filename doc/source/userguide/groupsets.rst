@@ -410,7 +410,7 @@ solver.
 correction on every boundary where the incoming angular flux is prescribed
 (``"vacuum"``, ``"isotropic"`` and ``"arbitrary"``): the incoming flux is the
 same at every iteration, so its error is zero and all three are vacuum
-boundaries for the correction. ``"marshak"`` (the default) imposes the natural
+boundaries for the correction. ``"marshak"`` imposes the natural
 Marshak condition :math:`\tfrac14\delta + \tfrac12 D\,\partial_n\delta = 0`,
 which adds :math:`\tfrac12\int_f \delta\, v` on the face and needs no penalty.
 ``"dirichlet"`` (OpenSn's original treatment) imposes a zero correction weakly
@@ -419,8 +419,8 @@ SI+DSA spectral radius to about 0.5 on bounded domains, which the Marshak
 condition removes. On boundary cells many mean free paths thick the roles
 reverse: the transport error vanishes across most of such a cell, which a zero
 correction matches, while the Marshak condition leaves a boundary mode with a
-spectral radius near 0.47. ``"closure_r"`` combines the two strengths, blending
-two transport-consistent forms face by face,
+spectral radius near 0.47. ``"closure_r"`` (the default) combines the two
+strengths, blending two transport-consistent forms face by face,
 
 .. math::
 
@@ -445,6 +445,10 @@ leakage coefficient matches the transport sweep. The blend is
 :math:`\theta_{coer}` the smallest value that keeps the operator positive
 definite (computed from the cell matrices). With ``"closure_r"`` the floor of
 the interior penalty is :math:`\beta_f` of each face instead of 1/4.
+``"marshak"`` is the simpler condition: it converges at the same rate as
+``"closure_r"`` when every boundary cell is thin, and can save one or two
+iterations on boundary cells 2 to 3 mean free paths thick, where the blend lies
+between its two forms.
 Reflecting boundaries are treated as zero-current (Neumann) boundaries. Of a
 pair of opposing reflecting boundaries, the sweep lags the incoming angular
 flux of one. In 1D spherical geometry it lags that of the reflecting outer

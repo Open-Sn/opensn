@@ -64,17 +64,17 @@ LBSGroupset::GetInputParameters()
     "wgdsa_verbose", false, "If true, WGDSA routines will print verbosely");
   params.AddOptionalParameter("wgdsa_petsc_options", "", "PETSc options to pass to WGDSA solver");
   params.AddOptionalParameter("wgdsa_boundary_closure",
-                              "marshak",
+                              "closure_r",
                               "Boundary condition of the WGDSA diffusion correction on every "
                               "boundary with a prescribed incoming flux (vacuum, isotropic, "
-                              "arbitrary). marshak (default) imposes the natural Marshak "
-                              "condition (1/4 delta + 1/2 D d(delta)/dn = 0); closure_r blends "
-                              "the Marshak form written with the partial current of the "
-                              "groupset's quadrature (face coefficient 2 beta_f, beta_f its "
-                              "half-range moment, against the analytic 1/2) on thin boundary "
-                              "cells with the half-range transport form on thick ones, and is "
-                              "faster when boundary cells are many mean free paths thick; "
-                              "dirichlet (OpenSn's original) imposes a zero correction weakly "
+                              "arbitrary). closure_r (default) blends the Marshak form written "
+                              "with the partial current of the groupset's quadrature (face "
+                              "coefficient 2 beta_f, beta_f its half-range moment, against the "
+                              "analytic 1/2) on thin boundary cells with the half-range "
+                              "transport form on thick ones, and is faster than marshak when "
+                              "boundary cells are many mean free paths thick; marshak imposes "
+                              "the natural Marshak condition (1/4 delta + 1/2 D d(delta)/dn = "
+                              "0); dirichlet (OpenSn's original) imposes a zero correction weakly "
                               "with the interior-penalty term. Reflecting boundaries are "
                               "zero-current, except that on a reflecting boundary that lags its "
                               "incoming flux, WGDSA imposes the inward partial current of the "
@@ -102,7 +102,7 @@ LBSGroupset::GetInputParameters()
     "tgdsa_verbose", false, "If true, TGDSA routines will print verbosely");
   params.AddOptionalParameter("tgdsa_petsc_options", "", "PETSc options to pass to TGDSA solver");
   params.AddOptionalParameter("tgdsa_boundary_closure",
-                              "marshak",
+                              "closure_r",
                               "Boundary condition of the TGDSA diffusion correction, with the "
                               "same choices and boundaries as wgdsa_boundary_closure.");
   params.AddOptionalParameter(
@@ -181,8 +181,8 @@ LBSGroupset::Init(int aid)
   tgdsa_solver_policy = "auto";
   wgdsa_direct_solve_threshold = 20000;
   tgdsa_direct_solve_threshold = 20000;
-  wgdsa_boundary_closure = "marshak";
-  tgdsa_boundary_closure = "marshak";
+  wgdsa_boundary_closure = "closure_r";
+  tgdsa_boundary_closure = "closure_r";
   wgdsa_h_perp_convention = "face_side";
   tgdsa_h_perp_convention = "face_side";
   wgdsa_verbose = false;

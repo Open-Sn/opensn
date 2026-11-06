@@ -1141,19 +1141,19 @@ WrapLBS(py::module& slv)
               Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
               number of spatial nodes times the number of groups in the groupset. The
               CSDA operator solves one group at a time, so the count is that of one group.
-          - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
+          - wgdsa_boundary_closure: {'closure_r', 'marshak', 'dirichlet'}, default='closure_r'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
-              arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
-              mass term with coefficient 1/2; ``closure_r`` blends the
-              Marshak form written with the quadrature's partial current (face mass
-              coefficient 2 beta_f, beta_f the quadrature's half-range moment, against the
-              analytic 1/2) on thin boundary cells with the half-range transport form on
-              thick ones, uses beta_f as the floor of the interior penalty, and is faster
-              than ``marshak`` when boundary cells are many mean free paths thick;
-              ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
-              (interior-penalty term). Reflecting boundaries are zero-current, except that on
-              a reflecting boundary that lags its incoming flux, WGDSA imposes the inward
-              partial current of the change of the lagged flux.
+              arbitrary boundaries. ``closure_r`` blends the Marshak form written with the
+              quadrature's partial current (face mass coefficient 2 beta_f, beta_f the
+              quadrature's half-range moment, against the analytic 1/2) on thin boundary
+              cells with the half-range transport form on thick ones, uses beta_f as the
+              floor of the interior penalty, and is faster than ``marshak`` when boundary
+              cells are many mean free paths thick; ``marshak`` imposes the natural Marshak
+              condition, a face mass term with coefficient 1/2; ``dirichlet`` (OpenSn's
+              original) imposes a zero correction weakly (interior-penalty term). Reflecting
+              boundaries are zero-current, except that on a reflecting boundary that lags
+              its incoming flux, WGDSA imposes the inward partial current of the change of
+              the lagged flux.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset. After each groupset iteration (after
               WGDSA), one energy-collapsed diffusion solve corrects the error mode that the
@@ -1177,7 +1177,7 @@ WrapLBS(py::module& slv)
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve, the
               number of spatial nodes.
-          - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
+          - tgdsa_boundary_closure: {'closure_r', 'marshak', 'dirichlet'}, default='closure_r'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
@@ -1769,19 +1769,19 @@ WrapLBS(py::module& slv)
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
               number of spatial nodes times the number of groups in the groupset.
-          - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
+          - wgdsa_boundary_closure: {'closure_r', 'marshak', 'dirichlet'}, default='closure_r'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
-              arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
-              mass term with coefficient 1/2; ``closure_r`` blends the
-              Marshak form written with the quadrature's partial current (face mass
-              coefficient 2 beta_f, beta_f the quadrature's half-range moment, against the
-              analytic 1/2) on thin boundary cells with the half-range transport form on
-              thick ones, uses beta_f as the floor of the interior penalty, and is faster
-              than ``marshak`` when boundary cells are many mean free paths thick;
-              ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
-              (interior-penalty term). Reflecting boundaries are zero-current, except that on
-              a reflecting boundary that lags its incoming flux, WGDSA imposes the inward
-              partial current of the change of the lagged flux.
+              arbitrary boundaries. ``closure_r`` blends the Marshak form written with the
+              quadrature's partial current (face mass coefficient 2 beta_f, beta_f the
+              quadrature's half-range moment, against the analytic 1/2) on thin boundary
+              cells with the half-range transport form on thick ones, uses beta_f as the
+              floor of the interior penalty, and is faster than ``marshak`` when boundary
+              cells are many mean free paths thick; ``marshak`` imposes the natural Marshak
+              condition, a face mass term with coefficient 1/2; ``dirichlet`` (OpenSn's
+              original) imposes a zero correction weakly (interior-penalty term). Reflecting
+              boundaries are zero-current, except that on a reflecting boundary that lags
+              its incoming flux, WGDSA imposes the inward partial current of the change of
+              the lagged flux.
           - apply_tgdsa: bool, default=False
               Enable two-grid DSA for this groupset. After each groupset iteration (after
               WGDSA), one energy-collapsed diffusion solve corrects the error mode that the
@@ -1805,7 +1805,7 @@ WrapLBS(py::module& slv)
           - tgdsa_direct_solve_threshold: int, default=20000
               Maximum global TGDSA diffusion unknown count for the automatic direct solve, the
               number of spatial nodes.
-          - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
+          - tgdsa_boundary_closure: {'closure_r', 'marshak', 'dirichlet'}, default='closure_r'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
           - wgdsa_h_perp_convention: {'face_side', 'cell'}, default='face_side'
