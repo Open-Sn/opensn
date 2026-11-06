@@ -592,18 +592,37 @@ WrapLBS(py::module& slv)
         Interior surfaces in the form {'name': ('axis', value)}, where axis is 'x', 'y', or 'z'.
         Each interior surface is written under two tags: '<name>_u' for faces whose outward normal
         aligns with the positive axis and '<name>_d' for faces with the opposite orientation.
-        An interior surface must match at least one cell face, must lie on cell faces inside the
-        mesh, and may not share a plane with another interior surface. Its generated tags may not
-        equal a requested boundary name. It may not coincide with an exterior boundary; export
-        that boundary by name using boundary_surfaces instead.
+        An interior surface must lie inside the mesh, must match at least one cell face, and may
+        not share a plane with another interior surface. Cells the surface cuts through contribute
+        no faces; only faces lying on the surface are written. Neither its name nor its
+        generated tags may equal a requested boundary name. It may not coincide with an exterior
+        boundary; export that boundary by name using boundary_surfaces instead.
 
     Notes
     -----
     Requires ``options.save_angular_flux=True``. Collective over all ranks; surface selections may
-    differ by rank. Each rank writes ``<file_base><rank>.h5``. The file records whether the problem
-    is in adjoint mode. After an adjoint steady-state solve, the stored angular flux is the adjoint
-    flux for the listed direction, so forward and adjoint data with the same indices refer to the
-    same direction.
+    differ by rank, but each file contains only its rank's tags, and
+    :py:class:`pyopensn.response.ResponseEvaluator` requires every requested tag in every file of a
+    set. Request the same surfaces on every rank for data that a ResponseEvaluator will read. Each
+    rank writes ``<file_base><rank>.h5``. The file records whether the problem
+    is in adjoint mode, and for each tag whether it is one side of an interior surface or a
+    boundary, so boundary names may end in ``_u`` or ``_d``. An adjoint problem must have completed an adjoint steady-state or
+    k-eigenvalue solve, which leaves the stored angular flux as the adjoint flux for the listed
+    direction, so forward and adjoint data with the same indices refer to the same direction.
+    Restart data are loaded in the internal sweep orientation, so execute an adjoint solver after
+    a restart read before writing.
+
+    Raises
+    ------
+    ValueError
+        If ``options.save_angular_flux`` is false; if the problem is in adjoint mode and its
+        solution is not in the physical orientation left by an adjoint solve; if a boundary name is
+        unknown or not on the mesh; or if an interior surface has an invalid axis, lies outside the
+        mesh, shares a plane with another interior surface, coincides with an exterior boundary,
+        matches no mesh faces, or has a name or generated tag equal to a requested boundary
+        name.
+    RuntimeError
+        If no rank requests a surface, or if the file cannot be written.
     )",
     py::arg("file_base"),
     py::arg("boundary_surfaces") = std::vector<std::string>{},
@@ -611,14 +630,21 @@ WrapLBS(py::module& slv)
   );
   lbs_problem.def(
     "ReadSurfaceAngularFluxes",
-    [](DiscreteOrdinatesProblem& self, const std::string& file_base, py::list surfaces)
+    [](DiscreteOrdinatesProblem& /*self*/,
+       const std::string& file_base,
+       py::list surfaces,
+       const std::optional<std::int64_t> partition)
     {
       std::vector<std::string> surface_ids;
       for (py::handle surface : surfaces)
         surface_ids.push_back(surface.cast<std::string>());
 
+      if (partition.has_value() and *partition < 0)
+        throw std::invalid_argument("ReadSurfaceAngularFluxes: partition must be non-negative.");
+      const auto file_id = partition.has_value() ? static_cast<uint64_t>(*partition)
+                                                 : static_cast<uint64_t>(opensn::mpi_comm.rank());
       const auto surface_fluxes =
-        DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(self, file_base, surface_ids);
+        DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base, file_id, surface_ids);
       py::list result;
       for (const auto& surface_flux : surface_fluxes)
       {
@@ -646,6 +672,10 @@ WrapLBS(py::module& slv)
         py::dict entry;
         entry["groupset_id"] = surface_flux.groupset_id;
         entry["adjoint"] = surface_flux.adjoint;
+        entry["num_partitions"] = surface_flux.num_partitions;
+        entry["num_directions"] = surface_flux.num_directions;
+        entry["num_groups"] = surface_flux.num_groups;
+        entry["interior"] = surface_flux.interior;
         entry["surface_name"] = surface_flux.surface_name;
         entry["mapping"] = std::move(mapping);
         entry["data"] = std::move(data);
@@ -661,16 +691,26 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     surfaces: list[str]
-        Stored surface tags to read. Use the boundary name for an exterior boundary. For an
-        interior surface named '<name>', use '<name>_u' for faces whose outward normal aligns with
-        the positive axis and '<name>_d' for faces with the opposite orientation.
+        Surface names to read. Use the boundary name for an exterior boundary. An interior surface
+        named '<name>' is stored as '<name>_u', for faces whose outward normal aligns with the
+        positive axis, and '<name>_d', for faces with the opposite orientation: pass '<name>' to
+        read both, '_u' first, or one of the tags to read that side only. A name that is itself a
+        stored tag reads that tag; a bare name reads two tags only if both are recorded as sides
+        of an interior surface.
+    partition: int, optional
+        Index of the file to read, ``<file_base><partition>.h5``. Defaults to this rank.
 
     Returns
     -------
     List[dict]
-        Surface mapping and angular-flux data for each groupset and requested surface. Each entry
-        has keys 'groupset_id', 'adjoint', 'surface_name', 'mapping', and 'data'. 'adjoint' is
-        True when the file was written from an adjoint problem. The 'cell_map' in 'mapping' maps
+        Surface mapping and angular-flux data for each groupset and read tag, ordered by groupset
+        and then by tag; 'surface_name' is the tag. Each entry has keys 'groupset_id', 'adjoint',
+        'num_partitions', 'num_directions', 'num_groups', 'surface_name', 'interior', 'mapping',
+        and 'data'. 'adjoint' is True when the file was written from an adjoint problem.
+        'interior' is True when the tag is one side of an interior surface and False for a
+        boundary. 'num_partitions' is
+        the number of files in the set, one per writing rank. 'num_directions' and 'num_groups' are
+        the counts of the entry's groupset. The 'cell_map' in 'mapping' maps
         face centroids, with 'centroid_origin' subtracted before each coordinate is divided by
         'centroid_spacing' (1e-9 times the global mesh extent) and rounded to an integer, to the
         surface face index. The same face has the same key from either side of an interior surface
@@ -678,11 +718,27 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Each rank reads ``<file_base><rank>.h5``; the files must have been written with the same mesh
-    partitioning.
+    Not collective: each call reads one file. The data are checked for internal consistency but
+    not against this problem, so a file set written by any number of ranks, with any
+    partitioning, can be read. When fewer ranks read a set than wrote it, the files from the
+    reading rank count up to ``num_partitions - 1`` are read only when requested with
+    ``partition``. The ``surface_angular_fluxes`` data option of
+    :py:class:`pyopensn.response.ResponseEvaluator` reads a whole file set and distributes it over
+    the ranks automatically.
+
+    Raises
+    ------
+    ValueError
+        If ``surfaces`` is empty or ``partition`` is negative.
+    RuntimeError
+        If the file is missing, malformed, contains non-finite values, was written by an
+        unsupported version of OpenSn, or records a set of at most ``partition`` files.
+        Files of an older, larger set written to the same prefix are not detected by a single
+        read; compare their ``num_partitions`` with that of partition 0.
     )",
     py::arg("file_base"),
-    py::arg("surfaces")
+    py::arg("surfaces"),
+    py::arg("partition") = py::none()
   );
   lbs_problem.def(
     "SetPointSources",

@@ -13,7 +13,8 @@ with n = +x. For the upwind DFEM discretization the discrete identity is exact w
 from its upwind side of the face and psi^dagger from its own upwind side (the downstream side of
 the forward direction). The surface QoI is evaluated from the exported directions, weights,
 direction cosines, face mass matrices, and angular fluxes, and must equal the volumetric forward
-QoI and the adjoint response.
+QoI and the adjoint response. Evaluated along the inter_x_d normal, n = -x, which points from the
+detector side to the source side, the surface response must equal minus the QoI.
 """
 
 import os
@@ -193,7 +194,7 @@ if __name__ == "__main__":
         raise RuntimeError("Rejected surface selection created an output file")
 
     invalid_interior_cases = [
-        ({"cuts_cells": ("x", 6.25)}, "cuts through mesh cells"),
+        ({"cuts_cells": ("x", 6.25)}, "matches no mesh faces"),
         ({"outside": ("x", 12.0)}, "lies outside the mesh"),
         ({"first": ("y", 4.0), "second": ("y", 4.0)}, "defined on the same plane"),
     ]
@@ -238,6 +239,17 @@ if __name__ == "__main__":
             if surface["data"]["node_index"] or surface["data"]["dir_index"]:
                 raise RuntimeError("Empty surface contains angular-flux start offsets")
 
+    # Any file of a set can be read by index, so fewer ranks than files can reach every file.
+    # Reading both partitions on each rank recovers every face of the x = 6 plane, one per cell row.
+    (own_up,) = problem.ReadSurfaceAngularFluxes(forward_surface_prefix, ["inter_x_u"])
+    (other_up,) = problem.ReadSurfaceAngularFluxes(
+        forward_surface_prefix, ["inter_x_u"], partition=(rank + 1) % size
+    )
+    if own_up["num_partitions"] != size or other_up["num_partitions"] != size:
+        raise RuntimeError("Unexpected number of partitions in the surface file set")
+    if len(own_up["mapping"]["cell_ids"]) + len(other_up["mapping"]["cell_ids"]) != num_cells:
+        raise RuntimeError("Reading every partition does not recover every face of the plane")
+
     # Adjoint solve and response evaluation.
     problem.SetAdjoint(True)
     adjoint_source = VolumetricSource(logical_volume=detector_volume, group_strength=[0.8])
@@ -253,7 +265,7 @@ if __name__ == "__main__":
 
     evaluator = ResponseEvaluator(problem=problem)
     evaluator.SetOptions(
-        buffers=[
+        data=[
             {"name": "detector", "file_prefixes": {"flux_moments": adjoint_flux_prefix}}
         ],
         sources={
@@ -263,6 +275,12 @@ if __name__ == "__main__":
         },
     )
     adjoint_qoi = evaluator.EvaluateResponse("detector")
+    try:
+        evaluator.EvaluateResponse("missing")
+        raise RuntimeError("An unknown data set was not rejected")
+    except ValueError as error:
+        if "No data named" not in str(error):
+            raise
 
     def read_surface(prefix, tag, adjoint):
         (surface,) = problem.ReadSurfaceAngularFluxes(prefix, [tag])
@@ -334,10 +352,56 @@ if __name__ == "__main__":
         m_offset += num_nodes * num_nodes
     surface_qoi = global_sum(local_surface_qoi)
 
+    # The evaluator matches faces by location and redistributes them over the ranks, so it does not
+    # require both sides of the plane on one rank.
+    # The interior surface name reads both stored sides, inter_x_u and inter_x_d.
+    interior_tags = ["inter_x"]
+    evaluator.SetOptions(
+        data=[
+            {
+                "name": "forward_all",
+                "file_prefixes": {"surface_angular_fluxes": forward_surface_prefix},
+                "surfaces": ["xmin", "xmax", "ymin", "ymax"] + interior_tags,
+            },
+            {
+                "name": "adjoint_interior",
+                "file_prefixes": {"surface_angular_fluxes": adjoint_surface_prefix},
+                "surfaces": interior_tags,
+            },
+        ]
+    )
+    evaluator_surface_qoi = evaluator.EvaluateSurfaceResponse(
+        "forward_all", "adjoint_interior", surfaces=["inter_x"]
+    )
+    # The side tag inter_x_d measures the same interior surface along its own normal, n = -x.
+    reversed_surface_qoi = evaluator.EvaluateSurfaceResponse(
+        "forward_all", "adjoint_interior", surfaces=["inter_x_d"]
+    )
+
+    # By default every forward surface is evaluated; the adjoint data lack the boundary tags.
+    try:
+        evaluator.EvaluateSurfaceResponse("forward_all", "adjoint_interior")
+        raise RuntimeError("A surface missing from the adjoint data was not rejected")
+    except ValueError as error:
+        if "requires tag" not in str(error):
+            raise
+    try:
+        evaluator.EvaluateSurfaceResponse("adjoint_interior", "forward_all", surfaces=["inter_x"])
+        raise RuntimeError("Swapped forward and adjoint data were not rejected")
+    except ValueError as error:
+        if "adjoint mode" not in str(error):
+            raise
+
     if rank == 0:
         print(f"Forward QoI={forward_qoi:.8e}")
         print(f"Adjoint QoI={adjoint_qoi:.8e}")
         print(f"Surface QoI={surface_qoi:.8e}")
+        print(f"Evaluator QoI={evaluator_surface_qoi:.8e}")
+        # Relative errors of the surface identity: each surface QoI must equal the forward QoI.
+        print(f"Reference identity error={abs(surface_qoi / forward_qoi - 1.0):.3e}")
+        print(f"Evaluator identity error={abs(evaluator_surface_qoi / forward_qoi - 1.0):.3e}")
+        # Along n = -x the surface QoI must equal minus the forward QoI.
+        print(f"Reversed-normal identity error={abs(reversed_surface_qoi / forward_qoi + 1.0):.3e}")
 
     barrier()
     for file_prefix in (

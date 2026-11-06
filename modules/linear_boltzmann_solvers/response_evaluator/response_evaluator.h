@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
+#include "modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h"
 #include "framework/parameters/input_parameters.h"
 #include <memory>
 
@@ -16,12 +17,12 @@ namespace opensn
  *
  * The workflow for this utility is constructed to minimize the file reading necessary for
  * evaluations. To begin, one should add all adjoint solutions that are desired for response
- * computations into the buffer. Then, one should define the different forward source
+ * computations as named data sets. Then, one should define the different forward source
  * configurations of interest. With this, the user can now iterate over the source
- * configurations and convolve them against all available adjoint solutions in the buffer. For
+ * configurations and convolve them against all available adjoint data sets. For
  * example, \code{.py}
  *    evaluator = ResponseEvaluator(problem=phys)
- *    evaluator.SetOptions(buffers=[{"name": "buff1", "file_prefixes": {...}}, ...])
+ *    evaluator.SetOptions(data=[{"name": "detector", "file_prefixes": {...}}, ...])
  *
  *    responses = {}
  *    for config_index, source_config in enumerate(source_configs):
@@ -29,17 +30,24 @@ namespace opensn
  *        evaluator.SetOptions(sources=source_config)
  *
  *        responses[config_index] = {
- *            buffer_name: evaluator.EvaluateResponse(buffer_name)
- *            for buffer_name in buffer_names
+ *            data_name: evaluator.EvaluateResponse(data_name)
+ *            for data_name in data_names
  *        }
  * \endcode
  */
 class ResponseEvaluator
 {
 private:
-  using FluxMomentBuffer = std::vector<double>;
-  using AngularFluxBuffer = std::vector<std::vector<double>>;
-  using AdjointBuffer = std::pair<FluxMomentBuffer, AngularFluxBuffer>;
+  using FluxMomentData = std::vector<double>;
+  using AngularFluxData = std::vector<std::vector<double>>;
+  /// Surface angular fluxes distributed by face over the ranks; see SurfaceShard.
+  using SurfaceAngularFluxData = DistributedSurfaceData;
+  struct FluxData
+  {
+    FluxMomentData phi;
+    AngularFluxData psi;
+    SurfaceAngularFluxData surf_psi;
+  };
 
   using MaterialSources = std::map<unsigned int, std::vector<double>>;
   using PointSources = std::vector<std::shared_ptr<PointSource>>;
@@ -56,7 +64,18 @@ public:
 
   void SetOptions(const InputParameters& params);
 
-  void SetBufferOptions(const InputParameters& input);
+  /**
+   * Add a named data set. `file_prefixes` may contain `flux_moments` and `angular_fluxes`, the
+   * adjoint flux moments and angular fluxes that EvaluateResponse folds against the forward
+   * sources, and `surface_angular_fluxes`, the surface data that EvaluateSurfaceResponse pairs.
+   * Flux moments and angular fluxes must have been written with the current partitioning. The
+   * listed `surfaces` are read from all surface files of the prefix, whatever number of ranks
+   * and partitioning wrote them, and distributed by face over the current ranks with
+   * DistributeSurfaceAngularFluxes. Each is a boundary name, an interior surface name, which
+   * reads both stored sides `<name>_u` and `<name>_d`, or a single side's tag, which makes it a
+   * half-range surface. Collective.
+   */
+  void SetDataOptions(const InputParameters& input);
 
   void SetSourceOptions(const InputParameters& input);
 
@@ -67,17 +86,43 @@ public:
   /// Clear the existing forward sources from the response evaluator.
   void ClearForwardSources();
 
-  void AddResponseBuffers(const InputParameters& params);
+  void AddResponseData(const InputParameters& params);
 
   void AddResponseSources(const InputParameters& params);
 
   static InputParameters GetBoundarySourceOptionsBlock();
 
   /**
-   * Evaluate a response using the specified adjoint buffer with the currently defined sources in
-   * the solver.
+   * Evaluate a response by folding the currently defined forward sources against the adjoint flux
+   * moments and angular fluxes of the named data set added with SetDataOptions.
+   *
+   * Collective. Throws `std::invalid_argument` for an unknown data set and `std::logic_error` if
+   * the data set lacks the flux moments or angular fluxes that the defined sources require.
    */
-  double EvaluateResponse(const std::string& buffer_name) const;
+  double EvaluateResponse(const std::string& data_name) const;
+
+  /**
+   * Evaluate the surface response of forward and adjoint surface angular fluxes added with
+   * SetDataOptions.
+   *
+   * Returns the sum over the selected surfaces of the surface responses defined in
+   * ComputeSurfaceResponses. Per-surface outgoing and incoming contributions are logged at
+   * verbosity 1.
+   *
+   * \param fwd_data_name Name of the forward data set.
+   * \param adj_data_name Name of the adjoint data set.
+   * \param surfaces Surfaces to evaluate: boundary names, interior surface names (`<name>` or
+   *        `<name>_u` along the `_u` normal, `<name>_d` along the `_d` normal), and half-range
+   *        surface tags (`<name>_u` or `<name>_d`, when the forward data hold that side alone). If
+   *        empty, every surface in the forward data is evaluated.
+   *
+   * Collective. Throws `std::invalid_argument` for unknown data sets or surfaces, a surface
+   * requested more than once, and incompatible data, and `std::logic_error` if the forward and
+   * adjoint data do not cover the same faces.
+   */
+  double EvaluateSurfaceResponse(const std::string& fwd_data_name,
+                                 const std::string& adj_data_name,
+                                 const std::vector<std::string>& surfaces = {}) const;
 
 private:
   /**
@@ -95,7 +140,7 @@ private:
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 
-  std::map<std::string, AdjointBuffer> adjoint_buffers_;
+  std::map<std::string, FluxData> flux_data_;
 
   MaterialSources material_sources_;
   PointSources point_sources_;
@@ -107,9 +152,9 @@ public:
   static InputParameters GetInputParameters();
   static std::shared_ptr<ResponseEvaluator> Create(const ParameterBlock& params);
 
-  /// Return the schema for the options block, covering adjoint buffers and forward sources.
+  /// Return the schema for the options block, covering data sets and forward sources.
   static InputParameters GetOptionsBlock();
-  static InputParameters GetBufferOptionsBlock();
+  static InputParameters GetDataOptionsBlock();
   static InputParameters GetSourceOptionsBlock();
   static InputParameters GetMaterialSourceOptionsBlock();
 };

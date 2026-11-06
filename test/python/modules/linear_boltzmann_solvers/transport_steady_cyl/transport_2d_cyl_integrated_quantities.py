@@ -126,7 +126,7 @@ if __name__ == "__main__":
     problem.WriteFluxMoments(prefix)
     evaluator = ResponseEvaluator(problem=problem)
     evaluator.SetOptions(
-        buffers=[{"name": "phi", "file_prefixes": {"flux_moments": prefix}}],
+        data=[{"name": "phi", "file_prefixes": {"flux_moments": prefix}}],
         sources={"material": [{"block_id": 0, "strength": [1.0]}]},
     )
     evaluator_integral = evaluator.EvaluateResponse("phi")

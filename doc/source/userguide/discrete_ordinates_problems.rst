@@ -938,9 +938,74 @@ is forward or adjoint and, for an adjoint, whether it is in the internal sweep o
 physical orientation. Response and sensitivity postprocessors require files with
 the expected role; adjoint files must have physical orientation. Files written before the quadrature
 was recorded are read with a warning by general-purpose readers, but they do not
-have enough provenance to be used as validated response or sensitivity buffers.
+have enough provenance to be used as validated response or sensitivity inputs.
 Reading is collective: a file that is missing, malformed, nonfinite, or incompatible
 on any rank raises the error on every rank, and the destination is left unchanged.
+
+Surface angular-flux files are also written one per rank, but they are not tied to
+the rank count or partition that wrote them. Each file records the number of files
+in its set, and :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
+rank's by default, or any file of the set with ``partition``. That call is not
+collective and does not check the data against the problem. To combine a whole
+set, on any number of ranks, and evaluate surface responses, pass the file prefix
+as ``surface_angular_fluxes`` in the ``data`` option of
+:py:class:`pyopensn.response.ResponseEvaluator` and call
+:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`.
+
+Surface Responses
+-----------------
+
+An interior surface written with ``interior_surfaces={"x20": ("x", 20.0)}`` is
+stored under two tags, one per side: ``x20_u``, the faces of the cells on the
+negative side, whose outward normal is the positive axis, and ``x20_d``, the
+faces of the cells on the positive side, whose outward normal is the negative
+axis. Two lists select a surface response:
+
+* the ``surfaces`` of each data set in ``SetOptions(data=...)`` decide which
+  tags are read: ``"x20"`` reads both sides, and ``"x20_u"`` or ``"x20_d"``
+  reads that side alone;
+* the ``surfaces`` of ``EvaluateSurfaceResponse`` name the normal the
+  response is measured along. When the forward data hold both sides, the
+  response is full-range, over every direction; when they hold one side, it is
+  half-range, over the directions leaving that side.
+
+.. list-table::
+   :header-rows: 1
+
+   * - Response
+     - Forward data ``surfaces``
+     - Adjoint data ``surfaces``
+     - ``EvaluateSurfaceResponse`` ``surfaces``
+   * - Full-range, +axis
+     - ``["x20"]``
+     - ``["x20"]``
+     - ``["x20"]`` or ``["x20_u"]``
+   * - Full-range, -axis
+     - ``["x20"]``
+     - ``["x20"]``
+     - ``["x20_d"]``
+   * - Half-range, +axis
+     - ``["x20_u"]``
+     - ``["x20_d"]`` or ``["x20"]``
+     - ``["x20_u"]``
+   * - Half-range, -axis
+     - ``["x20_d"]``
+     - ``["x20_u"]`` or ``["x20"]``
+     - ``["x20_d"]``
+
+The full-range -axis response is the negative of the +axis response, and the
+full-range +axis response is the half-range +axis response minus the half-range
+-axis response.
+
+A full-range response through a surface that separates the forward source from
+the detector scored by the adjoint source equals the detector response when
+the normal points from the source side to the detector side, and its negative
+otherwise. Name the side the source is on: ``x20_u`` when the source is at
+x < 20, ``x20_d`` when it is at x > 20. A surface that does not separate the
+source from the detector gives zero, its half-range parts cancelling. The
+:doc:`surface-response tutorial
+<../tutorials/applications/detector_response/surface_response/surface_resp>`
+works through both cases for two detectors on opposite sides of a source.
 
 For restartable solver state, prefer the restart options documented above over
 manual angular-flux files. Manual angular-flux files are useful when the
