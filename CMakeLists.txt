@@ -336,7 +336,8 @@ if (OPENSN_WITH_GPU)
   elseif (OPENSN_WITH_SYCL)
     set_source_files_properties(${LIBOPENSNGPU_SRCS} PROPERTIES LANGUAGE CXX)
   endif()
-  add_library(libopensngpu STATIC ${LIBOPENSNGPU_SRCS})
+  # The GPU objects and libopensn call each other, so they are linked into libopensn
+  add_library(libopensngpu OBJECT ${LIBOPENSNGPU_SRCS})
 endif()
 
 add_library(libopensn SHARED ${LIBOPENSN_SRCS})
@@ -379,25 +380,8 @@ if (OPENSN_WITH_GPU)
     endif()
   endif()
   set_property(TARGET libopensngpu PROPERTY POSITION_INDEPENDENT_CODE ON)
-  set_property(TARGET libopensngpu PROPERTY OUTPUT_NAME opensngpu)
   add_subdirectory(external/caribou)
   target_link_libraries(libopensngpu PUBLIC libcaribou)
-  # Installed consumers link the static GPU library themselves, so they also
-  # need the GPU runtime that CMake adds implicitly to in-tree links.
-  if(OPENSN_WITH_CUDA OR HIP_ON_NVIDIA)
-    if(OPENSN_WITH_CUDA)
-      string(TOLOWER "${CMAKE_CUDA_RUNTIME_LIBRARY}" _opensn_gpu_runtime)
-    else()
-      string(TOLOWER "${CMAKE_HIP_RUNTIME_LIBRARY}" _opensn_gpu_runtime)
-    endif()
-    if(_opensn_gpu_runtime STREQUAL "shared")
-      target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:CUDA::cudart>)
-    elseif(NOT _opensn_gpu_runtime STREQUAL "none")
-      target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:CUDA::cudart_static>)
-    endif()
-  elseif(OPENSN_WITH_HIP)
-    target_link_libraries(libopensngpu INTERFACE $<INSTALL_INTERFACE:hip::host>)
-  endif()
   if(CMAKE_BUILD_TYPE STREQUAL "Debug" OR CMAKE_BUILD_TYPE STREQUAL "RelWithDebInfo")
     target_compile_options(libopensngpu PRIVATE $<$<COMPILE_LANGUAGE:CUDA>:--ptxas-options=-v>)
   endif()
@@ -460,7 +444,7 @@ target_link_libraries(libopensn
     PETSc::BLASLAPACK
 )
 if (OPENSN_WITH_GPU)
-  target_link_libraries(libopensn INTERFACE libopensngpu)
+  target_link_libraries(libopensn PRIVATE libopensngpu)
 endif()
 
 if(UNIX AND NOT APPLE)
@@ -475,6 +459,37 @@ if(UNIX AND NOT APPLE)
   if(_opensn_blaslapack_archives)
     list(JOIN _opensn_blaslapack_archives ":" _opensn_blaslapack_archives)
     target_link_options(libopensn PRIVATE "LINKER:--exclude-libs,${_opensn_blaslapack_archives}")
+  endif()
+
+  # Every symbol libopensn uses must come from a library it links, as the macOS linker requires,
+  # rather than from one that happens to be loaded with it. A static sanitizer runtime is linked only
+  # into executables (the default of Clang-based compilers, or GCC with -static-libasan and
+  # similar), so skip the check for those builds. -shared-libsan links the runtime into libopensn
+  # too. A multi-configuration build skips it if any configuration uses a static runtime.
+  set(_opensn_link_flags "${CMAKE_CXX_FLAGS} ${CMAKE_SHARED_LINKER_FLAGS}")
+  if(CMAKE_CONFIGURATION_TYPES)
+    set(_opensn_link_configs ${CMAKE_CONFIGURATION_TYPES})
+  else()
+    set(_opensn_link_configs ${CMAKE_BUILD_TYPE})
+  endif()
+  foreach(_config IN LISTS _opensn_link_configs)
+    string(TOUPPER "${_config}" _config)
+    string(APPEND _opensn_link_flags
+           " ${CMAKE_CXX_FLAGS_${_config}} ${CMAKE_SHARED_LINKER_FLAGS_${_config}}")
+  endforeach()
+  set(_opensn_static_sanitizer_runtime FALSE)
+  if(_opensn_link_flags MATCHES "-fsanitize=")
+    if(CMAKE_CXX_COMPILER_ID MATCHES "Clang|IntelLLVM"
+       AND NOT _opensn_link_flags MATCHES "-shared-libsan")
+      set(_opensn_static_sanitizer_runtime TRUE)
+    elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND _opensn_link_flags MATCHES "-static-lib[a-z]*san")
+      set(_opensn_static_sanitizer_runtime TRUE)
+    endif()
+  endif()
+  if(_opensn_static_sanitizer_runtime)
+    message(STATUS "Static sanitizer runtime: libopensn is linked without -z defs")
+  else()
+    target_link_options(libopensn PRIVATE "LINKER:-z,defs")
   endif()
 endif()
 
@@ -538,9 +553,6 @@ if(APPLE OR UNIX)
 endif()
 
 set_target_properties(libopensn PROPERTIES EXPORT_NAME opensn)
-if (OPENSN_WITH_GPU)
-  set_target_properties(libopensngpu PROPERTIES EXPORT_NAME opensngpu)
-endif()
 
 if(OPENSN_WITH_PRECICE)
   add_subdirectory(adapters/precice)
@@ -600,7 +612,7 @@ install(
 
 if(OPENSN_WITH_GPU)
   install(
-        TARGETS libopensngpu libcaribou
+        TARGETS libcaribou
         EXPORT openSnTargets
         LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
         ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
