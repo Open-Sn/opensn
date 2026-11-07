@@ -19,9 +19,8 @@ source q, so the exact solution is uniform:
 
 The Jacobi energy iteration matrix of case B, (diag(sigma_t) - diag(S))^-1 offdiag(S) =
 0.499 (J - I) with J the matrix of ones, has the eigenvalues 0.998 (the two-grid spectrum) and
--0.499. A groupset whose matrix has an eigenvalue near -0.998 instead (e.g. two groups coupled by
-down- and upscatter) converges slowly or stalls under Richardson with TGDSA. See the two-grid
-section of the theory manual.
+-0.499. A matrix with an eigenvalue near -rho (two groups coupled by down- and upscatter) is
+tested by transport_tgdsa_alternating_mode.py.
 
 The inner solver is classic Richardson by default. With inner_method="petsc_fgmres" the lagged
 fluxes are Krylov unknowns and the DSA preconditioner, whose diffusion solve is inexact, varies

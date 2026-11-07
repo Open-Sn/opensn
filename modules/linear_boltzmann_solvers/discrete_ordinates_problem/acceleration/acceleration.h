@@ -81,6 +81,19 @@ struct TwoGridCollapsedInfo
   double collapsed_D = 0.0;
   double collapsed_sig_a = 0.0;
   std::vector<double> spectrum;
+  /**
+   * Local correction L = h(C) (Sigma_t - S)^-1 over the groupset groups (row-major, n x n), applied
+   * nodewise to the two-grid residual, with C the Jacobi iteration matrix, rho its Perron
+   * eigenvalue and h(C) = (rho I - C) / (2 rho). It removes the infinite-medium error of the modes
+   * that the spectrum does not represent, fully for a mode with eigenvalue -rho. Empty when the
+   * iteration has no Perron mode or the groupset absorbs almost nothing (1 - rho <= 1e-8).
+   */
+  std::vector<double> local_correction;
+  /**
+   * Weights c = (I - (Sigma_t - S) L)^T 1 of the residual groups in the diffusion source, which
+   * then excludes the part removed by the local correction (all ones when that is empty).
+   */
+  std::vector<double> source_weights;
 };
 
 /**

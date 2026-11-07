@@ -8,6 +8,7 @@
 #include "framework/runtime.h"
 #include <algorithm>
 #include <cmath>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -169,6 +170,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
   // The Gershgorin bound s = max_g sum_g' |C(g,g')| satisfies s >= rho.
   double rho = 0.0;
   double sum = 0.0;
+  bool converged = false;
   if (has_dominant_mode)
   {
     double shift = 0.0;
@@ -184,7 +186,6 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
     constexpr double tolerance = 1.0e-13;
     for (unsigned int g = 0; g < n; ++g)
       E(g) = 1.0 / n;
-    bool converged = false;
     for (int it = 0; it < max_iterations and not converged; ++it)
     {
       Vector<double> E_new = Mult(C, E);
@@ -237,6 +238,40 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
       collapsed_sig_a -= S(g, gp) * block_spectrum[gp];
   }
 
+  // Local correction of the error modes other than the Perron mode, L = h(C) (A - B)^-1 with
+  // h(C) = (rho I - C) / (2 rho), and the weights c = (I - (A - B) L)^T 1 of the residual in the
+  // diffusion source. (A - B)^-1 = (I - C)^-1 A^-1 amplifies the Perron mode by 1 / (1 - rho), and
+  // rho I - C removes it only to the accuracy of rho, so a groupset that absorbs almost nothing
+  // gets no local correction.
+  constexpr double min_absorption = 1.0e-8;
+  std::vector<double> local_correction;
+  std::vector<double> source_weights(n, 1.0);
+  if (has_dominant_mode and converged and rho > 0.0 and 1.0 - rho > min_absorption)
+  {
+    DenseMatrix<double> I_minus_C(n, n);
+    DenseMatrix<double> rho_I_minus_C(n, n);
+    DenseMatrix<double> A_minus_B(n, n);
+    for (unsigned int g = 0; g < n; ++g)
+      for (unsigned int gp = 0; gp < n; ++gp)
+      {
+        const double identity = g == gp ? 1.0 : 0.0;
+        I_minus_C(g, gp) = identity - C(g, gp);
+        rho_I_minus_C(g, gp) = rho * identity - C(g, gp);
+        A_minus_B(g, gp) = A(g, gp) - B(g, gp);
+      }
+    const auto L =
+      Mult(Mult(Mult(rho_I_minus_C, InverseGEPivoting(I_minus_C)), Ainv), 1.0 / (2.0 * rho));
+    const auto AmB_L = Mult(A_minus_B, L);
+
+    local_correction.assign(static_cast<size_t>(n) * n, 0.0);
+    for (unsigned int g = 0; g < n; ++g)
+      for (unsigned int gp = 0; gp < n; ++gp)
+      {
+        local_correction[static_cast<size_t>(g) * n + gp] = L(g, gp);
+        source_weights[gp] -= AmB_L(g, gp);
+      }
+  }
+
   // The spectrum is indexed by global group and is zero outside the groupset.
   std::vector<double> spectrum(num_groups, 0.0);
   for (unsigned int g = 0; g < n; ++g)
@@ -253,6 +288,8 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
   tgci.collapsed_D = collapsed_D;
   tgci.collapsed_sig_a = collapsed_sig_a;
   tgci.spectrum = spectrum;
+  tgci.local_correction = std::move(local_correction);
+  tgci.source_weights = std::move(source_weights);
   return tgci;
 }
 

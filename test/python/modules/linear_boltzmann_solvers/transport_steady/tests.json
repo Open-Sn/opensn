@@ -2052,6 +2052,20 @@
     ]
   },
   {
+    "file": "transport_tgdsa_alternating_mode.py",
+    "comment": "TGDSA local correction of the alternating (-rho) Jacobi energy mode: infinite medium of the C5G7 moderator (eigenvalues 0.872, -0.871) and a 2-group upscatter set (+/-0.998), classic/PETSc Richardson with WGDSA+TGDSA limited to 20 iterations. The exact solution is phi = (Sigma_t - S)^-1 q. Without the correction the error is 6e-4 to 8e-3.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "TGDSA_ALTERNATING_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "transport_dsa_reflecting_residual.py",
     "comment": "WGDSA inward-current residual on lagged reflecting boundaries. A thin (0.1 mfp) infinite medium with c=0.9999 is solved on a 1D slab, a 2D square and a 1D sphere with classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 23-59%.",
     "num_procs": 2,

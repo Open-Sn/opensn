@@ -350,24 +350,45 @@ with :math:`\langle D \rangle = \sum_g D_g \xi_g` and
 \sigma_{s,g \leftarrow g'} \xi_{g'}\bigr)`, where :math:`\phi^{(\text{th}+1/2)}`
 includes the within-group DSA correction when it is used. In time-dependent
 problems, :math:`1/(v_g \theta \Delta t)` is added to :math:`\sigma_{t,g}` and to
-the transport cross section in :math:`D_g`. The correction targets the mode
-with spectrum :math:`\xi`. Error modes of the Jacobi iteration with other
-energy shapes, such as the :math:`-\rho` mode above, contribute to the
-right-hand side and can change through the correction, but they are not
-specifically removed.
+the transport cross section in :math:`D_g`.
 
-With a stationary inner iteration (``classic_richardson`` or
-``petsc_richardson``), such a mode decays only at the rate set by its own
-eigenvalue :math:`\lambda`, about :math:`|\lambda|` per iteration. When
-:math:`A^{-1}B` has an eigenvalue near :math:`-\rho` and :math:`\rho` is close
-to one, the groupset iteration with TGDSA therefore converges slowly or stalls
-even though the mode :math:`\xi` is removed. This happens exactly for a groupset
-of two groups coupled by down- and upscatter, and approximately whenever
-neighboring groups dominate the coupling between the groups of the groupset.
-The C5G7 moderator, for example, has :math:`\rho = 0.872` and the eigenvalue
-:math:`-0.871`. Krylov inner methods (``petsc_gmres``, ``petsc_fgmres``) are not
-limited by the sign of an eigenvalue and should be used with TGDSA for such
-groupsets.
+The diffusion correction represents only the mode with spectrum :math:`\xi`.
+Error modes of the Jacobi iteration with other energy shapes decay at about
+:math:`|\lambda|` per iteration, where :math:`\lambda` is their eigenvalue. A
+mode with an eigenvalue near :math:`-\rho` changes sign every iteration and,
+when :math:`\rho` is close to one, is nearly as slow as :math:`\xi`. It occurs
+exactly for two groups coupled by down- and upscatter, and approximately
+whenever neighboring groups dominate the coupling between the groups of the
+groupset (the C5G7 moderator has :math:`\rho = 0.872` and the eigenvalue
+:math:`-0.871`). These modes are corrected locally, at each node, from their
+infinite-medium error. With the two-grid residual
+:math:`R = B\bigl(\phi^{(\text{th}+1/2)} - \phi^{(\text{th})}\bigr)`, the
+infinite-medium error :math:`e` solves :math:`(A - B)\, e = R`, and the local
+correction is
+
+.. math:: \delta\phi_\text{loc} = h(C)\, (A - B)^{-1} R \,, \qquad
+          h(C) = \frac{\rho I - C}{2\rho} \,, \qquad C = A^{-1} B \,.
+
+On an eigenvector of :math:`C` with eigenvalue :math:`\lambda`, :math:`h` is the
+weight :math:`(\rho - \lambda)/(2\rho)`: zero on :math:`\xi`, which is left to
+the diffusion correction, and one on a mode with eigenvalue :math:`-\rho`, which
+the correction removes. The diffusion source is the residual less the part
+removed locally, :math:`\sum_g \bigl[R - (A - B)\, \delta\phi_\text{loc}\bigr]_g`,
+so the two corrections together keep the infinite-medium balance
+:math:`\sum_g [(A - B)\, \delta\phi]_g = \sum_g R_g`, and
+
+.. math:: \phi^{(\text{th}+1)}_g = \phi^{(\text{th}+1/2)}_g + \xi_g\, \theta
+          + \delta\phi_{\text{loc},g} \,.
+
+For a mode whose real eigenvalue :math:`\lambda` is reduced by leakage to
+:math:`s\lambda`, :math:`0 \le s \le 1`, the error after the correction is at
+most :math:`|\lambda|` times the error before the iteration, as without the
+correction, and it vanishes for :math:`s = 1` and :math:`\lambda = -\rho`.
+:math:`(A - B)^{-1}` amplifies :math:`\xi` by :math:`1/(1 - \rho)`, which
+:math:`h(C)` cancels only to the accuracy of :math:`\rho`, so there is no local
+correction when the groupset absorbs almost nothing
+(:math:`1 - \rho \le 10^{-8}`), and none when :math:`C` has no Perron mode
+(:math:`\rho = 0`).
 
 Power Iterations
 ----------------

@@ -100,13 +100,10 @@ ClassicRichardson::Solve()
     {
       CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
 
-      std::vector<double> delta_phi;
-      TGDSA::AssembleDeltaPhiVector(
-        do_problem, groupset, do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(), delta_phi);
-      groupset.tgdsa_solver->Assemble_b(delta_phi);
-      groupset.tgdsa_solver->Solve(delta_phi);
-      TGDSA::DisassembleDeltaPhiVector(
-        do_problem, groupset, delta_phi, do_problem.GetPhiNewLocal());
+      TGDSA::Apply(do_problem,
+                   groupset,
+                   do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(),
+                   do_problem.GetPhiNewLocal());
     }
 
     if (correct_delayed_psi)

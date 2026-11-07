@@ -102,27 +102,27 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 }
 
 void
-TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
-                              const LBSGroupset& groupset,
-                              const std::vector<double>& phi_in,
-                              std::vector<double>& delta_phi_local)
+TGDSA::Apply(DiscreteOrdinatesProblem& do_problem,
+             const LBSGroupset& groupset,
+             const std::vector<double>& phi_change,
+             std::vector<double>& phi_new)
 {
-
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
+  const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
   // The residual is the scattering between groups of the groupset, matching the JFULL spectrum
   // (see TGDSA::Init). Groups outside the groupset are not part of its iteration error.
 
-  auto local_node_count = do_problem.GetLocalNodeCount();
-  if (delta_phi_local.size() != local_node_count)
-    delta_phi_local.assign(local_node_count, 0.0);
-  else
-    std::fill(delta_phi_local.begin(), delta_phi_local.end(), 0.0);
+  std::vector<double> delta_phi(do_problem.GetLocalNodeCount(), 0.0);
+  // Local correction of each node and groupset group. It is added after the diffusion solve, since
+  // phi_change and phi_new may be the same vector.
+  std::vector<double> local_delta;
+  std::vector<double> residual(gss);
 
   for (const auto& cell : grid->GetLocalCells())
   {
@@ -130,61 +130,61 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& S =
       block_id_to_xs_map.at(cell->block_id)->GetTransferMatrix(0, do_problem.GetOptions().adjoint);
+    const auto& tginfo = map_mat_id_2_tginfo.at(cell->block_id);
+    const auto& L = tginfo.local_correction;
+    const auto& weights = tginfo.source_weights;
+    if (not L.empty() and local_delta.empty())
+      local_delta.assign(delta_phi.size() * gss, 0.0);
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
       const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, 0);
+      const double* phi_change_mapped = &phi_change[phi_map];
 
-      double& delta_phi_mapped = delta_phi_local[dphi_map];
-      const double* phi_in_mapped = &phi_in[phi_map];
-
+      double source = 0.0;
       for (unsigned int g = 0; g < gss; ++g)
       {
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
           if (gprime >= gsi and gprime < gsi + gss and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
-
-        delta_phi_mapped += R_g;
+            R_g += sigma_sm * phi_change_mapped[gprime];
+        residual[g] = R_g;
+        source += weights[g] * R_g;
       }
+      delta_phi[dphi_map] = source;
+
+      if (not L.empty())
+        for (unsigned int g = 0; g < gss; ++g)
+        {
+          double value = 0.0;
+          for (unsigned int gp = 0; gp < gss; ++gp)
+            value += L[g * gss + gp] * residual[gp];
+          local_delta[dphi_map * gss + g] = value;
+        }
     }
   }
-}
 
-void
-TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
-                                 const LBSGroupset& groupset,
-                                 const std::vector<double>& delta_phi_local,
-                                 std::vector<double>& ref_phi_new)
-{
-
-  const auto grid = do_problem.GetGrid();
-  const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
-
-  const auto gsi = groupset.first_group;
-  const auto gss = groupset.GetNumGroups();
-
-  const auto& map_mat_id_2_tginfo = groupset.tg_acceleration_info_.map_mat_id_2_tginfo;
+  groupset.tgdsa_solver->Assemble_b(delta_phi);
+  groupset.tgdsa_solver->Solve(delta_phi);
 
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-
     const auto& xi_g = map_mat_id_2_tginfo.at(cell->block_id).spectrum;
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
       const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
-
-      const double delta_phi_mapped = delta_phi_local[dphi_map];
-      double* phi_new_mapped = &ref_phi_new[phi_map];
+      double* phi_new_mapped = &phi_new[phi_map];
 
       for (unsigned int g = 0; g < gss; ++g)
-        phi_new_mapped[g] += delta_phi_mapped * xi_g[gsi + g];
+        phi_new_mapped[g] += delta_phi[dphi_map] * xi_g[gsi + g];
+      if (not local_delta.empty())
+        for (unsigned int g = 0; g < gss; ++g)
+          phi_new_mapped[g] += local_delta[dphi_map * gss + g];
     }
   }
 }
