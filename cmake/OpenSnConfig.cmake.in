@@ -1,9 +1,6 @@
 set(OPENSN_VERSION @PROJECT_VERSION@)
 set(_OpenSn_WITH_PYTHON @OPENSN_WITH_PYTHON@)
-set(_OpenSn_WITH_CUDA @OPENSN_WITH_CUDA@)
-set(_OpenSn_WITH_HIP @OPENSN_WITH_HIP@)
 set(_OpenSn_WITH_PRECICE @OPENSN_WITH_PRECICE@)
-set(_OpenSn_HIP_ON_NVIDIA @HIP_ON_NVIDIA@)
 set(_OpenSn_VTK_VERSION "@VTK_VERSION@")
 
 @PACKAGE_INIT@
@@ -59,12 +56,6 @@ if(_OpenSn_WITH_PRECICE)
   find_dependency(precice 3.4 CONFIG)
 endif()
 
-if(_OpenSn_WITH_CUDA OR _OpenSn_HIP_ON_NVIDIA)
-  find_dependency(CUDAToolkit 12.0)
-elseif(_OpenSn_WITH_HIP)
-  find_dependency(hip)
-endif()
-
 if(_OpenSn_WITH_PYTHON)
   find_dependency(Python3 COMPONENTS Interpreter Development)
   if(NOT TARGET pybind11::embed)
@@ -80,9 +71,6 @@ if(_OpenSn_WITH_PYTHON)
 endif()
 
 unset(_OpenSn_WITH_PYTHON)
-unset(_OpenSn_WITH_CUDA)
-unset(_OpenSn_WITH_HIP)
-unset(_OpenSn_HIP_ON_NVIDIA)
 unset(_OpenSn_WITH_PRECICE)
 unset(_OpenSn_VTK_VERSION)
 
