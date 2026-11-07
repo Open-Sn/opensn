@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "python/lib/py_app.h"
+#include "framework/gpu/device_binding.h"
 #include "mpicpp-lite/mpicpp-lite.h"
 #include "petsc.h"
 #include <cstdlib>
@@ -13,6 +14,9 @@ int
 main(int argc, char** argv) // NOLINT(bugprone-exception-escape)
 {
   mpi::Environment env(argc, argv, mpi::ThreadSupport::MULTIPLE);
+
+  // Before PETSc, which selects its GPU while it initializes
+  opensn::BindDevice(MPI_COMM_WORLD);
 
   PetscCall(PetscInitializeNoArguments()); // NOLINT(bugprone-casting-through-void)
 
