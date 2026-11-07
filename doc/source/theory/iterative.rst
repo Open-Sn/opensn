@@ -271,6 +271,8 @@ The floor :math:`\theta_c` keeps the operator positive definite. Let
 :math:`\theta_c = 0`. The exact coercivity condition has 12 in place of 6; the
 rule uses it with a safety factor 2.
 
+.. _theory_two_grid:
+
 Thermal Upscattering Acceleration
 ---------------------------------
 
@@ -353,6 +355,19 @@ with spectrum :math:`\xi`. Error modes of the Jacobi iteration with other
 energy shapes, such as the :math:`-\rho` mode above, contribute to the
 right-hand side and can change through the correction, but they are not
 specifically removed.
+
+With a stationary inner iteration (``classic_richardson`` or
+``petsc_richardson``), such a mode decays only at the rate set by its own
+eigenvalue :math:`\lambda`, about :math:`|\lambda|` per iteration. When
+:math:`A^{-1}B` has an eigenvalue near :math:`-\rho` and :math:`\rho` is close
+to one, the groupset iteration with TGDSA therefore converges slowly or stalls
+even though the mode :math:`\xi` is removed. This happens exactly for a groupset
+of two groups coupled by down- and upscatter, and approximately whenever
+neighboring groups dominate the coupling between the groups of the groupset.
+The C5G7 moderator, for example, has :math:`\rho = 0.872` and the eigenvalue
+:math:`-0.871`. Krylov inner methods (``petsc_gmres``, ``petsc_fgmres``) are not
+limited by the sign of an eigenvalue and should be used with TGDSA for such
+groupsets.
 
 Power Iterations
 ----------------

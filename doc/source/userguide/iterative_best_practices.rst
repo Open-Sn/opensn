@@ -246,6 +246,13 @@ Practical guidance:
   spending too much time micro-tuning unrelated iteration settings
 * if multigroup scattering structure is making convergence difficult across
   energy, TGDSA may also be worth enabling
+* with TGDSA, prefer ``petsc_gmres`` or ``petsc_fgmres`` to the Richardson
+  methods when neighboring groups dominate the coupling between the groups of
+  the groupset (two groups coupled by down- and upscatter, or a thermal range
+  such as the C5G7 moderator's). The groupset's Jacobi energy iteration then has
+  an error mode that changes sign every iteration and that TGDSA does not
+  remove, so Richardson with TGDSA converges slowly or stalls (see
+  :ref:`theory_two_grid`)
 
 At the same time:
 

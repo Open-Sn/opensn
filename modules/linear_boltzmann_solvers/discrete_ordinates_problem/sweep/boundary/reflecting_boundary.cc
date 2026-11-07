@@ -511,6 +511,56 @@ ReflectingBoundary::AddToNewDelayedAngularSlope(int groupset_id,
 }
 
 void
+ReflectingBoundary::TallyDelayedIncomingCurrent(int groupset_id,
+                                                const AngularQuadrature& quadrature,
+                                                const bool subtract_old,
+                                                const DelayedCurrentTally& tally) const
+{
+  if (not opposing_reflected_)
+    return;
+
+  const auto& extra_data = extra_data_[groupset_id];
+  const auto node_stride = extra_data.node_stride;
+  const auto groupset_size = bank_[groupset_id].groupset_size;
+  const double* psi_new = GetBoundaryFlux(groupset_id);
+  const double* psi_old = GetBoundaryFlux(groupset_id, extra_data.old_stride);
+
+  // Slot and weight w_n |Omega_n . n| of every incoming direction. An incoming direction shares the
+  // slot of its mirror image, whose outgoing flux the next sweep reads as its incoming flux.
+  const auto& omegas = quadrature.GetOmegas();
+  const auto& weights = quadrature.GetWeights();
+  std::vector<std::pair<std::uint64_t, double>> incoming;
+  for (std::uint32_t n = 0; n < omegas.size(); ++n)
+  {
+    const double mu = omegas[n].Dot(normal_);
+    if (mu >= 0.0)
+      continue;
+    const auto slot = extra_data.map_dirnum[n];
+    OpenSnLogicalErrorIf(slot >= node_stride,
+                         "ReflectingBoundary: incoming direction " + std::to_string(n) +
+                           " has no delayed angular flux slot.");
+    incoming.emplace_back(slot, -mu * weights[n]);
+  }
+
+  for (const auto& [face_node, facenode_idx] : facenode_to_index_)
+  {
+    const auto cell_local_id = static_cast<std::uint32_t>(face_node.GetCellIndex());
+    const auto face = face_node.GetFaceIndex();
+    const auto fnode = face_node.GetFaceNodeIndex();
+    for (unsigned int g = 0; g < groupset_size; ++g)
+    {
+      double current = 0.0;
+      for (const auto& [slot, weight] : incoming)
+      {
+        const auto idx = (facenode_idx * node_stride + slot) * groupset_size + g;
+        current += weight * (subtract_old ? psi_new[idx] - psi_old[idx] : psi_new[idx]);
+      }
+      tally(cell_local_id, face, fnode, g, current);
+    }
+  }
+}
+
+void
 ReflectingBoundary::AddToNewDelayedValues(int groupset_id,
                                           const DelayedFluxCorrection& correction,
                                           const std::uint64_t offset)

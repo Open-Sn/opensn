@@ -2052,6 +2052,20 @@
     ]
   },
   {
+    "file": "transport_dsa_reflecting_residual.py",
+    "comment": "WGDSA inward-current residual on lagged reflecting boundaries: thin (0.1 mfp) infinite medium c=0.9999, 1D slab, 2D square, 1D sphere, classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 23-59%.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 2e-05
+      }
+    ]
+  },
+  {
     "file": "transport_tgdsa_two_group_infinite_medium.py",
     "comment": "TGDSA spectrum (Perron eigenvector when the Jacobi matrix has eigenvalues +/-rho), computed over the accelerated groupset only, and convergence of TGDSA alone and WGDSA+TGDSA: 2-group infinite medium, classic Richardson, exact phi from (Sigma_t - S) phi = Q",
     "num_procs": 2,
@@ -2413,16 +2427,16 @@
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions. Phi must match the exact uniform solution",
     "num_procs": 4,
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution (CBC sweeps)",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions. Phi must match the exact uniform solution (CBC sweeps)",
     "outfileprefix": "transport_dsa_lagged_interface_cbc",
     "num_procs": 4,
     "args": [
@@ -2430,12 +2444,12 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions; phi must match the exact uniform solution (GPU AAH sweeps)",
+    "comment": "Source iteration with WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) in a 3D infinite medium on 4 ranks, where AAH lags angular fluxes between partitions. Phi must match the exact uniform solution (GPU AAH sweeps)",
     "outfileprefix": "transport_dsa_lagged_interface_gpu",
     "num_procs": 4,
     "requires_gpu": true,
@@ -2444,7 +2458,7 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {
@@ -2471,7 +2485,7 @@
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns. Phi must match the exact uniform solution",
     "outfileprefix": "transport_dsa_lagged_interface_fgmres",
     "num_procs": 4,
     "args": [
@@ -2479,12 +2493,12 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution (CBC sweeps)",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns. Phi must match the exact uniform solution (CBC sweeps)",
     "outfileprefix": "transport_dsa_lagged_interface_fgmres_cbc",
     "num_procs": 4,
     "args": [
@@ -2493,12 +2507,12 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {
     "file": "transport_dsa_lagged_interface.py",
-    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (2G upscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns; phi must match the exact uniform solution (GPU AAH sweeps)",
+    "comment": "Flexible GMRES with the inexact WGDSA (1G, c=0.999) and WGDSA+TGDSA (3G up- and downscatter) preconditioner in a 3D infinite medium on 4 ranks, with angular fluxes lagged between partitions as Krylov unknowns. Phi must match the exact uniform solution (GPU AAH sweeps)",
     "outfileprefix": "transport_dsa_lagged_interface_fgmres_gpu",
     "num_procs": 4,
     "requires_gpu": true,
@@ -2508,7 +2522,7 @@
     ],
     "checks": [
       {"type": "KeyValuePair", "key": "DSA_LAG_1G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09},
-      {"type": "KeyValuePair", "key": "DSA_LAG_2G_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
+      {"type": "KeyValuePair", "key": "DSA_LAG_MG_MAX_ERR", "goldvalue": 0, "abs_tol": 1e-09}
     ]
   },
   {

@@ -412,8 +412,14 @@ leakage coefficient matches the transport sweep. The blend is
 :math:`\theta_{coer}` the smallest value that keeps the operator positive
 definite (computed from the cell matrices). With ``"closure_r"`` the floor of
 the interior penalty is :math:`\beta_f` of each face instead of 1/4.
-Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
-``tgdsa_boundary_closure`` does the same for TGDSA.
+Reflecting boundaries are treated as zero-current (Neumann) boundaries. Of a
+pair of opposing reflecting boundaries, the sweep lags the incoming angular
+flux of one. In 1D spherical geometry it lags that of the reflecting outer
+surface. On such a boundary WGDSA instead imposes the inward partial current of
+the change of the lagged flux over the sweep, the part of the error the sweep
+has not yet reflected. TGDSA keeps the zero-current condition.
+``tgdsa_boundary_closure`` does for TGDSA what ``wgdsa_boundary_closure`` does
+for WGDSA.
 
 ``wgdsa_h_perp_convention`` sets the penalty length :math:`h_\perp` of the MIP
 diffusion operator (penalty ``penalty_factor`` :math:`D/h_\perp` per face,

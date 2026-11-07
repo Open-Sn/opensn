@@ -34,6 +34,16 @@ public:
    * Adds the WGDSA correction driven by `phi_change`, the change of the groupset flux moments over
    * one transport sweep, to the scalar moments of `phi_new`. The two vectors may be the same.
    *
+   * A reflecting boundary that lags its incoming angular flux by one sweep (the one with the
+   * smaller boundary id of a pair of opposing reflecting boundaries, and the outer surface in 1D
+   * spherical geometry) adds the boundary residual: the correction has the inward net current J,
+   * the inward partial current of the change of the lagged incoming flux, in place of zero current.
+   * That change is the new delayed angular flux minus the old one when `subtract_old_delayed_psi`
+   * is true (after a sweep, whose `phi_change` is the change over the sweep), and the new delayed
+   * angular flux itself otherwise (a preconditioner applied to a residual vector whose lagged block
+   * is held as the new delayed angular flux). The CSDA energy slopes of the lagged fluxes add no
+   * residual.
+   *
    * In a CSDA groupset with charged-particle groups, the diffusion operator of each group also
    * removes S_g/dE_g, and the groups are solved in energy order. The source of each group is the
    * scattering residual of all groupset groups plus the in-groupset scattering and CSDA
@@ -42,6 +52,7 @@ public:
   static void Apply(DiscreteOrdinatesProblem& do_problem,
                     const LBSGroupset& groupset,
                     const std::vector<double>& phi_change,
+                    bool subtract_old_delayed_psi,
                     std::vector<double>& phi_new);
 
   /// Cleans up memory consuming items.

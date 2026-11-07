@@ -14,19 +14,26 @@ isotropic correction delta psi = delta phi as the lagged fluxes of opposing refl
 Both cases are infinite media (reflecting on every face of a 3D orthogonal mesh) with a uniform
 source q, so the exact solution is uniform:
   A. one group, sigma_t = 3, c = 0.999, q = 1, WGDSA: phi = q / (sigma_t (1 - c)) = 1000 / 3;
-  B. two groups with strong upscattering (overall c of about 0.999), WGDSA and TGDSA:
-     phi = (diag(sigma_t) - S)^-1 q.
+  B. three groups coupled equally by up- and downscattering (overall c of about 0.999), WGDSA
+     and TGDSA: phi = (diag(sigma_t) - S)^-1 q.
+
+The Jacobi energy iteration matrix of case B, (diag(sigma_t) - diag(S))^-1 offdiag(S) =
+0.499 (J - I) with J the matrix of ones, has the eigenvalues 0.998 (the two-grid spectrum) and
+-0.499. A groupset whose matrix has an eigenvalue near -0.998 instead (e.g. two groups coupled by
+down- and upscatter) converges slowly or stalls under Richardson with TGDSA. See the two-grid
+section of the theory manual.
 
 The inner solver is classic Richardson by default. With inner_method="petsc_fgmres" the lagged
 fluxes are Krylov unknowns and the DSA preconditioner, whose diffusion solve is inexact, varies
 between applications; flexible GMRES must still converge to the exact solution.
 
 Checks:
-  DSA_LAG_1G_MAX_ERR, DSA_LAG_2G_MAX_ERR: max |phi / phi_exact - 1| over all nodes and groups.
+  DSA_LAG_1G_MAX_ERR, DSA_LAG_MG_MAX_ERR: max |phi / phi_exact - 1| over all nodes and groups.
 """
 
 import os
 import sys
+import numpy as np
 
 if "opensn_console" not in globals():
     from mpi4py import MPI
@@ -110,37 +117,36 @@ if __name__ == "__main__":
     problem_a, sweeps_a = solve(one_group, 1, [1.0], False)
     err_a = max_relative_error(problem_a, [1.0 / (sigma_t * (1.0 - c))])
 
-    # B. Two groups with upscattering
-    sigma_t2 = [3.0, 6.0]
-    transfer = [[1.8, 3.0], [1.197, 2.994]]  # transfer[g_to][g_from]
-    q = [1.0, 0.0]
-    a11, a12 = sigma_t2[0] - transfer[0][0], -transfer[0][1]
-    a21, a22 = -transfer[1][0], sigma_t2[1] - transfer[1][1]
-    det = a11 * a22 - a12 * a21
-    phi_exact = [(a22 * q[0] - a12 * q[1]) / det, (a11 * q[1] - a21 * q[0]) / det]
+    # B. Three groups coupled by up- and downscattering
+    num_groups = 3
+    sigma_t3 = [3.0] * num_groups
+    transfer = [[1.8 if g_to == g_from else 0.5988 for g_from in range(num_groups)]
+                for g_to in range(num_groups)]  # transfer[g_to][g_from]
+    q = [1.0, 0.0, 0.0]
+    phi_exact = list(np.linalg.solve(np.diag(sigma_t3) - np.array(transfer), q))
 
-    xs_file = "dsa_lagged_interface_two_group.xs"
+    xs_file = "dsa_lagged_interface_three_group.xs"
     if rank == 0:
         with open(xs_file, "w") as f:
-            f.write("NUM_GROUPS 2\nNUM_MOMENTS 1\n\nSIGMA_T_BEGIN\n")
-            for g in range(2):
-                f.write(f"{g} {sigma_t2[g]}\n")
+            f.write(f"NUM_GROUPS {num_groups}\nNUM_MOMENTS 1\n\nSIGMA_T_BEGIN\n")
+            for g in range(num_groups):
+                f.write(f"{g} {sigma_t3[g]}\n")
             f.write("SIGMA_T_END\n\nTRANSFER_MOMENTS_BEGIN\n")
-            for g_to in range(2):
-                for g_from in range(2):
+            for g_to in range(num_groups):
+                for g_from in range(num_groups):
                     f.write(f"M_GFROM_GTO_VAL 0 {g_from} {g_to} {transfer[g_to][g_from]}\n")
             f.write("TRANSFER_MOMENTS_END\n")
     MPIBarrier()
-    two_group = MultiGroupXS()
-    two_group.LoadFromOpenSn(xs_file)
+    three_group = MultiGroupXS()
+    three_group.LoadFromOpenSn(xs_file)
     MPIBarrier()
     if rank == 0:
         os.remove(xs_file)
-    problem_b, sweeps_b = solve(two_group, 2, q, True)
+    problem_b, sweeps_b = solve(three_group, num_groups, q, True)
     err_b = max_relative_error(problem_b, phi_exact)
 
     if rank == 0:
         print(f"DSA_LAG_1G_MAX_ERR {err_a:.6e}")
         print(f"DSA_LAG_1G_SWEEPS {sweeps_a}")
-        print(f"DSA_LAG_2G_MAX_ERR {err_b:.6e}")
-        print(f"DSA_LAG_2G_SWEEPS {sweeps_b}")
+        print(f"DSA_LAG_MG_MAX_ERR {err_b:.6e}")
+        print(f"DSA_LAG_MG_SWEEPS {sweeps_b}")
