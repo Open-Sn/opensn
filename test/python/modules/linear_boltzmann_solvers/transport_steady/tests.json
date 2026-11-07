@@ -2053,7 +2053,7 @@
   },
   {
     "file": "transport_dsa_reflecting_residual.py",
-    "comment": "WGDSA inward-current residual on lagged reflecting boundaries: thin (0.1 mfp) infinite medium c=0.9999, 1D slab, 2D square, 1D sphere, classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 23-59%.",
+    "comment": "WGDSA inward-current residual on lagged reflecting boundaries. A thin (0.1 mfp) infinite medium with c=0.9999 is solved on a 1D slab, a 2D square and a 1D sphere with classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 23-59%.",
     "num_procs": 2,
     "checks": [
       {
@@ -2062,6 +2062,43 @@
         "wordnum": 1,
         "gold": 0.0,
         "abs_tol": 2e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_dsa_reflecting_residual.py",
+    "comment": "WGDSA inward-current residual on lagged reflecting boundaries in 3D. A thin (0.1 mfp) infinite medium with c=0.9999 is solved on an orthogonal cube, unstructured tetrahedra and extruded triangular prisms with classic/PETSc Richardson and GMRES limited to 4 iterations. The exact solution is phi = Q/sigma_a. Without the residual the error is 5e-4 to 65%.",
+    "outfileprefix": "transport_dsa_reflecting_residual_3d",
+    "num_procs": 1,
+    "args": [
+      "case_set=\"3d\""
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_dsa_reflecting_residual.py",
+    "comment": "The 3D cases of the WGDSA reflecting-boundary residual test on 4 ranks, limited to 8 iterations. The sweep also lags fluxes between partitions, which WGDSA does not correct, so the error is 6e-3 with the residual. Without it the error is 47%.",
+    "outfileprefix": "transport_dsa_reflecting_residual_3d_np4",
+    "num_procs": 4,
+    "args": [
+      "case_set=\"3d\"",
+      "max_its=8"
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 5e-02
       }
     ]
   },
