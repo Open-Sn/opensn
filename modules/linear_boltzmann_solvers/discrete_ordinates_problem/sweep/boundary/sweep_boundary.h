@@ -152,6 +152,29 @@ public:
   {
   }
 
+  /**
+   * Receives a nodal inward partial current, indexed by (cell local id, face, face node, group
+   * index within the groupset).
+   */
+  using DelayedCurrentTally =
+    std::function<void(std::uint32_t, unsigned int, unsigned int, unsigned int, double)>;
+
+  /**
+   * Passes to `tally`, for every face node and groupset group of a boundary whose incoming angular
+   * flux is lagged by one sweep, the inward partial current
+   * \f$ \sum_{n:\, \Omega_n \cdot \hat{n} < 0} w_n |\Omega_n \cdot \hat{n}| \delta\psi_n \f$
+   * of the lagged incoming fluxes, with `quadrature` the groupset quadrature. \f$\delta\psi_n\f$ is
+   * the new delayed value minus the old one when `subtract_old` is true (after a sweep: the change
+   * of the incoming flux the boundary condition asks for) and the new delayed value otherwise. A
+   * boundary without lagged incoming fluxes passes nothing.
+   */
+  virtual void TallyDelayedIncomingCurrent(int groupset_id,
+                                           const AngularQuadrature& quadrature,
+                                           bool subtract_old,
+                                           const DelayedCurrentTally& tally) const
+  {
+  }
+
   virtual const Vector3* GetNormalForReflection() const { return nullptr; }
 
   virtual void GetReflectedMap(int groupset_id,

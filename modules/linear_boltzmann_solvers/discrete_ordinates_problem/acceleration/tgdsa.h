@@ -18,17 +18,16 @@ public:
   /// Initializes the Two-Grid DSA solver.
   static void Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset);
 
-  /// Assembles a delta-phi vector on the first moment.
-  static void AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
-                                     const LBSGroupset& groupset,
-                                     const std::vector<double>& phi_in,
-                                     std::vector<double>& delta_phi_local);
-
-  /// Disassembles a delta-phi vector on the first moment.
-  static void DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
-                                        const LBSGroupset& groupset,
-                                        const std::vector<double>& delta_phi_local,
-                                        std::vector<double>& ref_phi_new);
+  /**
+   * Adds the two-grid correction driven by `phi_change`, the change of the groupset flux moments
+   * over one iteration, to the scalar moments of `phi_new`: the spectrum times the collapsed
+   * diffusion solution, plus the local correction of the other Jacobi error modes
+   * (TwoGridCollapsedInfo::local_correction). The two vectors may be the same.
+   */
+  static void Apply(DiscreteOrdinatesProblem& do_problem,
+                    const LBSGroupset& groupset,
+                    const std::vector<double>& phi_change,
+                    std::vector<double>& phi_new);
 
   /// Cleans up memory consuming items.
   static void CleanUp(LBSGroupset& groupset);
