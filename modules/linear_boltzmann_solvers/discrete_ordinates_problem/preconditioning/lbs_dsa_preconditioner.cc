@@ -45,7 +45,7 @@ ApplyDSAPreconditioner(WGSContext& gs_context, Vec phi_input, Vec pc_output)
   {
     CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
 
-    WGDSA::Apply(do_problem, groupset, phi_new_local, phi_new_local);
+    WGDSA::Apply(do_problem, groupset, phi_new_local, false, phi_new_local);
   }
   // Apply TGDSA
   if (groupset.apply_tgdsa)

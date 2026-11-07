@@ -294,7 +294,7 @@ range.
 WGDSA and TGDSA
 ---------------
 
-Within-Groupset Diffusion Synthetic Acceleration (WGDSA) and Two-Grid Diffusion
+Within-Group Diffusion Synthetic Acceleration (WGDSA) and Two-Grid Diffusion
 Synthetic Acceleration (TGDSA) are auxiliary solves added to the groupset
 transport iteration. Their purpose is to reduce the number of transport
 iterations needed for convergence.
@@ -343,17 +343,33 @@ with associated controls:
 ``apply_wgdsa``
 ~~~~~~~~~~~~~~~
 
-For WGSA, the idea is:
+For WGDSA, the idea is:
 
 * perform the transport iteration for the groupset,
-* estimate the remaining slow scalar-flux error,
-* solve a diffusion problem for that correction over the same groupset,
-* project the correction back into the transport iterate.
+* for each group of the groupset, take the change of its within-group
+  scattering source over that iteration as the source of a one-group diffusion
+  problem,
+* add the diffusion solution, the correction, to the group's scalar flux.
 
-This is most useful when the groupset itself has strongly diffusive behavior.
-If a single groupset covers the relevant energy range and the within-groupset
-source iteration is slow because of scattering, WGDSA is often the first DSA
-option to think about.
+WGDSA acts on one groupset at a time. After each iteration of a groupset, it
+corrects all groups of that groupset with one diffusion solve. That diffusion
+system is block diagonal in energy. Each group has its own diffusion
+coefficient and removal cross section, and the groups are not coupled. WGDSA
+therefore accelerates within-group scattering. The scattering between the groups
+of the groupset is lagged by the groupset iteration as well, and the error
+mode it couples is the target of TGDSA. See :doc:`../theory/iterative` for the
+equations.
+
+A groupset that contains charged-particle groups with ``csda_enabled`` is the
+exception. There WGDSA solves one diffusion problem per group, in energy order.
+The source of each group also contains the in-groupset scattering and the CSDA
+slowing-down of the corrections of the groups above it, so the corrections are
+coupled in energy (see :doc:`csda`).
+
+This is most useful when the groups of the groupset scatter strongly within
+themselves in optically thick regions. If source iteration of the groupset is
+slow because of such scattering, WGDSA is often the first DSA option to think
+about.
 
 The main WGDSA controls are:
 
@@ -367,11 +383,28 @@ The main WGDSA controls are:
 * ``wgdsa_h_perp_convention``
 
 ``wgdsa_solver_policy`` controls the PETSc solver setup for the WGDSA diffusion
-correction. ``"auto"`` uses a direct PETSc LU solve when the global WGDSA
-diffusion unknown count is at or below ``wgdsa_direct_solve_threshold`` and an
-iterative solve otherwise. ``"direct"`` and ``"iterative"`` force those paths,
-and ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup.
-The default threshold is ``20000`` global unknowns.
+correction. ``"auto"`` uses a direct PETSc LU solve when the problem runs on one
+MPI process and the global WGDSA diffusion unknown count is at or below
+``wgdsa_direct_solve_threshold``, and an iterative solve otherwise. All groups
+of the groupset are solved in one system, so the unknown count is the number of
+spatial nodes times the number of groups in the groupset. In a groupset with
+charged-particle groups and ``csda_enabled``, each group has its own system,
+and the count is that of one group. The iterative solve
+is conjugate gradients preconditioned by BoomerAMG. It stops when the residual,
+relative to the norm of the right-hand side, is below ``wgdsa_l_abs_tol``, or
+after ``wgdsa_l_max_its`` iterations. The direct solve ignores both.
+``"direct"`` and ``"iterative"`` force those paths. On more than one MPI
+process, ``"direct"`` requires a PETSc build with a parallel LU package.
+``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup. The
+default threshold is ``20000`` global unknowns.
+
+``wgdsa_petsc_options`` is inserted into the PETSc options database with every
+policy. The WGDSA solver reads only the options that carry its prefix, the
+problem ``name`` followed by ``_WGDSA``. For a problem with the default name,
+``"-DiscreteOrdinatesProblem_WGDSAksp_type gmres"`` selects GMRES. The prefix
+is ``_TGDSA`` for TGDSA. In a groupset with charged-particle groups it is
+``_WGDSA_g`` followed by the global group index, since each group has its own
+solver.
 
 ``wgdsa_boundary_closure`` sets the boundary condition of the diffusion
 correction on every boundary where the incoming angular flux is prescribed
@@ -412,8 +445,14 @@ leakage coefficient matches the transport sweep. The blend is
 :math:`\theta_{coer}` the smallest value that keeps the operator positive
 definite (computed from the cell matrices). With ``"closure_r"`` the floor of
 the interior penalty is :math:`\beta_f` of each face instead of 1/4.
-Reflecting boundaries are always treated as zero-current (Neumann) boundaries.
-``tgdsa_boundary_closure`` does the same for TGDSA.
+Reflecting boundaries are treated as zero-current (Neumann) boundaries. Of a
+pair of opposing reflecting boundaries, the sweep lags the incoming angular
+flux of one. In 1D spherical geometry it lags that of the reflecting outer
+surface. On such a boundary WGDSA instead imposes the inward partial current of
+the change of the lagged flux over the sweep, the part of the error the sweep
+has not yet reflected. TGDSA keeps the zero-current condition.
+``tgdsa_boundary_closure`` does for TGDSA what ``wgdsa_boundary_closure`` does
+for WGDSA.
 
 ``wgdsa_h_perp_convention`` sets the penalty length :math:`h_\perp` of the MIP
 diffusion operator (penalty ``penalty_factor`` :math:`D/h_\perp` per face,
@@ -466,9 +505,11 @@ The main TGDSA controls are:
 * ``tgdsa_boundary_closure``
 * ``tgdsa_h_perp_convention``
 
-``tgdsa_solver_policy`` and ``tgdsa_direct_solve_threshold`` have the same
-meaning for the TGDSA diffusion correction solve that the corresponding WGDSA
-options have for WGDSA. The default threshold is ``20000`` global unknowns.
+``tgdsa_solver_policy``, ``tgdsa_direct_solve_threshold``, ``tgdsa_l_abs_tol``,
+``tgdsa_l_max_its`` and ``tgdsa_petsc_options`` have the same meaning for the
+TGDSA diffusion correction solve that the corresponding WGDSA options have for
+WGDSA. The TGDSA system has one unknown per spatial node, whatever the number of
+groups. The default threshold is ``20000`` global unknowns.
 
 TGDSA follows the two-grid method of :cite:t:`gs-adams1993two` in the Jacobi
 form of :cite:t:`gs-ragusa_hanus_TG_2020`. Each groupset iteration lags the
@@ -492,8 +533,96 @@ example, with two groups coupled by downscatter and upscatter, the Jacobi
 iteration matrix has eigenvalues :math:`\pm\rho`.
 
 TGDSA requires a groupset with at least two groups; it is rejected for a
-single-group groupset. For a material without scattering between the groups of
-the groupset, a flat two-grid spectrum is used and a warning is printed.
+single-group groupset. A material whose scattering between the groups of the
+groupset has no cycle has no slow two-grid mode. This includes a material with
+no scattering between the groups, and one with downscatter only or upscatter
+only. For such a material a flat two-grid spectrum is used and a warning is
+printed. TGDSA is not supported with CSDA.
+
+.. _groupsets_choosing_dsa:
+
+Choosing WGDSA, TGDSA, or both
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+WGDSA and TGDSA correct different parts of the iteration error of a groupset.
+They are not alternatives to each other.
+
+* WGDSA corrects the error of within-group scattering. It helps when groups
+  scatter strongly within themselves, with :math:`\sigma_{s,g\to g}/\sigma_{t,g}`
+  close to one, in regions many mean free paths thick. It works in any
+  groupset, including one with a single group.
+* TGDSA corrects the error that scattering between the groups of a groupset
+  carries around a cycle of groups. In practice the cycle is thermal
+  upscattering: a group scatters up to a higher-energy group, which scatters
+  back down. TGDSA needs a groupset of at least two groups that contains such a
+  cycle. In a groupset with downscatter only, it has no error mode to correct.
+
+Either can be used alone, and the two can be used together. Neither changes the
+converged solution. As a rule:
+
+* use WGDSA alone in groupsets without upscatter, such as fast groups, and in
+  single-group groupsets,
+* use TGDSA alone in an upscattering groupset whose groups do not scatter
+  strongly within themselves,
+* use both in an upscattering groupset of a strongly scattering moderator, such
+  as water, polyethylene or graphite. This is the usual choice for thermal
+  groups.
+
+TGDSA computes its spectrum as if within-group scattering were converged, and
+it leaves the within-group error to the transport iteration. WGDSA removes that
+error, so the two combine well. Which of the two removes more iterations
+depends on the material. Strong upscatter between the thermal groups favors
+TGDSA. Strong within-group scattering in every group favors WGDSA. Together they
+need the fewest iterations.
+
+The two also differ in cost. The TGDSA diffusion problem has one unknown per
+spatial node. The WGDSA diffusion problem has one unknown per spatial node and
+group of the groupset. With many groups on a small mesh, the WGDSA solve can
+cost more than the sweep it accompanies, and it can then save fewer seconds
+than it saves iterations.
+
+With a Krylov inner method, both corrections act as the preconditioner, and the
+same choices apply. In a thermal groupset of few groups with strong scattering
+both up and down in energy, also note the limitation of TGDSA described under
+``apply_tgdsa`` above.
+
+Groupset structure with TGDSA
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The groups of one groupset are iterated together. Every iteration sweeps all of
+them, and the scattering between them is lagged by one iteration. The groupsets
+themselves are solved in order by the across-groupset (AGS) iteration, each with
+the latest fluxes of the groupsets before it. The AGS iteration is not
+accelerated.
+
+TGDSA corrects only the scattering between groups of the same groupset. Keep
+every upscatter cycle inside one groupset. The groupset with TGDSA must start at
+or above the highest-energy group that receives upscatter, that is, at a group
+index no larger than the smallest index of any group that receives upscatter.
+If upscatter crosses a groupset boundary, the AGS iteration carries that
+coupling without acceleration and converges slowly.
+
+With every upscatter cycle in one groupset, two layouts work well.
+
+* **One groupset for all groups.** This is the simplest layout. The two-grid
+  spectrum is zero in every group that scattering from the upscattering groups
+  does not reach, so TGDSA corrects only the thermal groups. Every iteration
+  still sweeps the fast groups, although they converge in fewer iterations than
+  the thermal ones.
+* **A fast groupset and a thermal groupset.** The fast groupset holds the groups
+  above the upscatter range, and the thermal groupset holds the rest. No
+  neutron scatters from the thermal groupset into the fast one, so the fast
+  groupset converges once. In a fixed-source problem whose groupsets are each
+  converged well below the AGS tolerance, the AGS iteration then converges in
+  two passes, the second confirming the first. The thermal
+  iterations no longer sweep the fast groups. This usually reduces the total
+  work, and each groupset's Krylov vectors are smaller. Give the fast groupset
+  WGDSA if its groups scatter strongly within themselves, as in hydrogenous
+  materials, and the thermal groupset WGDSA and TGDSA.
+
+The second layout is the one to prefer for large group structures. Keep its
+AGS tolerance consistent with the inner tolerances (see
+:ref:`iterative_ags_tolerance`).
 
 DSA with lagged angular fluxes and time dependence
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -559,7 +688,9 @@ Multiple groupsets
 Multiple groupsets are useful when:
 
 * the energy structure is large enough to justify a split,
-* the user wants different iteration behavior in different energy ranges,
+* the user wants different iteration behavior in different energy ranges, such
+  as fast groups without upscatter and thermal groups with TGDSA (see
+  `Groupset structure with TGDSA`_),
 * the problem is part of a workflow that intentionally uses AGS iteration.
 
 Example:
@@ -607,6 +738,9 @@ Practical rule:
 
 * if multiple groupsets are used and there is upscatter coupling across
   groupset boundaries, AGS iteration must be enabled and converged.
+* converge each groupset well below the AGS tolerance. Otherwise the AGS
+  iteration runs slowly, one source iteration per pass, even without upscatter
+  between the groupsets (see :ref:`iterative_ags_tolerance`).
 
 .. note::
 
@@ -614,6 +748,22 @@ Practical rule:
    groupset split does not remove the underlying physical coupling. It only
    changes where that coupling is iterated. In general, multiple groupsets are
    not recommended.
+
+Fission couples groupsets as well. In fixed-source and time-dependent solves,
+fission within a groupset is part of the groupset's operator, and a Krylov
+inner method converges it with the scattering. Fission in one groupset that
+emits into another is a source of the AGS iteration instead. With a fast and a
+thermal groupset, fission in the thermal groups emits into the fast ones, and
+the AGS iteration converges that coupling at about the multiplication factor
+of the problem per pass. That takes hundreds of passes at a multiplication
+factor of 0.95, and more as it approaches one. In a time step the time
+absorption :math:`1/(v\theta\Delta t)` lowers the factor, more for shorter
+steps. The AGS iteration is not accelerated. Use one groupset for fixed-source
+and time-dependent problems with fission.
+
+The power iteration k-eigenvalue solver is not affected. It performs one AGS
+pass per power iteration, and the fission source is the target of its own
+iteration and acceleration.
 
 Example Patterns
 ================
@@ -685,8 +835,10 @@ For most users:
 * use ``petsc_gmres`` as the default difficult-problem inner method,
 * use ``angle_aggregation_type="single"`` for unstructured meshes,
 * add WGDSA or TGDSA only when convergence behavior suggests they are needed,
+  and choose between them as described in `Choosing WGDSA, TGDSA, or both`_,
 * add multiple groupsets only when there is a clear reason to split the energy
   structure,
+* with TGDSA, keep every group that receives upscatter in the same groupset,
 * if multiple groupsets and cross-groupset upscatter are present, enable and
   converge AGS,
 * keep inner tolerances explicit and tighter than outer tolerances.
