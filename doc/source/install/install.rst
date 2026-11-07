@@ -190,6 +190,16 @@ To compile the console application:
    variable when one is provided. The module build performed by
    ``pip install .`` always disables the tests.
 
+.. note::
+
+   On Linux, ``libopensn`` is linked with ``-z defs``, so the link fails if a
+   symbol it uses is not provided by one of the libraries it links, as on
+   macOS. With Clang sanitizers, link the shared sanitizer runtime with
+   ``-shared-libsan -frtlib-add-rpath``, as the ``clang+debug+sanitizer``
+   preset does, so that ``libopensn`` links it and executables find it at
+   run time. When the sanitizer runtime is static, and linked only into
+   executables, CMake skips this check.
+
 .. danger::
 
    In the console application, all classes and functions are implicitly imported
