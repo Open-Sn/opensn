@@ -227,6 +227,53 @@
   },
   {
     "file": "adjoint_keigen_delayed_infinite_medium.py",
+    "comment": "Mixed-material CMFD with energy collapse preserves delayed production in forward and adjoint infinite-medium problems",
+    "num_procs": 2,
+    "args": [
+      "scenario=\"two_materials_cmfd\""
+    ],
+    "outfileprefix": "adjoint_keigen_delayed_two_materials_cmfd",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_K_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_K_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_RATIO_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_RATIO_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_FLAT_FWD=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_FLAT_ADJ=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_delayed_infinite_medium.py",
     "comment": "Adjoint k-eigenvalue with delayed precursors equals the forward one and the infinite-medium k_inf",
     "num_procs": 2,
     "checks": [

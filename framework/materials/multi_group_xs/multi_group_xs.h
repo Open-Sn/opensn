@@ -33,6 +33,10 @@ class MultiGroupXS
 {
 public:
   static constexpr double STOPPING_POWER_TOLERANCE = 1.0e-12;
+  /// Transport cross-section magnitude below which the diffusion coefficient is bounded.
+  static constexpr double TRANSPORT_XS_TOLERANCE = 1.0e-12;
+  /// Upper bound on diffusion coefficients in void and near-void groups.
+  static constexpr double MAX_DIFFUSION_COEFFICIENT = 1.0 / (3.0 * TRANSPORT_XS_TOLERANCE);
 
   MultiGroupXS()
     : num_groups_(0),
