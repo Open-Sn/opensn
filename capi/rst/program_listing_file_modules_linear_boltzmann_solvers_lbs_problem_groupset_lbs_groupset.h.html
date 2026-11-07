@@ -184,6 +184,8 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiffusionMIPSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">wgdsa_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiffusionMIPSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">tgdsa_solver</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// CSDA WGDSA: one single-group diffusion solver per groupset group, solved in energy order.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiffusionMIPSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgdsa_csda_solvers</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">TwoGridAccelerationInfo</span>
 <span class="w">  </span><span class="p">{</span>

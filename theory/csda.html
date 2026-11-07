@@ -69,14 +69,15 @@
 <li class="toctree-l3"><a class="reference internal" href="#within-group-representation">9.3. Within-group representation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#slowing-down-density-at-group-edges">9.4. Slowing-down density at group edges</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#augmented-local-sweep">9.5. Augmented local sweep</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#deposited-energy-fields">9.6. Deposited-energy fields</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#conservative-definition">9.6.1. Conservative definition</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cepxs-response-definition">9.6.2. CEPXS-response definition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#within-group-diffusion-synthetic-acceleration">9.6. Within-group diffusion synthetic acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#deposited-energy-fields">9.7. Deposited-energy fields</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#conservative-definition">9.7.1. Conservative definition</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cepxs-response-definition">9.7.2. CEPXS-response definition</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#charge-deposition">9.7. Charge deposition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#particle-balance">9.8. Particle balance</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#energy-balance">9.9. Energy balance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#charge-deposition">9.8. Charge deposition</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#particle-balance">9.9. Particle balance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#energy-balance">9.10. Energy balance</a></li>
 </ul>
 </li>
 </ul>
@@ -277,8 +278,58 @@ iteration state for a CSDA sweep is consequently
 <span class="math notranslate nohighlight">\(\{\psi,\psi^E\}\)</span>. OpenSn stores the angular moment
 <span class="math notranslate nohighlight">\(\varphi^E_{i,g}\)</span> by local cell and global group after the sweep.</p>
 </section>
+<section id="within-group-diffusion-synthetic-acceleration">
+<span id="theory-csda-wgdsa"></span><h2><span class="section-number">9.6. </span>Within-group diffusion synthetic acceleration<a class="headerlink" href="#within-group-diffusion-synthetic-acceleration" title="Link to this heading"></a></h2>
+<p>A transport sweep of a CSDA groupset solves the energy coupling of the
+slowing-down term exactly, but lags the scattering source of every groupset
+group. With <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code>, a groupset that contains charged-particle groups
+corrects the scalar flux with a diffusion approximation of the error equation
+that includes the CSDA term. The angular flux is approximated as linearly
+anisotropic, and the energy slope is dropped, so the slowing-down term of group
+<span class="math notranslate nohighlight">\(g\)</span> contributes the removal <span class="math notranslate nohighlight">\(R_g\Phi_g\)</span> and the source
+<span class="math notranslate nohighlight">\(R_{g-1}\Phi_{g-1}\)</span>, with</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}R_g =
+\begin{cases}
+S_g/\Delta E_g, &amp; S_g&gt;0,\\
+0, &amp; S_g=0.
+\end{cases}\end{split}\]</div>
+<p>The removal <span class="math notranslate nohighlight">\(R_g\)</span> acts on every angular moment, so it enters both the
+removal and the transport cross sections. For the groups of the groupset, in
+energy order, the correction <span class="math notranslate nohighlight">\(f_g\)</span> solves</p>
+<div class="math notranslate nohighlight" id="equation-csda-wgdsa">
+<span class="eqno">(6)<a class="headerlink" href="#equation-csda-wgdsa" title="Link to this equation"></a></span>\[-\boldsymbol{\nabla}\!\cdot\!D_g\boldsymbol{\nabla}f_g
++\left(\sigma_{r,g}+R_g\right)f_g
+=
+\sum_{g'}\sigma_{0,g'\rightarrow g}\,\delta\Phi_{g'}
++\sum_{g'&lt;g}\sigma_{0,g'\rightarrow g}\,f_{g'}
++R_{g-1}f_{g-1},\]</div>
+<p>where <span class="math notranslate nohighlight">\(D_g=1/\bigl(3(\sigma_{tr,g}+R_g)\bigr)\)</span>, <span class="math notranslate nohighlight">\(\sigma_{tr,g}\)</span> and
+<span class="math notranslate nohighlight">\(\sigma_{r,g}=\max(0,\sigma_{t,g}-\sigma_{0,g\rightarrow g})\)</span> are the
+transport and removal cross sections of the standard WGDSA operator, and
+<span class="math notranslate nohighlight">\(\delta\Phi\)</span> is the change of the scalar flux over the sweep (the
+preconditioned vector when WGDSA preconditions a Krylov solve). All sums run
+over groupset groups. The feed <span class="math notranslate nohighlight">\(R_{g-1}f_{g-1}\)</span> is present only when the
+material has nonzero stopping power in both groups, as in the sweep.</p>
+<p>The operator is lower triangular in energy apart from in-groupset upscatter,
+which enters only through the residual. Solving the groups in order therefore
+solves the coupled system with one single-group MIP diffusion solve per group.
+Without the energy coupling, a correction of group <span class="math notranslate nohighlight">\(g\)</span> reaches the groups
+below it only through the next sweep, which can amplify the error transiently
+along a charged-particle block before it decays.</p>
+<p>The correction is added to the scalar flux and, as an isotropic correction, to
+the lagged angular fluxes. The energy slope is not corrected. The correction
+vanishes when the iteration converges, so it does not change the converged
+solution.</p>
+<p>Without <span class="math notranslate nohighlight">\(R_g\)</span>, the diffusion operator has no removal in groups whose
+within-group scattering equals the total cross section, which CEPXS CSDA data
+contains near the low-energy end of each electron block. Elsewhere it
+underestimates the removal, so the correction overshoots and the iteration can
+diverge.</p>
+<p>Two-grid DSA has no CSDA operator and is rejected for CSDA problems.</p>
+</section>
 <section id="deposited-energy-fields">
-<h2><span class="section-number">9.6. </span>Deposited-energy fields<a class="headerlink" href="#deposited-energy-fields" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.7. </span>Deposited-energy fields<a class="headerlink" href="#deposited-energy-fields" title="Link to this heading"></a></h2>
 <p>The CSDA energy-space contribution is obtained by weighting each edge
 slowing-down density by the decrease in midpoint energy. Define</p>
 <div class="math notranslate nohighlight">
@@ -289,22 +340,22 @@ E_g, &amp; g\text{ is terminal in its charged-particle block}.
 \end{cases}\end{split}\]</div>
 <p>The cellwise continuous-loss density is then</p>
 <div class="math notranslate nohighlight" id="equation-csda-continuous-energy-loss">
-<span class="eqno">(6)<a class="headerlink" href="#equation-csda-continuous-energy-loss" title="Link to this equation"></a></span>\[d^{\mathrm{CSDA}}_{E,i}
+<span class="eqno">(7)<a class="headerlink" href="#equation-csda-continuous-energy-loss" title="Link to this equation"></a></span>\[d^{\mathrm{CSDA}}_{E,i}
 =\sum_{g\in\mathrm{charged}}
 \delta E_g^{\mathrm{edge}}J^E_{i,g}.\]</div>
 <p>The terminal definition deposits the remaining group-midpoint energy when a
 particle leaves the last group in a charged-particle block.</p>
 <section id="conservative-definition">
-<h3><span class="section-number">9.6.1. </span>Conservative definition<a class="headerlink" href="#conservative-definition" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.7.1. </span>Conservative definition<a class="headerlink" href="#conservative-definition" title="Link to this heading"></a></h3>
 <p>Multiplying the multigroup transport equation by midpoint energy and summing
 over groups gives the collision energy-loss coefficient</p>
 <div class="math notranslate nohighlight" id="equation-csda-collision-loss-coefficient">
-<span class="eqno">(7)<a class="headerlink" href="#equation-csda-collision-loss-coefficient" title="Link to this equation"></a></span>\[c^{\mathrm{coll}}_{i,g}
+<span class="eqno">(8)<a class="headerlink" href="#equation-csda-collision-loss-coefficient" title="Link to this equation"></a></span>\[c^{\mathrm{coll}}_{i,g}
 =E_g\sigma_{t,i,g}
 -\sum_{g'}E_{g'}\sigma_{s,i,g\rightarrow g'}.\]</div>
 <p>The conservative deposited-energy field is</p>
 <div class="math notranslate nohighlight" id="equation-csda-conservative-deposition">
-<span class="eqno">(8)<a class="headerlink" href="#equation-csda-conservative-deposition" title="Link to this equation"></a></span>\[d^{\mathrm{conservative}}_{E,i}
+<span class="eqno">(9)<a class="headerlink" href="#equation-csda-conservative-deposition" title="Link to this equation"></a></span>\[d^{\mathrm{conservative}}_{E,i}
 =\sum_g c^{\mathrm{coll}}_{i,g}\overline{\Phi}_{i,g}
 +d^{\mathrm{CSDA}}_{E,i}.\]</div>
 <p>OpenSn exposes this quantity as <code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code> and, when CSDA is
@@ -312,11 +363,11 @@ enabled, as the <code class="docutils literal notranslate"><span class="pre">ene
 the collision and continuous losses in the energy-balance equation below.</p>
 </section>
 <section id="cepxs-response-definition">
-<h3><span class="section-number">9.6.2. </span>CEPXS-response definition<a class="headerlink" href="#cepxs-response-definition" title="Link to this heading"></a></h3>
+<h3><span class="section-number">9.7.2. </span>CEPXS-response definition<a class="headerlink" href="#cepxs-response-definition" title="Link to this heading"></a></h3>
 <p>CEPXS libraries also provide an energy-deposition response coefficient
 <span class="math notranslate nohighlight">\(e^{\mathrm{CEPXS}}_{i,g}\)</span>. The response-based field is</p>
 <div class="math notranslate nohighlight" id="equation-csda-cepxs-response-deposition">
-<span class="eqno">(9)<a class="headerlink" href="#equation-csda-cepxs-response-deposition" title="Link to this equation"></a></span>\[d^{\mathrm{CEPXS}}_{E,i}
+<span class="eqno">(10)<a class="headerlink" href="#equation-csda-cepxs-response-deposition" title="Link to this equation"></a></span>\[d^{\mathrm{CEPXS}}_{E,i}
 =\sum_g e^{\mathrm{CEPXS}}_{i,g}\overline{\Phi}_{i,g}
 +d^{\mathrm{CSDA}}_{E,i}.\]</div>
 <p>OpenSn exposes this quantity as <code class="docutils literal notranslate"><span class="pre">cepxs_energy_deposition</span></code>. It preserves the
@@ -327,7 +378,7 @@ energy balance.</p>
 </section>
 </section>
 <section id="charge-deposition">
-<h2><span class="section-number">9.7. </span>Charge deposition<a class="headerlink" href="#charge-deposition" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.8. </span>Charge deposition<a class="headerlink" href="#charge-deposition" title="Link to this heading"></a></h2>
 <p>Only the slowing-down density at the terminal edge removes particles from a
 charged-particle block. For block <span class="math notranslate nohighlight">\(b\)</span> with terminal group
 <span class="math notranslate nohighlight">\(g_e(b)\)</span>, the CSDA charge contribution is</p>
@@ -348,7 +399,7 @@ position of a charged block in the group array.</p>
 converts the signed particle-rate convention to electric-charge deposition.</p>
 </section>
 <section id="particle-balance">
-<h2><span class="section-number">9.8. </span>Particle balance<a class="headerlink" href="#particle-balance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.9. </span>Particle balance<a class="headerlink" href="#particle-balance" title="Link to this heading"></a></h2>
 <p>Let <span class="math notranslate nohighlight">\(Q_N\)</span>, <span class="math notranslate nohighlight">\(L_{N,\mathrm{in}}\)</span>, <span class="math notranslate nohighlight">\(A_N\)</span>, and
 <span class="math notranslate nohighlight">\(L_{N,\mathrm{out}}\)</span> denote the global volumetric particle source,
 boundary inflow, absorption, and boundary outflow rates. The terminal
@@ -357,7 +408,7 @@ particle-deposition rate is</p>
 \[D_N=\sum_i V_i\sum_b J^E_{i,g_e(b)}.\]</div>
 <p>OpenSn reports the signed relative particle residual</p>
 <div class="math notranslate nohighlight" id="equation-csda-particle-balance">
-<span class="eqno">(10)<a class="headerlink" href="#equation-csda-particle-balance" title="Link to this equation"></a></span>\[B_N^{\mathrm{CSDA}}
+<span class="eqno">(11)<a class="headerlink" href="#equation-csda-particle-balance" title="Link to this equation"></a></span>\[B_N^{\mathrm{CSDA}}
 =\frac{Q_N+L_{N,\mathrm{in}}
 -\left(A_N+L_{N,\mathrm{out}}+D_N\right)}
 {Q_N+L_{N,\mathrm{in}}}.\]</div>
@@ -370,7 +421,7 @@ reflecting boundaries, every particle that leaves comes back in, so the inflow
 is set equal to the converged outflow through that face.</p>
 </section>
 <section id="energy-balance">
-<h2><span class="section-number">9.9. </span>Energy balance<a class="headerlink" href="#energy-balance" title="Link to this heading"></a></h2>
+<h2><span class="section-number">9.10. </span>Energy balance<a class="headerlink" href="#energy-balance" title="Link to this heading"></a></h2>
 <p>The energy-weighted volumetric source and boundary rates are</p>
 <div class="math notranslate nohighlight">
 \[Q_E=\sum_i\sum_g\int_{V_i}E_gq_g(\mathbf r)\,dV,
@@ -386,7 +437,7 @@ c^{\mathrm{coll}}_{i,g}\Phi_g(\mathbf r)\,dV,\]</div>
 =\sum_i V_i d^{\mathrm{CSDA}}_{E,i}.\]</div>
 <p>The reported signed relative energy residual is</p>
 <div class="math notranslate nohighlight" id="equation-csda-energy-balance">
-<span class="eqno">(11)<a class="headerlink" href="#equation-csda-energy-balance" title="Link to this equation"></a></span>\[B_E^{\mathrm{CSDA}}
+<span class="eqno">(12)<a class="headerlink" href="#equation-csda-energy-balance" title="Link to this equation"></a></span>\[B_E^{\mathrm{CSDA}}
 =\frac{Q_E+L_{E,\mathrm{in}}
 -\left(L_{E,\mathrm{out}}+D_E^{\mathrm{coll}}
 +D_E^{\mathrm{CSDA}}\right)}
@@ -397,8 +448,8 @@ the gain is zero but the residual is nonzero.</p>
 <p>The augmented sweep, the conservative deposited-energy field, and the energy
 balance are all built from the same three definitions: the slowing-down density
 <a class="reference internal" href="#equation-csda-slowing-down-density">(4)</a>, the collision energy-loss coefficient
-<a class="reference internal" href="#equation-csda-collision-loss-coefficient">(7)</a>, and the continuous energy-loss density
-<a class="reference internal" href="#equation-csda-continuous-energy-loss">(6)</a>. Because none of these quantities is computed
+<a class="reference internal" href="#equation-csda-collision-loss-coefficient">(8)</a>, and the continuous energy-loss density
+<a class="reference internal" href="#equation-csda-continuous-energy-loss">(7)</a>. Because none of these quantities is computed
 two different ways, the three results agree with each other. The energy the
 balance counts as lost is exactly the integral of <code class="docutils literal notranslate"><span class="pre">csda_energy_deposition</span></code>,
 and any remaining residual reflects how well the solve has converged rather

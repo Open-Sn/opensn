@@ -117,6 +117,20 @@
 <span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">delta_phi_local</span><span class="p">,</span>
 <span class="w">                                        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">ref_phi_new</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Adds the WGDSA correction driven by `phi_change`, the change of the groupset flux moments over</span>
+<span class="cm">   * one transport sweep, to the scalar moments of `phi_new`. The two vectors may be the same.</span>
+<span class="cm">   *</span>
+<span class="cm">   * In a CSDA groupset with charged-particle groups, the diffusion operator of each group also</span>
+<span class="cm">   * removes S_g/dE_g, and the groups are solved in energy order. The source of each group is the</span>
+<span class="cm">   * scattering residual of all groupset groups plus the in-groupset scattering and CSDA</span>
+<span class="cm">   * slowing-down of the corrections already computed for the groups above it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Apply</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
+<span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_change</span><span class="p">,</span>
+<span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_new</span><span class="p">);</span>
+
 <span class="w">  </span><span class="c1">/// Cleans up memory consuming items.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">CleanUp</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 

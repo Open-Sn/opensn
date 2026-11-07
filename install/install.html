@@ -148,6 +148,13 @@ build (if not found on your system):</p>
 <li><p>VTK 9.3.0+</p></li>
 <li><p>Caliper 2.11+</p></li>
 </ol>
+<p>OpenSn calls LAPACK through PETSc and links the BLAS/LAPACK libraries that
+PETSc was built with, which CMake reads from <code class="docutils literal notranslate"><span class="pre">BLASLAPACK_LIB</span></code> in PETSc’s
+<code class="docutils literal notranslate"><span class="pre">lib/petsc/conf/petscvariables</span></code>. The configure output reports them on the
+<code class="docutils literal notranslate"><span class="pre">BLAS/LAPACK:</span></code> line. If PETSc does not record them, CMake searches for a
+system LAPACK with the integer width of PETSc’s BLAS (32-bit, or 64-bit when
+PETSc uses 64-bit BLAS indices). In that case, set <code class="docutils literal notranslate"><span class="pre">BLA_VENDOR</span></code> or
+<code class="docutils literal notranslate"><span class="pre">LAPACK_LIBRARIES</span></code> to the LAPACK that PETSc uses.</p>
 </section>
 <section id="install-with-docker">
 <h2>Install with Docker<a class="headerlink" href="#install-with-docker" title="Link to this heading"></a></h2>

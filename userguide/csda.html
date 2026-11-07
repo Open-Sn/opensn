@@ -67,7 +67,10 @@
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">12. CSDA Charged-Particle Transport</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#basic-workflow">12.1. Basic Workflow</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#cepxs-csda-data">12.2. CEPXS CSDA Data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cepxs-csda-data">12.2. CEPXS CSDA Data</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#energy-group-structure">12.2.1. Energy Group Structure</a></li>
+</ul>
+</li>
 <li class="toctree-l3"><a class="reference internal" href="#problem-requirements">12.3. Problem Requirements</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#derived-field-functions">12.4. Derived Field Functions</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#energy-deposition">12.4.1. <code class="docutils literal notranslate"><span class="pre">energy_deposition</span></code></a></li>
@@ -80,7 +83,8 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#balance-table-entries">12.5. Balance Table Entries</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#convergence-and-verification">12.6. Convergence and Verification</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#within-group-dsa">12.6. Within-Group DSA</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#convergence-and-verification">12.7. Convergence and Verification</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="precice_coupling.html">13. preCICE Multiphysics Coupling</a></li>
@@ -260,6 +264,27 @@ number density a second time. Group energies are preserved by both operations.</
 <p>The legacy custom responses <code class="docutils literal notranslate"><span class="pre">cepxs_charge_deposition</span></code> and
 <code class="docutils literal notranslate"><span class="pre">cepxs_secondary_production</span></code> remain available. <code class="docutils literal notranslate"><span class="pre">charge_deposition</span></code> is an
 additional name for the imported charge response.</p>
+<section id="energy-group-structure">
+<h3><span class="section-number">12.2.1. </span>Energy Group Structure<a class="headerlink" href="#energy-group-structure" title="Link to this heading"></a></h3>
+<p>CSDA results are more sensitive than standard results to the width of the
+charged-particle groups near the cutoff. The CSDA sweep removes particles from
+the lowest-energy group of each charged-particle block at the rate
+<span class="math notranslate nohighlight">\(S_g/\Delta E_g\)</span>, as if each particle slows down through the whole group.
+A standard CEPXS library removes them at twice that rate, as if they cross only
+half the group. Low-energy electrons and positrons scatter most
+strongly, so a wide group at the cutoff overestimates backscatter and the
+secondary radiation it produces, and the CSDA and standard results differ most
+there.</p>
+<p>Use logarithmic or cutoff-refined electron and positron groups, for example
+<code class="docutils literal notranslate"><span class="pre">LOG</span></code> instead of <code class="docutils literal notranslate"><span class="pre">LINEAR</span></code> under <code class="docutils literal notranslate"><span class="pre">ELECTRONS</span></code> in the CEPXS input, especially
+when the source energy is far above the cutoff. For 100 MeV electrons normally
+incident on 1 cm of tungsten with 50 electron groups, S<sub>16</sub>, and
+P<sub>15</sub>, the reverse photon leakage per incident electron is 1.03 with
+linear groups 2 MeV wide and 0.79 with logarithmic groups. The standard library
+gives 0.84 and 0.77, and Monte Carlo gives 0.70. Reverse leakage at such
+energies also depends strongly on the angular quadrature and the scattering
+order, so check convergence in both.</p>
+</section>
 </section>
 <section id="problem-requirements">
 <h2><span class="section-number">12.3. </span>Problem Requirements<a class="headerlink" href="#problem-requirements" title="Link to this heading"></a></h2>
@@ -281,9 +306,9 @@ additional name for the imported charge response.</p>
 <li><p>It is not supported with a precomputed uncollided flux.</p></li>
 <li><p>It is not supported with GPU sweeps.</p></li>
 <li><p>It is not supported with <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;CBC&quot;</span></code>.</p></li>
-<li><p>It is not supported with within-group or two-grid DSA (<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or
-<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> in any groupset). Their diffusion operators omit the CSDA
-slowing-down term.</p></li>
+<li><p>It is not supported with two-grid DSA (<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> in any groupset). The
+two-grid operator omits the CSDA slowing-down term. Within-group DSA is
+supported; see <a class="reference internal" href="#within-group-dsa">Within-Group DSA</a>.</p></li>
 <li><p>It is not supported by
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.html#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem" title="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.DiscreteOrdinatesCurvilinearProblem</span></code></a>.</p></li>
 <li><p>Each contiguous charged-particle group range, identified by nonzero stopping
@@ -395,8 +420,39 @@ for a converged solve its integral equals
 <code class="docutils literal notranslate"><span class="pre">csda_energy_production_rate</span> <span class="pre">+</span> <span class="pre">csda_energy_inflow_rate</span> <span class="pre">-</span>
 <span class="pre">csda_energy_outflow_rate</span></code>.</p>
 </section>
+<section id="within-group-dsa">
+<h2><span class="section-number">12.6. </span>Within-Group DSA<a class="headerlink" href="#within-group-dsa" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> corrects the isotropic error of each group after a sweep. In a
+groupset that contains charged-particle groups, OpenSn uses a CSDA diffusion
+operator: each group’s removal and transport cross sections include the
+slowing-down rate <span class="math notranslate nohighlight">\(S_g/\Delta E_g\)</span>, and the group corrections are solved
+one at a time in energy order, each feeding the slowing-down and in-groupset
+scattering sources of the groups below it. Groupsets without charged-particle
+groups use the standard WGDSA operator. See <a class="reference internal" href="../theory/csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+    <span class="p">{</span>
+        <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">xs</span><span class="o">.</span><span class="n">num_groups</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
+        <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quadrature</span><span class="p">,</span>
+        <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-10</span><span class="p">,</span>
+        <span class="s2">&quot;apply_wgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
+    <span class="p">},</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+<p>WGDSA works with both <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> and the Krylov methods, where it is
+the preconditioner. It corrects the scalar flux and, when the sweep lags angular
+fluxes (reflecting boundaries or sweep cycles), adds the same isotropic
+correction to the lagged angular fluxes. It does not correct the higher flux
+moments. Forward-peaked charged-particle scattering leaves much of the slowly
+converging error in those moments, so the iteration reduction is smaller than
+in problems with nearly isotropic scattering.</p>
+<p>The CSDA operator performs one diffusion solve per group, so
+<code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> applies to the unknown count of a single
+group.</p>
+</section>
 <section id="convergence-and-verification">
-<h2><span class="section-number">12.6. </span>Convergence and Verification<a class="headerlink" href="#convergence-and-verification" title="Link to this heading"></a></h2>
+<h2><span class="section-number">12.7. </span>Convergence and Verification<a class="headerlink" href="#convergence-and-verification" title="Link to this heading"></a></h2>
 <p>CSDA balance is convergence-sensitive. The reported <code class="docutils literal notranslate"><span class="pre">csda_particle_balance</span></code>
 should decrease in magnitude as the transport solve is converged more tightly.
 If the balance does not improve when the linear tolerance is tightened, check that:</p>
