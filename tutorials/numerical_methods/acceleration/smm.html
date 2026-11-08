@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.3.5. SMM: Second-Moment Method Acceleration &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.3.7. SMM: Second-Moment Method Acceleration &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -30,7 +30,7 @@
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
     <link rel="next" title="6. Applications" href="../../applications/index.html" />
-    <link rel="prev" title="5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration" href="cmfd.html" /> 
+    <link rel="prev" title="5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration" href="cmfd.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,9 +67,11 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">5.3. Acceleration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tgdsa.html">5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="wgdsa_tgdsa.html">5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="scdsa.html">5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cmfd.html">5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.5. SMM: Second-Moment Method Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_options.html">5.3.3. DSA Options on Regular Grids: Boundary Closure and Penalty Length</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_distorted_mesh.html">5.3.4. DSA on Distorted Meshes: Why the Penalty Length Is Capped</a></li>
+<li class="toctree-l4"><a class="reference internal" href="scdsa.html">5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmfd.html">5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.7. SMM: Second-Moment Method Acceleration</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +103,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Numerical Methods</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.3. </span>Acceleration</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.3.5. </span>SMM: Second-Moment Method Acceleration</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.7. </span>SMM: Second-Moment Method Acceleration</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,11 +113,11 @@
            <div itemprop="articleBody">
              
   <section id="SMM:-Second-Moment-Method-Acceleration">
-<h1><span class="section-number">5.3.5. </span>SMM: Second-Moment Method Acceleration<a class="headerlink" href="#SMM:-Second-Moment-Method-Acceleration" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.3.7. </span>SMM: Second-Moment Method Acceleration<a class="headerlink" href="#SMM:-Second-Moment-Method-Acceleration" title="Link to this heading"></a></h1>
 <p><img alt="Homogeneous reflecting U-235 cube used for the SMM comparison" src="../../../_images/smm_u235_cube.png" /></p>
 <p>This tutorial compares unaccelerated power iteration with second-moment method (SMM) acceleration for the same multigroup eigenvalue problem. A third solve applies within-group diffusion synthetic acceleration (WGDSA) to the transport iterations instead, for comparison. SMM is currently experimental in OpenSn.</p>
 <section id="Problem-setup">
-<h2><span class="section-number">5.3.5.1. </span>Problem setup<a class="headerlink" href="#Problem-setup" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.1. </span>Problem setup<a class="headerlink" href="#Problem-setup" title="Link to this heading"></a></h2>
 <p>The model is the regression-suite SMM problem: a homogeneous 2 cm cube of U-235 with 84 energy groups and reflecting boundaries. The cross sections are loaded from <code class="docutils literal notranslate"><span class="pre">test/assets/xs/u235_84g.h5</span></code>. Because the domain is homogeneous and closed, it provides a compact correctness check while retaining substantial energy and angular work.</p>
 <p>OpenSn’s current SMM implementation requires one groupset, P0 scattering, and <code class="docutils literal notranslate"><span class="pre">save_angular_flux=True</span></code>. The saved angular flux supplies the second-moment closure used by the low-order diffusion correction.</p>
 <div class="nbinput nblast docutils container">
@@ -148,7 +150,7 @@
 </div>
 </section>
 <section id="Build-the-transport-problem">
-<h2><span class="section-number">5.3.5.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
 <p>A 5 by 5 by 5 mesh keeps the example compact. The 72-direction product quadrature makes the transport sweeps sufficiently expensive to expose the reduction in work from SMM. All three cases use the same within-group solver settings: a classic Richardson solve limited to two iterations, and therefore two transport sweeps, per power iteration and groupset. The unaccelerated and SMM cases place all 84 groups in one groupset, as SMM requires. The <code class="docutils literal notranslate"><span class="pre">use_wgdsa</span></code> argument enables WGDSA and splits the
 groups into two groupsets: the fast groups 0–32 (0.111 to 20 MeV) and the lower-energy groups 33–83 (9.9 eV to 0.111 MeV). The library has no thermal groups, and no neutrons scatter from the lower groupset back into the fast one, so each power iteration solves the fast groupset and then the lower-energy groupset once. Run the generated script with four MPI processes.</p>
 <div class="nbinput nblast docutils container">
@@ -213,7 +215,7 @@ groups into two groupsets: the fast groups 0–32 (0.111 to 20 MeV) and the lowe
 </div>
 </section>
 <section id="Compare-power-iteration,-SMM,-and-WGDSA">
-<h2><span class="section-number">5.3.5.3. </span>Compare power iteration, SMM, and WGDSA<a class="headerlink" href="#Compare-power-iteration,-SMM,-and-WGDSA" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.3. </span>Compare power iteration, SMM, and WGDSA<a class="headerlink" href="#Compare-power-iteration,-SMM,-and-WGDSA" title="Link to this heading"></a></h2>
 <p>The <code class="docutils literal notranslate"><span class="pre">acceleration</span></code> argument of <code class="docutils literal notranslate"><span class="pre">solve</span></code> selects the case. The baseline (<code class="docutils literal notranslate"><span class="pre">None</span></code>) uses no acceleration object. <code class="docutils literal notranslate"><span class="pre">&quot;smm&quot;</span></code> adds <code class="docutils literal notranslate"><span class="pre">SMMAcceleration</span></code> with a continuous piecewise-linear diffusion solve. SMM derives a closure from the angular transport solution, solves the low-order eigenvalue problem, and maps its scalar-flux correction back to transport space. <code class="docutils literal notranslate"><span class="pre">&quot;wgdsa&quot;</span></code> instead preconditions each within-group transport solve with a diffusion correction for within-group scattering; it leaves
 power iteration itself unaccelerated. Wall time is split into three phases, each the maximum across ranks: model setup (mesh, cross sections, transport problem, and solver objects), solver initialization, and the power iterations themselves. WGDSA’s diffusion solvers are built with the transport problem, so they count as model setup, whereas SMM builds its low-order system when the solve starts, so that cost falls in the power-iteration phase.</p>
 <div class="nbinput nblast docutils container">
@@ -275,7 +277,7 @@ power iteration itself unaccelerated. Wall time is split into three phases, each
 </div>
 </section>
 <section id="Interpret-the-metrics">
-<h2><span class="section-number">5.3.5.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
 <p>Agreement in <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span> is the correctness check. Power iterations and sweeps show how strongly each correction reduces high-order transport work. Wall time is machine-dependent; reporting the setup and iteration phases separately isolates the cost and benefit of each acceleration itself.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -396,7 +398,7 @@ Because the low-order solve has a large, roughly fixed cost, SMM pays off most w
 times themselves, measure the improvement from each acceleration.</p>
 </section>
 <section id="Visualize-the-flux-spectrum">
-<h2><span class="section-number">5.3.5.5. </span>Visualize the flux spectrum<a class="headerlink" href="#Visualize-the-flux-spectrum" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.5. </span>Visualize the flux spectrum<a class="headerlink" href="#Visualize-the-flux-spectrum" title="Link to this heading"></a></h2>
 <p>The cube is homogeneous with reflecting boundaries, so the converged scalar flux is spatially uniform and a spatial map carries no information. The energy spectrum is the informative view. The following code computes the volume-averaged flux in each group. It remains in Markdown so regression tests are unchanged; dividing each value by the group’s lethargy width <span class="math notranslate nohighlight">\(\ln(E_{g,\max}/E_{g,\min})\)</span> gives the plotted flux per unit lethargy.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.post</span><span class="w"> </span><span class="kn">import</span> <span class="n">VolumePostprocessor</span>
 
@@ -409,7 +411,7 @@ times themselves, measure the improvement from each acceleration.</p>
 <p><em>Volume-averaged flux per unit lethargy for the 84-group structure of ``u235_84g.h5``, normalized to its peak. The SMM (solid) and unaccelerated (dashed) spectra coincide. With no moderator, the spectrum stays close to the fission spectrum, peaking near 0.7 MeV, and essentially all of the flux lies above 1 keV.</em></p>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">5.3.5.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.7.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In script mode, PyOpenSn handles finalization automatically. In a Jupyter kernel, finalize OpenSn before MPI.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -431,7 +433,7 @@ times themselves, measure the improvement from each acceleration.</p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="cmfd.html" class="btn btn-neutral float-left" title="5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cmfd.html" class="btn btn-neutral float-left" title="5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
         <a href="../../applications/index.html" class="btn btn-neutral float-right" title="6. Applications" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,8 +29,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration" href="cmfd.html" />
-    <link rel="prev" title="5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem" href="wgdsa_tgdsa.html" /> 
+    <link rel="next" title="5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration" href="cmfd.html" />
+    <link rel="prev" title="5.3.4. DSA on Distorted Meshes: Why the Penalty Length Is Capped" href="dsa_distorted_mesh.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,9 +67,11 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">5.3. Acceleration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tgdsa.html">5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="wgdsa_tgdsa.html">5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="cmfd.html">5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="smm.html">5.3.5. SMM: Second-Moment Method Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_options.html">5.3.3. DSA Options on Regular Grids: Boundary Closure and Penalty Length</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_distorted_mesh.html">5.3.4. DSA on Distorted Meshes: Why the Penalty Length Is Capped</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="cmfd.html">5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="smm.html">5.3.7. SMM: Second-Moment Method Acceleration</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +103,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Numerical Methods</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.3. </span>Acceleration</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.3.3. </span>SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.5. </span>SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,11 +113,11 @@
            <div itemprop="articleBody">
              
   <section id="SCDSA:-Spatially-Consistent-Diffusion-Synthetic-Acceleration">
-<h1><span class="section-number">5.3.3. </span>SCDSA: Spatially Consistent Diffusion Synthetic Acceleration<a class="headerlink" href="#SCDSA:-Spatially-Consistent-Diffusion-Synthetic-Acceleration" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.3.5. </span>SCDSA: Spatially Consistent Diffusion Synthetic Acceleration<a class="headerlink" href="#SCDSA:-Spatially-Consistent-Diffusion-Synthetic-Acceleration" title="Link to this heading"></a></h1>
 <p><img alt="Fuel-water quarter-domain with reflecting and vacuum boundaries" src="../../../_images/fuel_water_quarter.png" /></p>
 <p>This tutorial compares ordinary, unaccelerated power iteration with the same two-group eigenvalue calculation using Spatially Consistent Diffusion Synthetic Acceleration (SCDSA).</p>
 <section id="Why-a-fuel-water-problem?">
-<h2><span class="section-number">5.3.3.1. </span>Why a fuel-water problem?<a class="headerlink" href="#Why-a-fuel-water-problem?" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.1. </span>Why a fuel-water problem?<a class="headerlink" href="#Why-a-fuel-water-problem?" title="Link to this heading"></a></h2>
 <p>SCDSA accelerates power iteration, so it requires a multiplying system rather than a nonfissile graphite block. A heterogeneous fuel–water problem is a useful demonstration: fission neutrons are born in the fast group, water moderates them, and the slowly varying thermal eigenmode is well represented by a diffusion correction.</p>
 <p>The model is a 14 cm by 14 cm quarter-domain. Fuel occupies the 10 cm by 10 cm region adjacent to the reflecting left and bottom boundaries; water fills the remaining top and right reflector. The two-group fuel and water cross sections come from <code class="docutils literal notranslate"><span class="pre">test/assets/xs/xs_fuel_g2.xs</span></code> and <code class="docutils literal notranslate"><span class="pre">test/assets/xs/xs_water_g2.xs</span></code> in the regression suite. The outer boundaries are vacuum.</p>
 <div class="nbinput nblast docutils container">
@@ -148,7 +150,7 @@
 </div>
 </section>
 <section id="Build-the-transport-problem">
-<h2><span class="section-number">5.3.3.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
 <p>The mesh uses a 2 by 2 KBA partition and the generated script should be run with four MPI processes. SCDSA currently requires all energy groups to be in one groupset. The groupset contains no WGDSA, TGDSA, or other DSA options. The transport problem is rebuilt for each solve so both cases begin from the same state.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -211,7 +213,7 @@
 </div>
 </section>
 <section id="Compare-power-iteration-and-SCDSA">
-<h2><span class="section-number">5.3.3.3. </span>Compare power iteration and SCDSA<a class="headerlink" href="#Compare-power-iteration-and-SCDSA" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.3. </span>Compare power iteration and SCDSA<a class="headerlink" href="#Compare-power-iteration-and-SCDSA" title="Link to this heading"></a></h2>
 <p>The baseline passes no acceleration object to the power-iteration solver. The second case changes only this setting by passing an <code class="docutils literal notranslate"><span class="pre">SCDSAAcceleration</span></code> object with a piecewise-linear discontinuous diffusion discretization. We record <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span>, completed power iterations, and transport sweeps. Wall time is split into three phases, each the maximum across ranks: model setup (mesh, cross sections, transport problem, and solver objects), solver initialization, and the power iterations
 themselves. SCDSA assembles its diffusion operator when the solve starts, so that cost falls in the power-iteration phase.</p>
 <div class="nbinput nblast docutils container">
@@ -271,7 +273,7 @@ themselves. SCDSA assembles its diffusion operator when the solve starts, so tha
 </div>
 </section>
 <section id="Interpret-the-metrics">
-<h2><span class="section-number">5.3.3.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
 <p>Agreement in <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span> is the correctness check. Power iterations and transport sweeps measure convergence work; lower values indicate that SCDSA is removing the slowly converging eigenmode. Wall time is included for context but is not regression-tested because it depends on the machine. Reporting the setup and iteration phases separately shows where the time goes and isolates the cost and benefit of the acceleration itself.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -378,7 +380,7 @@ diffusion operator when the solve starts and, every outer iteration, up to 50 in
 <p>On this small 784-cell, 16-angle problem a sweep is cheap, so the diffusion work costs nearly as much as the sweeps it saves. Sweep cost grows with the number of angles while the diffusion correction does not, so the 5-fold sweep reduction translates more directly into wall time for higher-order quadratures. Wall times are machine-dependent; the iteration and sweep counts are not.</p>
 </section>
 <section id="Export-and-visualize-the-scalar-flux">
-<h2><span class="section-number">5.3.3.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>
 <p>The converged eigenvalues agree, so the SCDSA solution is used as the representative flux field. The following code exports both group scalar fluxes to VTK. It remains in Markdown so regression tests do not create output files.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
 
@@ -393,7 +395,7 @@ diffusion operator when the solve starts and, every outer iteration, up to 50 in
 fuel.</em></p>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">5.3.3.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.5.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In script mode, PyOpenSn handles finalization automatically. In a Jupyter kernel, finalize OpenSn before MPI.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -415,8 +417,8 @@ fuel.</em></p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="wgdsa_tgdsa.html" class="btn btn-neutral float-left" title="5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="cmfd.html" class="btn btn-neutral float-right" title="5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="dsa_distorted_mesh.html" class="btn btn-neutral float-left" title="5.3.4. DSA on Distorted Meshes: Why the Penalty Length Is Capped" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="cmfd.html" class="btn btn-neutral float-right" title="5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

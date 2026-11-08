@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration &mdash; OpenSn 1.0.1 documentation</title>
+  <title>5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -29,8 +29,8 @@
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" />
-    <link rel="next" title="5.3.5. SMM: Second-Moment Method Acceleration" href="smm.html" />
-    <link rel="prev" title="5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" href="scdsa.html" /> 
+    <link rel="next" title="5.3.7. SMM: Second-Moment Method Acceleration" href="smm.html" />
+    <link rel="prev" title="5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" href="scdsa.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -67,9 +67,11 @@
 <li class="toctree-l3 current"><a class="reference internal" href="index.html">5.3. Acceleration</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="tgdsa.html">5.3.1. TGDSA: Two-Grid Diffusion Synthetic Acceleration</a></li>
 <li class="toctree-l4"><a class="reference internal" href="wgdsa_tgdsa.html">5.3.2. WGDSA and TGDSA in a Multigroup Source-Detector Problem</a></li>
-<li class="toctree-l4"><a class="reference internal" href="scdsa.html">5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.4. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
-<li class="toctree-l4"><a class="reference internal" href="smm.html">5.3.5. SMM: Second-Moment Method Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_options.html">5.3.3. DSA Options on Regular Grids: Boundary Closure and Penalty Length</a></li>
+<li class="toctree-l4"><a class="reference internal" href="dsa_distorted_mesh.html">5.3.4. DSA on Distorted Meshes: Why the Penalty Length Is Capped</a></li>
+<li class="toctree-l4"><a class="reference internal" href="scdsa.html">5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">5.3.6. CMFD: Coarse Mesh Finite-Difference Acceleration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="smm.html">5.3.7. SMM: Second-Moment Method Acceleration</a></li>
 </ul>
 </li>
 </ul>
@@ -101,7 +103,7 @@
           <li class="breadcrumb-item"><a href="../../index.html">Tutorials</a></li>
           <li class="breadcrumb-item"><a href="../index.html"><span class="section-number">5. </span>Numerical Methods</a></li>
           <li class="breadcrumb-item"><a href="index.html"><span class="section-number">5.3. </span>Acceleration</a></li>
-      <li class="breadcrumb-item active"><span class="section-number">5.3.4. </span>CMFD: Coarse Mesh Finite-Difference Acceleration</li>
+      <li class="breadcrumb-item active"><span class="section-number">5.3.6. </span>CMFD: Coarse Mesh Finite-Difference Acceleration</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -111,11 +113,11 @@
            <div itemprop="articleBody">
              
   <section id="CMFD:-Coarse-Mesh-Finite-Difference-Acceleration">
-<h1><span class="section-number">5.3.4. </span>CMFD: Coarse Mesh Finite-Difference Acceleration<a class="headerlink" href="#CMFD:-Coarse-Mesh-Finite-Difference-Acceleration" title="Link to this heading"></a></h1>
+<h1><span class="section-number">5.3.6. </span>CMFD: Coarse Mesh Finite-Difference Acceleration<a class="headerlink" href="#CMFD:-Coarse-Mesh-Finite-Difference-Acceleration" title="Link to this heading"></a></h1>
 <p><img alt="Fuel-water quarter-domain with reflecting and vacuum boundaries" src="../../../_images/fuel_water_quarter.png" /></p>
 <p>This tutorial compares unaccelerated power iteration with coarse-mesh finite-difference (CMFD) acceleration for the same two-group eigenvalue problem.</p>
 <section id="Problem-setup">
-<h2><span class="section-number">5.3.4.1. </span>Problem setup<a class="headerlink" href="#Problem-setup" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.1. </span>Problem setup<a class="headerlink" href="#Problem-setup" title="Link to this heading"></a></h2>
 <p>The 14 cm by 14 cm quarter-domain contains a 10 cm by 10 cm fuel region surrounded by water on its top and right. The left and bottom boundaries are reflecting, and the outer boundaries are vacuum. The two-group cross sections come from the OpenSn regression suite.</p>
 <p>This weakly coupled eigenvalue iteration contains a slowly converging spatial error mode. CMFD represents that mode on an aggregated mesh and applies a low-order correction after each transport update.</p>
 <div class="nbinput nblast docutils container">
@@ -148,7 +150,7 @@
 </div>
 </section>
 <section id="Build-the-transport-problem">
-<h2><span class="section-number">5.3.4.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.2. </span>Build the transport problem<a class="headerlink" href="#Build-the-transport-problem" title="Link to this heading"></a></h2>
 <p>The mesh uses a 2 by 2 KBA partition, so run the generated script with four MPI processes. The transport problem, including two within-group iterations per power iteration (<code class="docutils literal notranslate"><span class="pre">l_max_its=2</span></code>), is identical to the one in the <a class="reference internal" href="scdsa.html"><span class="doc">SCDSA tutorial</span></a>, so both tutorials share the same unaccelerated baseline. Once its corrections are active, CMFD switches the groupset to one transport update per power iteration (<code class="docutils literal notranslate"><span class="pre">update_wgs_max_its=1</span></code>, the default). Rebuilding the problem ensures that the
 baseline and accelerated calculations start from the same state.</p>
 <div class="nbinput nblast docutils container">
@@ -212,7 +214,7 @@ baseline and accelerated calculations start from the same state.</p>
 </div>
 </section>
 <section id="Compare-power-iteration-and-CMFD">
-<h2><span class="section-number">5.3.4.3. </span>Compare power iteration and CMFD<a class="headerlink" href="#Compare-power-iteration-and-CMFD" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.3. </span>Compare power iteration and CMFD<a class="headerlink" href="#Compare-power-iteration-and-CMFD" title="Link to this heading"></a></h2>
 <p>The baseline passes no acceleration object to the eigenvalue solver. The accelerated case adds <code class="docutils literal notranslate"><span class="pre">CMFDAcceleration</span></code>. <code class="docutils literal notranslate"><span class="pre">local_aggregation</span></code> combines nearby fine cells owned by each MPI rank, while <code class="docutils literal notranslate"><span class="pre">aggregation_size=4</span></code> targets about four fine cells per coarse cell. <code class="docutils literal notranslate"><span class="pre">relaxation=1.0</span></code> applies the full accepted correction, and the face-current closure is left at its default, the partial-current (pCMFD) closure. Wall time is split into three phases, each the maximum across ranks: model setup (mesh,
 cross sections, transport problem, and solver objects), solver initialization, and the power iterations themselves. CMFD builds its coarse-mesh data when the solve starts, so that cost falls in the power-iteration phase.</p>
 <div class="nbinput nblast docutils container">
@@ -269,7 +271,7 @@ cross sections, transport problem, and solver objects), solver initialization, a
 </div>
 </section>
 <section id="Interpret-the-metrics">
-<h2><span class="section-number">5.3.4.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.4. </span>Interpret the metrics<a class="headerlink" href="#Interpret-the-metrics" title="Link to this heading"></a></h2>
 <p>Agreement in <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span> checks that CMFD converges to the transport solution. Power iterations and transport sweeps measure deterministic convergence work. Wall time is shown for context and varies by machine; reporting the setup and iteration phases separately isolates the cost and benefit of CMFD itself.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -361,7 +363,7 @@ the power iterations.</p>
 <p>Model setup takes about 0.015 s in both cases and solver initialization is negligible, so setup is about 2% of the unaccelerated run and 14% of the CMFD run. Including it lowers the overall speedup to 6.0. The iteration counts are deterministic; the timing values are illustrative rather than regression metrics.</p>
 </section>
 <section id="Export-and-visualize-the-scalar-flux">
-<h2><span class="section-number">5.3.4.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.5. </span>Export and visualize the scalar flux<a class="headerlink" href="#Export-and-visualize-the-scalar-flux" title="Link to this heading"></a></h2>
 <p>The converged eigenvalues and flux shapes agree, so the CMFD solution is used as the representative flux field. The following code exports both group scalar fluxes to VTK. It remains in Markdown so regression tests do not create output files.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.fieldfunc</span><span class="w"> </span><span class="kn">import</span> <span class="n">FieldFunctionGridBased</span>
 
@@ -376,7 +378,7 @@ the power iterations.</p>
 fuel.</em></p>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
-<h2><span class="section-number">5.3.4.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
+<h2><span class="section-number">5.3.6.6. </span>Finalize (for Jupyter Notebook only)<a class="headerlink" href="#Finalize-(for-Jupyter-Notebook-only)" title="Link to this heading"></a></h2>
 <p>In script mode, PyOpenSn handles finalization automatically. In a Jupyter kernel, finalize OpenSn before MPI.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -398,8 +400,8 @@ fuel.</em></p>
            </div>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
-        <a href="scdsa.html" class="btn btn-neutral float-left" title="5.3.3. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="smm.html" class="btn btn-neutral float-right" title="5.3.5. SMM: Second-Moment Method Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="scdsa.html" class="btn btn-neutral float-left" title="5.3.5. SCDSA: Spatially Consistent Diffusion Synthetic Acceleration" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="smm.html" class="btn btn-neutral float-right" title="5.3.7. SMM: Second-Moment Method Acceleration" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>
