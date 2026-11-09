@@ -126,7 +126,7 @@ if __name__ == "__main__":
     problem.WriteFluxMoments(prefix)
     evaluator = ResponseEvaluator(problem=problem)
     evaluator.SetOptions(
-        buffers=[{"name": "phi", "file_prefixes": {"flux_moments": prefix}}],
+        data=[{"name": "phi", "file_prefixes": {"flux_moments": prefix}}],
         sources={"material": [{"block_id": 0, "strength": [1.0]}]},
     )
     evaluator_integral = evaluator.EvaluateResponse("phi")
@@ -137,13 +137,8 @@ if __name__ == "__main__":
     surface_prefix = "RZIntegratedSurface_p"
     problem.WriteSurfaceAngularFluxes(surface_prefix, boundary_surfaces=["rmax"])
     (surface,) = problem.ReadSurfaceAngularFluxes(surface_prefix, ["rmax"])
-    num_surface_nodes = sum(surface["mapping"]["num_face_nodes"])
-    local_fe_area = 0.0
-    if num_surface_nodes > 0:
-        num_directions = len(surface["data"]["fe_shape"]) // num_surface_nodes
-        local_fe_area = sum(surface["data"]["fe_shape"]) / num_directions
-    fe_surface_area = global_sum(local_fe_area)
-    mass_surface_area = global_sum(sum(surface["data"]["M_ij"], 0.0))
+    fe_surface_area = global_sum(sum(surface["mapping"]["fe_shape"], 0.0))
+    mass_surface_area = global_sum(sum(surface["mapping"]["M_ij"], 0.0))
     lateral_area = 2.0 * math.pi * R * H
 
     fissile_xs = MultiGroupXS()
