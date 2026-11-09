@@ -191,9 +191,10 @@
 
 <span class="cm">/**</span>
 <span class="cm"> * Translates sweep boundary conditions to those of the diffusion correction in acceleration</span>
-<span class="cm"> * methods. Reflecting boundaries become zero-current (Neumann) boundaries. Every boundary with a</span>
-<span class="cm"> * prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three get</span>
-<span class="cm"> * the condition selected by `closure`.</span>
+<span class="cm"> * methods. Reflecting boundaries become zero-current (Neumann) boundaries. WGDSA adds the inward</span>
+<span class="cm"> * current of the residual on those that lag their incoming flux (WGDSA::Apply). Every boundary with</span>
+<span class="cm"> * a prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three</span>
+<span class="cm"> * get the condition selected by `closure`.</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundaryCondition</span><span class="o">&gt;</span>
 <span class="n">TranslateBCs</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepBoundary</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">sweep_boundaries</span><span class="p">,</span>

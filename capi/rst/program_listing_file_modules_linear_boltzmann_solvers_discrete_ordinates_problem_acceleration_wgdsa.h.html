@@ -121,6 +121,16 @@
 <span class="cm">   * Adds the WGDSA correction driven by `phi_change`, the change of the groupset flux moments over</span>
 <span class="cm">   * one transport sweep, to the scalar moments of `phi_new`. The two vectors may be the same.</span>
 <span class="cm">   *</span>
+<span class="cm">   * A reflecting boundary that lags its incoming angular flux by one sweep (the one with the</span>
+<span class="cm">   * smaller boundary id of a pair of opposing reflecting boundaries, and the outer surface in 1D</span>
+<span class="cm">   * spherical geometry) adds the boundary residual: the correction has the inward net current J,</span>
+<span class="cm">   * the inward partial current of the change of the lagged incoming flux, in place of zero current.</span>
+<span class="cm">   * That change is the new delayed angular flux minus the old one when `subtract_old_delayed_psi`</span>
+<span class="cm">   * is true (after a sweep, whose `phi_change` is the change over the sweep), and the new delayed</span>
+<span class="cm">   * angular flux itself otherwise (a preconditioner applied to a residual vector whose lagged block</span>
+<span class="cm">   * is held as the new delayed angular flux). The CSDA energy slopes of the lagged fluxes add no</span>
+<span class="cm">   * residual.</span>
+<span class="cm">   *</span>
 <span class="cm">   * In a CSDA groupset with charged-particle groups, the diffusion operator of each group also</span>
 <span class="cm">   * removes S_g/dE_g, and the groups are solved in energy order. The source of each group is the</span>
 <span class="cm">   * scattering residual of all groupset groups plus the in-groupset scattering and CSDA</span>
@@ -129,6 +139,7 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">Apply</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
 <span class="w">                    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_change</span><span class="p">,</span>
+<span class="w">                    </span><span class="kt">bool</span><span class="w"> </span><span class="n">subtract_old_delayed_psi</span><span class="p">,</span>
 <span class="w">                    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_new</span><span class="p">);</span>
 
 <span class="w">  </span><span class="c1">/// Cleans up memory consuming items.</span>

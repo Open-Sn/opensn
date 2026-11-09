@@ -249,6 +249,8 @@ iteration k-eigen solve, or a nonlinear k-eigen solve?</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
@@ -256,6 +258,8 @@ iteration k-eigen solve, or a nonlinear k-eigen solve?</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <p>These settings control the solve performed within a single groupset.</p>
 </section>
@@ -370,6 +374,11 @@ systems unless acceleration is also enabled.</p>
 <li><p>usually slower and less robust than Krylov methods on harder problems</p></li>
 <li><p>convergence can deteriorate badly for optically thick or highly scattering
 cases without acceleration</p></li>
+<li><p>in fixed-source and time-dependent solves, fission within the groupset is
+lagged by one iteration like scattering. WGDSA and TGDSA do not correct it, so
+a problem with a multiplication factor close to one converges at about that
+factor per iteration. The Krylov methods converge fission with the rest of the
+groupset operator.</p></li>
 </ul>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
@@ -439,15 +448,18 @@ memory.</p>
 the preconditioner applied on the right.</p>
 <p>Why use it:</p>
 <ul class="simple">
-<li><p>with <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code>. The DSA preconditioner solves its
-diffusion system only to <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>/<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>, so it
-differs slightly between applications. Standard GMRES assumes a fixed
-preconditioner and can then report convergence while the transport solution is
-still in error; flexible GMRES remains exact.
-With standard GMRES, the transport error follows the DSA tolerance once that
-tolerance is looser than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, and a groupset that uses
-<code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> with such a DSA tolerance prints a
-warning suggesting <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code>. Setting <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code> and
+<li><p>with <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> or <code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> when the DSA diffusion system is
+solved iteratively. The iterative solve stops at the relative tolerance
+<code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>/<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>, so the DSA preconditioner differs
+slightly between applications. Standard GMRES assumes a fixed preconditioner
+and can then report convergence while the transport solution is still in
+error. Flexible GMRES remains exact. With standard GMRES, the transport error
+follows the DSA tolerance once that tolerance is looser than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>.
+A groupset that uses <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> with such a DSA
+tolerance prints a warning suggesting <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code>. The warning compares
+only the tolerances. A direct diffusion solve, which the default <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>
+policy chooses for small systems on one MPI process, is the same in every
+application, and standard GMRES is then exact. Setting <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code> and
 <code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code> no larger than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> also avoids the error, at the
 cost of tighter diffusion solves.</p></li>
 </ul>
@@ -598,6 +610,10 @@ solution is consistent across groupset boundaries.</p>
 <li><p>if the problem has only one groupset, AGS is irrelevant</p></li>
 <li><p>if the problem has multiple groupsets, AGS is part of the main solve
 algorithm, not just a logging detail</p></li>
+<li><p>in fixed-source and time-dependent solves with fission, fission that emits
+from one groupset into another is iterated by AGS at about the multiplication
+factor of the problem per pass, which can take hundreds of passes (see
+<a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>)</p></li>
 </ul>
 </section>
 <section id="ags-convergence-check">
@@ -621,7 +637,7 @@ local scalar flux or to the moment itself, whichever is larger. It can be useful
 when localized solution changes matter more than the global norm.</p>
 </section>
 <section id="ags-tolerance">
-<h3><span class="section-number">8.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
+<span id="iterative-ags-tolerance"></span><h3><span class="section-number">8.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
 <p>This is the stopping tolerance for the AGS iteration.</p>
 <p>What it tests:</p>
 <ul class="simple">
@@ -636,12 +652,39 @@ passes, using either the <code class="docutils literal notranslate"><span class=
 <li><p><code class="docutils literal notranslate"><span class="pre">1.0e-7</span></code> to <code class="docutils literal notranslate"><span class="pre">1.0e-8</span></code> may be appropriate when strong cross-groupset
 coupling must be converged tightly</p></li>
 </ul>
-<p>In general, the groupset inner solves should be at least as tight as the AGS
-solve, and usually somewhat tighter. The change between AGS iterates includes
-the error of the inner solves, so with looser inner solves it stalls above
-<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> and the iteration runs to <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>. The <code class="docutils literal notranslate"><span class="pre">l2</span></code>
-check is absolute, so compare <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> with <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> times the
-norm of the flux.</p>
+<p>In general, the groupset inner solves should be tighter than the AGS solve.
+The change between AGS iterates includes the error that the inner solves
+leave, so the AGS iteration cannot stop until that error is below its own test.
+Compare the two in the same terms:</p>
+<ul class="simple">
+<li><p>With the PETSc inner methods, <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> bounds the relative residual of a
+groupset solve, not its error. A groupset whose iteration converges at rate
+<span class="math notranslate nohighlight">\(\rho\)</span> leaves an error of up to about <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> <span class="math notranslate nohighlight">\(/(1-\rho)\)</span>
+relative to the flux. <span class="math notranslate nohighlight">\(\rho\)</span> is the convergence rate of the whole
+groupset iteration. Without acceleration it is set by everything the
+iteration lags: the within-group scattering, the scattering between the groups
+of the groupset and, in fixed-source and time-dependent solves, the fission
+within the groupset. Two groups that scatter strongly into each other converge
+slowly even without within-group scattering. WGDSA reduces the within-group
+part and TGDSA the part that scattering between the groups couples.
+<code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> already scales its test by <span class="math notranslate nohighlight">\(1-\rho\)</span>.</p></li>
+<li><p>The <code class="docutils literal notranslate"><span class="pre">l2</span></code> check is absolute. <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> is in the units of the flux,
+so compare it with that relative error times the L2 norm of the flux. The
+<code class="docutils literal notranslate"><span class="pre">pointwise</span></code> check is relative.</p></li>
+<li><p>The AGS test also scales <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> by <span class="math notranslate nohighlight">\(1-\varrho\)</span>.</p></li>
+</ul>
+<p>When the inner error is above the AGS test, the AGS iteration does not stop at
+the inner tolerance. It runs slowly. A groupset whose PETSc solve starts below
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> takes no Krylov iteration, but the sweep that rebuilds its angular
+flux after the solve still applies one source iteration to it. Each AGS pass
+then advances that groupset by one source iteration, and the AGS iteration can
+take tens of passes or reach <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code>. The log shows this as
+groupsets that converge at iteration 0 while the AGS change decreases slowly.
+Tighten
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>, add DSA to the groupsets with strong scattering, or loosen
+<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code>. Loosening <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> or switching to the
+<code class="docutils literal notranslate"><span class="pre">pointwise</span></code> check stops the iteration sooner, with the accuracy of the inner
+solves.</p>
 </section>
 <section id="max-ags-iterations">
 <h3><span class="section-number">8.5.4. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>
@@ -692,71 +735,100 @@ tighter inner solves</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_h_perp_convention</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_verbose</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code></p></li>
 </ul>
 <section id="wgdsa">
 <h3><span class="section-number">8.6.1. </span>WGDSA<a class="headerlink" href="#wgdsa" title="Link to this heading"></a></h3>
 <p>WGDSA stands for within-group diffusion synthetic acceleration. Enabling
-<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> creates a diffusion MIP solve over the current groupset and
-applies the resulting correction to the updated flux.</p>
+<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code> creates one MIP diffusion solve for the groupset. After each
+groupset iteration, it corrects the scalar flux of every group with the
+solution of a one-group diffusion problem whose source is the change of that
+group’s within-group scattering source. The groups are not coupled in the
+correction. In a groupset with charged-particle groups and <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code>,
+WGDSA instead solves one diffusion problem per group in energy order, coupled
+by in-groupset scattering and CSDA slowing-down (see <a class="reference internal" href="csda.html"><span class="doc">CSDA Charged-Particle Transport</span></a>). With
+<code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> the correction is applied after each sweep. With the
+PETSc methods it is the preconditioner.</p>
 <p>Why use it:</p>
 <ul class="simple">
-<li><p>to accelerate scattering-dominated inner iterations</p></li>
-<li><p>especially useful with Richardson-style iteration</p></li>
-<li><p>can also help PETSc-based inner solves when used as part of the transport
-solve workflow</p></li>
+<li><p>to accelerate inner iterations that are slow because of within-group
+scattering in optically thick regions</p></li>
+<li><p>with any inner method: it is the correction step of Richardson iteration and
+the preconditioner of the Krylov methods</p></li>
 </ul>
 <p>WGDSA controls:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>: stopping tolerance for the diffusion correction solve</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code>: hard cap on WGDSA iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>: residual tolerance of the iterative diffusion solve,
+relative to the norm of its right-hand side</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code>: maximum iterations of the iterative diffusion solve</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code>: PETSc solver setup policy for the WGDSA diffusion
-solve. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses direct PETSc LU for systems at or below
-<code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
-otherwise. <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code>, and <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> force a
-specific path.</p></li>
+solve. <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> uses direct PETSc LU on one MPI process for systems at or
+below <code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns, and conjugate
+gradients preconditioned by BoomerAMG otherwise. <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> and
+<code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> force those paths. <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> takes the KSP/PC setup
+from <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code>: maximum global WGDSA diffusion unknown count
-for the automatic direct solve. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
+for the automatic direct solve. The count is the number of spatial nodes times
+the number of groups in the groupset, or the number of spatial nodes for the
+per-group systems of a CSDA groupset. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code>: PETSc options for the diffusion solver. They must
+carry the solver’s prefix (see <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>).</p></li>
 </ul>
+<p>The direct solve ignores <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code> and <code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its</span></code>.</p>
 <p>Reasonable values:</p>
 <ul class="simple">
-<li><p>start with <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its=30</span></code></p></li>
+<li><p>start with <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_its=30</span></code> with
+<code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code></p></li>
+<li><p>with <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> and an iterative diffusion solve,
+use a <code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code> no larger than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> (see
+<code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> above)</p></li>
 <li><p>if WGDSA is clearly helping but not converging tightly enough, reduce the
 tolerance to <code class="docutils literal notranslate"><span class="pre">1.0e-5</span></code> or raise the iteration cap modestly</p></li>
-<li><p>it is usually not necessary to solve the DSA system more tightly than the
-transport problem itself</p></li>
 </ul>
 </section>
 <section id="tgdsa">
 <h3><span class="section-number">8.6.2. </span>TGDSA<a class="headerlink" href="#tgdsa" title="Link to this heading"></a></h3>
 <p>TGDSA stands for two-grid diffusion synthetic acceleration. Enabling
-<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> constructs a collapsed one-group diffusion correction using
-two-grid information derived from the groupset cross sections, then projects the
-correction back to the groupset spectrum.</p>
+<code class="docutils literal notranslate"><span class="pre">apply_tgdsa</span></code> builds, per material, the energy spectrum of the slowest error
+mode of the groupset’s iteration in energy and diffusion cross sections
+collapsed with it. After each groupset iteration, it solves one one-group
+diffusion problem whose source is the change of the scattering between the
+groups of the groupset, and adds the solution times the spectrum to the scalar
+flux of each group. It acts after WGDSA when both are enabled. TGDSA requires a
+groupset with at least two groups and is not supported with CSDA.</p>
 <p>TGDSA controls:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>: stopping tolerance for the two-grid diffusion solve</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code>: hard cap on TGDSA iterations</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol</span></code>: residual tolerance of the iterative two-grid diffusion
+solve, relative to the norm of its right-hand side</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its</span></code>: maximum iterations of the iterative two-grid diffusion
+solve</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_solver_policy</span></code>: PETSc solver setup policy for the TGDSA diffusion
 solve, with the same choices and behavior as <code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code>.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code>: maximum global TGDSA diffusion unknown count
-for the automatic direct solve. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
+for the automatic direct solve. The TGDSA system has one unknown per spatial
+node. The default is <code class="docutils literal notranslate"><span class="pre">20000</span></code>.</p></li>
 </ul>
 <p>Reasonable values:</p>
 <ul class="simple">
 <li><p>the same starting values as WGDSA are usually sensible:
-<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its=30</span></code></p></li>
+<code class="docutils literal notranslate"><span class="pre">tgdsa_l_abs_tol=1.0e-4</span></code> and <code class="docutils literal notranslate"><span class="pre">tgdsa_l_max_its=30</span></code>, with the same caveat
+for <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> and <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code></p></li>
 <li><p>TGDSA is a correction solve, so very tight tolerances are usually unnecessary</p></li>
 </ul>
 <p>Why use it:</p>
 <ul class="simple">
-<li><p>to accelerate multigroup error modes that are not well treated by within-group
-acceleration alone</p></li>
+<li><p>to accelerate the error that scattering between the groups of a groupset
+couples across them, which within-group acceleration does not correct, for
+example in thermal groups with upscattering</p></li>
 </ul>
 </section>
 <section id="practical-guidance">
@@ -764,16 +836,21 @@ acceleration alone</p></li>
 <p>For many problems:</p>
 <ul class="simple">
 <li><p>start without DSA</p></li>
-<li><p>if convergence is too slow, try WGDSA first</p></li>
-<li><p>add TGDSA when multigroup coupling remains difficult</p></li>
+<li><p>if convergence is too slow, enable WGDSA in groupsets whose groups scatter
+strongly within themselves</p></li>
+<li><p>enable TGDSA in a groupset that contains thermal upscattering, usually
+together with WGDSA</p></li>
+<li><p>keep every group that receives upscatter in the groupset that has TGDSA</p></li>
 </ul>
+<p>See <a class="reference internal" href="groupsets.html#groupsets-choosing-dsa"><span class="std std-ref">Choosing WGDSA, TGDSA, or both</span></a> for when to use each correction and how to lay
+out groupsets for TGDSA.</p>
 <p>DSA is most useful when there is an actual iteration problem to solve. It is
 not automatically beneficial for every easy case.</p>
 <p>Example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="p">{</span>
     <span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">39</span><span class="p">),</span>
     <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">,</span>
-    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_gmres&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;inner_linear_method&quot;</span><span class="p">:</span> <span class="s2">&quot;petsc_fgmres&quot;</span><span class="p">,</span>
     <span class="s2">&quot;l_abs_tol&quot;</span><span class="p">:</span> <span class="mf">1.0e-6</span><span class="p">,</span>
     <span class="s2">&quot;l_max_its&quot;</span><span class="p">:</span> <span class="mi">200</span><span class="p">,</span>
     <span class="s2">&quot;apply_wgdsa&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span>
@@ -946,8 +1023,8 @@ pathologies</p></li>
 <li><p>Start with <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>.</p></li>
 <li><p>Use the default AGS settings unless there is a clear need to change them.</p></li>
 <li><p>If convergence is slow on scattering-dominated problems, enable WGDSA.</p></li>
-<li><p>If multigroup convergence remains difficult, consider TGDSA and/or revisit
-groupset splitting.</p></li>
+<li><p>If the groups of a groupset upscatter, enable TGDSA as well, and keep the
+whole upscatter range in that groupset (see <a class="reference internal" href="groupsets.html#groupsets-choosing-dsa"><span class="std std-ref">Choosing WGDSA, TGDSA, or both</span></a>).</p></li>
 <li><p>Use <code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> when a simple source-iteration style method is
 specifically desired.</p></li>
 </ol>

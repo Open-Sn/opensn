@@ -290,6 +290,57 @@ operator <span class="math notranslate nohighlight">\(A\)</span> is a diffusion 
 Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
 <span id="id13">Wang and Ragusa [<a class="reference internal" href="#id165" title="Yaqi Wang and Jean C. Ragusa. Diffusion synthetic acceleration for high-order discontinuous finite element $s_n$ transport schemes and application to locally refined unstructured meshes. Nuclear Science and Engineering, 166:145-166, 2010.">WR10</a>]</span>, <span id="id14">Turcksin and Ragusa [<a class="reference internal" href="#id136" title="Bruno Turcksin and Jean C. Ragusa. Discontinuous diffusion synthetic acceleration for sn transport on 2d arbitrary polygonal meshes. Journal of Computational Physics, 274:356-369, 2014. URL: https://www.sciencedirect.com/science/article/pii/S0021999114004100, doi:https://doi.org/10.1016/j.jcp.2014.05.044.">TR14</a>]</span>.</p>
+<p>OpenSn’s within-group DSA (WGDSA, groupset option <code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code>) is applied
+to one groupset at a time, after each iteration of that groupset. It corrects
+only the scalar flux, and it corrects each group separately: the groups of the
+groupset are solved in one diffusion system, which is block diagonal in energy.
+For group <span class="math notranslate nohighlight">\(g\)</span> the correction solves</p>
+<div class="math notranslate nohighlight">
+\[-\nabla \cdot D_g \nabla \delta\phi_g + \sigma_{r,g}\, \delta\phi_g
+= \sigma_{s0,g \leftarrow g} \left( \phi_g^{(i+1/2)} - \phi_g^{(i)} \right) \,,\]</div>
+<p>with <span class="math notranslate nohighlight">\(D_g = 1/(3\sigma_{tr,g})\)</span>, <span class="math notranslate nohighlight">\(\sigma_{tr,g} = \sigma_{t,g} -
+\sigma_{s1,g}\)</span>, <span class="math notranslate nohighlight">\(\sigma_{s1,g}\)</span> the P1 scattering out of group <span class="math notranslate nohighlight">\(g\)</span>,
+and <span class="math notranslate nohighlight">\(\sigma_{r,g} = \max(0,\, \sigma_{t,g} - \sigma_{s0,g \leftarrow g})\)</span>.
+The source is the change of the isotropic within-group scattering source. The
+change of the scattering between the groups of the groupset is not part of it.
+TGDSA (see below) corrects the error mode that this scattering couples across
+the groups. <span class="math notranslate nohighlight">\(\delta\phi_g\)</span> is added to the scalar flux of group
+<span class="math notranslate nohighlight">\(g\)</span>. Higher flux moments are not corrected. Where the sweep lags incoming
+angular fluxes (opposing reflecting boundaries and broken sweep cycles),
+<span class="math notranslate nohighlight">\(\delta\phi_g\)</span> is also added to them as the isotropic correction
+<span class="math notranslate nohighlight">\(\delta\psi_g = \delta\phi_g\)</span>, since the quadrature weights sum to one.
+Groupsets with charged-particle groups use the operator of
+<a class="reference internal" href="csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a> instead.</p>
+<p>Reflecting boundaries are zero-current boundaries of the correction, with one
+exception. Of a pair of opposing reflecting boundaries, the sweep lags the
+incoming angular flux of the one with the smaller boundary id. In 1D spherical
+geometry it lags that of the reflecting outer surface. The error that enters
+through such a boundary is the change of the lagged incoming flux, which the
+sweep has not yet reflected. On it the correction satisfies</p>
+<div class="math notranslate nohighlight">
+\[D_g \frac{\partial \delta\phi_g}{\partial n} = J_g \,, \qquad
+J_g = \sum_{\Omega_d \cdot n &lt; 0} w_d \, |\Omega_d \cdot n| \,
+\bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,\]</div>
+<p>with <span class="math notranslate nohighlight">\(n\)</span> the outward normal and <span class="math notranslate nohighlight">\(\psi^{\text{new}}\)</span> and
+<span class="math notranslate nohighlight">\(\psi^{\text{old}}\)</span> the lagged incoming fluxes after and before the
+sweep. <span class="math notranslate nohighlight">\(J_g\)</span> is the inward partial current of that change. The fluxes
+that the sweep lags where it breaks a cycle, within a partition or between
+partitions, receive the isotropic correction only. The change of those fluxes
+is not a source of the correction.</p>
+<p>With a PETSc inner method (<code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code>, <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>,
+<code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code>), the same correction is the
+preconditioner. Applied to a vector <span class="math notranslate nohighlight">\(v\)</span> of the groupset unknowns, it
+returns <span class="math notranslate nohighlight">\(v + \delta\phi(v)\)</span>, where <span class="math notranslate nohighlight">\(\delta\phi(v)\)</span> solves the
+diffusion problem above with <span class="math notranslate nohighlight">\(v\)</span> in place of the change of the scalar
+flux, and with the lagged incoming fluxes of <span class="math notranslate nohighlight">\(v\)</span> in place of their change
+in <span class="math notranslate nohighlight">\(J_g\)</span>. <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> applies it on the right, the other methods on
+the left.
+The diffusion systems are solved directly with LU, or with conjugate gradients
+preconditioned by BoomerAMG to a tolerance relative to the norm of their
+right-hand side (groupset options <code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy</span></code> and
+<code class="docutils literal notranslate"><span class="pre">wgdsa_l_abs_tol</span></code>). An iterative diffusion solve makes the preconditioner
+change slightly between applications. Flexible GMRES admits that, while GMRES
+and BiCGStab assume a fixed preconditioner.</p>
 <p>The MIP form adds, on every interior face <span class="math notranslate nohighlight">\(f\)</span>, a penalty
 <span class="math notranslate nohighlight">\(\kappa_f \int_f [\![\delta\Phi]\!]\,[\![v]\!]\)</span> with</p>
 <div class="math notranslate nohighlight">
@@ -361,7 +412,7 @@ when <span class="math notranslate nohighlight">\(D_g \le 0\)</span>),</p>
 rule uses it with a safety factor 2.</p>
 </section>
 <section id="thermal-upscattering-acceleration">
-<h2><span class="section-number">6.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
+<span id="theory-two-grid"></span><h2><span class="section-number">6.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
 <p>In low-leakage configurations containing materials with low neutron
 absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
@@ -430,14 +481,38 @@ there is no error mode to remove; a flat spectrum is used. The correction amplit
 = \sum_g \left[ B \left( \phi^{(\text{th}+1/2)} - \phi^{(\text{th})} \right) \right]_g \,,\]</div>
 <p>with <span class="math notranslate nohighlight">\(\langle D \rangle = \sum_g D_g \xi_g\)</span> and
 <span class="math notranslate nohighlight">\(\langle \sigma_a \rangle = \sum_g \bigl(\sigma_{t,g} \xi_g - \sum_{g'}
-\sigma_{s,g \leftarrow g'} \xi_{g'}\bigr)\)</span>, where <span class="math notranslate nohighlight">\(\phi^{(\text{th}+1/2)}\)</span>
-includes the within-group DSA correction when it is used. In time-dependent
+\sigma_{s0,g \leftarrow g'} \xi_{g'}\bigr)\)</span>, where <span class="math notranslate nohighlight">\(D_g\)</span> is that of WGDSA
+and all sums run over the groups of the groupset. <span class="math notranslate nohighlight">\(\xi\)</span>,
+<span class="math notranslate nohighlight">\(\langle D \rangle\)</span> and <span class="math notranslate nohighlight">\(\langle \sigma_a \rangle\)</span> are computed per
+material when the groupset is initialized. <span class="math notranslate nohighlight">\(\phi^{(\text{th}+1/2)}\)</span>
+includes the within-group DSA correction when it is used, and the TGDSA
+correction is added after it. With a PETSc inner method, TGDSA is part of the
+preconditioner and acts on the vector that WGDSA returns. Like WGDSA, it
+corrects only the scalar flux and adds the isotropic correction
+<span class="math notranslate nohighlight">\(\xi_g \theta\)</span> to the lagged angular fluxes. A problem in adjoint mode
+uses the transposed transfer matrix in <span class="math notranslate nohighlight">\(A\)</span>, <span class="math notranslate nohighlight">\(B\)</span> and the residual.
+The diffusion problem for <span class="math notranslate nohighlight">\(\theta\)</span> has the vacuum-boundary closure and the
+MIP penalty of WGDSA, selected by <code class="docutils literal notranslate"><span class="pre">tgdsa_boundary_closure</span></code> and
+<code class="docutils literal notranslate"><span class="pre">tgdsa_h_perp_convention</span></code>. All reflecting boundaries, including those that lag
+their incoming flux, are zero-current boundaries for it. In time-dependent
 problems, <span class="math notranslate nohighlight">\(1/(v_g \theta \Delta t)\)</span> is added to <span class="math notranslate nohighlight">\(\sigma_{t,g}\)</span> and to
 the transport cross section in <span class="math notranslate nohighlight">\(D_g\)</span>. The correction targets the mode
 with spectrum <span class="math notranslate nohighlight">\(\xi\)</span>. Error modes of the Jacobi iteration with other
 energy shapes, such as the <span class="math notranslate nohighlight">\(-\rho\)</span> mode above, contribute to the
 right-hand side and can change through the correction, but they are not
 specifically removed.</p>
+<p>With a stationary inner iteration (<code class="docutils literal notranslate"><span class="pre">classic_richardson</span></code> or
+<code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code>), such a mode decays only at the rate set by its own
+eigenvalue <span class="math notranslate nohighlight">\(\lambda\)</span>, about <span class="math notranslate nohighlight">\(|\lambda|\)</span> per iteration. When
+<span class="math notranslate nohighlight">\(A^{-1}B\)</span> has an eigenvalue near <span class="math notranslate nohighlight">\(-\rho\)</span> and <span class="math notranslate nohighlight">\(\rho\)</span> is close
+to one, the groupset iteration with TGDSA therefore converges slowly or stalls
+even though the mode <span class="math notranslate nohighlight">\(\xi\)</span> is removed. This happens exactly for a groupset
+of two groups coupled by down- and upscatter, and approximately whenever
+neighboring groups dominate the coupling between the groups of the groupset.
+The C5G7 moderator, for example, has <span class="math notranslate nohighlight">\(\rho = 0.872\)</span> and the eigenvalue
+<span class="math notranslate nohighlight">\(-0.871\)</span>. Krylov inner methods (<code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>, <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code>) are not
+limited by the sign of an eigenvalue and should be used with TGDSA for such
+groupsets.</p>
 </section>
 <section id="power-iterations">
 <h2><span class="section-number">6.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>

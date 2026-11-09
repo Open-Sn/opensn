@@ -239,6 +239,29 @@
 <span class="w">  </span><span class="p">{</span>
 <span class="w">  </span><span class="p">}</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Receives a nodal inward partial current, indexed by (cell local id, face, face node, group</span>
+<span class="cm">   * index within the groupset).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Passes to `tally`, for every face node and groupset group of a boundary whose incoming angular</span>
+<span class="cm">   * flux is lagged by one sweep, the inward partial current</span>
+<span class="cm">   * \f$ \sum_{n:\, \Omega_n \cdot \hat{n} &lt; 0} w_n |\Omega_n \cdot \hat{n}| \delta\psi_n \f$</span>
+<span class="cm">   * of the lagged incoming fluxes, with `quadrature` the groupset quadrature. \f$\delta\psi_n\f$ is</span>
+<span class="cm">   * the new delayed value minus the old one when `subtract_old` is true (after a sweep: the change</span>
+<span class="cm">   * of the incoming flux the boundary condition asks for) and the new delayed value otherwise. A</span>
+<span class="cm">   * boundary without lagged incoming fluxes passes nothing.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">TallyDelayedIncomingCurrent</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">subtract_old</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tally</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">}</span>
+
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">*</span><span class="w"> </span><span class="nf">GetNormalForReflection</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">GetReflectedMap</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>

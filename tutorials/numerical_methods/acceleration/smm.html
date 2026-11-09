@@ -335,7 +335,7 @@ power iteration itself unaccelerated. Wall time is split into three phases, each
 </thead>
 <tbody>
 <tr class="row-even"><td><p>No acceleration</p></td>
-<td><p>2.28043169</p></td>
+<td><p>2.28043176</p></td>
 <td><p>95</p></td>
 <td><p>190</p></td>
 </tr>
@@ -345,17 +345,17 @@ power iteration itself unaccelerated. Wall time is split into three phases, each
 <td><p>6</p></td>
 </tr>
 <tr class="row-even"><td><p>WGDSA</p></td>
-<td><p>2.28043176</p></td>
-<td><p>40</p></td>
-<td><p>160</p></td>
+<td><p>2.28043178</p></td>
+<td><p>14</p></td>
+<td><p>56</p></td>
 </tr>
 </tbody>
 </table>
-<p>The sweep count is the total over all groupsets. The unaccelerated and SMM sweeps each cover all 84 groups, whereas each WGDSA sweep covers either the 33 fast groups or the 51 lower-energy groups. One sweep of each WGDSA groupset therefore equals one sweep of all 84 groups, and the 160 WGDSA sweeps are equivalent to 80 sweeps of all 84 groups.</p>
-<p>The SMM eigenvalue differs from the baseline by <span class="math notranslate nohighlight">\(8.4\times10^{-8}\)</span> and the WGDSA eigenvalue by <span class="math notranslate nohighlight">\(7.0\times10^{-8}\)</span>. SMM removes about 97% of the power iterations and transport sweeps. WGDSA removes about 58% of both: it needs 40 power iterations, and its sweeps are equivalent to 80 sweeps of all 84 groups. Each two-iteration within-group solve is far from converged in this all-reflecting cube, and WGDSA reduces the within-group error it leaves behind; the correction is applied to the
-lagged reflected angular fluxes as well as to the scalar flux. The remaining slowly converging error is the fission-source eigenmode, which a low-order eigenvalue correction such as SMM removes far more effectively.</p>
-<p>Convergence is judged on <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span> alone. At this tolerance the volume-averaged spectra of all three solves agree to better than <span class="math notranslate nohighlight">\(10^{-7}\)</span> of the peak, and the unaccelerated and WGDSA fluxes are spatially flat to better than <span class="math notranslate nohighlight">\(10^{-6}\)</span>, as expected for this homogeneous, reflecting cube. The SMM flux has not yet reached that shape: after three power iterations its pointwise values in the peak group vary by about 12% around the volume average, and some values in low-flux
-groups are slightly negative, down to about <span class="math notranslate nohighlight">\(-0.1\%\)</span> of the peak-group average.</p>
+<p>The sweep count is the total over all groupsets. The unaccelerated and SMM sweeps each cover all 84 groups, whereas each WGDSA sweep covers either the 33 fast groups or the 51 lower-energy groups. One sweep of each WGDSA groupset therefore equals one sweep of all 84 groups, and the 56 WGDSA sweeps are equivalent to 28 sweeps of all 84 groups.</p>
+<p>The SMM eigenvalue differs from the baseline by <span class="math notranslate nohighlight">\(1.5\times10^{-8}\)</span> and the WGDSA eigenvalue by <span class="math notranslate nohighlight">\(1.3\times10^{-8}\)</span>. SMM removes about 97% of the power iterations and transport sweeps. WGDSA removes about 85% of both: it needs 14 power iterations, and its sweeps are equivalent to 28 sweeps of all 84 groups. Each two-iteration within-group solve is far from converged in this all-reflecting cube, and WGDSA reduces the within-group error it leaves behind. The correction is applied to the
+lagged reflected angular fluxes as well as to the scalar flux. Of each pair of opposite reflecting faces, the sweep lags the incoming angular flux of one. On that face the diffusion correction has the inward partial current of the change of the lagged flux, the part of the error the sweep has not yet reflected, in place of zero current. The remaining slowly converging error is the fission-source eigenmode, which a low-order eigenvalue correction such as SMM removes far more effectively.</p>
+<p>Convergence is judged on <span class="math notranslate nohighlight">\(k_{\mathrm{eff}}\)</span> alone. At this tolerance the volume-averaged spectra of all three solves agree to better than <span class="math notranslate nohighlight">\(10^{-7}\)</span> of the peak, and the unaccelerated and WGDSA fluxes are spatially flat to better than <span class="math notranslate nohighlight">\(10^{-6}\)</span>, as expected for this homogeneous, reflecting cube. The SMM flux has not yet reached that shape: after three power iterations its pointwise values in the peak group differ from the volume average by up to about 8.5%, and some values in
+low-flux groups are slightly negative, down to about <span class="math notranslate nohighlight">\(-0.07\%\)</span> of the peak-group average.</p>
 <p>The wall-time breakdown below is the median of five four-process runs:</p>
 <table class="docutils align-default">
 <thead>
@@ -369,33 +369,33 @@ groups are slightly negative, down to about <span class="math notranslate nohigh
 </thead>
 <tbody>
 <tr class="row-even"><td><p>No acceleration</p></td>
-<td><p>0.058</p></td>
-<td><p>0.001</p></td>
-<td><p>7.806</p></td>
-<td><p>7.865</p></td>
-<td><p>0.082</p></td>
+<td><p>0.036</p></td>
+<td><p>0.002</p></td>
+<td><p>12.346</p></td>
+<td><p>12.385</p></td>
+<td><p>0.130</p></td>
 </tr>
 <tr class="row-odd"><td><p>SMM</p></td>
-<td><p>0.053</p></td>
-<td><p>0.001</p></td>
-<td><p>7.244</p></td>
-<td><p>7.300</p></td>
-<td><p>2.415</p></td>
+<td><p>0.039</p></td>
+<td><p>0.002</p></td>
+<td><p>8.978</p></td>
+<td><p>9.019</p></td>
+<td><p>2.993</p></td>
 </tr>
 <tr class="row-even"><td><p>WGDSA</p></td>
-<td><p>0.200</p></td>
-<td><p>0.001</p></td>
-<td><p>9.270</p></td>
-<td><p>9.471</p></td>
-<td><p>0.232</p></td>
+<td><p>0.179</p></td>
+<td><p>0.002</p></td>
+<td><p>3.768</p></td>
+<td><p>3.948</p></td>
+<td><p>0.269</p></td>
 </tr>
 </tbody>
 </table>
-<p>Setup is small in every case. Model setup takes about 0.05 s, or 0.20 s with WGDSA because its diffusion solvers are built with the transport problem. Setup is at most about 2% of any total.</p>
-<p>Each SMM power iteration costs about 29 times as much as an unaccelerated one. Its six sweeps take only about <span class="math notranslate nohighlight">\(6\times41\)</span> ms <span class="math notranslate nohighlight">\(\approx0.25\)</span> s; the remaining <span class="math notranslate nohighlight">\(\approx7.0\)</span> s, about 97% of the iteration time, is the low-order work: building the low-order system when the solve starts and, every power iteration, solving an 84-group diffusion eigenvalue problem with up to 30 inner power iterations (<code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code>). The net speedup is 1.08 for the power iterations and 1.08 overall.
+<p>Setup is small in every case. Model setup takes about 0.04 s, or 0.18 s with WGDSA because its diffusion solvers are built with the transport problem. Setup is at most about 5% of any total.</p>
+<p>Each SMM power iteration costs about 23 times as much as an unaccelerated one. Its six sweeps take only about <span class="math notranslate nohighlight">\(6\times65\)</span> ms <span class="math notranslate nohighlight">\(\approx0.39\)</span> s. The remaining <span class="math notranslate nohighlight">\(\approx8.6\)</span> s, about 96% of the iteration time, is the low-order work: building the low-order system when the solve starts and, every power iteration, solving an 84-group diffusion eigenvalue problem with up to 30 inner power iterations (<code class="docutils literal notranslate"><span class="pre">pi_max_its</span></code>). The net speedup is 1.38 for the power iterations and 1.37 overall.
 Because the low-order solve has a large, roughly fixed cost, SMM pays off most when transport sweeps are expensive, for example with finer meshes or more directions.</p>
-<p>WGDSA is still slower than the baseline. It removes 58% of the power iterations, but each costs about 2.8 times as much because every within-group Richardson iteration adds diffusion solves for all 84 groups, so the whole calculation takes about 1.2 times as long as the baseline (a speedup of 0.83). WGDSA pays off when within-group scattering is what converges slowly, not when the eigenmode limits convergence. Absolute wall times vary from machine to machine, so the speedups, rather than the
-times themselves, measure the improvement from each acceleration.</p>
+<p>WGDSA is the fastest of the three solves. Each of its power iterations costs about 2.1 times as much as an unaccelerated one because every within-group Richardson iteration adds diffusion solves for all 84 groups, but it removes 85% of the power iterations. The speedup is 3.28 for the power iterations and 3.14 overall. SMM needs fewer power iterations and sweeps, but on this small mesh its low-order solve costs more than the sweeps it saves. WGDSA pays off when within-group scattering is what
+converges slowly, as it is here with only two within-group iterations per power iteration. Absolute wall times vary from machine to machine, so the speedups, rather than the times themselves, measure the improvement from each acceleration.</p>
 </section>
 <section id="Visualize-the-flux-spectrum">
 <h2><span class="section-number">5.3.7.5. </span>Visualize the flux spectrum<a class="headerlink" href="#Visualize-the-flux-spectrum" title="Link to this heading"></a></h2>

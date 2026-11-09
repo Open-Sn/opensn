@@ -906,7 +906,10 @@ preconditioner solves its diffusion system only approximately.</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>apply_wgdsa: bool, default=False</dt><dd><p>Enable within-group DSA for this groupset.</p>
+<dt>apply_wgdsa: bool, default=False</dt><dd><p>Enable within-group DSA for this groupset. After each groupset iteration, one
+diffusion solve corrects the scalar flux of every group of the groupset. The
+system is block diagonal in energy: the source of group g is the change of its
+within-group scattering source, and the groups are not coupled.</p>
 </dd>
 </dl>
 </li>
@@ -927,20 +930,22 @@ right-hand side (the name is historical).</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>wgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the WGDSA solver.</p>
+<dt>wgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the WGDSA solver. Options must carry the solver’s
+prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA</span></code>.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>wgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>WGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve below
-<code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
-otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> control the
-PETSc KSP/PC setup.</p>
+<dt>wgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>WGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve on one MPI
+process at or below <code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> global unknowns, and
+conjugate gradients preconditioned by BoomerAMG otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets
+<code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> control the PETSc KSP/PC setup.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>wgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global WGDSA diffusion unknown count for the automatic direct solve.</p>
+<dt>wgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
+number of spatial nodes times the number of groups in the groupset.</p>
 </dd>
 </dl>
 </li>
@@ -954,12 +959,17 @@ analytic 1/2) on thin boundary cells with the half-range transport form on
 thick ones, uses beta_f as the floor of the interior penalty, and is faster
 than <code class="docutils literal notranslate"><span class="pre">marshak</span></code> when boundary cells are many mean free paths thick;
 <code class="docutils literal notranslate"><span class="pre">dirichlet</span></code> (OpenSn’s original) imposes a zero correction weakly
-(interior-penalty term). Reflecting boundaries are zero-current.</p>
+(interior-penalty term). Reflecting boundaries are zero-current, except that on
+a reflecting boundary that lags its incoming flux, WGDSA imposes the inward
+partial current of the change of the lagged flux.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>apply_tgdsa: bool, default=False</dt><dd><p>Enable two-grid DSA for this groupset.</p>
+<dt>apply_tgdsa: bool, default=False</dt><dd><p>Enable two-grid DSA for this groupset. After each groupset iteration (after
+WGDSA), one energy-collapsed diffusion solve corrects the error mode that the
+scattering between the groups of the groupset couples. Requires at least two
+groups in the groupset.</p>
 </dd>
 </dl>
 </li>
@@ -980,20 +990,22 @@ right-hand side (the name is historical).</p>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>tgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the TGDSA solver.</p>
+<dt>tgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the TGDSA solver. Options must carry the solver’s
+prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_TGDSA</span></code>.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>tgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>TGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve below
-<code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> global unknowns and an iterative solve
-otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets <code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code> control the
-PETSc KSP/PC setup.</p>
+<dt>tgdsa_solver_policy: {‘auto’, ‘direct’, ‘iterative’, ‘petsc_options’}, default=’auto’</dt><dd><p>TGDSA diffusion solver policy. <code class="docutils literal notranslate"><span class="pre">auto</span></code> uses a direct PETSc LU solve on one MPI
+process at or below <code class="docutils literal notranslate"><span class="pre">tgdsa_direct_solve_threshold</span></code> global unknowns, and
+conjugate gradients preconditioned by BoomerAMG otherwise. <code class="docutils literal notranslate"><span class="pre">petsc_options</span></code> lets
+<code class="docutils literal notranslate"><span class="pre">tgdsa_petsc_options</span></code> control the PETSc KSP/PC setup.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>tgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global TGDSA diffusion unknown count for the automatic direct solve.</p>
+<dt>tgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global TGDSA diffusion unknown count for the automatic direct solve, the
+number of spatial nodes.</p>
 </dd>
 </dl>
 </li>

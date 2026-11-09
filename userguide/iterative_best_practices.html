@@ -343,8 +343,9 @@ memory usage. Tune <code class="docutils literal notranslate"><span class="pre">
 method or a method-study baseline</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code> when a stationary PETSc iteration is specifically
 desired</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> with WGDSA or TGDSA: flexible GMRES tolerates the inexact
-DSA diffusion solve, which standard GMRES does not</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> with WGDSA or TGDSA when the DSA diffusion system is solved
+iteratively: flexible GMRES tolerates the inexact diffusion solve, which
+standard GMRES does not</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code> when GMRES memory or restart behavior is problematic and a
 nonsymmetric Krylov alternative is worth trying</p></li>
 </ul>
@@ -373,7 +374,18 @@ tolerance.</p>
 <li><p>if a strongly scattering problem converges poorly, try enabling WGDSA before
 spending too much time micro-tuning unrelated iteration settings</p></li>
 <li><p>if multigroup scattering structure is making convergence difficult across
-energy, TGDSA may also be worth enabling</p></li>
+energy, TGDSA may also be worth enabling (see <a class="reference internal" href="groupsets.html#groupsets-choosing-dsa"><span class="std std-ref">Choosing WGDSA, TGDSA, or both</span></a>
+for when to use each and how to lay out groupsets for TGDSA)</p></li>
+<li><p>with TGDSA, use a Krylov <code class="docutils literal notranslate"><span class="pre">inner_linear_method</span></code> instead of the Richardson
+methods when neighboring groups dominate the coupling between the groups of
+the groupset (two groups coupled by down- and upscatter, or a thermal range
+such as the C5G7 moderator’s). The groupset’s Jacobi energy iteration then has
+an error mode that changes sign every iteration. TGDSA does not remove it, so
+Richardson with TGDSA converges slowly or stalls (see
+<a class="reference internal" href="../theory/iterative.html#theory-two-grid"><span class="std std-ref">Thermal Upscattering Acceleration</span></a>). Use <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> when the TGDSA diffusion system
+is solved iteratively to a loose tolerance, because the preconditioner then
+changes between applications. <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code> is enough when the diffusion
+system is solved directly or to a tight tolerance.</p></li>
 </ul>
 <p>At the same time:</p>
 <ul class="simple">
