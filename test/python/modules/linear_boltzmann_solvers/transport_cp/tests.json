@@ -270,6 +270,25 @@
     ]
   },
   {
+    "file": "transport_2d_cepxs_synthetic_csda_infinite_medium.py",
+    "comment": "CSDA WGDSA with the lagged reflecting-boundary residual: the synthetic CSDA infinite medium with classic Richardson limited to 3 iterations, against the exact infinite-medium reference. The error is 7.1e-3 with the boundary source and 3.0e-2 without it.",
+    "args": [
+      "apply_wgdsa=True",
+      "max_its=3"
+    ],
+    "outfileprefix": "transport_2d_cepxs_synthetic_csda_infinite_medium_wgdsa_its3",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "MAX_GROUP_AVG_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1.5e-02
+      }
+    ]
+  },
+  {
     "file": "transport_2d_cepxs_synthetic_csda_infinite_medium_unstructured.py",
     "comment": "2D unstructured synthetic CEPXS CSDA infinite medium with reflecting boundaries",
     "num_procs": 4,

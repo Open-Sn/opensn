@@ -75,8 +75,10 @@ LBSGroupset::GetInputParameters()
                               "cells with the half-range transport form on thick ones, and is "
                               "faster when boundary cells are many mean free paths thick; "
                               "dirichlet (OpenSn's original) imposes a zero correction weakly "
-                              "with the interior-penalty term. Reflecting boundaries are always "
-                              "zero-current.");
+                              "with the interior-penalty term. Reflecting boundaries are "
+                              "zero-current, except that on a reflecting boundary that lags its "
+                              "incoming flux, WGDSA imposes the inward partial current of the "
+                              "change of the lagged flux.");
 
   // TG DSA options
   params.AddOptionalParameter(

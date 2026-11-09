@@ -104,9 +104,10 @@ TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
 
 /**
  * Translates sweep boundary conditions to those of the diffusion correction in acceleration
- * methods. Reflecting boundaries become zero-current (Neumann) boundaries. Every boundary with a
- * prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three get
- * the condition selected by `closure`.
+ * methods. Reflecting boundaries become zero-current (Neumann) boundaries. WGDSA adds the inward
+ * current of the residual on those that lag their incoming flux (WGDSA::Apply). Every boundary with
+ * a prescribed incoming flux (vacuum, isotropic, arbitrary) has zero incoming error, so all three
+ * get the condition selected by `closure`.
  */
 std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,

@@ -91,6 +91,7 @@ ClassicRichardson::Solve()
       WGDSA::Apply(do_problem,
                    groupset,
                    do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(),
+                   true,
                    do_problem.GetPhiNewLocal());
     }
 

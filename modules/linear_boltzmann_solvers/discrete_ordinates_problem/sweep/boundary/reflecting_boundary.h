@@ -107,6 +107,16 @@ public:
   void AddToNewDelayedAngularSlope(int groupset_id,
                                    const DelayedFluxCorrection& correction) override;
 
+  /**
+   * Tallies the current of an opposing reflecting boundary, the only kind whose incoming flux is
+   * lagged. Of a pair of opposing reflecting boundaries, only the one with the smaller boundary id
+   * lags. The other reads fluxes reflected in the same sweep.
+   */
+  void TallyDelayedIncomingCurrent(int groupset_id,
+                                   const AngularQuadrature& quadrature,
+                                   bool subtract_old,
+                                   const DelayedCurrentTally& tally) const override;
+
   void GetReflectedMap(int groupset_id,
                        std::vector<std::vector<std::uint32_t>>& reflected_maps) override
   {

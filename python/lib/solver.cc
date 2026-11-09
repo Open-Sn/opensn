@@ -1100,11 +1100,14 @@ WrapLBS(py::module& slv)
           - allow_cycles: bool, default=True
               Whether cyclic dependencies are allowed in sweeps.
           - apply_wgdsa: bool, default=False
-              Enable within-group DSA for this groupset. With ``csda_enabled`` and charged-particle
-              groups in the groupset, each group's diffusion operator also removes the CSDA
-              slowing-down rate ``S_g / dE_g``, and the groups are solved one at a time in energy
-              order, coupled by in-groupset scattering and slowing-down. See
-              :ref:`theory_csda_wgdsa`.
+              Enable within-group DSA for this groupset. After each groupset iteration, one
+              diffusion solve corrects the scalar flux of every group of the groupset. The
+              system is block diagonal in energy: the source of group g is the change of its
+              within-group scattering source, and the groups are not coupled. With
+              ``csda_enabled`` and charged-particle groups in the groupset, each group's
+              diffusion operator also removes the CSDA slowing-down rate ``S_g / dE_g``, and
+              the groups are solved one at a time in energy order, coupled by in-groupset
+              scattering and slowing-down. See :ref:`theory_csda_wgdsa`.
           - wgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1113,14 +1116,18 @@ WrapLBS(py::module& slv)
           - wgdsa_verbose: bool, default=False
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
-              PETSc options string for the WGDSA solver.
+              PETSc options string for the WGDSA solver. Options must carry the solver's
+              prefix, the problem name followed by ``_WGDSA``. With ``csda_enabled``, a groupset
+              with charged-particle groups has one solver per group, whose prefix is the problem
+              name followed by ``_WGDSA_g`` and the global group index.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
-              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
-              ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
-              otherwise. ``petsc_options`` lets ``wgdsa_petsc_options`` control the
-              PETSc KSP/PC setup.
+              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
+              process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
+              conjugate gradients preconditioned by BoomerAMG otherwise. ``petsc_options`` lets
+              ``wgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
-              Maximum global WGDSA diffusion unknown count for the automatic direct solve. The
+              Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
+              number of spatial nodes times the number of groups in the groupset. The
               CSDA operator solves one group at a time, so the count is that of one group.
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
@@ -1132,9 +1139,14 @@ WrapLBS(py::module& slv)
               thick ones, uses beta_f as the floor of the interior penalty, and is faster
               than ``marshak`` when boundary cells are many mean free paths thick;
               ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
-              (interior-penalty term). Reflecting boundaries are zero-current.
+              (interior-penalty term). Reflecting boundaries are zero-current, except that on
+              a reflecting boundary that lags its incoming flux, WGDSA imposes the inward
+              partial current of the change of the lagged flux.
           - apply_tgdsa: bool, default=False
-              Enable two-grid DSA for this groupset.
+              Enable two-grid DSA for this groupset. After each groupset iteration (after
+              WGDSA), one energy-collapsed diffusion solve corrects the error mode that the
+              scattering between the groups of the groupset couples. Requires at least two
+              groups in the groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the TGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1143,14 +1155,16 @@ WrapLBS(py::module& slv)
           - tgdsa_verbose: bool, default=False
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
-              PETSc options string for the TGDSA solver.
+              PETSc options string for the TGDSA solver. Options must carry the solver's
+              prefix, the problem name followed by ``_TGDSA``.
           - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
-              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
-              ``tgdsa_direct_solve_threshold`` global unknowns and an iterative solve
-              otherwise. ``petsc_options`` lets ``tgdsa_petsc_options`` control the
-              PETSc KSP/PC setup.
+              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
+              process at or below ``tgdsa_direct_solve_threshold`` global unknowns, and
+              conjugate gradients preconditioned by BoomerAMG otherwise. ``petsc_options`` lets
+              ``tgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
-              Maximum global TGDSA diffusion unknown count for the automatic direct solve.
+              Maximum global TGDSA diffusion unknown count for the automatic direct solve, the
+              number of spatial nodes.
           - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.
@@ -1721,7 +1735,10 @@ WrapLBS(py::module& slv)
           - allow_cycles: bool, default=True
               Whether cyclic dependencies are allowed in sweeps.
           - apply_wgdsa: bool, default=False
-              Enable within-group DSA for this groupset.
+              Enable within-group DSA for this groupset. After each groupset iteration, one
+              diffusion solve corrects the scalar flux of every group of the groupset. The
+              system is block diagonal in energy: the source of group g is the change of its
+              within-group scattering source, and the groups are not coupled.
           - wgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1730,14 +1747,16 @@ WrapLBS(py::module& slv)
           - wgdsa_verbose: bool, default=False
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
-              PETSc options string for the WGDSA solver.
+              PETSc options string for the WGDSA solver. Options must carry the solver's
+              prefix, the problem name followed by ``_WGDSA``.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
-              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
-              ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
-              otherwise. ``petsc_options`` lets ``wgdsa_petsc_options`` control the
-              PETSc KSP/PC setup.
+              WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
+              process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
+              conjugate gradients preconditioned by BoomerAMG otherwise. ``petsc_options`` lets
+              ``wgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
-              Maximum global WGDSA diffusion unknown count for the automatic direct solve.
+              Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
+              number of spatial nodes times the number of groups in the groupset.
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
@@ -1748,9 +1767,14 @@ WrapLBS(py::module& slv)
               thick ones, uses beta_f as the floor of the interior penalty, and is faster
               than ``marshak`` when boundary cells are many mean free paths thick;
               ``dirichlet`` (OpenSn's original) imposes a zero correction weakly
-              (interior-penalty term). Reflecting boundaries are zero-current.
+              (interior-penalty term). Reflecting boundaries are zero-current, except that on
+              a reflecting boundary that lags its incoming flux, WGDSA imposes the inward
+              partial current of the change of the lagged flux.
           - apply_tgdsa: bool, default=False
-              Enable two-grid DSA for this groupset.
+              Enable two-grid DSA for this groupset. After each groupset iteration (after
+              WGDSA), one energy-collapsed diffusion solve corrects the error mode that the
+              scattering between the groups of the groupset couples. Requires at least two
+              groups in the groupset.
           - tgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the TGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1759,14 +1783,16 @@ WrapLBS(py::module& slv)
           - tgdsa_verbose: bool, default=False
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
-              PETSc options string for the TGDSA solver.
+              PETSc options string for the TGDSA solver. Options must carry the solver's
+              prefix, the problem name followed by ``_TGDSA``.
           - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
-              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve below
-              ``tgdsa_direct_solve_threshold`` global unknowns and an iterative solve
-              otherwise. ``petsc_options`` lets ``tgdsa_petsc_options`` control the
-              PETSc KSP/PC setup.
+              TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
+              process at or below ``tgdsa_direct_solve_threshold`` global unknowns, and
+              conjugate gradients preconditioned by BoomerAMG otherwise. ``petsc_options`` lets
+              ``tgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - tgdsa_direct_solve_threshold: int, default=20000
-              Maximum global TGDSA diffusion unknown count for the automatic direct solve.
+              Maximum global TGDSA diffusion unknown count for the automatic direct solve, the
+              number of spatial nodes.
           - tgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the TGDSA diffusion correction, with the same choices
               and boundaries as ``wgdsa_boundary_closure``.

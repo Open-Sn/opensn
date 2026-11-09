@@ -17,8 +17,17 @@ With `apply_wgdsa=True` (console argument), the groupset also applies the CSDA
 WGDSA operator, which corrects the scalar flux and the lagged reflected angular
 fluxes. The correction vanishes at convergence, so the solution must still equal
 the same exact reference.
+
+With `max_its` (console argument), the groupset iteration stops after that many
+iterations. MAX_GROUP_AVG_REL_ERR is then the largest relative error of the
+group averages against the exact reference. After three iterations with
+`apply_wgdsa=True` it tests the CSDA WGDSA correction itself. On the reflecting
+boundaries that lag their incoming flux, the correction includes the inward
+partial current of the change of the lagged flux. Without that boundary source
+the error after three iterations is about four times larger.
 """
 
+import math
 import os
 import sys
 
@@ -135,6 +144,7 @@ def volume_value(ff, op_type, logical_volume):
 
 if __name__ == "__main__":
     apply_wgdsa = bool(globals().get("apply_wgdsa", False))
+    max_its = int(globals().get("max_its", 2000))
     nx = 12
     ny = 12
     x_nodes = [i / nx for i in range(nx + 1)]
@@ -166,7 +176,7 @@ if __name__ == "__main__":
                 "angular_quadrature": pquad,
                 "inner_linear_method": "classic_richardson",
                 "l_abs_tol": 1.0e-10,
-                "l_max_its": 2000,
+                "l_max_its": max_its,
                 "apply_wgdsa": apply_wgdsa,
                 "wgdsa_l_abs_tol": 1.0e-12,
             }
@@ -195,12 +205,18 @@ if __name__ == "__main__":
     vol = RPPLogicalVolume(infx=True, infy=True, infz=True)
     ff_list = problem.GetScalarFluxFieldFunction(only_scalar_flux=False)
 
+    max_rel_err = 0.0
     for g in range(G):
         ff = ff_list[g][0]
         phi_avg = volume_value(ff, "avg", vol)
+        rel_err = abs(phi_avg / phi_ref[g] - 1.0)
+        # A non-finite average must fail the check, and max() would skip a NaN.
+        max_rel_err = max(max_rel_err, rel_err) if math.isfinite(rel_err) else math.inf
         if rank == 0:
             print(f"GROUP_{g}_AVG={phi_avg:.12e}")
             print(f"GROUP_{g}_REF={phi_ref[g]:.12e}")
+    if rank == 0:
+        print(f"MAX_GROUP_AVG_REL_ERR {max_rel_err:.6e}")
 
     ff_name = "energy_deposition"
     edep_ff = problem.CreateFieldFunction(ff_name, "energy_deposition")
