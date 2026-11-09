@@ -118,11 +118,13 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
  *
  * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
  * absorption tau_g = 1/(v_g theta dt) is added to the removal cross section and to the transport
- * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)).
+ * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)). `adjoint` selects
+ * the diffusion coefficient of the transposed scattering.
  */
 std::map<unsigned int, Multigroup_D_and_sigR> PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
                                                              unsigned int first_grp_index,
                                                              unsigned int last_group_index,
+                                                             bool adjoint,
                                                              double time_absorption_scale = 0.0);
 
 class DiscreteOrdinatesProblem;

@@ -55,6 +55,13 @@ private:
 
   double ComputeFissionDenominator(const std::vector<double>& forward_phi,
                                    const std::vector<double>& adjoint_phi) const;
+
+  /**
+   * The forward fission production matrix that the problem's solvers apply, dense and row-major
+   * (destination group g, source group g'): the production matrix, plus the delayed production
+   * when the problem includes delayed neutrons.
+   */
+  std::vector<double> GetFissionProductionMatrix(const MultiGroupXS& xs) const;
   void ScaleForKEigenvalueSensitivity(double k_eff, double denominator);
 
   void ValidateSelectedCoefficient() const;
@@ -67,6 +74,9 @@ private:
 
   SensitivityType sensitivity_type_ = SensitivityType::SIGMA_T;
   NDArray<double, 2> values_;
+  /// Whether values_ holds the result of Execute, and whether it has been scaled to k.
+  bool executed_ = false;
+  bool k_eigenvalue_scaled_ = false;
 
   std::optional<unsigned int> selected_group_;
   std::optional<unsigned int> ell_;

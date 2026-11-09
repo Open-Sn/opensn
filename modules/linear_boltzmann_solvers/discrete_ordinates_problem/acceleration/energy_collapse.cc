@@ -68,7 +68,7 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
   // not iterated with the groupset, so they are excluded from the collapse; scattering from the
   // groupset to them is removal (it is part of the total cross section).
   const unsigned int n = last_group - first_group + 1;
-  const auto& diffusion_coeff_xs = xs.GetDiffusionCoefficient();
+  const auto& diffusion_coeff_xs = xs.GetDiffusionCoefficient(adjoint);
 
   // Include the time absorption 1/(v theta dt) of the theta scheme in the total cross section
   // and the diffusion coefficient.

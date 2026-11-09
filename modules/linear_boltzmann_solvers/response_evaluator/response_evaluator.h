@@ -60,8 +60,13 @@ private:
   using BoundarySources = std::map<uint64_t, BoundarySource>;
 
 public:
+  /// Construct the evaluator and apply its options with SetOptions. Collective.
   explicit ResponseEvaluator(const InputParameters& params);
 
+  /**
+   * Add data sets with SetDataOptions and forward sources with SetSourceOptions. Collective, and
+   * every rank must give the same options.
+   */
   void SetOptions(const InputParameters& params);
 
   /**
@@ -76,8 +81,13 @@ public:
    */
   void SetDataOptions(const InputParameters& input);
 
+  /**
+   * Add forward sources. Collective. A material source counts its cells over all ranks, so every
+   * rank must add the same sources in the same order.
+   */
   void SetSourceOptions(const InputParameters& input);
 
+  /// Add one material source. Collective, as described for SetSourceOptions.
   void SetMaterialSourceOptions(const InputParameters& params);
 
   void SetBoundarySourceOptions(const InputParameters& params);
@@ -94,6 +104,10 @@ public:
   /**
    * Evaluate a response by folding the currently defined forward sources against the adjoint flux
    * moments and angular fluxes of the named data set added with SetDataOptions.
+   *
+   * Point and volumetric sources are evaluated at the problem's time and skipped when inactive
+   * then, as in the forward source assembly. Volumetric sources use the consistent mass matrix.
+   * Boundary sources require adjoint angular fluxes in physical orientation.
    *
    * Collective. Throws `std::invalid_argument` for an unknown data set and `std::logic_error` if
    * the data set lacks the flux moments or angular fluxes that the defined sources require.
@@ -125,17 +139,12 @@ public:
 
 private:
   /**
-   * Evaluates a boundary source and returns the angular flux on the boundary.
-   *
-   * This returns the full angular flux at a particular spatial location, for a particular
-   * groupset, at a particular time, for a particular boundary. No boundary normal information
-   * is included in the evaluation. The incident fluxes are obtained within the EvaluateResponse
-   * routine.
+   * Returns the angular flux of a boundary source for every direction and group of a groupset,
+   * direction-major. Isotropic boundary sources are uniform on the boundary, and the incident
+   * directions are selected within EvaluateResponse.
    */
   std::vector<double> EvaluateBoundaryCondition(uint64_t boundary_id,
-                                                const Vector3& node,
-                                                const LBSGroupset& groupset,
-                                                double time = 0.0) const;
+                                                const LBSGroupset& groupset) const;
 
   std::shared_ptr<DiscreteOrdinatesProblem> do_problem_;
 

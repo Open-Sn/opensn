@@ -295,7 +295,7 @@ Important behavior:
 * steady-state and k-eigenvalue solves require the problem to be in steady-state
   mode
 * switching modes preserves sources and boundary conditions, unlike
-  :py:meth:`SetAdjoint`, which performs a destructive mode reset
+  :py:meth:`SetAdjoint`, which clears sources and boundary sources
 
 .. note::
 
@@ -502,11 +502,13 @@ Important behavior:
 
 * adjoint mode is a property of the problem, not of the solver object
 * if :py:meth:`SetAdjoint(True)` changes the current mode, OpenSn performs a
-  destructive mode reset
-* that reset reinitializes materials in adjoint mode, clears sources and
-  boundary conditions, and zeroes scalar and angular flux state
-* after such a mode change, the desired adjoint sources and boundary conditions
-  must be reapplied before solving
+  mode reset
+* that reset reinitializes materials in adjoint mode, clears point and
+  volumetric sources and isotropic and arbitrary boundaries (which become
+  vacuum), keeps vacuum and reflecting boundaries, and zeroes scalar and angular
+  flux state
+* after such a mode change, the desired adjoint sources and boundary sources
+  must be applied before solving
 
 At the end of the steady-state solve, OpenSn reorients the adjoint solution. The
 adjoint is computed with the forward sweeps, so the angular flux stored for

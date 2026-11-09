@@ -509,6 +509,13 @@ This treatment is useful for localized sources in optically thin or weakly
 scattering regions where a conventional angular quadrature would otherwise
 produce strong ray effects.
 
+Only the scalar flux receives the uncollided component. The stored angular flux
+is the collided part, so the outputs computed from it are not available with an
+uncollided flux: ``WriteAngularFluxes``, ``WriteSurfaceAngularFluxes``,
+``ComputeLeakage``, and ``sigma_t`` cross-section sensitivities that take the
+forward angular flux from the problem raise ``ValueError``. ``GetPsi`` returns
+the collided part.
+
 Two-stage workflow
 ------------------
 

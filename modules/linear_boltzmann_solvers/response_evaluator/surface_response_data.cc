@@ -1142,6 +1142,13 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
   std::vector<std::uint64_t> local_counts(3 * num_surfaces, 0);
   std::vector<std::uint64_t> partner_node_map, fwd_d_node_map, adj_u_node_map, adj_d_node_map;
 
+  // Moment sources enter each direction divided by the quadrature weight sum W, so angular inner
+  // products of forward and adjoint angular fluxes carry a factor W (1 for OpenSn quadratures).
+  std::vector<double> weight_sums(num_groupsets, 0.0);
+  for (size_t gs = 0; gs < num_groupsets; ++gs)
+    for (const auto weight : forward.groupsets[gs].weights)
+      weight_sums[gs] += weight;
+
   for (size_t surface_index = 0; surface_index < num_surfaces; ++surface_index)
   {
     const auto& name = selected_surfs[surface_index].stored_name;
@@ -1187,8 +1194,8 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
           const double* adjoint_psi = FacePsi(partner, *partner_face, gs, adjoint.groupsets[gs]);
           for (std::uint64_t dir = 0; dir < num_dirs; ++dir)
           {
-            // mu_d w_d: the cosine with the anchor normal times the direction weight.
-            const auto direction_factor = mu[dir] * quadrature.weights[dir];
+            // W mu_d w_d: the cosine with the anchor normal times the direction weight.
+            const auto direction_factor = weight_sums[gs] * mu[dir] * quadrature.weights[dir];
             if (mu[dir] == 0.0)
               continue;
             (mu[dir] > 0.0 ? outgoing : incoming) +=
@@ -1252,8 +1259,8 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
         const double* adj_d_psi = FacePsi(adj_d, *adj_d_face, gs, adj_quadrature);
         for (std::uint64_t dir = 0; dir < num_dirs; ++dir)
         {
-          // mu_d w_d: the cosine with the anchor normal times the direction weight.
-          const auto direction_factor = mu[dir] * quadrature.weights[dir];
+          // W mu_d w_d: the cosine with the anchor normal times the direction weight.
+          const auto direction_factor = weight_sums[gs] * mu[dir] * quadrature.weights[dir];
           const auto adjoint_dir = direction_maps[gs][dir];
           // Forward leaves the `_u` cell and the adjoint leaves the `_d` cell for mu > 0, and the
           // reverse for mu < 0.

@@ -557,6 +557,8 @@ With energy restriction:
    # result[0] is a vector with one element (the single group)
    print(result[0][0])
 
+.. _userguide_xs_sensitivity:
+
 Cross-Section Sensitivity Postprocessor
 ========================================
 
@@ -581,6 +583,7 @@ against the current (adjoint) state and the saved forward files:
    from pyopensn.post import CrossSectionSensitivityPostprocessor
 
    # ... solve forward, then phys.WriteAngularFluxes("forward_psi")
+   # and phys.WriteFluxMoments("forward_phi")
    # ... solve adjoint (phys now holds the adjoint state)
 
    sens = CrossSectionSensitivityPostprocessor(
@@ -591,6 +594,10 @@ against the current (adjoint) state and the saved forward files:
    sens.Execute()
    result = sens.GetValue()
 
+The examples below continue from this one: ``phys`` holds the completed
+adjoint solution, and the forward solution is in the ``forward_psi`` and
+``forward_phi`` files.
+
 Sensitivity Types
 ------------------
 
@@ -600,7 +607,8 @@ Sensitivity Types
   ``from_group -> to_group`` pair. One column per selected scattering
   moment (Legendre order).
 * ``"production"`` — fission production (``nu_sigma_f``) sensitivity for a
-  single group. Always a single column.
+  single source group ``group``, with the fission spectra and the
+  delayed-neutron fraction held fixed. Always a single column.
 
 .. code-block:: python
 
@@ -611,6 +619,7 @@ Sensitivity Types
        from_group=2,
        to_group=1,
        moment=0,
+       forward_flux_moments="forward_phi",
    )
 
    # Production sensitivity for group 0
@@ -618,6 +627,7 @@ Sensitivity Types
        problem=phys,
        sensitivity_type="production",
        group=0,
+       forward_flux_moments="forward_phi",
    )
 
 ``from_group`` and ``to_group`` are required for ``"scatter"``. ``group`` is
@@ -644,6 +654,7 @@ integral, and can be combined:
        sensitivity_type="sigma_t",
        logical_volumes=[lv],
        block_ids=[1],
+       forward_angular_fluxes="forward_psi",
    )
 
 Each logical volume produces one row of results; with no logical volumes,
@@ -653,8 +664,9 @@ Forward and Adjoint State
 --------------------------
 
 By default, both the forward and the adjoint terms are read from the
-problem's *current* state. To compare an explicit forward and adjoint
-solve, write one of them to disk and point the postprocessor at it:
+problem's *current* state. Because a problem holds one solution at a time, at
+least one of them must come from a file: write one solution to disk and point
+the postprocessor at it:
 
 * ``forward_angular_fluxes`` / ``adjoint_angular_fluxes`` — file prefixes
   written by ``WriteAngularFluxes``; used for ``"sigma_t"``.
@@ -667,7 +679,18 @@ solve, write one of them to disk and point the postprocessor at it:
   multi-rank run raises an error before opening any file.
 
 Leaving a prefix empty (the default) uses the problem's current state for
-that term.
+that term. The postprocessor checks that each term has the right kind of
+solution. It raises ``ValueError`` when the current state is the wrong kind,
+and ``RuntimeError`` when a file is:
+
+* A forward term must come from a forward solution. That is a forward problem's
+  current state or a file written by a forward problem.
+* An adjoint term must come from a physically oriented adjoint solution. That is
+  an adjoint problem's current state after its solver has finished, or a file
+  written by an adjoint problem after its solver finished.
+
+Leaving both prefixes of a pair empty is therefore an error, as is reading a
+forward file as the adjoint term or the reverse.
 
 Relative Sensitivities
 ------------------------
@@ -682,6 +705,7 @@ which is dimensionless and easier to compare across coefficients:
        problem=phys,
        sensitivity_type="sigma_t",
        relative=True,
+       forward_angular_fluxes="forward_psi",
    )
 
 Discrete Formulas
@@ -702,8 +726,18 @@ single cell and group:
   :math:`(2\ell+1)\sum_{m\in\ell}\sum_{ij}\phi^\dagger_{m,i} M_{ij}\phi_{m,j}`
   (adjoint mode, and therefore these sensitivities, require the standard
   angular operators);
-* ``"production"``:
-  :math:`\sum_{ij}\big(\sum_{g'}\chi_{g'}\phi^\dagger_{0,g',i}\big) M_{ij}\phi_{0,g,j}`.
+* ``"production"`` for source group :math:`g'`:
+  :math:`\sum_{ij}\big(\sum_{g}F_{g g'}\phi^\dagger_{0,g,i}\big) M_{ij}\phi_{0,g',j}`
+  divided by :math:`\nu\sigma_{f,g'}` (not divided for ``relative=True``).
+  Here :math:`F` is the fission production matrix the solvers apply: the
+  production matrix (prompt when delayed data are present) plus, when the
+  problem includes delayed neutrons (``use_precursors``), the delayed
+  production :math:`\sum_j \chi_{d,j,g}\gamma_j\,\nu_d\sigma_{f,g'}`.
+  Holding the spectra and the delayed fraction fixed, column :math:`g'` of
+  :math:`F` scales with :math:`\nu\sigma_{f,g'}`. In a material where
+  :math:`\nu\sigma_{f,g'}=0`, column :math:`g'` is zero and does not define
+  the spectrum. The relative sensitivity is zero there, and the absolute
+  sensitivity raises ``ValueError`` unless the material is excluded.
 
 The adjoint fluxes must be the reoriented adjoint solution produced by the
 steady-state or k-eigenvalue solvers (see :doc:`../theory/adjoint`).
@@ -715,11 +749,10 @@ For k-eigenvalue problems, call
 :py:meth:`pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling`
 after ``Execute()`` to convert the computed sensitivities into first-order
 k-eigenvalue sensitivities, normalized by the fission-weighted inner product
-``<psi_adj, F psi>`` built from the same forward/adjoint flux-moment sources
+:math:`\langle\phi^\dagger, F\phi\rangle` with the fission production matrix
+:math:`F` above, built from the same forward/adjoint flux-moment sources
 configured at construction. As above, this requires an actual forward and
-adjoint pair of states — leaving both prefixes empty would take the "forward"
-and "adjoint" terms from the same current state and would not produce a
-meaningful sensitivity:
+adjoint pair of states:
 
 .. code-block:: python
 

@@ -19,7 +19,9 @@ if "opensn_console" not in globals():
     from mpi4py import MPI
 
     rank = MPI.COMM_WORLD.rank
+    size = MPI.COMM_WORLD.size
     barrier = MPI.COMM_WORLD.Barrier
+    global_sum = MPI.COMM_WORLD.allreduce
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.aquad import GLCProductQuadrature2DXY
     from pyopensn.logvol import RPPLogicalVolume
@@ -33,6 +35,16 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
 else:
     barrier = MPIBarrier
+    global_sum = MPIAllReduce
+
+
+def raises_on_all_ranks(action, error_type):
+    try:
+        action()
+        raised = 0
+    except error_type:
+        raised = 1
+    return int(global_sum(raised) == size)
 
 
 PREFIX = "xs_sens_keigen_2d_"
@@ -202,10 +214,36 @@ if __name__ == "__main__":
         ),
     }
 
+    invalid_moment_rejected = raises_on_all_ranks(
+        lambda: CrossSectionSensitivityPostprocessor(
+            problem=problem,
+            sensitivity_type="scatter",
+            block_ids=[0],
+            moment=2,
+            from_group=0,
+            to_group=0,
+            forward_flux_moments=fwd_phi,
+            adjoint_flux_moments=adj_phi,
+        ),
+        ValueError,
+    )
+    empty_block_rejected = raises_on_all_ranks(
+        lambda: CrossSectionSensitivityPostprocessor(
+            problem=problem,
+            sensitivity_type="sigma_t",
+            block_ids=[99],
+            group=0,
+            forward_angular_fluxes=fwd_psi,
+            adjoint_angular_fluxes=adj_psi,
+        ),
+        ValueError,
+    )
+
     if rank == 0:
         for name, (adjoint_value, fd_value) in results.items():
             rel_err = abs(adjoint_value - fd_value) / abs(fd_value)
             print(f"XS_SENS_KEIGEN_2D_{name}_REL_ERR={rel_err:.12e}")
+        print(f"XS_SENS_KEIGEN_2D_INPUT_REJECTED={invalid_moment_rejected * empty_block_rejected}")
 
     barrier()
     for prefix in (fwd_psi, fwd_phi, adj_psi, adj_phi, nl_adj_psi, nl_adj_phi):

@@ -18,6 +18,7 @@
 #include <cmath>
 #include <limits>
 #include <list>
+#include <map>
 #include <memory>
 #include <set>
 #include <stdexcept>
@@ -178,9 +179,21 @@ DiscreteOrdinatesProblem::ParseBoundaryDefinition(
 }
 
 void
-DiscreteOrdinatesProblem::ClearBoundaries()
+DiscreteOrdinatesProblem::ClearBoundarySources()
 {
-  SetBoundaryOptions({}, true);
+  auto new_definitions = boundary_definitions_;
+  std::erase_if(new_definitions,
+                [](const auto& entry)
+                {
+                  const auto type = entry.second.type;
+                  return type == LBSBoundaryType::ISOTROPIC or type == LBSBoundaryType::ARBITRARY;
+                });
+  if (new_definitions.size() == boundary_definitions_.size())
+    return;
+
+  ValidateChange(boundary_definitions_, new_definitions);
+  boundary_definitions_ = std::move(new_definitions);
+  RebuildRuntimeObjects();
 }
 
 void

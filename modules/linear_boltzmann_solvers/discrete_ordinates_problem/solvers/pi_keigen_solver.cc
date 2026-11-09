@@ -321,6 +321,8 @@ PowerIterationKEigenSolver::ExecuteSolver()
   if (options.restart.writes_enabled)
     WriteRestartData();
 
+  do_problem_->RecordBoundaryInflow();
+
   // The adjoint is solved by sweeping the forward directions; map it to the physical adjoint
   // after the final restart dump so that restart data holds the iterate.
   if (options.adjoint)

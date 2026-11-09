@@ -2,9 +2,11 @@
 # -*- coding: utf-8 -*-
 
 """
-2D PWLD adjoint transport test with localized material source
-Test: QoI Value=1.38399e-05
-      Inner Product=1.38405e-05
+2D PWLD adjoint transport test with localized material source (adjoint part only).
+
+The inner product must equal the forward QoI of the same problem computed by response_2d_1
+(1.3839677494e-05), to the solver tolerance.
+Test: Inner Product=1.38397e-05
 """
 
 import math
@@ -100,7 +102,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, 0),
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
                 "gmres_restart_interval": 100,
             },
@@ -132,6 +134,7 @@ if __name__ == "__main__":
     # Print results
     if rank == 0:
         print(f"Inner Product={adj_qoi:.5e}")
+        print(f"Inner Product exact={adj_qoi:.10e}")
 
     # Cleanup
     barrier()

@@ -118,8 +118,11 @@ InitCSDA(DiscreteOrdinatesProblem& do_problem,
   std::vector<double> dummy_rhs(sdm.GetNumLocalDOFs(uk_man), 0.0);
   for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
   {
-    auto matid_2_mgxs_map =
-      PackGroupsetXS(block_id_to_xs_map, g, g, do_problem.GetDSATimeAbsorptionScale());
+    auto matid_2_mgxs_map = PackGroupsetXS(block_id_to_xs_map,
+                                           g,
+                                           g,
+                                           do_problem.GetOptions().adjoint,
+                                           do_problem.GetDSATimeAbsorptionScale());
     for (auto& [block_id, xs_g] : matid_2_mgxs_map)
     {
       const auto csda_data = MakeCSDAMaterialData(*block_id_to_xs_map.at(block_id), energy);
@@ -163,6 +166,8 @@ ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
+  // The problem's mode, not the cross sections' own, which a problem sharing them may have set.
+  const bool adjoint = do_problem.GetOptions().adjoint;
   const auto energy =
     MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map, do_problem.GetNumGroups());
   const auto& solvers = groupset.wgdsa_csda_solvers;
@@ -191,7 +196,8 @@ ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
   std::vector<std::vector<double>> correction(gss, std::vector<double>(num_dofs, 0.0));
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& transfer_matrices = block_id_to_xs_map.at(cell->block_id)->GetTransferMatrices();
+    const auto& transfer_matrices =
+      block_id_to_xs_map.at(cell->block_id)->GetTransferMatrices(adjoint);
     if (transfer_matrices.empty())
       continue;
     const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
@@ -235,7 +241,7 @@ ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
         const double feed =
           slows_down ? (*csda_data.stopping_power)[gsi + g - 1] / (*csda_data.delta_e)[gsi + g - 1]
                      : 0.0;
-        const auto& transfer_matrices = xs.GetTransferMatrices();
+        const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
         const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
         for (size_t i = 0; i < num_nodes; ++i)
         {
@@ -300,6 +306,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     auto matid_2_mgxs_map = PackGroupsetXS(block_id_to_xs_map,
                                            groupset.first_group,
                                            groupset.last_group,
+                                           do_problem.GetOptions().adjoint,
                                            do_problem.GetDSATimeAbsorptionScale());
 
     // Create solver

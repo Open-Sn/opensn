@@ -298,3 +298,51 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
   EXPECT_EQ(problem->GetExtSrcMomentsLocal(), ext_src);
 }
+
+// ReverseMomentDirections multiplies each moment of degree ell by (-1)^ell, so it negates the P1
+// moments, keeps the P0 moments, and is its own inverse.
+TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
+{
+  auto problem = MakeProblem();
+  const auto& sdm = problem->GetSpatialDiscretization();
+  const auto& uk_man = problem->GetUnknownManager();
+  const auto& moment_map = problem->GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
+  const auto phi = MakeVector(problem->GetPhiNewLocal().size(), 1.0, 0.125, 11);
+
+  auto reversed = phi;
+  problem->ReverseMomentDirections(reversed);
+  for (const auto& cell : problem->GetGrid()->GetLocalCells())
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(*cell); ++i)
+      for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
+        for (unsigned int g = 0; g < 2; ++g)
+        {
+          const auto dof = sdm.MapDOFLocal(*cell, i, uk_man, m, g);
+          EXPECT_EQ(reversed[dof], moment_map[m].ell % 2 == 0 ? phi[dof] : -phi[dof]);
+        }
+
+  problem->ReverseMomentDirections(reversed);
+  EXPECT_EQ(reversed, phi);
+
+  std::vector<double> wrong_size(phi.size() + 1, 1.0);
+  EXPECT_THROW(problem->ReverseMomentDirections(wrong_size), std::logic_error);
+}
+
+// Source moments are applied in the solver orientation. After an adjoint solution is reoriented to
+// the physical orientation, the form without an argument maps it back first, so it gives bit for
+// bit the source moments of the solver-oriented flux, not those of the stored physical one.
+TEST(MakeSourceMomentsFromPhiTest, NoArgumentFormUsesSolverOrientedAdjointFlux)
+{
+  auto problem = MakeProblem();
+  problem->SetAdjoint(true);
+  const auto solver_phi = MakeVector(problem->GetPhiNewLocal().size(), 1.0, 0.125, 11);
+  problem->SetPhiNewFrom(solver_phi);
+  problem->ReorientAdjointSolution();
+  ASSERT_TRUE(problem->IsAdjointSolutionReoriented());
+  const auto physical_phi = problem->GetPhiNewLocal();
+  ASSERT_NE(physical_phi, solver_phi);
+
+  const auto source_moments = problem->MakeSourceMomentsFromPhi();
+  EXPECT_EQ(source_moments, problem->MakeSourceMomentsFromPhi(solver_phi));
+  EXPECT_NE(source_moments, problem->MakeSourceMomentsFromPhi(physical_phi));
+  EXPECT_EQ(problem->GetPhiNewLocal(), physical_phi);
+}

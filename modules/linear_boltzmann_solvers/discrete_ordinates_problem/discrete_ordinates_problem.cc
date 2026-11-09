@@ -1275,13 +1275,20 @@ DiscreteOrdinatesProblem::UpdateAngularFluxStorage()
 
     // Deterministic sweeps rebuild their destinations from the stored angular flux. Device sweeps
     // copy it to the host with the other sweep results.
+    // A reallocated or released angular flux no longer has the recorded boundary inflow.
     if (options_.save_angular_flux or save_old or options_.deterministic_sweeps)
     {
       if (psi_new.size() != num_ang_unknowns)
+      {
         psi_new.assign(num_ang_unknowns, 0.0);
+        ClearBoundaryInflow();
+      }
     }
     else
+    {
       std::vector<double>().swap(psi_new);
+      ClearBoundaryInflow();
+    }
 
     if (save_old)
     {
@@ -1323,12 +1330,14 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
 {
   CALI_CXX_MARK_SCOPE("ReorientAdjointSolution");
 
+  // Flux moments integrate the angular flux against the spherical harmonics. Evaluating them at
+  // opposite directions uses Y_{ell,m}(-Omega) = (-1)^ell Y_{ell,m}(Omega).
+  ReverseMomentDirections(phi_new_local_);
+  ReverseMomentDirections(phi_old_local_);
+
   for (const auto& groupset : groupsets_)
   {
     int gs = groupset.id;
-
-    // Moment map for flux moments
-    const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
 
     // Angular flux info
     auto& psi = psi_new_local_[gs];
@@ -1346,34 +1355,12 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
     } // if saving angular flux
 
     const auto num_gs_groups = groupset.GetNumGroups();
-    const auto gsg_i = groupset.first_group;
-    const auto gsg_f = groupset.last_group;
 
     for (const auto& cell : grid_->GetLocalCells())
     {
       const auto& transport_view = cell_transport_views_[cell->local_id];
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
-        // Reorient flux moments
-        //
-        // Because flux moments are integrated angular fluxes, the
-        // angular flux and spherical harmonics must be evaluated at
-        // opposite angles in the quadrature integration. Taking advantage
-        // of the even/odd nature of the spherical harmonics, i.e.
-        // Y_{\ell,m}(-\Omega) = (-1)^\ell Y_{\ell,m}(\Omega), the flux
-        // moments must be multiplied by (-1)^\ell.
-        for (unsigned int imom = 0; imom < num_moments_; ++imom)
-        {
-          const auto& ell = moment_map[imom].ell;
-          const auto dof_map = transport_view.MapDOF(i, imom, 0);
-
-          for (auto g = gsg_i; g <= gsg_f; ++g)
-          {
-            phi_new_local_[dof_map + g] *= std::pow(-1.0, ell);
-            phi_old_local_[dof_map + g] *= std::pow(-1.0, ell);
-          } // for group g
-        } // for moment m
-
         // Reorient angular flux
         if (not psi.empty())
         {
@@ -1391,6 +1378,122 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
     } // for cell
 
   } // for groupset
+}
+
+void
+DiscreteOrdinatesProblem::RecordBoundaryInflow()
+{
+  ClearBoundaryInflow();
+  if (std::any_of(psi_new_local_.begin(),
+                  psi_new_local_.end(),
+                  [](const std::vector<double>& psi) { return psi.empty(); }))
+    return;
+
+  std::size_t num_slots = 0;
+  for (const auto& cell : grid_->GetLocalCells())
+  {
+    const auto& cell_mapping = discretization_->GetCellMapping(*cell);
+    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      if (not cell->faces[f].has_neighbor)
+      {
+        boundary_inflow_slots_[{cell->local_id, f}] = num_slots;
+        num_slots += cell_mapping.GetNumFaceNodes(f);
+      }
+  }
+
+  boundary_inflow_.resize(groupsets_.size());
+  for (const auto& groupset : groupsets_)
+  {
+    const auto gs = groupset.id;
+    const auto& quadrature = *groupset.quadrature;
+    const auto& uk_man = groupset.psi_uk_man_;
+    const auto num_dirs = quadrature.GetNumAngles();
+    const auto num_gs_groups = groupset.GetNumGroups();
+    const auto& psi = psi_new_local_[gs];
+    auto& inflow = boundary_inflow_[gs];
+    inflow.assign(num_slots * num_dirs * num_gs_groups, 0.0);
+
+    std::map<uint64_t, std::vector<std::uint32_t>> reflected_maps;
+    for (const auto& cell : grid_->GetLocalCells())
+    {
+      const auto& cell_mapping = discretization_->GetCellMapping(*cell);
+      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      {
+        const auto& face = cell->faces[f];
+        if (face.has_neighbor)
+          continue;
+        const auto bid = face.neighbor_id;
+        auto& boundary = *sweep_boundaries_.at(bid);
+        const std::vector<std::uint32_t>* reflected = nullptr;
+        if (boundary.IsReflecting())
+        {
+          auto [it, inserted] = reflected_maps.try_emplace(bid);
+          if (inserted)
+          {
+            std::vector<std::vector<std::uint32_t>> maps;
+            boundary.GetReflectedMap(static_cast<int>(gs), maps);
+            OpenSnLogicalErrorIf(maps.size() != 1 or maps.front().size() != num_dirs,
+                                 "Reflecting boundary " + std::to_string(bid) +
+                                   " has no reflection map for groupset " + std::to_string(gs) +
+                                   ".");
+            it->second = std::move(maps.front());
+          }
+          reflected = &it->second;
+        }
+
+        const auto slot = boundary_inflow_slots_.at({cell->local_id, f});
+        for (unsigned int fi = 0; fi < cell_mapping.GetNumFaceNodes(f); ++fi)
+        {
+          const auto i = cell_mapping.MapFaceNode(f, fi);
+          for (unsigned int d = 0; d < num_dirs; ++d)
+          {
+            if (quadrature.GetOmega(d).Dot(face.normal) >= 0.0)
+              continue;
+            const auto base = ((slot + fi) * num_dirs + d) * num_gs_groups;
+            for (unsigned int g = 0; g < num_gs_groups; ++g)
+            {
+              if (reflected != nullptr)
+                inflow[base + g] =
+                  psi[discretization_->MapDOFLocal(*cell, i, uk_man, (*reflected)[d], g)];
+              // With source moments the sweep does not apply the incoming flux of the other
+              // boundaries, so the solve used zero.
+              else if (options_.use_src_moments)
+                inflow[base + g] = 0.0;
+              else
+              {
+                const double* incoming = boundary.PsiIncoming(cell->local_id, f, fi, d, gs, g);
+                inflow[base + g] = incoming != nullptr ? *incoming : 0.0;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+void
+DiscreteOrdinatesProblem::ClearBoundaryInflow()
+{
+  boundary_inflow_slots_.clear();
+  boundary_inflow_.clear();
+}
+
+double
+DiscreteOrdinatesProblem::GetBoundaryInflow(const unsigned int groupset_id,
+                                            const std::uint32_t cell_local_id,
+                                            const unsigned int face,
+                                            const unsigned int fi,
+                                            const unsigned int direction,
+                                            const unsigned int gsg) const
+{
+  OpenSnLogicalErrorIf(not HasBoundaryInflow(), "No boundary inflow has been recorded.");
+  const auto& groupset = groupsets_.at(groupset_id);
+  const auto num_dirs = groupset.quadrature->GetNumAngles();
+  const auto num_gs_groups = groupset.GetNumGroups();
+  const auto slot = boundary_inflow_slots_.at({cell_local_id, face});
+  return boundary_inflow_.at(groupset_id)
+    .at(((slot + fi) * num_dirs + direction) * num_gs_groups + gsg);
 }
 
 void
@@ -1418,6 +1521,7 @@ DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
 void
 DiscreteOrdinatesProblem::ZeroPsi()
 {
+  ClearBoundaryInflow();
   for (auto& psi : psi_new_local_)
     psi.assign(psi.size(), 0.0);
 
@@ -1451,6 +1555,8 @@ DiscreteOrdinatesProblem::ReadProblemRestartData(hid_t file_id,
                                                  bool allow_transient_initialization_from_steady,
                                                  bool repartitioned)
 {
+  // The loaded angular flux has no record of the boundary inflow of the solve that produced it.
+  ClearBoundaryInflow();
   return DiscreteOrdinatesProblemIO::ReadRestartData(
     *this, file_id, allow_transient_initialization_from_steady, repartitioned);
 }

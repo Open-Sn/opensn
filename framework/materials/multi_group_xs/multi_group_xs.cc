@@ -596,53 +596,59 @@ MultiGroupXS::ComputeDiffusionParameters()
   // Initialize diffusion data
   sigma_tr_.resize(num_groups_, 0.0);
   diffusion_coeff_.resize(num_groups_, 1.0);
+  adjoint_sigma_tr_.resize(num_groups_, 0.0);
+  adjoint_diffusion_coeff_.resize(num_groups_, 1.0);
   sigma_s_gtog_.resize(num_groups_, 0.0);
   sigma_r_.resize(num_groups_, 0.0);
 
-  // Perform computations group-wise
+  // The transport correction subtracts the P1 scattering out of a group: sum_g' S1[g'][g] in
+  // forward mode, and sum_g' S1[g][g'] (the out-scatter of the transposed matrix) in adjoint mode.
+  // The forward data warn, and the adjoint data, used only by adjoint problems, log at verbosity 1.
   const auto& S = transfer_matrices_;
-  for (unsigned int g = 0; g < num_groups_; ++g)
-  {
-    // Determine transport correction
-    double sigma_1 = 0.0;
-    const bool has_p1_scattering = S.size() > 1;
-    if (has_p1_scattering)
-    {
-      for (unsigned int gp = 0; gp < num_groups_; ++gp)
+  const bool has_p1_scattering = S.size() > 1;
+  std::vector<double> sigma_1_forward(num_groups_, 0.0);
+  std::vector<double> sigma_1_adjoint(num_groups_, 0.0);
+  if (has_p1_scattering)
+    for (unsigned int g = 0; g < num_groups_; ++g)
+      for (const auto& [row, col, value] : S[1].Row(g))
       {
-        const auto& cols = S[1].rowI_indices[gp];
-        const auto& vals = S[1].rowI_values[gp];
-        for (size_t t = 0; t < cols.size(); ++t)
-          if (cols[t] == g)
-          {
-            sigma_1 += vals[t];
-            break;
-          }
-      } // for gp
-    } // if moment 1 available
+        sigma_1_forward[col] += value;
+        sigma_1_adjoint[row] += value;
+      }
 
-    // Compute transport cross section
+  const auto compute_transport =
+    [&](unsigned int g, double sigma_1, const bool adjoint, double& sigma_tr, double& diffusion)
+  {
+    const auto level = adjoint ? Logger::LOG_0VERBOSE_1 : Logger::LOG_0WARNING;
+    const std::string mode = adjoint ? "adjoint " : "";
     if (has_p1_scattering and sigma_1 >= sigma_t_[g])
     {
-      log.Log0Warning() << "Non-positive transport cross section found for group " << g << " ("
-                        << "sigma_t = " << sigma_t_[g] << ", sigma_1 = " << sigma_1
-                        << "). Setting sigma_1 = 0.0 and sigma_tr = sigma_t for this group.";
+      log.Log(level) << "Non-positive " << mode << "transport cross section found for group " << g
+                     << " (sigma_t = " << sigma_t_[g] << ", sigma_1 = " << sigma_1
+                     << "). Setting sigma_1 = 0.0 and sigma_tr = sigma_t for this group.";
       sigma_1 = 0.0;
     }
-    sigma_tr_[g] = sigma_t_[g] - sigma_1;
+    sigma_tr = sigma_t_[g] - sigma_1;
 
-    // Compute the diffusion coefficient
-    // Cap the value for when the transport cross section is near zero
-    if (std::fabs(sigma_tr_[g]) < sigma_tr_min)
+    // Cap the diffusion coefficient for when the transport cross section is near zero
+    if (std::fabs(sigma_tr) < sigma_tr_min)
     {
-      log.Log0Warning() << "Transport cross section near zero for group " << g
-                        << " (sigma_tr = " << sigma_tr_[g] << ", sigma_tr_min = " << sigma_tr_min
-                        << "). Setting diffusion coefficient to " << diffusion_coeff_max
-                        << " for this group.";
-      diffusion_coeff_[g] = diffusion_coeff_max;
+      log.Log(level) << "Transport cross section near zero for group " << g << " (" << mode
+                     << "sigma_tr = " << sigma_tr << ", sigma_tr_min = " << sigma_tr_min
+                     << "). Setting the " << mode << "diffusion coefficient to "
+                     << diffusion_coeff_max << " for this group.";
+      diffusion = diffusion_coeff_max;
     }
     else
-      diffusion_coeff_[g] = 1.0 / 3.0 / sigma_tr_[g];
+      diffusion = 1.0 / 3.0 / sigma_tr;
+  };
+
+  // Perform computations group-wise
+  for (unsigned int g = 0; g < num_groups_; ++g)
+  {
+    compute_transport(g, sigma_1_forward[g], false, sigma_tr_[g], diffusion_coeff_[g]);
+    compute_transport(
+      g, sigma_1_adjoint[g], true, adjoint_sigma_tr_[g], adjoint_diffusion_coeff_[g]);
 
     // Determine within group scattering
     if (not S.empty())

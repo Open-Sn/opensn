@@ -40,6 +40,9 @@ WrapResEval(py::module& response)
     R"(
     Construct a response evaluator object.
 
+    This call is collective. Every rank must give the same options, because adding data sets and
+    material sources communicates over all ranks.
+
     Parameters
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
@@ -47,7 +50,7 @@ WrapResEval(py::module& response)
     options: Dict
         The specification of data sets and forward sources to use. Supported keys:
           - data: List[Dict], default=[]
-              Data set specifications, as for :py:meth:`SetOptions`.
+              Data set specifications, as for :py:meth:`SetDataOptions`.
           - clear_sources: bool, default=False
               If true, clears any existing forward sources.
           - sources: Dict, default={}
@@ -66,12 +69,11 @@ WrapResEval(py::module& response)
                     Boundary source dictionaries. Each dictionary supports:
                       - name: str (required)
                           Boundary name that identifies the specific boundary.
-                      - type: {'vacuum', 'isotropic', 'reflecting'} (required)
-                          Boundary type specification. Only ``isotropic`` is used for responses.
-                      - group_strength: List[float], optional
-                          Required when ``type='isotropic'``. Isotropic strength per group.
-                      - function_name: str, optional, default=''
-                          Name of a registered function to evaluate on the boundary.
+                      - type: {'isotropic'} (required)
+                          Boundary type. Only isotropic boundary sources are supported.
+                      - group_strength: List[float] (required)
+                          Isotropic incident angular flux per group.
+                      A boundary may have only one boundary source.
     )"
   );
   res_eval.def(
@@ -80,13 +82,33 @@ WrapResEval(py::module& response)
     R"(
     Evaluate a response by folding the currently defined forward sources against the adjoint
     flux moments and angular fluxes of a data set added with ``SetOptions(data=...)`` or
-    :py:meth:`SetDataOptions`. This call is collective.
+    :py:meth:`SetDataOptions`.
+
+    For adjoint data :math:`\phi^\dagger, \psi^\dagger` this returns
+    :math:`R = \int \phi^\dagger q\,dV + W \sum_{n:\,\Omega_n\cdot n < 0} w_n \int_{\partial D}
+    |\Omega_n\cdot n| \psi^\dagger_n \psi^{\text{in}}_n\,dA` over the material, point,
+    volumetric, and boundary sources. The boundary sum runs over the incoming directions of each
+    boundary face, :math:`w_n` is the quadrature weight, and :math:`W` is the sum of the
+    quadrature weights (1 for OpenSn quadratures, applied per groupset). For data from a
+    fixed-source adjoint solve, this equals the forward response to the adjoint source that
+    produced the data, for a forward problem with the same mesh, cross sections, quadrature, and
+    vacuum and reflecting boundaries. A k-eigenvalue adjoint has an arbitrary normalization and
+    gives no detector response.
+    Volumetric sources are integrated with the consistent mass matrix, as in the forward solve.
+    Point and volumetric sources are evaluated at the problem's current time, and sources that
+    are inactive then are skipped. In RZ geometry the result includes the :math:`2\pi` azimuthal
+    factor. This call is collective.
 
     Parameters
     ----------
     data_name: str
         Name of the data set holding the adjoint flux moments (``flux_moments``) and, for boundary
         sources, adjoint angular fluxes (``angular_fluxes``).
+
+    Returns
+    -------
+    float
+        The response, identical on every rank.
 
     Raises
     ------
@@ -128,10 +150,11 @@ WrapResEval(py::module& response)
 
     .. math::
 
-       R = \sum_{f \in S} \sum_{d \in D_f} \mu_{f,d}\, w_d \sum_{ij} M_{f,ij} \sum_g
+       R = W \sum_{f \in S} \sum_{d \in D_f} \mu_{f,d}\, w_d \sum_{ij} M_{f,ij} \sum_g
            \psi_{f,i,d,g}\, \psi^\dagger_{f,j,d,g},
 
-    with :math:`\mu_{f,d} = \Omega_d \cdot n_f`, :math:`w_d` the quadrature weight,
+    with :math:`\mu_{f,d} = \Omega_d \cdot n_f`, :math:`w_d` the quadrature weight, :math:`W` the
+    sum of the quadrature weights (1 for OpenSn quadratures, applied per groupset),
     :math:`M_{f,ij}` the mass matrix of face :math:`f`, and :math:`\psi_{f,i,d,g}` and
     :math:`\psi^\dagger_{f,j,d,g}` the forward and adjoint angular fluxes at nodes :math:`i` and
     :math:`j` of face :math:`f`.
@@ -146,6 +169,8 @@ WrapResEval(py::module& response)
     ``outgoing`` part is the response to the particles leaving through the boundary (for a
     detector outside the domain, represented by an adjoint boundary source, the detector
     response), and its ``incoming`` part minus the response to a forward boundary source on it.
+    On a reflecting boundary both sides use the reflected angular flux of the final iterate, so its
+    response is zero to the iteration tolerance.
 
     The surface files record whether each tag is a boundary or one side of an interior surface,
     so a boundary is evaluated as a boundary whatever its name, including names ending in ``_u``
@@ -223,6 +248,9 @@ WrapResEval(py::module& response)
     R"(
     Set options for the response evaluator for adding data sets and defining forward sources.
 
+    This call is collective. Every rank must give the same options, because adding data sets and
+    material sources communicates over all ranks.
+
     Parameters
     ----------
     data: List[Dict], default=[]
@@ -246,12 +274,11 @@ WrapResEval(py::module& response)
               Boundary source dictionaries. Each dictionary supports:
                 - name: str (required)
                     Boundary name that identifies the specific boundary.
-                - type: {'vacuum', 'isotropic', 'reflecting'} (required)
-                    Boundary type specification. Only ``isotropic`` is used for responses.
-                - group_strength: List[float], optional
-                    Required when ``type='isotropic'``. Isotropic strength per group.
-                - function_name: str, optional, default=''
-                    Name of a registered function to evaluate on the boundary.
+                - type: {'isotropic'} (required)
+                    Boundary type. Only isotropic boundary sources are supported.
+                - group_strength: List[float] (required)
+                    Isotropic incident angular flux per group.
+                A boundary may have only one boundary source.
     )"
     );
   res_eval.def(
@@ -289,11 +316,23 @@ WrapResEval(py::module& response)
               number of ranks wrote them, and their faces are distributed over the current ranks.
               Any rank may read any file, so the files must be on a file system that every rank
               can access.
+        Flux-moment and angular-flux files must also match the problem's quadrature and groups.
+        Adjoint data must be in physical orientation, as written after its solver finished.
+        Forward data is also accepted.
     surfaces: List[str], default=[]
         Surfaces to read. Required with ``surface_angular_fluxes``, and rejected without it. Each
         entry is a boundary name or an interior surface name, which reads both stored sides
         ``<name>_u`` and ``<name>_d``. A single side's tag is rejected unless its other side is
         also requested, because a surface response needs both sides.
+
+    Raises
+    ------
+    ValueError
+        If the name is already used, or ``surfaces`` and ``surface_angular_fluxes`` are not given
+        together.
+    RuntimeError
+        If a file cannot be read, does not match the problem, or holds adjoint data in solver
+        orientation.
     )"
   );
   res_eval.def(
@@ -306,6 +345,9 @@ WrapResEval(py::module& response)
     },
     R"(
     Add forward sources from the options block to the response evaluator.
+
+    This call is collective. Every rank must add the same sources in the same order, because a
+    material source counts its cells over all ranks.
 
     Parameters
     ----------
@@ -323,12 +365,11 @@ WrapResEval(py::module& response)
         Boundary source dictionaries. Each dictionary supports:
           - name: str (required)
               Boundary name that identifies the specific boundary.
-          - type: {'vacuum', 'isotropic', 'reflecting'} (required)
-              Boundary type specification. Only ``isotropic`` is used for responses.
-          - group_strength: List[float], optional
-              Required when ``type='isotropic'``. Isotropic strength per group.
-          - function_name: str, optional, default=''
-              Name of a registered function to evaluate on the boundary.
+          - type: {'isotropic'} (required)
+              Boundary type. Only isotropic boundary sources are supported.
+          - group_strength: List[float] (required)
+              Isotropic incident angular flux per group.
+          A boundary may have only one boundary source.
     )"
   );
   // clang-format on

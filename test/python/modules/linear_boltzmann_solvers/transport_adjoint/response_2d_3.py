@@ -164,7 +164,7 @@ if __name__ == "__main__":
             print(f"QoI Value[{g}]= {fwd_qois[g]:.5e}")
         print(f"sum(QoI Values)= {fwd_qoi_sum:.5e}")
         print(f"Inner Product= {response_val:.5e}")
-        print(f"ADJOINT_IDENTITY_DIFF={abs(response_val - fwd_qois[5]):.12e}")
+        print(f"ADJOINT_IDENTITY_REL_DIFF={abs(response_val / fwd_qois[5] - 1.0):.6e}")
 
     # Cleanup
     barrier()

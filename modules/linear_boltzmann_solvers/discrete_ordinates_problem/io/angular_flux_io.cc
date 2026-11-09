@@ -35,6 +35,10 @@ DiscreteOrdinatesProblemIO::WriteAngularFluxes(
   FluxSolutionRole role,
   AdjointFluxOrientation orientation)
 {
+  OpenSnInvalidArgumentIf(not opt_src.has_value() and do_problem.HasUncollidedFlux(),
+                          "WriteAngularFluxes is not available with an uncollided flux: the "
+                          "angular flux holds only the collided part.");
+
   // Select source vector
   std::vector<std::vector<double>>& src =
     opt_src.has_value() ? opt_src.value().get() : do_problem.GetPsiNewLocal();
@@ -206,8 +210,8 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
           (not has_role or file_role != static_cast<unsigned int>(expected_role)),
         "The solution role in " + file_name + " does not match the requested role.");
       OpenSnLogicalErrorIf(expected_orientation != AdjointFluxOrientation::UNSPECIFIED and
-                             (not has_orientation or
-                              file_orientation != static_cast<unsigned int>(expected_orientation)),
+                             file_role == static_cast<unsigned int>(FluxSolutionRole::ADJOINT) and
+                             file_orientation != static_cast<unsigned int>(expected_orientation),
                            "The adjoint orientation in " + file_name +
                              " does not match the requested orientation.");
       if (not opt_dest.has_value() and has_role)
@@ -328,7 +332,10 @@ DiscreteOrdinatesProblemIO::ReadAngularFluxes(
     });
 
   if (not opt_dest.has_value())
+  {
     do_problem.RestoreAdjointSolutionOrientation();
+    do_problem.ClearBoundaryInflow();
+  }
   dest = std::move(result);
 }
 
@@ -374,6 +381,9 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
 {
   OpenSnInvalidArgumentIf(not do_problem.SaveAngularFluxEnabled(),
                           "WriteSurfaceAngularFluxes requires `options.save_angular_flux=true`.");
+  OpenSnInvalidArgumentIf(do_problem.HasUncollidedFlux(),
+                          "WriteSurfaceAngularFluxes is not available with an uncollided flux: the "
+                          "angular flux holds only the collided part.");
   // Adjoint data are paired with forward data by direction, so the adjoint flux must be in the
   // physical orientation that an adjoint solve leaves. Restart data are loaded in the internal
   // sweep orientation.
@@ -381,6 +391,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                           "WriteSurfaceAngularFluxes requires the adjoint solution in physical "
                           "orientation. Execute an adjoint solver before writing; restart data are "
                           "loaded in the internal sweep orientation.");
+  // Boundary tags store the incoming angular flux the solve used, which the solve recorded.
+  OpenSnInvalidArgumentIf(not do_problem.HasBoundaryInflow(),
+                          "WriteSurfaceAngularFluxes requires the angular flux of a completed "
+                          "solve. Execute a solver before writing; an angular flux that was "
+                          "zeroed, read from a file, or loaded from restart data has no record of "
+                          "its boundary values.");
 
   // Get problem information
   const auto& grid = do_problem.GetGrid();
@@ -706,6 +722,12 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                        "Failed to write the file-set identifier to " + file_name + ".");
   OpenSnLogicalErrorIf(not H5CreateAttribute<bool>(file.Id(), "adjoint", do_problem.IsAdjoint()),
                        "Failed to write the adjoint flag to " + file_name + ".");
+  // The checks above admit only physically oriented adjoint data.
+  const auto orientation =
+    do_problem.IsAdjoint() ? AdjointFluxOrientation::PHYSICAL : AdjointFluxOrientation::UNSPECIFIED;
+  OpenSnLogicalErrorIf(
+    not H5CreateAttribute(file.Id(), "adjoint_orientation", static_cast<unsigned int>(orientation)),
+    "Failed to write the adjoint orientation to " + file_name + ".");
   // Readers that redistribute the surface data use this to discover all files of the set.
   OpenSnLogicalErrorIf(not H5CreateAttribute(file.Id(),
                                              "num_partitions",
@@ -873,51 +895,18 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
 
     // On a boundary face, a direction that enters the domain takes its upwind value from the
     // boundary condition: mu_d < 0 for a forward problem, and mu_d > 0 for an adjoint problem in
-    // physical orientation, whose transport direction is -Omega_d. The boundaries hold the values
-    // the sweeps used, indexed by sweep direction, which for an adjoint problem is the direction
-    // opposite to the physical one.
+    // physical orientation, whose transport direction is -Omega_d. The values are those the solve
+    // recorded, indexed by sweep direction, which for an adjoint problem is the direction opposite
+    // to the physical one. A reflection commutes with reversing the direction, so the recorded
+    // reflected angular flux of sweep direction opposite[d] is that of physical direction d.
     const bool adjoint = do_problem.IsAdjoint();
     const auto opposite = adjoint ? quadrature->MapOppositeDirections() : std::vector<size_t>{};
-    const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
-    // A reflecting boundary returns the angular flux of the reflected direction, which the stored
-    // angular flux already holds. The reflection map is the one the sweep uses. A reflection
-    // commutes with reversing the direction, so the map applies to physical directions in adjoint
-    // problems too.
-    std::map<uint64_t, std::vector<std::uint32_t>> reflected_directions;
-    const auto ReflectedDirections =
-      [&](const uint64_t bid,
-          SweepBoundary& reflecting_boundary) -> const std::vector<std::uint32_t>&
-    {
-      auto [it, inserted] = reflected_directions.try_emplace(bid);
-      if (not inserted)
-        return it->second;
-      std::vector<std::vector<std::uint32_t>> reflected_maps;
-      reflecting_boundary.GetReflectedMap(groupset_id, reflected_maps);
-      OpenSnLogicalErrorIf(
-        reflected_maps.size() != 1 or reflected_maps.front().size() != num_gs_dirs,
-        "Reflecting boundary " + std::to_string(bid) + " has no reflection map for groupset " +
-          std::to_string(groupset_id) + ".");
-      it->second = std::move(reflected_maps.front());
-      return it->second;
-    };
 
     for (const auto& surface_face : surface_faces)
     {
       const auto& cell = grid->GetLocalCell(surface_face.cell_local_id);
       auto& surface_data = data_map[surface_face.surface_name];
-
-      SweepBoundary* boundary = nullptr;
-      const std::vector<std::uint32_t>* reflected = nullptr;
-      if (surface_face.boundary_id.has_value())
-      {
-        const auto bid = *surface_face.boundary_id;
-        const auto it = sweep_boundaries.find(bid);
-        OpenSnLogicalErrorIf(it == sweep_boundaries.end(),
-                             "No sweep boundary for boundary ID " + std::to_string(bid) + ".");
-        boundary = it->second.get();
-        if (boundary->IsReflecting())
-          reflected = &ReflectedDirections(bid, *boundary);
-      }
+      const bool on_boundary = surface_face.boundary_id.has_value();
 
       for (size_t fi = 0; fi < surface_face.node_indices.size(); ++fi)
       {
@@ -930,25 +919,18 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
           {
             const auto dof_map = discretization.MapDOFLocal(cell, i, uk_man, d, g);
             surface_data.psi.push_back(psi[groupset_id][dof_map]);
-            if (boundary == nullptr)
+            if (not on_boundary)
               continue;
             if (not enters)
               surface_data.upwind_psi.push_back(psi[groupset_id][dof_map]);
-            else if (reflected != nullptr)
-              surface_data.upwind_psi.push_back(
-                psi[groupset_id][discretization.MapDOFLocal(cell, i, uk_man, (*reflected)[d], g)]);
             else
-            {
-              const auto sweep_dir = adjoint ? opposite[d] : d;
-              const double* incoming =
-                boundary->PsiIncoming(static_cast<std::uint32_t>(surface_face.cell_local_id),
-                                      surface_face.face_index,
-                                      static_cast<unsigned int>(fi),
-                                      static_cast<unsigned int>(sweep_dir),
-                                      groupset_id,
-                                      g);
-              surface_data.upwind_psi.push_back(incoming != nullptr ? *incoming : 0.0);
-            }
+              surface_data.upwind_psi.push_back(
+                do_problem.GetBoundaryInflow(groupset_id,
+                                             static_cast<std::uint32_t>(surface_face.cell_local_id),
+                                             surface_face.face_index,
+                                             static_cast<unsigned int>(fi),
+                                             static_cast<unsigned int>(adjoint ? opposite[d] : d),
+                                             g));
           }
         }
       }
@@ -1053,6 +1035,19 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(const std::string& file_bas
   OpenSnLogicalErrorIf(not H5ReadAttribute(file.Id(), "adjoint", file_adjoint),
                        "Failed to read the adjoint flag from " + file_name +
                          ". The file was written by an unsupported version of OpenSn.");
+  // Responses pair forward and adjoint data by direction, which requires physically oriented
+  // adjoint data. Files written before the orientation was recorded hold only such data.
+  if (H5Aexists(file.Id(), "adjoint_orientation") > 0)
+  {
+    unsigned int file_orientation = 0;
+    OpenSnLogicalErrorIf(not H5ReadAttribute(file.Id(), "adjoint_orientation", file_orientation),
+                         "Failed to read the adjoint orientation from " + file_name + ".");
+    const auto expected =
+      file_adjoint ? AdjointFluxOrientation::PHYSICAL : AdjointFluxOrientation::UNSPECIFIED;
+    OpenSnLogicalErrorIf(file_orientation != static_cast<unsigned int>(expected),
+                         "The adjoint orientation in " + file_name +
+                           " is not the physical orientation that surface responses require.");
+  }
   std::array<double, 3> centroid_origin{};
   for (size_t d = 0; d < 3; ++d)
     OpenSnLogicalErrorIf(
