@@ -190,6 +190,29 @@ To compile the console application:
    variable when one is provided. The module build performed by
    ``pip install .`` always disables the tests.
 
+.. note::
+
+   On Linux, ``libopensn`` is linked with ``-z defs``, so the link fails if a
+   symbol it uses is not provided by one of the libraries it links, as on
+   macOS. With Clang sanitizers, link the shared sanitizer runtime with
+   ``-shared-libsan -frtlib-add-rpath``, as the ``clang+debug+sanitizer``
+   preset does, so that ``libopensn`` links it and executables find it at
+   run time. When the sanitizer runtime is static, and linked only into
+   executables, CMake skips this check.
+
+.. note::
+
+   On Linux, importing a ``pyopensn`` module built with AddressSanitizer from
+   an ordinary Python interpreter aborts with "ASan runtime does not come first
+   in initial library list". Preload the runtime of the Clang that built the
+   module. LeakSanitizer then reports the interpreter's own allocations at
+   exit, so disable leak detection:
+
+   .. code-block:: shell
+
+      LD_PRELOAD=$(clang -print-file-name=libclang_rt.asan.so) \
+        ASAN_OPTIONS=detect_leaks=0 python3 input.py
+
 .. danger::
 
    In the console application, all classes and functions are implicitly imported

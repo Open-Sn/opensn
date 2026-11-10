@@ -265,6 +265,28 @@ that option is not set, it follows the standard CMake <code class="docutils lite
 variable when one is provided. The module build performed by
 <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">.</span></code> always disables the tests.</p>
 </div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On Linux, <code class="docutils literal notranslate"><span class="pre">libopensn</span></code> is linked with <code class="docutils literal notranslate"><span class="pre">-z</span> <span class="pre">defs</span></code>, so the link fails if a
+symbol it uses is not provided by one of the libraries it links, as on
+macOS. With Clang sanitizers, link the shared sanitizer runtime with
+<code class="docutils literal notranslate"><span class="pre">-shared-libsan</span> <span class="pre">-frtlib-add-rpath</span></code>, as the <code class="docutils literal notranslate"><span class="pre">clang+debug+sanitizer</span></code>
+preset does, so that <code class="docutils literal notranslate"><span class="pre">libopensn</span></code> links it and executables find it at
+run time. When the sanitizer runtime is static, and linked only into
+executables, CMake skips this check.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>On Linux, importing a <code class="docutils literal notranslate"><span class="pre">pyopensn</span></code> module built with AddressSanitizer from
+an ordinary Python interpreter aborts with “ASan runtime does not come first
+in initial library list”. Preload the runtime of the Clang that built the
+module. LeakSanitizer then reports the interpreter’s own allocations at
+exit, so disable leak detection:</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nv">LD_PRELOAD</span><span class="o">=</span><span class="k">$(</span>clang<span class="w"> </span>-print-file-name<span class="o">=</span>libclang_rt.asan.so<span class="k">)</span><span class="w"> </span><span class="se">\</span>
+<span class="w">  </span><span class="nv">ASAN_OPTIONS</span><span class="o">=</span><span class="nv">detect_leaks</span><span class="o">=</span><span class="m">0</span><span class="w"> </span>python3<span class="w"> </span>input.py
+</pre></div>
+</div>
+</div>
 <div class="admonition danger">
 <p class="admonition-title">Danger</p>
 <p>In the console application, all classes and functions are implicitly imported
