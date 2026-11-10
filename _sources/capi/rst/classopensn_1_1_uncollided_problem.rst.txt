@@ -13,6 +13,7 @@ Nested Relationships
 Nested Types
 ************
 
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_exact_cell_integrals`
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_face_vert_data`
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_moment`
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_reflection_plane`

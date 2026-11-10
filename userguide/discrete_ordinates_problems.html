@@ -635,8 +635,8 @@ produce strong ray effects.</p>
 <p>The uncollided calculation follows the same problem/solver lifecycle as other
 OpenSn transport calculations. Construct the problem and solver, then call
 <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> and <code class="docutils literal notranslate"><span class="pre">Execute</span></code>:</p>
-<p>Uncollided generation is restricted to Cartesian two- and three-dimensional
-meshes and must run with exactly one MPI rank.</p>
+<p>Uncollided generation is restricted to three-dimensional Cartesian meshes and
+must run with exactly one MPI rank.</p>
 <p>The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
 estimated remaining time. Set <code class="docutils literal notranslate"><span class="pre">progress_interval</span></code> on
@@ -646,7 +646,7 @@ to disable progress reporting.</p>
 variable <code class="docutils literal notranslate"><span class="pre">OPENSN_NUM_THREADS</span></code>. If the variable is unset or invalid, OpenSn
 uses <code class="docutils literal notranslate"><span class="pre">1</span></code> thread. The current uncollided implementation applies this cap to
 reflected-image projection and to the bulk-sweep group solve.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature2DXY</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
     <span class="n">DiscreteOrdinatesProblem</span><span class="p">,</span>
@@ -661,10 +661,11 @@ reflected-image projection and to the bulk-sweep group solve.</p>
     <span class="n">xmax</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
     <span class="n">ymin</span><span class="o">=-</span><span class="mf">0.25</span><span class="p">,</span>
     <span class="n">ymax</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
-    <span class="n">infz</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">zmin</span><span class="o">=-</span><span class="mf">0.25</span><span class="p">,</span>
+    <span class="n">zmax</span><span class="o">=</span><span class="mf">0.25</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">point_source</span> <span class="o">=</span> <span class="n">PointSource</span><span class="p">(</span>
-    <span class="n">location</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span>
+    <span class="n">location</span><span class="o">=</span><span class="p">[</span><span class="mf">0.01</span><span class="p">,</span> <span class="mf">0.02</span><span class="p">,</span> <span class="mf">0.03</span><span class="p">],</span>
     <span class="n">strength</span><span class="o">=</span><span class="p">[</span><span class="mf">1.0</span><span class="p">],</span>
 <span class="p">)</span>
 
@@ -685,9 +686,9 @@ reflected-image projection and to the bulk-sweep group solve.</p>
 <span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
 <span class="n">uncollided_solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 
-<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature2DXY</span><span class="p">(</span>
-    <span class="n">n_polar</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
-    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">24</span><span class="p">,</span>
+<span class="n">quadrature</span> <span class="o">=</span> <span class="n">GLCProductQuadrature3DXYZ</span><span class="p">(</span>
+    <span class="n">n_polar</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
+    <span class="n">n_azimuthal</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span>
     <span class="n">scattering_order</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
 <span class="p">)</span>
 <span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
@@ -726,18 +727,30 @@ problem.</p>
 <p>Every point source requires a corresponding entry in <code class="docutils literal notranslate"><span class="pre">near_source</span></code>. The two
 lists are matched by position, so <code class="docutils literal notranslate"><span class="pre">near_source</span></code> is required whenever
 <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> is nonempty.</p>
-<p>For now, uncollided generation requires each point source to lie strictly
-inside a single cell. A source located exactly on a face, edge, or vertex is
-rejected as unsupported.</p>
+<p>For now, uncollided generation requires each point source to belong to a single
+cell. A source located exactly on a face, edge, or vertex shared by more than
+one cell is rejected as unsupported, as is a source on a reflecting boundary. A
+source on a vacuum boundary emits into the domain only the fraction of its
+strength in the solid angle its cell subtends; the rest is counted as outflow.</p>
 <div class="admonition important">
 <p class="admonition-title">Important</p>
-<p>Point-source placement strongly affects spatial accuracy. Whenever the
-physical model permits, construct the mesh so that each source lies well
-inside its containing cell and near the cell centroid. A source near a
-face, edge, or vertex produces highly uneven local basis weights and makes
-the near-singular flux and outgoing currents difficult to integrate
-accurately. The conservation correction restores cell balance, but it
-cannot recover an unresolved local flux shape.</p>
+<p>Point-source placement affects spatial accuracy. The cell containing the
+source is represented by its exact cell-average flux and exact face
+leakages wherever the source lies in it. The neighboring cells, however,
+are projected from quadrature points by default. When the source lies
+close to an edge or vertex of its cell, it is also close to the neighbors
+sharing that edge or vertex, and their quadrature leakages can be wrong by
+tens of percent. The near-source conservation correction then carries
+that error into every downstream cell, and mesh refinement does not
+remove it, because each mesh places the source differently relative to its
+cell. A source close to a single face is not affected.</p>
+<p>Set <code class="docutils literal notranslate"><span class="pre">exact_near_source_leakage=True</span></code> to integrate the cells that share a
+vertex with the source cell exactly over direction, which makes the result
+much less sensitive to where the source lies in its cell. It costs
+additional ray tracing for those cells and applies to convex cells. Without
+it, construct the mesh, whenever the physical model permits, so that each
+source lies well inside its containing cell. The conservation correction
+restores cell balance, but it cannot recover an unresolved local flux shape.</p>
 <p>Do not move a physically fixed source merely to improve the discretization.
 Instead, align or locally refine the mesh around it. Check mesh convergence
 of the physical quantities of interest and monitor the reported
@@ -746,10 +759,6 @@ and face quadratures for this calculation; their order is not currently
 user-configurable. A large correction indicates that these spatial
 integrations do not adequately resolve the source on the current mesh.</p>
 </div>
-<p>In two-dimensional problems, a point source represents the two-dimensional
-transport Green’s function, equivalently a line source per unit
-out-of-plane depth. Its free-space uncollided scalar flux scales as
-<span class="math notranslate nohighlight">\(1/(2 \pi r)\)</span>, not as the three-dimensional <span class="math notranslate nohighlight">\(1/(4 \pi r^2)\)</span> point-source field.</p>
 <p>Finite-volume sources can be approximated by the input author with weighted
 point sources. For example, a quadrature approximation uses</p>
 <div class="math notranslate nohighlight">

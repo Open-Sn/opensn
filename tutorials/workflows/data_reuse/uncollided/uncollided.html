@@ -361,8 +361,8 @@ sweep-based PWLD solution, rather than random noise or reduced plotting resoluti
 <section id="Confirm-Mesh-Refinement-Convergence">
 <h2><span class="section-number">4.4.1.7. </span>Confirm Mesh-Refinement Convergence<a class="headerlink" href="#Confirm-Mesh-Refinement-Convergence" title="Link to this heading"></a></h2>
 <p>The jumps described above are a spatial-discretization effect, so refining the mesh should reduce them. To check this quantitatively rather than only by eye, the same problem is solved again on <code class="docutils literal notranslate"><span class="pre">cube3.2_fine.msh</span></code> — a second mesh of the same 3.2-cm cube, graded from about 0.6 mm elements near the point source out to 1.8 mm in the bulk, for roughly 46,000 tetrahedral cells.</p>
-<p>The refinement is graded rather than uniform on purpose. A uniform refinement does not control how close the point source lands to a cell face, and OpenSn’s point-source representation is measurably sensitive to that: if the source sits close to a face relative to its cell’s size, OpenSn emits a warning (<code class="docutils literal notranslate"><span class="pre">UncollidedProblem:</span> <span class="pre">point</span> <span class="pre">source</span> <span class="pre">...</span> <span class="pre">lies</span> <span class="pre">only</span> <span class="pre">&lt;dist&gt;</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">face</span> <span class="pre">of</span> <span class="pre">its</span> <span class="pre">containing</span> <span class="pre">cell</span></code>) because the near-source ray-traced flux is poorly resolved there. Grading the mesh finer around the
-source keeps its containing cell small and well-shaped regardless of exactly where the mesh generator places it, so the comparison below isolates the effect of resolution rather than an accident of meshing.</p>
+<p>The refinement is graded rather than uniform on purpose. A uniform refinement does not control where the point source lands relative to the edges and vertices of its containing cell, and OpenSn’s default point-source treatment is sensitive to that: a source close to an edge or vertex is also close to the neighboring cells that share it, whose flux is poorly resolved by spatial quadrature unless <code class="docutils literal notranslate"><span class="pre">exact_near_source_leakage</span></code> is enabled. Grading the mesh finer around the source keeps its
+containing cell small and well-shaped regardless of exactly where the mesh generator places it, so the comparison below isolates the effect of resolution rather than an accident of meshing.</p>
 <p>The plots above only show the sweep-based bulk region, since the validation line is offset enough in y and z to stay outside the 0.008 m near-source half-width for every x. To also see the ray-traced region, a second line is sampled here, offset by only 0.006 m in both y and z instead — small enough to pass through the near-source region for <span class="math notranslate nohighlight">\(x\in[0.0023,0.0183]\)</span> m, while its closest approach to the source (0.00849 m, at <span class="math notranslate nohighlight">\(x=x_\mathrm{source}\)</span>) still keeps every analytic value finite.
 This near-source line reuses the two field functions already solved above; no additional transport solve is needed.</p>
 <div class="nbinput nblast docutils container">
@@ -449,10 +449,8 @@ This near-source line reuses the two field functions already solved above; no ad
 <span class="n">near_source_coarse_mean</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">near_source_coarse_errors</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">near_source_coarse_errors</span><span class="p">)</span>
 <span class="n">near_source_fine_mean</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">near_source_fine_errors</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">near_source_fine_errors</span><span class="p">)</span>
 
-<span class="c1"># The near-source line crosses the ray-traced region, where accuracy is</span>
-<span class="c1"># governed by the near-source treatment rather than bulk-cell size, so</span>
-<span class="c1"># refinement is not expected to help nearly as much here as it did above.</span>
-<span class="c1"># This is a sanity bound, not a strict fine-beats-coarse check.</span>
+<span class="c1"># The near-source line crosses the ray-traced region. This is a sanity</span>
+<span class="c1"># bound, not a strict fine-beats-coarse check.</span>
 <span class="k">if</span> <span class="n">near_source_coarse_mean</span> <span class="o">&gt;</span> <span class="mf">0.06</span> <span class="ow">or</span> <span class="n">near_source_fine_mean</span> <span class="o">&gt;</span> <span class="mf">0.06</span><span class="p">:</span>
     <span class="k">raise</span> <span class="ne">RuntimeError</span><span class="p">(</span><span class="s2">&quot;Near-source line does not agree with the analytic solution.&quot;</span><span class="p">)</span>
 
@@ -503,8 +501,8 @@ This near-source line reuses the two field functions already solved above; no ad
 </div>
 </div>
 <p><img alt="OpenSn and analytic uncollided scalar flux, coarse vs. refined mesh, bulk-only vs. near-source line" src="../../../../_images/uncollided_flux_refinement_check.png" /></p>
-<p>Top row: the bulk-only line from above. Refining from 5,880 to about 46,000 cells reduces its mean relative error from about 2.2% to about 1.0%, and its maximum relative error from about 7.7% to about 2.4% — the jumps visibly shrink and the errors asserted above confirm it numerically rather than only by eye.</p>
-<p>Bottom row: a second line, offset only 0.006 m in y and z instead of the 0.0126 m/0.00936 m used above, so it crosses the ray-traced near-source region. Its mean relative error only drops from about 2.7% to about 2.5% under the same refinement — accuracy there is governed by the near-source ray-tracing treatment rather than bulk-cell size, so the improvement is real but far more modest than the bulk-only line’s.</p>
+<p>Top row: the bulk-only line from above. Refining from 5,880 to about 46,000 cells reduces its mean relative error from about 1.7% to about 0.5%, and its maximum relative error from about 8.7% to about 1.8% — the jumps visibly shrink and the errors asserted above confirm it numerically rather than only by eye.</p>
+<p>Bottom row: a second line, offset only 0.006 m in y and z instead of the 0.0126 m/0.00936 m used above, so it crosses the ray-traced near-source region. Its mean relative error drops from about 1.4% to about 0.4% under the same refinement, a reduction similar to that of the bulk-only line.</p>
 </section>
 </section>
 

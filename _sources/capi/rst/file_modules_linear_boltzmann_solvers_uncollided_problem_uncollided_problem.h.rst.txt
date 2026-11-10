@@ -54,6 +54,8 @@ Includes
 
 - ``mutex``
 
+- ``optional``
+
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
 - ``thread`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_scheduler_spmd_threadpool.h`)
@@ -77,6 +79,8 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_uncollided_matrices`
+
+- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_exact_cell_integrals`
 
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_face_vert_data`
 

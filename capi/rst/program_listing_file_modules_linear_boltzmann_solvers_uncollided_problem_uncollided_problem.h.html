@@ -102,6 +102,7 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;atomic&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;unordered_map&gt;</span>
@@ -203,6 +204,7 @@
 <span class="w">  </span><span class="c1">/// Zero-allocation variant: writes into pre-allocated @p phi_out and reuses the three</span>
 <span class="w">  </span><span class="c1">/// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call</span>
 <span class="w">  </span><span class="c1">/// (they are reset internally each call, so no manual clearing is needed between calls).</span>
+<span class="w">  </span><span class="c1">/// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RaytraceLineInto</span><span class="p">(</span><span class="n">RayTracer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_tracer</span><span class="p">,</span>
 <span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">qp_xyz</span><span class="p">,</span>
@@ -212,6 +214,51 @@
 <span class="w">                        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">scratch_bp</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">scratch_mfp</span><span class="p">,</span>
 <span class="w">                        </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">);</span>
+
+<span class="w">  </span><span class="c1">/// Integrals of the uncollided flux of a point source over a cell.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">ExactCellIntegrals</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Volume integral of the scalar flux over the cell, per group.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">volume_integral</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Outgoing leakage through each cell face, indexed [face][group]; zero for other faces.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">face_leakage</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Integrates the uncollided flux of a point source over a cell, and its leakage through each</span>
+<span class="cm">   * outgoing face, exactly over direction.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Every direction from the source through the cell leaves it through an outgoing face. Along</span>
+<span class="cm">   * it the flux is S exp(-tau(r)) / (4 pi r^2), so with tau_in the optical depth from the source</span>
+<span class="cm">   * to where the ray enters the cell and Delta the chord through the homogeneous cell, the leakage</span>
+<span class="cm">   * integrand is S exp(-tau_in - sigma_t Delta) / (4 pi) and the volume integrand is</span>
+<span class="cm">   * S exp(-tau_in) (1 - exp(-sigma_t Delta)) / (4 pi sigma_t). The optical depth comes from ray</span>
+<span class="cm">   * tracing, so heterogeneous media are handled. For the cell containing the source, the ray</span>
+<span class="cm">   * starts in the cell, so tau_in = 0 and Delta is the distance to the face.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The directions through each PWL side triangle of each outgoing face are integrated with a</span>
+<span class="cm">   * composite Gauss-Legendre rule in variables that keep the integrands smooth however close the</span>
+<span class="cm">   * source is to a face, edge, or vertex, at points that lie on the face.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Returns std::nullopt when a ray from the source could cross the cell more than once: for a</span>
+<span class="cm">   * cell that does not contain the source, when it is not convex; and for the cell containing</span>
+<span class="cm">   * the source, when a face is not directly visible from it. Also returns std::nullopt when the</span>
+<span class="cm">   * source is on the inner side of a face that is not outgoing.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ExactCellIntegrals</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">IntegrateCellExactly</span><span class="p">(</span><span class="n">RayTracer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_tracer</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the fraction of the full solid angle that a cell subtends at a point on or in it.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The signed solid angles of the PWL side triangles of the cell&#39;s faces are summed, so the</span>
+<span class="cm">   * result is exact for cells of any shape, including non-convex ones. It is 1 for a point</span>
+<span class="cm">   * inside the cell, 1/2 on a planar face, and smaller on an edge or vertex.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">SubtendedAngleFraction</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// True when every vertex of the cell lies on the inner side of the plane of every face.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsConvex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SweepBulkRegion</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
 
@@ -254,10 +301,10 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">all_cells_convex_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Precomputed face vertex data -- bypasses the std::map-backed VertexHandler in the hot path.</span>
-<span class="w">  </span><span class="c1">/// Supports faces with up to kMaxFaceSides vertices (covers triangles and quads).</span>
+<span class="w">  </span><span class="c1">/// Supports faces with up to max_sides vertices (covers common polyhedral mesh faces).</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">FaceVertData</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">max_sides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span>
+<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">max_sides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
 <span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">verts</span><span class="p">[</span><span class="n">max_sides</span><span class="p">];</span><span class="w"> </span><span class="c1">// inline vertex positions (no tree traversal)</span>
 <span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">centroid</span><span class="p">;</span>
 <span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">neighbor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
@@ -270,10 +317,13 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_num_faces_</span><span class="p">;</span><span class="w">    </span><span class="c1">// [num_cells] number of faces per cell</span>
 <span class="w">  </span><span class="c1">/// O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_to_local_id_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// True when all_cells_convex_ and all faces have &lt;= kMaxFaceSides vertices.</span>
+<span class="w">  </span><span class="c1">/// True when all_cells_convex_ and all faces have &lt;= FaceVertData::max_sides vertices.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_fast_trace_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ell_max_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Integrate the leakages and volume integrals of the cells that share a vertex with a point</span>
+<span class="w">  </span><span class="c1">/// source&#39;s cell exactly over direction instead of with spatial quadrature.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">exact_near_source_leakage_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Moment</span><span class="o">&gt;</span><span class="w"> </span><span class="n">moments_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">moment_names_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">accumulated_moments_</span><span class="p">;</span>

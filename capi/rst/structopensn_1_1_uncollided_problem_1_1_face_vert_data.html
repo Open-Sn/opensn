@@ -97,7 +97,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertDataE">
 <span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">FaceVertData</span></span></span><br /></dt>
 <dd><p>Precomputed face vertex data &amp;#8212; bypasses the std::map-backed VertexHandler in the hot path. </p>
-<p>Supports faces with up to kMaxFaceSides vertices (covers triangles and quads). </p>
+<p>Supports faces with up to max_sides vertices (covers common polyhedral mesh faces). </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
@@ -130,7 +130,7 @@
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-attributes">Public Static Attributes</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UncollidedProblem12FaceVertData9max_sidesE">
-<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1ac4f2fbf4ef5f3fef2c5f916f2896a3fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_sides</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">4</span></span><br /></dt>
+<span class="target" id="structopensn_1_1_uncollided_problem_1_1_face_vert_data_1ac4f2fbf4ef5f3fef2c5f916f2896a3fc"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">max_sides</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">8</span></span><br /></dt>
 <dd></dd></dl>
 
 </div>

@@ -1132,7 +1132,14 @@ source moments</p>
 <ol class="arabic">
 <li><p>The inversion of the <span class="math notranslate nohighlight">\(L\)</span> operator in the uncollided problem can
 be done using ray tracing, thus mitigating ray effects.</p></li>
-<li><p>Within the near-source region, OpenSn ray-traces both a volumetric
+<li><p>Near a localized source the uncollided flux varies too steeply for the
+far-field treatment, and the cells that contain the source need a
+treatment of their own. The flux of a point source is singular at the
+source, and a small volumetric source has no singularity but a similarly
+steep near field. OpenSn’s uncollided generator accepts point sources
+only. A volumetric source can be supplied as weighted point sources at
+its volume-quadrature points (see the note on finite-volume sources below).
+Within the near-source region, OpenSn ray-traces both a volumetric
 least-squares projection of the scalar flux onto the local PWLD basis
 (from which cell removal is computed) and the outgoing face currents,
 using the point source’s exact analytic attenuation, following the
@@ -1153,16 +1160,87 @@ The magnitude of that scale factor is reported as a diagnostic, with a
 warning if it becomes large. A large factor indicates that the local spatial
 flux shape is poorly resolved. The correction restores cell balance, but the
 mesh or source placement may still need refinement.</p>
-<p>This treatment also applies in the cell containing the point source. OpenSn
-evaluates the analytic flux at the finite-element volume and face quadrature
-points. The accuracy of these spatial integrals depends strongly on the
-source’s position within its containing cell. A source near the cell
-centroid generally gives better-distributed samples. Near a face, edge, or
-vertex, the singular field is concentrated into a smaller part of the cell
-and the discrete integrals can have much larger error. Exact cell balance
-after correction does not by itself establish spatial accuracy; source
-placement and local mesh refinement must be checked through a convergence
-study.</p>
+<p>The flux of a point source is singular at the source, so these
+quadratures cannot resolve it in the cell that contains the source. That
+cell is instead represented by its exact cell-average flux. With <span class="math notranslate nohighlight">\(S\)</span>
+the emission rate of the point source in a group and
+<span class="math notranslate nohighlight">\(R(\vec{\Omega})\)</span> the distance from the source to the cell boundary
+in direction <span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>, the volume integral of the flux and the
+leakage through face <span class="math notranslate nohighlight">\(f\)</span> are</p>
+<div class="math notranslate nohighlight">
+\[\int_{V} \phi \, dV
+= \frac{S}{4\pi}\int_{4\pi}
+  \frac{1 - e^{-\sigma_t R(\vec{\Omega})}}{\sigma_t} \, d\Omega ,
+\qquad
+J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\sigma_t R(\vec{\Omega})} \, d\Omega ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\Omega_f\)</span> is the solid angle subtended by face <span class="math notranslate nohighlight">\(f\)</span>.
+OpenSn evaluates these over the cone from the source through each PWL side
+triangle of each face with a composite
+Gauss–Legendre rule in variables that keep the integrands smooth even when
+the source is close to a face, edge, or vertex of the cell. This makes the
+result much less sensitive to where the source lies than a rule in the
+original variables. The quadrature error still depends on the source position
+through the integration limits and the number of panels. The method applies
+to cells of any shape, provided every face is directly visible from the
+source, which is always the case in a convex cell. OpenSn accepts
+non-convex cells, for example in polyhedral meshes. In a non-convex 3D cell
+a ray from the source may leave the cell and re-enter it. If that happens,
+OpenSn falls back to the quadrature projection with a warning.</p>
+<p>In the source cell, every node of the scalar flux is set to the exact cell
+average. Because the flux is singular at the source, it varies strongly
+across the cell, and the cell-average treatment causes this variation to be
+lost. This loss in fidelity can only be reduced by refining the mesh around
+the source. The angular moments with <span class="math notranslate nohighlight">\(\ell \geq 1\)</span> of the uncollided
+flux at a point <span class="math notranslate nohighlight">\(\vec{r}\)</span> are the scalar flux times
+<span class="math notranslate nohighlight">\(Y_{\ell m}(\vec{\Omega}_s)\)</span>, with <span class="math notranslate nohighlight">\(\vec{\Omega}_s\)</span> the
+direction from the source to <span class="math notranslate nohighlight">\(\vec{r}\)</span>. In the source cell they are
+formed from the constant cell average and projected onto the PWLD basis, so
+they still vary in space through <span class="math notranslate nohighlight">\(Y_{\ell m}\)</span>. Accuracy near the
+source must still be checked through mesh refinement.</p>
+<p>The point source enters the balance of the source cell as
+<span class="math notranslate nohighlight">\(S\,\Omega_c/(4\pi)\)</span>, where <span class="math notranslate nohighlight">\(\Omega_c\)</span> is the solid angle the
+cell subtends at the source, computed exactly from the cell’s faces. It
+equals <span class="math notranslate nohighlight">\(S\)</span> for a source inside the cell. A source must belong to
+exactly one cell, so a source on a vacuum boundary lies inside a boundary
+face of its cell, or on a boundary edge or vertex that no other cell
+shares. The remaining fraction then leaves the domain directly and is
+counted as outflow. Sources on a reflecting boundary are rejected, because
+such a source coincides with its own image.</p>
+<p>When the source is close to an edge or vertex of its cell, it is also close
+to the cells that share that edge or vertex. Their quadrature leakages are
+then inaccurate, and because each near-source cell’s correction factor is
+computed from the leakages it receives, the error propagates to every
+downstream cell. With the optional <code class="docutils literal notranslate"><span class="pre">exact_near_source_leakage</span></code> treatment,
+each convex near-source cell that shares a vertex with the source cell is
+integrated exactly over direction. The leakage through an outgoing face
+<span class="math notranslate nohighlight">\(f\)</span> is</p>
+<div class="math notranslate nohighlight">
+\[J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\tau(\vec{\Omega})} \, d\Omega ,\]</div>
+<p>where <span class="math notranslate nohighlight">\(\tau\)</span> is the optical depth from the source to the face along
+<span class="math notranslate nohighlight">\(\vec{\Omega}\)</span>, found by ray tracing, so heterogeneous media are
+handled. With <span class="math notranslate nohighlight">\(\Delta(\vec{\Omega})\)</span> the chord length through the
+cell and <span class="math notranslate nohighlight">\(\tau_{in} = \tau - \sigma_t \Delta\)</span> the optical depth to
+where the ray enters it, the volume integral is</p>
+<div class="math notranslate nohighlight">
+\[\int_{V} \phi \, dV
+= \frac{S}{4\pi}\sum_{f\,\mathrm{outgoing}}\int_{\Omega_f}
+  e^{-\tau_{in}(\vec{\Omega})}\,
+  \frac{1 - e^{-\sigma_t \Delta(\vec{\Omega})}}{\sigma_t} \, d\Omega ,\]</div>
+<p>which reduces to <span class="math notranslate nohighlight">\(\Delta\)</span> as <span class="math notranslate nohighlight">\(\sigma_t \to 0\)</span>. OpenSn
+evaluates the factor as <span class="math notranslate nohighlight">\(-\mathrm{expm1}(-\sigma_t\Delta)/\sigma_t\)</span>,
+which has no cancellation error for small <span class="math notranslate nohighlight">\(\sigma_t \Delta\)</span>, so
+optically thin cells need no Taylor expansion; only
+<span class="math notranslate nohighlight">\(\sigma_t\Delta = 0\)</span> uses the limit <span class="math notranslate nohighlight">\(\Delta\)</span>. These are the
+same integrals as for the cell containing the source, which is the case
+<span class="math notranslate nohighlight">\(\tau_{in} = 0\)</span> with <span class="math notranslate nohighlight">\(\Delta\)</span> the distance to the face, and
+OpenSn evaluates both with the same routine. The directions are integrated
+over each face side triangle by fanning it out from the point of the
+triangle closest to the source, with the radius graded by a <span class="math notranslate nohighlight">\(\sinh\)</span>
+substitution, so the integrands remain smooth however close the source is
+to the cell. The two treatments differ only in how the flux inside the cell
+is represented: the projected flux shape of a neighbor cell is rescaled to
+the exact volume integral, while the source cell, whose projection cannot
+resolve the singularity, uses the constant cell average.</p>
 </li>
 <li><p>Finite-volume sources can be approximated externally by weighted point
 sources, for example at volume-quadrature points. Those quadrature points
