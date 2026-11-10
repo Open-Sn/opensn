@@ -1,7 +1,11 @@
 #!/usr/bin/env python3
-"""Analytic uncollided point-source test with two reflecting symmetry planes."""
+"""Analytic uncollided point-source test with three reflecting symmetry planes.
+
+The neighbors of the source cell use exact_near_source_leakage.
+"""
 
 import importlib
+import itertools
 import math
 import os
 import sys
@@ -12,11 +16,11 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.fieldfunc import FieldFunctionInterpolationPoint
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.math import Vector3
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.solver import (
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
@@ -28,7 +32,6 @@ if "opensn_console" not in globals():
 
 sys.path.append(os.path.dirname(__file__))
 uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-mesh_path = uncollided_utils.mesh_path
 point_value = uncollided_utils.point_value
 relative_error = uncollided_utils.relative_error
 remove_file = uncollided_utils.remove_file
@@ -37,8 +40,8 @@ remove_file = uncollided_utils.remove_file
 def analytic_flux(source, images, point, sigma_t):
     flux = 0.0
     for location in [source, *images]:
-        distance = math.hypot(point[0] - location[0], point[1] - location[1])
-        flux += math.exp(-sigma_t * distance) / (2.0 * math.pi * distance)
+        distance = math.dist(point, location)
+        flux += math.exp(-sigma_t * distance) / (4.0 * math.pi * distance**2)
     return flux
 
 
@@ -46,7 +49,8 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_super_fine.obj")).Execute()
+    nodes = [-1.0 + 0.05 * i for i in range(21)]
+    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes]).Execute()
     grid.SetUniformBlockID(0)
     grid.SetOrthogonalBoundaries()
 
@@ -54,12 +58,12 @@ if __name__ == "__main__":
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=sigma_t, c=0.0)
 
-    # Centered on its containing cell so it isn't flush against a face
-    source = (-0.3589073333333333, -0.386495, 0.0)
+    # Reflections through the x = -1, y = -1, and z = -1 planes
+    source = (-0.3589, -0.3865, -0.4421)
     images = [
-        (-1.6410926666666667, -0.386495, 0.0),
-        (-0.3589073333333333, -1.613505, 0.0),
-        (-1.6410926666666667, -1.613505, 0.0),
+        tuple(-2.0 - c if mirror else c for c, mirror in zip(source, mask))
+        for mask in itertools.product((False, True), repeat=3)
+        if any(mask)
     ]
     point_source = PointSource(location=list(source), strength=[1.0])
     # A small region around the point source
@@ -68,14 +72,16 @@ if __name__ == "__main__":
         xmax=source[0] + 0.08,
         ymin=source[1] - 0.08,
         ymax=source[1] + 0.08,
-        infz=True,
+        zmin=source[2] - 0.08,
+        zmax=source[2] + 0.08,
     )
     boundary_conditions = [
         {"name": "xmin", "type": "reflecting"},
         {"name": "ymin", "type": "reflecting"},
+        {"name": "zmin", "type": "reflecting"},
     ]
 
-    file_name = "uncollided_2d_reflecting.h5"
+    file_name = "uncollided_3d_reflecting.h5"
     remove_file(file_name)
     uncollided = UncollidedProblem(
         mesh=grid,
@@ -84,6 +90,7 @@ if __name__ == "__main__":
         xs_map=[{"block_ids": [0], "xs": xs}],
         point_sources=[point_source],
         near_source=[near_source_region],
+        exact_near_source_leakage=True,
         boundary_conditions=boundary_conditions,
         scattering_order=0,
     )
@@ -92,9 +99,9 @@ if __name__ == "__main__":
     uncollided_solver.Execute()
 
     sample_points = [
-        (-0.74, -0.68, 0.0),
-        (0.21, -0.31, 0.0),
-        (-0.12, 0.46, 0.0),
+        (-0.74, -0.68, -0.83),
+        (-0.21, -0.31, -0.12),
+        (-0.62, -0.13, -0.71),
     ]
     scalar_flux = uncollided.GetScalarFluxFieldFunction()[0]
     max_analytic_error = 0.0
@@ -108,9 +115,9 @@ if __name__ == "__main__":
         reference = analytic_flux(source, images, point, sigma_t)
         max_analytic_error = max(max_analytic_error, relative_error(value, reference))
 
-    quadrature = GLCProductQuadrature2DXY(
-        n_polar=2,
-        n_azimuthal=24,
+    quadrature = GLCProductQuadrature3DXYZ(
+        n_polar=4,
+        n_azimuthal=16,
         scattering_order=0,
     )
     mismatch_rejected = False
@@ -169,14 +176,14 @@ if __name__ == "__main__":
 
     balance = solver.ComputeBalanceTable()
     if rank == 0:
-        print(f"UncollidedReflecting2DMaxAnalyticError={max_analytic_error:.8e}")
-        print(f"UncollidedReflecting2DRecombinationError={max_recombination_error:.8e}")
-        print(f"UncollidedReflecting2DCombinedBalance={balance['balance']:.8e}")
-        print(f"UncollidedReflecting2DMismatchRejected={int(mismatch_rejected)}")
+        print(f"UncollidedReflecting3DMaxAnalyticError={max_analytic_error:.8e}")
+        print(f"UncollidedReflecting3DRecombinationError={max_recombination_error:.8e}")
+        print(f"UncollidedReflecting3DCombinedBalance={balance['balance']:.8e}")
+        print(f"UncollidedReflecting3DMismatchRejected={int(mismatch_rejected)}")
         sys.stdout.flush()
 
     remove_file(file_name)
-    if max_analytic_error > 0.05:
+    if max_analytic_error > 0.02:
         raise RuntimeError(f"Reflecting analytic error is too large: {max_analytic_error}")
     if max_recombination_error > 1.0e-12:
         raise RuntimeError(

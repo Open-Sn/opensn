@@ -3,7 +3,8 @@
 The first-collision fission source follows use_precursors, as the transport fission source does.
 
 A point source in a subcritical one-group medium with delayed-neutron data (c = 0.7,
-sigma_f = 0.1, nu_p = 1.987, nu_d = 0.013, one spectrum) is solved with an uncollided flux file.
+sigma_f = 0.1, nu_p = 1.987, nu_d = 0.013, one spectrum) on an extruded prism mesh is solved with an
+uncollided flux file.
 With use_precursors=True the fission source, first-collision source included, uses nu = 2.0, so
 the flux must equal that of the same medium without delayed-neutron data and nu = 2.0. With
 use_precursors=False it uses nu_p only, so the flux must equal that of the medium with nu = 1.987.
@@ -28,9 +29,9 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import (
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
@@ -42,7 +43,7 @@ if "opensn_console" not in globals():
 
 sys.path.append(os.path.dirname(__file__))
 uncollided_utils = importlib.import_module("uncollided_unstructured_utils")
-mesh_path = uncollided_utils.mesh_path
+extruded_mesh = uncollided_utils.extruded_mesh
 remove_file = uncollided_utils.remove_file
 
 
@@ -53,8 +54,8 @@ def solve(grid, xs, file_name, use_precursors):
         groupsets=[
             {
                 "groups_from_to": [0, 0],
-                "angular_quadrature": GLCProductQuadrature2DXY(
-                    n_polar=2, n_azimuthal=24, scattering_order=0
+                "angular_quadrature": GLCProductQuadrature3DXYZ(
+                    n_polar=2, n_azimuthal=8, scattering_order=0
                 ),
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-12,
@@ -92,7 +93,7 @@ if __name__ == "__main__":
     if size != 1:
         sys.exit(f"Expected one process, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj")
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
@@ -108,9 +109,10 @@ if __name__ == "__main__":
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
-        # Centered on its containing cell so it isn't flush against a face
-        point_sources=[PointSource(location=[0.0441723, -0.0330477, 0.0], strength=[1.0])],
-        near_source=[RPPLogicalVolume(xmin=-0.22, xmax=0.22, ymin=-0.22, ymax=0.22, infz=True)],
+        point_sources=[PointSource(location=[0.0441723, -0.0330477, 1.11], strength=[1.0])],
+        near_source=[
+            RPPLogicalVolume(xmin=-0.22, xmax=0.22, ymin=-0.22, ymax=0.22, zmin=0.89, zmax=1.33)
+        ],
         scattering_order=0,
     )
     uncollided_solver = UncollidedSolver(problem=uncollided, file_name=file_name)

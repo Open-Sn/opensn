@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-"""Homogeneous 3D tetrahedral-mesh convergence test."""
+"""Homogeneous 3D tetrahedral-mesh convergence test.
+
+The neighbors of the source cell use exact_near_source_leakage, so the error is set by
+the bulk-sweep discretization rather than by where the source lies in its cell.
+"""
 
 import importlib
 import os
@@ -61,6 +65,7 @@ def compute_error(mesh_name, file_name):
         xs_map=[{"block_ids": [0], "xs": xs}],
         point_sources=[point_source],
         near_source=[near_source_region],
+        exact_near_source_leakage=True,
         scattering_order=0,
     )
     solver = UncollidedSolver(problem=problem, file_name=file_name)
@@ -113,5 +118,5 @@ if __name__ == "__main__":
         raise RuntimeError(f"3D coarse-to-medium convergence failed: {errors}")
     if not errors[2] < 0.9 * errors[1]:
         raise RuntimeError(f"3D medium-to-fine convergence failed: {errors}")
-    if max_errors[2] > 0.11:
+    if max_errors[2] > 0.02:
         raise RuntimeError(f"3D fine-mesh scalar-flux error is too large: {max_errors[2]}")
