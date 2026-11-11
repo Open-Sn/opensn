@@ -616,23 +616,27 @@ Mesh::CheckPointInsideCellFace(const Cell& cell,
   if (std::abs((point - face.centroid).Dot(face.normal)) > tol)
     return false;
 
-  // Helper for computing if the point is on the inside of an edge defined by
-  // the face vertices v1 and v2 where inside is opposite the outward normal
-  // of the edge (outward normal points from face centroid -> edge)
-  const auto InsideEdge = [this, &point, &face](const auto vi1, const auto vi2)
+  // The point is in the face when it is on the inner side of every edge. In the plane of the
+  // face, the direction normal to an edge is the cross product of the edge with the face normal;
+  // it is taken to point away from the face centroid. The direction from the centroid to the
+  // middle of the edge is not normal to the edge of a general polygon, such as a triangle that
+  // is not equilateral.
+  const std::size_t num_vertices = face.vertex_ids.size();
+  for (std::size_t i = 0; i < num_vertices; ++i)
   {
-    const auto edge_centroid =
-      (GlobalVertex(face.vertex_ids[vi1]) + GlobalVertex(face.vertex_ids[vi2])) / 2.0;
-    const auto normal = (edge_centroid - face.centroid).Normalized();
-    return (point - edge_centroid).Dot(normal) <= 0.0;
-  };
-
-  // Check all of the way around the polygon
-  for (size_t i = 0; i < (face.vertex_ids.size() - 1); ++i)
-    if (!InsideEdge(i, i + 1))
+    const auto& v1 = GlobalVertex(face.vertex_ids[i]);
+    const auto& v2 = GlobalVertex(face.vertex_ids[(i + 1) % num_vertices]);
+    auto outward = (v2 - v1).Cross(face.normal);
+    const double length = outward.Norm();
+    if (length == 0.0)
+      continue;
+    outward /= length;
+    if ((face.centroid - v1).Dot(outward) > 0.0)
+      outward = -1.0 * outward;
+    if ((point - v1).Dot(outward) > tol)
       return false;
-  // Last vertex is checked with the first vertex
-  return InsideEdge(face.vertex_ids.size() - 1, 0);
+  }
+  return true;
 }
 
 NDArray<uint64_t, 3>

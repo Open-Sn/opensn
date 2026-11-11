@@ -221,6 +221,18 @@ TEST(MeshTest, PointInsideCellFace3D)
   TestPointInsideCellFace(grid_ptr);
 }
 
+TEST(MeshTest, PointInsideCellFaceTetrahedra)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // Triangular faces of general shape: the direction from the face centroid to the middle of an
+  // edge is not normal to the edge.
+  const auto grid_ptr = BuildMeshFromFile(std::filesystem::path(OPENSN_TEST_ROOT) / "assets" /
+                                          "mesh" / "uncollided_cube_coarse.msh");
+  TestPointInsideCellFace(grid_ptr);
+}
+
 namespace
 {
 
