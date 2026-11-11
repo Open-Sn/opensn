@@ -185,8 +185,10 @@ public:
     /// First group of the groupset.
     uint64_t first_group = 0;
     std::string surface_name;
-    /// True when the tag is one side, `<name>_u` or `<name>_d`, of an interior surface; false for a
-    /// boundary, whatever its name.
+    /**
+     * True when the tag is one side, `<name>_u` or `<name>_d`, of an interior surface; false for a
+     * boundary, whatever its name.
+     */
     bool interior = false;
     /// Face geometry of the tag, shared by the entries of every groupset of the tag.
     std::shared_ptr<const SurfaceMap> mapping;

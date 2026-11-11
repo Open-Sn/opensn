@@ -46,15 +46,19 @@ struct SurfaceShard
   {
     /// Direction cosine with the face normal, ordered by face and direction.
     std::vector<double> mu;
-    /// Angular flux, ordered by face, face node, direction, and group. For an interior tag, the
-    /// values of the face's cell; for a boundary tag, the upwind values written by
-    /// WriteSurfaceAngularFluxes (`upwind_flux`), which take the boundary condition for the
-    /// directions that enter the domain.
+    /**
+     * Angular flux, ordered by face, face node, direction, and group. For an interior tag, the
+     * values of the face's cell; for a boundary tag, the upwind values written by
+     * WriteSurfaceAngularFluxes (`upwind_flux`), which take the boundary condition for the
+     * directions that enter the domain.
+     */
     std::vector<double> psi;
   };
 
-  /// True when the tag is one side, `<name>_u` or `<name>_d`, of an interior surface; false for a
-  /// boundary, whatever its name. Recorded by the writer and identical on all ranks.
+  /**
+   * True when the tag is one side, `<name>_u` or `<name>_d`, of an interior surface; false for a
+   * boundary, whatever its name. Recorded by the writer and identical on all ranks.
+   */
   bool interior = false;
   /// (face key, local face index) pairs sorted by key.
   std::vector<std::pair<DiscreteOrdinatesProblemIO::FaceCentroidKey, std::uint64_t>> index;
@@ -107,20 +111,26 @@ enum class SurfaceKind
 /// The surface response of one boundary or interior surface.
 struct SurfaceResponse
 {
-  /// The surface as requested: a boundary name, or an interior surface name, bare (`X`) or with
-  /// the side tag that sets its normal (`X_u` or `X_d`).
+  /**
+   * The surface as requested: a boundary name, or an interior surface name, bare (`X`) or with
+   * the side tag that sets its normal (`X_u` or `X_d`).
+   */
   std::string name;
   SurfaceKind kind = SurfaceKind::BOUNDARY;
-  /// Contribution of the directions with positive cosine with the surface normal. For an interior
-  /// surface, the normal is the outward normal of the selected side, `X_u` (the positive axis) for
-  /// `X` and `X_u` and `X_d` (the negative axis) for `X_d`, and these directions leave the cell of
-  /// that side. For a boundary, the normal is the outward normal and these are the outflow
-  /// directions.
+  /**
+   * Contribution of the directions with positive cosine with the surface normal. For an interior
+   * surface, the normal is the outward normal of the selected side, `X_u` (the positive axis) for
+   * `X` and `X_u` and `X_d` (the negative axis) for `X_d`, and these directions leave the cell of
+   * that side. For a boundary, the normal is the outward normal and these are the outflow
+   * directions.
+   */
   double outgoing = 0.0;
-  /// Contribution of the directions with negative cosine with the normal. For an interior surface,
-  /// these leave the cell of the other side and cross back. For a boundary, they are the inflow
-  /// directions: the forward boundary-condition value (a forward boundary source; 0 for a vacuum
-  /// boundary) against the adjoint cell value.
+  /**
+   * Contribution of the directions with negative cosine with the normal. For an interior surface,
+   * these leave the cell of the other side and cross back. For a boundary, they are the inflow
+   * directions: the forward boundary-condition value (a forward boundary source; 0 for a vacuum
+   * boundary) against the adjoint cell value.
+   */
   double incoming = 0.0;
 
   /// The response carried across the surface along its normal: `outgoing + incoming`.

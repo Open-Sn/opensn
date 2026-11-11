@@ -40,8 +40,10 @@ const std::vector<double> weights = {0.1, 0.2, 0.3, 0.4};
 /// Groups per groupset.
 const std::vector<std::uint64_t> groups_per_groupset = {2, 1};
 
-/// Angular flux a + b y of a data set (`adjoint`) on one side ('u', 'd', or 'b') of a surface, or
-/// the boundary-condition value ('i') of a boundary.
+/**
+ * Angular flux a + b y of a data set (`adjoint`) on one side ('u', 'd', or 'b') of a surface, or
+ * the boundary-condition value ('i') of a boundary.
+ */
 std::array<double, 2>
 FluxCoefficients(const bool adjoint,
                  const char side,
@@ -101,8 +103,10 @@ ExpectedResponse(const bool interior)
   return response;
 }
 
-/// Closed-form incoming (mu < 0) part of the boundary response: the forward boundary value against
-/// the adjoint cell value.
+/**
+ * Closed-form incoming (mu < 0) part of the boundary response: the forward boundary value against
+ * the adjoint cell value.
+ */
 double
 ExpectedBoundaryIncoming()
 {
@@ -117,8 +121,10 @@ ExpectedBoundaryIncoming()
   return incoming;
 }
 
-/// Closed-form outgoing (mu > 0) and incoming (mu < 0) parts of the interior surface response
-/// along +x.
+/**
+ * Closed-form outgoing (mu > 0) and incoming (mu < 0) parts of the interior surface response
+ * along +x.
+ */
 std::pair<double, double>
 ExpectedInteriorParts()
 {
