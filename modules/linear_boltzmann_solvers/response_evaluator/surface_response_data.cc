@@ -555,9 +555,17 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
   std::vector<SurfaceAngularFlux> file_fluxes;
   std::vector<std::string> surface_tags;
   FileSetHeader header;
+  // A failure is rethrown on every rank with its type kept for invalid requests, such as names that
+  // resolve to the same tag twice, so that Python reports them as ValueError.
   std::vector<char> root_error;
+  int root_error_is_invalid_argument = 0;
   if (rank == 0)
   {
+    const auto RecordError = [&root_error](const std::exception& error)
+    {
+      const std::string message = error.what();
+      root_error.assign(message.begin(), message.end());
+    };
     try
     {
       file_fluxes = DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base, 0, surfaces);
@@ -566,16 +574,27 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
           surface_tags.push_back(surf_flux.surface_name);
       header = GetFileHeader(file_fluxes, surface_tags.size());
     }
+    catch (const std::invalid_argument& error)
+    {
+      RecordError(error);
+      root_error_is_invalid_argument = 1;
+    }
     catch (const std::exception& error)
     {
-      const std::string message = error.what();
-      root_error.assign(message.begin(), message.end());
+      RecordError(error);
     }
   }
   BroadcastVector(comm, root_error, 0);
   if (not root_error.empty())
-    throw std::logic_error(operation +
-                           " failed: " + std::string(root_error.begin(), root_error.end()));
+  {
+    comm.broadcast(root_error_is_invalid_argument, 0);
+    auto message = std::string(operation)
+                     .append(" failed: ")
+                     .append(std::string(root_error.begin(), root_error.end()));
+    if (root_error_is_invalid_argument != 0)
+      throw std::invalid_argument(message);
+    throw std::logic_error(message);
+  }
 
   BroadcastStrings(comm, surface_tags, 0);
   BroadcastFileSetHeader(comm, header);

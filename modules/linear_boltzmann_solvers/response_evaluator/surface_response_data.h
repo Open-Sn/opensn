@@ -166,9 +166,9 @@ int SurfaceFaceOwner(const DiscreteOrdinatesProblemIO::FaceCentroidKey& key, int
  * \param comm Communicator to distribute the faces over.
  * \param max_send_bytes Per-rank send budget of one exchange.
  *
- * Collective over `comm`. Throws `std::invalid_argument` for invalid arguments and
- * `std::logic_error`, on all ranks, for missing, inconsistent, or malformed files, for a tag with
- * no faces in any file, and for duplicate faces.
+ * Collective over `comm`. Throws, on all ranks, `std::invalid_argument` for invalid arguments,
+ * including names that resolve to the same tag twice, and `std::logic_error` for missing,
+ * inconsistent, or malformed files, for a tag with no faces in any file, and for duplicate faces.
  */
 DistributedSurfaceData
 DistributeSurfaceAngularFluxes(const std::string& file_base,

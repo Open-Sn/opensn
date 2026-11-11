@@ -805,6 +805,9 @@ TEST_F(SurfaceResponseDataTest, ResolvesInteriorSurfaceNames)
   EXPECT_THROW(
     DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(forward_base, 0, {"plane", "plane_u"}),
     std::invalid_argument);
+  // The reader's invalid_argument keeps its type when rethrown on every rank.
+  EXPECT_THROW(DistributeSurfaceAngularFluxes(forward_base, {"plane", "plane_u"}, mpi_comm),
+               std::invalid_argument);
   auto one_side = ForwardSpec();
   one_side.tags.erase(one_side.tags.begin() + 1);
   EXPECT_THROW(DistributeSurfaceAngularFluxes(Write("one_side", one_side), {"plane"}, mpi_comm),
