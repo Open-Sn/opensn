@@ -165,7 +165,7 @@ public:
   /// Computes the geometric info on the cell.
   void ComputeGeometricInfo(Mesh& grid, std::uint32_t cell_local_id);
 
-  void ComputeVolume(const Mesh& mesh);
+  void ComputeVolume(const Mesh& mesh, std::uint32_t cell_local_id);
 
   /// Serializes a cell into a vector of bytes.
   ByteArray Serialize() const;
