@@ -104,7 +104,7 @@ public:
 
   /// Calls f(local_id) for each local cell whose centroid lies in a bin that overlaps [lo, hi].
   template <typename F>
-  void ForEachCandidate(const Vector3& lo, const Vector3& hi, F&& f) const
+  void ForEachCandidate(const Vector3& lo, const Vector3& hi, const F& f) const
   {
     if (cell_ids_.empty())
       return;

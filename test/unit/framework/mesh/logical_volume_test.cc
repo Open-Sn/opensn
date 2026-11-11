@@ -5,7 +5,6 @@
 #include "framework/parameters/parameter_block.h"
 #include <limits>
 #include <map>
-#include <random>
 #include <string>
 
 using namespace opensn;
@@ -25,26 +24,29 @@ MakeVolume(const std::map<std::string, V>& values)
   return T(params);
 }
 
-/// Checks that every sampled point of [-4, 4]^3 that is inside the volume is inside its box, and
-/// that some points are inside.
+/// Checks that every point of a 61 x 61 x 61 lattice on [-4, 4]^3 that is inside the volume is
+/// inside its box, and that some points are inside.
 void
 ExpectBoxContainsVolume(const LogicalVolume& volume)
 {
   Vector3 lo, hi;
   ASSERT_TRUE(volume.GetBoundingBox(lo, hi));
-  std::mt19937 gen(42);
-  std::uniform_real_distribution<double> coordinate(-4.0, 4.0);
+  constexpr int num_points = 61;
+  const auto coordinate = [](const int n) { return -4.0 + 8.0 * n / (num_points - 1); };
   int num_inside = 0;
-  for (int n = 0; n < 200000; ++n)
-  {
-    const Vector3 p(coordinate(gen), coordinate(gen), coordinate(gen));
-    if (not volume.Inside(p))
-      continue;
-    ++num_inside;
-    EXPECT_TRUE(p.x >= lo.x and p.x <= hi.x and p.y >= lo.y and p.y <= hi.y and p.z >= lo.z and
-                p.z <= hi.z)
-      << "point (" << p.x << ", " << p.y << ", " << p.z << ") is inside the volume but not its box";
-  }
+  for (int i = 0; i < num_points; ++i)
+    for (int j = 0; j < num_points; ++j)
+      for (int k = 0; k < num_points; ++k)
+      {
+        const Vector3 p(coordinate(i), coordinate(j), coordinate(k));
+        if (not volume.Inside(p))
+          continue;
+        ++num_inside;
+        EXPECT_TRUE(p.x >= lo.x and p.x <= hi.x and p.y >= lo.y and p.y <= hi.y and p.z >= lo.z and
+                    p.z <= hi.z)
+          << "point (" << p.x << ", " << p.y << ", " << p.z
+          << ") is inside the volume but not its box";
+      }
   EXPECT_GT(num_inside, 100);
 }
 
