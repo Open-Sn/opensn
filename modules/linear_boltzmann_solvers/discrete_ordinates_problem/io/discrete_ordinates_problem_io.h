@@ -196,6 +196,12 @@ public:
   };
 
   /**
+   * Version of the surface angular flux file format, stored in the `format_version` attribute of
+   * every file. Increase it whenever the stored attributes or datasets change.
+   */
+  static constexpr uint64_t SURFACE_FILE_FORMAT_VERSION = 1;
+
+  /**
    * Write surface angular flux vector(s) to a file.
    *
    * \param do_problem Discrete ordinates problem
@@ -213,11 +219,12 @@ public:
    * Collective over all ranks. Surface selections may differ by rank, but each file contains only
    * its rank's tags, and DistributeSurfaceAngularFluxes requires every requested tag in every file
    * of a set. Plane-matching tolerances are relative to the global mesh extent. Each rank writes
-   * `<file_base><rank>.h5`, which records whether the problem is in adjoint mode, the number of
-   * files written (`num_partitions`), and an identifier shared by the files of the set
-   * (`file_set_id`). Each groupset records its first group. Boundary tags also store the upwind
-   * face values (`upwind_flux`; see SurfaceData), taken from the problem's boundary conditions for
-   * the directions that enter the domain.
+   * `<file_base><rank>.h5`, which records the file format version (`format_version`, see
+   * SURFACE_FILE_FORMAT_VERSION), whether the problem is in adjoint mode, the number of files
+   * written (`num_partitions`), and an identifier shared by the files of the set (`file_set_id`).
+   * Each groupset records its first group. Boundary tags also store the upwind face values
+   * (`upwind_flux`; see SurfaceData), taken from the problem's boundary conditions for the
+   * directions that enter the domain.
    *
    * Requires `options.save_angular_flux=true`. An adjoint problem must hold its solution in the
    * physical orientation (`IsAdjointSolutionReoriented()`), which an adjoint steady-state or
@@ -243,13 +250,13 @@ public:
    * faces, and the names must not resolve to the same tag twice.
    *
    * Returns one entry per groupset and resolved tag, groupset-major, with `surface_name` set to
-   * the tag. The file must carry every attribute
-   * written by the current WriteSurfaceAngularFluxes, including `num_partitions`, which must exceed
-   * `partition`. Every dataset size is checked against the face-node counts before data are read,
-   * the data must be finite, and face centroid keys must be unique within each surface. The data
-   * are not checked against a problem, so any rank can read any file of a set, whatever number of
-   * ranks or partitioning wrote it. Not collective. Throws `std::invalid_argument` for an empty
-   * `surfaces` and `std::logic_error` for a missing, malformed, or inconsistent file.
+   * the tag. The file must have format version SURFACE_FILE_FORMAT_VERSION and carry every
+   * attribute written by the current WriteSurfaceAngularFluxes, including `num_partitions`, which
+   * must exceed `partition`. Every dataset size is checked against the face-node counts before data
+   * are read, the data must be finite, and face centroid keys must be unique within each surface.
+   * The data are not checked against a problem, so any rank can read any file of a set, whatever
+   * number of ranks or partitioning wrote it. Not collective. Throws `std::invalid_argument` for an
+   * empty `surfaces` and `std::logic_error` for a missing, malformed, or inconsistent file.
    */
   static std::vector<SurfaceAngularFlux> ReadSurfaceAngularFluxes(
     const std::string& file_base, uint64_t partition, const std::vector<std::string>& surfaces);

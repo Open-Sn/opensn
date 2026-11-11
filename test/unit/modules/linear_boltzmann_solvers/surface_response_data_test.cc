@@ -159,6 +159,9 @@ struct TagSpec
 struct SetSpec
 {
   bool adjoint = false;
+  /// File format version recorded in the files; none is written when empty.
+  std::optional<std::uint64_t> format_version =
+    DiscreteOrdinatesProblemIO::SURFACE_FILE_FORMAT_VERSION;
   /// Omit attributes that earlier versions of OpenSn did not write.
   bool write_num_partitions = true;
   bool write_adjoint = true;
@@ -199,6 +202,10 @@ WriteSet(const std::string& file_base, const SetSpec& spec)
     const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
     ASSERT_GE(file.Id(), 0);
     const auto id = file.Id();
+    if (spec.format_version.has_value())
+    {
+      ASSERT_TRUE(H5CreateAttribute(id, "format_version", *spec.format_version));
+    }
     ASSERT_TRUE(H5CreateAttribute(id, "num_groupsets", std::uint64_t{groups_per_groupset.size()}));
     if (spec.write_adjoint)
     {
@@ -475,6 +482,12 @@ TEST_F(SurfaceResponseDataTest, SmallSendBudgetGivesSameResult)
 
 TEST_F(SurfaceResponseDataTest, RejectsFilesFromEarlierVersions)
 {
+  auto without_version = ForwardSpec();
+  without_version.format_version.reset();
+  EXPECT_THROW(
+    DistributeSurfaceAngularFluxes(Write("no_version", without_version), all_tags, mpi_comm),
+    std::logic_error);
+
   auto without_partitions = ForwardSpec();
   without_partitions.write_num_partitions = false;
   EXPECT_THROW(
@@ -512,6 +525,20 @@ TEST_F(SurfaceResponseDataTest, RejectsFilesFromEarlierVersions)
   // Interior tags have no upwind values.
   EXPECT_NO_THROW(DistributeSurfaceAngularFluxes(
     Write("no_upwind_interior", without_upwind), {"plane"}, mpi_comm));
+}
+
+TEST_F(SurfaceResponseDataTest, RejectsOtherFormatVersions)
+{
+  for (const std::uint64_t version :
+       {std::uint64_t{0}, DiscreteOrdinatesProblemIO::SURFACE_FILE_FORMAT_VERSION + 1})
+  {
+    auto spec = ForwardSpec();
+    spec.format_version = version;
+    const auto file_base = Write("version_" + std::to_string(version), spec);
+    EXPECT_THROW(DistributeSurfaceAngularFluxes(file_base, all_tags, mpi_comm), std::logic_error);
+    EXPECT_THROW(DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(file_base, 0, all_tags),
+                 std::logic_error);
+  }
 }
 
 TEST_F(SurfaceResponseDataTest, RejectsFileOfAnotherSet)

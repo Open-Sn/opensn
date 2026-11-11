@@ -695,6 +695,9 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
 
   log.Log() << "Writing surface angular flux data to " << file_base;
 
+  OpenSnLogicalErrorIf(
+    not H5CreateAttribute(file.Id(), "format_version", SURFACE_FILE_FORMAT_VERSION),
+    "Failed to write the file format version to " + file_name + ".");
   OpenSnLogicalErrorIf(not H5CreateAttribute(file.Id(), "num_groupsets", num_groupsets),
                        "Failed to write the number of groupsets to " + file_name + ".");
   // Identifies the files written by this call, so that readers reject a file left over from
@@ -1016,6 +1019,16 @@ DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes(const std::string& file_bas
   const std::string file_name = file_base + std::to_string(partition) + ".h5";
   const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
   OpenSnLogicalErrorIf(file.Id() < 0, "Failed to open " + file_name + ".");
+
+  // Files written before the format was versioned have no version attribute.
+  uint64_t format_version = 0;
+  OpenSnLogicalErrorIf(not H5ReadAttribute(file.Id(), "format_version", format_version),
+                       file_name + " has no file format version. It was written by an earlier, "
+                                   "unsupported version of OpenSn; write it again.");
+  OpenSnLogicalErrorIf(format_version != SURFACE_FILE_FORMAT_VERSION,
+                       file_name + " has file format version " + std::to_string(format_version) +
+                         ", but this version of OpenSn reads version " +
+                         std::to_string(SURFACE_FILE_FORMAT_VERSION) + ".");
 
   // Every attribute below is written by the current WriteSurfaceAngularFluxes. Files without them
   // were written by an unsupported version of OpenSn.
