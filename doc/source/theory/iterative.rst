@@ -230,10 +230,28 @@ sweep has not yet reflected. On it the correction satisfies
 
 with :math:`n` the outward normal and :math:`\psi^{\text{new}}` and
 :math:`\psi^{\text{old}}` the lagged incoming fluxes after and before the
-sweep. :math:`J_g` is the inward partial current of that change. The fluxes
-that the sweep lags where it breaks a cycle, within a partition or between
-partitions, receive the isotropic correction only. The change of those fluxes
-is not a source of the correction.
+sweep. :math:`J_g` is the inward partial current of that change.
+
+The sweep also lags the upwind angular flux on the faces where it breaks a
+cyclic dependency, within a partition or between partitions. The cell :math:`K`
+that reads the lagged flux through such a face :math:`f` is swept with the
+lagged value :math:`\psi^{\text{old}}` in place of :math:`\psi^{\text{new}}`,
+the upwind flux of the current sweep. The error of the swept iterate therefore
+has the change of the lagged flux as an incoming surface source of :math:`K`
+on :math:`f`. The correction receives the zeroth angular moment of that
+source: the equation of each basis function :math:`b_i` of :math:`K` gains the
+face term
+
+.. math:: \int_f b_i \, J_g \,, \qquad
+          J_g = \sum_{d \in \mathcal{D}_f} w_d \, |\Omega_d \cdot n| \,
+          \bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,
+
+with :math:`n` the outward normal of :math:`K` on :math:`f`,
+:math:`\mathcal{D}_f` the directions whose flux is lagged on :math:`f`, and
+:math:`J_g` interpolated by the face basis. This is the term that the condition
+above adds on a lagged reflecting boundary. Without it the correction misses
+the particles that the lagged faces have not yet passed on, which limits the
+convergence of optically thin problems with strong scattering.
 
 With a PETSc inner method (``petsc_richardson``, ``petsc_gmres``,
 ``petsc_fgmres`` or ``petsc_bicgstab``), the same correction is the

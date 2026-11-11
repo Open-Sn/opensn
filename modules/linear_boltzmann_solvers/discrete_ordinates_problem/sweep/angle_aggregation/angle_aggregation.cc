@@ -618,6 +618,31 @@ AngleAggregation::CorrectNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrectio
     angle_set->GetFLUDS().CorrectNewDelayedAngularFlux(correction);
 }
 
+bool
+AngleAggregation::HasLocalDelayedAngularFlux() const
+{
+  for (const auto& [bid, bndry] : boundaries_)
+    if (bndry->CountDelayedAngularDOFsNew(groupset_id_) > 0)
+      return true;
+  for (const auto& angle_set : angle_set_groups_)
+    if (angle_set->GetFLUDS().HasDelayedAngularFlux())
+      return true;
+  return false;
+}
+
+void
+AngleAggregation::TallyDelayedIncomingCurrent(const bool subtract_old,
+                                              const FLUDS::DelayedCurrentTally& tally) const
+{
+  for (const auto& [bid, bndry] : boundaries_)
+    bndry->TallyDelayedIncomingCurrent(groupset_id_, *quadrature_, subtract_old, tally);
+
+  // Intra-location and inter-location cycles
+  for (const auto& angle_set : angle_set_groups_)
+    angle_set->GetFLUDS().TallyDelayedIncomingCurrent(
+      *quadrature_, angle_set->GetAngleIndices(), subtract_old, tally);
+}
+
 std::vector<double>
 AngleAggregation::MapNodalValuesToDelayedAngularDOFs(
   const FLUDS::DelayedFluxCorrection& nodal_value)

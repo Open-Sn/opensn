@@ -16,6 +16,7 @@
 namespace opensn
 {
 
+class AngularQuadrature;
 class GridFaceHistogram;
 class SPDS;
 
@@ -111,6 +112,37 @@ public:
    * energy-slope value. The default has no delayed energy slopes.
    */
   virtual void AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction) {}
+
+  /**
+   * Receives a nodal inward partial current, indexed by (cell local id, face, face node, group
+   * index within the groupset).
+   */
+  using DelayedCurrentTally =
+    std::function<void(std::uint32_t, unsigned int, unsigned int, unsigned int, double)>;
+
+  /**
+   * Passes to `tally`, for every incoming face node of a cell that reads delayed angular fluxes
+   * (a cyclic dependency broken within this location or between locations) and every groupset
+   * group, the inward partial current \f$ -\sum_n w_n (\Omega_n \cdot \hat{n}) \delta\psi_n \f$
+   * of those fluxes over the directions of this FLUDS, with \f$\hat{n}\f$ the outward normal of
+   * the face of the reading cell. `angle_indices` are the directions of `quadrature` held by this
+   * FLUDS, in its storage order. \f$\delta\psi_n\f$ is the new delayed value minus the old one
+   * when `subtract_old` is true (after a sweep: the change of the upwind flux that the sweep did
+   * not see) and the new delayed value otherwise.
+   *
+   * A FLUDS type that stores delayed angular fluxes must override this. The default accepts only a
+   * FLUDS without them and otherwise throws.
+   */
+  virtual void TallyDelayedIncomingCurrent(const AngularQuadrature& /*quadrature*/,
+                                           const std::vector<std::uint32_t>& /*angle_indices*/,
+                                           bool /*subtract_old*/,
+                                           const DelayedCurrentTally& /*tally*/) const
+  {
+    OpenSnLogicalErrorIf(HasDelayedAngularFlux(),
+                         "This FLUDS type stores delayed (lagged) angular fluxes but does not "
+                         "implement TallyDelayedIncomingCurrent, so WGDSA cannot form their "
+                         "residual.");
+  }
 
   virtual ~FLUDS() = default;
 

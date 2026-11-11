@@ -263,9 +263,10 @@ Without the energy coupling, a correction of group :math:`g` reaches the groups
 below it only through the next sweep, which can amplify the error transiently
 along a charged-particle block before it decays.
 
-On a reflecting boundary that lags its incoming flux, each group's correction
-also receives the inward partial current of the change of the lagged flux, as
-in the standard WGDSA operator (see :doc:`iterative`).
+On a reflecting boundary that lags its incoming flux, and on a face where the
+sweep breaks a cyclic dependency, each group's correction also receives the
+inward partial current of the change of the lagged flux, as in the standard
+WGDSA operator (see :doc:`iterative`).
 
 The correction is added to the scalar flux and, as an isotropic correction, to
 the lagged angular fluxes. The energy slope is not corrected. The correction
