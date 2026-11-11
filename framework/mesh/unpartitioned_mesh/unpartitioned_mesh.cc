@@ -42,7 +42,7 @@ UnpartitionedMesh::ComputeBoundingBox()
 }
 
 std::span<const uint64_t>
-UnpartitionedMesh::GetCellConnectivity(std::uint32_t cell_global_id) const
+UnpartitionedMesh::GetCellConnectivity(std::uint64_t cell_global_id) const
 {
   if (cell_global_id < connect_ofst_.size() - 1)
   {
@@ -55,7 +55,7 @@ UnpartitionedMesh::GetCellConnectivity(std::uint32_t cell_global_id) const
 }
 
 std::span<const CellFace>
-UnpartitionedMesh::GetCellFaces(std::uint32_t cell_global_id) const
+UnpartitionedMesh::GetCellFaces(std::uint64_t cell_global_id) const
 {
   if (cell_global_id < connect_ofst_.size() - 1)
   {
@@ -68,7 +68,7 @@ UnpartitionedMesh::GetCellFaces(std::uint32_t cell_global_id) const
 }
 
 std::span<CellFace>
-UnpartitionedMesh::GetCellFaces(std::uint32_t cell_global_id)
+UnpartitionedMesh::GetCellFaces(std::uint64_t cell_global_id)
 {
   if (cell_global_id < connect_ofst_.size() - 1)
   {
@@ -81,13 +81,13 @@ UnpartitionedMesh::GetCellFaces(std::uint32_t cell_global_id)
 }
 
 std::uint64_t
-UnpartitionedMesh::GetCellFaceCount(std::uint32_t cell_global_id) const
+UnpartitionedMesh::GetCellFaceCount(std::uint64_t cell_global_id) const
 {
   return cell_face_connectivity_[cell_global_id].size();
 }
 
 const CellFace&
-UnpartitionedMesh::GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx) const
+UnpartitionedMesh::GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx) const
 {
   if (cell_global_id < face_connect_ofst_.size() - 1)
   {
@@ -99,7 +99,7 @@ UnpartitionedMesh::GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_
 }
 
 CellFace&
-UnpartitionedMesh::GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx)
+UnpartitionedMesh::GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx)
 {
   if (cell_global_id < face_connect_ofst_.size() - 1)
   {
