@@ -173,6 +173,9 @@ ParameterBlock::ChangeToArray()
                              "type.");
 
   type_ = ParameterBlockType::ARRAY;
+  // A block is sorted by name, but an array must be sorted by index ("9" before "10"). The
+  // in-order fast path of AddParameter relies on this.
+  SortParameters();
 }
 
 // NOLINTBEGIN(misc-no-recursion)
