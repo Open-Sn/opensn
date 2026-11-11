@@ -187,6 +187,17 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     const double* __restrict m2d_row = m2d_op.data() + dir_moment_offset;
     const double* __restrict d2m_row = d2m_op.data() + dir_moment_offset;
 
+    auto& nodal_angular_source = sweep_chunk.workspace_.nodal_angular_source;
+    nodal_angular_source.resize(static_cast<std::size_t>(NumNodes) * gs_size);
+    ComputeAngularSource(cell_transport_view,
+                         NumNodes,
+                         sweep_chunk.num_moments_,
+                         gs_gi,
+                         gs_size,
+                         m2d_row,
+                         sweep_chunk.source_moments_,
+                         nodal_angular_source.data());
+
     for (unsigned int g0 = 0; g0 < gs_size; g0 += sweep_chunk.group_block_size_)
     {
       const auto g1 = std::min(g0 + sweep_chunk.group_block_size_, gs_size);
@@ -203,15 +214,9 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
         auto* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
         std::array<double, NumNodes> nodal_source{};
-        for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
-        {
-          const double w = m2d_row[m];
-          for (std::size_t i = 0; i < NumNodes; ++i)
-            nodal_source[i] +=
-              w *
-              sweep_chunk
-                .source_moments_[moment_dof_map[static_cast<std::size_t>(m) * NumNodes + i] + gsg];
-        }
+        PRAGMA_UNROLL
+        for (std::size_t i = 0; i < NumNodes; ++i)
+          nodal_source[i] = nodal_angular_source[i * gs_size + gsg];
 
         if constexpr (time_dependent)
         {
@@ -282,20 +287,19 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
           bg[pivot] /= A[Idx(pivot, pivot)];
         }
       }
+    }
 
-      for (std::size_t gsg = g0; gsg < g1; ++gsg)
+    // Add the angular flux to the flux moments of each node for all groups. The moments of a node
+    // are contiguous in memory, so this writes them in order.
+    for (std::size_t i = 0; i < NumNodes; ++i)
+    {
+      for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
       {
-        const auto* __restrict bg = &b[gsg * NumNodes];
-        for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
-        {
-          const double w = d2m_row[m];
-          PRAGMA_UNROLL
-          for (std::size_t i = 0; i < NumNodes; ++i)
-          {
-            const std::size_t dof = moment_dof_map[static_cast<std::size_t>(m) * NumNodes + i];
-            sweep_chunk.destination_phi_[dof + gsg] += w * bg[i];
-          }
-        }
+        const double w = d2m_row[m];
+        double* __restrict phi =
+          &sweep_chunk.destination_phi_[moment_dof_map[static_cast<std::size_t>(m) * NumNodes + i]];
+        for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
+          phi[gsg] += w * b[static_cast<std::size_t>(gsg) * NumNodes + i];
       }
     }
 

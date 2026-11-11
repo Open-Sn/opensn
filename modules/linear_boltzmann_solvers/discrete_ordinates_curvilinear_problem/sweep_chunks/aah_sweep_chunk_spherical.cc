@@ -60,7 +60,7 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
   std::vector<Vector<double>> b(gs_size, Vector<double>(max_num_cell_dofs_));
-  std::vector<double> source(max_num_cell_dofs_);
+  std::vector<double> nodal_source(static_cast<size_t>(max_num_cell_dofs_) * gs_size);
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
@@ -177,23 +177,26 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
         for (size_t i = 0; i < cell_num_nodes; ++i)
           b[gsg](i) = psi_edge_[discretization_.MapDOFLocal(cell, i, unknown_manager_, 0, 0) + gsg];
 
+      if (not final_direction)
+        ComputeAngularSource(cell_transport_view,
+                             cell_num_nodes,
+                             num_moments_,
+                             gs_gi,
+                             gs_size,
+                             m2d_row,
+                             source_moments_,
+                             nodal_source.data());
+
       for (size_t gsg = 0; gsg < gs_size && not final_direction; ++gsg)
       {
         const double sigma_tg = sigma_t[gs_gi + gsg];
-        for (size_t i = 0; i < cell_num_nodes; ++i)
-        {
-          double temp_src = 0.0;
-          for (unsigned int m = 0; m < num_moments_; ++m)
-            temp_src += m2d_row[m] * source_moments_[cell_transport_view.MapDOF(i, m, gs_gi + gsg)];
-          source[i] = temp_src;
-        }
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           double temp = 0.0;
           for (size_t j = 0; j < cell_num_nodes; ++j)
           {
             Atemp(i, j) = Amat(i, j) + M(i, j) * sigma_tg;
-            temp += M(i, j) * source[j];
+            temp += M(i, j) * nodal_source[j * gs_size + gsg];
           }
           b[gsg](i) += temp;
         }

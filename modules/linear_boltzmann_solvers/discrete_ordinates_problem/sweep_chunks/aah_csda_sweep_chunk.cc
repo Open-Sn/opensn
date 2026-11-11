@@ -80,7 +80,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
   DenseMatrix<double> Aext(max_num_cell_dofs_ + 1, max_num_cell_dofs_ + 1);
   std::vector<Vector<double>> b(gs_size, Vector<double>(max_num_cell_dofs_, 0.0));
   Vector<double> b_ext(max_num_cell_dofs_ + 1, 0.0);
-  std::vector<double> source(max_num_cell_dofs_);
+  std::vector<double> nodal_source(static_cast<size_t>(max_num_cell_dofs_) * gs_size);
   std::vector<double> face_mu_values;
   std::vector<double> psiE_gsg(gs_size, 0.0);
 
@@ -193,20 +193,18 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
       const double* m2d_row = m2d_op.data() + direction_num * static_cast<size_t>(num_moments_);
       const double* d2m_row = d2m_op.data() + direction_num * static_cast<size_t>(num_moments_);
 
+      ComputeAngularSource(cell_transport_view,
+                           cell_num_nodes,
+                           num_moments_,
+                           gs_gi,
+                           gs_size,
+                           m2d_row,
+                           source_moments_,
+                           nodal_source.data());
+
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
       {
         const double sigma_tg = sigma_t[gs_gi + gsg];
-
-        for (size_t i = 0; i < cell_num_nodes; ++i)
-        {
-          double temp_src = 0.0;
-          for (unsigned int m = 0; m < num_moments_; ++m)
-          {
-            const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_row[m] * source_moments_[ir];
-          }
-          source[i] = temp_src;
-        }
 
         if (charged_groups_[gs_gi + gsg])
         {
@@ -231,7 +229,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
                                                &psiE_gsg};
           SolveCSDALocalSystem(
             csda_ctx,
-            [&source](size_t j) { return source[j]; },
+            [&nodal_source, gs_size, gsg](size_t j) { return nodal_source[j * gs_size + gsg]; },
             [&b](size_t gg, size_t j) { return b[gg](j); },
             [&b](size_t gg, size_t i, double value) { b[gg](i) = value; },
             [&fluds, &angle_set, &cell, cell_local_id, direction_num, spls_index, as_ss_idx](
@@ -262,7 +260,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
             {
               const double Mij = M(i, j);
               Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
-              temp += Mij * source[j];
+              temp += Mij * nodal_source[j * gs_size + gsg];
             }
             b[gsg](i) += temp;
           }

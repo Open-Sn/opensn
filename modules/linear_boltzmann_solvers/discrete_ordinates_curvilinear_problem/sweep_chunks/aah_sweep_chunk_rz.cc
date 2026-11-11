@@ -77,7 +77,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
   DenseMatrix<double> Amat(max_num_cell_dofs_, max_num_cell_dofs_);
   DenseMatrix<double> Atemp(max_num_cell_dofs_, max_num_cell_dofs_);
   std::vector<Vector<double>> b(groupset_.GetNumGroups(), Vector<double>(max_num_cell_dofs_));
-  std::vector<double> source(max_num_cell_dofs_);
+  std::vector<double> nodal_source(static_cast<size_t>(max_num_cell_dofs_) * gs_size);
 
   const auto curvilinear_product_quadrature =
     std::dynamic_pointer_cast<opensn::CurvilinearProductQuadrature>(groupset_.quadrature);
@@ -217,22 +217,20 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       const double* m2d_row = m2d_op.data() + row_offset;
       const double* d2m_row = d2m_op.data() + row_offset;
 
+      // Angular source q = M_n^T * q_moms at the cell nodes for all groups.
+      ComputeAngularSource(cell_transport_view,
+                           cell_num_nodes,
+                           num_moments_,
+                           gs_gi,
+                           gs_size,
+                           m2d_row,
+                           source_moments_,
+                           nodal_source.data());
+
       // Looping over groups, assembling mass terms
       for (size_t gsg = 0; gsg < gs_size; ++gsg)
       {
         double sigma_tg = sigma_t[gs_gi + gsg];
-
-        // Contribute source moments q = M_n^T * q_moms
-        for (size_t i = 0; i < cell_num_nodes; ++i)
-        {
-          double temp_src = 0.0;
-          for (unsigned int m = 0; m < num_moments_; ++m)
-          {
-            const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-            temp_src += m2d_row[m] * source_moments_[ir];
-          }
-          source[i] = temp_src;
-        }
 
         // Mass matrix and source
         // Atemp = Amat + sigma_tgr * M
@@ -244,7 +242,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           {
             const double Mij = M(i, j);
             Atemp(i, j) = Amat(i, j) + Mij * sigma_tg;
-            temp += Mij * source[j];
+            temp += Mij * nodal_source[j * gs_size + gsg];
           }
           b[gsg](i) += temp;
         }
