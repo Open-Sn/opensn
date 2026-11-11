@@ -4,6 +4,7 @@
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/utils/error.h"
+#include <limits>
 
 namespace opensn
 {
@@ -72,6 +73,15 @@ RPPLogicalVolume::Inside(const Vector3& point) const
     condition[ZMIN] = true;
 
   return condition == true_condition;
+}
+
+bool
+RPPLogicalVolume::GetBoundingBox(Vector3& lo, Vector3& hi) const
+{
+  constexpr double inf = std::numeric_limits<double>::infinity();
+  lo = Vector3(infx_ ? -inf : xmin_, infy_ ? -inf : ymin_, infz_ ? -inf : zmin_);
+  hi = Vector3(infx_ ? inf : xmax_, infy_ ? inf : ymax_, infz_ ? inf : zmax_);
+  return true;
 }
 
 } // namespace opensn

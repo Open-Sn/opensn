@@ -57,8 +57,8 @@ public:
   /// Returns a read-only reference to the locally stored field data.
   const std::vector<double>& GetLocalFieldVector() const;
 
-  /// Makes a copy of the locally stored data with ghost access.
-  std::vector<double> GetGhostedFieldVector() const;
+  /// Returns a read-only reference to the locally stored data with ghost access.
+  const std::vector<double>& GetGhostedFieldVector() const;
 
   /// Updates the field vector with a local STL vector.
   void UpdateFieldVector(const std::vector<double>& field_vector);

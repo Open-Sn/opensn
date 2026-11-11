@@ -26,6 +26,8 @@ public:
 
   bool Inside(const Vector3& point) const override;
 
+  bool GetBoundingBox(Vector3& lo, Vector3& hi) const override;
+
 protected:
   double xmin_, xmax_;
   double ymin_, ymax_;

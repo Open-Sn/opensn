@@ -162,7 +162,7 @@ FieldFunctionInterpolationLine::Execute()
   const auto& uk_man = ref_ff_->GetUnknownManager();
   const auto uid = 0;
   const auto cid = ref_component_;
-  const auto field_data = ref_ff_->GetGhostedFieldVector();
+  const auto& field_data = ref_ff_->GetGhostedFieldVector();
 
   double local_max = -std::numeric_limits<double>::infinity();
   double local_min = std::numeric_limits<double>::infinity();

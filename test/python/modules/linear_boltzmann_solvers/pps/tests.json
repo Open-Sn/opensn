@@ -60,5 +60,31 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "volume_postprocessor_many_volumes.py",
+    "comment": "VolumePostprocessor with RPP, sphere, RCC and Boolean logical volumes on a 3D two-group problem: averages and integrals equal FieldFunctionInterpolationVolume, and integrals over an RPP grid tiling the domain add up to the whole-domain integral",
+    "num_procs": 3,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PP_NUM_VOLUMES=",
+        "goldvalue": 55,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_MAX_REL_DIFF_VS_INTERPOLATION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_GRID_TILING_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      }
+    ]
   }
 ]
