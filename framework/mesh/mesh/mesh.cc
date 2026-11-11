@@ -309,6 +309,31 @@ Mesh::SetCellFaces(
   face_vertex_ofst_.clear();
   face_vertex_ids_.clear();
 
+  // count the sizes
+  std::size_t n_faces = 0;
+  std::size_t n_face_connect_ofst = local_cells_.size() + ghost_cells_.size() + 1;
+  std::size_t n_face_vertex_ofst = 1;
+  std::size_t n_face_vertex_ids = 0;
+  auto count_sizes = [&](const std::vector<Cell>& cells)
+  {
+    for (const auto& cell : cells)
+    {
+      n_faces += cell_faces.at(cell.global_id).size();
+      const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
+      n_face_vertex_ofst += cell_face_vids.size();
+      for (const auto& face_vids : cell_face_vids)
+      {
+        n_face_vertex_ids += face_vids.size();
+      }
+    }
+  };
+  count_sizes(local_cells_);
+  count_sizes(ghost_cells_);
+  faces_.reserve(n_faces);
+  face_connect_ofst_.reserve(n_face_connect_ofst);
+  face_vertex_ofst_.reserve(n_face_vertex_ofst);
+  face_vertex_ids_.reserve(n_face_vertex_ids);
+
   face_connect_ofst_.push_back(0);
   for (const auto& cell : local_cells_)
   {
