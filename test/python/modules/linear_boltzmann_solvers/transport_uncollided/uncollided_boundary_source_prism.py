@@ -13,9 +13,15 @@ checks that this round-off does not turn those faces into inflow or outflow face
 - the outflow matches the escape probability of the box, computed independently by integrating
   exp(-sigma_t R) over the inward directions, plus the half that leaves directly;
 - the flux matches the point kernel at sample points, including next to the boundary plane.
+
+The outflow is checked twice: here, as the source strength minus the absorption rate of the flux
+field, and in tests.json, where the "Out-flow rate" and "Conservation error" lines of the solver's
+balance table are compared with the same reference and with zero. The reference is printed so
+that tests.json can check that its gold value is the one computed here.
 """
 
 import importlib
+import math
 import os
 import sys
 
@@ -96,6 +102,8 @@ if __name__ == "__main__":
         sigma_t, source, [(-1.0, 1.0), (-1.0, 1.0), (0.0, height)]
     )
     outflow_error = relative_error(computed_outflow, reference_outflow)
+    if not math.isfinite(outflow_error):
+        raise RuntimeError(f"Boundary-source outflow is not finite: {computed_outflow}")
 
     sample_points = [
         (0.46, 0.11, 0.37),
@@ -108,9 +116,12 @@ if __name__ == "__main__":
     for point in sample_points:
         value = point_value(scalar_flux, point, FieldFunctionInterpolationPoint, Vector3)
         exact = uncollided_3d(strength, sigma_t, source, point)
+        if not math.isfinite(value):
+            raise RuntimeError(f"Boundary-source scalar flux at {point} is not finite: {value}")
         max_error = max(max_error, relative_error(value, exact))
 
     if rank == 0:
+        print(f"UncollidedBoundarySourcePrismReferenceOutflow={reference_outflow:.10e}")
         print(f"UncollidedBoundarySourcePrismOutflowRelativeError={outflow_error:.8e}")
         print(f"UncollidedBoundarySourcePrismMaxRelativeError={max_error:.8e}")
         sys.stdout.flush()

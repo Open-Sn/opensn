@@ -83,9 +83,27 @@
   },
   {
     "file": "uncollided_boundary_source_prism.py",
-    "comment": "Source on a vacuum boundary face of a prism mesh whose plane coordinate is not exactly representable, against the box escape probability and the point kernel",
+    "comment": "Source on a vacuum boundary face of a prism mesh whose plane coordinate is not exactly representable, against the box escape probability and the point kernel. The gold out-flow rate is the reference the input computes by quadrature (first check); the flux error at the sample points is 1.6% on this mesh",
     "num_procs": 1,
     "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedBoundarySourcePrismReferenceOutflow=",
+        "goldvalue": 0.7389436939,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Out-flow rate               =",
+        "goldvalue": 0.7389436939,
+        "abs_tol": 7.4e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Conservation error          =",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
       {
         "type": "KeyValuePair",
         "key": "UncollidedBoundarySourcePrismOutflowRelativeError=",
@@ -95,8 +113,8 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedBoundarySourcePrismMaxRelativeError=",
-        "goldvalue": 0.015965,
-        "abs_tol": 0.005
+        "goldvalue": 0.0,
+        "abs_tol": 0.02
       }
     ]
   },
