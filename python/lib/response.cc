@@ -287,6 +287,8 @@ WrapResEval(py::module& response)
               Prefix for the files written by ``WriteSurfaceAngularFluxes``, used by
               :py:meth:`EvaluateSurfaceResponse`. All files of the prefix are read, whatever
               number of ranks wrote them, and their faces are distributed over the current ranks.
+              Any rank may read any file, so the files must be on a file system that every rank
+              can access.
     surfaces: List[str], default=[]
         Surfaces to read. Required with ``surface_angular_fluxes``, and rejected without it. Each
         entry is a boundary name or an interior surface name, which reads both stored sides

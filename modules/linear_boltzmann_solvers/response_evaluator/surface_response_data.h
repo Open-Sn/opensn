@@ -155,7 +155,8 @@ int SurfaceFaceOwner(const DiscreteOrdinatesProblemIO::FaceCentroidKey& key, int
  * faces and one exchange. A rank receives from every rank in an exchange, so its receive buffer is
  * bounded by the number of ranks times `max_send_bytes`; faces spread evenly over owners, so it is
  * typically about `max_send_bytes`. Every file must contain every requested tag, possibly
- * without faces.
+ * without faces. Any rank may read any file, so the files must be on a file system that every rank
+ * of `comm` can access; `file_base` is used only by the calling rank.
  *
  * \param file_base File name base.
  * \param surfaces Surface names to read. Must be non-empty and unique. A boundary name reads that

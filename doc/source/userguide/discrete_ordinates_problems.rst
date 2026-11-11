@@ -950,7 +950,9 @@ collective and does not check the data against the problem. To combine a whole
 set, on any number of ranks, and evaluate surface responses, pass the file prefix
 as ``surface_angular_fluxes`` in the ``data`` option of
 :py:class:`pyopensn.response.ResponseEvaluator` and call
-:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`.
+:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`. Any
+rank may read any file of the set, so all files must be on a file system that
+every reading rank can access.
 
 Surface Responses
 -----------------

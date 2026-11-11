@@ -367,32 +367,30 @@ AdjointSpec()
 class SurfaceResponseDataTest : public ::testing::Test
 {
 protected:
+  /**
+   * Every rank writes its own copy of each file set into its own directory and reads from it, as
+   * the other unit tests do with temporary files, so the test needs no file system shared between
+   * nodes. DistributeSurfaceAngularFluxes uses the file base only on the calling rank, and the
+   * fixture's sets are identical on all ranks. The directory name carries rank 0's process id so
+   * that concurrent test runs do not share files.
+   */
   void SetUp() override
   {
-    // All ranks use rank 0's process id so concurrent test runs do not share files.
     auto pid = static_cast<std::uint64_t>(getpid());
     mpi_comm.broadcast(pid, 0);
     directory_ =
-      std::filesystem::temp_directory_path() / ("opensn_surface_response_" + std::to_string(pid));
-    if (mpi_comm.rank() == 0)
-      std::filesystem::create_directories(directory_);
-    mpi_comm.barrier();
+      std::filesystem::temp_directory_path() /
+      ("opensn_surface_response_" + std::to_string(pid) + "_r" + std::to_string(mpi_comm.rank()));
+    std::filesystem::create_directories(directory_);
   }
 
-  void TearDown() override
-  {
-    mpi_comm.barrier();
-    if (mpi_comm.rank() == 0)
-      std::filesystem::remove_all(directory_);
-  }
+  void TearDown() override { std::filesystem::remove_all(directory_); }
 
-  /// Write a set on rank 0 and return its file base.
-  std::string Write(const std::string& name, const SetSpec& spec)
+  /// Write a set into this rank's directory and return its file base.
+  std::string Write(const std::string& name, const SetSpec& spec) const
   {
     const auto file_base = (directory_ / (name + "_p")).string();
-    if (mpi_comm.rank() == 0)
-      WriteSet(file_base, spec);
-    mpi_comm.barrier();
+    WriteSet(file_base, spec);
     return file_base;
   }
 
