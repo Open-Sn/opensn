@@ -187,6 +187,25 @@
     ]
   },
   {
+    "file": "uncollided_edge_grazing_rays.py",
+    "comment": "Near-source ray tracing through rays that pass within roundoff of tetrahedron edges, against the exact escape fraction",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedEdgeGrazingOutflowError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.002
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedEdgeGrazingExactOutflowError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0002
+      }
+    ]
+  },
+  {
     "file": "uncollided_3d_prism_analytic.py",
     "comment": "3D prism scalar flux and P1 moments against the exact point-source solution, bulk positivity, and global outflow",
     "num_procs": 1,

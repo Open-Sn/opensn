@@ -128,6 +128,21 @@ protected:
                         std::vector<double>& scratch_mfp,
                         double tolerance = 1.0e-12);
 
+  /// Return the local ID of the convex cell that contains the point a small fraction of a cell
+  /// size beyond @p point along @p omega. Used to continue a ray that passed within roundoff of
+  /// an edge or vertex of @p cell_id and was handed to a cell that it does not enter.
+  size_t LocateCellAhead(const Vector3& point,
+                         const Vector3& omega,
+                         double remaining_distance,
+                         size_t cell_id) const;
+
+  /// Maximum number of consecutive times a ray may be moved to the cell ahead of it without
+  /// advancing.
+  static constexpr unsigned int max_ray_relocations = 8;
+  /// Distance ahead of a stalled ray, as a fraction of the cell size, of the point that locates
+  /// the next cell.
+  static constexpr double ray_relocation_probe_fraction = 1.0e-6;
+
   /// Integrals of the uncollided flux of a point source over a cell.
   struct ExactCellIntegrals
   {

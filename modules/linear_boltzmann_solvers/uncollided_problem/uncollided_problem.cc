@@ -22,6 +22,7 @@
 #include <numeric>
 #include <utility>
 #include <unordered_map>
+#include <unordered_set>
 #include <cmath>
 #include <exception>
 #include <algorithm>
@@ -748,6 +749,57 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 }
 // NOLINTEND(clang-analyzer-security.ArrayBound)
 
+size_t
+UncollidedProblem::LocateCellAhead(const Vector3& point,
+                                   const Vector3& omega,
+                                   const double remaining_distance,
+                                   const size_t cell_id) const
+{
+  const double probe_distance =
+    std::min(0.5 * remaining_distance, cell_sizes_[cell_id] * ray_relocation_probe_fraction);
+  const Vector3 probe = point + probe_distance * omega;
+  const auto contains_probe = [this, &probe](const Cell& candidate)
+  {
+    const double point_tolerance = cell_sizes_[candidate.local_id] * 1.0e-10;
+    return std::all_of(candidate.faces.begin(),
+                       candidate.faces.end(),
+                       [&probe, point_tolerance](const CellFace& face)
+                       { return face.normal.Dot(probe - face.centroid) <= point_tolerance; });
+  };
+
+  // The cell ahead shares an edge or vertex with the given cell, so search its face neighbors
+  // first, a few layers deep, before the whole mesh.
+  std::vector<size_t> layer{cell_id};
+  std::unordered_set<size_t> visited{cell_id};
+  for (unsigned int depth = 0; depth < 3 and not layer.empty(); ++depth)
+  {
+    std::vector<size_t> next_layer;
+    for (const size_t local_id : layer)
+      for (const auto& face : grid_->GetLocalCell(local_id).faces)
+      {
+        if (not face.has_neighbor)
+          continue;
+        const size_t neighbor = face.GetNeighborLocalID(grid_.get());
+        if (not visited.insert(neighbor).second)
+          continue;
+        if (contains_probe(grid_->GetLocalCell(neighbor)))
+          return neighbor;
+        next_layer.push_back(neighbor);
+      }
+    layer = std::move(next_layer);
+  }
+  const auto& cells = grid_->GetLocalCells();
+  const auto containing_cell =
+    std::find_if(cells.begin(),
+                 cells.end(),
+                 [&](const auto& candidate)
+                 { return candidate->local_id != cell_id and contains_probe(*candidate); });
+  OpenSnLogicalErrorIf(containing_cell == cells.end(),
+                       GetName() + ": could not locate the cell ahead of a ray that passed an "
+                                   "edge or vertex.");
+  return (*containing_cell)->local_id;
+}
+
 void
 UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
                                     const Cell& cell,
@@ -833,6 +885,7 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
       }
     }
     Vector3 line_point = segment_start;
+    unsigned int num_relocations = 0;
     while (remaining_distance > tolerance)
     {
       double dist_in_cell = NAN;
@@ -886,15 +939,52 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
           auto trace_direction = segment_omega;
           const auto oi =
             ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), trace_point, trace_direction);
-          OpenSnLogicalErrorIf(oi.particle_lost,
-                               GetName() +
-                                 ": reflected image-source ray lost in fast-trace fallback.");
-          dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
-          exit_point = oi.pos_f;
-          dest_neighbor = oi.destination_face_neighbor;
-          destination_has_neighbor =
-            grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
-          destination_face_index = oi.destination_face_index;
+          if (oi.particle_lost)
+          {
+            // The ray leaves this convex cell exactly through an edge or vertex, or it reached
+            // the cell through an edge or vertex and does not enter it. The nearest face plane
+            // ahead of the ray gives the exit in the first case. In the second case no face
+            // plane lies ahead, and the ray continues from the cell that contains a point just
+            // ahead of it.
+            const auto& current_cell = grid_->GetLocalCell(cell_id);
+            double plane_distance = std::numeric_limits<double>::max();
+            uint32_t plane_face = 0;
+            for (uint32_t f = 0; f < n_faces; ++f)
+            {
+              const auto& face = current_cell.faces[f];
+              const double cosine = face.normal.Dot(segment_omega);
+              if (cosine <= 0.0)
+                continue;
+              const double distance = face.normal.Dot(face.centroid - line_point) / cosine;
+              if (distance < plane_distance)
+              {
+                plane_distance = distance;
+                plane_face = f;
+              }
+            }
+            if (plane_distance <= back_tol or plane_distance == std::numeric_limits<double>::max())
+            {
+              OpenSnLogicalErrorIf(num_relocations >= max_ray_relocations,
+                                   GetName() + ": ray lost in fast-trace fallback.");
+              cell_id = LocateCellAhead(line_point, segment_omega, remaining_distance, cell_id);
+              ++num_relocations;
+              continue;
+            }
+            dist_in_cell = plane_distance;
+            exit_point = line_point + plane_distance * segment_omega;
+            dest_neighbor = current_cell.faces[plane_face].neighbor_id;
+            destination_has_neighbor = current_cell.faces[plane_face].has_neighbor;
+            destination_face_index = plane_face;
+          }
+          else
+          {
+            dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
+            exit_point = oi.pos_f;
+            dest_neighbor = oi.destination_face_neighbor;
+            destination_has_neighbor =
+              grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
+            destination_face_index = oi.destination_face_index;
+          }
         }
       }
       else
@@ -950,9 +1040,20 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
           ", segment_end=" + segment_end.PrintStr() + ", hit=" + exit_point.PrintStr() +
           ", cell=" + std::to_string(cell_id) + ".");
       const double distance_in_cell = reaches_segment_end ? remaining_distance : dist_in_cell;
+      if (distance_in_cell <= tolerance and all_cells_convex_ and
+          num_relocations < max_ray_relocations)
+      {
+        // A ray that passes within roundoff of an edge or vertex can be handed to a cell that it
+        // only touches, so no exit lies ahead of it in that cell. Continue from the cell that
+        // contains a point just ahead on the ray, without advancing the ray.
+        cell_id = LocateCellAhead(line_point, segment_omega, remaining_distance, cell_id);
+        ++num_relocations;
+        continue;
+      }
       OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
                            GetName() + ": reflected image-source ray failed to advance.");
       scratch_segs.emplace_back(cell_id, distance_in_cell);
+      num_relocations = 0;
       remaining_distance -= distance_in_cell;
       if (reaches_segment_end or remaining_distance <= tolerance)
         break;
