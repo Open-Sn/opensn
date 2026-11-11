@@ -261,9 +261,8 @@ Cell::operator=(const Cell& other)
 }
 
 void
-Cell::ComputeGeometricInfo(Mesh& grid)
+Cell::ComputeGeometricInfo(Mesh& grid, std::uint32_t cell_local_id)
 {
-  const auto cell_local_id = grid.MapCellGlobalID2LocalID(global_id);
   auto vertex_ids = grid.GetCellConnectivity(cell_local_id);
   // Compute cell centroid
   centroid = Vector3(0.0, 0.0, 0.0);
