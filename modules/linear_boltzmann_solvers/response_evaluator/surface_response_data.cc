@@ -1029,7 +1029,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
   {
     const auto& surface_tag = surface.first;
     std::string name = surface_tag;
-    SurfaceKind kind = SurfaceKind::boundary;
+    SurfaceKind kind = SurfaceKind::BOUNDARY;
     if (surface.second.interior)
     {
       const auto other = forward.surfaces.find(OtherSideTag(surface_tag));
@@ -1037,7 +1037,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
                               "The forward data hold side " + surface_tag +
                                 " of an interior surface without its other side.");
       name = surface_tag.substr(0, surface_tag.size() - 2);
-      kind = SurfaceKind::interior;
+      kind = SurfaceKind::INTERIOR;
     }
     const auto [it, inserted] = available_surfs.emplace(name, kind);
     OpenSnInvalidArgumentIf(not inserted and it->second != kind,
@@ -1051,7 +1051,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
   struct SelectedSurface
   {
     std::string name;
-    SurfaceKind kind = SurfaceKind::boundary;
+    SurfaceKind kind = SurfaceKind::BOUNDARY;
     std::string stored_name;
     bool reversed = false;
   };
@@ -1066,7 +1066,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
     std::set<std::string> requested_surfs;
     for (const auto& surface : surfaces)
     {
-      SelectedSurface selected{surface, SurfaceKind::boundary, surface, false};
+      SelectedSurface selected{surface, SurfaceKind::BOUNDARY, surface, false};
       auto it = available_surfs.find(surface);
       // A side tag that is not itself an available surface names the interior surface of that
       // side, measured along that side's normal.
@@ -1075,7 +1075,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
         selected.stored_name = surface.substr(0, surface.size() - 2);
         selected.reversed = EndsWith(surface, "_d");
         it = available_surfs.find(selected.stored_name);
-        if (it != available_surfs.end() and it->second != SurfaceKind::interior)
+        if (it != available_surfs.end() and it->second != SurfaceKind::INTERIOR)
           it = available_surfs.end();
       }
       OpenSnInvalidArgumentIf(it == available_surfs.end(),
@@ -1091,7 +1091,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
   // itself.
   const auto AdjointTags = [](const std::string& name, const SurfaceKind kind)
   {
-    if (kind == SurfaceKind::interior)
+    if (kind == SurfaceKind::INTERIOR)
       return std::vector<std::string>{name + "_u", name + "_d"};
     return std::vector<std::string>{name};
   };
@@ -1106,7 +1106,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
                                 .append(surface_tag)
                                 .append(" in the adjoint data."));
       OpenSnInvalidArgumentIf(
-        partner->second.interior != (selected.kind != SurfaceKind::boundary),
+        partner->second.interior != (selected.kind != SurfaceKind::BOUNDARY),
         std::string("Tag ")
           .append(surface_tag)
           .append(" of the adjoint data is ")
@@ -1137,7 +1137,7 @@ ComputeSurfaceResponses(const DistributedSurfaceData& forward,
     // same tag. Both hold upwind values, so the outflow directions pair the forward cell value with
     // the adjoint boundary value and the inflow directions the forward boundary value with the
     // adjoint cell value.
-    if (kind == SurfaceKind::boundary)
+    if (kind == SurfaceKind::BOUNDARY)
     {
       const auto& anchor = forward.surfaces.at(name);
       const auto& partner = adjoint.surfaces.at(AdjointTags(name, kind).front());

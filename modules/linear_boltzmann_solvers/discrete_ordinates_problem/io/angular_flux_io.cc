@@ -457,23 +457,23 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   // selections and a single flag reduction reports the failure on all ranks.
   enum InteriorSurfaceError
   {
-    outside_mesh = 0,
-    duplicate_plane = 1,
-    cuts_cell = 2,
-    num_errors = 3
+    OUTSIDE_MESH = 0,
+    DUPLICATE_PLANE = 1,
+    CUTS_CELL = 2,
+    NUM_ERRORS = 3
   };
-  std::array<int, num_errors> local_surface_errors{};
+  std::array<int, NUM_ERRORS> local_surface_errors{};
   for (auto it = interior_surfs.begin(); it != interior_surfs.end(); ++it)
   {
     const auto& [axis, slice] = it->second;
     const auto a = AxisIndex(axis);
     if (slice < global_min[a] - surface_tolerance or slice > global_max[a] + surface_tolerance)
-      local_surface_errors[outside_mesh] = 1;
+      local_surface_errors[OUTSIDE_MESH] = 1;
 
     for (auto other = std::next(it); other != interior_surfs.end(); ++other)
       if (other->second.first == axis and
           std::abs(other->second.second - slice) <= surface_tolerance)
-        local_surface_errors[duplicate_plane] = 1;
+        local_surface_errors[DUPLICATE_PLANE] = 1;
 
     for (const auto& cell : grid->GetLocalCells())
     {
@@ -487,20 +487,20 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
       }
       if (cell_min < slice - surface_tolerance and cell_max > slice + surface_tolerance)
       {
-        local_surface_errors[cuts_cell] = 1;
+        local_surface_errors[CUTS_CELL] = 1;
         break;
       }
     }
   }
-  std::array<int, num_errors> surface_errors{};
+  std::array<int, NUM_ERRORS> surface_errors{};
   mpi_comm.all_reduce(
-    local_surface_errors.data(), num_errors, surface_errors.data(), mpi::op::max<int>());
-  OpenSnInvalidArgumentIf(surface_errors[outside_mesh],
+    local_surface_errors.data(), NUM_ERRORS, surface_errors.data(), mpi::op::max<int>());
+  OpenSnInvalidArgumentIf(surface_errors[OUTSIDE_MESH],
                           "An interior surface lies outside the mesh.");
-  OpenSnInvalidArgumentIf(surface_errors[duplicate_plane],
+  OpenSnInvalidArgumentIf(surface_errors[DUPLICATE_PLANE],
                           "Two interior surfaces are defined on the same plane.");
   OpenSnInvalidArgumentIf(
-    surface_errors[cuts_cell],
+    surface_errors[CUTS_CELL],
     "An interior surface cuts through mesh cells. Interior surfaces must lie on cell faces.");
 
   // An interior surface must not alias an exterior boundary. Without this check, a face selected

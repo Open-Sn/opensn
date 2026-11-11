@@ -99,9 +99,9 @@ struct DistributedSurfaceData
 enum class SurfaceKind
 {
   /// An exterior boundary, stored under its boundary name.
-  boundary,
+  BOUNDARY,
   /// An interior surface, stored as its two sides `<name>_u` and `<name>_d`.
-  interior
+  INTERIOR
 };
 
 /// The surface response of one boundary or interior surface.
@@ -110,7 +110,7 @@ struct SurfaceResponse
   /// The surface as requested: a boundary name, or an interior surface name, bare (`X`) or with
   /// the side tag that sets its normal (`X_u` or `X_d`).
   std::string name;
-  SurfaceKind kind = SurfaceKind::boundary;
+  SurfaceKind kind = SurfaceKind::BOUNDARY;
   /// Contribution of the directions with positive cosine with the surface normal. For an interior
   /// surface, the normal is the outward normal of the selected side, `X_u` (the positive axis) for
   /// `X` and `X_u` and `X_d` (the negative axis) for `X_d`, and these directions leave the cell of

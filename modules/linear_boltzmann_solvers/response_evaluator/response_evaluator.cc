@@ -526,7 +526,7 @@ ResponseEvaluator::EvaluateSurfaceResponse(const std::string& fwd_data,
 
   auto surface_responses = ComputeSurfaceResponses(fwd_surf_psi, adj_surf_psi, surfaces, mpi_comm);
   for (const auto& surface_response : surface_responses)
-    log.Log0Verbose1() << (surface_response.kind == SurfaceKind::interior ? "Interior surface "
+    log.Log0Verbose1() << (surface_response.kind == SurfaceKind::INTERIOR ? "Interior surface "
                                                                           : "Boundary ")
                        << surface_response.name << ": outgoing " << surface_response.outgoing
                        << ", incoming " << surface_response.incoming << ", total "

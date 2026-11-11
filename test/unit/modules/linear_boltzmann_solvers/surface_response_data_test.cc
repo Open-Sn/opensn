@@ -418,9 +418,9 @@ TEST_F(SurfaceResponseDataTest, MatchesClosedFormAcrossPartitions)
   ASSERT_EQ(surface_responses.size(), 2U);
   // Name order: "plane" (interior) before "right" (boundary).
   EXPECT_EQ(surface_responses[0].name, "plane");
-  EXPECT_EQ(surface_responses[0].kind, SurfaceKind::interior);
+  EXPECT_EQ(surface_responses[0].kind, SurfaceKind::INTERIOR);
   EXPECT_EQ(surface_responses[1].name, "right");
-  EXPECT_EQ(surface_responses[1].kind, SurfaceKind::boundary);
+  EXPECT_EQ(surface_responses[1].kind, SurfaceKind::BOUNDARY);
   // The boundary's incoming part pairs the forward boundary value with the adjoint cell value.
   const double boundary_incoming = ExpectedBoundaryIncoming();
   EXPECT_LT(boundary_incoming, 0.0);
@@ -822,13 +822,13 @@ TEST_F(SurfaceResponseDataTest, SideTagsOrientInteriorSurfaces)
   const auto plane_u = ComputeSurfaceResponses(forward, adjoint, {"plane_u"}, mpi_comm);
   ASSERT_EQ(plane_u.size(), 1U);
   EXPECT_EQ(plane_u.front().name, "plane_u");
-  EXPECT_EQ(plane_u.front().kind, SurfaceKind::interior);
+  EXPECT_EQ(plane_u.front().kind, SurfaceKind::INTERIOR);
   EXPECT_EQ(plane_u.front().outgoing, outgoing);
   EXPECT_EQ(plane_u.front().incoming, incoming);
   const auto plane_d = ComputeSurfaceResponses(forward, adjoint, {"plane_d"}, mpi_comm);
   ASSERT_EQ(plane_d.size(), 1U);
   EXPECT_EQ(plane_d.front().name, "plane_d");
-  EXPECT_EQ(plane_d.front().kind, SurfaceKind::interior);
+  EXPECT_EQ(plane_d.front().kind, SurfaceKind::INTERIOR);
   EXPECT_EQ(plane_d.front().outgoing, -incoming);
   EXPECT_EQ(plane_d.front().incoming, -outgoing);
 
@@ -870,7 +870,7 @@ TEST_F(SurfaceResponseDataTest, BoundaryTagsWithSideSuffixesStayBoundaries)
   const double boundary = ExpectedResponse(false);
   for (const auto& surface_response : surface_responses)
   {
-    EXPECT_EQ(surface_response.kind, SurfaceKind::boundary) << surface_response.name;
+    EXPECT_EQ(surface_response.kind, SurfaceKind::BOUNDARY) << surface_response.name;
     EXPECT_NEAR(surface_response.Total(), boundary, 1.0e-13 * std::abs(boundary));
   }
   EXPECT_NO_THROW(ComputeSurfaceResponses(forward, adjoint, {"outer_d"}, mpi_comm));
