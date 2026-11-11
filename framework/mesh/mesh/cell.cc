@@ -90,11 +90,12 @@ CellFace::GetNeighborLocalID(const Mesh* grid) const
   if (grid->GetNumPartitions() == 1)
     return neighbor_id; // cause global_ids=local_ids
 
-  const auto& adj_cell = grid->GetGlobalCell(neighbor_id);
+  const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(neighbor_id);
+  const auto& adj_cell = grid->GetLocalCell(adj_cell_local_id);
 
   if (adj_cell.partition_id != opensn::mpi_comm.rank())
     throw std::logic_error("Cell local ID requested from a non-local cell.");
-  return grid->MapCellGlobalID2LocalID(neighbor_id);
+  return adj_cell_local_id;
 }
 
 void
@@ -279,9 +280,8 @@ Cell::ComputeGeometricInfo(Mesh& grid, std::uint32_t cell_local_id)
 }
 
 void
-Cell::ComputeVolume(const Mesh& mesh)
+Cell::ComputeVolume(const Mesh& mesh, std::uint32_t cell_local_id)
 {
-  const auto cell_local_id = mesh.MapCellGlobalID2LocalID(global_id);
   auto vertex_ids = mesh.GetCellConnectivity(cell_local_id);
 
   volume = 0.0;
