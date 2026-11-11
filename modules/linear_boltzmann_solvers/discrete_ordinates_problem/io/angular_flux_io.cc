@@ -13,6 +13,7 @@
 #include "framework/math/spatial_weight_function.h"
 #include <algorithm>
 #include <array>
+#include <cstdint>
 #include <cmath>
 #include <iterator>
 #include <limits>
@@ -21,6 +22,7 @@
 #include <random>
 #include <set>
 #include <tuple>
+#include <utility>
 
 namespace opensn
 {
@@ -875,32 +877,24 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
     const auto opposite = adjoint ? quadrature->MapOppositeDirections() : std::vector<size_t>{};
     const auto& sweep_boundaries = do_problem.GetSweepBoundaries();
     // A reflecting boundary returns the angular flux of the reflected direction, which the stored
-    // angular flux already holds; map each direction to its reflection once per boundary.
-    std::map<uint64_t, std::vector<size_t>> reflected_directions;
-    const auto ReflectedDirections = [&](const uint64_t bid,
-                                         const Vector3& normal) -> const std::vector<size_t>&
+    // angular flux already holds. The reflection map is the one the sweep uses. A reflection
+    // commutes with reversing the direction, so the map applies to physical directions in adjoint
+    // problems too.
+    std::map<uint64_t, std::vector<std::uint32_t>> reflected_directions;
+    const auto ReflectedDirections =
+      [&](const uint64_t bid,
+          SweepBoundary& reflecting_boundary) -> const std::vector<std::uint32_t>&
     {
       auto [it, inserted] = reflected_directions.try_emplace(bid);
       if (not inserted)
         return it->second;
-      auto& reflected = it->second;
-      reflected.resize(num_gs_dirs);
-      for (size_t d = 0; d < num_gs_dirs; ++d)
-      {
-        const auto& omega_d = quadrature->GetOmega(d);
-        const auto omega_r = omega_d - normal * (2.0 * omega_d.Dot(normal));
-        bool found = false;
-        for (size_t r = 0; r < num_gs_dirs and not found; ++r)
-          if ((quadrature->GetOmega(r) - omega_r).NormSquare() < 1.0e-16)
-          {
-            reflected[d] = r;
-            found = true;
-          }
-        OpenSnLogicalErrorIf(not found,
-                             "The quadrature of groupset " + std::to_string(groupset_id) +
-                               " has no reflection of direction " + std::to_string(d) +
-                               " on reflecting boundary " + std::to_string(bid) + ".");
-      }
+      std::vector<std::vector<std::uint32_t>> reflected_maps;
+      reflecting_boundary.GetReflectedMap(groupset_id, reflected_maps);
+      OpenSnLogicalErrorIf(
+        reflected_maps.size() != 1 or reflected_maps.front().size() != num_gs_dirs,
+        "Reflecting boundary " + std::to_string(bid) + " has no reflection map for groupset " +
+          std::to_string(groupset_id) + ".");
+      it->second = std::move(reflected_maps.front());
       return it->second;
     };
 
@@ -910,7 +904,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
       auto& surface_data = data_map[surface_face.surface_name];
 
       SweepBoundary* boundary = nullptr;
-      const std::vector<size_t>* reflected = nullptr;
+      const std::vector<std::uint32_t>* reflected = nullptr;
       if (surface_face.boundary_id.has_value())
       {
         const auto bid = *surface_face.boundary_id;
@@ -919,7 +913,7 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
                              "No sweep boundary for boundary ID " + std::to_string(bid) + ".");
         boundary = it->second.get();
         if (boundary->IsReflecting())
-          reflected = &ReflectedDirections(bid, surface_face.normal);
+          reflected = &ReflectedDirections(bid, *boundary);
       }
 
       for (size_t fi = 0; fi < surface_face.node_indices.size(); ++fi)
