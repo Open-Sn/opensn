@@ -206,9 +206,11 @@ public:
   /// Returns whether the cell with the given global id is locally owned.
   bool IsCellLocal(uint64_t global_id) const noexcept
   {
-    assert(global_to_local_cell_id_map_.contains(global_id));
-    auto local_id = global_to_local_cell_id_map_.at(global_id);
-    return local_id < local_cells_.size();
+    auto it = global_to_local_cell_id_map_.find(global_id);
+    if (it != global_to_local_cell_id_map_.end())
+      return it->second < local_cells_.size();
+    else
+      return false;
   }
 
   /**
