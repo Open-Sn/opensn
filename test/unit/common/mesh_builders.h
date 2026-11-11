@@ -15,3 +15,7 @@ std::shared_ptr<opensn::Mesh> BuildSquareMesh(double length, unsigned int n, dou
 std::shared_ptr<opensn::Mesh> BuildBoxMesh(double length, unsigned int n, double xmin);
 
 std::shared_ptr<opensn::Mesh> BuildMeshFromFile(std::filesystem::path file_name);
+
+/// Extrudes the 2D mesh of a file over z in [0, height] with the given number of layers.
+std::shared_ptr<opensn::Mesh>
+BuildExtrudedMeshFromFile(std::filesystem::path file_name, double height, unsigned int num_layers);
