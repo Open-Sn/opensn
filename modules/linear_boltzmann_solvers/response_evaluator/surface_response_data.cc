@@ -22,14 +22,14 @@ using FaceCentroidKey = DiscreteOrdinatesProblemIO::FaceCentroidKey;
 using SurfaceAngularFlux = DiscreteOrdinatesProblemIO::SurfaceAngularFlux;
 
 /// Tolerance for comparing quadrature values and direction cosines written by one problem.
-const double same_problem_tolerance = 1.0e-12;
+const double SAME_PROBLEM_TOLERANCE = 1.0e-12;
 
 /**
  * Largest forward-to-adjoint direction distance, relative to the distance from the adjoint
  * direction to its nearest neighbor, at which the two are taken as the same direction. This is the
  * angular analog of matching face nodes within 1e-6 times the face size.
  */
-const double direction_match_tolerance = 1.0e-6;
+const double DIRECTION_MATCH_TOLERANCE = 1.0e-6;
 
 /// Throw on every rank if any rank recorded an error. Collective.
 void
@@ -95,7 +95,7 @@ SameQuadrature(const std::vector<SurfaceQuadrature>& a, const std::vector<Surfac
     if (x.size() != y.size())
       return false;
     for (size_t i = 0; i < x.size(); ++i)
-      if (std::abs(x[i] - y[i]) > same_problem_tolerance)
+      if (std::abs(x[i] - y[i]) > SAME_PROBLEM_TOLERANCE)
         return false;
     return true;
   };
@@ -229,7 +229,7 @@ struct FaceChunk
 };
 
 /// Number of int64 header values per face: three key components and the node count.
-const size_t face_header_size = 4;
+const size_t FACE_HEADER_SIZE = 4;
 
 /// Number of payload doubles of a face with `n` nodes.
 std::uint64_t
@@ -278,7 +278,7 @@ public:
     std::uint64_t end = next_face_;
     while (end < keys_.size())
     {
-      const auto bytes = sizeof(std::int64_t) * face_header_size +
+      const auto bytes = sizeof(std::int64_t) * FACE_HEADER_SIZE +
                          sizeof(double) * FacePayloadSize(GetNumFaceNodes(end), quadratures_);
       if (end > next_face_ and chunk.packed_bytes + bytes > budget)
         break;
@@ -379,7 +379,7 @@ ExchangeChunk(const mpi::Communicator& comm,
   for (size_t f = 0; f < num_faces; ++f)
   {
     owner[f] = static_cast<size_t>(SurfaceFaceOwner(chunk.keys[f], comm.size()));
-    send_counts[2 * owner[f]] += face_header_size;
+    send_counts[2 * owner[f]] += FACE_HEADER_SIZE;
     send_counts[2 * owner[f] + 1] += FacePayloadSize(chunk.num_nodes[f], quadratures);
   }
   std::vector<std::uint64_t> recv_counts(2 * num_ranks, 0);
@@ -417,7 +417,7 @@ ExchangeChunk(const mpi::Communicator& comm,
   const auto payload_offsets = MakeOffsets(payload_counts);
 
   // Pack in destination order.
-  std::vector<std::int64_t> headers(num_faces * face_header_size);
+  std::vector<std::int64_t> headers(num_faces * FACE_HEADER_SIZE);
   std::vector<double> payload(send_payload);
   {
     auto header_cursor = header_offsets;
@@ -433,7 +433,7 @@ ExchangeChunk(const mpi::Communicator& comm,
       h[1] = std::get<1>(chunk.keys[f]);
       h[2] = std::get<2>(chunk.keys[f]);
       h[3] = static_cast<std::int64_t>(n);
-      header_cursor[owner[f]] += static_cast<int>(face_header_size);
+      header_cursor[owner[f]] += static_cast<int>(FACE_HEADER_SIZE);
 
       auto* out = &payload[payload_cursor[owner[f]]];
       out = std::copy_n(&chunk.coords[3 * node_offset], 3 * n, out);
@@ -473,7 +473,7 @@ ExchangeChunk(const mpi::Communicator& comm,
   // Unpack in arrival order.
   const double* in = recv_payload_values.data();
   const double* const in_end = in + recv_payload_values.size();
-  for (size_t h = 0; h < recv_header_values.size(); h += face_header_size)
+  for (size_t h = 0; h < recv_header_values.size(); h += FACE_HEADER_SIZE)
   {
     const auto n = static_cast<std::uint64_t>(recv_header_values[h + 3]);
     if (n == 0 or static_cast<std::uint64_t>(in_end - in) < FacePayloadSize(n, quadratures))
@@ -843,7 +843,7 @@ DirectionSpacing(const std::vector<double>& omegas,
  * directions must have the same weight.
  *
  * Forward direction `d` maps to its nearest adjoint direction `j` when |omega_d - omega_j| is at
- * most direction_match_tolerance times the distance from `j` to its nearest other adjoint
+ * most DIRECTION_MATCH_TOLERANCE times the distance from `j` to its nearest other adjoint
  * direction. Every other adjoint direction is then nearly that full spacing from `omega_d`, so the
  * match is unambiguous however closely the quadrature places its directions.
  */
@@ -877,18 +877,18 @@ BuildSameDirectionMap(const SurfaceQuadrature& from,
   {
     const auto [match, distance] =
       NearestDirection(to.omegas, to_order, &from.omegas[3 * d], to.num_dirs);
-    if (not(distance <= direction_match_tolerance * to_spacing[match]))
+    if (not(distance <= DIRECTION_MATCH_TOLERANCE * to_spacing[match]))
     {
       std::ostringstream message;
       message << std::setprecision(3) << "Forward direction " << d << " of " << context
               << " has no matching adjoint direction. The nearest, adjoint direction " << match
-              << ", is " << distance << " away, more than " << direction_match_tolerance
+              << ", is " << distance << " away, more than " << DIRECTION_MATCH_TOLERANCE
               << " times its spacing " << to_spacing[match] << " to the next adjoint direction.";
       OpenSnInvalidArgument(message.str());
     }
     OpenSnInvalidArgumentIf(used[match],
                             "The direction mapping of " + context + " is not one-to-one.");
-    OpenSnInvalidArgumentIf(std::abs(from.weights[d] - to.weights[match]) > same_problem_tolerance,
+    OpenSnInvalidArgumentIf(std::abs(from.weights[d] - to.weights[match]) > SAME_PROBLEM_TOLERANCE,
                             "Forward direction " + std::to_string(d) + " of " + context +
                               " and its matching adjoint direction have different weights.");
     used[match] = true;

@@ -17,7 +17,7 @@ namespace opensn
 {
 
 /// Default per-rank send budget, in bytes, of one surface-data exchange.
-const std::uint64_t surface_redistribution_bytes = std::uint64_t{64} << 20;
+const std::uint64_t SURFACE_REDISTRIBUTION_BYTES = std::uint64_t{64} << 20;
 
 /// Quadrature of one groupset of a surface angular-flux file set.
 struct SurfaceQuadrature
@@ -174,7 +174,7 @@ DistributedSurfaceData
 DistributeSurfaceAngularFluxes(const std::string& file_base,
                                const std::vector<std::string>& surfaces,
                                const mpi::Communicator& comm,
-                               std::uint64_t max_send_bytes = surface_redistribution_bytes);
+                               std::uint64_t max_send_bytes = SURFACE_REDISTRIBUTION_BYTES);
 
 /**
  * Evaluate the surface inner products of forward and adjoint angular fluxes.
