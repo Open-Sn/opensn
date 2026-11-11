@@ -1431,12 +1431,10 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         } // if face.has_neighbor
       } // if outgoing
 
-      // Retrieve leakage in from incoming face
-      else if (orientation == FOINCOMING)
+      // Retrieve leakage in from incoming face. Nothing enters through a boundary face, whose
+      // leakage stays zero.
+      else if (orientation == FOINCOMING and cell.faces[f].has_neighbor)
       {
-        if (not cell.faces[f].has_neighbor)
-          continue;
-
         size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
         size_t neigh_face_ind = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
         face_leakage = leakages[neigh_id][neigh_face_ind];

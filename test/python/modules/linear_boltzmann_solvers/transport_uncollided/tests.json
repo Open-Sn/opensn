@@ -82,6 +82,25 @@
     ]
   },
   {
+    "file": "uncollided_boundary_source_prism.py",
+    "comment": "Source on a vacuum boundary face of a prism mesh whose plane coordinate is not exactly representable, against the box escape probability and the point kernel",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedBoundarySourcePrismOutflowRelativeError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedBoundarySourcePrismMaxRelativeError=",
+        "goldvalue": 0.015965,
+        "abs_tol": 0.005
+      }
+    ]
+  },
+  {
     "file": "uncollided_3d_exact_near_source_leakage.py",
     "comment": "Exact near-source leakage for a source close to a vertex of its cell, against the exact point-source solution",
     "num_procs": 1,
