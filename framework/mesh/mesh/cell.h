@@ -163,7 +163,7 @@ public:
   CellType GetSubType() const { return cell_sub_type_; }
 
   /// Computes the geometric info on the cell.
-  void ComputeGeometricInfo(Mesh& grid);
+  void ComputeGeometricInfo(Mesh& grid, std::uint32_t cell_local_id);
 
   void ComputeVolume(const Mesh& mesh);
 
