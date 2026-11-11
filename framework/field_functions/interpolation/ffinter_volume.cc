@@ -54,7 +54,7 @@ FieldFunctionInterpolationVolume::Execute()
   const auto uid = 0;
   const auto cid = ref_component_;
 
-  const auto& field_data = ref_ff.GetGhostedFieldVector();
+  const auto field_data = ref_ff.GetGhostedFieldVector();
   // Physical volume measure (2*pi*r in RZ, 4*pi*r^2 in 1D spherical geometry).
   const auto spatial_weight = sdm.GetSpatialWeightingFunction();
 

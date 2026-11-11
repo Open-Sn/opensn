@@ -109,7 +109,7 @@ FieldFunctionGridBased::GetLocalFieldVector() const
   return ghosted_field_vector_->GetLocalSTLData();
 }
 
-const std::vector<double>&
+std::vector<double>
 FieldFunctionGridBased::GetGhostedFieldVector() const
 {
   return ghosted_field_vector_->GetLocalSTLData();
@@ -390,7 +390,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
   auto* point_data = ugrid->GetPointData();
   for (const auto& ff_ptr : ff_list)
   {
-    const auto& field_vector = ff_ptr->GetGhostedFieldVector();
+    const auto field_vector = ff_ptr->GetGhostedFieldVector();
 
     const auto& uk_man = ff_ptr->GetUnknownManager();
     const auto& unknown = ff_ptr->GetUnknown();
