@@ -278,3 +278,13 @@ TEST(MeshTest, PointInsideCellFace3D)
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);
 }
+
+TEST(MeshTest, IsCellLocal)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 0.0, 1.0, 2.0}});
+  EXPECT_TRUE(grid_ptr->IsCellLocal(0));
+  EXPECT_FALSE(grid_ptr->IsCellLocal(123));
+}
