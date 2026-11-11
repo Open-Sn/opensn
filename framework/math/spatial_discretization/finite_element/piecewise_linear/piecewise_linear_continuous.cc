@@ -421,7 +421,7 @@ PieceWiseLinearContinuous::BuildSparsityPattern(std::vector<int64_t>& nodal_nnz_
 }
 
 uint64_t
-PieceWiseLinearContinuous::MapDOF(std::uint32_t cell_global_id,
+PieceWiseLinearContinuous::MapDOF(std::uint64_t cell_global_id,
                                   const unsigned int node,
                                   const UnknownManager& unknown_manager,
                                   const unsigned int unknown_id,

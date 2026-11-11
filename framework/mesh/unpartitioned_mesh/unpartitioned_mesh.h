@@ -79,16 +79,16 @@ public:
     return cell_face_connectivity_;
   }
 
-  std::span<const CellFace> GetCellFaces(std::uint32_t cell_global_id) const;
-  std::span<CellFace> GetCellFaces(std::uint32_t cell_global_id);
+  std::span<const CellFace> GetCellFaces(std::uint64_t cell_global_id) const;
+  std::span<CellFace> GetCellFaces(std::uint64_t cell_global_id);
 
-  std::uint64_t GetCellFaceCount(std::uint32_t cell_global_id) const;
+  std::uint64_t GetCellFaceCount(std::uint64_t cell_global_id) const;
 
-  const CellFace& GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx) const;
+  const CellFace& GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx) const;
 
-  CellFace& GetCellFace(std::uint32_t cell_global_id, std::uint32_t face_idx);
+  CellFace& GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx);
 
-  std::span<const uint64_t> GetCellConnectivity(std::uint32_t cell_global_id) const;
+  std::span<const uint64_t> GetCellConnectivity(std::uint64_t cell_global_id) const;
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
