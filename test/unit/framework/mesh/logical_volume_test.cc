@@ -1,3 +1,6 @@
+// SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+// SPDX-License-Identifier: MIT
+
 #include "gtest/gtest.h"
 #include "framework/mesh/logical_volume/rcc_logical_volume.h"
 #include "framework/mesh/logical_volume/rpp_logical_volume.h"
