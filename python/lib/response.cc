@@ -290,8 +290,8 @@ WrapResEval(py::module& response)
     surfaces: List[str], default=[]
         Surfaces to read. Required with ``surface_angular_fluxes``, and rejected without it. Each
         entry is a boundary name or an interior surface name, which reads both stored sides
-        ``<name>_u`` and ``<name>_d``. A single side's tag is rejected, because a surface response
-        needs both sides.
+        ``<name>_u`` and ``<name>_d``. A single side's tag is rejected unless its other side is
+        also requested, because a surface response needs both sides.
     )"
   );
   res_eval.def(
