@@ -72,6 +72,8 @@ public:
   bool allow_cycles;
 
   bool apply_wgdsa;
+  /// Couple the WGDSA corrections of the groupset groups in energy (see wgdsa_group_solvers).
+  bool wgdsa_energy_coupling;
   bool apply_tgdsa;
   unsigned int wgdsa_max_iters;
   unsigned int tgdsa_max_iters;
@@ -97,8 +99,9 @@ public:
 
   std::shared_ptr<DiffusionMIPSolver> wgdsa_solver = nullptr;
   std::shared_ptr<DiffusionMIPSolver> tgdsa_solver = nullptr;
-  /// CSDA WGDSA: one single-group diffusion solver per groupset group, solved in energy order.
-  std::vector<std::shared_ptr<DiffusionMIPSolver>> wgdsa_csda_solvers;
+  /// WGDSA coupled in energy (wgdsa_energy_coupling, or CSDA with charged-particle groups):
+  /// one single-group diffusion solver per groupset group, solved in energy order.
+  std::vector<std::shared_ptr<DiffusionMIPSolver>> wgdsa_group_solvers;
 
   struct TwoGridAccelerationInfo
   {

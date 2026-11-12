@@ -256,8 +256,10 @@ preconditioned vector when WGDSA preconditions a Krylov solve). All sums run
 over groupset groups. The feed :math:`R_{g-1}f_{g-1}` is present only when the
 material has nonzero stopping power in both groups, as in the sweep.
 
-The operator is lower triangular in energy apart from in-groupset upscatter,
-which enters only through the residual. Solving the groups in order therefore
+Without the CSDA terms this is the operator of the groupset option
+``wgdsa_energy_coupling`` (see :ref:`theory_wgdsa_energy_coupling`). The
+operator is lower triangular in energy apart from in-groupset upscatter, which
+enters only through the residual. Solving the groups in order therefore
 solves the coupled system with one single-group MIP diffusion solve per group.
 Without the energy coupling, a correction of group :math:`g` reaches the groups
 below it only through the next sweep, which can amplify the error transiently

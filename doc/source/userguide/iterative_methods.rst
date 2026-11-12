@@ -629,9 +629,11 @@ WGDSA stands for within-group diffusion synthetic acceleration. Enabling
 groupset iteration, it corrects the scalar flux of every group with the
 solution of a one-group diffusion problem whose source is the change of that
 group's within-group scattering source. The groups are not coupled in the
-correction. In a groupset with charged-particle groups and ``csda_enabled``,
-WGDSA instead solves one diffusion problem per group in energy order, coupled
-by in-groupset scattering and CSDA slowing-down (see :doc:`csda`). With
+correction unless ``wgdsa_energy_coupling`` is set. Then WGDSA solves one
+diffusion problem per group in energy order, coupled by the in-groupset
+scattering of the corrections (see :doc:`groupsets`). In a groupset with
+charged-particle groups and ``csda_enabled``, WGDSA always uses this form, with
+the CSDA slowing-down added (see :doc:`csda`). With
 ``classic_richardson`` the correction is applied after each sweep. With the
 PETSc methods it is the preconditioner.
 
@@ -644,6 +646,8 @@ Why use it:
 
 WGDSA controls:
 
+- ``wgdsa_energy_coupling``: couple the corrections of the groupset groups
+  in energy
 - ``wgdsa_l_abs_tol``: residual tolerance of the iterative diffusion solve,
   relative to the norm of its right-hand side
 - ``wgdsa_l_max_its``: maximum iterations of the iterative diffusion solve
@@ -656,7 +660,7 @@ WGDSA controls:
 - ``wgdsa_direct_solve_threshold``: maximum global WGDSA diffusion unknown count
   for the automatic direct solve. The count is the number of spatial nodes times
   the number of groups in the groupset, or the number of spatial nodes for the
-  per-group systems of a CSDA groupset. The default is ``20000``.
+  per-group systems of an energy-coupled or CSDA groupset. The default is ``20000``.
 - ``wgdsa_petsc_options``: PETSc options for the diffusion solver. They must
   carry the solver's prefix (see :doc:`groupsets`).
 

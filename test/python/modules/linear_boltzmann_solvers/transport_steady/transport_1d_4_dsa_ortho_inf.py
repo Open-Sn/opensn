@@ -3,7 +3,8 @@
 
 """
 1D test of an infinite medium of graphite (168 groups) with WGDSA in both groupsets and TGDSA in
-the thermal groupset. SDM: PWLD.
+the thermal groupset. SDM: PWLD. With energy_coupling=True, both groupsets couple the WGDSA
+corrections in energy (wgdsa_energy_coupling).
 
 One slab cell with reflecting faces and a source in group 0 is an infinite medium, so the scalar
 flux is the solution of the multigroup balance phi = (diag(sigma_t) - S_0)^-1 q, with S_0 the
@@ -67,6 +68,11 @@ if __name__ == "__main__":
     # Setup Physics
     pquad = GLProductQuadrature1DSlab(n_polar=4, scattering_order=1)
 
+    # Optional WGDSA energy coupling (default False)
+    dsa_options = {}
+    if "energy_coupling" in globals():
+        dsa_options["wgdsa_energy_coupling"] = energy_coupling
+
     phys = DiscreteOrdinatesProblem(
         mesh=grid,
         num_groups=num_groups,
@@ -80,6 +86,7 @@ if __name__ == "__main__":
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
                 "wgdsa_l_abs_tol": 1.0e-2,
+                **dsa_options,
             },
             {
                 "groups_from_to": [63, num_groups - 1],
@@ -91,6 +98,7 @@ if __name__ == "__main__":
                 "apply_wgdsa": True,
                 "apply_tgdsa": True,
                 "wgdsa_l_abs_tol": 1.0e-2,
+                **dsa_options,
             },
         ],
         xs_map=[
