@@ -177,6 +177,7 @@ The most important constructor inputs are:
 Problem options available in Python include:
 
 * ``max_mpi_message_size``
+* ``max_mpi_outstanding_sends``
 * ``restart_writes_enabled``
 * ``write_delayed_psi_to_restart``
 * ``write_angular_flux_to_restart``

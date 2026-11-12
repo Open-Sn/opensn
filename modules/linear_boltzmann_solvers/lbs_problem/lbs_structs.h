@@ -58,6 +58,8 @@ struct LBSRestartOptions
 struct LBSOptions
 {
   int max_mpi_message_size = 4194304;
+  /// Maximum number of posted, incomplete sweep sends per rank in CPU AAH sweeps (0: no limit).
+  int max_mpi_outstanding_sends = 0;
 
   LBSRestartOptions restart;
 

@@ -137,6 +137,9 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
   groupset.angle_agg = std::make_shared<AngleAggregation>(
     groupset, sweep_boundaries_, groupset.quadrature, grid_, options_.csda_enabled);
 
+  // The angle sets of the groupset share one limit on posted sweep sends.
+  auto send_window = std::make_shared<SweepSendWindow>(options_.max_mpi_outstanding_sends);
+
   size_t angle_set_id = 0;
   for (const auto& so_grouping : unique_so_groupings)
   {
@@ -188,7 +191,8 @@ DiscreteOrdinatesProblem::InitFluxDataStructures(LBSGroupset& groupset)
                                                      sweep_boundaries_,
                                                      options_.max_mpi_message_size,
                                                      options_.csda_enabled,
-                                                     *sweep_communicator_);
+                                                     *sweep_communicator_,
+                                                     send_window);
         }
         groupset.angle_agg->GetAngleSetGroups().push_back(angle_set);
         break;

@@ -53,6 +53,18 @@ into many messages, and each one adds posting, matching, and polling work. With
 a 32 KiB limit, GPU sweeps on a few nodes ran up to 2.8 times slower. Messages
 below the limit are not affected, so the default rarely needs changing.
 
+The ``max_mpi_outstanding_sends`` problem option limits how many sweep messages
+each rank may have posted and not yet completed in a CPU AAH sweep. Messages
+beyond the limit wait in a queue and are posted as earlier ones complete. With
+CSDA, the angular-flux message and its energy-derivative partner count as two
+sends and are posted together. The default, 0, sets no limit. Use the option
+when the network runs out of transmit resources. On Slingshot, MPICH then warns
+that OFI is failing to make progress on posting a send because of rendezvous
+message resource exhaustion, and a run can hang. Set the limit a little below
+``FI_CXI_DEFAULT_TX_SIZE``, for example 448 for a transmit queue of 512. The
+limit does not change the solution, but a small limit can slow the sweep. The
+option requires ``sweep_type="AAH"`` and ``use_gpus=False``.
+
 Running with GPUs
 =================
 

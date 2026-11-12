@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <utility>
 
 namespace opensn
 {
@@ -17,7 +18,8 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                            std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                            int maximum_message_size,
                            bool csda_enabled,
-                           const SweepCommunicator& sweep_communicator)
+                           const SweepCommunicator& sweep_communicator,
+                           std::shared_ptr<SweepSendWindow> send_window)
   : AngleSet(id, groupset, spds, fluds, angle_indices, boundaries),
     async_comm_(*fluds,
                 groupset.id,
@@ -26,7 +28,8 @@ AAH_AngleSet::AAH_AngleSet(size_t id,
                 angle_indices.size(),
                 maximum_message_size,
                 csda_enabled,
-                sweep_communicator)
+                sweep_communicator,
+                std::move(send_window))
 {
 }
 
@@ -39,11 +42,13 @@ AAH_AngleSet::InitializeDelayedUpstreamData()
 AngleSetStatus
 AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission)
 {
+  // An executed angle set is finished once its messages to non-delayed successors are posted.
+  // Those successors need them to finish the sweep.
   if (executed_)
   {
-    if (not async_comm_.DoneSending())
-      async_comm_.ClearDownstreamBuffers();
-    return AngleSetStatus::FINISHED;
+    async_comm_.ProgressDownstreamPsi(false);
+    return async_comm_.UndelayedSendsPosted() ? AngleSetStatus::FINISHED
+                                              : AngleSetStatus::MESSAGES_PENDING;
   }
 
   // Check upstream data available
@@ -75,7 +80,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
     }
 
     executed_ = true;
-    return AngleSetStatus::FINISHED;
+    return async_comm_.UndelayedSendsPosted() ? AngleSetStatus::FINISHED
+                                              : AngleSetStatus::MESSAGES_PENDING;
   }
   else
     return AngleSetStatus::READY_TO_EXECUTE;
@@ -84,8 +90,8 @@ AAH_AngleSet::AngleSetAdvance(SweepChunk& sweep_chunk, AngleSetStatus permission
 AngleSetStatus
 AAH_AngleSet::FlushSendBuffers()
 {
-  if (not async_comm_.DoneSending())
-    async_comm_.ClearDownstreamBuffers();
+  // After the sweep, messages to delayed successors are posted as well.
+  async_comm_.ProgressDownstreamPsi(true);
 
   if (async_comm_.DoneSending())
     return AngleSetStatus::MESSAGES_SENT;
