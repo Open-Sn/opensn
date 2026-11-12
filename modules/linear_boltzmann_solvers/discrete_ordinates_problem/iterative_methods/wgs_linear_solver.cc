@@ -145,8 +145,10 @@ WGSLinearSolver::PreSolveCallback()
 void
 WGSLinearSolver::SetInitialGuess()
 {
-  // If the norm of the initial guess is large enough, the initial guess will be used, otherwise it
-  // is assumed to be zero.
+  // The current flux of the groupset is the initial guess unless it is zero, in which case PETSc
+  // can skip the operator application that a nonzero guess needs. The flux has the scale of the
+  // source, so any nonzero norm is meaningful: a solution whose norm happens to be small is still
+  // the best guess, and discarding it restarts the solve from zero.
 
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   auto& groupset = gs_context_ptr->groupset;
@@ -158,7 +160,7 @@ WGSLinearSolver::SetInitialGuess()
   OpenSnPETScCall(VecNorm(x_, NORM_2, &init_guess_norm));
   OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_FALSE));
 
-  if (init_guess_norm > 1.0e-10)
+  if (init_guess_norm > 0.0)
     OpenSnPETScCall(KSPSetInitialGuessNonzero(ksp_, PETSC_TRUE));
 }
 

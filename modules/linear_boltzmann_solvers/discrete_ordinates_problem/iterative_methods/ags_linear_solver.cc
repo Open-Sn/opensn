@@ -16,6 +16,7 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <vector>
 
 namespace opensn
 {
@@ -47,6 +48,52 @@ ValidateFiniteScalarFlux(const LBSProblem& lbs_problem, const std::shared_ptr<Li
     "conditions for invalid values or regions without interaction.");
 }
 
+/**
+ * Returns whether one pass over the groupsets, in the order of wgs_solvers, solves the coupling
+ * between them exactly. A groupset receives sources from the others through scattering and, when
+ * its right-hand side applies across-groupset fission, through fission. The pass is exact when no
+ * groupset receives a source from one solved after it: no material scatters from a later groupset
+ * into an earlier one, in the problem's mode (transposed in adjoint mode), and either no material
+ * is fissionable or no groupset applies across-groupset fission. Continuous slowing down couples
+ * groups through the sweep, so a CSDA problem always iterates. Every rank holds the cross
+ * sections of every block, so every rank gets the same answer.
+ */
+bool
+OnePassIsExact(const LBSProblem& lbs_problem,
+               const std::vector<std::shared_ptr<LinearSolver>>& wgs_solvers)
+{
+  const auto& options = lbs_problem.GetOptions();
+  if (options.csda_enabled)
+    return false;
+
+  std::vector<size_t> groupset_of(lbs_problem.GetNumGroups(), wgs_solvers.size());
+  bool across_groupset_fission = false;
+  for (size_t k = 0; k < wgs_solvers.size(); ++k)
+  {
+    const auto context = std::dynamic_pointer_cast<WGSContext>(wgs_solvers[k]->GetContext());
+    if (not context)
+      return false;
+    for (auto g = context->groupset.first_group; g <= context->groupset.last_group; ++g)
+      groupset_of[g] = k;
+    across_groupset_fission =
+      across_groupset_fission or (context->GetRHSSourceScope() & APPLY_AGS_FISSION_SOURCES);
+  }
+  if (std::find(groupset_of.begin(), groupset_of.end(), wgs_solvers.size()) != groupset_of.end())
+    return false;
+
+  for (const auto& [block_id, xs] : lbs_problem.GetBlockID2XSMap())
+  {
+    if (across_groupset_fission and xs->IsFissionable())
+      return false;
+    for (const auto& transfer_matrix : xs->GetTransferMatrices(options.adjoint))
+      for (size_t g = 0; g < transfer_matrix.GetNumRows(); ++g)
+        for (const auto& [row, source_group, value] : transfer_matrix.Row(g))
+          if (value != 0.0 and groupset_of[source_group] > groupset_of[g])
+            return false;
+  }
+  return true;
+}
+
 /// L2 norm of a distributed vector over all ranks.
 double
 ComputeGlobalL2Norm(const std::vector<double>& values)
@@ -75,6 +122,10 @@ AGSLinearSolver::Solve()
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
   // to function and for keigen-value problems
   const auto saved_qmoms = lbs_problem_.GetQMomentsLocal();
+
+  // Without coupling to earlier groupsets, a second pass would only continue the groupset solves
+  // that already converged, so the iteration stops after the first pass in which they all do.
+  const bool one_pass_exact = is_multi_groupset and OnePassIsExact(lbs_problem_, wgs_solvers_);
 
   ConvergenceRateEstimator rate_estimator;
   double last_error = 0.0;
@@ -135,6 +186,10 @@ AGSLinearSolver::Solve()
       if (rate_estimator.Converged(tolerance_, roundoff_change))
         converged = true;
     }
+
+    if (one_pass_exact and wgs_summaries.size() == wgs_solvers_.size() and
+        wgs_status == IterationStatus::CONVERGED)
+      converged = true;
 
     const auto iteration_status = IterationStatusFromSolve(converged, false, wgs_status);
     if (iteration_status != IterationStatus::NONE)

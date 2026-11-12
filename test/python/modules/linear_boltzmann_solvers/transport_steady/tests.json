@@ -2978,5 +2978,48 @@
         "abs_tol": 1e-09
       }
     ]
+  },
+  {
+    "file": "ags_single_pass_groupsets.py",
+    "comment": "AGS iteration stops after one pass when no groupset feeds an earlier one, iterates when one does, and is invariant to the source scale",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SPLIT_A_ONE_PASS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SPLIT_A_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SPLIT_B_ONE_PASS_CONVERGED=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SPLIT_B_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SPLIT_B_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SOURCE_SCALE_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
   }
 ]

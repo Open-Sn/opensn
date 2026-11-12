@@ -544,10 +544,23 @@ Compare the two in the same terms:
   ``pointwise`` check is relative.
 - The AGS test also scales ``ags_tolerance`` by :math:`1-\varrho`.
 
-When the inner error is above the AGS test, the AGS iteration does not stop at
-the inner tolerance. It runs slowly. A groupset whose PETSc solve starts below
-``l_abs_tol`` takes no Krylov iteration, but the sweep that rebuilds its angular
-flux after the solve still applies one source iteration to it. Each AGS pass
+One pass over the groupsets solves the coupling between them exactly when no
+groupset receives a source from a groupset solved after it: no material scatters
+from a later groupset into an earlier one (in an adjoint problem, with the
+transposed scattering), no fission is emitted from one groupset into another,
+and the problem does not use continuous slowing down. A power iteration holds
+the fission source fixed during each transport solve, so there only the
+scattering counts. The AGS iteration then stops after the first pass in which
+every groupset solve converges, without testing the change between passes. The
+accuracy of the result is then that of the groupset solves, so set ``l_abs_tol``
+for the accuracy you need. A further pass would only continue the groupset
+solves.
+
+When the groupsets are coupled and the inner error is above the AGS test, the
+AGS iteration does not stop at the inner tolerance. It runs slowly. A groupset
+whose PETSc solve starts below ``l_abs_tol`` takes no Krylov iteration, but the
+sweep that rebuilds its angular flux after the solve still applies one source
+iteration to it. Each AGS pass
 then advances that groupset by one source iteration, and the AGS iteration can
 take tens of passes or reach ``max_ags_iterations``. The log shows this as
 groupsets that converge at iteration 0 while the AGS change decreases slowly.
