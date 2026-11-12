@@ -517,7 +517,12 @@ OpenSn transport calculations. Construct the problem and solver, then call
 ``Initialize`` and ``Execute``:
 
 Uncollided generation is restricted to three-dimensional Cartesian meshes and
-must run with exactly one MPI rank.
+must run with exactly one MPI rank. Every cell must be star-shaped about its
+centroid (the average of its vertices). The centroid must lie on the inner side
+of every triangle formed by two consecutive vertices of a face and the face
+centroid. Convex cells always satisfy this. The uncollided problem rejects a
+mesh with a cell that does not. Such cells are also the source of the mesh
+quality warning about negative-volume sub-elements.
 
 The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
@@ -528,7 +533,8 @@ to disable progress reporting.
 Internal threading used by the uncollided solver is capped by the environment
 variable ``OPENSN_NUM_THREADS``. If the variable is unset or invalid, OpenSn
 uses ``1`` thread. The current uncollided implementation applies this cap to
-reflected-image projection and to the bulk-sweep group solve.
+the ray tracing of the near-source region, to reflected-image projection, and to
+the bulk-sweep group solve.
 
 .. code-block:: python
 

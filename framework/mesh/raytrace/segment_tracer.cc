@@ -143,9 +143,13 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
     else
     {
       // Side tetrahedra: a side triangle of a face and the cell centroid. Only the side
-      // triangle lies on the cell boundary.
-      for (const auto& face : cell.faces)
+      // triangle lies on the cell boundary. They fill the cell only if the cell centroid lies on
+      // the inner side of every side triangle, which the face vertex order (counterclockwise
+      // seen from outside) defines. Otherwise a side tetrahedron lies outside the cell, as does
+      // the corresponding sub-element of the piecewise-linear discretizations.
+      for (size_t f_index = 0; f_index < cell.faces.size(); ++f_index)
       {
+        const auto& face = cell.faces[f_index];
         std::uint32_t neighbor = no_neighbor;
         if (face.has_neighbor and grid.IsCellLocal(face.neighbor_id))
           neighbor = static_cast<std::uint32_t>(grid.GetGlobalCell(face.neighbor_id).local_id);
@@ -156,6 +160,14 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
           const auto& b = grid.GlobalVertex(face.vertex_ids[(s + 1) % num_sides]);
           const auto& f = face.centroid;
           const auto& m = cell.centroid;
+          const Vector3 outward = (a - f).Cross(b - f);
+          OpenSnInvalidArgumentIf(outward.Dot(m - a) > tolerance * outward.Norm(),
+                                  "SegmentTracer: cell " + std::to_string(cell.global_id) +
+                                    " (centroid " + m.PrintStr() + "), face " +
+                                    std::to_string(f_index) + ", side " + std::to_string(s) +
+                                    ": the cell centroid lies on the outer side of the plane of "
+                                    "the side triangle, so the cell is not star-shaped about its "
+                                    "centroid.");
           const std::array<std::array<Vector3, 4>, 4> triangles = {
             {{a, b, f, m}, {a, b, m, f}, {a, f, m, b}, {b, f, m, a}}};
           std::array<std::optional<Plane>, 4> tet_planes;
@@ -300,11 +312,12 @@ SegmentTracer::FindNext(const std::uint32_t cell,
                         const Ray& ray,
                         const double t,
                         const std::vector<std::uint32_t>& exit_neighbors,
+                        std::vector<std::uint32_t>& visited,
                         double& exit) const
 {
   std::optional<std::uint32_t> best;
   double best_exit = t + ray.tolerance;
-  std::vector<std::uint32_t> visited;
+  visited.clear();
   const auto Consider = [&](const std::uint32_t candidate)
   {
     if (std::find(visited.begin(), visited.end(), candidate) != visited.end())
@@ -389,6 +402,7 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
   }
 
   std::vector<std::uint32_t> exit_neighbors;
+  std::vector<std::uint32_t> visited;
   double t = 0.0;
   double exit = 0.0;
   std::uint32_t cell = start_cell;
@@ -397,7 +411,7 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
   else
   {
     // The segment only touches the start cell.
-    const auto next = FindNext(cell, ray, t, exit_neighbors, exit);
+    const auto next = FindNext(cell, ray, t, exit_neighbors, visited, exit);
     if (not next)
       return false;
     cell = *next;
@@ -415,7 +429,7 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
       segments.back().length += length - t;
       return true;
     }
-    const auto next = FindNext(cell, ray, t, exit_neighbors, exit);
+    const auto next = FindNext(cell, ray, t, exit_neighbors, visited, exit);
     if (not next)
       return false;
     cell = *next;
@@ -436,7 +450,8 @@ SegmentTracer::LocateAhead(const std::uint32_t hint_cell,
   if (ExitAfter(hint_cell, ray, 0.0, nullptr))
     return hint_cell;
   double exit = 0.0;
-  return FindNext(hint_cell, ray, 0.0, {}, exit);
+  std::vector<std::uint32_t> visited;
+  return FindNext(hint_cell, ray, 0.0, {}, visited, exit);
 }
 
 } // namespace opensn

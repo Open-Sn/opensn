@@ -1294,8 +1294,10 @@ Notes:
    to both discretizations. The uncollided problem uses explicit point sources
    and must run with exactly one MPI rank. On that rank, physical sources are
    processed sequentially. ``OPENSN_NUM_THREADS`` parallelizes the bulk sweep
-   over energy groups and reflected-image projection over cells; near-source
-   ray tracing and moment accumulation remain single-threaded. The resulting
+   over energy groups, and the ray tracing of the near-source region and
+   reflected-image projection over cells. The conservation correction of the
+   near-source cells, which depends on the corrected leakages of their upstream
+   cells, and moment accumulation remain single-threaded. The resulting
    HDF5 file can be used by a subsequent collided calculation on the same mesh
    with one or more MPI ranks.
 

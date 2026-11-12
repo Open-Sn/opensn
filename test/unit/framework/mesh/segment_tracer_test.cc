@@ -8,8 +8,13 @@
 #include "gtest/gtest.h"
 #include <algorithm>
 #include <array>
+#include <chrono>
 #include <cmath>
 #include <filesystem>
+#include <fstream>
+#include <iomanip>
+#include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -146,6 +151,81 @@ Asset(const std::string& name)
   return std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / name;
 }
 
+/**
+ * Writes the polygon (counterclockwise in the xy-plane) extruded from z = 0 to z = 1 as a single
+ * VTK polyhedron to a temporary VTU file, reads it, and removes the file.
+ */
+std::shared_ptr<Mesh>
+BuildExtrudedPolygonCell(const std::vector<std::array<double, 2>>& polygon)
+{
+  const size_t n = polygon.size();
+  const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+  const auto path = std::filesystem::temp_directory_path() /
+                    ("opensn_segment_tracer_cell_" + std::to_string(now) + ".vtu");
+  {
+    std::ofstream out(path);
+    out << std::setprecision(17);
+    out << "<?xml version=\"1.0\"?>\n"
+        << "<VTKFile type=\"UnstructuredGrid\" version=\"0.1\" byte_order=\"LittleEndian\">\n"
+        << "<UnstructuredGrid>\n<Piece NumberOfPoints=\"" << 2 * n << "\" NumberOfCells=\"1\">\n"
+        << "<Points>\n<DataArray type=\"Float64\" NumberOfComponents=\"3\" format=\"ascii\">\n";
+    for (const double z : {0.0, 1.0})
+      for (const auto& [x, y] : polygon)
+        out << x << " " << y << " " << z << "\n";
+    out << "</DataArray>\n</Points>\n<Cells>\n"
+        << "<DataArray type=\"Int64\" Name=\"connectivity\" format=\"ascii\">\n";
+    for (size_t i = 0; i < 2 * n; ++i)
+      out << i << " ";
+    out << "\n</DataArray>\n<DataArray type=\"Int64\" Name=\"offsets\" format=\"ascii\">\n"
+        << 2 * n << "\n</DataArray>\n"
+        << "<DataArray type=\"UInt8\" Name=\"types\" format=\"ascii\">\n42\n</DataArray>\n";
+    // Faces with their vertices counterclockwise seen from outside: the bottom, the top, and the
+    // sides.
+    std::vector<size_t> faces = {n + 2, n};
+    for (size_t i = 0; i < n; ++i)
+      faces.push_back(n - 1 - i);
+    faces.push_back(n);
+    for (size_t i = 0; i < n; ++i)
+      faces.push_back(n + i);
+    for (size_t i = 0; i < n; ++i)
+      for (const size_t v : {size_t{4}, i, (i + 1) % n, n + (i + 1) % n, n + i})
+        faces.push_back(v);
+    out << "<DataArray type=\"Int64\" Name=\"faces\" format=\"ascii\">\n";
+    for (const auto v : faces)
+      out << v << " ";
+    out << "\n</DataArray>\n<DataArray type=\"Int64\" Name=\"faceoffsets\" format=\"ascii\">\n"
+        << faces.size() << "\n</DataArray>\n</Cells>\n<CellData>\n"
+        << "<DataArray type=\"Int32\" Name=\"BlockID\" format=\"ascii\">\n0\n</DataArray>\n"
+        << "</CellData>\n</Piece>\n</UnstructuredGrid>\n</VTKFile>\n";
+  }
+  std::shared_ptr<Mesh> grid;
+  try
+  {
+    grid = BuildMeshFromFile(path);
+  }
+  catch (...)
+  {
+    std::filesystem::remove(path);
+    throw;
+  }
+  std::filesystem::remove(path);
+  return grid;
+}
+
+double
+TracedLength(const SegmentTracer& tracer, const Vector3& a, const Vector3& b, bool& reached_end)
+{
+  std::vector<SegmentTracer::Segment> segments;
+  reached_end = tracer.Trace(0, a, b, segments);
+  double total = 0.0;
+  for (const auto& segment : segments)
+  {
+    EXPECT_EQ(segment.cell_local_id, 0);
+    total += segment.length;
+  }
+  return total;
+}
+
 } // namespace
 
 TEST(SegmentTracer, OrthogonalHexahedra)
@@ -214,4 +294,42 @@ TEST(SegmentTracer, LocateAheadAtVertex)
         else
           ADD_FAILURE() << "no cell ahead of the vertex along " << omega.PrintStr();
       }
+}
+
+// A square with a V-shaped notch in its top edge, extruded in z. The cell is not convex, but its
+// centroid (1, 9.6 / 7, 0.5) lies on the inner side of every side triangle, so its side
+// tetrahedra fill it. A segment at y = 1.9 leaves the cell where it meets the notch, at
+// x = 0.8 + 0.5 (2 - 1.9) = 0.85.
+TEST(SegmentTracer, NonConvexCell)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const auto grid = BuildExtrudedPolygonCell(
+    {{0.0, 0.0}, {2.0, 0.0}, {2.0, 2.0}, {1.2, 2.0}, {1.0, 1.6}, {0.8, 2.0}, {0.0, 2.0}});
+  const SegmentTracer tracer(*grid);
+  EXPECT_FALSE(tracer.IsConvexCell(0));
+  bool reached_end = false;
+  EXPECT_NEAR(
+    TracedLength(tracer, Vector3(0.2, 1.5, 0.5), Vector3(1.8, 1.5, 0.5), reached_end), 1.6, 1e-12);
+  EXPECT_TRUE(reached_end);
+  EXPECT_NEAR(
+    TracedLength(tracer, Vector3(0.2, 1.9, 0.5), Vector3(1.8, 1.9, 0.5), reached_end), 0.65, 1e-12);
+  EXPECT_FALSE(reached_end);
+}
+
+// A U-shaped cell, extruded in z. Its centroid (1.5, 1.25, 0.5) lies in the notch, outside the
+// cell, so some of its side tetrahedra lie outside it. The tracer rejects the cell.
+TEST(SegmentTracer, RejectsCellNotStarShapedAboutCentroid)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const auto grid = BuildExtrudedPolygonCell({{0.0, 0.0},
+                                              {3.0, 0.0},
+                                              {3.0, 2.0},
+                                              {2.0, 2.0},
+                                              {2.0, 1.0},
+                                              {1.0, 1.0},
+                                              {1.0, 2.0},
+                                              {0.0, 2.0}});
+  EXPECT_THROW(SegmentTracer tracer(*grid), std::invalid_argument);
 }
