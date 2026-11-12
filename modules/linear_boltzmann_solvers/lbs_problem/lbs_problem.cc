@@ -600,6 +600,13 @@ LBSProblem::GetOptionsBlock()
                               "angular-flux transfers are split into messages of at most this "
                               "size.");
   params.AddOptionalParameter(
+    "max_mpi_outstanding_sends",
+    0,
+    "The maximum number of sweep MPI sends that each rank may have posted and not completed in "
+    "CPU AAH sweeps. Further messages wait until earlier ones complete. Set it below the network "
+    "transmit queue size, such as FI_CXI_DEFAULT_TX_SIZE on Slingshot, when MPI runs out of "
+    "transmit resources. 0 means no limit.");
+  params.AddOptionalParameter(
     "restart_writes_enabled", false, "Flag that controls writing of restart dumps");
   params.AddOptionalParameter("write_delayed_psi_to_restart",
                               true,
@@ -703,6 +710,7 @@ LBSProblem::GetOptionsBlock()
     "waiting. Ignored unless fused_aao_sweep is true.");
 
   params.ConstrainParameterRange("max_mpi_message_size", AllowableRangeLowLimit::New(1024));
+  params.ConstrainParameterRange("max_mpi_outstanding_sends", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("fused_aao_lanes", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("write_restart_time_interval", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("max_ags_iterations", AllowableRangeLowLimit::New(0));
@@ -739,6 +747,9 @@ LBSProblem::ParseOptions(const InputParameters& input)
   const std::unordered_map<std::string, OptionSetter> option_setters = {
     {"max_mpi_message_size",
      [this](const ParameterBlock& spec) { options_.max_mpi_message_size = spec.GetValue<int>(); }},
+    {"max_mpi_outstanding_sends",
+     [this](const ParameterBlock& spec)
+     { options_.max_mpi_outstanding_sends = spec.GetValue<int>(); }},
     {"restart_writes_enabled",
      [this](const ParameterBlock& spec)
      { options_.restart.writes_enabled = spec.GetValue<bool>(); }},

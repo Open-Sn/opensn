@@ -1231,6 +1231,15 @@ WrapLBS(py::module& slv)
           - max_mpi_message_size: int, default=4194304
               Maximum size in bytes of one sweep MPI message. Larger angular-flux transfers
               are split into messages of at most this size.
+          - max_mpi_outstanding_sends: int, default=0
+              Maximum number of sweep MPI sends that each rank may have posted and not yet
+              completed. Further messages wait until earlier ones complete, and an angle set
+              whose messages exceed the limit sends them in turn. Set it below the network
+              transmit queue size when MPI runs out of transmit resources, for example below
+              ``FI_CXI_DEFAULT_TX_SIZE`` on Slingshot when MPICH warns about rendezvous message
+              resource exhaustion. The solution does not depend on it. 0 means no limit. Must
+              be at least 0. Requires ``sweep_type="AAH"`` and ``use_gpus=False`` when
+              positive.
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
@@ -1859,6 +1868,15 @@ WrapLBS(py::module& slv)
           - max_mpi_message_size: int, default=4194304
               Maximum size in bytes of one sweep MPI message. Larger angular-flux transfers
               are split into messages of at most this size.
+          - max_mpi_outstanding_sends: int, default=0
+              Maximum number of sweep MPI sends that each rank may have posted and not yet
+              completed. Further messages wait until earlier ones complete, and an angle set
+              whose messages exceed the limit sends them in turn. Set it below the network
+              transmit queue size when MPI runs out of transmit resources, for example below
+              ``FI_CXI_DEFAULT_TX_SIZE`` on Slingshot when MPICH warns about rendezvous message
+              resource exhaustion. The solution does not depend on it. 0 means no limit. Must
+              be at least 0. Requires ``sweep_type="AAH"`` and ``use_gpus=False`` when
+              positive.
           - restart_writes_enabled: bool, default=False
               Enable restart dump writes for solvers that support restart output.
           - write_delayed_psi_to_restart: bool, default=True
