@@ -188,7 +188,17 @@ public:
     return adjoint ? adjoint_sigma_tr_ : sigma_tr_;
   }
 
-  /// Returns the diffusion coefficient 1/(3 sigma_tr) for the forward or the adjoint mode.
+  /**
+   * Transport cross section below which a group is void in the diffusion acceleration methods.
+   * Such groups get D = 1 / (3 DIFFUSION_SIGMA_TR_MIN) here. A DiscreteOrdinatesProblem replaces
+   * it with a length of its geometry (DiscreteOrdinatesProblem::GetDSADiffusionCoefficient).
+   */
+  static constexpr double DIFFUSION_SIGMA_TR_MIN = 1.0e-12;
+
+  /**
+   * Returns the diffusion coefficient 1/(3 sigma_tr) for the forward or the adjoint mode, limited
+   * by DIFFUSION_SIGMA_TR_MIN.
+   */
   const std::vector<double>& GetDiffusionCoefficient(bool adjoint) const
   {
     return adjoint ? adjoint_diffusion_coeff_ : diffusion_coeff_;

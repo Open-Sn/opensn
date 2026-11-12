@@ -25,9 +25,12 @@ configuration that satisfies it:
 11. CMFD in RZ geometry (accepted).
 12. SCDSA with sdm="pwlc" in 1D spherical geometry (rejected: the correction diverges), and
 13. SCDSA with sdm="pwld" in 1D spherical geometry (accepted).
+14. SMM with a void block (rejected: the SMM source correction divides by the transport cross
+    section), and
+15. the same geometry with sigma_t = 1e-6 /cm in that block (accepted).
 
 Checks:
-  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 13) that behave as described.
+  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 15) that behave as described.
 """
 
 import os
@@ -50,6 +53,7 @@ if "opensn_console" not in globals():
         GLCProductQuadrature2DXY,
         GLProductQuadrature1DSpherical,
     )
+    from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.solver import (
         CMFDAcceleration,
@@ -82,6 +86,17 @@ def xy_problem(grid, xs, num_groups, groupsets, boundary_conditions=None, option
         groupsets=groupsets,
         xs_map=[{"block_ids": [0], "xs": xs}],
         boundary_conditions=boundary_conditions or [],
+        options={"verbose_inner_iterations": False, "verbose_outer_iterations": False,
+                 **(options or {})},
+    )
+
+
+def two_block_problem(grid, xs0, xs1, groupsets, options=None):
+    return DiscreteOrdinatesProblem(
+        mesh=grid,
+        num_groups=1,
+        groupsets=groupsets,
+        xs_map=[{"block_ids": [0], "xs": xs0}, {"block_ids": [1], "xs": xs1}],
         options={"verbose_inner_iterations": False, "verbose_outer_iterations": False,
                  **(options or {})},
     )
@@ -134,13 +149,27 @@ if __name__ == "__main__":
                     "M_GFROM_GTO_VAL 0 0 0 0.5\nM_GFROM_GTO_VAL 0 0 1 0.4\n"
                     "M_GFROM_GTO_VAL 0 1 1 0.9\n"
                     "TRANSFER_MOMENTS_END\n")
+    absorber_files = {0.0: "keigen_acceleration_requirements_void.xs",
+                      1.0e-6: "keigen_acceleration_requirements_thin.xs"}
+    if rank == 0:
+        for sigma_t, file_name in absorber_files.items():
+            with open(file_name, "w") as f:
+                f.write(f"NUM_GROUPS 1\nNUM_MOMENTS 1\n\nSIGMA_T_BEGIN\n0 {sigma_t}\nSIGMA_T_END\n")
     MPIAllReduce(0)
     fissile2 = MultiGroupXS()
     fissile2.LoadFromOpenSn(xs2_file)
+    absorbers = {}
+    for sigma_t, file_name in absorber_files.items():
+        absorbers[sigma_t] = MultiGroupXS()
+        absorbers[sigma_t].LoadFromOpenSn(file_name)
 
     nodes = [i * 10.0 / 8 for i in range(9)]
     xy_grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()
     xy_grid.SetUniformBlockID(0)
+    xy_grid2 = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()
+    xy_grid2.SetUniformBlockID(0)
+    xy_grid2.SetBlockIDFromLogicalVolume(
+        RPPLogicalVolume(xmin=3.0, xmax=7.0, ymin=3.0, ymax=7.0, infz=True), 1, True)
     rz_grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes], coord_sys="cylindrical").Execute()
     rz_grid.SetUniformBlockID(0)
     sph_grid = OrthogonalMeshGenerator(node_sets=[[i * 10.0 / 16 for i in range(17)]],
@@ -234,7 +263,20 @@ if __name__ == "__main__":
         outcome(pi(problem, SCDSAAcceleration(problem=problem, sdm="pwld"))) == "accepted"
     )
 
+    # Cases 14 and 15
+    problem = two_block_problem(xy_grid2, fissile, absorbers[0.0], [groupset((0, 0), xy_quad())],
+                                save_psi)
+    passed += on_all_ranks(
+        outcome(pi(problem, SMMAcceleration(problem=problem)),
+                "block 1 is void in group 0") == "rejected"
+    )
+    problem = two_block_problem(xy_grid2, fissile, absorbers[1.0e-6],
+                                [groupset((0, 0), xy_quad())], save_psi)
+    passed += on_all_ranks(outcome(pi(problem, SMMAcceleration(problem=problem))) == "accepted")
+
     MPIAllReduce(0)
     if rank == 0:
         os.remove(xs2_file)
+        for file_name in absorber_files.values():
+            os.remove(file_name)
         print(f"KEIGEN_ACCELERATION_REQUIREMENTS_PASSED {passed}")
