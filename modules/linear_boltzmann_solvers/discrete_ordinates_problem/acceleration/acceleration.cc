@@ -45,11 +45,12 @@ TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_bou
 }
 
 std::map<unsigned int, Multigroup_D_and_sigR>
-PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
+PackGroupsetXS(const DiscreteOrdinatesProblem& do_problem,
                unsigned int first_grp_index,
                unsigned int last_group_index,
                double time_absorption_scale)
 {
+  const auto& blkid_to_xs_map = do_problem.GetBlockID2XSMap();
   OpenSnInvalidArgumentIf(last_group_index < first_grp_index,
                           "last_grp_index must be >= first_grp_index");
   const unsigned int num_gs_groups = last_group_index - first_grp_index + 1;
@@ -64,7 +65,7 @@ PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
     std::vector<double> sigma_r(num_gs_groups, 0.0);
 
     unsigned int g = 0;
-    const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+    const auto& diffusion_coeff = do_problem.GetDSADiffusionCoefficient(*xs);
     const auto& sigma_removal = xs->GetSigmaRemoval();
     const auto& inv_velocity = xs->GetInverseVelocity();
     OpenSnLogicalErrorIf(time_absorption_scale > 0.0 and inv_velocity.size() < last_group_index + 1,

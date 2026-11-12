@@ -70,7 +70,7 @@ SCDSAAcceleration::Initialize()
 
   // Make xs map
   const auto matid_2_mgxs_map =
-    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
+    PackGroupsetXS(do_problem_, front_gs_.first_group, front_gs_.last_group);
 
   // Create solver
   const auto& sdm = do_problem_.GetSpatialDiscretization();

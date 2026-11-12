@@ -76,6 +76,17 @@ public:
   double GetDSATimeAbsorptionScale() const { return dsa_time_absorption_scale_; }
 
   /**
+   * Returns the diffusion coefficient of a material for the diffusion acceleration methods (WGDSA,
+   * TGDSA, SCDSA, SMM, and CMFD), indexed by group. It is the material's own coefficient
+   * (MultiGroupXS::GetDiffusionCoefficient), except in void groups, whose transport cross section
+   * is below MultiGroupXS::DIFFUSION_SIGMA_TR_MIN. There it is V / S, with V the volume of the
+   * material's cells and S the area of their faces that border another material or a boundary
+   * that is not reflecting. The reference stays valid until the runtime objects of the problem are
+   * rebuilt.
+   */
+  const std::vector<double>& GetDSADiffusionCoefficient(const MultiGroupXS& xs) const;
+
+  /**
    * Rebuilds the WGDSA/TGDSA operators if the time absorption 1/(v theta dt) of the current
    * mode, time step, and theta differs from the one they were built with. Called before each
    * transient step to pick up changes of dt or theta. Mode changes rebuild the operators through
@@ -305,6 +316,11 @@ protected:
 
   /// Time-absorption scale 1/(theta dt) for the current mode, time step, and theta (0 when steady).
   double ComputeDSATimeAbsorptionScale() const;
+  /**
+   * Builds the volume-to-surface diffusion coefficients of the materials that have void groups
+   * (see GetDSADiffusionCoefficient). Collective.
+   */
+  void BuildDSAVoidDiffusionCoefficients();
   /// Rebuild WGS/AGS solver schemes after runtime configuration changes.
   void ReinitializeSolverSchemes();
 
@@ -385,6 +401,9 @@ protected:
   const std::string sweep_type_;
   /// Time-absorption scale 1/(theta dt) of the current DSA operators (0 when steady).
   double dsa_time_absorption_scale_ = 0.0;
+  /// DSA diffusion coefficients of the materials that differ from their own (see
+  /// GetDSADiffusionCoefficient).
+  std::map<const MultiGroupXS*, std::vector<double>> dsa_void_diffusion_coeff_;
   /** @} */
 
   /**

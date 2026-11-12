@@ -10,6 +10,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iomanip>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
@@ -65,7 +66,8 @@ ExpectSpectrum(const std::vector<double>& spectrum, const std::vector<double>& e
 TEST(TwoGridSpectrumTest, UpscatterOnlyIsFlat)
 {
   const auto xs = MakeXS({1.0, 1.0, 1.0}, {{0.5, 0.3, 0.2}, {0.0, 0.5, 0.3}, {0.0, 0.0, 0.5}});
-  const auto info = MakeTwoGridCollapsedInfo(xs, EnergyCollapseScheme::JFULL, 0, 2);
+  const auto info =
+    MakeTwoGridCollapsedInfo(xs, xs.GetDiffusionCoefficient(), EnergyCollapseScheme::JFULL, 0, 2);
   ExpectSpectrum(info.spectrum, {1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0});
 }
 
@@ -73,7 +75,8 @@ TEST(TwoGridSpectrumTest, UpscatterOnlyIsFlat)
 TEST(TwoGridSpectrumTest, DownscatterOnlyIsFlat)
 {
   const auto xs = MakeXS({1.0, 1.0, 1.0}, {{0.5, 0.0, 0.0}, {0.3, 0.5, 0.0}, {0.2, 0.3, 0.5}});
-  const auto info = MakeTwoGridCollapsedInfo(xs, EnergyCollapseScheme::JFULL, 0, 2);
+  const auto info =
+    MakeTwoGridCollapsedInfo(xs, xs.GetDiffusionCoefficient(), EnergyCollapseScheme::JFULL, 0, 2);
   ExpectSpectrum(info.spectrum, {1.0 / 3.0, 1.0 / 3.0, 1.0 / 3.0});
 }
 
@@ -84,6 +87,29 @@ TEST(TwoGridSpectrumTest, DownscatterOnlyIsFlat)
 TEST(TwoGridSpectrumTest, TwoGroupPerronVector)
 {
   const auto xs = MakeXS({1.0, 2.0}, {{0.5, 0.09}, {0.45, 1.9}});
-  const auto info = MakeTwoGridCollapsedInfo(xs, EnergyCollapseScheme::JFULL, 0, 1);
+  const auto info =
+    MakeTwoGridCollapsedInfo(xs, xs.GetDiffusionCoefficient(), EnergyCollapseScheme::JFULL, 0, 1);
   ExpectSpectrum(info.spectrum, {1.0 / 6.0, 5.0 / 6.0});
+}
+
+// The collapsed diffusion coefficient weights the supplied coefficients, not those of the cross
+// section, by the spectrum. For the two-group case above, xi = (1/6, 5/6), so D = (2, 8) collapses
+// to 2/6 + 40/6 = 7.
+TEST(TwoGridSpectrumTest, CollapsedDiffusionUsesSuppliedCoefficients)
+{
+  const auto xs = MakeXS({1.0, 2.0}, {{0.5, 0.09}, {0.45, 1.9}});
+  const auto info = MakeTwoGridCollapsedInfo(xs, {2.0, 8.0}, EnergyCollapseScheme::JFULL, 0, 1);
+  EXPECT_NEAR(info.collapsed_D, 7.0, 1.0e-10);
+}
+
+// A coefficient vector that does not have one entry per group of the cross section is rejected.
+TEST(TwoGridSpectrumTest, WrongNumberOfDiffusionCoefficientsThrows)
+{
+  const auto xs = MakeXS({1.0, 2.0}, {{0.5, 0.09}, {0.45, 1.9}});
+  EXPECT_THROW(MakeTwoGridCollapsedInfo(xs, {}, EnergyCollapseScheme::JFULL, 0, 1),
+               std::logic_error);
+  EXPECT_THROW(MakeTwoGridCollapsedInfo(xs, {2.0}, EnergyCollapseScheme::JFULL, 0, 1),
+               std::logic_error);
+  EXPECT_THROW(MakeTwoGridCollapsedInfo(xs, {2.0, 8.0, 1.0}, EnergyCollapseScheme::JFULL, 0, 1),
+               std::logic_error);
 }

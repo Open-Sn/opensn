@@ -861,7 +861,7 @@ CMFDAcceleration::CondensedDiffusionCoefficient(const MultiGroupXS& xs,
                                                 const CMFDCoarseCell& coarse_cell,
                                                 const unsigned int coarse_group) const
 {
-  const auto& diffusion_coeff = xs.GetDiffusionCoefficient();
+  const auto& diffusion_coeff = do_problem_.GetDSADiffusionCoefficient(xs);
   const bool has_flux = not fine_coarse_phi.empty();
   const auto fine_offset = coarse_cell.local_id * num_groups_;
   double numerator = 0.0;

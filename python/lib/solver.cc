@@ -2730,6 +2730,8 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     --------
        SMM acceleration is **experimental** and should be used with caution!
        SMM acceleration only supports problems with isotropic scattering.
+       SMM acceleration does not support void groups, in which the transport cross section of a
+       material is below 1e-12.
 
     Parameters
     ----------

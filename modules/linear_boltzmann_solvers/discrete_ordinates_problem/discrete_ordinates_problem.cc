@@ -693,6 +693,7 @@ DiscreteOrdinatesProblem::BuildRuntimeData()
   // Initialize groupsets for sweeping
   InitializeSweepDataStructures();
   dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
+  BuildDSAVoidDiffusionCoefficients();
   for (auto& groupset : groupsets_)
   {
     InitFluxDataStructures(groupset);
@@ -737,6 +738,7 @@ DiscreteOrdinatesProblem::RebuildRuntimeObjects()
   RebuildBoundaryRuntimeData();
   // Build the diffusion acceleration operators with the time absorption of the current mode.
   dsa_time_absorption_scale_ = ComputeDSATimeAbsorptionScale();
+  BuildDSAVoidDiffusionCoefficients();
   for (auto& groupset : groupsets_)
   {
     WGDSA::CleanUp(groupset);
@@ -1225,6 +1227,84 @@ double
 DiscreteOrdinatesProblem::ComputeDSATimeAbsorptionScale() const
 {
   return IsTimeDependent() ? 1.0 / (GetTheta() * GetTimeStep()) : 0.0;
+}
+
+const std::vector<double>&
+DiscreteOrdinatesProblem::GetDSADiffusionCoefficient(const MultiGroupXS& xs) const
+{
+  const auto it = dsa_void_diffusion_coeff_.find(&xs);
+  return it != dsa_void_diffusion_coeff_.end() ? it->second : xs.GetDiffusionCoefficient();
+}
+
+void
+DiscreteOrdinatesProblem::BuildDSAVoidDiffusionCoefficients()
+{
+  dsa_void_diffusion_coeff_.clear();
+
+  // The materials, numbered in the order of their first block id so that every rank agrees.
+  std::vector<const MultiGroupXS*> materials;
+  std::map<unsigned int, size_t> block_material;
+  for (const auto& [block_id, xs] : block_id_to_xs_map_)
+  {
+    const auto it = std::find(materials.begin(), materials.end(), xs.get());
+    block_material[block_id] = static_cast<size_t>(it - materials.begin());
+    if (it == materials.end())
+      materials.push_back(xs.get());
+  }
+
+  // Volume of each material, and the area of its faces that border another material or a
+  // boundary that is not reflecting. Each rank adds the faces of its own cells, so every face of
+  // a material interface is counted once for each side.
+  const size_t num_materials = materials.size();
+  std::vector<double> local_vs(2 * num_materials, 0.0);
+  for (const auto& cell : grid_->GetLocalCells())
+  {
+    const size_t m = block_material.at(cell->block_id);
+    local_vs[m] += cell->volume;
+    for (const auto& face : cell->faces)
+    {
+      bool wall = false;
+      if (face.has_neighbor)
+        wall = block_material.at(grid_->GetGlobalCell(face.neighbor_id).block_id) != m;
+      else
+      {
+        const auto it = sweep_boundaries_.find(face.neighbor_id);
+        wall = it == sweep_boundaries_.end() or not it->second->IsReflecting();
+      }
+      if (wall)
+        local_vs[num_materials + m] += face.area;
+    }
+  }
+  std::vector<double> global_vs(local_vs.size(), 0.0);
+  mpi_comm.all_reduce(
+    local_vs.data(), static_cast<int>(local_vs.size()), global_vs.data(), mpi::op::sum<double>());
+
+  constexpr double sigma_tr_min = MultiGroupXS::DIFFUSION_SIGMA_TR_MIN;
+  for (size_t m = 0; m < num_materials; ++m)
+  {
+    const auto& xs = *materials[m];
+    const double volume = global_vs[m];
+    const double surface = global_vs[num_materials + m];
+    // A material without walls (filling a domain whose boundaries all reflect) keeps its own D.
+    if (surface <= 0.0)
+      continue;
+    const double length = volume / surface;
+    const auto& sigma_tr = xs.GetSigmaTransport();
+    auto diffusion_coeff = xs.GetDiffusionCoefficient();
+    unsigned int num_void_groups = 0;
+    for (size_t g = 0; g < diffusion_coeff.size(); ++g)
+      if (std::fabs(sigma_tr[g]) < sigma_tr_min)
+      {
+        diffusion_coeff[g] = length;
+        ++num_void_groups;
+      }
+    if (num_void_groups == 0)
+      continue;
+    log.Log0Verbose1() << "DSA void diffusion: material " << m << " (V = " << volume
+                       << ", S = " << surface << ") uses D = V / S = " << length << " in "
+                       << num_void_groups << " void groups.";
+    dsa_void_diffusion_coeff_.emplace(&xs, std::move(diffusion_coeff));
+  }
 }
 
 void
