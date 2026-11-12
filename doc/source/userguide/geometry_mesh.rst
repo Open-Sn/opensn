@@ -194,7 +194,8 @@ Supported import families include:
 
 * ``.obj``: Wavefront OBJ exporters from Blender, MeshLab, FreeCAD, and many
   CAD or geometry tools.
-* ``.msh``: Gmsh.
+* ``.msh``: Gmsh, in MSH format 2.2 (ASCII) or 4.1 (ASCII or binary), with first-order
+  tetrahedra, hexahedra, prisms, and pyramids in 3D, or triangles and quadrilaterals in 2D.
 * ``.e``: ExodusII-producing tools such as Cubit, Coreform Cubit, SEACAS
   tools, and some finite-element preprocessors.
 * ``.vtu``: VTK or ParaView writers, ``meshio``, and many FEM or CFD tools

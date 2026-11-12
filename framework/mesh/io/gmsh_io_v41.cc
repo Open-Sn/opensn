@@ -338,8 +338,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       case 5:
         return CellType::HEXAHEDRON;
       case 6:
+        return CellType::WEDGE;
       case 7:
-        return CellType::POLYHEDRON;
+        return CellType::PYRAMID;
       default:
         return CellType::GHOST;
     }
@@ -446,6 +447,10 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       num_cell_nodes = 4;
     else if (element_type == 5) // 8-node hexahedron
       num_cell_nodes = 8;
+    else if (element_type == 6) // 6-node prism
+      num_cell_nodes = 6;
+    else if (element_type == 7) // 5-node pyramid
+      num_cell_nodes = 5;
 
     for (size_t i = 0; i < num_elems_in_block; ++i)
     {
@@ -571,6 +576,8 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       for (auto& lw_face : lw_faces)
         cell.faces.push_back(lw_face);
     }
+    else if (element_type == 6 or element_type == 7) // prism or pyramid
+      AddGmshPrismOrPyramidFaces(element_type, cell);
     else
       throw std::runtime_error(fname + ": Unsupported cell type.");
 
@@ -847,8 +854,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           case 5:
             return CellType::HEXAHEDRON;
           case 6:
+            return CellType::WEDGE;
           case 7:
-            return CellType::POLYHEDRON;
+            return CellType::PYRAMID;
           default:
             return CellType::GHOST;
         }
@@ -941,6 +949,10 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           num_cell_nodes = 4;
         else if (element_type == 5)
           num_cell_nodes = 8;
+        else if (element_type == 6) // 6-node prism
+          num_cell_nodes = 6;
+        else if (element_type == 7) // 5-node pyramid
+          num_cell_nodes = 5;
 
         for (uint64_t i = 0; i < num_elems_in_block; ++i)
         {
@@ -1052,9 +1064,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
               cell.faces.push_back(lw_face);
           }
           else if (element_type == 6 or element_type == 7)
-          {
-            throw std::logic_error(fname + ": Polyhedral cells are unsupported for binary reader.");
-          }
+            AddGmshPrismOrPyramidFaces(element_type, cell);
         }
       }
 
