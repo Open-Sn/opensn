@@ -953,6 +953,43 @@
   },
   {
     "file": "transport_3d_3a_dsa_ortho.py",
+    "comment": "Same as transport_3d_3a_dsa_ortho with the WGDSA corrections coupled in energy (wgdsa_energy_coupling) in both groupsets, checked against the same converged reference values. The within-group iteration limit of 20 is met with the energy coupling (14 iterations in each groupset) but not without it (28 and 52), or without the downscatter of the corrections between groups.",
+    "outfileprefix": "transport_3d_3a_dsa_ortho_energy_coupling",
+    "num_procs": 4,
+    "args": [
+      "energy_coupling=True",
+      "wgs_max_its=20"
+    ],
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-62] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [63-167] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.09495,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.09448,
+        "abs_tol": 0.0003
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_3a_dsa_ortho.py",
     "comment": "Same as transport_3d_3a_dsa_ortho with the Dirichlet DSA boundary closure and the cell-wide MIP penalty length (the behaviour before the Marshak and face_side defaults); same converged reference values",
     "outfileprefix": "transport_3d_3a_dsa_ortho_dirichlet_cell",
     "num_procs": 4,
@@ -1494,6 +1531,29 @@
     "file": "transport_1d_4_dsa_ortho_inf.py",
     "comment": "1D infinite medium of graphite (168 groups, reflecting faces) with WGDSA and TGDSA: the across-groupset iteration converges and the scalar flux matches the exact multigroup balance (diag(sigma_t) - S_0)^-1 q",
     "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_4_dsa_ortho_inf.py",
+    "comment": "Same as transport_1d_4_dsa_ortho_inf with the WGDSA corrections coupled in energy (wgdsa_energy_coupling) in both groupsets: the across-groupset iteration converges and the scalar flux matches the exact multigroup balance",
+    "outfileprefix": "transport_1d_4_dsa_ortho_inf_energy_coupling",
+    "num_procs": 1,
+    "args": [
+      "energy_coupling=True"
+    ],
     "checks": [
       {
         "type": "KeyValuePair",

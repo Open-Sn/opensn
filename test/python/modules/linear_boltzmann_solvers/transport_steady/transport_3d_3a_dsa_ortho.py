@@ -81,6 +81,11 @@ if __name__ == "__main__":
         if name in globals():
             dsa_options["wgdsa_" + name] = globals()[name]
             dsa_options["tgdsa_" + name] = globals()[name]
+    # Optional WGDSA energy coupling (default False)
+    if "energy_coupling" in globals():
+        dsa_options["wgdsa_energy_coupling"] = energy_coupling
+    # Optional within-group iteration limit (default 1000)
+    wgs_max_its = globals().get("wgs_max_its", 1000)
 
     # The default partition has rank-level sweep cycles, which are broken by lagging fluxes. The
     # lagged set depends on how directions are grouped into angle sets, so the iteration history
@@ -95,7 +100,7 @@ if __name__ == "__main__":
                 "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
-                "l_max_its": 1000,
+                "l_max_its": wgs_max_its,
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
                 "wgdsa_l_abs_tol": 1.0e-2,
@@ -107,7 +112,7 @@ if __name__ == "__main__":
                 "angle_aggregation_type": "polar",
                 "inner_linear_method": "petsc_gmres",
                 "l_abs_tol": 1.0e-6,
-                "l_max_its": 1000,
+                "l_max_its": wgs_max_its,
                 "gmres_restart_interval": 30,
                 "apply_wgdsa": True,
                 "apply_tgdsa": True,

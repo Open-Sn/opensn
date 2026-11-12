@@ -46,6 +46,13 @@ LBSGroupset::GetInputParameters()
                               "Flag to turn on within-group Diffusion Synthetic Acceleration for "
                               "this groupset");
   params.AddOptionalParameter(
+    "wgdsa_energy_coupling",
+    false,
+    "Couple the within-group DSA corrections in energy. The source of each group is the change "
+    "of the scattering into it from every groupset group, and the groups are solved one at a "
+    "time from the highest energy, each with the downscatter of the corrections of the groups "
+    "above it. Requires apply_wgdsa.");
+  params.AddOptionalParameter(
     "wgdsa_l_abs_tol",
     1.0e-4,
     "Within-group DSA diffusion-solve residual tolerance, relative to the right-hand-side norm");
@@ -172,6 +179,7 @@ LBSGroupset::Init(int aid)
   gmres_restart_intvl = 30;
   allow_cycles = true;
   apply_wgdsa = false;
+  wgdsa_energy_coupling = false;
   apply_tgdsa = false;
   wgdsa_max_iters = 30;
   tgdsa_max_iters = 30;
@@ -189,7 +197,7 @@ LBSGroupset::Init(int aid)
   tgdsa_verbose = false;
   wgdsa_solver = nullptr;
   tgdsa_solver = nullptr;
-  wgdsa_csda_solvers.clear();
+  wgdsa_group_solvers.clear();
 }
 
 LBSGroupset::LBSGroupset() // NOLINT(cppcoreguidelines-pro-type-member-init)
@@ -256,6 +264,7 @@ LBSGroupset::LBSGroupset( // NOLINT(cppcoreguidelines-pro-type-member-init)
 
   // DSA
   apply_wgdsa = params.GetParamValue<bool>("apply_wgdsa");
+  wgdsa_energy_coupling = params.GetParamValue<bool>("wgdsa_energy_coupling");
   apply_tgdsa = params.GetParamValue<bool>("apply_tgdsa");
 
   wgdsa_tol = params.GetParamValue<double>("wgdsa_l_abs_tol");
