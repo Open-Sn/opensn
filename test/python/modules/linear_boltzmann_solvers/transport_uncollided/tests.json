@@ -206,6 +206,19 @@
     ]
   },
   {
+    "file": "uncollided_orthogonal_layered_rays.py",
+    "comment": "Uncollided ray tracing on an orthogonal grid, with rays through cell edges and vertices, across two materials, against the exact escape fraction",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedOrthogonalLayeredOutflowError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      }
+    ]
+  },
+  {
     "file": "uncollided_3d_prism_analytic.py",
     "comment": "3D prism scalar flux and P1 moments against the exact point-source solution, bulk positivity, and global outflow",
     "num_procs": 1,

@@ -170,9 +170,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
 
   ComputeUnitIntegrals();
 
-  // Pre-compute per-cell bounding-box diagonals for RayTracer tolerance scaling.
-  // Without this, RayTracer::TraceRay() recomputes it on every call by iterating
-  // over all cell vertices.
+  // Per-cell bounding-box diagonals, which scale geometric tolerances.
   cell_sizes_.resize(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
   {
@@ -203,55 +201,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
   if (not all_cells_convex_)
     log.Log() << "Non-convex cells detected; concavity checks enabled globally.";
 
-  // Precompute flat face vertex data when all cells are convex and all faces fit in FaceVertData.
-  // This bypasses the std::map-backed VertexHandler and the two O(log N) GlobalCellHandler lookups
-  // per while-loop iteration in RaytraceLineInto, replacing them with flat-array and unordered_map
-  // accesses that hit the L2 cache instead of chasing red-black tree nodes.
-  if (all_cells_convex_)
-  {
-    size_t total_faces = 0;
-    bool can_fast = true;
-    for (const auto& cell : grid_->GetLocalCells())
-    {
-      for (const auto& face : cell->faces)
-      {
-        if (face.vertex_ids.size() > FaceVertData::max_sides)
-        {
-          can_fast = false;
-          break;
-        }
-      }
-      if (not can_fast)
-        break;
-      total_faces += cell->faces.size();
-    }
-
-    if (can_fast)
-    {
-      all_face_verts_.resize(total_faces);
-      cell_face_offsets_.resize(grid_->GetLocalCellCount());
-      cell_num_faces_.resize(grid_->GetLocalCellCount());
-      global_to_local_id_.reserve(grid_->GetLocalCellCount());
-      size_t offset = 0;
-      for (const auto& cell : grid_->GetLocalCells())
-      {
-        cell_face_offsets_[cell->local_id] = static_cast<uint32_t>(offset);
-        cell_num_faces_[cell->local_id] = static_cast<uint32_t>(cell->faces.size());
-        global_to_local_id_[cell->global_id] = static_cast<uint32_t>(cell->local_id);
-        for (const auto& face : cell->faces)
-        {
-          auto& fv = all_face_verts_[offset++];
-          fv.num_sides = static_cast<uint32_t>(face.vertex_ids.size());
-          for (size_t s = 0; s < fv.num_sides; ++s)
-            fv.verts[s] = grid_->GlobalVertex(face.vertex_ids[s]);
-          fv.centroid = face.centroid;
-          fv.neighbor_id = face.neighbor_id;
-          fv.pad = 0;
-        }
-      }
-      use_fast_trace_ = true;
-    }
-  }
+  segment_tracer_ = std::make_unique<SegmentTracer>(*grid_);
 }
 
 std::vector<UncollidedProblem::ReflectionPlane>
@@ -749,60 +699,8 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 }
 // NOLINTEND(clang-analyzer-security.ArrayBound)
 
-size_t
-UncollidedProblem::LocateCellAhead(const Vector3& point,
-                                   const Vector3& omega,
-                                   const double remaining_distance,
-                                   const size_t cell_id) const
-{
-  const double probe_distance =
-    std::min(0.5 * remaining_distance, cell_sizes_[cell_id] * ray_relocation_probe_fraction);
-  const Vector3 probe = point + probe_distance * omega;
-  const auto contains_probe = [this, &probe](const Cell& candidate)
-  {
-    const double point_tolerance = cell_sizes_[candidate.local_id] * 1.0e-10;
-    return std::all_of(candidate.faces.begin(),
-                       candidate.faces.end(),
-                       [&probe, point_tolerance](const CellFace& face)
-                       { return face.normal.Dot(probe - face.centroid) <= point_tolerance; });
-  };
-
-  // The cell ahead shares an edge or vertex with the given cell, so search its face neighbors
-  // first, a few layers deep, before the whole mesh.
-  std::vector<size_t> layer{cell_id};
-  std::unordered_set<size_t> visited{cell_id};
-  for (unsigned int depth = 0; depth < 3 and not layer.empty(); ++depth)
-  {
-    std::vector<size_t> next_layer;
-    for (const size_t local_id : layer)
-      for (const auto& face : grid_->GetLocalCell(local_id).faces)
-      {
-        if (not face.has_neighbor)
-          continue;
-        const size_t neighbor = face.GetNeighborLocalID(grid_.get());
-        if (not visited.insert(neighbor).second)
-          continue;
-        if (contains_probe(grid_->GetLocalCell(neighbor)))
-          return neighbor;
-        next_layer.push_back(neighbor);
-      }
-    layer = std::move(next_layer);
-  }
-  const auto& cells = grid_->GetLocalCells();
-  const auto containing_cell =
-    std::find_if(cells.begin(),
-                 cells.end(),
-                 [&](const auto& candidate)
-                 { return candidate->local_id != cell_id and contains_probe(*candidate); });
-  OpenSnLogicalErrorIf(containing_cell == cells.end(),
-                       GetName() + ": could not locate the cell ahead of a ray that passed an "
-                                   "edge or vertex.");
-  return (*containing_cell)->local_id;
-}
-
 void
-UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
-                                    const Cell& cell,
+UncollidedProblem::RaytraceLineInto(const Cell& cell,
                                     const Vector3& qp_xyz,
                                     const SourcePoint& source_point,
                                     std::vector<double>& phi_out,
@@ -839,7 +737,8 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
   std::sort(scratch_bp.begin(), scratch_bp.end());
 
   scratch_segs.clear();
-  size_t cell_id = cell.local_id;
+  thread_local std::vector<SegmentTracer::Segment> traced;
+  auto cell_id = static_cast<std::uint32_t>(cell.local_id);
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
     Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
@@ -852,230 +751,40 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         segment_end = ReflectPoint(segment_end, plane);
       }
 
-    double remaining_distance = (segment_end - segment_start).Norm();
-    if (remaining_distance <= tolerance)
+    if ((segment_end - segment_start).Norm() <= tolerance)
       continue;
 
-    Vector3 segment_omega = (segment_end - segment_start).Normalized();
-    if (interval > 0 and all_cells_convex_)
+    const Vector3 segment_omega = (segment_end - segment_start).Normalized();
+    if (interval > 0)
     {
       // A fold can land where a reflecting boundary meets an internal face or edge. The reflected
-      // segment may then enter a different incident cell than the segment that reached the fold.
-      const double probe_distance =
-        std::min(0.5 * remaining_distance, cell_sizes_[cell_id] * 1.0e-8);
-      const Vector3 probe = segment_start + probe_distance * segment_omega;
-      const auto contains_probe = [this, &probe](const Cell& candidate)
-      {
-        const double point_tolerance = cell_sizes_[candidate.local_id] * 1.0e-10;
-        return std::all_of(candidate.faces.begin(),
-                           candidate.faces.end(),
-                           [&probe, point_tolerance](const CellFace& face)
-                           { return face.normal.Dot(probe - face.centroid) <= point_tolerance; });
-      };
-      if (not contains_probe(grid_->GetLocalCell(cell_id)))
-      {
-        const auto containing_cell = std::find_if(grid_->GetLocalCells().begin(),
-                                                  grid_->GetLocalCells().end(),
-                                                  [&contains_probe](const auto& candidate)
-                                                  { return contains_probe(*candidate); });
-        OpenSnLogicalErrorIf(containing_cell == grid_->GetLocalCells().end(),
-                             GetName() +
-                               ": reflected image-source ray could not locate its re-entry cell.");
-        cell_id = (*containing_cell)->local_id;
-      }
+      // segment continues in the cell that it enters there.
+      const auto entered = segment_tracer_->LocateAhead(cell_id, segment_start, segment_omega);
+      OpenSnLogicalErrorIf(not entered,
+                           GetName() +
+                             ": reflected image-source ray could not locate its re-entry cell.");
+      cell_id = *entered;
     }
-    Vector3 line_point = segment_start;
-    unsigned int num_relocations = 0;
-    while (remaining_distance > tolerance)
+
+    traced.clear();
+    if (not segment_tracer_->Trace(cell_id, segment_start, segment_end, traced))
     {
-      double dist_in_cell = NAN;
-      Vector3 exit_point;
-      uint64_t dest_neighbor = 0;
-      bool destination_has_neighbor = false;
-      uint32_t destination_face_index = 0;
-
-      if (use_fast_trace_)
-      {
-        // Fast path: precomputed flat face vertex data -- no std::map traversal.
-        const double cell_size = cell_sizes_[cell_id];
-        const double back_tol = cell_size * 1.0e-10;
-        const uint32_t face_off = cell_face_offsets_[cell_id];
-        const uint32_t n_faces = cell_num_faces_[cell_id];
-
-        bool found = false;
-        dist_in_cell = std::numeric_limits<double>::max();
-        for (uint32_t f = 0; f < n_faces; ++f)
-        {
-          const auto& fv = all_face_verts_[face_off + f];
-          const auto& v2 = fv.centroid;
-          const uint32_t ns = fv.num_sides;
-          for (uint32_t s = 0; s < ns; ++s)
-          {
-            const auto& v0 = fv.verts[s];
-            const auto& v1 = fv.verts[s + 1 < ns ? s + 1 : 0];
-            if ((v1 - v0).Cross(v2 - v0).Dot(segment_omega) < 0.0)
-              continue;
-            Vector3 candidate;
-            if (CheckLineIntersectTriangle2(v0, v1, v2, line_point, segment_omega, candidate))
-            {
-              const double d = (candidate - line_point).Norm();
-              if (d > back_tol and d < dist_in_cell)
-              {
-                exit_point = candidate;
-                dist_in_cell = d;
-                dest_neighbor = fv.neighbor_id;
-                destination_has_neighbor = grid_->GetLocalCell(cell_id).faces[f].has_neighbor;
-                destination_face_index = f;
-                found = true;
-              }
-            }
-          }
-        }
-
-        if (not found)
-        {
-          // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
-          auto trace_point = line_point;
-          auto trace_direction = segment_omega;
-          const auto oi =
-            ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), trace_point, trace_direction);
-          if (oi.particle_lost)
-          {
-            // The ray leaves this convex cell exactly through an edge or vertex, or it reached
-            // the cell through an edge or vertex and does not enter it. The nearest face plane
-            // ahead of the ray gives the exit in the first case. In the second case no face
-            // plane lies ahead, and the ray continues from the cell that contains a point just
-            // ahead of it.
-            const auto& current_cell = grid_->GetLocalCell(cell_id);
-            double plane_distance = std::numeric_limits<double>::max();
-            uint32_t plane_face = 0;
-            for (uint32_t f = 0; f < n_faces; ++f)
-            {
-              const auto& face = current_cell.faces[f];
-              const double cosine = face.normal.Dot(segment_omega);
-              if (cosine <= 0.0)
-                continue;
-              const double distance = face.normal.Dot(face.centroid - line_point) / cosine;
-              if (distance < plane_distance)
-              {
-                plane_distance = distance;
-                plane_face = f;
-              }
-            }
-            if (plane_distance <= back_tol or plane_distance == std::numeric_limits<double>::max())
-            {
-              OpenSnLogicalErrorIf(num_relocations >= max_ray_relocations,
-                                   GetName() + ": ray lost in fast-trace fallback.");
-              cell_id = LocateCellAhead(line_point, segment_omega, remaining_distance, cell_id);
-              ++num_relocations;
-              continue;
-            }
-            dist_in_cell = plane_distance;
-            exit_point = line_point + plane_distance * segment_omega;
-            dest_neighbor = current_cell.faces[plane_face].neighbor_id;
-            destination_has_neighbor = current_cell.faces[plane_face].has_neighbor;
-            destination_face_index = plane_face;
-          }
-          else
-          {
-            dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
-            exit_point = oi.pos_f;
-            dest_neighbor = oi.destination_face_neighbor;
-            destination_has_neighbor =
-              grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
-            destination_face_index = oi.destination_face_index;
-          }
-        }
-      }
-      else
-      {
-        // Original path: used for non-convex meshes or faces with >max_sides vertices.
-        auto trace_point = line_point;
-        auto trace_direction = segment_omega;
-        const auto oi =
-          ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), trace_point, trace_direction);
-        OpenSnLogicalErrorIf(oi.particle_lost,
-                             GetName() + ": ray lost in mesh during segment traversal.");
-        dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
-        exit_point = oi.pos_f;
-        dest_neighbor = oi.destination_face_neighbor;
-        destination_has_neighbor =
-          grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
-        destination_face_index = oi.destination_face_index;
-      }
-
-      const double endpoint_tolerance = std::max(tolerance, cell_sizes_[cell_id] * 1.0e-10);
-      const auto& destination_face = grid_->GetLocalCell(cell_id).faces[destination_face_index];
-      if (not destination_has_neighbor)
-      {
-        // TraceRay can nudge its working origin when a ray lies on a face or edge. Recompute a
-        // boundary hit from the unchanged analytic ray and the boundary-face plane so the nudge
-        // cannot shorten a segment ending on a reflecting plane.
-        const double denominator = destination_face.normal.Dot(segment_omega);
-        if (std::abs(denominator) > endpoint_tolerance)
-        {
-          const double boundary_distance =
-            destination_face.normal.Dot(destination_face.centroid - line_point) / denominator;
-          if (boundary_distance > endpoint_tolerance)
-            dist_in_cell = boundary_distance;
-        }
-      }
-
-      // Keep the traversal on the analytic segment. Reusing an intersection point computed from
-      // a face triangulation can accumulate transverse roundoff over many polyhedral cells.
-      exit_point = line_point + dist_in_cell * segment_omega;
-      const double endpoint_error = (exit_point - segment_end).Norm();
-      const bool endpoint_on_destination_face =
-        not destination_has_neighbor and
-        std::abs(destination_face.normal.Dot(segment_end - destination_face.centroid)) <=
-          endpoint_tolerance;
-      const bool reaches_segment_end = remaining_distance <= dist_in_cell + endpoint_tolerance or
-                                       endpoint_error <= endpoint_tolerance or
-                                       endpoint_on_destination_face;
-      OpenSnLogicalErrorIf(
-        not destination_has_neighbor and not reaches_segment_end,
-        GetName() + ": reflected image-source ray left the mesh " + std::to_string(endpoint_error) +
-          " from its segment endpoint. target=" + qp_xyz.PrintStr() +
-          ", image=" + pt_loc.PrintStr() + ", segment_start=" + segment_start.PrintStr() +
-          ", segment_end=" + segment_end.PrintStr() + ", hit=" + exit_point.PrintStr() +
-          ", cell=" + std::to_string(cell_id) + ".");
-      const double distance_in_cell = reaches_segment_end ? remaining_distance : dist_in_cell;
-      if (distance_in_cell <= tolerance and all_cells_convex_ and
-          num_relocations < max_ray_relocations)
-      {
-        // A ray that passes within roundoff of an edge or vertex can be handed to a cell that it
-        // only touches, so no exit lies ahead of it in that cell. Continue from the cell that
-        // contains a point just ahead on the ray, without advancing the ray.
-        cell_id = LocateCellAhead(line_point, segment_omega, remaining_distance, cell_id);
-        ++num_relocations;
-        continue;
-      }
-      OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
-                           GetName() + ": reflected image-source ray failed to advance.");
-      scratch_segs.emplace_back(cell_id, distance_in_cell);
-      num_relocations = 0;
-      remaining_distance -= distance_in_cell;
-      if (reaches_segment_end or remaining_distance <= tolerance)
-        break;
-
-      if (use_fast_trace_)
-      {
-        // O(1) unordered_map lookup replaces two O(log N) std::map calls.
-        auto it = global_to_local_id_.find(dest_neighbor);
-        OpenSnLogicalErrorIf(
-          it == global_to_local_id_.end(),
-          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = it->second;
-      }
-      else
-      {
-        OpenSnLogicalErrorIf(
-          not grid_->IsCellLocal(dest_neighbor),
-          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = grid_->GetGlobalCell(dest_neighbor).local_id;
-      }
-      line_point = exit_point;
+      OpenSnLogicalErrorIf(not source_point.reflection_planes.empty(),
+                           GetName() +
+                             ": reflected image-source ray left the mesh before reaching "
+                             "its source. target=" +
+                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() + ".");
+      // The line to the source leaves a non-convex domain. Through a vacuum boundary, the source
+      // contributes no uncollided flux at this point.
+      ++rays_left_mesh_;
+      scratch_mfp.assign(num_groups_, std::numeric_limits<double>::infinity());
+      phi_out.assign(num_groups_, 0.0);
+      return;
     }
+    for (const auto& segment : traced)
+      scratch_segs.emplace_back(segment.cell_local_id, segment.length);
+    if (not traced.empty())
+      cell_id = traced.back().cell_local_id;
   }
 
   scratch_mfp.assign(num_groups_, 0.0);
@@ -1117,7 +826,6 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
   {
     try
     {
-      RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
       double local_removal = 0.0;
       double local_outflow = 0.0;
       // Pre-allocate scratch buffers once per thread to avoid heap allocation in the hot loop.
@@ -1147,14 +855,8 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
-            RaytraceLineInto(ray_tracer,
-                             cell,
-                             qp_xyz,
-                             source_point,
-                             phi_qp,
-                             scratch_segs,
-                             scratch_bp,
-                             scratch_mfp);
+            RaytraceLineInto(
+              cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
               const double integrand = fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -1224,14 +926,8 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
               const auto omega = ComputeOmega(source_point.location, qp_xyz);
               const double integrand = omega.Dot(face.normal) * fe_srf_data.JxW(qp);
-              RaytraceLineInto(ray_tracer,
-                               cell,
-                               qp_xyz,
-                               source_point,
-                               phi_qp,
-                               scratch_segs,
-                               scratch_bp,
-                               scratch_mfp);
+              RaytraceLineInto(
+                cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
               for (size_t g = 0; g < num_groups_; ++g)
                 local_outflow += phi_qp[g] * integrand;
             }
@@ -1321,8 +1017,6 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   const Vector3& pt_loc = source_point.location;
   const std::vector<double>& strength = source_point.strength;
 
-  RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
-
   // Face leakages
   std::unordered_map<size_t, std::vector<std::vector<double>>> leakages;
   std::vector<std::vector<double>> cell_leakage;
@@ -1400,7 +1094,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                   source_point.subscribers.end(),
                   [c](const auto& subscriber) { return subscriber.cell_local_id == c; });
     if (is_source_cell or is_exact_neighbor[c])
-      exact_integrals = IntegrateCellExactly(ray_tracer, cell, source_point);
+      exact_integrals = IntegrateCellExactly(cell, source_point);
     if (is_exact_neighbor[c])
       ++(exact_integrals ? exact_neighbor_count : exact_neighbor_fallback_count);
     if (is_source_cell)
@@ -1437,7 +1131,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         {
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
-          const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+          const auto phi_qp = RaytraceLine(cell, qp_xyz, source_point);
           const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
@@ -1569,7 +1263,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         // Raytrace to point
         Vector3 qp_xyz = fe_vol_data.QPointXYZ(qp);
 
-        std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+        std::vector<double> phi_qp = RaytraceLine(cell, qp_xyz, source_point);
 
         for (unsigned int i = 0; i < cell_num_nodes; ++i)
         {
@@ -1790,8 +1484,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 }
 
 std::vector<double>
-UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
-                                const Cell& cell,
+UncollidedProblem::RaytraceLine(const Cell& cell,
                                 const Vector3& qp_xyz,
                                 const SourcePoint& source_point,
                                 const double tolerance)
@@ -1803,7 +1496,7 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   scratch_segs.reserve(16);
   scratch_bp.reserve(8);
   RaytraceLineInto(
-    ray_tracer, cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
+    cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
   return phi;
 }
 
@@ -1972,9 +1665,7 @@ ForEachVisibleSideTriangle(const Mesh& grid,
 } // namespace
 
 std::optional<UncollidedProblem::ExactCellIntegrals>
-UncollidedProblem::IntegrateCellExactly(RayTracer& ray_tracer,
-                                        const Cell& cell,
-                                        const SourcePoint& source_point)
+UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& source_point)
 {
   const Vector3& source = source_point.location;
   const bool contains_source = std::any_of(source_point.subscribers.begin(),
@@ -2055,8 +1746,7 @@ UncollidedProblem::IntegrateCellExactly(RayTracer& ray_tracer,
             const double chord = std::max(0.0, R - R_in);
 
             // On return, scratch_mfp holds the optical depth from the source to x.
-            RaytraceLineInto(
-              ray_tracer, cell, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
+            RaytraceLineInto(cell, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t g = 0; g < num_groups_; ++g)
             {
               const double optical_chord = sigma_t[g] * chord;
