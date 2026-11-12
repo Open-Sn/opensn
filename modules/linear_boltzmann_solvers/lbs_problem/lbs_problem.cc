@@ -659,9 +659,10 @@ LBSProblem::GetOptionsBlock()
     "k-eigenvalue solver.");
   params.AddOptionalParameter("ags_tolerance", 1.0e-6, "Across-groupset iterations tolerance.");
   params.AddOptionalParameter("ags_convergence_check",
-                              "l2",
-                              "Type of convergence check for AGS iterations. Valid values are "
-                              "`\"l2\"` and '\"pointwise\"'");
+                              "pointwise",
+                              "Type of convergence check for AGS iterations: `\"pointwise\"`, the "
+                              "largest change of any flux moment relative to the local flux, or "
+                              "`\"l2\"`, the absolute L2 norm of the change of all flux moments.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "

@@ -81,14 +81,18 @@ OnePassIsExact(const LBSProblem& lbs_problem,
   if (std::find(groupset_of.begin(), groupset_of.end(), wgs_solvers.size()) != groupset_of.end())
     return false;
 
+  // Cross sections may have more groups than the problem simulates. Only transfers between
+  // simulated groups couple the groupsets.
+  const size_t num_groups = groupset_of.size();
   for (const auto& [block_id, xs] : lbs_problem.GetBlockID2XSMap())
   {
     if (across_groupset_fission and xs->IsFissionable())
       return false;
     for (const auto& transfer_matrix : xs->GetTransferMatrices(options.adjoint))
-      for (size_t g = 0; g < transfer_matrix.GetNumRows(); ++g)
+      for (size_t g = 0; g < std::min<size_t>(transfer_matrix.GetNumRows(), num_groups); ++g)
         for (const auto& [row, source_group, value] : transfer_matrix.Row(g))
-          if (value != 0.0 and groupset_of[source_group] > groupset_of[g])
+          if (value != 0.0 and source_group < num_groups and
+              groupset_of[source_group] > groupset_of[g])
             return false;
   }
   return true;

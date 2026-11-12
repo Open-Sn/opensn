@@ -1383,7 +1383,7 @@ WrapLBS(py::module& slv)
             steady-state and transient solvers, and 1 in each power iteration of
             :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
-          - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
+          - ags_convergence_check: {'pointwise', 'l2'}, default='pointwise'
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
@@ -1999,7 +1999,7 @@ WrapLBS(py::module& slv)
             steady-state and transient solvers, and 1 in each power iteration of
             :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
-          - ags_convergence_check: {'l2', 'pointwise'}, default='l2'
+          - ags_convergence_check: {'pointwise', 'l2'}, default='pointwise'
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
