@@ -18,7 +18,9 @@ class Mesh;
  * Exact traversal of straight segments through the local cells of a mesh.
  *
  * Every cell is the union of its side tetrahedra, each formed by a side triangle of a face
- * (two consecutive face vertices and the face centroid) and the cell centroid. A cell for which
+ * (two consecutive face vertices and the face centroid) and the cell centroid. This requires the
+ * cell centroid to lie on the inner side of every side triangle, as the piecewise-linear
+ * discretizations also do. The tracer rejects a cell that violates it. A cell for which
  * all of its vertices and face centroids lie on the inner side of the plane of every side
  * triangle is convex, and is the intersection of the half-spaces of its side triangles. Any
  * other cell is traced through its side tetrahedra, which are convex.
@@ -48,7 +50,9 @@ public:
   };
 
   /**
-   * Builds the planes of every local cell and the vertex-to-cell adjacency. O(cells).
+   * Builds the planes of every local cell and the vertex-to-cell adjacency. O(cells). Throws
+   * std::invalid_argument if the centroid of a non-convex cell lies on the outer side of one of
+   * its side triangles.
    *
    * With split_all_cells, every cell is traced through its side tetrahedra, as a non-convex cell
    * is. The result is the same up to round-off; the option exists to test that path on meshes of
@@ -109,11 +113,15 @@ private:
                      std::vector<std::uint32_t>* exit_neighbors,
                      double exit_tolerance) const;
 
-  /// Returns the cell that continues the ray at t, searching outward from cell.
+  /**
+   * Returns the cell that continues the ray at t, searching outward from cell. visited is
+   * scratch storage, cleared on entry, that the caller reuses across calls.
+   */
   std::optional<std::uint32_t> FindNext(std::uint32_t cell,
                                         const Ray& ray,
                                         double t,
                                         const std::vector<std::uint32_t>& exit_neighbors,
+                                        std::vector<std::uint32_t>& visited,
                                         double& exit) const;
 
   static constexpr std::uint32_t no_neighbor = std::numeric_limits<std::uint32_t>::max();
