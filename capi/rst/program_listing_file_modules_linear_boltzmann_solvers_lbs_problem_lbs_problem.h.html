@@ -487,8 +487,12 @@
 <span class="cm">   * It returns ``true`` when device-allocated memory can be accessed directly by the host without</span>
 <span class="cm">   * having the driver performing implicit copies. It enables fast non-copy path for delayed flux</span>
 <span class="cm">   * in AAH sweep for both local and non-local.</span>
+<span class="cm">   *</span>
+<span class="cm">   * The current device is queried on the first call, not during static initialization, so loading</span>
+<span class="cm">   * libopensn does not initialize CUDA or HIP. Initializing CUDA while the library loads disables</span>
+<span class="cm">   * compute-sanitizer, which must attach first.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">has_integrated_memory</span><span class="p">;</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasIntegratedMemory</span><span class="p">();</span>
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Input parameters based construction.</span>

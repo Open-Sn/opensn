@@ -751,6 +751,14 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem19HasIntegratedMemoryEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1af1bd470e0feb82d0c128b708c3a66220"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasIntegratedMemory</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem19HasIntegratedMemoryEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Flag indicating if GPU and CPU can directly access memory of each other. </p>
+<p>It returns <code class="docutils literal notranslate"><span class="pre">true</span></code> when device-allocated memory can be accessed directly by the host without having the driver performing implicit copies. It enables fast non-copy path for delayed flux in AAH sweep for both local and non-local.</p>
+<p>The current device is queried on the first call, not during static initialization, so loading libopensn does not initialize CUDA or HIP. Initializing CUDA while the library loads disables compute-sanitizer, which must attach first. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem18GetInputParametersEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a59eb5cb82c103c26d4bfba9868810c63"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_input_parameters.html#_CPPv4N6opensn15InputParametersE" title="opensn::InputParameters"><span class="n"><span class="pre">InputParameters</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetInputParameters</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem18GetInputParametersEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the input parameters for this object. </p>
@@ -778,13 +786,6 @@
 <p class="admonition-title">Note</p>
 <p>Memory error will be thrown when MPI library is not compiled with GPU support. </p>
 </div>
-</dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem21has_integrated_memoryE">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a4806fe25c44d555e6de28358484a1e0f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">has_integrated_memory</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem21has_integrated_memoryE" title="Link to this definition"></a><br /></dt>
-<dd><p>Flag indicating if GPU and CPU can directly access memory of each other. </p>
-<p>It returns <code class="docutils literal notranslate"><span class="pre">true</span></code> when device-allocated memory can be accessed directly by the host without having the driver performing implicit copies. It enables fast non-copy path for delayed flux in AAH sweep for both local and non-local. </p>
 </dd></dl>
 
 <dl class="cpp var">
