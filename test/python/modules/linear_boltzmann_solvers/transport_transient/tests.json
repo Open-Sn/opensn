@@ -589,6 +589,7 @@
     "file": "transient_zero_3d_1g_pulse_inf_med.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient pulse",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -602,6 +603,7 @@
     "file": "transient_zero_3d_1g_v1_inf_med.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -615,6 +617,7 @@
     "file": "transient_zero_3d_2g_inf_med_downscatter.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -634,6 +637,7 @@
     "file": "transient_zero_3d_1g_v0.5_inf_med.py",
     "comment": "3D unstructured mesh, 1 group, vel = 0.5, zero-init transient",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -647,6 +651,7 @@
     "file": "transient_zero_3d_1g_v1_inf_med_swap.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient, swap xs at 0.5s",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -660,6 +665,7 @@
     "file": "transient_zero_3d_1g_v2_inf_med.py",
     "comment": "3D unstructured mesh, 1 group, vel = 2.0, zero-init transient",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -673,6 +679,7 @@
     "file": "transient_zero_3d_2g_inf_med_downscatter_swap.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, swap xs at 0.5s",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -692,6 +699,7 @@
     "file": "transient_zero_3d_2g_inf_med_pydrvr.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, Python time step loop",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -711,6 +719,7 @@
     "file": "transient_zero_3d_2g_inf_med_pydrvr_cbc.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, Python time step loop (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -730,6 +739,7 @@
     "file": "transient_zero_3d_2g_inf_med_pydrvr_ramp_dt.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, Python time step loop, ramp dt",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -762,6 +772,7 @@
     "file": "transient_zero_3d_openmc_xs_cbc.py",
     "comment": "3D orthogonal mesh, 30 group, zero-init transient, OpenMC cross sections (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1167,6 +1178,7 @@
     "file": "transient_zero_3d_1g_ramp_source_analytic.py",
     "comment": "Zero-mode transient with ramped source and analytic check",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "FloatCompare",
@@ -1545,6 +1557,7 @@
     "file": "transient_zero_3d_1g_pulse_inf_med_cbc.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient pulse (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1558,6 +1571,7 @@
     "file": "transient_zero_3d_1g_ramp_source_analytic_cbc.py",
     "comment": "Zero-mode transient with ramped source and analytic check (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "FloatCompare",
@@ -1585,6 +1599,7 @@
     "file": "transient_zero_3d_1g_v1_inf_med_cbc.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1598,6 +1613,7 @@
     "file": "transient_zero_3d_1g_v1_inf_med_swap_cbc.py",
     "comment": "3D unstructured mesh, 1 group, vel = 1.0, zero-init transient, swap xs at 0.5s (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1611,6 +1627,7 @@
     "file": "transient_zero_3d_1g_v2_inf_med_cbc.py",
     "comment": "3D unstructured mesh, 1 group, vel = 2.0, zero-init transient (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1624,6 +1641,7 @@
     "file": "transient_zero_3d_2g_inf_med_downscatter_cbc.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1643,6 +1661,7 @@
     "file": "transient_zero_3d_2g_inf_med_downscatter_swap_cbc.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, swap xs at 0.5s (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1662,6 +1681,7 @@
     "file": "transient_zero_3d_2g_inf_med_pydrvr_ramp_dt_cbc.py",
     "comment": "3D unstructured mesh, 2 group, downscatter, zero-init transient, Python time step loop, ramp dt (CBC)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",

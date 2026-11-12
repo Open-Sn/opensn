@@ -151,7 +151,7 @@
     "env": {
       "OPENSN_NUM_THREADS": 4
     },
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -303,7 +303,7 @@
     "file": "uncollided_3d_unstructured_analytic.py",
     "comment": "3D tetrahedral scalar-flux mesh convergence with exact near-source leakage",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",

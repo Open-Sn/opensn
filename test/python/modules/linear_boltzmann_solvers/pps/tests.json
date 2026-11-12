@@ -15,7 +15,7 @@
     "file": "transport_3d.py",
     "comment": "Computing volumetric post-processors on 3D domain",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "ErrorCode",

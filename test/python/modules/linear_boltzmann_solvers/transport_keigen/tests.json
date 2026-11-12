@@ -1134,6 +1134,7 @@
     "file": "keigenvalue_transport_3d_2g_qblock_8rank.py",
     "comment": "8-rank 3D 2G heterogeneous qblock benchmark using straight power iteration",
     "num_procs": 8,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1225,6 +1226,7 @@
     "file": "keigenvalue_transport_3d_2g_unstructured_8rank.py",
     "comment": "8-rank 3D 2G heterogeneous extruded-unstructured benchmark using straight power iteration",
     "num_procs": 8,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
