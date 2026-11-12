@@ -70,9 +70,8 @@ public:
   void SetCells(std::vector<Cell>&& cells,
                 const std::vector<std::vector<std::uint64_t>>& cell_connectivity);
 
-  void
-  SetCellFaces(std::vector<CellFace>&& faces,
-               const std::vector<std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+  void SetCellFaces(std::vector<CellFace>&& faces,
+                    std::vector<std::vector<std::vector<std::uint64_t>>>&& cell_face_connectivity);
 
   const std::vector<std::vector<std::vector<std::uint64_t>>>& GetCellFaceConnectivity() const
   {
@@ -87,6 +86,9 @@ public:
   const CellFace& GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx) const;
 
   CellFace& GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_idx);
+
+  std::span<const std::uint64_t> GetCellFaceConnectivity(std::size_t cell_global_id,
+                                                         std::uint32_t face_idx) const;
 
   std::span<const uint64_t> GetCellConnectivity(std::uint64_t cell_global_id) const;
 

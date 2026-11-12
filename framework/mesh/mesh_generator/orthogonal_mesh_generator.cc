@@ -770,7 +770,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned1DOrthoMesh(const std::vector<double
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
-  umesh->SetCellFaces(std::move(cell_faces), cell_face_connect);
+  umesh->SetCellFaces(std::move(cell_faces), std::move(cell_face_connect));
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
@@ -909,7 +909,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned2DOrthoMesh(const std::vector<double
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
-  umesh->SetCellFaces(std::move(cell_faces), cell_face_connect);
+  umesh->SetCellFaces(std::move(cell_faces), std::move(cell_face_connect));
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();
@@ -1097,7 +1097,7 @@ OrthogonalMeshGenerator::CreateUnpartitioned3DOrthoMesh(const std::vector<double
   }
 
   umesh->SetCells(std::move(cells), cell_connect);
-  umesh->SetCellFaces(std::move(cell_faces), cell_face_connect);
+  umesh->SetCellFaces(std::move(cell_faces), std::move(cell_face_connect));
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();

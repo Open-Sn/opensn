@@ -448,7 +448,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (cell.has_value())
         new_cells.emplace_back(cell.value());
     mesh->SetCells(std::move(new_cells), cell_connect);
-    mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
+    mesh->SetCellFaces(std::move(mesh_faces), std::move(cell_face_connect));
   } // If global-ids available
   else
   {
@@ -511,7 +511,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
     }
 
     mesh->SetCells(std::move(raw_cells), cell_connect);
-    mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
+    mesh->SetCellFaces(std::move(mesh_faces), std::move(cell_face_connect));
   } // if no global-ids
 
   mesh->ComputeBoundingBox();

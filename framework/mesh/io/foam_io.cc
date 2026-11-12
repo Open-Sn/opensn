@@ -878,7 +878,7 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   mesh->SetDimension(3);
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(cells), cell_connect);
-  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), std::move(cell_face_connect));
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

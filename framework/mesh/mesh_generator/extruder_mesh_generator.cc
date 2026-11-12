@@ -277,7 +277,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
   umesh->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   umesh->SetExtruded(true);
   umesh->SetCells(std::move(cells), cell_connect);
-  umesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
+  umesh->SetCellFaces(std::move(mesh_faces), std::move(cell_face_connect));
   umesh->ComputeCentroids();
   umesh->CheckQuality();
   umesh->BuildMeshConnectivity();

@@ -396,7 +396,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(raw_cells), cell_connect);
-  mesh->SetCellFaces(std::move(mesh_faces), cell_face_connect);
+  mesh->SetCellFaces(std::move(mesh_faces), std::move(cell_face_connect));
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -421,7 +421,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       auto& face = cell_faces[f];
       if (not face.has_neighbor)
       {
-        const auto& face_vids = cell_face_connect[cell_idx][f];
+        const auto& face_vids = mesh->GetCellFaceConnectivity(cell_idx, f);
         std::set<uint64_t> key(face_vids.begin(), face_vids.end());
 
         auto it = bnd_cell_to_bnd_id_map.find(key);

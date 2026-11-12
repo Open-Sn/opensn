@@ -217,6 +217,12 @@ UnpartitionedMesh::GetCellFace(std::uint64_t cell_global_id, std::uint32_t face_
     throw std::out_of_range("Cell local id out of range");
 }
 
+std::span<const std::uint64_t>
+UnpartitionedMesh::GetCellFaceConnectivity(std::size_t cell_global_id, std::uint32_t face_idx) const
+{
+  return cell_face_connectivity_[cell_global_id][face_idx];
+}
+
 void
 UnpartitionedMesh::ComputeCentroids()
 {
@@ -447,7 +453,7 @@ UnpartitionedMesh::SetCells(std::vector<Cell>&& cells,
 void
 UnpartitionedMesh::SetCellFaces(
   std::vector<CellFace>&& faces,
-  const std::vector<std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity)
+  std::vector<std::vector<std::vector<std::uint64_t>>>&& cell_face_connectivity)
 {
   faces_ = std::move(faces);
   face_connect_ofst_.push_back(0);
@@ -464,7 +470,7 @@ UnpartitionedMesh::SetCellFaces(
                               std::to_string(cell.global_id));
     }
   }
-  cell_face_connectivity_ = cell_face_connectivity;
+  cell_face_connectivity_ = std::move(cell_face_connectivity);
 }
 
 void

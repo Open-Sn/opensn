@@ -336,11 +336,6 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(block_data[main_block_id].cells),
                  block_data[main_block_id].cell_connect);
-  mesh->SetCellFaces(std::move(block_data[main_block_id].mesh_faces),
-                     block_data[main_block_id].cell_face_connect);
-  mesh->ComputeCentroids();
-  mesh->CheckQuality();
-  mesh->BuildMeshConnectivity();
 
   // Set boundary ids
   if (not bndry_block_ids.empty())
@@ -397,6 +392,12 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       ++bndry_id;
     } // for boundary block
   }
+
+  mesh->SetCellFaces(std::move(block_data[main_block_id].mesh_faces),
+                     std::move(block_data[main_block_id].cell_face_connect));
+  mesh->ComputeCentroids();
+  mesh->CheckQuality();
+  mesh->BuildMeshConnectivity();
 
   return mesh;
 }
