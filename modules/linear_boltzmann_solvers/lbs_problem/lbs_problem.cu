@@ -40,7 +40,12 @@ CheckIntegratedMemory()
 
 } // namespace
 
-const bool LBSProblem::has_integrated_memory = CheckIntegratedMemory();
+bool
+LBSProblem::HasIntegratedMemory()
+{
+  static const bool has_integrated_memory = CheckIntegratedMemory();
+  return has_integrated_memory;
+}
 
 void
 LBSProblem::InitializeGPUExtras()
