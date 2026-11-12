@@ -7,13 +7,14 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/raytrace/raytracer.h"
+#include "framework/mesh/raytrace/segment_tracer.h"
 #include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
 #include "framework/data_types/vector3.h"
 #include "hdf5.h"
 #include <atomic>
+#include <memory>
 #include <mutex>
 #include <optional>
 #include <string>
@@ -108,8 +109,7 @@ protected:
 
   void ProjectReflectedImageSources(unsigned int progress_interval);
 
-  std::vector<double> RaytraceLine(RayTracer& ray_tracer,
-                                   const Cell& cell,
+  std::vector<double> RaytraceLine(const Cell& cell,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
                                    double tolerance = 1.0e-12);
@@ -118,8 +118,7 @@ protected:
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
   /// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.
-  void RaytraceLineInto(RayTracer& ray_tracer,
-                        const Cell& cell,
+  void RaytraceLineInto(const Cell& cell,
                         const Vector3& qp_xyz,
                         const SourcePoint& source_point,
                         std::vector<double>& phi_out,
@@ -127,21 +126,6 @@ protected:
                         std::vector<double>& scratch_bp,
                         std::vector<double>& scratch_mfp,
                         double tolerance = 1.0e-12);
-
-  /// Return the local ID of the convex cell that contains the point a small fraction of a cell
-  /// size beyond @p point along @p omega. Used to continue a ray that passed within roundoff of
-  /// an edge or vertex of @p cell_id and was handed to a cell that it does not enter.
-  size_t LocateCellAhead(const Vector3& point,
-                         const Vector3& omega,
-                         double remaining_distance,
-                         size_t cell_id) const;
-
-  /// Maximum number of consecutive times a ray may be moved to the cell ahead of it without
-  /// advancing.
-  static constexpr unsigned int max_ray_relocations = 8;
-  /// Distance ahead of a stalled ray, as a fraction of the cell size, of the point that locates
-  /// the next cell.
-  static constexpr double ray_relocation_probe_fraction = 1.0e-6;
 
   /// Integrals of the uncollided flux of a point source over a cell.
   struct ExactCellIntegrals
@@ -173,8 +157,8 @@ protected:
    * the source, when a face is not directly visible from it. Also returns std::nullopt when the
    * source is on the inner side of a face that is not outgoing.
    */
-  std::optional<ExactCellIntegrals>
-  IntegrateCellExactly(RayTracer& ray_tracer, const Cell& cell, const SourcePoint& source_point);
+  std::optional<ExactCellIntegrals> IntegrateCellExactly(const Cell& cell,
+                                                         const SourcePoint& source_point);
 
   /**
    * Returns the fraction of the full solid angle that a cell subtends at a point on or in it.
@@ -222,31 +206,17 @@ protected:
   std::vector<CellRegion> cell_regions_;
 
   std::vector<double> destination_phi_;
-  /// Bounding-box diagonal for each local cell, pre-computed once for RayTracer tolerance scaling.
+  /// Bounding-box diagonal of each local cell, which scales geometric tolerances.
   std::vector<double> cell_sizes_;
   /// False when the mesh contains any geometrically non-convex cell; true for standard hex/tet
   /// meshes.
   bool all_cells_convex_ = true;
 
-  /// Precomputed face vertex data -- bypasses the std::map-backed VertexHandler in the hot path.
-  /// Supports faces with up to max_sides vertices (covers common polyhedral mesh faces).
-  struct FaceVertData
-  {
-    static constexpr uint32_t max_sides = 8;
-    Vector3 verts[max_sides]; // inline vertex positions (no tree traversal)
-    Vector3 centroid;
-    uint64_t neighbor_id = 0;
-    uint32_t num_sides = 0;
-    uint32_t pad = 0;
-  };
-  std::vector<FaceVertData>
-    all_face_verts_; // flat: [cell_0_face_0, cell_0_face_1, ..., cell_1_face_0, ...]
-  std::vector<uint32_t> cell_face_offsets_; // [num_cells] first face index in all_face_verts_
-  std::vector<uint32_t> cell_num_faces_;    // [num_cells] number of faces per cell
-  /// O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step.
-  std::unordered_map<uint64_t, uint32_t> global_to_local_id_;
-  /// True when all_cells_convex_ and all faces have <= FaceVertData::max_sides vertices.
-  bool use_fast_trace_ = false;
+  /// Exact traversal of the rays from quadrature points to the point sources.
+  std::unique_ptr<SegmentTracer> segment_tracer_;
+  /// Rays from quadrature points to a point source that left the mesh before reaching it. In a
+  /// non-convex domain with vacuum boundaries their uncollided flux is zero.
+  mutable std::atomic<size_t> rays_left_mesh_ = 0;
 
   unsigned int ell_max_ = 0;
   /// Integrate the leakages and volume integrals of the cells that share a vertex with a point
