@@ -691,7 +691,7 @@
     "file": "transport_1d_cepxs_iv1a.py",
     "comment": "SAND89-2211 IV.1.A, 130-group electron-photon-positron tungsten benchmark",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "outfileprefix": "transport_1d_cepxs_iv1a",
     "checks": [
       {

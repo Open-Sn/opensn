@@ -162,6 +162,7 @@
     "file": "transport_2d_cyl_disk_leakage_reflecting_bcs.py",
     "comment": "RZ disk leakage: reflecting z, vacuum side compared to 3D reference",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -199,6 +200,7 @@
     "file": "transport_2d_cyl_disk_source_vacuum_hdpe_struct.py",
     "comment": "RZ disk fixed-source vacuum boundaries (HDPE OpenMC XS, PHI_MAX reference)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -225,6 +227,7 @@
     "file": "transport_2d_cyl_2g_scatter_vacuum_umed.py",
     "comment": "RZ gmsh unstructured 2g scatter vacuum (medium)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -238,6 +241,7 @@
     "file": "transport_2d_cyl_2g_scatter_vacuum_ufine.py",
     "comment": "RZ gmsh unstructured 2g scatter vacuum (fine)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",

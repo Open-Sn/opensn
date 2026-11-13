@@ -165,7 +165,7 @@
   {
     "file": "cf252_flux_export.py",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "ErrorCode",
