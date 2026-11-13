@@ -4,9 +4,15 @@
 #include "framework/runtime.h"
 #include "test/unit/common/mesh_builders.h"
 #include <gtest/gtest.h>
+#include <chrono>
 #include <filesystem>
+#include <fstream>
+#include <iterator>
 #include <limits>
 #include <map>
+#include <memory>
+#include <string>
+#include <vector>
 
 using namespace opensn;
 namespace fs = std::filesystem;
@@ -120,5 +126,135 @@ TEST(MeshIOTest, ReadGmshPrismsAndPyramids)
     EXPECT_EQ(counts[CellType::PYRAMID], 9);
     EXPECT_NEAR(volume, 2.5, 1.0e-12);
     EXPECT_NEAR(boundary_area, 12.0, 1.0e-12);
+  }
+}
+
+// Gmsh numbers physical groups separately in each dimension, so a volume group can have the same
+// tag as a boundary group. Here the gmsh_hybrid_*.msh files get a physical volume name "solid"
+// with the tag (2) of the physical surface "outer", listed before or after it. The boundary must
+// keep its name, and every boundary face must belong to it.
+TEST(MeshIOTest, ReadGmshPhysicalNamesWithSharedTags)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const auto meshes_loc = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh";
+  const std::string original = "$PhysicalNames\n1\n2 2 \"outer\"\n$EndPhysicalNames\n";
+  const std::vector<std::string> replacements = {
+    "$PhysicalNames\n2\n2 2 \"outer\"\n3 2 \"solid\"\n$EndPhysicalNames\n",
+    "$PhysicalNames\n2\n3 2 \"solid\"\n2 2 \"outer\"\n$EndPhysicalNames\n"};
+  for (const auto* name :
+       {"gmsh_hybrid_v22.msh", "gmsh_hybrid_v41.msh", "gmsh_hybrid_v41_binary.msh"})
+    for (size_t r = 0; r < replacements.size(); ++r)
+    {
+      SCOPED_TRACE(std::string(name) + ", order " + std::to_string(r));
+      std::string contents;
+      {
+        std::ifstream in(meshes_loc / name, std::ios::binary);
+        ASSERT_TRUE(in.is_open());
+        contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+      }
+      const auto position = contents.find(original);
+      ASSERT_NE(position, std::string::npos);
+      contents.replace(position, original.size(), replacements[r]);
+
+      const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+      const auto path =
+        fs::temp_directory_path() / ("opensn_gmsh_shared_tags_" + std::to_string(now) + "_" + name);
+      {
+        std::ofstream out(path, std::ios::binary);
+        out << contents;
+      }
+      std::shared_ptr<Mesh> grid;
+      try
+      {
+        grid = BuildMeshFromFile(path);
+      }
+      catch (...)
+      {
+        fs::remove(path);
+        throw;
+      }
+      fs::remove(path);
+
+      uint64_t outer_id = std::numeric_limits<uint64_t>::max();
+      for (const auto& [id, boundary_name] : grid->GetBoundaryIDMap())
+      {
+        EXPECT_NE(boundary_name, "solid");
+        if (boundary_name == "outer")
+          outer_id = id;
+      }
+      EXPECT_EQ(outer_id, 2);
+      if (outer_id != 2)
+        continue;
+      size_t num_boundary_faces = 0;
+      for (const auto& cell : grid->GetLocalCells())
+        for (const auto& face : cell->faces)
+          if (not face.has_neighbor)
+          {
+            EXPECT_EQ(face.neighbor_id, outer_id);
+            ++num_boundary_faces;
+          }
+      EXPECT_GT(num_boundary_faces, 0);
+    }
+}
+
+/// In MSH 4.1, the cells of an entity without a physical tag get block ID 0, and the cells of an
+/// entity with several physical tags get the first. The ASCII reader must not read the number of
+/// bounding entities that follows an empty tag list as a tag.
+TEST(MeshIOTest, ReadGmshUntaggedAndMultiTaggedEntities)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const auto source = fs::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "gmsh_hybrid_v41.msh";
+  std::string contents;
+  {
+    std::ifstream in(source, std::ios::binary);
+    ASSERT_TRUE(in.is_open());
+    contents.assign(std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
+  }
+  // Volume 1 loses its physical tag. Volume 2 gets the physical tags 2 and 1. Volume 3 keeps 1.
+  const std::vector<std::pair<std::string, std::string>> edits = {
+    {" 1 1 6 -1 2 -3 4 -5 6 ", " 0 6 -1 2 -3 4 -5 6 "},
+    {" 1 1 6 -2 7 -8 9 -10 11 ", " 2 2 1 6 -2 7 -8 9 -10 11 "}};
+  for (const auto& [original, replacement] : edits)
+  {
+    const auto position = contents.find(original);
+    ASSERT_NE(position, std::string::npos);
+    contents.replace(position, original.size(), replacement);
+  }
+
+  const auto now = std::chrono::steady_clock::now().time_since_epoch().count();
+  const auto path =
+    fs::temp_directory_path() / ("opensn_gmsh_entity_tags_" + std::to_string(now) + ".msh");
+  {
+    std::ofstream out(path, std::ios::binary);
+    out << contents;
+  }
+  std::shared_ptr<Mesh> grid;
+  try
+  {
+    grid = BuildMeshFromFile(path);
+  }
+  catch (...)
+  {
+    fs::remove(path);
+    throw;
+  }
+  fs::remove(path);
+
+  // Volume 1 is x < 1, volume 2 is x > 1 and z < 1, and volume 3 is z > 1.
+  std::map<unsigned int, size_t> cells_per_block[3];
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const auto& c = cell->centroid;
+    const int volume = c.z > 1.0 ? 2 : (c.x < 1.0 ? 0 : 1);
+    ++cells_per_block[volume][cell->block_id];
+  }
+  const unsigned int expected[3] = {0, 2, 1};
+  for (int v = 0; v < 3; ++v)
+  {
+    SCOPED_TRACE("volume " + std::to_string(v + 1));
+    ASSERT_EQ(cells_per_block[v].size(), 1U);
+    EXPECT_EQ(cells_per_block[v].begin()->first, expected[v]);
   }
 }

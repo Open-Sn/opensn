@@ -10,6 +10,8 @@
 #include <cctype>
 #include <array>
 #include <cstring>
+#include <map>
+#include <string>
 #include <utility>
 
 namespace opensn
@@ -121,6 +123,17 @@ NextIsAsciiNumeric(std::ifstream& file)
   return saw_numeric;
 }
 
+/// Warn that the entities with more than one physical tag keep only the first. The cells or faces
+/// of such an entity get the first tag, and a boundary named by another tag gets no faces.
+void
+WarnMultiTagEntities(const std::string& file_name, size_t num_entities)
+{
+  if (num_entities > 0)
+    log.Log0Warning() << file_name << ": " << num_entities
+                      << " entities belong to more than one physical group. Only the first "
+                         "physical group of each entity is used.";
+}
+
 } // namespace
 
 std::shared_ptr<UnpartitionedMesh>
@@ -201,8 +214,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       break;
     }
 
-  // Map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   if (has_physical_names_section)
   {
     std::getline(file, file_line);
@@ -229,7 +243,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
         throw std::logic_error(fname + ": Failed to read physical name.");
       name = name.substr(1, name.length() - 2);
 
-      physical_names[phys_name_id] = {dim, name};
+      physical_names[{dim, phys_name_id}] = name;
     }
   }
 
@@ -250,7 +264,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   for (size_t i = 0; i < num_points; ++i)
     std::getline(file, file_line);
 
-  // Read curve, surface, and volume entities
+  // Read curve, surface, and volume entities. An entity without a physical tag maps to 0, as in
+  // the binary reader. Only the first physical tag of an entity is used.
+  size_t num_multi_tag_entities = 0;
   auto read_entity = [&](std::map<int, int>& entity_map, size_t num_entities)
   {
     for (size_t i = 0; i < num_entities; ++i)
@@ -260,8 +276,14 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       double minx = 0.0, miny = 0.0, minz = 0.0, maxx = 0.0, maxy = 0.0, maxz = 0.0;
       std::getline(file, file_line);
       iss = std::istringstream(file_line);
-      iss >> entity_tag >> minx >> miny >> minz >> maxx >> maxy >> maxz >> num_physical_tags >>
-        physical_tag;
+      if (not(iss >> entity_tag >> minx >> miny >> minz >> maxx >> maxy >> maxz >>
+              num_physical_tags))
+        throw std::logic_error(fname + ": Failed to read an entity of the $Entities section.");
+      if (num_physical_tags > 0 and not(iss >> physical_tag))
+        throw std::logic_error(fname + ": Failed to read the physical tag of entity " +
+                               std::to_string(entity_tag) + ".");
+      if (num_physical_tags > 1)
+        ++num_multi_tag_entities;
       entity_map[entity_tag] = physical_tag;
     }
   };
@@ -269,6 +291,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   read_entity(curve_entities, num_curves);
   read_entity(surface_entities, num_surfaces);
   read_entity(volume_entities, num_volumes);
+  WarnMultiTagEntities(fname, num_multi_tag_entities);
 
   // Read node data
   file.seekg(0);
@@ -588,14 +611,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   // create boundary names and IDs
   unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
-  for (auto& [id, e] : physical_names)
-  {
-    if (std::get<0>(e) == dimension - 1)
-    {
-      auto name = std::get<1>(e);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetType(UNSTRUCTURED);
   mesh->ComputeCentroids();
@@ -651,8 +669,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   log.Log() << "Making unpartitioned mesh from Gmsh file " << options.file_name
             << " (format v4.1 binary)";
 
-  // Map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   std::map<int, int> curve_entities, surface_entities, volume_entities;
   bool have_entities = false;
   bool mesh_is_2D = true;
@@ -681,7 +700,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           if (not(iss >> dim >> phys_name_id >> name))
             throw std::logic_error(fname + ": Failed to read physical name.");
           name = name.substr(1, name.length() - 2);
-          physical_names[phys_name_id] = {dim, name};
+          physical_names[{dim, phys_name_id}] = name;
         }
       }
       else
@@ -692,7 +711,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           const int dim = static_cast<int>(ReadUInt32(file));
           const int phys_name_id = static_cast<int>(ReadUInt32(file));
           std::string name = ReadBinaryString(file, data_size);
-          physical_names[phys_name_id] = {dim, name};
+          physical_names[{dim, phys_name_id}] = name;
         }
         ExpectEndSection(file, "$EndPhysicalNames");
       }
@@ -710,6 +729,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
         for (size_t i = 0; i < num_points; ++i)
           std::getline(file, line);
 
+        size_t num_multi_tag_entities = 0;
         auto read_entity = [&](std::map<int, int>& entity_map, size_t num_entities)
         {
           for (size_t i = 0; i < num_entities; ++i)
@@ -719,8 +739,15 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
             double minx = 0.0, miny = 0.0, minz = 0.0, maxx = 0.0, maxy = 0.0, maxz = 0.0;
             std::getline(file, line);
             iss = std::istringstream(line);
-            iss >> entity_tag >> minx >> miny >> minz >> maxx >> maxy >> maxz >>
-              num_physical_tags >> physical_tag;
+            if (not(iss >> entity_tag >> minx >> miny >> minz >> maxx >> maxy >> maxz >>
+                    num_physical_tags))
+              throw std::logic_error(fname +
+                                     ": Failed to read an entity of the $Entities section.");
+            if (num_physical_tags > 0 and not(iss >> physical_tag))
+              throw std::logic_error(fname + ": Failed to read the physical tag of entity " +
+                                     std::to_string(entity_tag) + ".");
+            if (num_physical_tags > 1)
+              ++num_multi_tag_entities;
             entity_map[entity_tag] = physical_tag;
           }
         };
@@ -728,6 +755,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
         read_entity(curve_entities, num_curves);
         read_entity(surface_entities, num_surfaces);
         read_entity(volume_entities, num_volumes);
+        WarnMultiTagEntities(fname, num_multi_tag_entities);
       }
       else
       {
@@ -740,6 +768,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
             num_surfaces > max_reasonable or num_volumes > max_reasonable)
           throw std::logic_error(fname + ": $Entities binary counts are invalid.");
 
+        size_t num_multi_tag_entities_bin = 0;
         auto read_entity_bin = [&](std::map<int, int>& entity_map, size_t num_entities)
         {
           for (size_t i = 0; i < num_entities; ++i)
@@ -757,6 +786,8 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
               physical_tag = static_cast<int>(ReadUInt32(file));
             for (size_t t = 1; t < num_physical_tags; ++t)
               ReadUInt32(file);
+            if (num_physical_tags > 1)
+              ++num_multi_tag_entities_bin;
             const size_t num_bounding_tags = ReadSize(file);
             for (size_t t = 0; t < num_bounding_tags; ++t)
               ReadUInt32(file);
@@ -782,6 +813,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
         read_entity_bin(curve_entities, num_curves);
         read_entity_bin(surface_entities, num_surfaces);
         read_entity_bin(volume_entities, num_volumes);
+        WarnMultiTagEntities(fname, num_multi_tag_entities_bin);
         ExpectEndSection(file, "$EndEntities");
       }
     }
@@ -1075,14 +1107,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   // create boundary names and IDs
   const unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
-  for (const auto& [id, data] : physical_names)
-  {
-    if (std::cmp_equal(std::get<0>(data), dimension - 1))
-    {
-      const auto& name = std::get<1>(data);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetType(UNSTRUCTURED);
   mesh->ComputeCentroids();

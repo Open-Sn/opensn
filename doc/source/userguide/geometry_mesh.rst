@@ -196,6 +196,12 @@ Supported import families include:
   CAD or geometry tools.
 * ``.msh``: Gmsh, in MSH format 2.2 (ASCII) or 4.1 (ASCII or binary), with first-order
   tetrahedra, hexahedra, prisms, and pyramids in 3D, or triangles and quadrilaterals in 2D.
+  The physical tag of each cell becomes its block ID. Cells of an entity without a physical
+  tag get block ID 0. Named physical surfaces (curves in 2D) become named boundaries. Gmsh
+  numbers physical groups separately in each dimension, so a boundary group may have the same
+  tag as a volume group. In MSH 4.1, an entity that belongs to more than one physical group
+  keeps only the first: its cells or faces get that group's tag, a boundary named by another
+  group gets no faces, and OpenSn warns about it.
 * ``.e``: ExodusII-producing tools such as Cubit, Coreform Cubit, SEACAS
   tools, and some finite-element preprocessors.
 * ``.vtu``: VTK or ParaView writers, ``meshio``, and many FEM or CFD tools
