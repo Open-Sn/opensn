@@ -76,6 +76,14 @@ public:
   using DelayedFluxCorrection =
     std::function<double(std::uint32_t, unsigned int, unsigned int, unsigned int)>;
 
+  /**
+   * Identifies the ordering of values in the delayed local and nonlocal psi buffers for restart
+   * layout fingerprints. Zero denotes the base/AAH layout and adds nothing to the fingerprint.
+   * A different layout must override this identifier and change it whenever its delayed-buffer
+   * ordering changes.
+   */
+  virtual std::uint64_t GetDelayedPsiLayoutIdentifier() const { return 0; }
+
   /// Whether this FLUDS stores delayed (lagged) angular fluxes, within or between locations.
   bool HasDelayedAngularFlux() const
   {

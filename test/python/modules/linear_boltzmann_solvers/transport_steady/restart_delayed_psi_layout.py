@@ -29,6 +29,9 @@ error there. Each problem in time-dependent mode takes two backward-Euler steps 
 writes a restart; the quadrant problem must then resume from its own restart, take a third step
 that matches the uninterrupted three-step solve, and reject the single restart, on every rank.
 
+The sweep type is AAH unless the input sets sweep_type="CBC", which runs the same checks with CBC
+sweeps in their own restart directory.
+
 Checks:
   DELAYED_LAYOUT_MATCH_REL_DIFF: max |phi_quadrant - phi_converged| / max |phi_converged|.
   DELAYED_LAYOUT_NONE_SENSITIVE: 1 when max |phi_none - phi_converged| / max |phi_converged|
@@ -70,7 +73,8 @@ else:
         return MPIAllReduce(value, "max")
 
 
-STEM = "restart_delayed_psi_layout/"
+SWEEP_TYPE = globals().get("sweep_type", "AAH")
+STEM = "restart_delayed_psi_layout/" if SWEEP_TYPE == "AAH" else "restart_delayed_psi_layout_cbc/"
 
 
 def make_problem(grid, aggregation, converge, restart_read="", restart_write="", delayed=True,
@@ -115,6 +119,7 @@ def make_problem(grid, aggregation, converge, restart_read="", restart_write="",
             if reflecting else []
         ),
         options=options,
+        sweep_type=SWEEP_TYPE,
     )
 
 

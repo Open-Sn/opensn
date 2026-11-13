@@ -273,6 +273,26 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55387,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.0294,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_5_cycles_2_restart.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD",
     "num_procs": 4,
@@ -289,6 +309,32 @@
         "key": "Max-value2=",
         "goldvalue": 1.0294,
         "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_5_cycles_2_restart_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55387,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.0294,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-4] iteration = 0,",
+        "wordnum": 18,
+        "gold": "converged"
       }
     ]
   },
@@ -313,10 +359,50 @@
     ]
   },
   {
+    "file": "transport_3d_5_cycles_2_crichardson_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55387,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.0294,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
     "file": "transport_3d_5_cycles_2_bicgstab.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD",
     "num_procs": 4,
     "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 6.55387,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 1.0294,
+        "abs_tol": 0.0001
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_5_cycles_2_bicgstab_cbc.py",
+    "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD (CBC)",
+    "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1044,6 +1130,44 @@
     ]
   },
   {
+    "file": "cbc_local_cycle_rejected.py",
+    "comment": "A rank-0 local CBC cycle is rejected collectively with allow_cycles=False",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_LOCAL_CYCLE_REJECTED_RANK_0=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_LOCAL_CYCLE_REJECTED_RANK_1=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_4_cycles_1_cbc.py",
+    "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD (CBC)",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value1=",
+        "goldvalue": 0.555349,
+        "abs_tol": 0.0001
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Max-value2=",
+        "goldvalue": 0.000374345,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
     "file": "transport_3d_4_cycles_1_gpu.py",
     "comment": "3D LinearBSolver Test Extruded-Unstructured Mesh - PWLD",
     "requires_gpu": "True",
@@ -1463,6 +1587,41 @@
     "file": "richardson_lagged_psi_convergence.py",
     "comment": "Classic Richardson lagged angular-flux test converges at its tolerance when lagged fluxes are near zero (tet cube with inter-rank sweep cycles; particle balance of both solves, GMRES reference)",
     "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RICHARDSON_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RICHARDSON_REL_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_REL_BALANCE=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "richardson_lagged_psi_convergence.py",
+    "comment": "Classic Richardson lagged angular-flux test converges at its tolerance when lagged fluxes are near zero (tet cube with inter-rank sweep cycles; particle balance of both solves, GMRES reference) (CBC sweeps)",
+    "outfileprefix": "richardson_lagged_psi_convergence_cbc",
+    "num_procs": 4,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
     "checks": [
       {
         "type": "KeyValuePair",
@@ -2939,6 +3098,137 @@
         "key": "TRANSIENT_LAYOUT_RESUME_REL_DIFF=",
         "goldvalue": 0.0,
         "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "restart_delayed_psi_layout.py",
+    "comment": "Restart lagged angular flux layout fingerprint: a matching layout is loaded, a same-size different layout (angle aggregation, with sweep cycles or with opposing reflecting boundaries) is skipped in a steady restart and rejected in a transient restart (CBC sweeps)",
+    "outfileprefix": "restart_delayed_psi_layout_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_MATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_MISMATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "DELAYED_LAYOUT_NONE_SENSITIVE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_MATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_MISMATCH_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "REFLECTING_LAYOUT_NONE_SENSITIVE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_MATCH_ACCEPTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_MISMATCH_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "TRANSIENT_LAYOUT_RESUME_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "cbc_distributed_cycle_rejected.py",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_GLOBAL_CYCLE_REJECTED_RANK_0=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_GLOBAL_CYCLE_REJECTED_RANK_1=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cbc_no_lag_equilibrium.py",
+    "outfileprefix": "cbc_no_lag_equilibrium",
+    "args": ["-v 1"],
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CBC global cell cycle check, nontrivial rank SCC=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_EQUILIBRIUM_ERROR=",
+        "goldvalue": 0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_EQUILIBRIUM_BALANCE=",
+        "goldvalue": 0,
+        "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "cbc_no_lag_equilibrium.py",
+    "outfileprefix": "cbc_fragment_equilibrium",
+    "args": [
+      "allow_cycles=True"
+    ],
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_EQUILIBRIUM_ERROR=",
+        "goldvalue": 0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CBC_EQUILIBRIUM_BALANCE=",
+        "goldvalue": 0,
+        "abs_tol": 1e-10
       }
     ]
   }

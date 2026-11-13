@@ -19,6 +19,9 @@ the iterative method. The relative balance |production - absorption - leakage| /
 each solve must be below 1e-10 (RICHARDSON_REL_BALANCE, GMRES_REL_BALANCE). The scalar flux must
 also equal that of the same problem solved with GMRES, which converges the lagged angular fluxes
 as unknowns of its Krylov space, within 1e-8 relative to the maximum flux.
+
+The sweep type is AAH unless the input sets sweep_type="CBC", which breaks the same inter-rank
+cycles with CBC sweeps.
 """
 
 import os
@@ -62,6 +65,7 @@ def solve(grid, xs, method):
         ],
         xs_map=[{"block_ids": [0, 1], "xs": xs}],
         volumetric_sources=[VolumetricSource(block_ids=[1], group_strength=[1.0])],
+        sweep_type=globals().get("sweep_type", "AAH"),
     )
     solver = SteadyStateSourceSolver(problem=problem)
     solver.Initialize()

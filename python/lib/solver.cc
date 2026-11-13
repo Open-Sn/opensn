@@ -1110,7 +1110,9 @@ WrapLBS(py::module& slv)
           - gmres_restart_interval: int, default=30
               GMRES restart interval, if GMRES is used.
           - allow_cycles: bool, default=True
-              Whether cyclic dependencies are allowed in sweeps.
+              Allow cycle breaking in host AAH and CBC sweeps. With False, CBC collectively
+              rejects genuine global cell cycles during setup; cyclic partition dependencies
+              alone are supported when the cell graph is acyclic. GPU CBC has no cycle breaking.
           - apply_wgdsa: bool, default=False
               Enable within-group DSA for this groupset. After each groupset iteration, one
               diffusion solve corrects the scalar flux of every group of the groupset. The
