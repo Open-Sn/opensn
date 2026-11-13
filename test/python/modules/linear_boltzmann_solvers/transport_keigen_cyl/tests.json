@@ -16,6 +16,7 @@
     "file": "transport_2d_cyl_disk_keigen_vacuum_gmsh_struct.py",
     "comment": "RZ disk k-eigenvalue vacuum boundaries (gmsh structured)",
     "num_procs": 4,
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -29,6 +30,7 @@
     "file": "transport_2d_cyl_disk_keigen_vacuum_gmsh_unstruct.py",
     "comment": "RZ disk k-eigenvalue vacuum boundaries (gmsh unstructured)",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",

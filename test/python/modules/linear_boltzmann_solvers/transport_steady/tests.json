@@ -276,7 +276,7 @@
     "file": "transport_3d_5_cycles_2_restart.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh restart - PWLD",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -296,7 +296,7 @@
     "file": "transport_3d_5_cycles_2_crichardson.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with Classic Richardson - PWLD",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -316,7 +316,7 @@
     "file": "transport_3d_5_cycles_2_bicgstab.py",
     "comment": "3D LinearBSolver Test STAR-CCM+ mesh with BiCGStab - PWLD",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -960,7 +960,7 @@
       "boundary_closure=\"dirichlet\"",
       "h_perp_convention=\"cell\""
     ],
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "StrCompare",
@@ -1129,7 +1129,7 @@
     "file": "transport_3d_6a_split_mesh.py",
     "comment": "3D LinearBSolver Test Split mesh configuration A",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1167,7 +1167,7 @@
     "file": "transport_3d_6b_split_mesh.py",
     "comment": "3D LinearBSolver Test Split mesh configuration B",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1205,7 +1205,7 @@
     "file": "transport_3d_6a_dist_mesh.py",
     "comment": "3D LinearBSolver test distributed mesh configuration A",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1243,7 +1243,7 @@
     "file": "transport_3d_6b_dist_mesh.py",
     "comment": "3D LinearBSolver test distributed mesh configuration B",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1281,7 +1281,7 @@
     "file": "reed_balance.py",
     "comment": "1D LinearBSolver Reed problem with balance printout",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1301,7 +1301,7 @@
     "file": "reed_balance_cbc.py",
     "comment": "1D LinearBSolver Reed problem with balance printout (CBC)",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1322,7 +1322,7 @@
     "comment": "1D LinearBSolver Reed problem with balance printout",
     "requires_gpu": "True",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1343,7 +1343,7 @@
     "comment": "1D LinearBSolver Reed problem with balance printout (CBC)",
     "requires_gpu": "True",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1363,7 +1363,7 @@
     "file": "reed_balance_crichardson.py",
     "comment": "1D LinearBSolver Reed problem with Classic Richardson and balance printout",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1513,7 +1513,7 @@
     "file": "transport_2d_1_poly_balance.py",
     "comment": "2D Transport test. Pure scatterer. Balance.",
     "num_procs": 1,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1533,7 +1533,7 @@
     "file": "transport_2d_1_poly_balance_mg.py",
     "comment": "2D Transport test. Vacuum and Isotropic BC. Balance.\n",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1669,6 +1669,7 @@
     "file": "transport_3d_disk_leakage_vacuum_bcs.py",
     "comment": "3D leakage calculation with non-orthogonal boundaries and vacuum bcs",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1700,6 +1701,7 @@
     "file": "transport_3d_disk_leakage_reflecting_bcs.py",
     "comment": "3D leakage calculation with non-orthogonal boundaries and reflecting/vacuum bcs",
     "num_procs": 8,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -1795,7 +1797,7 @@
     "file": "transport_2d_dsa_compare.py",
     "comment": "Compare WGDSA/TGDSA accelerated fixed-source solutions against unaccelerated transport",
     "num_procs": 4,
-    "weight_class": "intermediate",
+    "weight_class": "short",
     "checks": [
       {
         "type": "KeyValuePair",

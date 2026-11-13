@@ -14,6 +14,11 @@ jobs:
   test:
     runs-on: [self-hosted]
     timeout-minutes: 120
+    env:
+      # Pull requests, pushes to main, and manual runs run the short CPU tests. The nightly run
+      # runs the intermediate tests. Nightly builds run the short and intermediate tests on every
+      # compiler, and the weekly workflow runs the long tests.
+      TEST_WEIGHTS: ${{ github.event_name == 'schedule' && '2' || '1' }}
     steps:
       - uses: actions/checkout@v7
       - name: build
@@ -26,7 +31,7 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/gcc/14
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d test/python -j 16 -v 1 -w 3 \
+          test/run_tests -d test/python -j 16 -v 1 -w "$TEST_WEIGHTS" \
             --run-log "$RUNNER_TEMP/logs/regression_test_log.txt"
       - name: test tutorials
         shell: bash
@@ -34,7 +39,7 @@ jobs:
           module load python3/3.12.3 opensn/gcc/14
           export PYTHONPATH=$PWD/build
           mkdir -p "$RUNNER_TEMP/logs"
-          test/run_tests -d doc/source/tutorials -j 16 -v 1 -w 3 --engine=jupyter \
+          test/run_tests -d doc/source/tutorials -j 16 -v 1 -w "$TEST_WEIGHTS" --engine=jupyter \
             --run-log "$RUNNER_TEMP/logs/regression_tutorials_log.txt"
       - name: test unit (MPI=1)
         shell: bash

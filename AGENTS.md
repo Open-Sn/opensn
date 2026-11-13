@@ -329,6 +329,30 @@ Place inputs beside related tests under `test/python/` and register them in the
 nearest `tests.json`. Set appropriate `num_procs`, `weight_class`, checks,
 tolerances, and a unique `outfileprefix` when reusing an input.
 
+`weight_class` decides when CI runs a CPU test. Pull requests and pushes to
+`main` run the `short` tests. Every night, the build matrix runs the `short`
+and `intermediate` tests with each compiler and under the sanitizer, the
+nightly regression run runs the `intermediate` tests, and the coverage run runs
+both. The weekly run runs the `long` tests. A
+test costs its run time multiplied by its MPI ranks and `OPENSN_NUM_THREADS`.
+
+- `short` tests gate every pull request, so they must be fast and still catch
+  defects. Use the smallest mesh, group count, quadrature, and number of
+  iterations or time steps that still exercises the production path and gives
+  a meaningful numerical check. Every feature and supported configuration needs
+  at least one `short` test. Keep a `short` test below about 100 CPU-seconds.
+- `intermediate` tests run nightly and extend that coverage. Use them for finer
+  meshes, more ranks, convergence studies, parameter sweeps, variants of a
+  `short` test with another solver, sweep type, or boundary condition, and
+  benchmarks that take a few minutes.
+- `long` tests run weekly. Use them for large benchmarks, high-resolution
+  references, and runs that need many ranks or many minutes.
+
+When a feature needs more extensive testing than a `short` test can afford,
+add an `intermediate` or `long` test rather than enlarging the `short` test.
+Never make the only pull-request test of a code path or configuration slower
+than `short`. Make it smaller instead.
+
 `test/run_tests` runs each test in its own working directory beside the
 input's directory, holding links to that directory's files, so tests running at
 the same time cannot overwrite each other's generated files. Untracked files
