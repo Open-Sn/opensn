@@ -181,6 +181,14 @@ public:
 
   const std::vector<double>& GetSigmaTransport() const { return sigma_tr_; }
 
+  /**
+   * Transport cross section below which a group is void in the diffusion acceleration methods.
+   * Such groups get D = 1 / (3 DIFFUSION_SIGMA_TR_MIN) here. A DiscreteOrdinatesProblem replaces
+   * it with a length of its geometry (DiscreteOrdinatesProblem::GetDSADiffusionCoefficient).
+   */
+  static constexpr double DIFFUSION_SIGMA_TR_MIN = 1.0e-12;
+
+  /// Diffusion coefficient D_g = 1 / (3 sigma_tr,g), limited by DIFFUSION_SIGMA_TR_MIN.
   const std::vector<double>& GetDiffusionCoefficient() const { return diffusion_coeff_; }
 
   const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }

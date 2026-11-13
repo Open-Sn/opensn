@@ -45,12 +45,14 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
       // dominated by each material's most strongly self-scattering group, so neighboring
       // materials can have spectra in different groups. The collapsed correction is then mapped
       // to the wrong groups across material interfaces, and the iteration can diverge.
-      TwoGridCollapsedInfo tginfo = MakeTwoGridCollapsedInfo(*xs,
-                                                             EnergyCollapseScheme::JFULL,
-                                                             groupset.first_group,
-                                                             groupset.last_group,
-                                                             do_problem.GetDSATimeAbsorptionScale(),
-                                                             do_problem.GetOptions().adjoint);
+      TwoGridCollapsedInfo tginfo =
+        MakeTwoGridCollapsedInfo(*xs,
+                                 do_problem.GetDSADiffusionCoefficient(*xs),
+                                 EnergyCollapseScheme::JFULL,
+                                 groupset.first_group,
+                                 groupset.last_group,
+                                 do_problem.GetDSATimeAbsorptionScale(),
+                                 do_problem.GetOptions().adjoint);
 
       groupset.tg_acceleration_info_.map_mat_id_2_tginfo.insert(
         std::make_pair(mat_id, std::move(tginfo)));

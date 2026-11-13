@@ -203,7 +203,8 @@ For group :math:`g` the correction solves
 .. math:: -\nabla \cdot D_g \nabla \delta\phi_g + \sigma_{r,g}\, \delta\phi_g
           = \sigma_{s0,g \leftarrow g} \left( \phi_g^{(i+1/2)} - \phi_g^{(i)} \right) \,,
 
-with :math:`D_g = 1/(3\sigma_{tr,g})`, :math:`\sigma_{tr,g} = \sigma_{t,g} -
+with :math:`D_g = 1/(3\sigma_{tr,g})` (limited in voids, see
+:ref:`theory_dsa_void_diffusion`), :math:`\sigma_{tr,g} = \sigma_{t,g} -
 \sigma_{s1,g}`, :math:`\sigma_{s1,g}` the P1 scattering out of group :math:`g`,
 and :math:`\sigma_{r,g} = \max(0,\, \sigma_{t,g} - \sigma_{s0,g \leftarrow g})`.
 The source is the change of the isotropic within-group scattering source. The
@@ -326,6 +327,47 @@ The floor :math:`\theta_c` keeps the operator positive definite. Let
 :math:`[0, 1]` of :math:`(1-\theta)^2/(1+\theta) = r`; otherwise
 :math:`\theta_c = 0`. The exact coercivity condition has 12 in place of 6; the
 rule uses it with a safety factor 2.
+
+.. _theory_dsa_void_diffusion:
+
+Diffusion Coefficient in Voids
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In a void the transport cross section is zero, and :math:`1/(3\sigma_{tr,g})` is
+infinite. A group of a material is void when
+:math:`|\sigma_{tr,g}| < 10^{-12}`. Every other group, including the groups of
+thin gases such as air, uses :math:`D_g = 1/(3\sigma_{tr,g})`.
+
+A void bounded by scattering walls carries the error between the walls by
+streaming. Suppose the walls emit an isotropic flux :math:`\phi` that varies
+slowly in space. The angular flux at a point :math:`x` of the void in direction
+:math:`\Omega` is then that of the wall point at the distance
+:math:`\ell(x, -\Omega)` upstream, and the current in the void is
+
+.. math:: J(x) = -\Big[\frac{1}{4\pi} \int_{4\pi} \Omega\,\Omega^T\,
+          \ell(x, -\Omega)\, d\Omega\Big] \nabla\phi \,.
+
+The isotropic part of the bracket is :math:`D(x) = \lambda(x)/3`, with
+:math:`\lambda` the direction average of :math:`\ell`. The diffusion coefficient
+of a void is therefore a length of the size of the void rather than an infinite
+value. The diffusion operators of the acceleration methods WGDSA, TGDSA, SCDSA,
+and CMFD use, in the void groups of a material :math:`m`,
+
+.. math:: D_{m,g} = \frac{V_m}{S_m} \,,
+
+where :math:`V_m` is the volume of the cells of the material and :math:`S_m`
+the area of their faces that border a cell of another material or a boundary
+that is not reflecting. :math:`V/S` is a quarter of the mean chord length
+:math:`4V/S` of a convex region. One value per material is used instead of
+:math:`\lambda(x)/3` because the number of iterations depends weakly on
+:math:`D` near :math:`V/S`. A material whose cells form several separate regions
+gets a single value from the sum of their volumes and wall areas. A material
+without such faces keeps :math:`D_g = 1/(3 \cdot 10^{-12})`. In one and two
+dimensions, :math:`V` and :math:`S` are the measures of the mesh cells and
+faces. The diffusion coefficient changes only the convergence of the iteration,
+not the converged solution. SMM does not support void groups. Its low-order
+source correction divides the second-moment closure by the transport cross
+section, so it is undefined there, and SMM rejects such a problem.
 
 .. _theory_two_grid:
 

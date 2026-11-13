@@ -86,7 +86,10 @@ struct TwoGridCollapsedInfo
 /**
  * Computes the two-grid collapsed diffusion data for a material over the groups
  * [first_group, last_group] of the accelerated groupset. The returned spectrum is indexed by global
- * group and is zero outside that range.
+ * group and is zero outside that range. `dsa_diffusion_coeff` is the material's diffusion
+ * coefficient for diffusion acceleration, indexed by global group (DiscreteOrdinatesProblem::
+ * GetDSADiffusionCoefficient). It must have one entry per group of `xs`; std::logic_error is thrown
+ * otherwise or when the group range is invalid.
  *
  * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
  * absorption 1/(v theta dt) that the theta scheme adds to the total cross section is included in
@@ -96,6 +99,7 @@ struct TwoGridCollapsedInfo
  * mode does, and the forward transfer matrix otherwise.
  */
 TwoGridCollapsedInfo MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
+                                              const std::vector<double>& dsa_diffusion_coeff,
                                               EnergyCollapseScheme scheme,
                                               unsigned int first_group,
                                               unsigned int last_group,
@@ -113,20 +117,23 @@ std::map<uint64_t, BoundaryCondition>
 TranslateBCs(const std::map<uint64_t, std::shared_ptr<SweepBoundary>>& sweep_boundaries,
              DSABoundaryClosure closure = DSABoundaryClosure::DIRICHLET);
 
+class DiscreteOrdinatesProblem;
+class LBSGroupset;
+
 /**
- * Makes a packaged set of XSs, suitable for diffusion, for a particular set of groups.
+ * Makes a packaged set of XSs of the problem's materials, suitable for diffusion, for a particular
+ * set of groups. The diffusion coefficient is that of DiscreteOrdinatesProblem::
+ * GetDSADiffusionCoefficient.
  *
  * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time
  * absorption tau_g = 1/(v_g theta dt) is added to the removal cross section and to the transport
  * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)).
  */
-std::map<unsigned int, Multigroup_D_and_sigR> PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
-                                                             unsigned int first_grp_index,
-                                                             unsigned int last_group_index,
-                                                             double time_absorption_scale = 0.0);
-
-class DiscreteOrdinatesProblem;
-class LBSGroupset;
+std::map<unsigned int, Multigroup_D_and_sigR>
+PackGroupsetXS(const DiscreteOrdinatesProblem& do_problem,
+               unsigned int first_grp_index,
+               unsigned int last_group_index,
+               double time_absorption_scale = 0.0);
 
 /**
  * Applies a diffusion-synthetic scalar-flux correction to the lagged (delayed) incoming angular

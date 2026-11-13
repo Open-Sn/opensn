@@ -4,6 +4,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include "framework/utils/timer.h"
+#include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/data_types/parallel_vector/ghosted_parallel_stl_vector.h"
 #include "framework/data_types/parallel_vector/parallel_stl_vector.h"
 #include "framework/math/spatial_discretization/finite_element/finite_element_data.h"
@@ -17,6 +18,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/smm_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/pi_keigen_solver.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
+#include <cmath>
 #include <sstream>
 
 namespace opensn
@@ -67,6 +69,22 @@ SMMAcceleration::CheckRequirements(std::vector<std::string>& errors) const
       errors.emplace_back(GetName() + ": boundary " + std::to_string(bid) +
                           " is isotropic or arbitrary; only vacuum and reflecting boundaries are "
                           "supported.");
+  // The low-order source correction divides the second-moment closure by the transport cross
+  // section, so it is not defined in a void group.
+  for (const auto& [block_id, xs] : do_problem_.GetBlockID2XSMap())
+  {
+    const auto& sigma_tr = xs->GetSigmaTransport();
+    for (auto g = front_gs_.first_group; g <= front_gs_.last_group; ++g)
+      if (std::fabs(sigma_tr.at(g)) < MultiGroupXS::DIFFUSION_SIGMA_TR_MIN)
+      {
+        std::ostringstream message;
+        message << GetName() << ": the material of block " << block_id << " is void in group " << g
+                << " (transport cross section below " << MultiGroupXS::DIFFUSION_SIGMA_TR_MIN
+                << "), which SMM does not support.";
+        errors.emplace_back(message.str());
+        break;
+      }
+  }
 }
 
 void
@@ -106,8 +124,7 @@ SMMAcceleration::Initialize()
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), DSABoundaryClosure::MARSHAK);
 
   // Create the diffusion materials
-  const auto xs_map =
-    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
+  const auto xs_map = PackGroupsetXS(do_problem_, front_gs_.first_group, front_gs_.last_group);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";

@@ -51,6 +51,7 @@ HasCouplingCycle(const DenseMatrix<double>& C, const unsigned int n)
 
 TwoGridCollapsedInfo
 MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
+                         const std::vector<double>& dsa_diffusion_coeff,
                          EnergyCollapseScheme scheme,
                          const unsigned int first_group,
                          const unsigned int last_group,
@@ -64,11 +65,15 @@ MakeTwoGridCollapsedInfo(const MultiGroupXS& xs,
     throw std::logic_error(fname + ": invalid group range [" + std::to_string(first_group) + ", " +
                            std::to_string(last_group) + "] for a cross section with " +
                            std::to_string(num_groups) + " groups.");
+  if (dsa_diffusion_coeff.size() != num_groups)
+    throw std::logic_error(fname + ": " + std::to_string(dsa_diffusion_coeff.size()) +
+                           " diffusion coefficients given for a cross section with " +
+                           std::to_string(num_groups) + " groups.");
   // The two-grid error mode lives in the groups of the accelerated groupset. Groups outside it are
   // not iterated with the groupset, so they are excluded from the collapse; scattering from the
   // groupset to them is removal (it is part of the total cross section).
   const unsigned int n = last_group - first_group + 1;
-  const auto& diffusion_coeff_xs = xs.GetDiffusionCoefficient();
+  const auto& diffusion_coeff_xs = dsa_diffusion_coeff;
 
   // Include the time absorption 1/(v theta dt) of the theta scheme in the total cross section
   // and the diffusion coefficient.

@@ -920,6 +920,29 @@
     ]
   },
   {
+    "file": "transport_3d_void_duct_dsa.py",
+    "comment": "3D void dog-leg duct through a c = 0.99 scatterer with WGDSA. The void diffusion coefficient is V / S = 3240 / 2232 cm, counted independently from the duct geometry. The within-group iteration limit of 18 is met with it (13 iterations) but not with the previous void coefficient of 3.3e11 cm (28). The particle balance anchors the converged solution.",
+    "num_procs": 4,
+    "args": [
+      "wgs_max_its=18"
+    ],
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BALANCE_REL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
     "file": "transport_3d_3a_dsa_ortho.py",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 (group 39) and Max-value2 (group 120) are checked against the fully converged values 0.0949528 and 0.0944793 (AGS tolerance 1e-10, FGMRES, WGDSA and TGDSA tolerances 1e-10, 4 ranks), Max-value2 within the one-pass error, which is below 0.2% for the DSA boundary closures and penalty lengths tested",
     "num_procs": 4,

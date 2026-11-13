@@ -621,6 +621,16 @@ with associated controls:
 - ``tgdsa_boundary_closure``
 - ``tgdsa_h_perp_convention``
 
+In void groups, whose transport cross section is below ``1e-12`` 1/cm, every
+diffusion acceleration method uses the diffusion coefficient ``V/S`` of the
+material, with ``V`` its volume and ``S`` the area of its faces that border
+another material or a boundary that is not reflecting. A void region bounded by
+scattering walls carries the error by streaming over a distance of the size of
+the region, which ``V/S`` represents. Real materials, including thin gases, use
+``1/(3 sigma_tr)``. A material whose cells form several separate regions gets
+one value for all of them, so give separate void regions of very different
+sizes their own materials. See :ref:`theory_dsa_void_diffusion`.
+
 WGDSA
 -----
 

@@ -126,7 +126,7 @@ InitCSDA(DiscreteOrdinatesProblem& do_problem,
   for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
   {
     auto matid_2_mgxs_map =
-      PackGroupsetXS(block_id_to_xs_map, g, g, do_problem.GetDSATimeAbsorptionScale());
+      PackGroupsetXS(do_problem, g, g, do_problem.GetDSATimeAbsorptionScale());
     for (auto& [block_id, xs_g] : matid_2_mgxs_map)
     {
       const auto csda_data = MakeCSDAMaterialData(*block_id_to_xs_map.at(block_id), energy);
@@ -305,7 +305,7 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 
     // Make xs map
     const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
-    auto matid_2_mgxs_map = PackGroupsetXS(block_id_to_xs_map,
+    auto matid_2_mgxs_map = PackGroupsetXS(do_problem,
                                            groupset.first_group,
                                            groupset.last_group,
                                            do_problem.GetDSATimeAbsorptionScale());
