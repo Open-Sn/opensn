@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">6.2.2. A Multigroup Adjoint Response</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">6.2.3. A Multigroup 2D Glovebox</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">6.2.4. Adjoint Method with Multiple Detector Responses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../surface_response/surface_resp.html">6.2.5. Detector Responses from Surface Angular Fluxes</a></li>
 </ul>
 </li>
 </ul>
@@ -193,7 +194,7 @@
 <section id="Geometry">
 <h2><span class="section-number">6.2.3.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="1ae10d2c60114c5d841c4ccee6356e67" src="../../../../_images/glovebox_geom1.png" /></p>
+<p><img alt="d2c8382f6eca48c198360368e2349559" src="../../../../_images/glovebox_geom1.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -212,9 +213,9 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="f70b91a754f34b4f97daa1c9a91b96ed" src="../../../../_images/glovebox_mesh1.png" /></p>
-<p><img alt="6754231b724b491da80ba60157fb2777" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
-<p><img alt="d80a753af55f4650a6f9c237d0fb1312" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="8024a50ec6c14f48b5cc460debe2eb51" src="../../../../_images/glovebox_mesh1.png" /></p>
+<p><img alt="a0a6eaf027ff4a08be20c4c489755bb5" class="no-scaled-link" src="../../../../_images/det_mesh1.png" style="width: 400px;" /></p>
+<p><img alt="f999bd4abd2342b38cc311d97f91a3a0" class="no-scaled-link" src="../../../../_images/src_mesh1.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">6.2.3.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
@@ -226,12 +227,13 @@
 <li><p>He-3</p></li>
 <li><p>Cf-252</p></li>
 </ul>
-<p>Since we are importing a Gmsh mesh, materials IDs are assigned to the corresponding physcial group ID. Look at <a class="reference external" href="./glovebox.msh">glovebox.msh</a> under <code class="docutils literal notranslate"><span class="pre">PhysicalNames</span></code>.</p>
+<p>Since we are importing a Gmsh mesh, material IDs are assigned to the corresponding physical group ID. Look at <a class="reference external" href="./glovebox.msh">glovebox.msh</a> under <code class="docutils literal notranslate"><span class="pre">PhysicalNames</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;WIMS69&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The WIMS69 cross sections shared by the detector-response tutorials.</span>
+<span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../../../../test/assets/xs/WIMS69&quot;</span>
 <span class="n">xs_air</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="n">xs_air</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/Air.cxs&quot;</span><span class="p">)</span>
 
@@ -513,9 +515,9 @@
 </div>
 </div>
 <p>Group 3: [1.353, 2.231] MeV</p>
-<p><img alt="7d5da8ed3b9b477ba4733b8d040bd1d5" src="../../../../_images/glovebox_g3.png" /></p>
+<p><img alt="ca4ac4146c354ac1a50d51504a509f86" src="../../../../_images/glovebox_g3.png" /></p>
 <p>Group 52: [2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="e275131c5ce0420aa198056424d02141" src="../../../../_images/glovebox_g52.png" /></p>
+<p><img alt="f259edca0a2740229232903393ba9f65" src="../../../../_images/glovebox_g52.png" /></p>
 </section>
 <section id="Compute-Leakage">
 <h3><span class="section-number">6.2.3.5.2. </span>Compute Leakage<a class="headerlink" href="#Compute-Leakage" title="Link to this heading"></a></h3>
@@ -578,7 +580,7 @@
 <div class="line">Total Leakage YMax : 4.702092e-01</div>
 </div>
 <p>Total Leakage : 1.035658e+00</p>
-<p><img alt="e25f7d2ea4e34b3c9a559d63f148c8b3" src="../../../../_images/Lkg.png" /></p>
+<p><img alt="3c5146b5742e4aa587a528b8d2e04917" src="../../../../_images/Lkg.png" /></p>
 </section>
 <section id="Compute-Balance">
 <h3><span class="section-number">6.2.3.5.3. </span>Compute Balance<a class="headerlink" href="#Compute-Balance" title="Link to this heading"></a></h3>

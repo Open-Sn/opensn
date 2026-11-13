@@ -1,0 +1,351 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File surface_response_data.h &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File surface_response_data.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-surface-response-data-h">
+<span id="program-listing-file-modules-linear-boltzmann-solvers-response-evaluator-surface-response-data-h"></span><h1>Program Listing for File surface_response_data.h<a class="headerlink" href="#program-listing-for-file-surface-response-data-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h.html#file-modules-linear-boltzmann-solvers-response-evaluator-surface-response-data-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/runtime.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="c1">/// Default per-rank send budget, in bytes, of one surface-data exchange.</span>
+<span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">SURFACE_REDISTRIBUTION_BYTES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">{</span><span class="mi">64</span><span class="p">}</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span>
+
+<span class="c1">/// Quadrature of one groupset of a surface angular-flux file set.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceQuadrature</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_dirs</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// First group of the groupset.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">first_group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Direction vectors, three Cartesian components per direction.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">omegas</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Quadrature weights, one per direction.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * The faces of one stored surface tag that are owned by this rank.</span>
+<span class="cm"> *</span>
+<span class="cm"> * A face is owned by rank `SurfaceFaceOwner(key, P)`, where `key` is its centroid key, so every</span>
+<span class="cm"> * data set read on the same communicator places a given physical face, from either side of an</span>
+<span class="cm"> * interior surface, on the same rank. Faces are stored in arrival order; `index` gives the local</span>
+<span class="cm"> * face index of each key in key order.</span>
+<span class="cm"> */</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceShard</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">GroupsetValues</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Direction cosine with the face normal, ordered by face and direction.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mu</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * Angular flux, ordered by face, face node, direction, and group. For an interior tag, the</span>
+<span class="cm">     * values of the face&#39;s cell; for a boundary tag, the upwind values written by</span>
+<span class="cm">     * WriteSurfaceAngularFluxes (`upwind_flux`), which take the boundary condition for the</span>
+<span class="cm">     * directions that enter the domain.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">psi</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * True when the tag is one side, `&lt;name&gt;_u` or `&lt;name&gt;_d`, of an interior surface; false for a</span>
+<span class="cm">   * boundary, whatever its name. Recorded by the writer and identical on all ranks.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">interior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// (face key, local face index) pairs sorted by key.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblemIO</span><span class="o">::</span><span class="n">FaceCentroidKey</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">index</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Start offset of each face&#39;s nodes. Its size is the number of faces plus one.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">/// Start offset of each face&#39;s mass matrix. Its size is the number of faces plus one.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mass_offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="w">  </span><span class="c1">/// Face node coordinates, three per node.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">coords</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Face mass matrices, row-major by face node, including the curvilinear measure scale.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mass</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Values per groupset.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">GroupsetValues</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groupsets</span><span class="p">;</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetNumFaces</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">node_offset</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">GetNumFaceNodes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">face</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">node_offset</span><span class="p">[</span><span class="n">face</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="mi">1</span><span class="p">]</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">node_offset</span><span class="p">[</span><span class="n">face</span><span class="p">];</span>
+<span class="w">  </span><span class="p">}</span>
+
+<span class="w">  </span><span class="c1">/// Return the local index of the face with `key`, if this rank owns it.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Find</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblemIO</span><span class="o">::</span><span class="n">FaceCentroidKey</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// Surface angular-flux data distributed by face across the ranks of a communicator.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">DistributedSurfaceData</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// True when the data were written from an adjoint problem.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of files the data were read from.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_partitions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">centroid_origin</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{</span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">};</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">centroid_spacing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Quadrature per groupset. Identical on all ranks.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SurfaceQuadrature</span><span class="o">&gt;</span><span class="w"> </span><span class="n">groupsets</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Locally owned faces keyed by stored surface tag. Every rank holds every tag.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">SurfaceShard</span><span class="o">&gt;</span><span class="w"> </span><span class="n">surfaces</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">/// How a surface of the forward data is evaluated; see ComputeSurfaceResponses.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">SurfaceKind</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="c1">/// An exterior boundary, stored under its boundary name.</span>
+<span class="w">  </span><span class="n">BOUNDARY</span><span class="p">,</span>
+<span class="w">  </span><span class="c1">/// An interior surface, stored as its two sides `&lt;name&gt;_u` and `&lt;name&gt;_d`.</span>
+<span class="w">  </span><span class="n">INTERIOR</span>
+<span class="p">};</span>
+
+<span class="c1">/// The surface response of one boundary or interior surface.</span>
+<span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceResponse</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The surface as requested: a boundary name, or an interior surface name, bare (`X`) or with</span>
+<span class="cm">   * the side tag that sets its normal (`X_u` or `X_d`).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">  </span><span class="n">SurfaceKind</span><span class="w"> </span><span class="n">kind</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SurfaceKind</span><span class="o">::</span><span class="n">BOUNDARY</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Contribution of the directions with positive cosine with the surface normal. For an interior</span>
+<span class="cm">   * surface, the normal is the outward normal of the selected side, `X_u` (the positive axis) for</span>
+<span class="cm">   * `X` and `X_u` and `X_d` (the negative axis) for `X_d`, and these directions leave the cell of</span>
+<span class="cm">   * that side. For a boundary, the normal is the outward normal and these are the outflow</span>
+<span class="cm">   * directions.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">outgoing</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Contribution of the directions with negative cosine with the normal. For an interior surface,</span>
+<span class="cm">   * these leave the cell of the other side and cross back. For a boundary, they are the inflow</span>
+<span class="cm">   * directions: the forward boundary-condition value (a forward boundary source; 0 for a vacuum</span>
+<span class="cm">   * boundary) against the adjoint cell value.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">incoming</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// The response carried across the surface along its normal: `outgoing + incoming`.</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">Total</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">outgoing</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">incoming</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">/// Rank that owns the face with `key` on a communicator with `num_ranks` ranks.</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SurfaceFaceOwner</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DiscreteOrdinatesProblemIO</span><span class="o">::</span><span class="n">FaceCentroidKey</span><span class="o">&amp;</span><span class="w"> </span><span class="n">key</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_ranks</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Distribute the faces of a surface angular-flux file set written by</span>
+<span class="cm"> * `DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes` across the ranks of `comm`.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Each file is read with `DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes`, which does not</span>
+<span class="cm"> * check the data against a problem. The files `&lt;file_base&gt;0.h5`, ...,</span>
+<span class="cm"> * `&lt;file_base&gt;(N-1).h5` are found from the `num_partitions` attribute of the first file. N need not</span>
+<span class="cm"> * equal the size of `comm`, and the data need not match the partitioning of any current mesh. File</span>
+<span class="cm"> * k is read by rank k modulo the size of `comm`, one file per rank at a time, and its faces are</span>
+<span class="cm"> * sent to their owner ranks (see SurfaceFaceOwner) in exchanges in which each rank sends at most</span>
+<span class="cm"> * `max_send_bytes` packed bytes (at least one face), before the next file is read. The peak memory</span>
+<span class="cm"> * of a rank is therefore one file&#39;s requested surfaces, as returned by the reader, plus its owned</span>
+<span class="cm"> * faces and one exchange. A rank receives from every rank in an exchange, so its receive buffer is</span>
+<span class="cm"> * bounded by the number of ranks times `max_send_bytes`; faces spread evenly over owners, so it is</span>
+<span class="cm"> * typically about `max_send_bytes`. Every file must contain every requested tag, possibly</span>
+<span class="cm"> * without faces. Any rank may read any file, so the files must be on a file system that every rank</span>
+<span class="cm"> * of `comm` can access; `file_base` is used only by the calling rank.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param file_base File name base.</span>
+<span class="cm"> * \param surfaces Surface names to read. Must be non-empty and unique. A boundary name reads that</span>
+<span class="cm"> *        tag, and the name of an interior surface reads both of its tags, `&lt;name&gt;_u` and</span>
+<span class="cm"> *        `&lt;name&gt;_d`. A single side&#39;s tag is rejected unless its other side is also requested,</span>
+<span class="cm"> *        because surface responses need both sides. Names are resolved against file 0, and every</span>
+<span class="cm"> *        other file is read with the resolved tags.</span>
+<span class="cm"> * \param comm Communicator to distribute the faces over.</span>
+<span class="cm"> * \param max_send_bytes Per-rank send budget of one exchange.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Collective over `comm`. Throws, on all ranks, `std::invalid_argument` for invalid arguments,</span>
+<span class="cm"> * including names that resolve to the same tag twice, and `std::logic_error` for missing,</span>
+<span class="cm"> * inconsistent, or malformed files, for a tag with no faces in any file, and for duplicate faces.</span>
+<span class="cm"> */</span>
+<span class="n">DistributedSurfaceData</span>
+<span class="nf">DistributeSurfaceAngularFluxes</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">surfaces</span><span class="p">,</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">max_send_bytes</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SURFACE_REDISTRIBUTION_BYTES</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Evaluate the surface inner products of forward and adjoint angular fluxes.</span>
+<span class="cm"> *</span>
+<span class="cm"> * For a surface S with faces f,</span>
+<span class="cm"> *   R = sum_{f in S} sum_{d in D_f} mu_{f,d} w_d sum_ij M_{f,ij} sum_g</span>
+<span class="cm"> *         psi_f(i, d, g) psi^dagger_f(j, d, g),</span>
+<span class="cm"> * with mu_{f,d} the cosine of direction d with the normal n_f of face f. The forward tags of the</span>
+<span class="cm"> * forward data define the surfaces, classified by the kind the writer records for each tag</span>
+<span class="cm"> * (SurfaceShard::interior), not by its name:</span>
+<span class="cm"> * - A boundary: n_f is the outward normal, D_f holds every direction, and both fluxes are upwind</span>
+<span class="cm"> *   face values from the boundary tag of each data set. For the outflow directions (mu_{f,d} &gt; 0)</span>
+<span class="cm"> *   they are the forward flux of the face&#39;s cell and the adjoint boundary-condition value (0 for a</span>
+<span class="cm"> *   vacuum boundary), which is upwind for the adjoint because it travels along -Omega_d; for the</span>
+<span class="cm"> *   inflow directions, the forward boundary-condition value and the adjoint flux of the cell. This</span>
+<span class="cm"> *   is the boundary term of the discrete adjoint identity, so it is exact for the discretization</span>
+<span class="cm"> *   like an interior surface, and the totals of all boundaries sum to &lt;q, psi^dagger&gt; -</span>
+<span class="cm"> *   &lt;q^dagger, psi&gt; for the volumetric sources q and q^dagger.</span>
+<span class="cm"> * - An interior surface, with both interior tags `X_u` and `X_d` in the forward data: the faces are</span>
+<span class="cm"> * those of `X_u`, n_f is the `X_u` normal (the positive axis), and D_f holds every direction. The</span>
+<span class="cm"> * forward flux comes from the side upwind of the direction (`X_u` for mu_{f,d} &gt; 0, `X_d` for</span>
+<span class="cm"> *   mu_{f,d} &lt; 0) and the adjoint flux from the other side, which is upwind for the adjoint.</span>
+<span class="cm"> *   Requested as `X` or `X_u`, R is measured along the `X_u` normal; requested as `X_d`, along the</span>
+<span class="cm"> *   `X_d` normal (the negative axis), which gives -R and swaps and negates `outgoing` and</span>
+<span class="cm"> *   `incoming`.</span>
+<span class="cm"> * Each response is split into `outgoing` (mu_{f,d} &gt; 0) and `incoming` (mu_{f,d} &lt; 0) parts; the</span>
+<span class="cm"> * response is their sum (SurfaceResponse::Total). OpenSn quadrature weights sum to 1, so for an</span>
+<span class="cm"> * adjoint problem driven by a volumetric, material, or point response source, R equals the response</span>
+<span class="cm"> * it carries across the surface. Forward and adjoint directions are paired by equal direction</span>
+<span class="cm"> * vectors and must have equal weights. Face nodes are paired by location.</span>
+<span class="cm"> *</span>
+<span class="cm"> * \param forward Forward data. Must not be adjoint.</span>
+<span class="cm"> * \param adjoint Adjoint data. Must be adjoint and must be distributed over `comm`.</span>
+<span class="cm"> * \param surfaces Surfaces to evaluate: boundary names and interior surface names (`X`, or `X_u`</span>
+<span class="cm"> *        or `X_d` to choose the normal). Each surface may be requested once. If empty, every</span>
+<span class="cm"> * surface of the forward data is evaluated, interior surfaces along their `X_u` normals.</span>
+<span class="cm"> * \param comm Communicator both data sets were distributed over.</span>
+<span class="cm"> * \return One surface response per surface, in name order when `surfaces` is empty and in the given</span>
+<span class="cm"> * order otherwise. Values are global sums.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Collective over `comm`. Throws `std::invalid_argument` for incompatible data sets, unknown</span>
+<span class="cm"> * surfaces, a surface requested more than once, a side of an interior surface without its other</span>
+<span class="cm"> * side, or an adjoint tag whose kind differs from its</span>
+<span class="cm"> * forward surface, and `std::logic_error`, on all ranks, if any</span>
+<span class="cm"> * face lacks a matching face in another required tag or matching faces have different node</span>
+<span class="cm"> * locations.</span>
+<span class="cm"> */</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SurfaceResponse</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeSurfaceResponses</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DistributedSurfaceData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">forward</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="k">const</span><span class="w"> </span><span class="n">DistributedSurfaceData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">adjoint</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">surfaces</span><span class="p">,</span>
+<span class="w">                                                     </span><span class="k">const</span><span class="w"> </span><span class="n">mpi</span><span class="o">::</span><span class="n">Communicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">comm</span><span class="p">);</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

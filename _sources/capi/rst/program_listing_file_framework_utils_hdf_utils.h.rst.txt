@@ -16,6 +16,7 @@ Program Listing for File hdf_utils.h
    #pragma once
    
    #include "hdf5.h"
+   #include <cstdint>
    #include <vector>
    #include <string>
    #include <type_traits>
@@ -319,6 +320,32 @@ Program Listing for File hdf_utils.h
          }
          H5Aclose(attribute);
        }
+     }
+   
+     return success;
+   }
+   
+   /// Get the number of elements in the 1D dataset `name`. Returns false if it is not a 1D dataset.
+   inline bool
+   H5GetDataset1DSize(hid_t id, const std::string& name, std::uint64_t& size)
+   {
+     bool success = false;
+   
+     auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
+     if (dataset != H5I_INVALID_HID)
+     {
+       auto dataspace = H5Dget_space(dataset);
+       if (dataspace != H5I_INVALID_HID)
+       {
+         const auto npoints = H5Sget_simple_extent_npoints(dataspace);
+         if (H5Sget_simple_extent_ndims(dataspace) == 1 and npoints >= 0)
+         {
+           size = static_cast<std::uint64_t>(npoints);
+           success = true;
+         }
+         H5Sclose(dataspace);
+       }
+       H5Dclose(dataset);
      }
    
      return success;

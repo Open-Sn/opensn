@@ -286,7 +286,7 @@ OpenSn version 1.0.1
 <section id="Material-IDs">
 <h3><span class="section-number">3.3.1.3.1. </span>Material IDs<a class="headerlink" href="#Material-IDs" title="Link to this heading"></a></h3>
 <p>In this example, we define a source-driven detector response problem consisting of two regions: a detector and a source in vacuum. The geometry of the model is shown below.</p>
-<p><img alt="0a9754e420d74844a0fc48f806b68364" src="../../../_images/adjoint_geom.png" /></p>
+<p><img alt="9fa941d1e255460a8f74aeb233e924cb" src="../../../_images/adjoint_geom.png" /></p>
 <p>Firstly, when using the in-house <code class="docutils literal notranslate"><span class="pre">OrthogonalMeshGenerator</span></code>, no material IDs are assigned. The user needs to assign material IDs to all cells. We will begin by assigning the background material ID with a value of 0.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[5]:
@@ -694,7 +694,7 @@ Forward Total Response : 1.992929e-01
 </pre></div></div>
 </div>
 <p>With the adjoint data in hand and a forward source defined, we now create a <code class="docutils literal notranslate"><span class="pre">ResponseEvaluator</span></code>.</p>
-<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">buffers</span></code> (adjoint data) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">data</span></code> (the adjoint flux moments) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[20]:
 </pre></div>
@@ -703,7 +703,7 @@ Forward Total Response : 1.992929e-01
 
 <span class="n">evaluator</span> <span class="o">=</span> <span class="n">ResponseEvaluator</span><span class="p">(</span><span class="n">problem</span> <span class="o">=</span> <span class="n">phys</span><span class="p">)</span>
 <span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
-    <span class="n">buffers</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;detector&#39;</span><span class="p">,</span>
         <span class="s1">&#39;file_prefixes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;flux_moments&#39;</span><span class="p">:</span> <span class="n">data_dir</span><span class="o">+</span><span class="s1">&#39;/adjflux_p&#39;</span><span class="p">}</span>
     <span class="p">}],</span>
@@ -720,7 +720,7 @@ Forward Total Response : 1.992929e-01
 [0]  Reading flux moments from Data/adjflux_p
 </pre></div></div>
 </div>
-<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a data name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} = \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q(\vec{r},\vec\Omega) \psi^{\dagger}(\vec{r},\vec\Omega) = \int_\mathcal{D}  d^3r  \, q(\vec{r}) \phi^{\dagger}(\vec{r})\]</div>
 <div class="nbinput docutils container">

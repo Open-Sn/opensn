@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a198d54428c01927dea20b2a975c350aa:
+
+Function opensn::SurfaceFaceOwner
+=================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SurfaceFaceOwner(const DiscreteOrdinatesProblemIO::FaceCentroidKey&, int)
+   :project: opensn

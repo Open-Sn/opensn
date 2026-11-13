@@ -446,6 +446,8 @@
 </li>
       <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.EvaluateResponse">EvaluateResponse() (pyopensn.response.ResponseEvaluator method)</a>
 </li>
+      <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse">EvaluateSurfaceResponse() (pyopensn.response.ResponseEvaluator method)</a>
+</li>
       <li><a href="pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation.Execute">Execute() (pyopensn.fieldfunc.FieldFunctionInterpolation method)</a>
 
       <ul>
@@ -3526,6 +3528,8 @@
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1af6184d19080033614eaed52625ebfdac.html#_CPPv4N6opensn17ComputePrecursorsER10LBSProblem">opensn::ComputePrecursors (C++ function)</a>
 </li>
+      <li><a href="capi/rst/function_namespaceopensn_1a2488c0769f6e1f8cab0b32b969f84f84.html#_CPPv4N6opensn23ComputeSurfaceResponsesERK22DistributedSurfaceDataRK22DistributedSurfaceDataRKNSt6vectorINSt6stringEEERKN3mpi12CommunicatorE">opensn::ComputeSurfaceResponses (C++ function)</a>
+</li>
       <li><a href="capi/rst/function_namespaceopensn_1a18d2edd68d58fe789c571ebbc05f0fb4.html#_CPPv4N6opensn24ComputeUnitCellIntegralsERK21SpatialDiscretizationRK4Cell20CoordinateSystemType">opensn::ComputeUnitCellIntegrals (C++ function)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a2385799c61ab105543d6b9154a007104.html#_CPPv4N6opensn21ConsolidateGridBlocksERNSt6vectorI18vtkUGridPtrAndNameEERKNSt6stringE">opensn::ConsolidateGridBlocks (C++ function)</a>
@@ -4212,13 +4216,17 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO15FaceCentroidKeyE">opensn::DiscreteOrdinatesProblemIO::FaceCentroidKey (C++ type)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO19MakeFaceCentroidKeyENSt6vectorI7Vector3EERKNSt5arrayIdXL3EEEEdRKNSt6stringE">opensn::DiscreteOrdinatesProblemIO::MakeFaceCentroidKey (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO17ReadAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringENSt8optionalINSt17reference_wrapperINSt6vectorINSt6vectorIdEEEEEEEE16FluxSolutionRole22AdjointFluxOrientation">opensn::DiscreteOrdinatesProblemIO::ReadAngularFluxes (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO15ReadRestartDataER24DiscreteOrdinatesProblem5hid_tbb">opensn::DiscreteOrdinatesProblemIO::ReadRestartData (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO24ReadSurfaceAngularFluxesER24DiscreteOrdinatesProblemRKNSt6stringERKNSt6vectorINSt6stringEEE">opensn::DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO24ReadSurfaceAngularFluxesERKNSt6stringE8uint64_tRKNSt6vectorINSt6stringEEE">opensn::DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18ReadUncollidedFluxERK24DiscreteOrdinatesProblemRKNSt6stringE">opensn::DiscreteOrdinatesProblemIO::ReadUncollidedFlux (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO27SURFACE_FILE_FORMAT_VERSIONE">opensn::DiscreteOrdinatesProblemIO::SURFACE_FILE_FORMAT_VERSION (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFluxE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFluxE">[1]</a>
 </li>
@@ -4226,29 +4234,33 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux4dataE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::data (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux4dataE">[1]</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11file_set_idE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::file_set_id (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11file_set_idE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11first_groupE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::first_group (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11first_groupE">[1]</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11groupset_idE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::groupset_id (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11groupset_idE">[1]</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux8interiorE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::interior (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux8interiorE">[1]</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux7mappingE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::mapping (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux7mappingE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_directionsE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::num_directions (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_directionsE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux10num_groupsE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::num_groups (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux10num_groupsE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_partitionsE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::num_partitions (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_partitionsE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux12surface_nameE">opensn::DiscreteOrdinatesProblemIO::SurfaceAngularFlux::surface_name (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux12surface_nameE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE">opensn::DiscreteOrdinatesProblemIO::SurfaceData (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE">[1]</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData9dir_indexE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::dir_index (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData9dir_indexE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData8fe_shapeE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::fe_shape (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData8fe_shapeE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData11mass_matrixE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::mass_matrix (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData11mass_matrixE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData2muE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::mu (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData2muE">[1]</a>
-</li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10node_indexE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::node_index (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10node_indexE">[1]</a>
-</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData5omegaE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::omega (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData5omegaE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData3psiE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::psi (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData3psiE">[1]</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData4wt_dE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::wt_d (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData4wt_dE">[1]</a>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10upwind_psiE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::upwind_psi (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10upwind_psiE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData7weightsE">opensn::DiscreteOrdinatesProblemIO::SurfaceData::weights (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData7weightsE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE">[1]</a>
 </li>
@@ -4256,17 +4268,21 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_mapE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::cell_map (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_mapE">[1]</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::cell_stride (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE">[1]</a>
-</li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap15centroid_originE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::centroid_origin (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap15centroid_originE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap16centroid_spacingE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::centroid_spacing (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap16centroid_spacingE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8fe_shapeE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::fe_shape (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8fe_shapeE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11mass_matrixE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::mass_matrix (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11mass_matrixE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_xE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::nodes_x (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_xE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_yE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::nodes_y (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_yE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_zE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::nodes_z (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_zE">[1]</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7normalsE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::normals (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7normalsE">[1]</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap14num_face_nodesE">opensn::DiscreteOrdinatesProblemIO::SurfaceMap::num_face_nodes (C++ member)</a>, <a href="capi/rst/structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap14num_face_nodesE">[1]</a>
 </li>
@@ -4329,6 +4345,22 @@
       <li><a href="capi/rst/classopensn_1_1_distributed_mesh_generator.html#_CPPv4N6opensn24DistributedMeshGenerator7ExecuteEv">opensn::DistributedMeshGenerator::Execute (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_distributed_mesh_generator.html#_CPPv4N6opensn24DistributedMeshGenerator18GetInputParametersEv">opensn::DistributedMeshGenerator::GetInputParameters (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceDataE">opensn::DistributedSurfaceData (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData7adjointE">opensn::DistributedSurfaceData::adjoint (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData15centroid_originE">opensn::DistributedSurfaceData::centroid_origin (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData16centroid_spacingE">opensn::DistributedSurfaceData::centroid_spacing (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData9groupsetsE">opensn::DistributedSurfaceData::groupsets (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData14num_partitionsE">opensn::DistributedSurfaceData::num_partitions (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_distributed_surface_data.html#_CPPv4N6opensn22DistributedSurfaceData8surfacesE">opensn::DistributedSurfaceData::surfaces (C++ member)</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a26c6799e3eb4de70e747fed3ce12b4e5.html#_CPPv4N6opensn30DistributeSurfaceAngularFluxesERKNSt6stringERKNSt6vectorINSt6stringEEERKN3mpi12CommunicatorENSt8uint64_tE">opensn::DistributeSurfaceAngularFluxes (C++ function)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575.html#_CPPv4N6opensn11dLegendredxEjd">opensn::dLegendredx (C++ function)</a>
 </li>
@@ -5144,6 +5176,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_h5_file_handle.html#_CPPv4N6opensn12H5FileHandleD0Ev">opensn::H5FileHandle::~H5FileHandle (C++ function)</a>
 </li>
+      <li><a href="capi/rst/function_namespaceopensn_1a3e8bd789e48f354ec20b2f6dfcd739f1.html#_CPPv4N6opensn18H5GetDataset1DSizeE5hid_tRKNSt6stringERNSt8uint64_tE">opensn::H5GetDataset1DSize (C++ function)</a>
+</li>
       <li><a href="capi/rst/function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38.html#_CPPv4N6opensn5H5HasE5hid_tRKNSt6stringE">opensn::H5Has (C++ function)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a1dca7f0c5b97bf1a9d36772991bf1dcb.html#_CPPv4I0EN6opensn15H5ReadAttributeEb5hid_tRKNSt6stringER1T">opensn::H5ReadAttribute (C++ function)</a>
@@ -5850,8 +5884,6 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_problem.html#_CPPv4N6opensn10LBSProblemD0Ev">opensn::LBSProblem::~LBSProblem (C++ function)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptionsE">opensn::LBSRestartOptions (C++ struct)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4NK6opensn17LBSRestartOptions10IsWriteDueEv">opensn::LBSRestartOptions::IsWriteDue (C++ function)</a>
@@ -5872,6 +5904,8 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions19write_time_intervalE">opensn::LBSRestartOptions::write_time_interval (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions14writes_enabledE">opensn::LBSRestartOptions::writes_enabled (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_l_b_s_solver_i_o.html#_CPPv4N6opensn11LBSSolverIOE">opensn::LBSSolverIO (C++ class)</a>
@@ -7978,7 +8012,7 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluatorE">opensn::ResponseEvaluator (C++ class)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator18AddResponseBuffersERK15InputParameters">opensn::ResponseEvaluator::AddResponseBuffers (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator15AddResponseDataERK15InputParameters">opensn::ResponseEvaluator::AddResponseData (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator18AddResponseSourcesERK15InputParameters">opensn::ResponseEvaluator::AddResponseSources (C++ function)</a>
 </li>
@@ -7994,9 +8028,19 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4NK6opensn17ResponseEvaluator16EvaluateResponseERKNSt6stringE">opensn::ResponseEvaluator::EvaluateResponse (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4NK6opensn17ResponseEvaluator23EvaluateSurfaceResponseERKNSt6stringERKNSt6stringERKNSt6vectorINSt6stringEEE">opensn::ResponseEvaluator::EvaluateSurfaceResponse (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_response_evaluator_1_1_flux_data.html#_CPPv4N6opensn17ResponseEvaluator8FluxDataE">opensn::ResponseEvaluator::FluxData (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_response_evaluator_1_1_flux_data.html#_CPPv4N6opensn17ResponseEvaluator8FluxData3phiE">opensn::ResponseEvaluator::FluxData::phi (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_response_evaluator_1_1_flux_data.html#_CPPv4N6opensn17ResponseEvaluator8FluxData3psiE">opensn::ResponseEvaluator::FluxData::psi (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_response_evaluator_1_1_flux_data.html#_CPPv4N6opensn17ResponseEvaluator8FluxData8surf_psiE">opensn::ResponseEvaluator::FluxData::surf_psi (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator29GetBoundarySourceOptionsBlockEv">opensn::ResponseEvaluator::GetBoundarySourceOptionsBlock (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator21GetBufferOptionsBlockEv">opensn::ResponseEvaluator::GetBufferOptionsBlock (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator19GetDataOptionsBlockEv">opensn::ResponseEvaluator::GetDataOptionsBlock (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator18GetInputParametersEv">opensn::ResponseEvaluator::GetInputParameters (C++ function)</a>
 </li>
@@ -8010,7 +8054,7 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator24SetBoundarySourceOptionsERK15InputParameters">opensn::ResponseEvaluator::SetBoundarySourceOptions (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator16SetBufferOptionsERK15InputParameters">opensn::ResponseEvaluator::SetBufferOptions (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator14SetDataOptionsERK15InputParameters">opensn::ResponseEvaluator::SetDataOptions (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_response_evaluator.html#_CPPv4N6opensn17ResponseEvaluator24SetMaterialSourceOptionsERK15InputParameters">opensn::ResponseEvaluator::SetMaterialSourceOptions (C++ function)</a>
 </li>
@@ -8908,6 +8952,10 @@
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a9703a3c5ab99e86885289ed9122e096d.html#_CPPv4I0EN6opensn8SubtractE11DenseMatrixI4TYPEERK11DenseMatrixI4TYPEERK11DenseMatrixI4TYPEE">opensn::Subtract (C++ function)</a>, <a href="capi/rst/function_namespaceopensn_1ad0c00d88888a00738dc5fa25ba3e15b1.html#_CPPv4I0EN6opensn8SubtractE6VectorI4TYPEERK6VectorI4TYPEERK6VectorI4TYPEE">[1]</a>
 </li>
+      <li><a href="capi/rst/variable_namespaceopensn_1ae206d1a0148489ef097959a89793ae83.html#_CPPv4N6opensn28SURFACE_REDISTRIBUTION_BYTESE">opensn::SURFACE_REDISTRIBUTION_BYTES (C++ member)</a>
+</li>
+      <li><a href="capi/rst/function_namespaceopensn_1a198d54428c01927dea20b2a975c350aa.html#_CPPv4N6opensn16SurfaceFaceOwnerERKN26DiscreteOrdinatesProblemIO15FaceCentroidKeyEi">opensn::SurfaceFaceOwner (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_surface_finite_element_data.html#_CPPv4N6opensn24SurfaceFiniteElementDataE">opensn::SurfaceFiniteElementData (C++ class)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_surface_finite_element_data.html#_CPPv4NK6opensn24SurfaceFiniteElementData10GetNormalsEv">opensn::SurfaceFiniteElementData::GetNormals (C++ function)</a>
@@ -8915,6 +8963,12 @@
       <li><a href="capi/rst/classopensn_1_1_surface_finite_element_data.html#_CPPv4NK6opensn24SurfaceFiniteElementData6NormalE6size_t">opensn::SurfaceFiniteElementData::Normal (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_surface_finite_element_data.html#_CPPv4N6opensn24SurfaceFiniteElementData24SurfaceFiniteElementDataENSt6vectorIjEENSt6vectorI7Vector3EENSt6vectorINSt6vectorIdEEEENSt6vectorINSt6vectorI7Vector3EEEENSt6vectorIdEENSt6vectorI7Vector3EENSt6vectorINSt6vectorIiEEEE6size_t">opensn::SurfaceFiniteElementData::SurfaceFiniteElementData (C++ function)</a>
+</li>
+      <li><a href="capi/rst/enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075.html#_CPPv4N6opensn11SurfaceKindE">opensn::SurfaceKind (C++ enum)</a>
+</li>
+      <li><a href="capi/rst/enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075.html#_CPPv4N6opensn11SurfaceKind8BOUNDARYE">opensn::SurfaceKind::BOUNDARY (C++ enumerator)</a>
+</li>
+      <li><a href="capi/rst/enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075.html#_CPPv4N6opensn11SurfaceKind8INTERIORE">opensn::SurfaceKind::INTERIOR (C++ enumerator)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_surface_mesh.html#_CPPv4N6opensn11SurfaceMeshE">opensn::SurfaceMesh (C++ class)</a>
 </li>
@@ -9005,6 +9059,58 @@
       <li><a href="capi/rst/classopensn_1_1_surface_mesh_logical_volume.html#_CPPv4NK6opensn24SurfaceMeshLogicalVolume6InsideERK7Vector3">opensn::SurfaceMeshLogicalVolume::Inside (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_surface_mesh_logical_volume.html#_CPPv4N6opensn24SurfaceMeshLogicalVolume24SurfaceMeshLogicalVolumeERK15InputParameters">opensn::SurfaceMeshLogicalVolume::SurfaceMeshLogicalVolume (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadratureE">opensn::SurfaceQuadrature (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadrature11first_groupE">opensn::SurfaceQuadrature::first_group (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadrature8num_dirsE">opensn::SurfaceQuadrature::num_dirs (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadrature10num_groupsE">opensn::SurfaceQuadrature::num_groups (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadrature6omegasE">opensn::SurfaceQuadrature::omegas (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_quadrature.html#_CPPv4N6opensn17SurfaceQuadrature7weightsE">opensn::SurfaceQuadrature::weights (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4N6opensn15SurfaceResponseE">opensn::SurfaceResponse (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4N6opensn15SurfaceResponse8incomingE">opensn::SurfaceResponse::incoming (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4N6opensn15SurfaceResponse4kindE">opensn::SurfaceResponse::kind (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4N6opensn15SurfaceResponse4nameE">opensn::SurfaceResponse::name (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4N6opensn15SurfaceResponse8outgoingE">opensn::SurfaceResponse::outgoing (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_response.html#_CPPv4NK6opensn15SurfaceResponse5TotalEv">opensn::SurfaceResponse::Total (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShardE">opensn::SurfaceShard (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard6coordsE">opensn::SurfaceShard::coords (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4NK6opensn12SurfaceShard4FindERKN26DiscreteOrdinatesProblemIO15FaceCentroidKeyE">opensn::SurfaceShard::Find (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4NK6opensn12SurfaceShard15GetNumFaceNodesEKNSt8uint64_tE">opensn::SurfaceShard::GetNumFaceNodes (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4NK6opensn12SurfaceShard11GetNumFacesEv">opensn::SurfaceShard::GetNumFaces (C++ function)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard9groupsetsE">opensn::SurfaceShard::groupsets (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard14GroupsetValuesE">opensn::SurfaceShard::GroupsetValues (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_surface_shard_1_1_groupset_values.html#_CPPv4N6opensn12SurfaceShard14GroupsetValuesE">[1]</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard14GroupsetValues2muE">opensn::SurfaceShard::GroupsetValues::mu (C++ member)</a>, <a href="capi/rst/structopensn_1_1_surface_shard_1_1_groupset_values.html#_CPPv4N6opensn12SurfaceShard14GroupsetValues2muE">[1]</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard14GroupsetValues3psiE">opensn::SurfaceShard::GroupsetValues::psi (C++ member)</a>, <a href="capi/rst/structopensn_1_1_surface_shard_1_1_groupset_values.html#_CPPv4N6opensn12SurfaceShard14GroupsetValues3psiE">[1]</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard5indexE">opensn::SurfaceShard::index (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard8interiorE">opensn::SurfaceShard::interior (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard4massE">opensn::SurfaceShard::mass (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard11mass_offsetE">opensn::SurfaceShard::mass_offset (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_surface_shard.html#_CPPv4N6opensn12SurfaceShard11node_offsetE">opensn::SurfaceShard::node_offset (C++ member)</a>
 </li>
       <li><a href="capi/rst/function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813.html#_CPPv4I0EN6opensn8SwapRowsEvR11DenseMatrixI4TYPEE6size_t6size_t">opensn::SwapRows (C++ function)</a>
 </li>
@@ -10594,9 +10700,9 @@
         <li><a href="pyapi/generated/pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem.SetBoundaryOptions">(pyopensn.solver.DiscreteOrdinatesProblem method)</a>
 </li>
       </ul></li>
-      <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.SetBufferOptions">SetBufferOptions() (pyopensn.response.ResponseEvaluator method)</a>
-</li>
       <li><a href="pyapi/generated/pyopensn.context.SetCaliperConfig.html#pyopensn.context.SetCaliperConfig">SetCaliperConfig() (in module pyopensn.context)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator.SetDataOptions">SetDataOptions() (pyopensn.response.ResponseEvaluator method)</a>
 </li>
       <li><a href="pyapi/generated/pyopensn.fieldfunc.FieldFunctionInterpolation.html#pyopensn.fieldfunc.FieldFunctionInterpolation.SetFieldFunction">SetFieldFunction() (pyopensn.fieldfunc.FieldFunctionInterpolation method)</a>
 

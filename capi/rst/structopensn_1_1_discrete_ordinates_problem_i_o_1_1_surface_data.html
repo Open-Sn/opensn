@@ -96,10 +96,10 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceDataE">
 <span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceData</span></span></span><br /></dt>
-<dd><p>Flattened angular-flux data for a surface and groupset. </p>
-<p>The angular flux <code class="docutils literal notranslate"><span class="pre">psi</span></code> is ordered by cell, face node, direction, and group. The <code class="docutils literal notranslate"><span class="pre">omega</span></code> array follows cell, face node, direction, and Cartesian component, with three components per node-direction pair. The <code class="docutils literal notranslate"><span class="pre">mu</span></code>, <code class="docutils literal notranslate"><span class="pre">wt_d</span></code>, and <code class="docutils literal notranslate"><span class="pre">fe_shape</span></code> arrays follow cell, face node, and direction, with one value per node-direction pair. The <code class="docutils literal notranslate"><span class="pre">mass_matrix</span></code> array is ordered by cell, row face node, and column face node.</p>
-<p>The <code class="docutils literal notranslate"><span class="pre">node_index</span></code> and <code class="docutils literal notranslate"><span class="pre">dir_index</span></code> arrays contain start offsets into <code class="docutils literal notranslate"><span class="pre">psi</span></code> for each face node and node-direction pair, respectively. All arrays, including the index arrays, are empty when the requested surface has no local faces.</p>
-<p><code class="docutils literal notranslate"><span class="pre">psi</span></code> holds the face-node values of the problem’s stored angular flux on the cell that owns the face; the two sides of an interior surface are stored under separate tags. After an adjoint steady-state solve the stored angular flux is the adjoint flux for the listed direction, so forward and adjoint data with the same indices refer to the same direction. </p>
+<dd><p>Angular-flux data of one surface tag and groupset. </p>
+<p><code class="docutils literal notranslate"><span class="pre">omega</span></code> holds the groupset’s direction vectors, three components per direction, and <code class="docutils literal notranslate"><span class="pre">weights</span></code> its quadrature weights. The cosine of direction d with the normal of face f is <code class="docutils literal notranslate"><span class="pre">omega_d</span> <span class="pre">.</span> <span class="pre">normal_f</span></code>.</p>
+<p><code class="docutils literal notranslate"><span class="pre">psi</span></code> holds the face-node values of the problem’s stored angular flux on the cell that owns the face, ordered by face node (as in <a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map.html#structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map"><span class="std std-ref">SurfaceMap</span></a>), direction, and group: the value of node k, direction d, and group g is <code class="docutils literal notranslate"><span class="pre">psi[(k</span> <span class="pre">*</span> <span class="pre">num_directions</span> <span class="pre">+</span> <span class="pre">d)</span> <span class="pre">*</span> <span class="pre">num_groups</span> <span class="pre">+</span> <span class="pre">g]</span></code>. The two sides of an interior surface are stored under separate tags. For an adjoint problem the writer requires the physical orientation that an adjoint solve leaves, so the stored angular flux is the adjoint flux for the listed direction and forward and adjoint data with the same indices refer to the same direction.</p>
+<p><code class="docutils literal notranslate"><span class="pre">upwind_psi</span></code>, read for boundary tags only and laid out like <code class="docutils literal notranslate"><span class="pre">psi</span></code>, holds the face value upwind of each direction along the direction the data transport in (<code class="docutils literal notranslate"><span class="pre">Omega_d</span></code> for forward data, <code class="docutils literal notranslate"><span class="pre">-Omega_d</span></code> for adjoint data): the cell value of <code class="docutils literal notranslate"><span class="pre">psi</span></code> for a direction that leaves the domain and the boundary-condition value the sweep used for one that enters it (0 for vacuum, the incoming flux for isotropic and arbitrary boundaries, the reflected angular flux for reflecting boundaries). It is empty for interior tags. </p>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
@@ -108,23 +108,8 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData2muE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a49423a5cdd1b830b2a99b6658361302f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mu</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData4wt_dE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a77cf9264036caf1da87b7f115471261a"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">wt_d</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData11mass_matrixE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a711ec4bd86acf6dfba63f631e636fe0b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mass_matrix</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData8fe_shapeE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1af941ab4985e5a0b6ee93f3b5ca434964"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fe_shape</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData7weightsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a1eec90af2161131aed3fe89c72305a83"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">weights</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
@@ -133,13 +118,8 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10node_indexE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1acb8b965d48973986013ba5c3ae8bbffb"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_index</span></span></span><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData9dir_indexE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a39e6d9a994771353b8dfa2fa303b0cb6"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">dir_index</span></span></span><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO11SurfaceData10upwind_psiE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a928742a6517caff3ee24923d31f12080"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">upwind_psi</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>

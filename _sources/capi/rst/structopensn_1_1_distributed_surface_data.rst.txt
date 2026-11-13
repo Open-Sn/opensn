@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_distributed_surface_data:
+
+Struct DistributedSurfaceData
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::DistributedSurfaceData
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

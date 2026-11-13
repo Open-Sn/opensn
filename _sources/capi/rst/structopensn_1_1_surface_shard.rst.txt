@@ -1,0 +1,27 @@
+.. _exhale_struct_structopensn_1_1_surface_shard:
+
+Struct SurfaceShard
+===================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_surface_shard_1_1_groupset_values`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SurfaceShard
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

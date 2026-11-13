@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``cstdint``
+
 - ``hdf5.h``
 
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
@@ -100,6 +102,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc`
 
 - :ref:`exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155`
+
+- :ref:`exhale_function_namespaceopensn_1a3e8bd789e48f354ec20b2f6dfcd739f1`
 
 - :ref:`exhale_function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38`
 

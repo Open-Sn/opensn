@@ -1,0 +1,17 @@
+.. _exhale_struct_structopensn_1_1_surface_response:
+
+Struct SurfaceResponse
+======================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::SurfaceResponse
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

@@ -17,5 +17,6 @@ Files
 -----
 
 - :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_response_evaluator.h`
+- :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
 
 

@@ -29,7 +29,7 @@
     <script src="../../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../../genindex.html" />
     <link rel="search" title="Search" href="../../../../search.html" />
-    <link rel="next" title="C++ API" href="../../../../capi/rst/index.html" />
+    <link rel="next" title="6.2.5. Detector Responses from Surface Angular Fluxes" href="../surface_response/surface_resp.html" />
     <link rel="prev" title="6.2.3. A Multigroup 2D Glovebox" href="../glovebox_forward/glovebox.html" /> 
 </head>
 
@@ -69,6 +69,7 @@
 <li class="toctree-l4"><a class="reference internal" href="../detector_adjoint/detector_adj.html">6.2.2. A Multigroup Adjoint Response</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_forward/glovebox.html">6.2.3. A Multigroup 2D Glovebox</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">6.2.4. Adjoint Method with Multiple Detector Responses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../surface_response/surface_resp.html">6.2.5. Detector Responses from Surface Angular Fluxes</a></li>
 </ul>
 </li>
 </ul>
@@ -192,7 +193,7 @@
 <section id="Geometry">
 <h2><span class="section-number">6.2.4.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 2D multigroup, source-driven detector response problem. The neutron source is modeled as a circular region of Cf-252 encased in 0.1 cm of stainless steel (SS-316). Two He-3 detectors are then defined as circular regions of He-3 within SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="49a65594ac564fcaab7f19e315454c12" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="845fa983758540328642af6d3c75e7a3" src="../../../../_images/glovebox_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -211,13 +212,13 @@
 </pre></div>
 </div>
 </div>
-<p><img alt="34327b6bc9fb4d5e83409c13437532c7" src="../../../../_images/glovebox_mesh.png" /></p>
-<p><img alt="4fe34fd88fd348c1babdb3e558118d14" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
-<p><img alt="6569384bf9d34d44a0a1570009e821a0" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
+<p><img alt="101054f471d54cbd9e1880b4b46d8159" src="../../../../_images/glovebox_mesh.png" /></p>
+<p><img alt="e9e1253cdc314dd2b453226758e9c541" class="no-scaled-link" src="../../../../_images/det_mesh.png" style="width: 400px;" /></p>
+<p><img alt="698f9095a3964b48b3d102b932cedf63" class="no-scaled-link" src="../../../../_images/src_mesh.png" style="width: 400px;" /></p>
 <p>The total cell count for this mesh is 8,214.</p>
 <section id="Cross-Sections">
 <h3><span class="section-number">6.2.4.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
-<p>In this problem we are running a multigroup problem for the absoprtion reaction rate in a He-3 glovebox. This begins with importing our multigroup cross sections. In this case we will be using the WIMS69 group structure for 5 materials:</p>
+<p>In this problem we are running a multigroup problem for the absorption reaction rate in a He-3 glovebox. This begins with importing our multigroup cross sections. In this case we will be using the WIMS69 group structure for 5 materials:</p>
 <ul class="simple">
 <li><p>Air</p></li>
 <li><p>SS-316</p></li>
@@ -225,12 +226,13 @@
 <li><p>He-3</p></li>
 <li><p>Cf-252</p></li>
 </ul>
-<p>Since we are importing a Gmsh mesh, materials IDs are assigned to the corresponding physcial group ID. Look at <a class="reference external" href="./glovebox.msh">glovebox.msh</a> under <code class="docutils literal notranslate"><span class="pre">PhysicalNames</span></code>.</p>
+<p>Since we are importing a Gmsh mesh, material IDs are assigned to the corresponding physical group ID. Look at <a class="reference external" href="./glovebox.msh">glovebox.msh</a> under <code class="docutils literal notranslate"><span class="pre">PhysicalNames</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;WIMS69&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The WIMS69 cross sections shared by the detector-response tutorials.</span>
+<span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../../../../test/assets/xs/WIMS69&quot;</span>
 <span class="n">xs_air</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="n">xs_air</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/Air.cxs&quot;</span><span class="p">)</span>
 
@@ -428,14 +430,14 @@
 </div>
 </div>
 <p>With the adjoint data in hand and a forward source defined, we now create a <code class="docutils literal notranslate"><span class="pre">ResponseEvaluator</span></code>.</p>
-<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">buffers</span></code> (adjoint data) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">data</span></code> (the adjoint flux moments) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">ResponseEvaluator</span><span class="p">(</span><span class="n">problem</span> <span class="o">=</span> <span class="n">phys</span><span class="p">)</span>
 <span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
-    <span class="n">buffers</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;detector1&#39;</span><span class="p">,</span>
         <span class="s1">&#39;file_prefixes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;flux_moments&#39;</span><span class="p">:</span> <span class="n">data_dir</span><span class="o">+</span><span class="s1">&#39;/adjphi_det1_p&#39;</span><span class="p">}</span>
     <span class="p">}],</span>
@@ -444,7 +446,7 @@
 </pre></div>
 </div>
 </div>
-<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a data name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} =  \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q^g(\vec{r},\vec\Omega) \psi^{\dagger,g}(\vec{r},\vec\Omega) = \sum^G_g \, \int_\mathcal{D}  d^3r  \, q^g(\vec{r}) \phi^{\dagger,g}(\vec{r})\]</div>
 <p>At each group the solution <span class="math notranslate nohighlight">\(\phi^g(\vec{r})\)</span> is multiplied by the detector response at that group <span class="math notranslate nohighlight">\(\sigma^{He3,g}_{a}\)</span>.</p>
@@ -480,14 +482,14 @@
 </div>
 <p>Detector 1:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="c54c21fb2a6c4acea8736d06704c66b6" src="../../../../_images/det1_g3.png" /></p>
+<p><img alt="574ee37156ea4bdf93a912eba697c58b" src="../../../../_images/det1_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="074d29b393ed46a39d48215735afb00f" src="../../../../_images/det1_g52.png" /></p>
+<p><img alt="10019f56c3cb4abe84408e727be5420f" src="../../../../_images/det1_g52.png" /></p>
 <p>Detector 2:</p>
 <p>[1.353, 2.231] MeV</p>
-<p><img alt="19b93ea981da4ad4810f0968c63fb834" src="../../../../_images/det2_g3.png" /></p>
+<p><img alt="b545195fa2414af2894592a57e70cce6" src="../../../../_images/det2_g3.png" /></p>
 <p>[2.2e-07, 2.5e-07] MeV</p>
-<p><img alt="93726ccb6ccb4e65b0d680d21bf6cd28" src="../../../../_images/det2_g52.png" /></p>
+<p><img alt="e2bf0d60ac4e4ea996a4a3700ee78113" src="../../../../_images/det2_g52.png" /></p>
 </section>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">
@@ -523,7 +525,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../glovebox_forward/glovebox.html" class="btn btn-neutral float-left" title="6.2.3. A Multigroup 2D Glovebox" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="../../../../capi/rst/index.html" class="btn btn-neutral float-right" title="C++ API" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="../surface_response/surface_resp.html" class="btn btn-neutral float-right" title="6.2.5. Detector Responses from Surface Angular Fluxes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

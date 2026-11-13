@@ -947,9 +947,75 @@ is forward or adjoint and, for an adjoint, whether it is in the internal sweep o
 physical orientation. Response and sensitivity postprocessors require files with
 the expected role; adjoint files must have physical orientation. Files written before the quadrature
 was recorded are read with a warning by general-purpose readers, but they do not
-have enough provenance to be used as validated response or sensitivity buffers.
+have enough provenance to be used as validated response or sensitivity inputs.
 Reading is collective: a file that is missing, malformed, nonfinite, or incompatible
 on any rank raises the error on every rank, and the destination is left unchanged.
+
+Surface angular-flux files are also written one per rank, but they are not tied to
+the rank count or partition that wrote them. Each file records the number of files
+in its set, and :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
+rank's by default, or any file of the set with ``partition``. That call is not
+collective and does not check the data against the problem. To combine a whole
+set, on any number of ranks, and evaluate surface responses, pass the file prefix
+as ``surface_angular_fluxes`` in the ``data`` option of
+:py:class:`pyopensn.response.ResponseEvaluator` and call
+:py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`. Any
+rank may read any file of the set, so all files must be on a file system that
+every reading rank can access.
+
+Surface Responses
+-----------------
+
+Surface responses pair forward data with data written by an adjoint problem.
+OpenSn rejects adjoint mode for curvilinear problems, so surface responses are
+available for Cartesian geometries only; surface files written by a forward
+curvilinear problem can still be read with :py:meth:`ReadSurfaceAngularFluxes`.
+
+An interior surface written with ``interior_surfaces={"x20": ("x", 20.0)}`` is
+stored under two tags, one per side: ``x20_u``, the faces of the cells on the
+negative side, whose outward normal is the positive axis, and ``x20_d``, the
+faces of the cells on the positive side, whose outward normal is the negative
+axis. A data set reads it by its name, ``"x20"`` in the ``surfaces`` of
+``SetOptions(data=...)``, which reads both sides; a response needs both. In
+``EvaluateSurfaceResponse``, the name chooses the normal the response is
+measured along: ``"x20"`` or ``"x20_u"`` the positive axis, ``"x20_d"`` the
+negative axis, which gives the same response with the opposite sign.
+
+``EvaluateSurfaceResponse`` returns, for each surface, the ``outgoing`` part,
+carried by the directions crossing along the normal, the ``incoming`` part,
+carried by those crossing back (negative, because their cosine with the normal
+is), and their sum, the ``total``. For ``x20`` along the positive axis,
+``outgoing`` is the part carried in the +x direction and ``-incoming`` the part
+carried in the -x direction.
+
+The total response through a surface that separates the forward source from
+the detector scored by the adjoint source equals the detector response when
+the normal points from the source side to the detector side, and its negative
+otherwise. Name the side the source is on: ``x20_u`` when the source is at
+x < 20, ``x20_d`` when it is at x > 20. A surface that does not separate the
+source from the detector gives zero, its outgoing and incoming parts
+cancelling. The :doc:`surface-response tutorial
+<../tutorials/applications/detector_response/surface_response/surface_resp>`
+works through both cases for two detectors on opposite sides of a source.
+
+Interior surfaces must lie on cell faces: a plane that cuts through a cell is
+rejected, because the surface would have a hole there and would no longer
+separate the source from the detector.
+
+A boundary, written with ``boundary_surfaces``, pairs upwind values, which the
+file stores for boundary tags: the boundary-condition value of each problem (0
+for a vacuum boundary, the incoming flux of an isotropic or arbitrary boundary,
+the reflected flux of a reflecting boundary) for the directions entering the
+domain, and the cell value for those leaving it. Its ``outgoing`` part pairs the
+forward flux leaving the domain with the adjoint boundary value: for a detector
+outside the domain, represented by an adjoint boundary source on that boundary,
+it equals the detector response, and with a vacuum adjoint boundary it is zero.
+Its ``incoming`` part pairs the forward boundary value with the adjoint flux of
+the cell: minus the response to a forward boundary source, and zero for a vacuum
+forward boundary. This is the boundary term of the discrete adjoint identity, so
+a boundary response is exact for the discretization, and the totals of all
+boundaries sum to the response to the volumetric forward source minus that of
+the volumetric adjoint source.
 
 For restartable solver state, prefer the restart options documented above over
 manual angular-flux files. Manual angular-flux files are useful when the

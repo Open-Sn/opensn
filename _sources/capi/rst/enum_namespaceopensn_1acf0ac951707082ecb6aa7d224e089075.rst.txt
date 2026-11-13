@@ -1,0 +1,14 @@
+.. _exhale_enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075:
+
+Enum SurfaceKind
+================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Enum Documentation
+------------------
+
+
+.. doxygenenum:: opensn::SurfaceKind
+   :project: opensn

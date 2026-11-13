@@ -1,0 +1,14 @@
+.. _exhale_variable_namespaceopensn_1ae206d1a0148489ef097959a89793ae83:
+
+Variable opensn::SURFACE_REDISTRIBUTION_BYTES
+=============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Variable Documentation
+----------------------
+
+
+.. doxygenvariable:: opensn::SURFACE_REDISTRIBUTION_BYTES
+   :project: opensn

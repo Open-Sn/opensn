@@ -491,33 +491,74 @@ before any file is opened.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ReadSurfaceAngularFluxes">
-<span class="sig-name descname"><span class="pre">ReadSurfaceAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaces:</span> <span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ReadSurfaceAngularFluxes" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">ReadSurfaceAngularFluxes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self:</span> <span class="pre">opensn::DiscreteOrdinatesProblem</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file_base:</span> <span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">surfaces:</span> <span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">partition:</span> <span class="pre">Optional[int]</span> <span class="pre">=</span> <span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#pyopensn.solver.DiscreteOrdinatesCurvilinearProblem.ReadSurfaceAngularFluxes" title="Link to this definition"></a></dt>
 <dd><p>Read surface angular fluxes from file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>file_base</strong> (<em>str</em>) – File basename.</p></li>
-<li><p><strong>surfaces</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Stored surface tags to read. Use the boundary name for an exterior boundary. For an
-interior surface named ‘&lt;name&gt;’, use ‘&lt;name&gt;_u’ for faces whose outward normal aligns with
-the positive axis and ‘&lt;name&gt;_d’ for faces with the opposite orientation.</p></li>
+<li><p><strong>surfaces</strong> (<em>list</em><em>[</em><em>str</em><em>]</em>) – Surface names to read. Use the boundary name for an exterior boundary. An interior surface
+named ‘&lt;name&gt;’ is stored as ‘&lt;name&gt;_u’, for faces whose outward normal aligns with the
+positive axis, and ‘&lt;name&gt;_d’, for faces with the opposite orientation: pass ‘&lt;name&gt;’ to
+read both, ‘_u’ first, or one of the tags to read that side only. A name that is itself a
+stored tag reads that tag; a bare name reads two tags only if both are recorded as sides
+of an interior surface.</p></li>
+<li><p><strong>partition</strong> (<em>int</em><em>, </em><em>optional</em>) – Index of the file to read, <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;partition&gt;.h5</span></code>. Defaults to this rank.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>Surface mapping and angular-flux data for each groupset and requested surface. Each entry
-has keys ‘groupset_id’, ‘adjoint’, ‘surface_name’, ‘mapping’, and ‘data’. ‘adjoint’ is
-True when the file was written from an adjoint problem. The ‘cell_map’ in ‘mapping’ maps
-face centroids, with ‘centroid_origin’ subtracted before each coordinate is divided by
-‘centroid_spacing’ (1e-9 times the global mesh extent) and rounded to an integer, to the
-surface face index. The same face has the same key from either side of an interior surface
-and in every file for the same mesh.</p>
+<dd class="field-even"><p><p>Surface mapping and angular-flux data for each groupset and read tag, ordered by groupset
+and then by tag; ‘surface_name’ is the tag. Each entry has keys ‘groupset_id’, ‘adjoint’,
+‘num_partitions’, ‘file_set_id’, ‘num_directions’, ‘num_groups’, ‘first_group’,
+‘surface_name’, ‘interior’, ‘mapping’, and ‘data’. ‘adjoint’ is True when the file was
+written from an adjoint problem. ‘file_set_id’ is shared by the files written by one
+WriteSurfaceAngularFluxes call. ‘interior’ is True when the tag is one side of an interior
+surface and False for a boundary. ‘num_partitions’ is the number of files in the set, one
+per writing rank. ‘num_directions’ (D) and ‘num_groups’ (G) are the counts of the entry’s
+groupset, and ‘first_group’ its first group.</p>
+<p>’mapping’ holds the face geometry, the same for every groupset of a tag. Faces are listed in
+file order with ‘cell_ids’ and ‘num_face_nodes’; ‘nodes_x’, ‘nodes_y’, ‘nodes_z’, and
+‘fe_shape’ (the face integral of each node’s shape function) list the nodes of each face in
+turn; ‘normals’ holds the outward normal of each face’s cell, three components per face; and
+‘M_ij’ the face mass matrix of each face in turn, row-major by face node. Face integrals
+include the angular extent of curvilinear coordinates. The ‘cell_map’ maps face centroids,
+with ‘centroid_origin’ subtracted before each coordinate is divided by ‘centroid_spacing’
+(1e-9 times the global mesh extent) and rounded to an integer, to the face index. The same
+face has the same key from either side of an interior surface and in every file for the same
+mesh.</p>
+<p>’data’ holds the groupset’s directions ‘omega’ (three components per direction) and
+quadrature ‘weights’, and the angular flux ‘psi’ of the face’s cell: the value at node k
+(counted over the faces in turn), direction d, and group g is <code class="docutils literal notranslate"><span class="pre">psi[(k</span> <span class="pre">*</span> <span class="pre">D</span> <span class="pre">+</span> <span class="pre">d)</span> <span class="pre">*</span> <span class="pre">G</span> <span class="pre">+</span> <span class="pre">g]</span></code>.
+The cosine of direction d with face f is the dot product of ‘omega’ d and ‘normals’ f. For a
+boundary tag, ‘upwind_psi’ (empty for an interior tag), laid out like ‘psi’, holds the face
+value upwind of each direction along the direction the data transport in (Omega for forward
+data, -Omega for adjoint data): ‘psi’ for a direction leaving the domain, and the
+boundary-condition value the sweep used for one entering it.</p>
+</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>List[dict]</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
-<p>Each rank reads <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>; the files must have been written with the same mesh
-partitioning.</p>
+<p>Not collective: each call reads one file. The data are checked for internal consistency but
+not against this problem, so a file set written by any number of ranks, with any
+partitioning, can be read. When fewer ranks read a set than wrote it, the files from the
+reading rank count up to <code class="docutils literal notranslate"><span class="pre">num_partitions</span> <span class="pre">-</span> <span class="pre">1</span></code> are read only when requested with
+<code class="docutils literal notranslate"><span class="pre">partition</span></code>. The <code class="docutils literal notranslate"><span class="pre">surface_angular_fluxes</span></code> data option of
+<a class="reference internal" href="pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.response.ResponseEvaluator</span></code></a> reads a whole file set and distributes it over
+the ranks automatically.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">surfaces</span></code> is empty or <code class="docutils literal notranslate"><span class="pre">partition</span></code> is negative.</p></li>
+<li><p><strong>RuntimeError</strong> – If the file is missing, malformed, contains non-finite values, was written by an
+    unsupported version of OpenSn, or records a set of at most <code class="docutils literal notranslate"><span class="pre">partition</span></code> files.
+    Files of another set written to the same prefix are not detected by a single read;
+    compare their <code class="docutils literal notranslate"><span class="pre">file_set_id</span></code> with that of partition 0.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -805,19 +846,39 @@ to each problem: problems that share a <code class="docutils literal notranslate
 <li><p><strong>interior_surfaces</strong> (<em>dict</em><em>[</em><em>str</em><em>, </em><em>tuple</em><em>[</em><em>str</em><em>, </em><em>float</em><em>]</em><em>]</em><em>, </em><em>default={}</em>) – Interior surfaces in the form {‘name’: (‘axis’, value)}, where axis is ‘x’, ‘y’, or ‘z’.
 Each interior surface is written under two tags: ‘&lt;name&gt;_u’ for faces whose outward normal
 aligns with the positive axis and ‘&lt;name&gt;_d’ for faces with the opposite orientation.
-An interior surface must match at least one cell face, must lie on cell faces inside the
-mesh, and may not share a plane with another interior surface. Its generated tags may not
-equal a requested boundary name. It may not coincide with an exterior boundary; export
-that boundary by name using boundary_surfaces instead.</p></li>
+An interior surface must lie inside the mesh, on cell faces (it may not cut through a
+cell), must match at least one cell face, and may not share a plane with another interior
+surface. Neither its name nor its
+generated tags may equal a requested boundary name. It may not coincide with an exterior
+boundary; export that boundary by name using boundary_surfaces instead.</p></li>
 </ul>
 </dd>
 </dl>
 <p class="rubric">Notes</p>
 <p>Requires <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux=True</span></code>. Collective over all ranks; surface selections may
-differ by rank. Each rank writes <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. The file records whether the problem
-is in adjoint mode. After an adjoint steady-state solve, the stored angular flux is the adjoint
-flux for the listed direction, so forward and adjoint data with the same indices refer to the
-same direction.</p>
+differ by rank, but each file contains only its rank’s tags, and
+<a class="reference internal" href="pyopensn.response.ResponseEvaluator.html#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.response.ResponseEvaluator</span></code></a> requires every requested tag in every file of a
+set. Request the same surfaces on every rank for data that a ResponseEvaluator will read. Each
+rank writes <code class="docutils literal notranslate"><span class="pre">&lt;file_base&gt;&lt;rank&gt;.h5</span></code>. The file records whether the problem
+is in adjoint mode, and for each tag whether it is one side of an interior surface or a
+boundary, so boundary names may end in <code class="docutils literal notranslate"><span class="pre">_u</span></code> or <code class="docutils literal notranslate"><span class="pre">_d</span></code>. An adjoint problem must have completed an adjoint steady-state or
+k-eigenvalue solve, which leaves the stored angular flux as the adjoint flux for the listed
+direction, so forward and adjoint data with the same indices refer to the same direction.
+Restart data are loaded in the internal sweep orientation, so execute an adjoint solver after
+a restart read before writing.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">options.save_angular_flux</span></code> is false; if the problem is in adjoint mode and its
+    solution is not in the physical orientation left by an adjoint solve; if a boundary name is
+    unknown or not on the mesh; or if an interior surface has an invalid axis, lies outside the
+    mesh, cuts through a cell, shares a plane with another interior surface, coincides with an
+    exterior boundary, matches no mesh faces, or has a name or generated tag equal to a requested boundary
+    name.</p></li>
+<li><p><strong>RuntimeError</strong> – If no rank requests a surface, or if the file cannot be written.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">

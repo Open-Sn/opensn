@@ -133,6 +133,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_distributed_mesh_generator_1_1_distributed_mesh_data`
 
+- :ref:`exhale_struct_structopensn_1_1_distributed_surface_data`
+
 - :ref:`exhale_struct_structopensn_1_1_dummy_stream`
 
 - :ref:`exhale_struct_structopensn_1_1_dummy_stream_1_1_dummy_stream_buffer`
@@ -251,6 +253,8 @@ Classes
 
 - :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_boundary_source`
 
+- :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_flux_data`
+
 - :ref:`exhale_struct_structopensn_1_1_rule_values`
 
 - :ref:`exhale_struct_structopensn_1_1_simd_index`
@@ -286,6 +290,14 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_face`
 
 - :ref:`exhale_struct_structopensn_1_1_surface_mesh_1_1_poly_face`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_quadrature`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_response`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_shard`
+
+- :ref:`exhale_struct_structopensn_1_1_surface_shard_1_1_groupset_values`
 
 - :ref:`exhale_struct_structopensn_1_1_sweep_runtime`
 
@@ -864,6 +876,8 @@ Enums
 
 - :ref:`exhale_enum_namespaceopensn_1a91df367d01cc0205fa03a4a081195f3e`
 
+- :ref:`exhale_enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075`
+
 - :ref:`exhale_enum_namespaceopensn_1a31afc56a2549f6d301262f8f3d877f07`
 
 - :ref:`exhale_enum_namespaceopensn_1a146a48e86c7b4ca1f0c3e881a3f738ff`
@@ -1017,6 +1031,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1af6184d19080033614eaed52625ebfdac`
 
+- :ref:`exhale_function_namespaceopensn_1a2488c0769f6e1f8cab0b32b969f84f84`
+
 - :ref:`exhale_function_namespaceopensn_1a18d2edd68d58fe789c571ebbc05f0fb4`
 
 - :ref:`exhale_function_namespaceopensn_1a2385799c61ab105543d6b9154a007104`
@@ -1052,6 +1068,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a5ed5bb563b45f1906f828d406750c3c1`
 
 - :ref:`exhale_function_namespaceopensn_1a42728ba3cf18aa0e98f4997376672d65`
+
+- :ref:`exhale_function_namespaceopensn_1a26c6799e3eb4de70e747fed3ce12b4e5`
 
 - :ref:`exhale_function_namespaceopensn_1a6fba4337d1fd96234b6edbe19504b575`
 
@@ -1142,6 +1160,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc`
 
 - :ref:`exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155`
+
+- :ref:`exhale_function_namespaceopensn_1a3e8bd789e48f354ec20b2f6dfcd739f1`
 
 - :ref:`exhale_function_namespaceopensn_1a3ea5d8f6cdd02d37bc38ca1911d84d38`
 
@@ -1381,6 +1401,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ad0c00d88888a00738dc5fa25ba3e15b1`
 
+- :ref:`exhale_function_namespaceopensn_1a198d54428c01927dea20b2a975c350aa`
+
 - :ref:`exhale_function_namespaceopensn_1a1c4ba3e9e83c916abb606d0d44847813`
 
 - :ref:`exhale_function_namespaceopensn_1ac5f3cd9b97b1a18969688c279fa229e3`
@@ -1506,6 +1528,8 @@ Variables
 - :ref:`exhale_variable_namespaceopensn_1af3fecae321821ae5515300eb3f508615`
 
 - :ref:`exhale_variable_namespaceopensn_1ac6fbe4eb58362a1ed9253c55863b9b84`
+
+- :ref:`exhale_variable_namespaceopensn_1ae206d1a0148489ef097959a89793ae83`
 
 - :ref:`exhale_variable_namespaceopensn_1ad68991c35026374cafaed8fb496b25ca`
 

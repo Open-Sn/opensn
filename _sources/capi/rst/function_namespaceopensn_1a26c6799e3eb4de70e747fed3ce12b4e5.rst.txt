@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a26c6799e3eb4de70e747fed3ce12b4e5:
+
+Function opensn::DistributeSurfaceAngularFluxes
+===============================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::DistributeSurfaceAngularFluxes(const std::string&, const std::vector<std::string>&, const mpi::Communicator&, std::uint64_t)
+   :project: opensn

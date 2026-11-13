@@ -69,6 +69,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">6.2.2. A Multigroup Adjoint Response</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_forward/glovebox.html">6.2.3. A Multigroup 2D Glovebox</a></li>
 <li class="toctree-l4"><a class="reference internal" href="../glovebox_adjoint/glovebox_adj.html">6.2.4. Adjoint Method with Multiple Detector Responses</a></li>
+<li class="toctree-l4"><a class="reference internal" href="../surface_response/surface_resp.html">6.2.5. Detector Responses from Surface Angular Fluxes</a></li>
 </ul>
 </li>
 </ul>
@@ -216,7 +217,7 @@ OpenSn version 0.0.1
 <section id="Geometry">
 <h2><span class="section-number">6.2.2.2. </span><strong>Geometry</strong><a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>In this example, we define a 1D multi-group, source-driven detector response problem using the WIMS69 energy group structure. The neutron source is modeled as a 0.4 cm slab of Cf-252 encased in 0.1 cm slabs of stainless steel (SS-316). The detector is modeled as a 2.4 cm region of He-3 enclosed in a 0.07 cm SS-316 sleeve and surrounded by high-density polyethylene (HDPE). The geometric layout of the problem is shown below:</p>
-<p><img alt="2b644a4f1b8546979b7be27017c8b6a8" src="../../../../_images/detector_geom.png" /></p>
+<p><img alt="1107f6b2ff6442ebb4ed723ae4072d11" src="../../../../_images/detector_geom.png" /></p>
 <hr class="docutils" />
 </section>
 <section id="Mesh">
@@ -363,7 +364,8 @@ OpenSn version 0.0.1
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[7]:
 </pre></div>
 </div>
-<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;WIMS69&quot;</span>
+<div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># The WIMS69 cross sections shared by the detector-response tutorials.</span>
+<span class="n">xs_dir</span> <span class="o">=</span> <span class="s2">&quot;../../../../../../test/assets/xs/WIMS69&quot;</span>
 <span class="n">xs_air</span> <span class="o">=</span> <span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="n">xs_air</span><span class="o">.</span><span class="n">LoadFromOpenSn</span><span class="p">(</span><span class="n">xs_dir</span><span class="o">+</span><span class="s2">&quot;/Air.cxs&quot;</span><span class="p">)</span>
 
@@ -667,14 +669,14 @@ OpenSn version 0.0.1
 </div>
 </div>
 <p>With the adjoint data in hand and a forward source defined, we now create a <code class="docutils literal notranslate"><span class="pre">ResponseEvaluator</span></code>.</p>
-<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">buffers</span></code> (adjoint data) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
+<p>We supply two options to the <code class="docutils literal notranslate"><span class="pre">evaluator</span></code>; the <code class="docutils literal notranslate"><span class="pre">data</span></code> (the adjoint flux moments) and the <code class="docutils literal notranslate"><span class="pre">sources</span></code>.</p>
 <div class="nbinput docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[15]:
 </pre></div>
 </div>
 <div class="input_area highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">evaluator</span> <span class="o">=</span> <span class="n">ResponseEvaluator</span><span class="p">(</span><span class="n">problem</span> <span class="o">=</span> <span class="n">phys</span><span class="p">)</span>
 <span class="n">evaluator</span><span class="o">.</span><span class="n">SetOptions</span><span class="p">(</span>
-    <span class="n">buffers</span> <span class="o">=</span> <span class="p">[{</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">[{</span>
         <span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;detector&#39;</span><span class="p">,</span>
         <span class="s1">&#39;file_prefixes&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;flux_moments&#39;</span><span class="p">:</span> <span class="n">data_dir</span><span class="o">+</span><span class="s1">&#39;/adjphi_p&#39;</span><span class="p">}</span>
     <span class="p">}],</span>
@@ -691,7 +693,7 @@ OpenSn version 0.0.1
 [0]  Reading flux moments from Data/adjphi_p
 </pre></div></div>
 </div>
-<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a buffer name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
+<p>For computing the detector response we make use of <code class="docutils literal notranslate"><span class="pre">EvaluateResponse</span></code> which given a data name will compute an inner product of the adjoint flux <span class="math notranslate nohighlight">\(\phi^{\dagger,}\)</span> against the forward source <span class="math notranslate nohighlight">\(q\)</span> using the <a class="reference internal" href="../../../../theory/adjoint.html"><span class="doc">duality principle</span></a> such that:</p>
 <div class="math notranslate nohighlight">
 \[\text{QoI} =  \sum^G_g \, \text{RR}^g = \sum^G_g \, \int_\mathcal{D} d^3r \, \int_{(4\pi)}   d\Omega  \, q^g(\vec{r},\vec\Omega) \psi^{\dagger,g}(\vec{r},\vec\Omega) = \sum^G_g \, \int_\mathcal{D}  d^3r  \, q^g(\vec{r}) \phi^{\dagger,g}(\vec{r})\]</div>
 <div class="nbinput docutils container">

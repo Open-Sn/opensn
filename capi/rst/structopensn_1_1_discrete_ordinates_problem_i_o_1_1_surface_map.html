@@ -96,7 +96,9 @@
 <dl class="cpp struct">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE">
 <span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SurfaceMap</span></span></span><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
+<dd><p>Geometry and finite-element data of the faces of one surface tag, shared by all groupsets. </p>
+<p>Faces are stored in file order. <code class="docutils literal notranslate"><span class="pre">num_face_nodes</span></code> gives the node count n_f of each face, and the node arrays (<code class="docutils literal notranslate"><span class="pre">nodes_x</span></code>, <code class="docutils literal notranslate"><span class="pre">nodes_y</span></code>, <code class="docutils literal notranslate"><span class="pre">nodes_z</span></code>, <code class="docutils literal notranslate"><span class="pre">fe_shape</span></code>) list the nodes of every face in turn. <code class="docutils literal notranslate"><span class="pre">normals</span></code> holds the outward normal of each face’s cell, three components per face, and <code class="docutils literal notranslate"><span class="pre">mass_matrix</span></code> the n_f x n_f face mass matrix of each face in turn, row-major by face node. <code class="docutils literal notranslate"><span class="pre">fe_shape</span></code> holds the face integral of each node’s shape function. Face integrals include the angular extent of curvilinear coordinates. All arrays are empty when the tag has no faces in the file. </p>
+<div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8cell_idsE">
@@ -128,12 +130,6 @@
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11cell_strideE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a6ece6888b235233ee25c2eb3aaa9846f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">cell_stride</span></span></span><br /></dt>
-<dd><p>Start offset into the corresponding <a class="reference internal" href="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data.html#structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_data_1a2c93dab7741f908b66ae275112a829c9"><span class="std std-ref">SurfaceData::psi</span></a> array for each surface cell. </p>
-</dd></dl>
-
-<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_xE">
 <span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a16f3403abd0e47c874e5aba1851ac708"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes_x</span></span></span><br /></dt>
 <dd></dd></dl>
@@ -146,6 +142,21 @@
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7nodes_zE">
 <span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1adea99d8ef44dbc4fe255af2abd2f9a5c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">nodes_z</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap7normalsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1aa933e1e6b6fdb3fbed867703af72a0ab"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">normals</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap8fe_shapeE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a36ae3fbb5dcb4c1916f6685256444b17"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">fe_shape</span></span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMap11mass_matrixE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_map_1a2b65d3926f2df1614cf4b53c825ef719"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mass_matrix</span></span></span><br /></dt>
 <dd></dd></dl>
 
 </div>

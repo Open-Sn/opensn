@@ -92,6 +92,7 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/input_parameters.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 
@@ -103,12 +104,12 @@
 <span class="cm"> *</span>
 <span class="cm"> * The workflow for this utility is constructed to minimize the file reading necessary for</span>
 <span class="cm"> * evaluations. To begin, one should add all adjoint solutions that are desired for response</span>
-<span class="cm"> * computations into the buffer. Then, one should define the different forward source</span>
+<span class="cm"> * computations as named data sets. Then, one should define the different forward source</span>
 <span class="cm"> * configurations of interest. With this, the user can now iterate over the source</span>
-<span class="cm"> * configurations and convolve them against all available adjoint solutions in the buffer. For</span>
+<span class="cm"> * configurations and convolve them against all available adjoint data sets. For</span>
 <span class="cm"> * example, \code{.py}</span>
 <span class="cm"> *    evaluator = ResponseEvaluator(problem=phys)</span>
-<span class="cm"> *    evaluator.SetOptions(buffers=[{&quot;name&quot;: &quot;buff1&quot;, &quot;file_prefixes&quot;: {...}}, ...])</span>
+<span class="cm"> *    evaluator.SetOptions(data=[{&quot;name&quot;: &quot;detector&quot;, &quot;file_prefixes&quot;: {...}}, ...])</span>
 <span class="cm"> *</span>
 <span class="cm"> *    responses = {}</span>
 <span class="cm"> *    for config_index, source_config in enumerate(source_configs):</span>
@@ -116,17 +117,24 @@
 <span class="cm"> *        evaluator.SetOptions(sources=source_config)</span>
 <span class="cm"> *</span>
 <span class="cm"> *        responses[config_index] = {</span>
-<span class="cm"> *            buffer_name: evaluator.EvaluateResponse(buffer_name)</span>
-<span class="cm"> *            for buffer_name in buffer_names</span>
+<span class="cm"> *            data_name: evaluator.EvaluateResponse(data_name)</span>
+<span class="cm"> *            for data_name in data_names</span>
 <span class="cm"> *        }</span>
 <span class="cm"> * \endcode</span>
 <span class="cm"> */</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">ResponseEvaluator</span>
 <span class="p">{</span>
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FluxMomentBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AngularFluxBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">;</span>
-<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AdjointBuffer</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">FluxMomentBuffer</span><span class="p">,</span><span class="w"> </span><span class="n">AngularFluxBuffer</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FluxMomentData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Surface angular fluxes distributed by face over the ranks; see SurfaceShard.</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">SurfaceAngularFluxData</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">DistributedSurfaceData</span><span class="p">;</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">FluxData</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">FluxMomentData</span><span class="w"> </span><span class="n">phi</span><span class="p">;</span>
+<span class="w">    </span><span class="n">AngularFluxData</span><span class="w"> </span><span class="n">psi</span><span class="p">;</span>
+<span class="w">    </span><span class="n">SurfaceAngularFluxData</span><span class="w"> </span><span class="n">surf_psi</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">MaterialSources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="p">;</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">PointSources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">PointSource</span><span class="o">&gt;&gt;</span><span class="p">;</span>
@@ -143,7 +151,17 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBufferOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Add a named data set. `file_prefixes` may contain `flux_moments` and `angular_fluxes`, the</span>
+<span class="cm">   * adjoint flux moments and angular fluxes that EvaluateResponse folds against the forward</span>
+<span class="cm">   * sources, and `surface_angular_fluxes`, the surface data that EvaluateSurfaceResponse pairs.</span>
+<span class="cm">   * Flux moments and angular fluxes must have been written with the current partitioning. The</span>
+<span class="cm">   * listed `surfaces` are read from all surface files of the prefix, whatever number of ranks</span>
+<span class="cm">   * and partitioning wrote them, and distributed by face over the current ranks with</span>
+<span class="cm">   * DistributeSurfaceAngularFluxes. Each is a boundary name or an interior surface name, which</span>
+<span class="cm">   * reads both stored sides `&lt;name&gt;_u` and `&lt;name&gt;_d`. Collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDataOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSourceOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
@@ -154,17 +172,43 @@
 <span class="w">  </span><span class="c1">/// Clear the existing forward sources from the response evaluator.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearForwardSources</span><span class="p">();</span>
 
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddResponseBuffers</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddResponseData</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddResponseSources</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBoundarySourceOptionsBlock</span><span class="p">();</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Evaluate a response using the specified adjoint buffer with the currently defined sources in</span>
-<span class="cm">   * the solver.</span>
+<span class="cm">   * Evaluate a response by folding the currently defined forward sources against the adjoint flux</span>
+<span class="cm">   * moments and angular fluxes of the named data set added with SetDataOptions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Collective. Throws `std::invalid_argument` for an unknown data set and `std::logic_error` if</span>
+<span class="cm">   * the data set lacks the flux moments or angular fluxes that the defined sources require.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">EvaluateResponse</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">buffer_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">EvaluateResponse</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">data_name</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Evaluate the surface response of forward and adjoint surface angular fluxes added with</span>
+<span class="cm">   * SetDataOptions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Returns one surface response per selected surface, as defined in ComputeSurfaceResponses: its</span>
+<span class="cm">   * outgoing and incoming parts and their sum, the response carried across the surface. They are</span>
+<span class="cm">   * also logged at verbosity 1.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param fwd_data_name Name of the forward data set.</span>
+<span class="cm">   * \param adj_data_name Name of the adjoint data set.</span>
+<span class="cm">   * \param surfaces Surfaces to evaluate: boundary names and interior surface names (`&lt;name&gt;` or</span>
+<span class="cm">   *        `&lt;name&gt;_u` along the `_u` normal, `&lt;name&gt;_d` along the `_d` normal). If empty, every</span>
+<span class="cm">   *        surface in the forward data is evaluated, in name order.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Collective. Throws `std::invalid_argument` for unknown data sets or surfaces, a surface</span>
+<span class="cm">   * requested more than once, and incompatible data, and `std::logic_error` if the forward and</span>
+<span class="cm">   * adjoint data do not cover the same faces.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SurfaceResponse</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="n">EvaluateSurfaceResponse</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fwd_data_name</span><span class="p">,</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">adj_data_name</span><span class="p">,</span>
+<span class="w">                          </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">surfaces</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{})</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
@@ -182,7 +226,7 @@
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">AdjointBuffer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">adjoint_buffers_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">FluxData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">flux_data_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">MaterialSources</span><span class="w"> </span><span class="n">material_sources_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">PointSources</span><span class="w"> </span><span class="n">point_sources_</span><span class="p">;</span>
@@ -194,9 +238,9 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="n">GetInputParameters</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">ResponseEvaluator</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Create</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">ParameterBlock</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
-<span class="w">  </span><span class="c1">/// Return the schema for the options block, covering adjoint buffers and forward sources.</span>
+<span class="w">  </span><span class="c1">/// Return the schema for the options block, covering data sets and forward sources.</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetOptionsBlock</span><span class="p">();</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetBufferOptionsBlock</span><span class="p">();</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetDataOptionsBlock</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetSourceOptionsBlock</span><span class="p">();</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">InputParameters</span><span class="w"> </span><span class="nf">GetMaterialSourceOptionsBlock</span><span class="p">();</span>
 <span class="p">};</span>

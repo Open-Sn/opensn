@@ -110,14 +110,50 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_partitionsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a1a046fcced4cf70c86c377d2543b9c77"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_partitions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>Number of files in the file set, one per writing rank. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11file_set_idE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a7f0804c47a81d67effc0ad1399cd86d7"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">file_set_id</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>Random identifier shared by the files written by one WriteSurfaceAngularFluxes call. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux14num_directionsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a747a4e649c02297b9c05c4f6918e3c5b"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_directions</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>Direction and group counts of the groupset, also set when the surface has no local faces. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux10num_groupsE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a4cda40abdadcf5e10267e9bffb174390"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">num_groups</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux11first_groupE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1aa5b932b8851ee6e9ae0640c1ef14a4a9"></span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">first_group</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><br /></dt>
+<dd><p>First group of the groupset. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux12surface_nameE">
 <span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a0f6554cdf6bddd5d4fc2bea5fc19fc87"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">string</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">surface_name</span></span></span><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux8interiorE">
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1a483a9c06792b5975bebb0da3d6f09ad8"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">interior</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><br /></dt>
+<dd><p>True when the tag is one side, <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_u</span></code> or <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_d</span></code>, of an interior surface; false for a boundary, whatever its name. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux7mappingE">
-<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1ad3b7a8fd7229e901a72ab84b2b77306a"></span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE" title="opensn::DiscreteOrdinatesProblemIO::SurfaceMap"><span class="n"><span class="pre">SurfaceMap</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mapping</span></span></span><br /></dt>
-<dd></dd></dl>
+<span class="target" id="structopensn_1_1_discrete_ordinates_problem_i_o_1_1_surface_angular_flux_1ab0a3453acfccdea3876524597e6c1461"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_discrete_ordinates_problem_i_o.html#_CPPv4N6opensn26DiscreteOrdinatesProblemIO10SurfaceMapE" title="opensn::DiscreteOrdinatesProblemIO::SurfaceMap"><span class="n"><span class="pre">SurfaceMap</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">mapping</span></span></span><br /></dt>
+<dd><p>Face geometry of the tag, shared by the entries of every groupset of the tag. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn26DiscreteOrdinatesProblemIO18SurfaceAngularFlux4dataE">

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a3e8bd789e48f354ec20b2f6dfcd739f1:
+
+Function opensn::H5GetDataset1DSize
+===================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5GetDataset1DSize(hid_t, const std::string&, std::uint64_t&)
+   :project: opensn

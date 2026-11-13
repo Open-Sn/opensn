@@ -270,6 +270,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_distributed_surface_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_dummy_stream.rst
 
 .. toctree::
@@ -570,6 +575,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_response_evaluator_1_1_flux_data.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_rule_values.rst
 
 .. toctree::
@@ -656,6 +666,26 @@ Classes and Structs
    :maxdepth: 1
 
    structopensn_1_1_surface_mesh_1_1_poly_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_quadrature.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_response.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_shard.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_surface_shard_1_1_groupset_values.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2105,6 +2135,11 @@ Enums
    :maxdepth: 1
 
    enum_namespaceopensn_1a91df367d01cc0205fa03a4a081195f3e.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   enum_namespaceopensn_1acf0ac951707082ecb6aa7d224e089075.rst
 
 .. toctree::
    :maxdepth: 1
@@ -3653,6 +3688,11 @@ Files
    :maxdepth: 1
 
    file_framework_mesh_logical_volume_surface_mesh_logical_volume.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h.rst
 
 .. toctree::
    :maxdepth: 1

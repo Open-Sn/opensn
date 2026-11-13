@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a2488c0769f6e1f8cab0b32b969f84f84:
+
+Function opensn::ComputeSurfaceResponses
+========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeSurfaceResponses(const DistributedSurfaceData&, const DistributedSurfaceData&, const std::vector<std::string>&, const mpi::Communicator&)
+   :project: opensn

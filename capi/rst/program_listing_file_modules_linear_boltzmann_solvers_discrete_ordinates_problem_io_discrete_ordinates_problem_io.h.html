@@ -91,8 +91,10 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
@@ -175,6 +177,33 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">FaceCentroidKey</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">tuple</span><span class="o">&lt;</span><span class="kt">int64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">int64_t</span><span class="o">&gt;</span><span class="p">;</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Key a surface face by its centroid. The centroid is summed over the nodes in a canonical</span>
+<span class="cm">   * (sorted) order, so the same face yields a bit-identical key from either side of an interior</span>
+<span class="cm">   * surface and in every file written for the same mesh. Each component is</span>
+<span class="cm">   * `llround((centroid - centroid_origin) / centroid_spacing)`.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param nodes Face node locations, in any order. Must not be empty.</span>
+<span class="cm">   * \param centroid_origin Origin subtracted from the centroid.</span>
+<span class="cm">   * \param centroid_spacing Key spacing. Must be positive and finite.</span>
+<span class="cm">   * \param context Description of the face source, used in error messages.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">FaceCentroidKey</span><span class="w"> </span><span class="nf">MakeFaceCentroidKey</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">centroid_origin</span><span class="p">,</span>
+<span class="w">                                             </span><span class="kt">double</span><span class="w"> </span><span class="n">centroid_spacing</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">context</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Geometry and finite-element data of the faces of one surface tag, shared by all groupsets.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Faces are stored in file order. `num_face_nodes` gives the node count n_f of each face, and the</span>
+<span class="cm">   * node arrays (`nodes_x`, `nodes_y`, `nodes_z`, `fe_shape`) list the nodes of every face in turn.</span>
+<span class="cm">   * `normals` holds the outward normal of each face&#39;s cell, three components per face, and</span>
+<span class="cm">   * `mass_matrix` the n_f x n_f face mass matrix of each face in turn, row-major by face node.</span>
+<span class="cm">   * `fe_shape` holds the face integral of each node&#39;s shape function. Face integrals include the</span>
+<span class="cm">   * angular extent of curvilinear coordinates. All arrays are empty when the tag has no faces in</span>
+<span class="cm">   * the file.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceMap</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_ids</span><span class="p">;</span>
@@ -190,41 +219,42 @@
 <span class="cm">     * written for the same mesh.</span>
 <span class="cm">     */</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">FaceCentroidKey</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_map</span><span class="p">;</span>
-<span class="w">    </span><span class="cm">/** Start offset into the corresponding SurfaceData::psi array for each surface cell. */</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_stride</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes_x</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes_y</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">nodes_z</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">normals</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fe_shape</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mass_matrix</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Flattened angular-flux data for a surface and groupset.</span>
+<span class="cm">   * Angular-flux data of one surface tag and groupset.</span>
 <span class="cm">   *</span>
-<span class="cm">   * The angular flux `psi` is ordered by cell, face node, direction, and group. The `omega`</span>
-<span class="cm">   * array follows cell, face node, direction, and Cartesian component, with three components per</span>
-<span class="cm">   * node-direction pair. The `mu`, `wt_d`, and `fe_shape` arrays follow cell, face node, and</span>
-<span class="cm">   * direction, with one value per node-direction pair. The `mass_matrix` array is ordered by cell,</span>
-<span class="cm">   * row face node, and column face node.</span>
-<span class="cm">   *</span>
-<span class="cm">   * The `node_index` and `dir_index` arrays contain start offsets into `psi` for each face node and</span>
-<span class="cm">   * node-direction pair, respectively. All arrays, including the index arrays, are empty when the</span>
-<span class="cm">   * requested surface has no local faces.</span>
+<span class="cm">   * `omega` holds the groupset&#39;s direction vectors, three components per direction, and `weights`</span>
+<span class="cm">   * its quadrature weights. The cosine of direction d with the normal of face f is</span>
+<span class="cm">   * `omega_d . normal_f`.</span>
 <span class="cm">   *</span>
 <span class="cm">   * `psi` holds the face-node values of the problem&#39;s stored angular flux on the cell that owns the</span>
-<span class="cm">   * face; the two sides of an interior surface are stored under separate tags. After an adjoint</span>
-<span class="cm">   * steady-state solve the stored angular flux is the adjoint flux for the listed direction, so</span>
-<span class="cm">   * forward and adjoint data with the same indices refer to the same direction.</span>
+<span class="cm">   * face, ordered by face node (as in SurfaceMap), direction, and group: the value of node k,</span>
+<span class="cm">   * direction d, and group g is `psi[(k * num_directions + d) * num_groups + g]`. The two sides of</span>
+<span class="cm">   * an interior surface are stored under separate tags. For an adjoint problem the writer requires</span>
+<span class="cm">   * the physical orientation that an adjoint solve leaves, so the stored angular flux is the</span>
+<span class="cm">   * adjoint flux for the listed direction and forward and adjoint data with the same indices refer</span>
+<span class="cm">   * to the same direction.</span>
+<span class="cm">   *</span>
+<span class="cm">   * `upwind_psi`, read for boundary tags only and laid out like `psi`, holds the face value upwind</span>
+<span class="cm">   * of each direction along the direction the data transport in (`Omega_d` for forward data,</span>
+<span class="cm">   * `-Omega_d` for adjoint data): the cell value of `psi` for a direction that leaves the domain</span>
+<span class="cm">   * and the boundary-condition value the sweep used for one that enters it (0 for vacuum, the</span>
+<span class="cm">   * incoming flux for isotropic and arbitrary boundaries, the reflected angular flux for</span>
+<span class="cm">   * reflecting boundaries). It is empty for interior tags.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceData</span>
 <span class="w">  </span><span class="p">{</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">omega</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mu</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">wt_d</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mass_matrix</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">fe_shape</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">weights</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">psi</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">node_index</span><span class="p">;</span>
-<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">dir_index</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">upwind_psi</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SurfaceAngularFlux</span>
@@ -232,10 +262,31 @@
 <span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="c1">/// True when the data were written from an adjoint problem.</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Number of files in the file set, one per writing rank.</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_partitions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Random identifier shared by the files written by one WriteSurfaceAngularFluxes call.</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">file_set_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Direction and group counts of the groupset, also set when the surface has no local faces.</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_directions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">num_groups</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// First group of the groupset.</span>
+<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">first_group</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">surface_name</span><span class="p">;</span>
-<span class="w">    </span><span class="n">SurfaceMap</span><span class="w"> </span><span class="n">mapping</span><span class="p">;</span>
+<span class="w">    </span><span class="cm">/**</span>
+<span class="cm">     * True when the tag is one side, `&lt;name&gt;_u` or `&lt;name&gt;_d`, of an interior surface; false for a</span>
+<span class="cm">     * boundary, whatever its name.</span>
+<span class="cm">     */</span>
+<span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">interior</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Face geometry of the tag, shared by the entries of every groupset of the tag.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="k">const</span><span class="w"> </span><span class="n">SurfaceMap</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mapping</span><span class="p">;</span>
 <span class="w">    </span><span class="n">SurfaceData</span><span class="w"> </span><span class="n">data</span><span class="p">;</span>
 <span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Version of the surface angular flux file format, stored in the `format_version` attribute of</span>
+<span class="cm">   * every file. Increase it whenever the stored attributes or datasets change.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">SURFACE_FILE_FORMAT_VERSION</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Write surface angular flux vector(s) to a file.</span>
@@ -244,15 +295,28 @@
 <span class="cm">   * \param file_base File name base</span>
 <span class="cm">   * \param boundary_surfs Boundary surface names</span>
 <span class="cm">   * \param interior_surfs Interior surface definitions, keyed by name, as an axis (&quot;x&quot;, &quot;y&quot;, or</span>
-<span class="cm">   * &quot;z&quot;) and a coordinate. Each surface must match at least one cell face, must lie on cell faces</span>
-<span class="cm">   * inside the mesh, must not coincide with an exterior boundary, and must not share a plane with</span>
-<span class="cm">   * another requested surface. Each surface is written with an `_u` tag for face normals aligned</span>
-<span class="cm">   * with the positive specified axis and a `_d` tag for the opposite orientation; these tags must</span>
-<span class="cm">   * not equal a requested boundary name.</span>
+<span class="cm">   * &quot;z&quot;) and a coordinate. Each surface must lie inside the mesh, on cell faces (it must not cut</span>
+<span class="cm">   * through a cell), must match at least one cell face, must not coincide with an exterior</span>
+<span class="cm">   * boundary, and must not share a plane with another requested surface. Each surface is written</span>
+<span class="cm">   * with an `_u` tag for face normals aligned with the positive specified axis and a `_d` tag for</span>
+<span class="cm">   * the opposite orientation; neither these tags nor the surface name may equal a requested</span>
+<span class="cm">   * boundary name. Each tag&#39;s `mesh/&lt;tag&gt;` group records in its `interior` attribute whether the</span>
+<span class="cm">   * tag is one side of an interior surface or a boundary, so boundaries may have any name.</span>
 <span class="cm">   *</span>
-<span class="cm">   * Collective over all ranks. Surface selections may differ by rank. Plane-matching tolerances</span>
-<span class="cm">   * are relative to the global mesh extent. Each rank writes `&lt;file_base&gt;&lt;rank&gt;.h5`, which records</span>
-<span class="cm">   * whether the problem is in adjoint mode.</span>
+<span class="cm">   * Collective over all ranks. Surface selections may differ by rank, but each file contains only</span>
+<span class="cm">   * its rank&#39;s tags, and DistributeSurfaceAngularFluxes requires every requested tag in every file</span>
+<span class="cm">   * of a set. Plane-matching tolerances are relative to the global mesh extent. Each rank writes</span>
+<span class="cm">   * `&lt;file_base&gt;&lt;rank&gt;.h5`, which records the file format version (`format_version`, see</span>
+<span class="cm">   * SURFACE_FILE_FORMAT_VERSION), whether the problem is in adjoint mode, the number of files</span>
+<span class="cm">   * written (`num_partitions`), and an identifier shared by the files of the set (`file_set_id`).</span>
+<span class="cm">   * Each groupset records its first group. Boundary tags also store the upwind face values</span>
+<span class="cm">   * (`upwind_flux`; see SurfaceData), taken from the problem&#39;s boundary conditions for the</span>
+<span class="cm">   * directions that enter the domain.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Requires `options.save_angular_flux=true`. An adjoint problem must hold its solution in the</span>
+<span class="cm">   * physical orientation (`IsAdjointSolutionReoriented()`), which an adjoint steady-state or</span>
+<span class="cm">   * k-eigenvalue solve leaves. Restart data are loaded in the internal sweep orientation, so an</span>
+<span class="cm">   * adjoint solver must be executed after a restart read. Throws `std::invalid_argument` otherwise.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">WriteSurfaceAngularFluxes</span><span class="p">(</span>
 <span class="w">    </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
@@ -261,21 +325,28 @@
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">interior_surfs</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Read a surface angular flux vector from a file.</span>
+<span class="cm">   * Read surface angular fluxes from one file of a file set.</span>
 <span class="cm">   *</span>
-<span class="cm">   * \param do_problem Discrete ordinates problem</span>
 <span class="cm">   * \param file_base File name base</span>
-<span class="cm">   * \param surfaces Stored surface tags to read. Boundary tags are their boundary names. Interior</span>
-<span class="cm">   * surface tags use `_u` for face normals aligned with the positive specified axis and `_d` for</span>
-<span class="cm">   * the opposite orientation.</span>
+<span class="cm">   * \param partition File index; the file `&lt;file_base&gt;&lt;partition&gt;.h5` is read.</span>
+<span class="cm">   * \param surfaces Surface names to read. Must be non-empty. A name that is a stored tag reads</span>
+<span class="cm">   * that tag: a boundary name, or one side of an interior surface (`_u` for face normals aligned</span>
+<span class="cm">   * with the positive specified axis, `_d` for the opposite orientation). Any other name must be</span>
+<span class="cm">   * an interior surface whose tags `&lt;name&gt;_u` and `&lt;name&gt;_d` both exist and are recorded as</span>
+<span class="cm">   * interior; both are read, `_u` first. Each tag must be present in the file, possibly without</span>
+<span class="cm">   * faces, and the names must not resolve to the same tag twice.</span>
 <span class="cm">   *</span>
-<span class="cm">   * Reads `&lt;file_base&gt;&lt;rank&gt;.h5` on each rank; the files must have been written with the same mesh</span>
-<span class="cm">   * partitioning. Not collective.</span>
+<span class="cm">   * Returns one entry per groupset and resolved tag, groupset-major, with `surface_name` set to</span>
+<span class="cm">   * the tag. The file must have format version SURFACE_FILE_FORMAT_VERSION and carry every</span>
+<span class="cm">   * attribute written by the current WriteSurfaceAngularFluxes, including `num_partitions`, which</span>
+<span class="cm">   * must exceed `partition`. Every dataset size is checked against the face-node counts before data</span>
+<span class="cm">   * are read, the data must be finite, and face centroid keys must be unique within each surface.</span>
+<span class="cm">   * The data are not checked against a problem, so any rank can read any file of a set, whatever</span>
+<span class="cm">   * number of ranks or partitioning wrote it. Not collective. Throws `std::invalid_argument` for an</span>
+<span class="cm">   * empty `surfaces` and `std::logic_error` for a missing, malformed, or inconsistent file.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SurfaceAngularFlux</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="n">ReadSurfaceAngularFluxes</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
-<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
-<span class="w">                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">surfaces</span><span class="p">);</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SurfaceAngularFlux</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ReadSurfaceAngularFluxes</span><span class="p">(</span>
+<span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">partition</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">surfaces</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

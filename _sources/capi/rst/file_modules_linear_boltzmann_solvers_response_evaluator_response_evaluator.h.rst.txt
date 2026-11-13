@@ -38,6 +38,8 @@ Includes
 
 - ``modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h`` (:ref:`file_modules_linear_boltzmann_solvers_lbs_problem_lbs_problem.h`)
 
+- ``modules/linear_boltzmann_solvers/response_evaluator/surface_response_data.h`` (:ref:`file_modules_linear_boltzmann_solvers_response_evaluator_surface_response_data.h`)
+
 
 
 
@@ -55,6 +57,8 @@ Classes
 
 
 - :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_boundary_source`
+
+- :ref:`exhale_struct_structopensn_1_1_response_evaluator_1_1_flux_data`
 
 - :ref:`exhale_class_classopensn_1_1_response_evaluator`
 
