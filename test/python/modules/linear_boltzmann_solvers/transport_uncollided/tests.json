@@ -973,7 +973,7 @@
   },
   {
     "file": "uncollided_mode_rejections.py",
-    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode. Outputs that stand for the full angular flux, which holds only the collided part, are rejected. The collided leakage and the uncollided outflow of the balance table add up to its outflow rate.",
+    "comment": "Uncollided flux rejects time-dependent mode and transport-mode changes at construction and later. A rejected change leaves the problem unchanged. Generation rejects a point source outside its near-source volume. An incoming-flux boundary is rejected. Forward and adjoint files are only accepted by problems in the same mode. Outputs that stand for the full angular flux, which holds only the collided part, are rejected. The collided leakage and the uncollided outflow of the balance table add up to its outflow rate. The balance table of an adjoint problem with an adjoint file closes.",
     "num_procs": 1,
     "checks": [
       {
@@ -1062,19 +1062,25 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedGeneratorCtorAdjointRejected=",
+        "key": "UncollidedAdjointFileForwardRejected=",
         "goldvalue": 1,
         "abs_tol": 0
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedGeneratorSetAdjointRejected=",
+        "key": "UncollidedAdjointFileAdjointAccepted=",
         "goldvalue": 1,
         "abs_tol": 0
       },
       {
         "type": "KeyValuePair",
-        "key": "UncollidedGeneratorUnchanged=",
+        "key": "UncollidedAdjointBalanceResidual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedGeneratorSetAdjointClearsSources=",
         "goldvalue": 1,
         "abs_tol": 0
       }
@@ -1124,6 +1130,54 @@
         "key": "UncollidedDelayedBalance=",
         "goldvalue": 0.0,
         "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "uncollided_adjoint_reciprocity.py",
+    "comment": "Forward and adjoint uncollided fluxes with first-collision sources match an independent single-scatter point-to-point integral and each other (reciprocity). The adjoint path uses the transposed scattering matrix.",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "env": {
+      "OPENSN_NUM_THREADS": 4
+    },
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityForwardError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityAdjointError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.01
+      }
+    ]
+  },
+  {
+    "file": "uncollided_adjoint_transpose.py",
+    "comment": "An adjoint problem with an adjoint uncollided file and P1 scattering and fission equals, with the P1 moments negated, the forward problem with transposed scattering and production matrices.",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedAdjointTransposeMaxRelDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedAdjointTransposeSensitive=",
+        "goldvalue": 1,
+        "abs_tol": 0
       }
     ]
   },

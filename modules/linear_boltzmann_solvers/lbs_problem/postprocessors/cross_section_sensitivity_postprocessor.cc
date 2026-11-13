@@ -241,14 +241,19 @@ void
 CrossSectionSensitivityPostprocessor::LoadAngularFluxes(
   std::vector<std::vector<double>>& forward_psi, std::vector<std::vector<double>>& adjoint_psi)
 {
+  // The angular flux of a problem with an uncollided flux, forward or adjoint, holds only the
+  // collided part.
+  OpenSnInvalidArgumentIf(
+    (forward_angular_fluxes_prefix_.empty() or adjoint_angular_fluxes_prefix_.empty()) and
+      do_problem_->HasUncollidedFlux(),
+    "sigma_t sensitivities are not available with an uncollided flux: the angular flux holds only "
+    "the collided part.");
+
   if (forward_angular_fluxes_prefix_.empty())
   {
     OpenSnInvalidArgumentIf(do_problem_->IsAdjoint(),
                             "A forward angular-flux file is required when the problem's current "
                             "solution is adjoint.");
-    OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
-                            "sigma_t sensitivities are not available with an uncollided flux: the "
-                            "angular flux holds only the collided part.");
     forward_psi = do_problem_->GetPsiNewLocal();
   }
   else

@@ -487,6 +487,8 @@ of their angular-redistribution terms and are rejected.
 Because this is a fundamental change in problem interpretation, users should be
 deliberate about when they switch it on.
 
+.. _userguide_uncollided:
+
 Uncollided and First-Collision Transport
 ========================================
 
@@ -513,9 +515,9 @@ Only the scalar flux receives the uncollided component. The stored angular flux
 is the collided part, so the outputs that would stand for the full angular flux
 are not available with an uncollided flux: ``WriteAngularFluxes``,
 ``WriteSurfaceAngularFluxes``, and ``sigma_t`` cross-section sensitivities that
-take the forward angular flux from the problem raise ``ValueError``. ``GetPsi``
-returns the collided part. ``ComputeLeakage`` returns the leakage of the
-collided part in each group on each boundary; the balance table includes the
+take the forward or adjoint angular flux from the problem raise ``ValueError``.
+``GetPsi`` returns the collided part. ``ComputeLeakage`` returns the leakage of
+the collided part in each group on each boundary; the balance table includes the
 uncollided outflow in ``outflow_rate`` and reports it separately as
 ``uncollided_outflow_rate``, in total over all boundaries and groups, so the
 total leakage of a monoenergetic source is the collided leakage plus the
@@ -627,8 +629,13 @@ The group-wise point-source strengths are total angle-integrated emission
 rates. Angular distributions are not currently supported by the uncollided
 problem.
 
-Uncollided generation is forward only. The generator rejects adjoint mode, both
-``options={'adjoint': True}`` at construction and a later ``SetAdjoint(True)``.
+In adjoint mode (``options={'adjoint': True}``) the point sources are adjoint
+sources, such as a point detector with a group-wise response, and the file holds
+their adjoint uncollided flux. The uncollided flux depends only on the total
+cross sections, so the two modes compute it identically. The file records the
+mode, and only a collided problem in the same mode accepts it. A file written
+before the mode was recorded is read as a forward file. As for any problem,
+``SetAdjoint`` clears the point sources.
 
 Every point source requires a corresponding entry in ``near_source``. The two
 lists are matched by position, so ``near_source`` is required whenever
@@ -801,10 +808,14 @@ Supported problem mode
 ----------------------
 
 The collided use of ``uncollided_flux`` is supported for steady-state forward
-fixed-source calculations. It is not supported for:
+and adjoint fixed-source calculations. The file must have been generated in the
+problem's mode. In adjoint mode the first-collision source uses the transposed
+scattering and production matrices, as the adjoint sweep does, and the
+uncollided moments are added to the collided solution before the adjoint
+solution is reoriented. The transport mode cannot be changed after the file is
+loaded. It is not supported for:
 
 * time-dependent calculations,
-* adjoint calculations,
 * k-eigenvalue solvers.
 
 The first-collision source replaces the fixed sources of the collided problem.
