@@ -6,9 +6,12 @@ Surface angular-flux export validation.
 
 1. An interior surface whose generated tag (<name>_u or <name>_d) equals a requested boundary
    name is rejected before any output file is created.
-2. An interior plane that lies inside the mesh bounds but matches no face, here in the gap
+   An interior surface whose name equals a requested boundary name is rejected the same way.
+2. A boundary whose name ends in _u is written and read back as a boundary, while the tags of an
+   interior surface written with it are read back as interior sides.
+3. An interior plane that lies inside the mesh bounds but matches no face, here in the gap
    between two disconnected mesh blocks, is rejected before any output file is created.
-3. On a mesh with 1e-8 cm cells translated 1000 cm from the origin, the file reads back and every
+4. On a mesh with 1e-8 cm cells translated 1000 cm from the origin, the file reads back and every
    face key on the upper side of an interior surface has a matching key on the lower side.
 """
 
@@ -120,8 +123,35 @@ if __name__ == "__main__":
         boundary_surfaces=["plane_u"],
         interior_surfaces={"plane": ("x", 2.0)},
     )
+    expect_rejected(
+        problem,
+        prefix,
+        "Interior surface name plane_u collides with a requested boundary name",
+        boundary_surfaces=["plane_u"],
+        interior_surfaces={"plane_u": ("x", 2.0)},
+    )
 
-    # 2. A plane in the gap between two disconnected blocks.
+    # 2. The file records the kind of each tag, so the boundary plane_u is read back as a boundary.
+    problem.WriteSurfaceAngularFluxes(
+        prefix, boundary_surfaces=["plane_u"], interior_surfaces={"mid": ("x", 2.0)}
+    )
+    kinds = {
+        entry["surface_name"]: entry["interior"]
+        for entry in problem.ReadSurfaceAngularFluxes(prefix, ["plane_u", "mid"])
+    }
+    if kinds != {"plane_u": False, "mid_u": True, "mid_d": True}:
+        raise RuntimeError(f"Unexpected surface kinds read back: {kinds}")
+    try:
+        problem.ReadSurfaceAngularFluxes(prefix, ["plane"])
+        raise RuntimeError("A bare name resolved to a boundary tag")
+    except RuntimeError as error:
+        if "interior surface tags" not in str(error):
+            raise
+    barrier()
+    os.remove(f"{prefix}{rank}.h5")
+    barrier()
+
+    # 3. A plane in the gap between two disconnected blocks.
     obj_file = "surface_flux_validation_two_blocks.obj"
     if rank == 0:
         write_two_block_obj(obj_file)
@@ -139,7 +169,7 @@ if __name__ == "__main__":
         interior_surfaces={"gap": ("x", 1.5)},
     )
 
-    # 3. Face keys on a translated mesh with 1e-8 cm cells.
+    # 4. Face keys on a translated mesh with 1e-8 cm cells.
     scale = 1.0e-8
     origin = 1000.0
     micro_nodes = [origin + scale * i for i in range(9)]

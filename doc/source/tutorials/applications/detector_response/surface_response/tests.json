@@ -1,0 +1,61 @@
+[
+  {
+    "file": "surface_resp.py",
+    "comment": "Glovebox surface responses for detector-1: the source-side plane reproduces its adjoint QoI, the other plane gives zero",
+    "num_procs": 8,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 forward QoI=",
+        "goldvalue": 0.004415711,
+        "rel_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 adjoint QoI=",
+        "goldvalue": 0.004415711,
+        "rel_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 x20_d surface QoI=",
+        "goldvalue": 0.004415711,
+        "rel_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 x20 along +x QoI=",
+        "goldvalue": -0.004415711,
+        "rel_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 forward-adjoint difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 separating-plane difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 both-plane difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Detector-1 non-separating fraction=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  }
+]

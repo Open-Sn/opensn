@@ -153,7 +153,7 @@ if __name__ == "__main__":
     # Create response evaluator and evaluate response
     evaluator = ResponseEvaluator(problem=phys)
     evaluator.SetOptions(
-        buffers=[{"name": "buff", "file_prefixes": {"flux_moments": "adjoint_2d_3"}}],
+        data=[{"name": "buff", "file_prefixes": {"flux_moments": "adjoint_2d_3"}}],
         sources={"point": [pt_src]}
     )
     response_val = evaluator.EvaluateResponse("buff")

@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     evaluator = ResponseEvaluator(problem=problem)
     evaluator.SetOptions(
-        buffers=[
+        data=[
             {
                 "name": "detector",
                 "file_prefixes": {
