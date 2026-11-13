@@ -154,7 +154,8 @@ public:
 
   // Mutators
 
-  /// Changes the block type to array, making it accessible via integer keys.
+  /// Changes the block type to array, making it accessible via integer keys. Existing parameters
+  /// are sorted by index, so their names must be integers.
   void ChangeToArray();
 
   /// Sets a string to be displayed alongside exceptions that give some notion of the origin of the

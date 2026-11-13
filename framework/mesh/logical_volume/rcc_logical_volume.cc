@@ -3,6 +3,8 @@
 
 #include "framework/mesh/logical_volume/rcc_logical_volume.h"
 #include "framework/parameters/input_parameters.h"
+#include <algorithm>
+#include <cmath>
 
 namespace opensn
 {
@@ -84,6 +86,22 @@ RCCLogicalVolume::Inside(const Vector3& point) const
 
   // Determine if point is within cylinder
   return p0r_projected.NormSquare() <= (r_ * r_);
+}
+
+bool
+RCCLogicalVolume::GetBoundingBox(Vector3& lo, Vector3& hi) const
+{
+  // Every inside point is within r of a point of the axis segment from (x0, y0, z0) to
+  // (x0 + vx, y0 + vy, z0 + vz). The padding covers the rounding in Inside().
+  const double half_width = r_ + 1.0e-12 * (r_ + std::abs(x0_) + std::abs(y0_) + std::abs(z0_) +
+                                            std::abs(vx_) + std::abs(vy_) + std::abs(vz_));
+  lo = Vector3(std::min(x0_, x0_ + vx_) - half_width,
+               std::min(y0_, y0_ + vy_) - half_width,
+               std::min(z0_, z0_ + vz_) - half_width);
+  hi = Vector3(std::max(x0_, x0_ + vx_) + half_width,
+               std::max(y0_, y0_ + vy_) + half_width,
+               std::max(z0_, z0_ + vz_) + half_width);
+  return true;
 }
 
 } // namespace opensn

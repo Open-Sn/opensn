@@ -172,7 +172,26 @@ ParameterBlock::ChangeToArray()
                              "array. It has existing parameters and they are not of the same"
                              "type.");
 
+  // An array is sorted by index, which SortParameters reads with std::stoi. Check every name
+  // before changing anything, so that a name that is not an index leaves the block unchanged.
+  for (const auto& param : parameters_)
+  {
+    try
+    {
+      static_cast<void>(std::stoi(param.GetName()));
+    }
+    catch (const std::exception&)
+    {
+      throw std::logic_error(error_origin_scope_ + fname +
+                             ": Cannot change ParameterBlock to array. Parameter name \"" +
+                             param.GetName() + "\" is not an integer index.");
+    }
+  }
+
   type_ = ParameterBlockType::ARRAY;
+  // A block is sorted by name, but an array must be sorted by index ("9" before "10"). The
+  // in-order fast path of AddParameter relies on this.
+  SortParameters();
 }
 
 // NOLINTBEGIN(misc-no-recursion)

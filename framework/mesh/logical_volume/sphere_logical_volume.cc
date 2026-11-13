@@ -3,6 +3,7 @@
 
 #include "framework/mesh/logical_volume/sphere_logical_volume.h"
 #include "framework/parameters/input_parameters.h"
+#include <cmath>
 
 namespace opensn
 {
@@ -47,6 +48,16 @@ SphereLogicalVolume::Inside(const Vector3& point) const
   double R2 = dx * dx + dy * dy + dz * dz;
 
   return R2 <= (r_ * r_);
+}
+
+bool
+SphereLogicalVolume::GetBoundingBox(Vector3& lo, Vector3& hi) const
+{
+  // The padding covers the rounding in Inside().
+  const double half_width = r_ + 1.0e-12 * (r_ + std::abs(x0_) + std::abs(y0_) + std::abs(z0_));
+  lo = Vector3(x0_ - half_width, y0_ - half_width, z0_ - half_width);
+  hi = Vector3(x0_ + half_width, y0_ + half_width, z0_ + half_width);
+  return true;
 }
 
 } // namespace opensn

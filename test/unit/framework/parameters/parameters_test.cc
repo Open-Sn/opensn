@@ -124,4 +124,28 @@ TEST(ParametersTest, ArrayElementsKeepIndexOrder)
   // A duplicate index is rejected.
   EXPECT_THROW(in_order.AddParameter("3", 0), std::invalid_argument);
   EXPECT_THROW(with_gap.AddParameter("5", 0), std::invalid_argument);
+
+  // A block converted to an array is sorted by index, not by name. Here the names sorted as
+  // strings would end in "9" (= size - 1), but sorted as indices they end in "10", so adding
+  // "10" again takes the checked path and is rejected.
+  ParameterBlock converted("converted");
+  for (int k = 0; k <= 10; ++k)
+    if (k != 7)
+      converted.AddParameter(std::to_string(k), 100 + k);
+  converted.ChangeToArray();
+  EXPECT_EQ(converted.GetVectorValue<int>(),
+            std::vector<int>({100, 101, 102, 103, 104, 105, 106, 108, 109, 110}));
+  EXPECT_THROW(converted.AddParameter("10", 0), std::invalid_argument);
+
+  // A name that is not an index is rejected, and the block is left unchanged.
+  ParameterBlock not_indexed("not_indexed");
+  not_indexed.AddParameter("10", 110);
+  not_indexed.AddParameter("9", 109);
+  not_indexed.AddParameter("x", 0);
+  EXPECT_THROW(not_indexed.ChangeToArray(), std::logic_error);
+  EXPECT_EQ(not_indexed.GetType(), ParameterBlockType::BLOCK);
+  std::vector<std::string> names;
+  for (const auto& param : not_indexed.GetParameters())
+    names.push_back(param.GetName());
+  EXPECT_EQ(names, std::vector<std::string>({"10", "9", "x"}));
 }
