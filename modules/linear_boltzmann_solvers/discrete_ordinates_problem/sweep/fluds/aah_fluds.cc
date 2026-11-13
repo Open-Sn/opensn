@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/aah_fluds.h"
 #include "framework/logging/log.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/math.h"
 #include "framework/runtime.h"
@@ -530,8 +531,9 @@ AAH_FLUDS::AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction)
     AddToNewDelayedValues(correction, true);
 }
 
+template <typename Fn>
 void
-AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const bool energy_slope)
+AAH_FLUDS::ForEachDelayedIncomingFace(const Fn& fn) const
 {
   const auto& grid = *spds_.GetGrid();
   const auto& spls = spds_.GetLocalSubgrid();
@@ -553,9 +555,9 @@ AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const 
 
       const auto num_face_nodes =
         common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_.size();
-      // Storage, per-direction block stride, and the offset of each face node's group block within
-      // a direction block, as in UpwindPsi and NLUpwindPsi.
-      double* delayed_psi = nullptr;
+      // Per-direction block stride, and the offset of each face node's group block within a
+      // direction block, as in UpwindPsi and NLUpwindPsi.
+      int delayed_prelocI = -1;
       std::size_t block_stride = 0;
       std::vector<std::size_t> node_offsets(num_face_nodes);
       if (grid.IsCellLocal(face.neighbor_id))
@@ -565,8 +567,6 @@ AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const 
           continue;
         const auto& face_dofs =
           common_data_.so_cell_inco_face_dof_indices_[so_index][local_face_counter];
-        // The energy slopes share the layout of the angular fluxes.
-        delayed_psi = energy_slope ? delayed_local_psiE_.data() : delayed_local_psi_.data();
         block_stride = delayed_local_psi_Gn_block_strideG_;
         for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
           node_offsets[fj] = (face_dofs.slot_address * common_data_.delayed_local_psi_stride_ +
@@ -580,25 +580,91 @@ AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const 
           continue;
         const auto& [prelocI, slot_dofs] =
           common_data_.delayed_nonlocal_inc_face_prelocI_slot_dof_[nonlocal_face_counter];
-        delayed_psi = energy_slope ? delayed_prelocI_outgoing_psiE_[prelocI].data()
-                                   : delayed_prelocI_outgoing_psi_[prelocI].data();
+        delayed_prelocI = static_cast<int>(prelocI);
         block_stride = common_data_.delayed_prelocI_face_dof_count_[prelocI] * num_groups_;
         for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
           node_offsets[fj] =
             static_cast<std::size_t>(slot_dofs.first + slot_dofs.second[fj]) * num_groups_;
       }
 
-      for (unsigned int fj = 0; fj < num_face_nodes; ++fj)
+      fn(cell_local_id, f, delayed_prelocI, block_stride, node_offsets);
+    }
+  }
+}
+
+void
+AAH_FLUDS::AddToNewDelayedValues(const DelayedFluxCorrection& correction, const bool energy_slope)
+{
+  ForEachDelayedIncomingFace(
+    [&](std::uint32_t cell_local_id,
+        unsigned int f,
+        int prelocI,
+        std::size_t block_stride,
+        const std::vector<std::size_t>& node_offsets)
+    {
+      // The energy slopes share the layout of the angular fluxes.
+      double* delayed_psi = nullptr;
+      if (prelocI < 0)
+        delayed_psi = energy_slope ? delayed_local_psiE_.data() : delayed_local_psi_.data();
+      else
+        delayed_psi = energy_slope ? delayed_prelocI_outgoing_psiE_[prelocI].data()
+                                   : delayed_prelocI_outgoing_psi_[prelocI].data();
+
+      for (std::size_t fj = 0; fj < node_offsets.size(); ++fj)
         for (unsigned int g = 0; g < num_groups_; ++g)
         {
-          const double delta = correction(cell_local_id, f, fj, g);
+          const double delta = correction(cell_local_id, f, static_cast<unsigned int>(fj), g);
           if (delta == 0.0)
             continue;
           for (std::size_t n = 0; n < num_angles_; ++n)
             delayed_psi[block_stride * n + node_offsets[fj] + g] += delta;
         }
-    }
-  }
+    });
+}
+
+void
+AAH_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
+                                       const std::vector<std::uint32_t>& angle_indices,
+                                       const bool subtract_old,
+                                       const DelayedCurrentTally& tally) const
+{
+  OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
+                       "AAH_FLUDS: the number of directions does not match the FLUDS.");
+  const auto& grid = *spds_.GetGrid();
+  const auto& omegas = quadrature.GetOmegas();
+  const auto& weights = quadrature.GetWeights();
+
+  std::vector<double> inward_weights(num_angles_);
+  ForEachDelayedIncomingFace(
+    [&](std::uint32_t cell_local_id,
+        unsigned int f,
+        int prelocI,
+        std::size_t block_stride,
+        const std::vector<std::size_t>& node_offsets)
+    {
+      const double* psi_new =
+        prelocI < 0 ? delayed_local_psi_.data() : delayed_prelocI_outgoing_psi_[prelocI].data();
+      const double* psi_old = prelocI < 0 ? delayed_local_psi_old_.data()
+                                          : delayed_prelocI_outgoing_psi_old_[prelocI].data();
+
+      // -w_n Omega_n . n, the factor of the upwind flux in the face term of the sweep
+      const auto& normal = grid.GetLocalCell(cell_local_id).faces[f].normal;
+      for (std::size_t n = 0; n < num_angles_; ++n)
+        inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
+
+      for (std::size_t fj = 0; fj < node_offsets.size(); ++fj)
+        for (unsigned int g = 0; g < num_groups_; ++g)
+        {
+          double current = 0.0;
+          for (std::size_t n = 0; n < num_angles_; ++n)
+          {
+            const auto idx = block_stride * n + node_offsets[fj] + g;
+            current +=
+              inward_weights[n] * (subtract_old ? psi_new[idx] - psi_old[idx] : psi_new[idx]);
+          }
+          tally(cell_local_id, f, static_cast<unsigned int>(fj), g, current);
+        }
+    });
 }
 
 } // namespace opensn

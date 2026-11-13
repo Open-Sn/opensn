@@ -2087,12 +2087,11 @@
   },
   {
     "file": "transport_dsa_reflecting_residual.py",
-    "comment": "The 3D cases of the WGDSA reflecting-boundary residual test on 4 ranks, limited to 8 iterations. The sweep also lags fluxes between partitions, which WGDSA does not correct, so the error is 6e-3 with the residual. Without it the error is 47%.",
+    "comment": "The 3D cases of the WGDSA lagged-flux residual test on 4 ranks, limited to 4 iterations. The sweep also lags fluxes between partitions, whose change WGDSA takes as a face source like that of the lagged reflecting boundaries. Without that source the error is 1.5% to 3.5%.",
     "outfileprefix": "transport_dsa_reflecting_residual_3d_np4",
     "num_procs": 4,
     "args": [
-      "case_set=\"3d\"",
-      "max_its=8"
+      "case_set=\"3d\""
     ],
     "checks": [
       {
@@ -2100,7 +2099,45 @@
         "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
         "wordnum": 1,
         "gold": 0.0,
-        "abs_tol": 5e-02
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_dsa_reflecting_residual.py",
+    "comment": "WGDSA residual of the fluxes lagged at broken sweep cycles. The thin infinite medium is solved on a square and a cube partitioned by cell number, which gives cycles between the 2 ranks, and on non-convex quadrilaterals, which have cycles within a rank, with classic/PETSc Richardson and GMRES limited to 4 iterations. Without the residual the error is 0.34% to 1.2%.",
+    "outfileprefix": "transport_dsa_reflecting_residual_cycles",
+    "num_procs": 2,
+    "args": [
+      "case_set=\"cycles\""
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 5e-05
+      }
+    ]
+  },
+  {
+    "file": "transport_dsa_reflecting_residual.py",
+    "comment": "WGDSA residual of the fluxes lagged at broken sweep cycles, between the 2 ranks and within a rank (GPU AAH sweeps)",
+    "outfileprefix": "transport_dsa_reflecting_residual_cycles_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "case_set=\"cycles\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "DSA_REFLECTING_RESIDUAL_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 5e-05
       }
     ]
   },

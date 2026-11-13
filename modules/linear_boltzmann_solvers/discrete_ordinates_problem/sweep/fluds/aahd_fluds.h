@@ -187,6 +187,11 @@ public:
   void SetDelayedLocalPsiNewToOld() override;
   /// Add an isotropic nodal correction to the new delayed local and non-local incoming psi.
   void CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction) override;
+  /// Tally the inward partial current of the delayed local and non-local incoming psi.
+  void TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
+                                   const std::vector<std::uint32_t>& angle_indices,
+                                   bool subtract_old,
+                                   const DelayedCurrentTally& tally) const override;
   /// \}
 
   /// \name Sweep preparation and clean up
@@ -217,6 +222,15 @@ public:
   bool HasSaveAngularFlux() const { return not save_angular_flux_.host_storage.empty(); }
 
 protected:
+  /**
+   * Calls `fn(cell_local_id, face, face_node, loc, offset)` for every incoming face node of a
+   * local cell that reads delayed angular fluxes. `loc` is the index of the delayed predecessor
+   * location that sends them, or -1 for a cyclic dependency within this location. The value of
+   * direction n and group g is at `offset + n * num_groups + g` of that delayed storage.
+   */
+  template <typename Fn>
+  void ForEachDelayedIncomingNode(const Fn& fn) const;
+
   /// Reference to the common data.
   const AAHD_FLUDSCommonData& common_data_;
 

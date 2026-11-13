@@ -113,7 +113,7 @@
   },
   {
     "file": "dsa_distorted_mesh.py",
-    "comment": "Spectral radius of one-group SI with WGDSA on regular, moderate and severe Shestakov meshes with both MIP penalty lengths and direct and CG diffusion solves: on the severe mesh the cell length diverges (direct) or converges more slowly than SI without DSA (CG) and face_side converges",
+    "comment": "Spectral radius of one-group SI with WGDSA on regular, moderate and severe Shestakov meshes with both MIP penalty lengths and direct and CG diffusion solves: on the severe mesh the cell length diverges (direct) or converges about four times more slowly than face_side (CG) and face_side converges",
     "num_procs": 4,
     "checks": [
       {
@@ -123,19 +123,19 @@
       {
         "type": "KeyValuePair",
         "key": "Moderate mesh face_side direct spectral radius=",
-        "goldvalue": 0.338,
+        "goldvalue": 0.318,
         "abs_tol": 0.03
       },
       {
         "type": "KeyValuePair",
         "key": "Severe mesh face_side direct spectral radius=",
-        "goldvalue": 0.653,
+        "goldvalue": 0.547,
         "abs_tol": 0.04
       },
       {
         "type": "KeyValuePair",
         "key": "Severe mesh face_side iterative spectral radius=",
-        "goldvalue": 0.653,
+        "goldvalue": 0.547,
         "abs_tol": 0.04
       },
       {
@@ -147,7 +147,7 @@
       {
         "type": "KeyValuePair",
         "key": "Severe mesh cell iterative spectral radius=",
-        "goldvalue": 0.971,
+        "goldvalue": 0.862,
         "abs_tol": 0.02
       },
       {

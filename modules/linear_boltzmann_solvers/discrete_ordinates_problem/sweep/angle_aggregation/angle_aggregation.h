@@ -167,6 +167,19 @@ public:
    */
   void CorrectNewDelayedAngularFlux(const FLUDS::DelayedFluxCorrection& correction);
 
+  /// True when this location holds delayed angular fluxes of this groupset. Not collective.
+  bool HasLocalDelayedAngularFlux() const;
+
+  /**
+   * Passes to `tally` the nodal inward partial current of every delayed angular flux of this
+   * groupset on this location: the lagged incoming fluxes of opposing reflecting boundaries
+   * (SweepBoundary::TallyDelayedIncomingCurrent) and of broken cyclic dependencies within and
+   * between locations (FLUDS::TallyDelayedIncomingCurrent). A face node receives one call per
+   * angle set that reads delayed fluxes through it; the calls add up. Not collective.
+   */
+  void TallyDelayedIncomingCurrent(bool subtract_old,
+                                   const FLUDS::DelayedCurrentTally& tally) const;
+
   /**
    * Returns a vector laid out like GetNewDelayedAngularDOFsAsSTLVector() that holds, for every
    * delayed angular flux and CSDA energy slope, the nodal value at the face node of the cell that
