@@ -10,6 +10,8 @@
 #include <cctype>
 #include <array>
 #include <cstring>
+#include <map>
+#include <string>
 #include <utility>
 
 namespace opensn
@@ -201,8 +203,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
       break;
     }
 
-  // Map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   if (has_physical_names_section)
   {
     std::getline(file, file_line);
@@ -229,7 +232,7 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
         throw std::logic_error(fname + ": Failed to read physical name.");
       name = name.substr(1, name.length() - 2);
 
-      physical_names[phys_name_id] = {dim, name};
+      physical_names[{dim, phys_name_id}] = name;
     }
   }
 
@@ -588,14 +591,9 @@ MeshIO::FromGmshV41ASCII(const UnpartitionedMesh::Options& options)
   // create boundary names and IDs
   unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
-  for (auto& [id, e] : physical_names)
-  {
-    if (std::get<0>(e) == dimension - 1)
-    {
-      auto name = std::get<1>(e);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetType(UNSTRUCTURED);
   mesh->ComputeCentroids();
@@ -651,8 +649,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   log.Log() << "Making unpartitioned mesh from Gmsh file " << options.file_name
             << " (format v4.1 binary)";
 
-  // Map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   std::map<int, int> curve_entities, surface_entities, volume_entities;
   bool have_entities = false;
   bool mesh_is_2D = true;
@@ -681,7 +680,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           if (not(iss >> dim >> phys_name_id >> name))
             throw std::logic_error(fname + ": Failed to read physical name.");
           name = name.substr(1, name.length() - 2);
-          physical_names[phys_name_id] = {dim, name};
+          physical_names[{dim, phys_name_id}] = name;
         }
       }
       else
@@ -692,7 +691,7 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
           const int dim = static_cast<int>(ReadUInt32(file));
           const int phys_name_id = static_cast<int>(ReadUInt32(file));
           std::string name = ReadBinaryString(file, data_size);
-          physical_names[phys_name_id] = {dim, name};
+          physical_names[{dim, phys_name_id}] = name;
         }
         ExpectEndSection(file, "$EndPhysicalNames");
       }
@@ -1075,14 +1074,9 @@ MeshIO::FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_si
   // create boundary names and IDs
   const unsigned int dimension = mesh_is_2D ? 2 : 3;
   mesh->SetDimension(dimension);
-  for (const auto& [id, data] : physical_names)
-  {
-    if (std::cmp_equal(std::get<0>(data), dimension - 1))
-    {
-      const auto& name = std::get<1>(data);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetType(UNSTRUCTURED);
   mesh->ComputeCentroids();

@@ -6,6 +6,9 @@
 #include "framework/logging/log.h"
 #include <cstdint>
 #include <fstream>
+#include <map>
+#include <string>
+#include <utility>
 
 namespace opensn
 {
@@ -50,8 +53,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       break;
     }
 
-  // map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   if (has_physical_names_section)
   {
     std::getline(file, file_line);
@@ -78,7 +82,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
         throw std::logic_error(fname + ": Failed to read physical name.");
       name = name.substr(1, name.length() - 2);
 
-      physical_names[phys_name_id] = {dim, name};
+      physical_names[{dim, phys_name_id}] = name;
     }
   }
 
@@ -365,14 +369,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   // create boundary names and IDs
   unsigned int dimension = mesh_is_2D ? 2 : 3;
-  for (auto& [id, e] : physical_names)
-  {
-    if (std::get<0>(e) == dimension - 1)
-    {
-      auto name = std::get<1>(e);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
