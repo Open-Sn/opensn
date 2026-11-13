@@ -254,26 +254,9 @@ Mesh::SetOrthogonalBoundaries()
 }
 
 void
-Mesh::SetCellConnectivity(const std::vector<std::vector<std::uint64_t>>& connectivity)
-{
-  std::size_t total_len = 0;
-  for (const auto& cell : connectivity)
-    total_len += cell.size();
-  connect_ids_.reserve(total_len);
-
-  connect_ofst_.reserve(connectivity.size() + 1);
-  for (const auto& cell : connectivity)
-  {
-    connect_ofst_.push_back(connect_ids_.size());
-    std::copy(cell.begin(), cell.end(), connect_ids_.end());
-  }
-  connect_ofst_.push_back(total_len);
-}
-
-void
 Mesh::SetCells(std::vector<Cell>&& local_cells,
                std::vector<Cell>&& ghost_cells,
-               const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity)
+               const std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>>& light_cells)
 {
   local_cells_ = std::move(local_cells);
   ghost_cells_ = std::move(ghost_cells);
@@ -291,33 +274,36 @@ Mesh::SetCells(std::vector<Cell>&& local_cells,
   }
 
   std::size_t total_len = 0;
-  for (const auto& [id, cell] : cell_connectivity)
-    total_len += cell.size();
+  for (const auto& cell : local_cells_)
+  {
+    const auto& vertex_ids = light_cells.at(cell.global_id)->vertex_ids;
+    total_len += vertex_ids.size();
+  }
+  for (const auto& cell : ghost_cells_)
+  {
+    const auto& vertex_ids = light_cells.at(cell.global_id)->vertex_ids;
+    total_len += vertex_ids.size();
+  }
   connect_ids_.reserve(total_len);
 
-  connect_ofst_.reserve(cell_connectivity.size() + 1);
+  connect_ofst_.reserve(light_cells.size() + 1);
   for (auto& cell : local_cells_)
   {
     connect_ofst_.push_back(connect_ids_.size());
-    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    const auto& vertex_ids = light_cells.at(cell.global_id)->vertex_ids;
     for (const auto& id : vertex_ids)
       connect_ids_.push_back(id);
   }
   for (auto& cell : ghost_cells_)
   {
     connect_ofst_.push_back(connect_ids_.size());
-    const auto& vertex_ids = cell_connectivity.at(cell.global_id);
+    const auto& vertex_ids = light_cells.at(cell.global_id)->vertex_ids;
     for (const auto& id : vertex_ids)
       connect_ids_.push_back(id);
   }
   connect_ofst_.push_back(total_len);
-}
 
-void
-Mesh::SetCellFaces(
-  const std::map<std::uint64_t, std::vector<CellFace>>& cell_faces,
-  const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity)
-{
+  // faces
   faces_.clear();
   face_connect_ofst_.clear();
   face_vertex_ofst_.clear();
@@ -328,58 +314,188 @@ Mesh::SetCellFaces(
   std::size_t n_face_connect_ofst = local_cells_.size() + ghost_cells_.size() + 1;
   std::size_t n_face_vertex_ofst = 1;
   std::size_t n_face_vertex_ids = 0;
-  auto count_sizes = [&](const std::vector<Cell>& cells)
+  auto count_face_sizes = [&](const std::vector<Cell>& cells)
   {
     for (const auto& cell : cells)
     {
-      n_faces += cell_faces.at(cell.global_id).size();
-      const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
-      n_face_vertex_ofst += cell_face_vids.size();
-      for (const auto& face_vids : cell_face_vids)
+      const auto& lc = light_cells.at(cell.global_id);
+      const auto& faces = lc->faces;
+      n_faces += faces.size();
+      n_face_vertex_ofst += faces.size();
+      for (const auto& fc : faces)
       {
-        n_face_vertex_ids += face_vids.size();
+        const auto& cell_face_vids = fc.vertex_ids;
+        n_face_vertex_ids += cell_face_vids.size();
       }
     }
   };
-  count_sizes(local_cells_);
-  count_sizes(ghost_cells_);
+  count_face_sizes(local_cells_);
+  count_face_sizes(ghost_cells_);
   faces_.reserve(n_faces);
   face_connect_ofst_.reserve(n_face_connect_ofst);
   face_vertex_ofst_.reserve(n_face_vertex_ofst);
   face_vertex_ids_.reserve(n_face_vertex_ids);
 
-  face_connect_ofst_.push_back(0);
   for (const auto& cell : local_cells_)
   {
-    assert(cell_faces.at(cell.global_id).size() ==
-           cell_face_connectivity.at(cell.global_id).size());
-    for (const auto& face : cell_faces.at(cell.global_id))
-      faces_.emplace_back(face);
-    const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
-    face_connect_ofst_.push_back(face_connect_ofst_.back() + cell_face_vids.size());
-    for (const auto& face_vids : cell_face_vids)
+    const auto& lc = light_cells.at(cell.global_id);
+    face_connect_ofst_.push_back(face_vertex_ofst_.size());
+    for (const auto& face : lc->faces)
     {
+      CellFace new_face;
+      new_face.has_neighbor = face.has_neighbor;
+      new_face.neighbor_id = face.neighbor;
+      faces_.emplace_back(new_face);
+
       face_vertex_ofst_.push_back(face_vertex_ids_.size());
-      for (const auto vid : face_vids)
+      for (const auto& vid : face.vertex_ids)
+      {
         face_vertex_ids_.push_back(vid);
+      }
     }
   }
-
   for (const auto& cell : ghost_cells_)
   {
-    assert(cell_faces.at(cell.global_id).size() ==
-           cell_face_connectivity.at(cell.global_id).size());
-    for (const auto& face : cell_faces.at(cell.global_id))
-      faces_.emplace_back(face);
-    const auto& cell_face_vids = cell_face_connectivity.at(cell.global_id);
-    face_connect_ofst_.push_back(face_connect_ofst_.back() + cell_face_vids.size());
-    for (const auto& face_vids : cell_face_vids)
+    const auto& lc = light_cells.at(cell.global_id);
+    face_connect_ofst_.push_back(face_vertex_ofst_.size());
+    for (const auto& face : lc->faces)
     {
+      CellFace new_face;
+      new_face.has_neighbor = face.has_neighbor;
+      new_face.neighbor_id = face.neighbor;
+      faces_.emplace_back(new_face);
+
       face_vertex_ofst_.push_back(face_vertex_ids_.size());
-      for (const auto vid : face_vids)
+      for (const auto& vid : face.vertex_ids)
+      {
         face_vertex_ids_.push_back(vid);
+      }
     }
   }
+  face_connect_ofst_.push_back(face_vertex_ofst_.size());
+  face_vertex_ofst_.push_back(face_vertex_ids_.size());
+}
+
+void
+Mesh::SetCells(std::vector<Cell>&& local_cells,
+               std::vector<Cell>&& ghost_cells,
+               const std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell>& cells)
+{
+  local_cells_ = std::move(local_cells);
+  ghost_cells_ = std::move(ghost_cells);
+
+  std::size_t local_id = 0;
+  for (auto& cell : local_cells_)
+  {
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
+  }
+  for (auto& cell : ghost_cells_)
+  {
+    global_to_local_cell_id_map_[cell.global_id] = local_id;
+    ++local_id;
+  }
+
+  std::size_t total_len = 0;
+  for (const auto& cell : local_cells_)
+  {
+    const auto& vertex_ids = cells.at({cell.partition_id, cell.global_id}).vertex_ids;
+    total_len += vertex_ids.size();
+  }
+  for (const auto& cell : ghost_cells_)
+  {
+    const auto& vertex_ids = cells.at({cell.partition_id, cell.global_id}).vertex_ids;
+    total_len += vertex_ids.size();
+  }
+  connect_ids_.reserve(total_len);
+
+  connect_ofst_.reserve(cells.size() + 1);
+  for (auto& cell : local_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cells.at({cell.partition_id, cell.global_id}).vertex_ids;
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  for (auto& cell : ghost_cells_)
+  {
+    connect_ofst_.push_back(connect_ids_.size());
+    const auto& vertex_ids = cells.at({cell.partition_id, cell.global_id}).vertex_ids;
+    for (const auto& id : vertex_ids)
+      connect_ids_.push_back(id);
+  }
+  connect_ofst_.push_back(total_len);
+
+  // faces
+  faces_.clear();
+  face_connect_ofst_.clear();
+  face_vertex_ofst_.clear();
+  face_vertex_ids_.clear();
+
+  // count the sizes
+  std::size_t n_faces = 0;
+  std::size_t n_face_connect_ofst = local_cells_.size() + ghost_cells_.size() + 1;
+  std::size_t n_face_vertex_ofst = 1;
+  std::size_t n_face_vertex_ids = 0;
+  auto count_face_sizes = [&](const std::vector<Cell>& cell_vec)
+  {
+    for (const auto& cell : cell_vec)
+    {
+      const auto& lc = cells.at({cell.partition_id, cell.global_id});
+      const auto& faces = lc.faces;
+      n_faces += faces.size();
+      n_face_vertex_ofst += faces.size();
+      for (const auto& fc : faces)
+      {
+        const auto& cell_face_vids = fc.vertex_ids;
+        n_face_vertex_ids += cell_face_vids.size();
+      }
+    }
+  };
+  count_face_sizes(local_cells_);
+  count_face_sizes(ghost_cells_);
+  faces_.reserve(n_faces);
+  face_connect_ofst_.reserve(n_face_connect_ofst);
+  face_vertex_ofst_.reserve(n_face_vertex_ofst);
+  face_vertex_ids_.reserve(n_face_vertex_ids);
+
+  for (const auto& cell : local_cells_)
+  {
+    const auto& lc = cells.at({cell.partition_id, cell.global_id});
+    face_connect_ofst_.push_back(face_vertex_ofst_.size());
+    for (const auto& face : lc.faces)
+    {
+      CellFace new_face;
+      new_face.has_neighbor = face.has_neighbor;
+      new_face.neighbor_id = face.neighbor;
+      faces_.emplace_back(new_face);
+
+      face_vertex_ofst_.push_back(face_vertex_ids_.size());
+      for (const auto& vid : face.vertex_ids)
+      {
+        face_vertex_ids_.push_back(vid);
+      }
+    }
+  }
+  for (const auto& cell : ghost_cells_)
+  {
+    const auto& lc = cells.at({cell.partition_id, cell.global_id});
+    face_connect_ofst_.push_back(face_vertex_ofst_.size());
+    for (const auto& face : lc.faces)
+    {
+      CellFace new_face;
+      new_face.has_neighbor = face.has_neighbor;
+      new_face.neighbor_id = face.neighbor;
+      faces_.emplace_back(new_face);
+
+      face_vertex_ofst_.push_back(face_vertex_ids_.size());
+      for (const auto& vid : face.vertex_ids)
+      {
+        face_vertex_ids_.push_back(vid);
+      }
+    }
+  }
+  face_connect_ofst_.push_back(face_vertex_ofst_.size());
   face_vertex_ofst_.push_back(face_vertex_ids_.size());
 }
 

@@ -109,12 +109,11 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
     {
       if (cell_pids[cell_global_id] == pid)
       {
-        const auto& raw_cell = raw_cells[cell_global_id];
+        const auto& raw_cell = *raw_cells[cell_global_id];
         local_cells_needed.push_back(cell_global_id);
         cells_needed.emplace(cell_global_id);
 
-        auto raw_cell_vertex_ids = umesh.GetCellConnectivity(cell_global_id);
-        for (const auto vid : raw_cell_vertex_ids)
+        for (const auto vid : raw_cell.vertex_ids)
         {
           vertices_needed.emplace(vid);
 
@@ -124,10 +123,10 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
             if (ghost_gid != cell_global_id && cells_needed.find(ghost_gid) == cells_needed.end())
             {
               cells_needed.emplace(ghost_gid);
-              auto ghost_raw_cell_vertex_ids = umesh.GetCellConnectivity(ghost_gid);
+              const auto& ghost_raw_cell = *raw_cells[ghost_gid];
 
               // Insert ghost vertex IDs
-              for (const auto gvid : ghost_raw_cell_vertex_ids)
+              for (const auto gvid : ghost_raw_cell.vertex_ids)
                 vertices_needed.emplace(gvid);
             }
           }
@@ -165,32 +164,27 @@ DistributedMeshGenerator::DistributeSerializedMeshData(const std::vector<int>& c
     // Cell data
     for (const auto& cell_global_id : cells_needed)
     {
-      const auto& cell = raw_cells[cell_global_id];
+      const auto& cell = *raw_cells[cell_global_id];
       serial_data.Write(static_cast<int>(cell_pids[cell_global_id]));
       serial_data.Write(cell_global_id);
-      serial_data.Write(cell.GetType());
-      serial_data.Write(cell.GetSubType());
+      serial_data.Write(cell.type);
+      serial_data.Write(cell.sub_type);
       serial_data.Write(cell.centroid.x);
       serial_data.Write(cell.centroid.y);
       serial_data.Write(cell.centroid.z);
       serial_data.Write(cell.block_id);
-
-      auto cell_vertex_ids = umesh.GetCellConnectivity(cell_global_id);
-      serial_data.Write(cell_vertex_ids.size());
-      for (const auto vid : cell_vertex_ids)
+      serial_data.Write(cell.vertex_ids.size());
+      for (const auto vid : cell.vertex_ids)
         serial_data.Write(vid);
 
-      const auto num_faces = umesh.GetCellFaceCount(cell_global_id);
-      serial_data.Write(num_faces);
-      for (std::size_t f = 0; f < num_faces; ++f)
+      serial_data.Write(cell.faces.size());
+      for (const auto& face : cell.faces)
       {
-        const auto& face = umesh.GetCellFace(cell_global_id, f);
-        const auto& face_vids = umesh.GetCellFaceConnectivity()[cell_global_id][f];
-        serial_data.Write(face_vids.size());
-        for (const auto vid : face_vids)
+        serial_data.Write(face.vertex_ids.size());
+        for (const auto vid : face.vertex_ids)
           serial_data.Write(vid);
         serial_data.Write(face.has_neighbor);
-        serial_data.Write(face.neighbor_id);
+        serial_data.Write(face.neighbor);
       }
     }
 
@@ -251,7 +245,7 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     const auto type = serial_data.Read<CellType>();
     const auto sub_type = serial_data.Read<CellType>();
 
-    Cell cell(type, sub_type);
+    UnpartitionedMesh::LightWeightCell cell(type, sub_type);
 
     cell.centroid.x = serial_data.Read<double>();
     cell.centroid.y = serial_data.Read<double>();
@@ -259,34 +253,22 @@ DistributedMeshGenerator::DeserializeMeshData(ByteArray& serial_data)
     cell.block_id = serial_data.Read<unsigned int>();
 
     const auto num_vids = serial_data.Read<size_t>();
-    std::vector<std::uint64_t> cell_vertex_ids;
-    cell_vertex_ids.reserve(num_vids);
     for (size_t v = 0; v < num_vids; ++v)
-      cell_vertex_ids.push_back(serial_data.Read<uint64_t>());
-    info_block.cell_connect.emplace(cell_gid, cell_vertex_ids);
+      cell.vertex_ids.push_back(serial_data.Read<uint64_t>());
 
     const auto num_faces = serial_data.Read<size_t>();
-    std::vector<std::vector<std::uint64_t>> cell_faces_vids;
-    cell_faces_vids.reserve(num_faces);
-    std::vector<CellFace> cell_faces;
-    cell_faces.reserve(num_faces);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      CellFace face;
+      UnpartitionedMesh::LightWeightFace face;
       auto num_face_vids = serial_data.Read<size_t>();
-      std::vector<std::uint64_t> face_vids;
-      face_vids.reserve(num_face_vids);
       for (size_t v = 0; v < num_face_vids; ++v)
-        face_vids.push_back(serial_data.Read<uint64_t>());
-      cell_faces_vids.push_back(std::move(face_vids));
+        face.vertex_ids.push_back(serial_data.Read<uint64_t>());
 
       face.has_neighbor = serial_data.Read<bool>();
-      face.neighbor_id = serial_data.Read<uint64_t>();
+      face.neighbor = serial_data.Read<uint64_t>();
 
-      cell_faces.emplace_back(face);
+      cell.faces.push_back(std::move(face));
     }
-    info_block.cell_face_connect.emplace(cell_gid, cell_faces_vids);
-    info_block.cell_faces.emplace(cell_gid, std::move(cell_faces));
     info_block.cells.insert(std::make_pair(std::make_pair(cell_pid, cell_gid), cell));
   }
 
@@ -314,23 +296,35 @@ DistributedMeshGenerator::SetupLocalMesh(DistributedMeshData& mesh_info)
   for (const auto& [vid, vertex] : vertices)
     grid_ptr->AddGlobalVertex(vid, vertex);
 
-  std::vector<Cell> local_cells;
-  std::vector<Cell> ghost_cells;
   auto& cells = mesh_info.cells;
-  for (auto& [pidgid, cell] : cells)
+
+  std::size_t n_local_cells = 0;
+  std::size_t n_ghost_cells = 0;
+  for (auto& [pidgid, _] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
-    cell.global_id = cell_global_id;
-    cell.partition_id = cell_pid;
     if (cell_pid == opensn::mpi_comm.rank())
-      local_cells.push_back(std::move(cell));
+      n_local_cells++;
     else
-      ghost_cells.push_back(std::move(cell));
+      n_ghost_cells++;
   }
-  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cell_connect);
-  if (!mesh_info.cell_face_connect.empty())
-    grid_ptr->SetCellFaces(mesh_info.cell_faces, mesh_info.cell_face_connect);
 
+  std::vector<Cell> local_cells;
+  local_cells.reserve(n_local_cells);
+  std::vector<Cell> ghost_cells;
+  ghost_cells.reserve(n_ghost_cells);
+  for (const auto& [pidgid, raw_cell] : cells)
+  {
+    const auto& [cell_pid, cell_global_id] = pidgid;
+
+    auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
+    if (cell.partition_id == opensn::mpi_comm.rank())
+      local_cells.emplace_back(std::move(cell));
+    else
+      ghost_cells.emplace_back(std::move(cell));
+  }
+
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cells);
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);
   grid_ptr->SetType(mesh_info.mesh_type);

@@ -118,18 +118,15 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
   cell_graph.reserve(num_raw_cells);
   cell_centroids.reserve(num_raw_cells);
   {
-    for (const auto& cell : raw_cells)
+    for (const auto& raw_cell_ptr : raw_cells)
     {
       std::vector<uint64_t> cell_graph_node; // <-- Note A
-      auto cell_faces = input_umesh.GetCellFaces(cell.global_id);
-      for (const auto& face : cell_faces)
-      {
+      for (auto& face : raw_cell_ptr->faces)
         if (face.has_neighbor)
-          cell_graph_node.push_back(face.neighbor_id);
-      }
+          cell_graph_node.push_back(face.neighbor);
 
       cell_graph.push_back(cell_graph_node);
-      cell_centroids.push_back(cell.centroid);
+      cell_centroids.push_back(raw_cell_ptr->centroid);
     }
   }
 
@@ -154,68 +151,54 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   grid_ptr->GetBoundaryIDMap() = input_umesh->GetBoundaryIDMap();
   grid_ptr->GetBoundaryNameMap() = input_umesh->GetBoundaryNameMap();
 
+  size_t cell_global_id = 0;
   const auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
 
   std::size_t n_local_cells = 0;
   std::size_t n_ghost_cells = 0;
-  for (std::size_t cell_id = 0; cell_id < input_umesh->GetCells().size(); cell_id++)
+  for (auto& raw_cell : input_umesh->GetCells())
   {
-    if (CellHasLocalScope(mpi_comm.rank(), input_umesh, cell_id, vertex_subs, cell_pids))
+    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
-      auto partition_id = cell_pids[cell_id];
+      const auto partition_id = cell_pids[cell_global_id];
       if (partition_id == opensn::mpi_comm.rank())
-        ++n_local_cells;
+        n_local_cells++;
       else
-        ++n_ghost_cells;
+        n_ghost_cells++;
     }
   }
+
   std::vector<Cell> local_cells;
   local_cells.reserve(n_local_cells);
   std::vector<Cell> ghost_cells;
   ghost_cells.reserve(n_ghost_cells);
-  std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
-  std::map<std::uint64_t, std::vector<CellFace>> cell_faces;
-  std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
-  for (std::size_t cell_global_id = 0; cell_global_id < input_umesh->GetCells().size();
-       ++cell_global_id)
+  for (auto& raw_cell : input_umesh->GetCells())
   {
-    if (CellHasLocalScope(mpi_comm.rank(), input_umesh, cell_global_id, vertex_subs, cell_pids))
+    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
-      auto& cell = input_umesh->GetCells()[cell_global_id];
-      auto partition_id = cell_pids[cell_global_id];
-      cell.global_id = cell_global_id;
-      cell.partition_id = partition_id;
-      auto cell_vertex_ids = input_umesh->GetCellConnectivity(cell_global_id);
-      for (const auto vid : cell_vertex_ids)
-        grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
+      auto cell = SetupCell(*raw_cell, cell_global_id, cell_pids[cell_global_id]);
 
-      if (partition_id == opensn::mpi_comm.rank())
-        local_cells.emplace_back(cell);
-      else
-        ghost_cells.emplace_back(cell);
-      cell_connect.emplace(
-        cell_global_id, std::vector<std::uint64_t>{cell_vertex_ids.begin(), cell_vertex_ids.end()});
-      if (not input_umesh->GetCellFaceConnectivity().empty())
+      for (const auto vid : raw_cell->vertex_ids)
       {
-        const auto faces_for_this_cell = input_umesh->GetCellFaces(cell.global_id);
-        cell_faces.emplace(
-          cell_global_id,
-          std::vector<CellFace>(faces_for_this_cell.begin(), faces_for_this_cell.end()));
-        cell_face_connect.emplace(cell_global_id,
-                                  input_umesh->GetCellFaceConnectivity()[cell_global_id]);
+        const auto& pos = input_umesh->GetVertices()[vid];
+        grid_ptr->AddGlobalVertex(vid, pos);
       }
+
+      if (cell.partition_id == opensn::mpi_comm.rank())
+        local_cells.emplace_back(std::move(cell));
+      else
+        ghost_cells.emplace_back(std::move(cell));
     }
+    ++cell_global_id;
   } // for raw_cell
 
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), input_umesh->GetCells());
   grid_ptr->SetDimension(input_umesh->GetDimension());
   grid_ptr->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   grid_ptr->SetType(input_umesh->GetType());
   grid_ptr->SetExtruded(input_umesh->IsExtruded());
   grid_ptr->SetOrthoAttributes(input_umesh->GetOrthoAttributes());
   grid_ptr->SetGlobalVertexCount(input_umesh->GetVertices().size());
-  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), cell_connect);
-  if (not cell_face_connect.empty())
-    grid_ptr->SetCellFaces(cell_faces, cell_face_connect);
   grid_ptr->ComputeGeometricInfo();
 
   ComputeAndPrintStats(grid_ptr);
@@ -225,7 +208,7 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
 
 bool
 MeshGenerator::CellHasLocalScope(const int location_id,
-                                 std::shared_ptr<UnpartitionedMesh> mesh,
+                                 const UnpartitionedMesh::LightWeightCell& lwcell,
                                  const uint64_t cell_global_id,
                                  const std::vector<std::set<uint64_t>>& vertex_subscriptions,
                                  const std::vector<int>& cell_partition_ids) const
@@ -238,8 +221,7 @@ MeshGenerator::CellHasLocalScope(const int location_id,
     return true;
 
   // Now determine if the cell is a ghost cell
-  auto lwcell_vertex_ids = mesh->GetCellConnectivity(cell_global_id);
-  for (const auto vid : lwcell_vertex_ids)
+  for (const auto vid : lwcell.vertex_ids)
     for (const auto cid : vertex_subscriptions[vid])
     {
       if (cid == cell_global_id)
@@ -249,6 +231,20 @@ MeshGenerator::CellHasLocalScope(const int location_id,
         return true;
     }
   return false;
+}
+
+Cell
+MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
+                         const uint64_t global_id,
+                         const int partition_id)
+{
+  Cell cell(raw_cell.type, raw_cell.sub_type);
+  cell.centroid = raw_cell.centroid;
+  cell.global_id = global_id;
+  cell.partition_id = partition_id;
+  cell.block_id = raw_cell.block_id;
+
+  return cell;
 }
 
 InputParameters

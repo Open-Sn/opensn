@@ -47,15 +47,13 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   return nullptr;
 }
 
-std::vector<std::vector<uint64_t>>
-MeshIO::AddGmshPrismOrPyramidFaces(const int element_type,
-                                   const std::vector<uint64_t>& v,
-                                   std::vector<CellFace>& cell_faces)
+void
+MeshIO::AddGmshPrismOrPyramidFaces(const int element_type, UnpartitionedMesh::LightWeightCell& cell)
 {
   // Gmsh orders the nodes of both elements so that the first face (the triangle 0-1-2 of a prism,
   // the quadrilateral 0-1-2-3 of a pyramid) is counterclockwise seen from the opposite vertices,
   // as VTK does. The faces below are oriented outward for that ordering.
-  // const auto& v = cell.vertex_ids;
+  const auto& v = cell.vertex_ids;
   std::vector<std::vector<uint64_t>> faces;
   if (element_type == 6)
   {
@@ -78,8 +76,12 @@ MeshIO::AddGmshPrismOrPyramidFaces(const int element_type,
   else
     OpenSnLogicalError("MeshIO::FromGmsh: Element type " + std::to_string(element_type) +
                        " is not a prism or pyramid.");
-  cell_faces.resize(faces.size());
-  return faces;
+  for (auto& vertex_ids : faces)
+  {
+    UnpartitionedMesh::LightWeightFace face;
+    face.vertex_ids = std::move(vertex_ids);
+    cell.faces.push_back(std::move(face));
+  }
 }
 
 } // namespace opensn

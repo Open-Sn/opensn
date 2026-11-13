@@ -616,3 +616,105 @@ TEST(MeshTest, IsCellLocal)
   EXPECT_TRUE(grid_ptr->IsCellLocal(0));
   EXPECT_FALSE(grid_ptr->IsCellLocal(123));
 }
+
+TEST(MeshTest, SetCellsMapOverload)
+{
+  auto make_lw_cell = [](std::vector<uint64_t> vids,
+                         std::vector<std::pair<std::vector<uint64_t>, uint64_t>> face_defs)
+  {
+    UnpartitionedMesh::LightWeightCell lc(CellType::SLAB, CellType::SLAB);
+    lc.vertex_ids = std::move(vids);
+    for (auto& [face_vids, neighbor] : face_defs)
+    {
+      UnpartitionedMesh::LightWeightFace face;
+      face.vertex_ids = std::move(face_vids);
+      if (neighbor != std::numeric_limits<uint64_t>::max())
+      {
+        face.has_neighbor = true;
+        face.neighbor = neighbor;
+      }
+      else
+      {
+        face.has_neighbor = false;
+        face.neighbor = std::numeric_limits<uint64_t>::max();
+      }
+      lc.faces.push_back(std::move(face));
+    }
+    return lc;
+  };
+
+  const auto lc0 = make_lw_cell({0, 1}, {{{0}, std::numeric_limits<uint64_t>::max()}, {{1}, 1}});
+  const auto lc1 = make_lw_cell({1, 2}, {{{1}, 0}, {{2}, 2}});
+  const auto lc2 = make_lw_cell({2, 3}, {{{2}, 1}, {{3}, std::numeric_limits<uint64_t>::max()}});
+
+  std::vector<Cell> local_cells1;
+  local_cells1.emplace_back(CellType::SLAB, CellType::SLAB);
+  local_cells1.back().global_id = 0;
+  local_cells1.back().partition_id = 0;
+  local_cells1.emplace_back(CellType::SLAB, CellType::SLAB);
+  local_cells1.back().global_id = 1;
+  local_cells1.back().partition_id = 0;
+
+  std::vector<Cell> ghost_cells1;
+  ghost_cells1.emplace_back(CellType::SLAB, CellType::SLAB);
+  ghost_cells1.back().global_id = 2;
+  ghost_cells1.back().partition_id = 1;
+
+  std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>> light_cells;
+  light_cells.push_back(std::make_shared<UnpartitionedMesh::LightWeightCell>(lc0));
+  light_cells.push_back(std::make_shared<UnpartitionedMesh::LightWeightCell>(lc1));
+  light_cells.push_back(std::make_shared<UnpartitionedMesh::LightWeightCell>(lc2));
+
+  auto grid_vec = Mesh::New();
+  grid_vec->SetCells(std::move(local_cells1), std::move(ghost_cells1), light_cells);
+
+  std::vector<Cell> local_cells2;
+  local_cells2.emplace_back(CellType::SLAB, CellType::SLAB);
+  local_cells2.back().global_id = 0;
+  local_cells2.back().partition_id = 0;
+  local_cells2.emplace_back(CellType::SLAB, CellType::SLAB);
+  local_cells2.back().global_id = 1;
+  local_cells2.back().partition_id = 0;
+
+  std::vector<Cell> ghost_cells2;
+  ghost_cells2.emplace_back(CellType::SLAB, CellType::SLAB);
+  ghost_cells2.back().global_id = 2;
+  ghost_cells2.back().partition_id = 1;
+
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> map_cells;
+  map_cells.insert({{0, 0}, lc0});
+  map_cells.insert({{0, 1}, lc1});
+  map_cells.insert({{1, 2}, lc2});
+
+  auto grid_map = Mesh::New();
+  grid_map->SetCells(std::move(local_cells2), std::move(ghost_cells2), map_cells);
+
+  EXPECT_EQ(grid_vec->GetLocalCellCount(), grid_map->GetLocalCellCount());
+  EXPECT_EQ(grid_vec->GhostCellCount(), grid_map->GhostCellCount());
+
+  const auto total_cells = grid_vec->GetLocalCellCount() + grid_vec->GhostCellCount();
+  for (uint32_t c = 0; c < total_cells; ++c)
+  {
+    auto conn_vec = grid_vec->GetCellConnectivity(c);
+    auto conn_map = grid_map->GetCellConnectivity(c);
+    ASSERT_EQ(conn_vec.size(), conn_map.size());
+    for (size_t i = 0; i < conn_vec.size(); ++i)
+      EXPECT_EQ(conn_vec[i], conn_map[i]);
+
+    ASSERT_EQ(grid_vec->GetCellFaceCount(c), grid_map->GetCellFaceCount(c));
+    for (uint32_t f = 0; f < grid_vec->GetCellFaceCount(c); ++f)
+    {
+      const auto& face_vec = grid_vec->GetCellFace(c, f);
+      const auto& face_map = grid_map->GetCellFace(c, f);
+      EXPECT_EQ(face_vec.has_neighbor, face_map.has_neighbor);
+      EXPECT_EQ(face_vec.neighbor_id, face_map.neighbor_id);
+
+      EXPECT_EQ(grid_vec->GetCellFaceVertexCount(c, f), grid_map->GetCellFaceVertexCount(c, f));
+      auto fconn_vec = grid_vec->GetCellFaceConnectivity(c, f);
+      auto fconn_map = grid_map->GetCellFaceConnectivity(c, f);
+      ASSERT_EQ(fconn_vec.size(), fconn_map.size());
+      for (size_t i = 0; i < fconn_vec.size(); ++i)
+        EXPECT_EQ(fconn_vec[i], fconn_map[i]);
+    }
+  }
+}

@@ -57,13 +57,7 @@ private:
     OrthoMeshAttributes ortho_attributes;
 
     /// Map of cells (partition ID, cell global ID).
-    std::map<std::pair<int, uint64_t>, Cell> cells;
-    /// Cell connectivity
-    std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
-    /// Cell face connectivity
-    std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
-    /// Cell faces
-    std::map<std::uint64_t, std::vector<CellFace>> cell_faces;
+    std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
     /// Map of vertices by global vertex ID.
     std::map<uint64_t, Vector3> vertices;
     /// Map of boundary IDs to boundary names.

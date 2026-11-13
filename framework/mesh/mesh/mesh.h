@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/mesh/mesh/cell.h"
+#include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include "framework/data_types/ndarray.h"
 #include "framework/math/geometry.h"
 #include <memory>
@@ -36,12 +37,6 @@ ToString(CoordinateSystemType type) noexcept
   }
 }
 
-enum MeshType : int
-{
-  ORTHOGONAL,
-  UNSTRUCTURED
-};
-
 constexpr std::string_view
 ToString(MeshType type) noexcept
 {
@@ -64,13 +59,6 @@ enum BoundaryID : int
   YMAX = 3,
   ZMIN = 4,
   ZMAX = 5
-};
-
-struct OrthoMeshAttributes
-{
-  size_t Nx = 0;
-  size_t Ny = 0;
-  size_t Nz = 0;
 };
 
 /// Encapsulates all the necessary information required to fully define a computational domain.
@@ -155,15 +143,15 @@ public:
   /// Returns the the total number of ghost cells
   size_t GhostCellCount() const { return ghost_cells_.size(); }
 
-  void SetCellConnectivity(const std::vector<std::vector<std::uint64_t>>& connectivity);
+  void
+  SetCells(std::vector<Cell>&& local_cells,
+           std::vector<Cell>&& ghost_cells,
+           const std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>>& light_cells);
 
-  void SetCells(std::vector<Cell>&& local_cells,
-                std::vector<Cell>&& ghost_cells,
-                const std::map<std::uint64_t, std::vector<uint64_t>>& cell_connectivity);
-
-  void SetCellFaces(
-    const std::map<std::uint64_t, std::vector<CellFace>>& cell_faces,
-    const std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>>& cell_face_connectivity);
+  void
+  SetCells(std::vector<Cell>&& local_cells,
+           std::vector<Cell>&& ghost_cells,
+           const std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell>& cells);
 
   /// Returns a reference to a cell given its global cell index.
   Cell& GetGlobalCell(uint64_t cell_global_index);

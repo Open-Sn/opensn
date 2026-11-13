@@ -4,6 +4,7 @@
 #pragma once
 
 #include "framework/mesh/mesh_generator/mesh_generator.h"
+#include <thread>
 
 namespace opensn
 {

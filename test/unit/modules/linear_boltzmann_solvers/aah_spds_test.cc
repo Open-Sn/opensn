@@ -27,8 +27,8 @@ TEST(AAHSPDSTest, DISABLED_ReportsGlobalCycle)
   std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
   cell_face_connect[0] = {{0}, {1}};
 
-  grid->SetCells({cell}, {}, cell_connect);
-  grid->SetCellFaces(cell_faces, cell_face_connect);
+  // grid->SetCells({cell}, {}, cell_connect);
+  // grid->SetCellFaces(cell_faces, cell_face_connect);
 
   SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
