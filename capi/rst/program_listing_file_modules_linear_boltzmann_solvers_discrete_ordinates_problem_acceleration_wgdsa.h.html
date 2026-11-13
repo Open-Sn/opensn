@@ -128,8 +128,10 @@
 <span class="cm">   * That change is the new delayed angular flux minus the old one when `subtract_old_delayed_psi`</span>
 <span class="cm">   * is true (after a sweep, whose `phi_change` is the change over the sweep), and the new delayed</span>
 <span class="cm">   * angular flux itself otherwise (a preconditioner applied to a residual vector whose lagged block</span>
-<span class="cm">   * is held as the new delayed angular flux). The CSDA energy slopes of the lagged fluxes add no</span>
-<span class="cm">   * residual.</span>
+<span class="cm">   * is held as the new delayed angular flux). A face where the sweep broke a cyclic dependency,</span>
+<span class="cm">   * within a location or between locations, adds the same residual to the cell that reads the</span>
+<span class="cm">   * lagged flux: the face source J of the change of that flux. The CSDA energy slopes of the lagged</span>
+<span class="cm">   * fluxes add no residual.</span>
 <span class="cm">   *</span>
 <span class="cm">   * In a CSDA groupset with charged-particle groups, the diffusion operator of each group also</span>
 <span class="cm">   * removes S_g/dE_g, and the groups are solved in energy order. The source of each group is the</span>

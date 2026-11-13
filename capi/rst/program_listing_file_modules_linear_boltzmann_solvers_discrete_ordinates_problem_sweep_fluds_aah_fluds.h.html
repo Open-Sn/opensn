@@ -129,6 +129,11 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TallyDelayedIncomingCurrent</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>
+<span class="w">                                   </span><span class="kt">bool</span><span class="w"> </span><span class="n">subtract_old</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tally</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function</span>
 <span class="cm">   * computes the location where to store this position&#39;s outgoing psi and returns a reference to</span>
@@ -180,6 +185,16 @@
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="c1">/// Adds the nodal values to the new delayed angular fluxes, or to their CSDA energy slopes.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">AddToNewDelayedValues</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">energy_slope</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Calls `fn(cell_local_id, face, prelocI, block_stride, node_offsets)` for every incoming face</span>
+<span class="cm">   * of a local cell that reads delayed angular fluxes. `prelocI` is the delayed predecessor</span>
+<span class="cm">   * location that sends them, or -1 for a cyclic dependency within this location. The value of</span>
+<span class="cm">   * face node fj, group g and direction n is at `block_stride * n + node_offsets[fj] + g` of that</span>
+<span class="cm">   * delayed storage.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Fn</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ForEachDelayedIncomingFace</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Fn</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAH_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">csda_enabled_</span><span class="p">;</span>

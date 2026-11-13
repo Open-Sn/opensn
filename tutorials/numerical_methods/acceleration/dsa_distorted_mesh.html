@@ -384,7 +384,7 @@ stored next to this notebook as <code class="docutils literal notranslate"><span
 
 <span class="k">assert</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;Severe&quot;</span><span class="p">,</span> <span class="s2">&quot;face_side&quot;</span><span class="p">,</span> <span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mf">0.8</span>
 <span class="k">assert</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;Severe&quot;</span><span class="p">,</span> <span class="s2">&quot;cell&quot;</span><span class="p">,</span> <span class="s2">&quot;direct&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">1.0</span>
-<span class="k">assert</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;Severe&quot;</span><span class="p">,</span> <span class="s2">&quot;cell&quot;</span><span class="p">,</span> <span class="s2">&quot;iterative&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">unaccelerated</span>
+<span class="k">assert</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;Severe&quot;</span><span class="p">,</span> <span class="s2">&quot;cell&quot;</span><span class="p">,</span> <span class="s2">&quot;iterative&quot;</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">rates</span><span class="p">[</span><span class="s2">&quot;Severe&quot;</span><span class="p">,</span> <span class="s2">&quot;face_side&quot;</span><span class="p">,</span> <span class="s2">&quot;iterative&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="mf">0.2</span>
 </pre></div>
 </div>
 </div>
@@ -408,25 +408,25 @@ stored next to this notebook as <code class="docutils literal notranslate"><span
 </tr>
 <tr class="row-odd"><td><p>Moderate, <span class="math notranslate nohighlight">\(a = 0.3\)</span></p></td>
 <td><p>0.39</p></td>
-<td><p>0.336</p></td>
-<td><p>0.336</p></td>
-<td><p>0.338</p></td>
-<td><p>0.338</p></td>
+<td><p>0.323</p></td>
+<td><p>0.323</p></td>
+<td><p>0.318</p></td>
+<td><p>0.318</p></td>
 </tr>
 <tr class="row-even"><td><p>Severe, <span class="math notranslate nohighlight">\(a = 0.05\)</span></p></td>
 <td><p>0.0054</p></td>
-<td><p>1.54 (diverges)</p></td>
-<td><p>0.971</p></td>
-<td><p>0.653</p></td>
-<td><p>0.653</p></td>
+<td><p>1.55 (diverges)</p></td>
+<td><p>0.862</p></td>
+<td><p>0.547</p></td>
+<td><p>0.547</p></td>
 </tr>
 </tbody>
 </table>
 <p>The side-triangle quality of a cell is the area of its smallest side triangle over the mean side-triangle area: 1 for a parallelogram, near 0 for a cell with a skinny side triangle.</p>
-<p>On the regular and moderately distorted meshes the two penalty lengths give the same spectral radius to within 0.003, and the direct and iterative diffusion solves agree, as they must for an SPD operator. On the severe mesh <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> still converges, at the same rate with either solver, but <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> fails in two ways:</p>
+<p>On the regular and moderately distorted meshes the two penalty lengths give the same spectral radius to within 0.006, and the direct and iterative diffusion solves agree, as they must for an SPD operator. On the severe mesh <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> still converges, at the same rate with either solver, but <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> fails in two ways:</p>
 <ul class="simple">
-<li><p>With the direct solve, SI with WGDSA diverges: the change grows by a factor of 1.54 in every iteration. The exact correction amplifies some error modes instead of removing them, which is the behavior of an indefinite diffusion operator: the <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> length can make the operator indefinite on strongly distorted cells (see the <a class="reference internal" href="../../../userguide/groupsets.html"><span class="doc">groupset section of the user guide</span></a>).</p></li>
-<li><p>With conjugate gradients, the iteration converges with <span class="math notranslate nohighlight">\(\rho = 0.971\)</span>, slower than SI without any acceleration on the same mesh (<span class="math notranslate nohighlight">\(\rho = 0.962\)</span>, measured above). Conjugate gradients require an SPD operator. With <code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span> <span class="pre">=</span> <span class="pre">True</span></code>, every diffusion solve reports the status <code class="docutils literal notranslate"><span class="pre">failed</span></code> after three iterations, and its inaccurate correction is applied anyway.</p></li>
+<li><p>With the direct solve, SI with WGDSA diverges: the change grows by a factor of 1.55 in every iteration. The exact correction amplifies some error modes instead of removing them, which is the behavior of an indefinite diffusion operator: the <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> length can make the operator indefinite on strongly distorted cells (see the <a class="reference internal" href="../../../userguide/groupsets.html"><span class="doc">groupset section of the user guide</span></a>).</p></li>
+<li><p>With conjugate gradients, the iteration converges with <span class="math notranslate nohighlight">\(\rho = 0.862\)</span>: about four times as many iterations per digit as <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> (<span class="math notranslate nohighlight">\(\rho = 0.547\)</span>), though fewer than SI without any acceleration on the same mesh (<span class="math notranslate nohighlight">\(\rho = 0.962\)</span>, measured above). Conjugate gradients require an SPD operator. With <code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span> <span class="pre">=</span> <span class="pre">True</span></code>, every diffusion solve reports the status <code class="docutils literal notranslate"><span class="pre">failed</span></code> after two or three iterations, and its inaccurate correction is applied anyway.</p></li>
 </ul>
 <p>In both cases nothing in the default output points to the diffusion operator. Setting <code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span> <span class="pre">=</span> <span class="pre">True</span></code> prints the status of every diffusion solve.</p>
 </section>
@@ -434,9 +434,9 @@ stored next to this notebook as <code class="docutils literal notranslate"><span
 <h2><span class="section-number">5.3.4.4. </span>What to take away<a class="headerlink" href="#What-to-take-away" title="Link to this heading"></a></h2>
 <ul class="simple">
 <li><p>Keep the default <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> penalty length on meshes that are not orthogonal. It costs nothing on regular cells and keeps the diffusion operator SPD on distorted ones.</p></li>
-<li><p>On the regular and moderate meshes of this study, <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> converges as fast as <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> with both diffusion solvers. On the severe mesh, SI with WGDSA diverges with a direct diffusion solve and converges more slowly than without DSA with conjugate gradients, with no warning in either case.</p></li>
+<li><p>On the regular and moderate meshes of this study, <code class="docutils literal notranslate"><span class="pre">&quot;cell&quot;</span></code> converges as fast as <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> with both diffusion solvers. On the severe mesh, SI with WGDSA diverges with a direct diffusion solve and needs about four times as many iterations as with <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> with conjugate gradients, with no warning in either case.</p></li>
 <li><p>The diffusion solves report a failure only with <code class="docutils literal notranslate"><span class="pre">wgdsa_verbose</span> <span class="pre">=</span> <span class="pre">True</span></code>; a stalled iteration is the visible symptom.</p></li>
-<li><p>Distortion slows DSA even with <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> (<span class="math notranslate nohighlight">\(\rho\)</span> about 0.65 on the severe mesh against 0.22 on the regular one), so mesh quality still matters.</p></li>
+<li><p>Distortion slows DSA even with <code class="docutils literal notranslate"><span class="pre">&quot;face_side&quot;</span></code> (<span class="math notranslate nohighlight">\(\rho\)</span> about 0.55 on the severe mesh against 0.22 on the regular one), so mesh quality still matters.</p></li>
 </ul>
 </section>
 <section id="Finalize-(for-Jupyter-Notebook-only)">

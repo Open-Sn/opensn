@@ -309,7 +309,7 @@
     "\n",
     "assert rates[\"Severe\", \"face_side\", \"direct\"] < 0.8\n",
     "assert rates[\"Severe\", \"cell\", \"direct\"] > 1.0\n",
-    "assert rates[\"Severe\", \"cell\", \"iterative\"] > unaccelerated"
+    "assert rates[\"Severe\", \"cell\", \"iterative\"] > rates[\"Severe\", \"face_side\", \"iterative\"] + 0.2"
    ]
   },
   {
@@ -320,15 +320,15 @@
     "| Mesh | Smallest side-triangle quality | `\"cell\"`, direct | `\"cell\"`, CG | `\"face_side\"`, direct | `\"face_side\"`, CG |\n",
     "|---|---:|---:|---:|---:|---:|\n",
     "| Regular, $a = 0.5$ | 1 | 0.216 | 0.216 | 0.217 | 0.217 |\n",
-    "| Moderate, $a = 0.3$ | 0.39 | 0.336 | 0.336 | 0.338 | 0.338 |\n",
-    "| Severe, $a = 0.05$ | 0.0054 | 1.54 (diverges) | 0.971 | 0.653 | 0.653 |\n",
+    "| Moderate, $a = 0.3$ | 0.39 | 0.323 | 0.323 | 0.318 | 0.318 |\n",
+    "| Severe, $a = 0.05$ | 0.0054 | 1.55 (diverges) | 0.862 | 0.547 | 0.547 |\n",
     "\n",
     "The side-triangle quality of a cell is the area of its smallest side triangle over the mean side-triangle area: 1 for a parallelogram, near 0 for a cell with a skinny side triangle.\n",
     "\n",
-    "On the regular and moderately distorted meshes the two penalty lengths give the same spectral radius to within 0.003, and the direct and iterative diffusion solves agree, as they must for an SPD operator. On the severe mesh `\"face_side\"` still converges, at the same rate with either solver, but `\"cell\"` fails in two ways:\n",
+    "On the regular and moderately distorted meshes the two penalty lengths give the same spectral radius to within 0.006, and the direct and iterative diffusion solves agree, as they must for an SPD operator. On the severe mesh `\"face_side\"` still converges, at the same rate with either solver, but `\"cell\"` fails in two ways:\n",
     "\n",
-    "- With the direct solve, SI with WGDSA diverges: the change grows by a factor of 1.54 in every iteration. The exact correction amplifies some error modes instead of removing them, which is the behavior of an indefinite diffusion operator: the `\"cell\"` length can make the operator indefinite on strongly distorted cells (see the [groupset section of the user guide](../../../userguide/groupsets.rst)).\n",
-    "- With conjugate gradients, the iteration converges with $\\rho = 0.971$, slower than SI without any acceleration on the same mesh ($\\rho = 0.962$, measured above). Conjugate gradients require an SPD operator. With `wgdsa_verbose = True`, every diffusion solve reports the status `failed` after three iterations, and its inaccurate correction is applied anyway.\n",
+    "- With the direct solve, SI with WGDSA diverges: the change grows by a factor of 1.55 in every iteration. The exact correction amplifies some error modes instead of removing them, which is the behavior of an indefinite diffusion operator: the `\"cell\"` length can make the operator indefinite on strongly distorted cells (see the [groupset section of the user guide](../../../userguide/groupsets.rst)).\n",
+    "- With conjugate gradients, the iteration converges with $\\rho = 0.862$: about four times as many iterations per digit as `\"face_side\"` ($\\rho = 0.547$), though fewer than SI without any acceleration on the same mesh ($\\rho = 0.962$, measured above). Conjugate gradients require an SPD operator. With `wgdsa_verbose = True`, every diffusion solve reports the status `failed` after two or three iterations, and its inaccurate correction is applied anyway.\n",
     "\n",
     "In both cases nothing in the default output points to the diffusion operator. Setting `wgdsa_verbose = True` prints the status of every diffusion solve."
    ]
@@ -341,9 +341,9 @@
     "## What to take away\n",
     "\n",
     "- Keep the default `\"face_side\"` penalty length on meshes that are not orthogonal. It costs nothing on regular cells and keeps the diffusion operator SPD on distorted ones.\n",
-    "- On the regular and moderate meshes of this study, `\"cell\"` converges as fast as `\"face_side\"` with both diffusion solvers. On the severe mesh, SI with WGDSA diverges with a direct diffusion solve and converges more slowly than without DSA with conjugate gradients, with no warning in either case.\n",
+    "- On the regular and moderate meshes of this study, `\"cell\"` converges as fast as `\"face_side\"` with both diffusion solvers. On the severe mesh, SI with WGDSA diverges with a direct diffusion solve and needs about four times as many iterations as with `\"face_side\"` with conjugate gradients, with no warning in either case.\n",
     "- The diffusion solves report a failure only with `wgdsa_verbose = True`; a stalled iteration is the visible symptom.\n",
-    "- Distortion slows DSA even with `\"face_side\"` ($\\rho$ about 0.65 on the severe mesh against 0.22 on the regular one), so mesh quality still matters."
+    "- Distortion slows DSA even with `\"face_side\"` ($\\rho$ about 0.55 on the severe mesh against 0.22 on the regular one), so mesh quality still matters."
    ]
   },
   {

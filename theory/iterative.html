@@ -323,10 +323,26 @@ J_g = \sum_{\Omega_d \cdot n &lt; 0} w_d \, |\Omega_d \cdot n| \,
 \bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,\]</div>
 <p>with <span class="math notranslate nohighlight">\(n\)</span> the outward normal and <span class="math notranslate nohighlight">\(\psi^{\text{new}}\)</span> and
 <span class="math notranslate nohighlight">\(\psi^{\text{old}}\)</span> the lagged incoming fluxes after and before the
-sweep. <span class="math notranslate nohighlight">\(J_g\)</span> is the inward partial current of that change. The fluxes
-that the sweep lags where it breaks a cycle, within a partition or between
-partitions, receive the isotropic correction only. The change of those fluxes
-is not a source of the correction.</p>
+sweep. <span class="math notranslate nohighlight">\(J_g\)</span> is the inward partial current of that change.</p>
+<p>The sweep also lags the upwind angular flux on the faces where it breaks a
+cyclic dependency, within a partition or between partitions. The cell <span class="math notranslate nohighlight">\(K\)</span>
+that reads the lagged flux through such a face <span class="math notranslate nohighlight">\(f\)</span> is swept with the
+lagged value <span class="math notranslate nohighlight">\(\psi^{\text{old}}\)</span> in place of <span class="math notranslate nohighlight">\(\psi^{\text{new}}\)</span>,
+the upwind flux of the current sweep. The error of the swept iterate therefore
+has the change of the lagged flux as an incoming surface source of <span class="math notranslate nohighlight">\(K\)</span>
+on <span class="math notranslate nohighlight">\(f\)</span>. The correction receives the zeroth angular moment of that
+source: the equation of each basis function <span class="math notranslate nohighlight">\(b_i\)</span> of <span class="math notranslate nohighlight">\(K\)</span> gains the
+face term</p>
+<div class="math notranslate nohighlight">
+\[\int_f b_i \, J_g \,, \qquad
+J_g = \sum_{d \in \mathcal{D}_f} w_d \, |\Omega_d \cdot n| \,
+\bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,\]</div>
+<p>with <span class="math notranslate nohighlight">\(n\)</span> the outward normal of <span class="math notranslate nohighlight">\(K\)</span> on <span class="math notranslate nohighlight">\(f\)</span>,
+<span class="math notranslate nohighlight">\(\mathcal{D}_f\)</span> the directions whose flux is lagged on <span class="math notranslate nohighlight">\(f\)</span>, and
+<span class="math notranslate nohighlight">\(J_g\)</span> interpolated by the face basis. This is the term that the condition
+above adds on a lagged reflecting boundary. Without it the correction misses
+the particles that the lagged faces have not yet passed on, which limits the
+convergence of optically thin problems with strong scattering.</p>
 <p>With a PETSc inner method (<code class="docutils literal notranslate"><span class="pre">petsc_richardson</span></code>, <code class="docutils literal notranslate"><span class="pre">petsc_gmres</span></code>,
 <code class="docutils literal notranslate"><span class="pre">petsc_fgmres</span></code> or <code class="docutils literal notranslate"><span class="pre">petsc_bicgstab</span></code>), the same correction is the
 preconditioner. Applied to a vector <span class="math notranslate nohighlight">\(v\)</span> of the groupset unknowns, it

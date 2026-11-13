@@ -54,6 +54,11 @@ Program Listing for File aah_fluds.h
    
      void AddToNewDelayedAngularSlope(const DelayedFluxCorrection& correction) override;
    
+     void TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
+                                      const std::vector<std::uint32_t>& angle_indices,
+                                      bool subtract_old,
+                                      const DelayedCurrentTally& tally) const override;
+   
      /**
       * Given a sweep ordering index, the incoming face counter, the incoming face dof, this function
       * computes the location where to store this position's outgoing psi and returns a reference to
@@ -105,6 +110,16 @@ Program Listing for File aah_fluds.h
    private:
      /// Adds the nodal values to the new delayed angular fluxes, or to their CSDA energy slopes.
      void AddToNewDelayedValues(const DelayedFluxCorrection& correction, bool energy_slope);
+   
+     /**
+      * Calls `fn(cell_local_id, face, prelocI, block_stride, node_offsets)` for every incoming face
+      * of a local cell that reads delayed angular fluxes. `prelocI` is the delayed predecessor
+      * location that sends them, or -1 for a cyclic dependency within this location. The value of
+      * face node fj, group g and direction n is at `block_stride * n + node_offsets[fj] + g` of that
+      * delayed storage.
+      */
+     template <typename Fn>
+     void ForEachDelayedIncomingFace(const Fn& fn) const;
    
      const AAH_FLUDSCommonData& common_data_;
      const bool csda_enabled_;

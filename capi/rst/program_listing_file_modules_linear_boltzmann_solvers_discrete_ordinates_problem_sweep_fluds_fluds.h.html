@@ -103,6 +103,7 @@
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
 
+<span class="k">class</span><span class="w"> </span><span class="nc">AngularQuadrature</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">GridFaceHistogram</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">SPDS</span><span class="p">;</span>
 
@@ -198,6 +199,37 @@
 <span class="cm">   * energy-slope value. The default has no delayed energy slopes.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddToNewDelayedAngularSlope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="p">{}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Receives a nodal inward partial current, indexed by (cell local id, face, face node, group</span>
+<span class="cm">   * index within the groupset).</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="w"> </span><span class="o">=</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">function</span><span class="o">&lt;</span><span class="kt">void</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="p">)</span><span class="o">&gt;</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Passes to `tally`, for every incoming face node of a cell that reads delayed angular fluxes</span>
+<span class="cm">   * (a cyclic dependency broken within this location or between locations) and every groupset</span>
+<span class="cm">   * group, the inward partial current \f$ -\sum_n w_n (\Omega_n \cdot \hat{n}) \delta\psi_n \f$</span>
+<span class="cm">   * of those fluxes over the directions of this FLUDS, with \f$\hat{n}\f$ the outward normal of</span>
+<span class="cm">   * the face of the reading cell. `angle_indices` are the directions of `quadrature` held by this</span>
+<span class="cm">   * FLUDS, in its storage order. \f$\delta\psi_n\f$ is the new delayed value minus the old one</span>
+<span class="cm">   * when `subtract_old` is true (after a sweep: the change of the upwind flux that the sweep did</span>
+<span class="cm">   * not see) and the new delayed value otherwise.</span>
+<span class="cm">   *</span>
+<span class="cm">   * A FLUDS type that stores delayed angular fluxes must override this. The default accepts only a</span>
+<span class="cm">   * FLUDS without them and otherwise throws.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">TallyDelayedIncomingCurrent</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="cm">/*quadrature*/</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="cm">/*angle_indices*/</span><span class="p">,</span>
+<span class="w">                                           </span><span class="kt">bool</span><span class="w"> </span><span class="cm">/*subtract_old*/</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="o">&amp;</span><span class="w"> </span><span class="cm">/*tally*/</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">OpenSnLogicalErrorIf</span><span class="p">(</span><span class="n">HasDelayedAngularFlux</span><span class="p">(),</span>
+<span class="w">                         </span><span class="s">&quot;This FLUDS type stores delayed (lagged) angular fluxes but does not &quot;</span>
+<span class="w">                         </span><span class="s">&quot;implement TallyDelayedIncomingCurrent, so WGDSA cannot form their &quot;</span>
+<span class="w">                         </span><span class="s">&quot;residual.&quot;</span><span class="p">);</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="o">~</span><span class="n">FLUDS</span><span class="p">()</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">default</span><span class="p">;</span>
 

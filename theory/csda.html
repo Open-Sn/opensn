@@ -317,9 +317,10 @@ solves the coupled system with one single-group MIP diffusion solve per group.
 Without the energy coupling, a correction of group <span class="math notranslate nohighlight">\(g\)</span> reaches the groups
 below it only through the next sweep, which can amplify the error transiently
 along a charged-particle block before it decays.</p>
-<p>On a reflecting boundary that lags its incoming flux, each group’s correction
-also receives the inward partial current of the change of the lagged flux, as
-in the standard WGDSA operator (see <a class="reference internal" href="iterative.html"><span class="doc">Iterative Solution Algorithms</span></a>).</p>
+<p>On a reflecting boundary that lags its incoming flux, and on a face where the
+sweep breaks a cyclic dependency, each group’s correction also receives the
+inward partial current of the change of the lagged flux, as in the standard
+WGDSA operator (see <a class="reference internal" href="iterative.html"><span class="doc">Iterative Solution Algorithms</span></a>).</p>
 <p>The correction is added to the scalar flux and, as an isotropic correction, to
 the lagged angular fluxes. The energy slope is not corrected. The correction
 vanishes when the iteration converges, so it does not change the converged

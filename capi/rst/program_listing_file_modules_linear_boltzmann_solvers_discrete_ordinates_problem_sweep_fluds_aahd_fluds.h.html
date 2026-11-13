@@ -274,6 +274,11 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDelayedLocalPsiNewToOld</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Add an isotropic nodal correction to the new delayed local and non-local incoming psi.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CorrectNewDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">)</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Tally the inward partial current of the delayed local and non-local incoming psi.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TallyDelayedIncomingCurrent</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">AngularQuadrature</span><span class="o">&amp;</span><span class="w"> </span><span class="n">quadrature</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">angle_indices</span><span class="p">,</span>
+<span class="w">                                   </span><span class="kt">bool</span><span class="w"> </span><span class="n">subtract_old</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">DelayedCurrentTally</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tally</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// \}</span>
 
 <span class="w">  </span><span class="c1">/// \name Sweep preparation and clean up</span>
@@ -304,6 +309,15 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasSaveAngularFlux</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">save_angular_flux_</span><span class="p">.</span><span class="n">host_storage</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
 <span class="k">protected</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Calls `fn(cell_local_id, face, face_node, loc, offset)` for every incoming face node of a</span>
+<span class="cm">   * local cell that reads delayed angular fluxes. `loc` is the index of the delayed predecessor</span>
+<span class="cm">   * location that sends them, or -1 for a cyclic dependency within this location. The value of</span>
+<span class="cm">   * direction n and group g is at `offset + n * num_groups + g` of that delayed storage.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">Fn</span><span class="o">&gt;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">ForEachDelayedIncomingNode</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Fn</span><span class="o">&amp;</span><span class="w"> </span><span class="n">fn</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Reference to the common data.</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHD_FLUDSCommonData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">common_data_</span><span class="p">;</span>
 

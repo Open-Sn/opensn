@@ -254,6 +254,19 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CorrectNewDelayedAngularFlux</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FLUDS</span><span class="o">::</span><span class="n">DelayedFluxCorrection</span><span class="o">&amp;</span><span class="w"> </span><span class="n">correction</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// True when this location holds delayed angular fluxes of this groupset. Not collective.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasLocalDelayedAngularFlux</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Passes to `tally` the nodal inward partial current of every delayed angular flux of this</span>
+<span class="cm">   * groupset on this location: the lagged incoming fluxes of opposing reflecting boundaries</span>
+<span class="cm">   * (SweepBoundary::TallyDelayedIncomingCurrent) and of broken cyclic dependencies within and</span>
+<span class="cm">   * between locations (FLUDS::TallyDelayedIncomingCurrent). A face node receives one call per</span>
+<span class="cm">   * angle set that reads delayed fluxes through it; the calls add up. Not collective.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">TallyDelayedIncomingCurrent</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">subtract_old</span><span class="p">,</span>
+<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">FLUDS</span><span class="o">::</span><span class="n">DelayedCurrentTally</span><span class="o">&amp;</span><span class="w"> </span><span class="n">tally</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Returns a vector laid out like GetNewDelayedAngularDOFsAsSTLVector() that holds, for every</span>
 <span class="cm">   * delayed angular flux and CSDA energy slope, the nodal value at the face node of the cell that</span>

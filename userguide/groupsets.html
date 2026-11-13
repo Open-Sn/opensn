@@ -728,7 +728,10 @@ applied to all of these lagged angular fluxes as well (as an isotropic
 correction evaluated at the face node that reads the lagged value). Without it,
 the uncorrected lagged error re-enters on the next sweep and source iteration
 with DSA can diverge in highly scattering media; with it, WGDSA and TGDSA remain
-effective for both Richardson and Krylov inner solvers.</p>
+effective for both Richardson and Krylov inner solvers. WGDSA also takes the
+change of every lagged angular flux over the sweep as a source of its
+correction (the inward partial current on the face that reads it), which keeps
+it effective in optically thin problems with sweep cycles. TGDSA does not.</p>
 <p>In time-dependent problems the diffusion operators include the time
 absorption <span class="math notranslate nohighlight">\(1/(v\theta\Delta t)\)</span> of the transport operator and are rebuilt
 when the time step or <span class="math notranslate nohighlight">\(\theta\)</span> changes (see
