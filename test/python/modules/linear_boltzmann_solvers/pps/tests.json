@@ -60,5 +60,65 @@
         "abs_tol": 0
       }
     ]
+  },
+  {
+    "file": "transport_2d_1_poly.py",
+    "comment": "Computing surface post-processors on 2D domain",
+    "num_procs": 4,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "surface_pps_squares_tagged.py",
+    "comment": "Computing surface post-processors on embedded squares domain with Gmsh-tagged boundary",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "surface_pps_squares_logvol.py",
+    "comment": "Computing surface post-processors on embedded squares domain with RPPLogicalVolume",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "surface_pps_circles_tagged.py",
+    "comment": "Computing surface post-processors on embedded circles domain with Gmsh-tagged boundary",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
+  },
+  {
+    "file": "surface_pps_circles_logvol.py",
+    "comment": "Computing surface post-processors on embedded circles domain with RCCLogicalVolume",
+    "num_procs": 1,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      }
+    ]
   }
 ]
