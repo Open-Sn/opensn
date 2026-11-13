@@ -80,6 +80,8 @@ These are specified inside each entry of ``groupsets=[...]``:
 - ``wgdsa_petsc_options``
 - ``wgdsa_solver_policy``
 - ``wgdsa_direct_solve_threshold``
+- ``wgdsa_boundary_closure``
+- ``wgdsa_h_perp_convention``
 - ``apply_tgdsa``
 - ``tgdsa_l_abs_tol``
 - ``tgdsa_l_max_its``
@@ -87,6 +89,8 @@ These are specified inside each entry of ``groupsets=[...]``:
 - ``tgdsa_petsc_options``
 - ``tgdsa_solver_policy``
 - ``tgdsa_direct_solve_threshold``
+- ``tgdsa_boundary_closure``
+- ``tgdsa_h_perp_convention``
 
 These settings control the solve performed within a single groupset.
 
@@ -210,6 +214,11 @@ Why not use it by default:
 - usually slower and less robust than Krylov methods on harder problems
 - convergence can deteriorate badly for optically thick or highly scattering
   cases without acceleration
+- in fixed-source and time-dependent solves, fission within the groupset is
+  lagged by one iteration like scattering. WGDSA and TGDSA do not correct it, so
+  a problem with a multiplication factor close to one converges at about that
+  factor per iteration. The Krylov methods converge fission with the rest of the
+  groupset operator.
 
 Example:
 
@@ -288,15 +297,18 @@ the preconditioner applied on the right.
 
 Why use it:
 
-- with ``apply_wgdsa`` or ``apply_tgdsa``. The DSA preconditioner solves its
-  diffusion system only to ``wgdsa_l_abs_tol``/``tgdsa_l_abs_tol``, so it
-  differs slightly between applications. Standard GMRES assumes a fixed
-  preconditioner and can then report convergence while the transport solution is
-  still in error; flexible GMRES remains exact.
-  With standard GMRES, the transport error follows the DSA tolerance once that
-  tolerance is looser than ``l_abs_tol``, and a groupset that uses
-  ``petsc_gmres`` or ``petsc_bicgstab`` with such a DSA tolerance prints a
-  warning suggesting ``petsc_fgmres``. Setting ``wgdsa_l_abs_tol`` and
+- with ``apply_wgdsa`` or ``apply_tgdsa`` when the DSA diffusion system is
+  solved iteratively. The iterative solve stops at the relative tolerance
+  ``wgdsa_l_abs_tol``/``tgdsa_l_abs_tol``, so the DSA preconditioner differs
+  slightly between applications. Standard GMRES assumes a fixed preconditioner
+  and can then report convergence while the transport solution is still in
+  error. Flexible GMRES remains exact. With standard GMRES, the transport error
+  follows the DSA tolerance once that tolerance is looser than ``l_abs_tol``.
+  A groupset that uses ``petsc_gmres`` or ``petsc_bicgstab`` with such a DSA
+  tolerance prints a warning suggesting ``petsc_fgmres``. The warning compares
+  only the tolerances. A direct diffusion solve, which the default ``"auto"``
+  policy chooses for small systems on one MPI process, is the same in every
+  application, and standard GMRES is then exact. Setting ``wgdsa_l_abs_tol`` and
   ``tgdsa_l_abs_tol`` no larger than ``l_abs_tol`` also avoids the error, at the
   cost of tighter diffusion solves.
 
@@ -464,6 +476,10 @@ Why this matters:
 - if the problem has only one groupset, AGS is irrelevant
 - if the problem has multiple groupsets, AGS is part of the main solve
   algorithm, not just a logging detail
+- in fixed-source and time-dependent solves with fission, fission that emits
+  from one groupset into another is iterated by AGS at about the multiplication
+  factor of the problem per pass, which can take hundreds of passes (see
+  :doc:`groupsets`)
 
 ``ags_convergence_check``
 -------------------------
@@ -487,6 +503,8 @@ relative change in the flux vector, measuring each flux moment relative to the
 local scalar flux or to the moment itself, whichever is larger. It can be useful
 when localized solution changes matter more than the global norm.
 
+.. _iterative_ags_tolerance:
+
 ``ags_tolerance``
 -----------------
 
@@ -505,12 +523,39 @@ Reasonable values:
 - ``1.0e-7`` to ``1.0e-8`` may be appropriate when strong cross-groupset
   coupling must be converged tightly
 
-In general, the groupset inner solves should be at least as tight as the AGS
-solve, and usually somewhat tighter. The change between AGS iterates includes
-the error of the inner solves, so with looser inner solves it stalls above
-``ags_tolerance`` and the iteration runs to ``max_ags_iterations``. The ``l2``
-check is absolute, so compare ``ags_tolerance`` with ``l_abs_tol`` times the
-norm of the flux.
+In general, the groupset inner solves should be tighter than the AGS solve.
+The change between AGS iterates includes the error that the inner solves
+leave, so the AGS iteration cannot stop until that error is below its own test.
+Compare the two in the same terms:
+
+- With the PETSc inner methods, ``l_abs_tol`` bounds the relative residual of a
+  groupset solve, not its error. A groupset whose iteration converges at rate
+  :math:`\rho` leaves an error of up to about ``l_abs_tol`` :math:`/(1-\rho)`
+  relative to the flux. :math:`\rho` is the convergence rate of the whole
+  groupset iteration. Without acceleration it is set by everything the
+  iteration lags: the within-group scattering, the scattering between the groups
+  of the groupset and, in fixed-source and time-dependent solves, the fission
+  within the groupset. Two groups that scatter strongly into each other converge
+  slowly even without within-group scattering. WGDSA reduces the within-group
+  part and TGDSA the part that scattering between the groups couples.
+  ``classic_richardson`` already scales its test by :math:`1-\rho`.
+- The ``l2`` check is absolute. ``ags_tolerance`` is in the units of the flux,
+  so compare it with that relative error times the L2 norm of the flux. The
+  ``pointwise`` check is relative.
+- The AGS test also scales ``ags_tolerance`` by :math:`1-\varrho`.
+
+When the inner error is above the AGS test, the AGS iteration does not stop at
+the inner tolerance. It runs slowly. A groupset whose PETSc solve starts below
+``l_abs_tol`` takes no Krylov iteration, but the sweep that rebuilds its angular
+flux after the solve still applies one source iteration to it. Each AGS pass
+then advances that groupset by one source iteration, and the AGS iteration can
+take tens of passes or reach ``max_ags_iterations``. The log shows this as
+groupsets that converge at iteration 0 while the AGS change decreases slowly.
+Tighten
+``l_abs_tol``, add DSA to the groupsets with strong scattering, or loosen
+``ags_tolerance``. Loosening ``ags_tolerance`` or switching to the
+``pointwise`` check stops the iteration sooner, with the accuracy of the inner
+solves.
 
 ``max_ags_iterations``
 ----------------------
@@ -565,74 +610,104 @@ with associated controls:
 - ``wgdsa_petsc_options``
 - ``wgdsa_solver_policy``
 - ``wgdsa_direct_solve_threshold``
+- ``wgdsa_boundary_closure``
+- ``wgdsa_h_perp_convention``
 - ``tgdsa_l_abs_tol``
 - ``tgdsa_l_max_its``
 - ``tgdsa_verbose``
 - ``tgdsa_petsc_options``
 - ``tgdsa_solver_policy``
 - ``tgdsa_direct_solve_threshold``
+- ``tgdsa_boundary_closure``
+- ``tgdsa_h_perp_convention``
 
 WGDSA
 -----
 
 WGDSA stands for within-group diffusion synthetic acceleration. Enabling
-``apply_wgdsa`` creates a diffusion MIP solve over the current groupset and
-applies the resulting correction to the updated flux.
+``apply_wgdsa`` creates one MIP diffusion solve for the groupset. After each
+groupset iteration, it corrects the scalar flux of every group with the
+solution of a one-group diffusion problem whose source is the change of that
+group's within-group scattering source. The groups are not coupled in the
+correction. In a groupset with charged-particle groups and ``csda_enabled``,
+WGDSA instead solves one diffusion problem per group in energy order, coupled
+by in-groupset scattering and CSDA slowing-down (see :doc:`csda`). With
+``classic_richardson`` the correction is applied after each sweep. With the
+PETSc methods it is the preconditioner.
 
 Why use it:
 
-- to accelerate scattering-dominated inner iterations
-- especially useful with Richardson-style iteration
-- can also help PETSc-based inner solves when used as part of the transport
-  solve workflow
+- to accelerate inner iterations that are slow because of within-group
+  scattering in optically thick regions
+- with any inner method: it is the correction step of Richardson iteration and
+  the preconditioner of the Krylov methods
 
 WGDSA controls:
 
-- ``wgdsa_l_abs_tol``: stopping tolerance for the diffusion correction solve
-- ``wgdsa_l_max_its``: hard cap on WGDSA iterations
+- ``wgdsa_l_abs_tol``: residual tolerance of the iterative diffusion solve,
+  relative to the norm of its right-hand side
+- ``wgdsa_l_max_its``: maximum iterations of the iterative diffusion solve
 - ``wgdsa_solver_policy``: PETSc solver setup policy for the WGDSA diffusion
-  solve. ``"auto"`` uses direct PETSc LU for systems at or below
-  ``wgdsa_direct_solve_threshold`` global unknowns and an iterative solve
-  otherwise. ``"direct"``, ``"iterative"``, and ``"petsc_options"`` force a
-  specific path.
+  solve. ``"auto"`` uses direct PETSc LU on one MPI process for systems at or
+  below ``wgdsa_direct_solve_threshold`` global unknowns, and conjugate
+  gradients preconditioned by BoomerAMG otherwise. ``"direct"`` and
+  ``"iterative"`` force those paths. ``"petsc_options"`` takes the KSP/PC setup
+  from ``wgdsa_petsc_options``.
 - ``wgdsa_direct_solve_threshold``: maximum global WGDSA diffusion unknown count
-  for the automatic direct solve. The default is ``20000``.
+  for the automatic direct solve. The count is the number of spatial nodes times
+  the number of groups in the groupset, or the number of spatial nodes for the
+  per-group systems of a CSDA groupset. The default is ``20000``.
+- ``wgdsa_petsc_options``: PETSc options for the diffusion solver. They must
+  carry the solver's prefix (see :doc:`groupsets`).
+
+The direct solve ignores ``wgdsa_l_abs_tol`` and ``wgdsa_l_max_its``.
 
 Reasonable values:
 
-- start with ``wgdsa_l_abs_tol=1.0e-4`` and ``wgdsa_l_max_its=30``
+- start with ``wgdsa_l_abs_tol=1.0e-4`` and ``wgdsa_l_max_its=30`` with
+  ``classic_richardson`` or ``petsc_fgmres``
+- with ``petsc_gmres`` or ``petsc_bicgstab`` and an iterative diffusion solve,
+  use a ``wgdsa_l_abs_tol`` no larger than ``l_abs_tol`` (see
+  ``petsc_fgmres`` above)
 - if WGDSA is clearly helping but not converging tightly enough, reduce the
   tolerance to ``1.0e-5`` or raise the iteration cap modestly
-- it is usually not necessary to solve the DSA system more tightly than the
-  transport problem itself
 
 TGDSA
 -----
 
 TGDSA stands for two-grid diffusion synthetic acceleration. Enabling
-``apply_tgdsa`` constructs a collapsed one-group diffusion correction using
-two-grid information derived from the groupset cross sections, then projects the
-correction back to the groupset spectrum.
+``apply_tgdsa`` builds, per material, the energy spectrum of the slowest error
+mode of the groupset's iteration in energy and diffusion cross sections
+collapsed with it. After each groupset iteration, it solves one one-group
+diffusion problem whose source is the change of the scattering between the
+groups of the groupset, and adds the solution times the spectrum to the scalar
+flux of each group. It acts after WGDSA when both are enabled. TGDSA requires a
+groupset with at least two groups and is not supported with CSDA.
 
 TGDSA controls:
 
-- ``tgdsa_l_abs_tol``: stopping tolerance for the two-grid diffusion solve
-- ``tgdsa_l_max_its``: hard cap on TGDSA iterations
+- ``tgdsa_l_abs_tol``: residual tolerance of the iterative two-grid diffusion
+  solve, relative to the norm of its right-hand side
+- ``tgdsa_l_max_its``: maximum iterations of the iterative two-grid diffusion
+  solve
 - ``tgdsa_solver_policy``: PETSc solver setup policy for the TGDSA diffusion
   solve, with the same choices and behavior as ``wgdsa_solver_policy``.
 - ``tgdsa_direct_solve_threshold``: maximum global TGDSA diffusion unknown count
-  for the automatic direct solve. The default is ``20000``.
+  for the automatic direct solve. The TGDSA system has one unknown per spatial
+  node. The default is ``20000``.
 
 Reasonable values:
 
 - the same starting values as WGDSA are usually sensible:
-  ``tgdsa_l_abs_tol=1.0e-4`` and ``tgdsa_l_max_its=30``
+  ``tgdsa_l_abs_tol=1.0e-4`` and ``tgdsa_l_max_its=30``, with the same caveat
+  for ``petsc_gmres`` and ``petsc_bicgstab``
 - TGDSA is a correction solve, so very tight tolerances are usually unnecessary
 
 Why use it:
 
-- to accelerate multigroup error modes that are not well treated by within-group
-  acceleration alone
+- to accelerate the error that scattering between the groups of a groupset
+  couples across them, which within-group acceleration does not correct, for
+  example in thermal groups with upscattering
 
 Practical guidance
 ------------------
@@ -640,8 +715,14 @@ Practical guidance
 For many problems:
 
 - start without DSA
-- if convergence is too slow, try WGDSA first
-- add TGDSA when multigroup coupling remains difficult
+- if convergence is too slow, enable WGDSA in groupsets whose groups scatter
+  strongly within themselves
+- enable TGDSA in a groupset that contains thermal upscattering, usually
+  together with WGDSA
+- keep every group that receives upscatter in the groupset that has TGDSA
+
+See :ref:`groupsets_choosing_dsa` for when to use each correction and how to lay
+out groupsets for TGDSA.
 
 DSA is most useful when there is an actual iteration problem to solve. It is
 not automatically beneficial for every easy case.
@@ -653,7 +734,7 @@ Example:
    {
        "groups_from_to": (0, 39),
        "angular_quadrature": quad,
-       "inner_linear_method": "petsc_gmres",
+       "inner_linear_method": "petsc_fgmres",
        "l_abs_tol": 1.0e-6,
        "l_max_its": 200,
        "apply_wgdsa": True,
@@ -839,8 +920,8 @@ For most users, a sensible starting progression is:
 1. Start with ``petsc_gmres``.
 2. Use the default AGS settings unless there is a clear need to change them.
 3. If convergence is slow on scattering-dominated problems, enable WGDSA.
-4. If multigroup convergence remains difficult, consider TGDSA and/or revisit
-   groupset splitting.
+4. If the groups of a groupset upscatter, enable TGDSA as well, and keep the
+   whole upscatter range in that groupset (see :ref:`groupsets_choosing_dsa`).
 5. Use ``classic_richardson`` when a simple source-iteration style method is
    specifically desired.
 

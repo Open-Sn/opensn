@@ -215,8 +215,9 @@ Use other inner methods intentionally:
   method or a method-study baseline
 * ``petsc_richardson`` when a stationary PETSc iteration is specifically
   desired
-* ``petsc_fgmres`` with WGDSA or TGDSA: flexible GMRES tolerates the inexact
-  DSA diffusion solve, which standard GMRES does not
+* ``petsc_fgmres`` with WGDSA or TGDSA when the DSA diffusion system is solved
+  iteratively: flexible GMRES tolerates the inexact diffusion solve, which
+  standard GMRES does not
 * ``petsc_bicgstab`` when GMRES memory or restart behavior is problematic and a
   nonsymmetric Krylov alternative is worth trying
 
@@ -245,7 +246,18 @@ Practical guidance:
 * if a strongly scattering problem converges poorly, try enabling WGDSA before
   spending too much time micro-tuning unrelated iteration settings
 * if multigroup scattering structure is making convergence difficult across
-  energy, TGDSA may also be worth enabling
+  energy, TGDSA may also be worth enabling (see :ref:`groupsets_choosing_dsa`
+  for when to use each and how to lay out groupsets for TGDSA)
+* with TGDSA, use a Krylov ``inner_linear_method`` instead of the Richardson
+  methods when neighboring groups dominate the coupling between the groups of
+  the groupset (two groups coupled by down- and upscatter, or a thermal range
+  such as the C5G7 moderator's). The groupset's Jacobi energy iteration then has
+  an error mode that changes sign every iteration. TGDSA does not remove it, so
+  Richardson with TGDSA converges slowly or stalls (see
+  :ref:`theory_two_grid`). Use ``petsc_fgmres`` when the TGDSA diffusion system
+  is solved iteratively to a loose tolerance, because the preconditioner then
+  changes between applications. ``petsc_gmres`` is enough when the diffusion
+  system is solved directly or to a tight tolerance.
 
 At the same time:
 

@@ -12,20 +12,22 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
     from pyopensn.logvol import RPPLogicalVolume
-    from pyopensn.mesh import FromFileMeshGenerator
+    from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
     from pyopensn.solver import UncollidedProblem, UncollidedSolver
     from pyopensn.source import PointSource
     from pyopensn.xs import MultiGroupXS
 
 sys.path.append(os.path.dirname(__file__))
-mesh_path = importlib.import_module("uncollided_unstructured_utils").mesh_path
+extruded_mesh = importlib.import_module("uncollided_unstructured_utils").extruded_mesh
 
 
 if __name__ == "__main__":
     if size != 2:
         sys.exit(f"Expected two processes, got {size}.")
 
-    grid = FromFileMeshGenerator(filename=mesh_path("triangle_mesh2x2_fine.obj")).Execute()
+    grid = extruded_mesh(
+        ExtruderMeshGenerator, FromFileMeshGenerator, "triangle_mesh2x2.obj", num_layers=4
+    )
     grid.SetUniformBlockID(0)
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.0)
@@ -43,7 +45,7 @@ if __name__ == "__main__":
             num_groups=1,
             groupsets=[{"groups_from_to": [0, 0]}],
             xs_map=[{"block_ids": [0], "xs": xs}],
-            point_sources=[PointSource(location=[0.0, 0.0, 0.0], strength=[1.0])],
+            point_sources=[PointSource(location=[0.0, 0.0, 1.05], strength=[1.0])],
             near_source=[whole_domain],
         )
         solver = UncollidedSolver(

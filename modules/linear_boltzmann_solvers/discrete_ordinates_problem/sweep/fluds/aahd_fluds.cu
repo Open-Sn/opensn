@@ -5,6 +5,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/aahd_angle_set.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/mesh/mesh/mesh.h"
 #include <algorithm>
 #include <cstring>
@@ -76,7 +77,7 @@ AAHD_DelayedLocalBank::AAHD_DelayedLocalBank(std::size_t size, std::size_t strid
 {
   std::size_t num_unknowns = size * stride_size;
   device_storage = crb::DeviceMemory<double>(num_unknowns);
-  if (LBSProblem::has_integrated_memory)
+  if (LBSProblem::HasIntegratedMemory())
   {
     device_old_storage = crb::DeviceMemory<double>(num_unknowns);
   }
@@ -90,7 +91,7 @@ AAHD_DelayedLocalBank::AAHD_DelayedLocalBank(std::size_t size, std::size_t strid
 void
 AAHD_DelayedLocalBank::UpdateViews(std::span<double>& view, std::span<double>& old_view)
 {
-  if (LBSProblem::has_integrated_memory)
+  if (LBSProblem::HasIntegratedMemory())
   {
     view = std::span<double>(device_storage.get(), device_storage.size());
     old_view = std::span<double>(device_old_storage.get(), device_old_storage.size());
@@ -105,7 +106,7 @@ AAHD_DelayedLocalBank::UpdateViews(std::span<double>& view, std::span<double>& o
 void
 AAHD_DelayedLocalBank::SetOldToNew()
 {
-  if (LBSProblem::has_integrated_memory)
+  if (LBSProblem::HasIntegratedMemory())
     crb::copy(device_storage, device_old_storage, device_storage.size());
   else
     std::memcpy(host_storage.data(), host_old_storage.data(), host_storage.size() * sizeof(double));
@@ -114,7 +115,7 @@ AAHD_DelayedLocalBank::SetOldToNew()
 void
 AAHD_DelayedLocalBank::SetNewToOld()
 {
-  if (LBSProblem::has_integrated_memory)
+  if (LBSProblem::HasIntegratedMemory())
     crb::copy(device_old_storage, device_storage, device_old_storage.size());
   else
     std::memcpy(
@@ -130,7 +131,7 @@ AAHD_DelayedLocalBank::UploadOldToDevice(crb::Stream& stream)
 double*
 AAHD_DelayedLocalBank::GetOldDeviceStorage()
 {
-  return LBSProblem::has_integrated_memory ? device_old_storage.get() : device_storage.get();
+  return LBSProblem::HasIntegratedMemory() ? device_old_storage.get() : device_storage.get();
 }
 
 void
@@ -157,7 +158,7 @@ AAHD_NonLocalDelayedBank::AAHD_NonLocalDelayedBank(const std::vector<std::size_t
                                                    std::size_t stride)
   : AAHD_NonLocalBank(loc_sizes, loc_offsets, stride)
 {
-  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory)
+  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::HasIntegratedMemory())
   {
     device_current_storage = crb::DeviceMemory<double>(loc_offsets.back() * stride_size);
   }
@@ -174,7 +175,7 @@ AAHD_NonLocalDelayedBank::UpdateViews(std::vector<std::span<double>>& current_de
 {
   current_delayed_views.resize(location_sizes->size());
   old_delayed_views.resize(location_sizes->size());
-  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory)
+  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::HasIntegratedMemory())
   {
     for (std::size_t i = 0; i < location_sizes->size(); ++i)
     {
@@ -203,7 +204,7 @@ AAHD_NonLocalDelayedBank::UpdateViews(std::vector<std::span<double>>& current_de
 void
 AAHD_NonLocalDelayedBank::SetOldToNew()
 {
-  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory)
+  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::HasIntegratedMemory())
     crb::copy(device_current_storage, device_storage, device_storage.size());
   else
     std::memcpy(
@@ -213,7 +214,7 @@ AAHD_NonLocalDelayedBank::SetOldToNew()
 void
 AAHD_NonLocalDelayedBank::SetNewToOld()
 {
-  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory)
+  if (LBSProblem::use_gpu_aware_mpi and LBSProblem::HasIntegratedMemory())
     crb::copy(device_storage, device_current_storage, device_storage.size());
   else
     std::memcpy(
@@ -290,8 +291,9 @@ AAHD_FLUDS::SetDelayedLocalPsiNewToOld()
   delayed_local_psi_bank_.SetNewToOld();
 }
 
+template <typename Fn>
 void
-AAHD_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
 {
   const auto& grid = *spds_.GetGrid();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
@@ -318,26 +320,23 @@ AAHD_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction
         if (node_index.IsBoundary() or node_index.IsOutgoing() or not node_index.IsDelayed())
           continue;
 
-        double* slot = nullptr;
         if (node_index.IsLocal())
-          slot = delayed_local_psi_view_.data() + node_index.GetIndex() * num_groups_and_angles_;
+          fn(static_cast<std::uint32_t>(cell->local_id),
+             f,
+             fnode,
+             -1,
+             node_index.GetIndex() * num_groups_and_angles_);
         else
         {
           const auto loc = static_cast<std::size_t>(std::upper_bound(nonlocal_offsets.begin(),
                                                                      nonlocal_offsets.end(),
                                                                      node_index.GetIndex()) -
                                                     nonlocal_offsets.begin() - 1);
-          slot = delayed_prelocI_outgoing_psi_view_[loc].data() +
-                 (node_index.GetIndex() - nonlocal_offsets[loc]) * num_groups_and_angles_;
-        }
-
-        for (unsigned int g = 0; g < num_groups_; ++g)
-        {
-          const double delta = correction(cell->local_id, f, fnode, g);
-          if (delta == 0.0)
-            continue;
-          for (std::size_t n = 0; n < num_angles_; ++n)
-            slot[n * num_groups_ + g] += delta;
+          fn(static_cast<std::uint32_t>(cell->local_id),
+             f,
+             fnode,
+             static_cast<int>(loc),
+             (node_index.GetIndex() - nonlocal_offsets[loc]) * num_groups_and_angles_);
         }
       }
     }
@@ -345,11 +344,75 @@ AAHD_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction
 }
 
 void
+AAHD_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+{
+  ForEachDelayedIncomingNode(
+    [&](
+      std::uint32_t cell_local_id, unsigned int f, unsigned int fnode, int loc, std::size_t offset)
+    {
+      double* slot = (loc < 0 ? delayed_local_psi_view_.data()
+                              : delayed_prelocI_outgoing_psi_view_[loc].data()) +
+                     offset;
+      for (unsigned int g = 0; g < num_groups_; ++g)
+      {
+        const double delta = correction(cell_local_id, f, fnode, g);
+        if (delta == 0.0)
+          continue;
+        for (std::size_t n = 0; n < num_angles_; ++n)
+          slot[n * num_groups_ + g] += delta;
+      }
+    });
+}
+
+void
+AAHD_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
+                                        const std::vector<std::uint32_t>& angle_indices,
+                                        const bool subtract_old,
+                                        const DelayedCurrentTally& tally) const
+{
+  OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
+                       "AAHD_FLUDS: the number of directions does not match the FLUDS.");
+  const auto& grid = *spds_.GetGrid();
+  const auto& omegas = quadrature.GetOmegas();
+  const auto& weights = quadrature.GetWeights();
+
+  std::vector<double> inward_weights(num_angles_);
+  ForEachDelayedIncomingNode(
+    [&](
+      std::uint32_t cell_local_id, unsigned int f, unsigned int fnode, int loc, std::size_t offset)
+    {
+      const double* psi_new = (loc < 0 ? delayed_local_psi_view_.data()
+                                       : delayed_prelocI_outgoing_psi_view_[loc].data()) +
+                              offset;
+      const double* psi_old = (loc < 0 ? delayed_local_psi_old_view_.data()
+                                       : delayed_prelocI_outgoing_psi_old_view_[loc].data()) +
+                              offset;
+
+      // -w_n Omega_n . n, the factor of the upwind flux in the face term of the sweep
+      const auto& normal = grid.GetLocalCell(cell_local_id).faces[f].normal;
+      for (std::size_t n = 0; n < num_angles_; ++n)
+        inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
+
+      for (unsigned int g = 0; g < num_groups_; ++g)
+      {
+        double current = 0.0;
+        for (std::size_t n = 0; n < num_angles_; ++n)
+        {
+          const auto idx = n * num_groups_ + g;
+          current +=
+            inward_weights[n] * (subtract_old ? psi_new[idx] - psi_old[idx] : psi_new[idx]);
+        }
+        tally(cell_local_id, f, fnode, g, current);
+      }
+    });
+}
+
+void
 AAHD_FLUDS::CopyDelayedPsiToDevice()
 {
-  if (not LBSProblem::has_integrated_memory)
+  if (not LBSProblem::HasIntegratedMemory())
     delayed_local_psi_bank_.UploadOldToDevice(stream_);
-  if (not(LBSProblem::use_gpu_aware_mpi and LBSProblem::has_integrated_memory))
+  if (not(LBSProblem::use_gpu_aware_mpi and LBSProblem::HasIntegratedMemory()))
     nonlocal_delayed_incoming_psi_bank_.UploadToDevice(stream_);
 }
 
@@ -403,7 +466,7 @@ AAHD_FLUDS::CopyPsiFromDevice()
 {
   if constexpr (not LBSProblem::use_gpu_aware_mpi)
     nonlocal_outgoing_psi_bank_.DownloadToHost(stream_);
-  if (not LBSProblem::has_integrated_memory)
+  if (not LBSProblem::HasIntegratedMemory())
     delayed_local_psi_bank_.DownloadToHost(stream_);
 }
 

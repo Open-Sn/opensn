@@ -3,6 +3,7 @@
     "file": "response_2d_1.py",
     "comment": "2D transport response evaluation test with material source",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
@@ -22,6 +23,7 @@
     "file": "response_2d_2.py",
     "comment": "2D transport response evaluation test with point source",
     "num_procs": 4,
+    "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",

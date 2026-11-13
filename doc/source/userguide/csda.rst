@@ -331,7 +331,7 @@ groups use the standard WGDSA operator. See :ref:`theory_csda_wgdsa`.
        {
            "groups_from_to": (0, xs.num_groups - 1),
            "angular_quadrature": quadrature,
-           "inner_linear_method": "petsc_gmres",
+           "inner_linear_method": "petsc_fgmres",
            "l_abs_tol": 1.0e-10,
            "apply_wgdsa": True,
        },

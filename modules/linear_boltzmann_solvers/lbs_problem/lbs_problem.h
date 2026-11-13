@@ -400,8 +400,12 @@ public:
    * It returns ``true`` when device-allocated memory can be accessed directly by the host without
    * having the driver performing implicit copies. It enables fast non-copy path for delayed flux
    * in AAH sweep for both local and non-local.
+   *
+   * The current device is queried on the first call, not during static initialization, so loading
+   * libopensn does not initialize CUDA or HIP. Initializing CUDA while the library loads disables
+   * compute-sanitizer, which must attach first.
    */
-  static const bool has_integrated_memory;
+  static bool HasIntegratedMemory();
 
 protected:
   /// Input parameters based construction.

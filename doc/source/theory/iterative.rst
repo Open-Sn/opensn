@@ -194,6 +194,80 @@ Synthetic Acceleration (DSA) equations are discretized with DGFEM as
 well, using the Modified Interior Penalty (MIP) formalism
 :cite:t:`DSA_wang_ragusa`, :cite:t:`ragusaturcksinMIP_PWL2014`.
 
+OpenSn's within-group DSA (WGDSA, groupset option ``apply_wgdsa``) is applied
+to one groupset at a time, after each iteration of that groupset. It corrects
+only the scalar flux, and it corrects each group separately: the groups of the
+groupset are solved in one diffusion system, which is block diagonal in energy.
+For group :math:`g` the correction solves
+
+.. math:: -\nabla \cdot D_g \nabla \delta\phi_g + \sigma_{r,g}\, \delta\phi_g
+          = \sigma_{s0,g \leftarrow g} \left( \phi_g^{(i+1/2)} - \phi_g^{(i)} \right) \,,
+
+with :math:`D_g = 1/(3\sigma_{tr,g})`, :math:`\sigma_{tr,g} = \sigma_{t,g} -
+\sigma_{s1,g}`, :math:`\sigma_{s1,g}` the P1 scattering out of group :math:`g`,
+and :math:`\sigma_{r,g} = \max(0,\, \sigma_{t,g} - \sigma_{s0,g \leftarrow g})`.
+The source is the change of the isotropic within-group scattering source. The
+change of the scattering between the groups of the groupset is not part of it.
+TGDSA (see below) corrects the error mode that this scattering couples across
+the groups. :math:`\delta\phi_g` is added to the scalar flux of group
+:math:`g`. Higher flux moments are not corrected. Where the sweep lags incoming
+angular fluxes (opposing reflecting boundaries and broken sweep cycles),
+:math:`\delta\phi_g` is also added to them as the isotropic correction
+:math:`\delta\psi_g = \delta\phi_g`, since the quadrature weights sum to one.
+Groupsets with charged-particle groups use the operator of
+:ref:`theory_csda_wgdsa` instead.
+
+Reflecting boundaries are zero-current boundaries of the correction, with one
+exception. Of a pair of opposing reflecting boundaries, the sweep lags the
+incoming angular flux of the one with the smaller boundary id. In 1D spherical
+geometry it lags that of the reflecting outer surface. The error that enters
+through such a boundary is the change of the lagged incoming flux, which the
+sweep has not yet reflected. On it the correction satisfies
+
+.. math:: D_g \frac{\partial \delta\phi_g}{\partial n} = J_g \,, \qquad
+          J_g = \sum_{\Omega_d \cdot n < 0} w_d \, |\Omega_d \cdot n| \,
+          \bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,
+
+with :math:`n` the outward normal and :math:`\psi^{\text{new}}` and
+:math:`\psi^{\text{old}}` the lagged incoming fluxes after and before the
+sweep. :math:`J_g` is the inward partial current of that change.
+
+The sweep also lags the upwind angular flux on the faces where it breaks a
+cyclic dependency, within a partition or between partitions. The cell :math:`K`
+that reads the lagged flux through such a face :math:`f` is swept with the
+lagged value :math:`\psi^{\text{old}}` in place of :math:`\psi^{\text{new}}`,
+the upwind flux of the current sweep. The error of the swept iterate therefore
+has the change of the lagged flux as an incoming surface source of :math:`K`
+on :math:`f`. The correction receives the zeroth angular moment of that
+source: the equation of each basis function :math:`b_i` of :math:`K` gains the
+face term
+
+.. math:: \int_f b_i \, J_g \,, \qquad
+          J_g = \sum_{d \in \mathcal{D}_f} w_d \, |\Omega_d \cdot n| \,
+          \bigl(\psi^{\text{new}}_{g,d} - \psi^{\text{old}}_{g,d}\bigr) \,,
+
+with :math:`n` the outward normal of :math:`K` on :math:`f`,
+:math:`\mathcal{D}_f` the directions whose flux is lagged on :math:`f`, and
+:math:`J_g` interpolated by the face basis. This is the term that the condition
+above adds on a lagged reflecting boundary. Without it the correction misses
+the particles that the lagged faces have not yet passed on, which limits the
+convergence of optically thin problems with strong scattering.
+
+With a PETSc inner method (``petsc_richardson``, ``petsc_gmres``,
+``petsc_fgmres`` or ``petsc_bicgstab``), the same correction is the
+preconditioner. Applied to a vector :math:`v` of the groupset unknowns, it
+returns :math:`v + \delta\phi(v)`, where :math:`\delta\phi(v)` solves the
+diffusion problem above with :math:`v` in place of the change of the scalar
+flux, and with the lagged incoming fluxes of :math:`v` in place of their change
+in :math:`J_g`. ``petsc_fgmres`` applies it on the right, the other methods on
+the left.
+The diffusion systems are solved directly with LU, or with conjugate gradients
+preconditioned by BoomerAMG to a tolerance relative to the norm of their
+right-hand side (groupset options ``wgdsa_solver_policy`` and
+``wgdsa_l_abs_tol``). An iterative diffusion solve makes the preconditioner
+change slightly between applications. Flexible GMRES admits that, while GMRES
+and BiCGStab assume a fixed preconditioner.
+
 The MIP form adds, on every interior face :math:`f`, a penalty
 :math:`\kappa_f \int_f [\![\delta\Phi]\!]\,[\![v]\!]` with
 
@@ -271,6 +345,8 @@ The floor :math:`\theta_c` keeps the operator positive definite. Let
 :math:`\theta_c = 0`. The exact coercivity condition has 12 in place of 6; the
 rule uses it with a safety factor 2.
 
+.. _theory_two_grid:
+
 Thermal Upscattering Acceleration
 ---------------------------------
 
@@ -345,14 +421,39 @@ there is no error mode to remove; a flat spectrum is used. The correction amplit
 
 with :math:`\langle D \rangle = \sum_g D_g \xi_g` and
 :math:`\langle \sigma_a \rangle = \sum_g \bigl(\sigma_{t,g} \xi_g - \sum_{g'}
-\sigma_{s,g \leftarrow g'} \xi_{g'}\bigr)`, where :math:`\phi^{(\text{th}+1/2)}`
-includes the within-group DSA correction when it is used. In time-dependent
+\sigma_{s0,g \leftarrow g'} \xi_{g'}\bigr)`, where :math:`D_g` is that of WGDSA
+and all sums run over the groups of the groupset. :math:`\xi`,
+:math:`\langle D \rangle` and :math:`\langle \sigma_a \rangle` are computed per
+material when the groupset is initialized. :math:`\phi^{(\text{th}+1/2)}`
+includes the within-group DSA correction when it is used, and the TGDSA
+correction is added after it. With a PETSc inner method, TGDSA is part of the
+preconditioner and acts on the vector that WGDSA returns. Like WGDSA, it
+corrects only the scalar flux and adds the isotropic correction
+:math:`\xi_g \theta` to the lagged angular fluxes. A problem in adjoint mode
+uses the transposed transfer matrix in :math:`A`, :math:`B` and the residual.
+The diffusion problem for :math:`\theta` has the vacuum-boundary closure and the
+MIP penalty of WGDSA, selected by ``tgdsa_boundary_closure`` and
+``tgdsa_h_perp_convention``. All reflecting boundaries, including those that lag
+their incoming flux, are zero-current boundaries for it. In time-dependent
 problems, :math:`1/(v_g \theta \Delta t)` is added to :math:`\sigma_{t,g}` and to
 the transport cross section in :math:`D_g`. The correction targets the mode
 with spectrum :math:`\xi`. Error modes of the Jacobi iteration with other
 energy shapes, such as the :math:`-\rho` mode above, contribute to the
 right-hand side and can change through the correction, but they are not
 specifically removed.
+
+With a stationary inner iteration (``classic_richardson`` or
+``petsc_richardson``), such a mode decays only at the rate set by its own
+eigenvalue :math:`\lambda`, about :math:`|\lambda|` per iteration. When
+:math:`A^{-1}B` has an eigenvalue near :math:`-\rho` and :math:`\rho` is close
+to one, the groupset iteration with TGDSA therefore converges slowly or stalls
+even though the mode :math:`\xi` is removed. This happens exactly for a groupset
+of two groups coupled by down- and upscatter, and approximately whenever
+neighboring groups dominate the coupling between the groups of the groupset.
+The C5G7 moderator, for example, has :math:`\rho = 0.872` and the eigenvalue
+:math:`-0.871`. Krylov inner methods (``petsc_gmres``, ``petsc_fgmres``) are not
+limited by the sign of an eigenvalue and should be used with TGDSA for such
+groupsets.
 
 Power Iterations
 ----------------
@@ -1081,7 +1182,14 @@ Notes:
 #. The inversion of the :math:`L` operator in the uncollided problem can
    be done using ray tracing, thus mitigating ray effects.
 
-#. Within the near-source region, OpenSn ray-traces both a volumetric
+#. Near a localized source the uncollided flux varies too steeply for the
+   far-field treatment, and the cells that contain the source need a
+   treatment of their own. The flux of a point source is singular at the
+   source, and a small volumetric source has no singularity but a similarly
+   steep near field. OpenSn's uncollided generator accepts point sources
+   only. A volumetric source can be supplied as weighted point sources at
+   its volume-quadrature points (see the note on finite-volume sources below).
+   Within the near-source region, OpenSn ray-traces both a volumetric
    least-squares projection of the scalar flux onto the local PWLD basis
    (from which cell removal is computed) and the outgoing face currents,
    using the point source's exact analytic attenuation, following the
@@ -1103,16 +1211,99 @@ Notes:
    flux shape is poorly resolved. The correction restores cell balance, but the
    mesh or source placement may still need refinement.
 
-   This treatment also applies in the cell containing the point source. OpenSn
-   evaluates the analytic flux at the finite-element volume and face quadrature
-   points. The accuracy of these spatial integrals depends strongly on the
-   source's position within its containing cell. A source near the cell
-   centroid generally gives better-distributed samples. Near a face, edge, or
-   vertex, the singular field is concentrated into a smaller part of the cell
-   and the discrete integrals can have much larger error. Exact cell balance
-   after correction does not by itself establish spatial accuracy; source
-   placement and local mesh refinement must be checked through a convergence
-   study.
+   The flux of a point source is singular at the source, so these
+   quadratures cannot resolve it in the cell that contains the source. That
+   cell is instead represented by its exact cell-average flux. With :math:`S`
+   the emission rate of the point source in a group and
+   :math:`R(\vec{\Omega})` the distance from the source to the cell boundary
+   in direction :math:`\vec{\Omega}`, the volume integral of the flux and the
+   leakage through face :math:`f` are
+
+   .. math::
+
+      \int_{V} \phi \, dV
+      = \frac{S}{4\pi}\int_{4\pi}
+        \frac{1 - e^{-\sigma_t R(\vec{\Omega})}}{\sigma_t} \, d\Omega ,
+      \qquad
+      J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\sigma_t R(\vec{\Omega})} \, d\Omega ,
+
+   where :math:`\Omega_f` is the solid angle subtended by face :math:`f`.
+   OpenSn evaluates these over the cone from the source through each PWL side
+   triangle of each face with a composite
+   Gauss--Legendre rule in variables that keep the integrands smooth even when
+   the source is close to a face, edge, or vertex of the cell. This makes the
+   result much less sensitive to where the source lies than a rule in the
+   original variables. The quadrature error still depends on the source position
+   through the integration limits and the number of panels. The method applies
+   to cells of any shape, provided every face is directly visible from the
+   source, which is always the case in a convex cell. OpenSn accepts
+   non-convex cells, for example in polyhedral meshes. In a non-convex 3D cell
+   a ray from the source may leave the cell and re-enter it. If that happens,
+   OpenSn falls back to the quadrature projection with a warning.
+
+   In the source cell, every node of the scalar flux is set to the exact cell
+   average. Because the flux is singular at the source, it varies strongly
+   across the cell, and the cell-average treatment causes this variation to be
+   lost. This loss in fidelity can only be reduced by refining the mesh around
+   the source. The angular moments with :math:`\ell \geq 1` of the uncollided
+   flux at a point :math:`\vec{r}` are the scalar flux times
+   :math:`Y_{\ell m}(\vec{\Omega}_s)`, with :math:`\vec{\Omega}_s` the
+   direction from the source to :math:`\vec{r}`. In the source cell they are
+   formed from the constant cell average and projected onto the PWLD basis, so
+   they still vary in space through :math:`Y_{\ell m}`. Accuracy near the
+   source must still be checked through mesh refinement.
+
+   The point source enters the balance of the source cell as
+   :math:`S\,\Omega_c/(4\pi)`, where :math:`\Omega_c` is the solid angle the
+   cell subtends at the source, computed exactly from the cell's faces. It
+   equals :math:`S` for a source inside the cell. A source must belong to
+   exactly one cell, so a source on a vacuum boundary lies inside a boundary
+   face of its cell, or on a boundary edge or vertex that no other cell
+   shares. The remaining fraction then leaves the domain directly and is
+   counted as outflow. Sources on a reflecting boundary are rejected, because
+   such a source coincides with its own image.
+
+   When the source is close to an edge or vertex of its cell, it is also close
+   to the cells that share that edge or vertex. Their quadrature leakages are
+   then inaccurate, and because each near-source cell's correction factor is
+   computed from the leakages it receives, the error propagates to every
+   downstream cell. With the optional ``exact_near_source_leakage`` treatment,
+   each convex near-source cell that shares a vertex with the source cell is
+   integrated exactly over direction. The leakage through an outgoing face
+   :math:`f` is
+
+   .. math::
+
+      J_f = \frac{S}{4\pi}\int_{\Omega_f} e^{-\tau(\vec{\Omega})} \, d\Omega ,
+
+   where :math:`\tau` is the optical depth from the source to the face along
+   :math:`\vec{\Omega}`, found by ray tracing, so heterogeneous media are
+   handled. With :math:`\Delta(\vec{\Omega})` the chord length through the
+   cell and :math:`\tau_{in} = \tau - \sigma_t \Delta` the optical depth to
+   where the ray enters it, the volume integral is
+
+   .. math::
+
+      \int_{V} \phi \, dV
+      = \frac{S}{4\pi}\sum_{f\,\mathrm{outgoing}}\int_{\Omega_f}
+        e^{-\tau_{in}(\vec{\Omega})}\,
+        \frac{1 - e^{-\sigma_t \Delta(\vec{\Omega})}}{\sigma_t} \, d\Omega ,
+
+   which reduces to :math:`\Delta` as :math:`\sigma_t \to 0`. OpenSn
+   evaluates the factor as :math:`-\mathrm{expm1}(-\sigma_t\Delta)/\sigma_t`,
+   which has no cancellation error for small :math:`\sigma_t \Delta`, so
+   optically thin cells need no Taylor expansion; only
+   :math:`\sigma_t\Delta = 0` uses the limit :math:`\Delta`. These are the
+   same integrals as for the cell containing the source, which is the case
+   :math:`\tau_{in} = 0` with :math:`\Delta` the distance to the face, and
+   OpenSn evaluates both with the same routine. The directions are integrated
+   over each face side triangle by fanning it out from the point of the
+   triangle closest to the source, with the radius graded by a :math:`\sinh`
+   substitution, so the integrands remain smooth however close the source is
+   to the cell. The two treatments differ only in how the flux inside the cell
+   is represented: the projected flux shape of a neighbor cell is rescaled to
+   the exact volume integral, while the source cell, whose projection cannot
+   resolve the singularity, uses the constant cell average.
 
 #. Finite-volume sources can be approximated externally by weighted point
    sources, for example at volume-quadrature points. Those quadrature points

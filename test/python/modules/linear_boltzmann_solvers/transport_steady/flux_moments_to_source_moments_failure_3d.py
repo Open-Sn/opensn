@@ -38,7 +38,7 @@ if "opensn_console" not in globals():
     size = MPI.COMM_WORLD.size
     rank = MPI.COMM_WORLD.rank
     sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../../../")))
-    from pyopensn.aquad import GLCProductQuadrature2DXY
+    from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.mesh import OrthogonalMeshGenerator
     from pyopensn.solver import DiscreteOrdinatesProblem, SteadyStateSourceSolver, UncollidedProblem
@@ -54,7 +54,7 @@ def write_flux_file(grid, xs, q, file_base):
         groupsets=[
             {
                 "groups_from_to": [0, 0],
-                "angular_quadrature": GLCProductQuadrature2DXY(
+                "angular_quadrature": GLCProductQuadrature3DXYZ(
                     n_polar=2, n_azimuthal=4, scattering_order=0
                 ),
                 "inner_linear_method": "petsc_gmres",
@@ -78,14 +78,14 @@ if __name__ == "__main__":
         sys.exit(f"Expected one process, got {size}.")
 
     nodes = [0.25 * i for i in range(5)]
-    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes]).Execute()
+    grid = OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes]).Execute()
     grid.SetUniformBlockID(0)
 
     xs = MultiGroupXS()
     xs.CreateSimpleOneGroup(sigma_t=1.0, c=0.5)
 
-    file_base_a = "flux_moments_to_source_moments_failure_2d_a_"
-    file_base_b = "flux_moments_to_source_moments_failure_2d_b_"
+    file_base_a = "flux_moments_to_source_moments_failure_3d_a_"
+    file_base_b = "flux_moments_to_source_moments_failure_3d_b_"
     flux_a = write_flux_file(grid, xs, 1.0, file_base_a)
     flux_b = write_flux_file(grid, xs, 3.0, file_base_b)
 
@@ -96,8 +96,12 @@ if __name__ == "__main__":
         num_groups=1,
         groupsets=[{"groups_from_to": [0, 0]}],
         xs_map=[{"block_ids": [0], "xs": xs}],
-        point_sources=[PointSource(location=[0.3, 0.4, 0.0], strength=[1.0])],
-        near_source=[RPPLogicalVolume(xmin=-0.01, xmax=1.01, ymin=-0.01, ymax=1.01, infz=True)],
+        point_sources=[PointSource(location=[0.3, 0.4, 0.35], strength=[1.0])],
+        near_source=[
+            RPPLogicalVolume(
+                xmin=-0.01, xmax=1.01, ymin=-0.01, ymax=1.01, zmin=-0.01, zmax=1.01
+            )
+        ],
         scattering_order=0,
     )
     uncollided.ReadFluxMoments(file_base_b, False)

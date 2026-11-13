@@ -31,6 +31,57 @@ SetSolverOptions(DiffusionMIPSolver& solver, const LBSGroupset& groupset)
                                         groupset.quadrature->GetWeights());
 }
 
+/// True when this location holds angular fluxes of the groupset that the sweep lags by one sweep.
+bool
+HasDelayedAngularFlux(const LBSGroupset& groupset)
+{
+  return groupset.angle_agg and groupset.angle_agg->HasLocalDelayedAngularFlux();
+}
+
+/**
+ * Passes to `add(cell, i, g, value)` the face source of the WGDSA correction on the faces through
+ * which a cell reads an angular flux that the sweep lags: reflecting boundaries that lag their
+ * incoming flux, and faces where the sweep broke a cyclic dependency within a location or between
+ * locations. The sweep did not see the change delta psi of the lagged flux, so the error of the
+ * swept iterate has delta psi as an incoming surface source of the reading cell. Its zeroth angular
+ * moment is J, the inward partial current of delta psi (AngleAggregation::
+ * TallyDelayedIncomingCurrent). On a reflecting boundary this is the condition
+ * D n.grad(delta phi) = J. With J interpolated by the face basis, the source of node i of the
+ * reading cell is the face term sum_j (int_f b_i b_j) J_j.
+ */
+template <typename AddFn>
+void
+TallyDelayedSource(const DiscreteOrdinatesProblem& do_problem,
+                   const LBSGroupset& groupset,
+                   const bool subtract_old,
+                   const AddFn& add)
+{
+  const auto& grid = *do_problem.GetGrid();
+  const auto& sdm = do_problem.GetSpatialDiscretization();
+  const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
+
+  const auto tally = [&](std::uint32_t cell_local_id,
+                         unsigned int face,
+                         unsigned int face_node,
+                         unsigned int group_idx,
+                         double current)
+  {
+    if (current == 0.0)
+      return;
+    const auto& cell = *grid.GetLocalCells()[cell_local_id];
+    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& face_mass = unit_cell_matrices[cell_local_id].intS_shapeI_shapeJ[face];
+    const auto j = cell_mapping.MapFaceNode(face, face_node);
+    for (size_t fi = 0; fi < cell_mapping.GetNumFaceNodes(face); ++fi)
+    {
+      const auto i = cell_mapping.MapFaceNode(face, fi);
+      add(cell, i, group_idx, face_mass(i, j) * current);
+    }
+  };
+
+  groupset.angle_agg->TallyDelayedIncomingCurrent(subtract_old, tally);
+}
+
 /// True when CSDA is enabled and the groupset contains a charged-particle group.
 bool
 UsesCSDAOperator(const DiscreteOrdinatesProblem& do_problem, const LBSGroupset& groupset)
@@ -105,6 +156,7 @@ void
 ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
           const LBSGroupset& groupset,
           const std::vector<double>& phi_change,
+          const bool subtract_old_delayed_psi,
           std::vector<double>& phi_new)
 {
   const auto grid = do_problem.GetGrid();
@@ -157,6 +209,18 @@ ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
     }
   }
 
+  // Face source of each group on the faces that read a lagged angular flux
+  std::vector<std::vector<double>> lagged_source;
+  if (HasDelayedAngularFlux(groupset))
+  {
+    lagged_source.assign(gss, std::vector<double>(num_dofs, 0.0));
+    TallyDelayedSource(do_problem,
+                       groupset,
+                       subtract_old_delayed_psi,
+                       [&](const Cell& cell, size_t i, unsigned int g, double value)
+                       { lagged_source[g][sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0)] += value; });
+  }
+
   for (unsigned int g = 0; g < gss; ++g)
   {
     auto& q = correction[g];
@@ -188,6 +252,8 @@ ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
       }
     }
     solvers[g]->Assemble_b(q);
+    if (not lagged_source.empty())
+      solvers[g]->AddToRHS(lagged_source[g]);
     solvers[g]->Solve(q);
   }
 
@@ -341,17 +407,30 @@ void
 WGDSA::Apply(DiscreteOrdinatesProblem& do_problem,
              const LBSGroupset& groupset,
              const std::vector<double>& phi_change,
+             const bool subtract_old_delayed_psi,
              std::vector<double>& phi_new)
 {
   if (not groupset.wgdsa_csda_solvers.empty())
   {
-    ApplyCSDA(do_problem, groupset, phi_change, phi_new);
+    ApplyCSDA(do_problem, groupset, phi_change, subtract_old_delayed_psi, phi_new);
     return;
   }
 
   std::vector<double> delta_phi_local;
   AssembleDeltaPhiVector(do_problem, groupset, phi_change, delta_phi_local);
   groupset.wgdsa_solver->Assemble_b(delta_phi_local);
+  if (HasDelayedAngularFlux(groupset))
+  {
+    const auto& sdm = do_problem.GetSpatialDiscretization();
+    const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
+    std::vector<double> lagged_source(delta_phi_local.size(), 0.0);
+    TallyDelayedSource(do_problem,
+                       groupset,
+                       subtract_old_delayed_psi,
+                       [&](const Cell& cell, size_t i, unsigned int g, double value)
+                       { lagged_source[sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, g)] += value; });
+    groupset.wgdsa_solver->AddToRHS(lagged_source);
+  }
   groupset.wgdsa_solver->Solve(delta_phi_local);
   DisassembleDeltaPhiVector(do_problem, groupset, delta_phi_local, phi_new);
 }
