@@ -88,3 +88,40 @@ TEST(ParametersTest, DeprecationAndConstraints)
   input_bad_scale.AddParameter(ParameterBlock("scale", 3.0));
   EXPECT_THROW(params.AssignParameters(input_bad_scale), std::invalid_argument);
 }
+
+TEST(ParametersTest, ArrayElementsKeepIndexOrder)
+{
+  // Appended in index order, past "9" where string and numeric order differ.
+  ParameterBlock in_order("in_order");
+  in_order.ChangeToArray();
+  std::vector<int> expected;
+  for (int k = 0; k < 25; ++k)
+  {
+    in_order.AddParameter(std::to_string(k), 100 + k);
+    expected.push_back(100 + k);
+  }
+  EXPECT_EQ(in_order.GetVectorValue<int>(), expected);
+
+  // From a std::vector.
+  EXPECT_EQ(ParameterBlock("from_vector", expected).GetVectorValue<int>(), expected);
+
+  // Added out of order: sorted by index.
+  ParameterBlock out_of_order("out_of_order");
+  out_of_order.ChangeToArray();
+  out_of_order.AddParameter("1", 11);
+  out_of_order.AddParameter("0", 10);
+  out_of_order.AddParameter("2", 12);
+  EXPECT_EQ(out_of_order.GetVectorValue<int>(), std::vector<int>({10, 11, 12}));
+
+  // With a gap: the name equal to the size goes before the larger index.
+  ParameterBlock with_gap("with_gap");
+  with_gap.ChangeToArray();
+  with_gap.AddParameter("0", 10);
+  with_gap.AddParameter("5", 15);
+  with_gap.AddParameter("2", 12);
+  EXPECT_EQ(with_gap.GetVectorValue<int>(), std::vector<int>({10, 12, 15}));
+
+  // A duplicate index is rejected.
+  EXPECT_THROW(in_order.AddParameter("3", 0), std::invalid_argument);
+  EXPECT_THROW(with_gap.AddParameter("5", 0), std::invalid_argument);
+}

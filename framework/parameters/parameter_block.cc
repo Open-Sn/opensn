@@ -205,6 +205,18 @@ ParameterBlock::RequireParameter(const std::string& param_name) const
 void
 ParameterBlock::AddParameter(ParameterBlock block)
 {
+  // Array elements are normally appended in index order ("0", "1", ...). The array is kept
+  // sorted, so when its last name is size - 1, the name size cannot be a duplicate and appending
+  // keeps the order. Skipping the duplicate scan and the sort makes building an N-element array
+  // O(N) instead of O(N^2 log N).
+  const auto num_params = parameters_.size();
+  if (type_ == ParameterBlockType::ARRAY and block.GetName() == std::to_string(num_params) and
+      (num_params == 0 or parameters_.back().GetName() == std::to_string(num_params - 1)))
+  {
+    parameters_.push_back(std::move(block));
+    return;
+  }
+
   for (const auto& param : parameters_)
     if (param.GetName() == block.GetName())
       throw std::invalid_argument(error_origin_scope_ + std::string(__PRETTY_FUNCTION__) +
