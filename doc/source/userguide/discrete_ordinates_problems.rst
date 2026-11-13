@@ -609,8 +609,12 @@ The group-wise point-source strengths are total angle-integrated emission
 rates. Angular distributions are not currently supported by the uncollided
 problem.
 
-Uncollided generation is forward only. The generator rejects adjoint mode, both
-``options={'adjoint': True}`` at construction and a later ``SetAdjoint(True)``.
+In adjoint mode (``options={'adjoint': True}``) the point sources are adjoint
+sources, such as a point detector with a group-wise response, and the file holds
+their adjoint uncollided flux. The uncollided flux depends only on the total
+cross sections, so the two modes compute it identically. The file records the
+mode, and only a collided problem in the same mode accepts it. As for any
+problem, ``SetAdjoint`` clears the point sources.
 
 Every point source requires a corresponding entry in ``near_source``. The two
 lists are matched by position, so ``near_source`` is required whenever
@@ -783,10 +787,14 @@ Supported problem mode
 ----------------------
 
 The collided use of ``uncollided_flux`` is supported for steady-state forward
-fixed-source calculations. It is not supported for:
+and adjoint fixed-source calculations. The file must have been generated in the
+problem's mode. In adjoint mode the first-collision source uses the transposed
+scattering and production matrices, as the adjoint sweep does, and the
+uncollided moments are added to the collided solution before the adjoint
+solution is reoriented. The transport mode cannot be changed after the file is
+loaded. It is not supported for:
 
 * time-dependent calculations,
-* adjoint calculations,
 * k-eigenvalue solvers.
 
 The first-collision source replaces the fixed sources of the collided problem.

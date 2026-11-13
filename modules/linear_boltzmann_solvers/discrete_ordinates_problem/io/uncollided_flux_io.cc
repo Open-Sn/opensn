@@ -45,6 +45,18 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
     not H5ReadAttribute<uint64_t>(file.Id(), "global cell count", data.global_cell_count) or
       data.global_cell_count != grid->GetGlobalNumberOfCells(),
     problem_name + ": uncollided flux mesh cell count does not match the collided mesh.");
+  // Files written before the mode was recorded hold forward uncollided fluxes.
+  unsigned int adjoint_flag = 0;
+  OpenSnInvalidArgumentIf(
+    not H5ReadOptionalAttribute<unsigned int>(file.Id(), "adjoint", adjoint_flag) or
+      adjoint_flag > 1,
+    problem_name + ": failed to read the transport mode from \"" + file_name + "\".");
+  data.adjoint = adjoint_flag == 1;
+  OpenSnInvalidArgumentIf(data.adjoint != do_problem.IsAdjoint(),
+                          problem_name + ": the uncollided flux file \"" + file_name +
+                            "\" was generated in " + (data.adjoint ? "adjoint" : "forward") +
+                            " mode, but the problem is in " +
+                            (do_problem.IsAdjoint() ? "adjoint" : "forward") + " mode.");
   OpenSnInvalidArgumentIf(not H5ReadAttribute<double>(file.Id(), "production", data.source_rate),
                           problem_name + ": failed to read the uncollided source rate from \"" +
                             file_name + "\".");

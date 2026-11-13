@@ -123,7 +123,10 @@ DiscreteOrdinatesProblem::DiscreteOrdinatesProblem(const InputParameters& params
 
   uncollided_flux_file_ = params.GetParamValue<std::string>("uncollided_flux");
   if (HasUncollidedFlux())
+  {
     uncollided_xs_map_ = block_id_to_xs_map_;
+    uncollided_adjoint_ = options_.adjoint;
+  }
 
   if (params.Has("boundary_conditions"))
   {
@@ -408,8 +411,11 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
     if (IsTimeDependent())
       errors.emplace_back(
         "uncollided flux is only supported for steady-state fixed-source calculations.");
-    if (options_.adjoint)
-      errors.emplace_back("uncollided flux is not supported for adjoint calculations.");
+    // The file holds the uncollided flux of forward sources or of adjoint (detector) sources, and
+    // its mode is checked against the problem's when it is read.
+    if (options_.adjoint != uncollided_adjoint_)
+      errors.emplace_back("the transport mode cannot be changed after loading an uncollided flux "
+                          "file.");
     // The first-collision source was computed from the cross sections the problem was built with.
     if (block_id_to_xs_map_ != uncollided_xs_map_)
       errors.emplace_back(
@@ -816,9 +822,10 @@ DiscreteOrdinatesProblem::InitializeFCS()
       const auto num_nodes = discretization_->GetCellNumNodes(*cell);
       const auto& transport_view = cell_transport_views_[cell->local_id];
       const auto& xs = transport_view.GetXS();
-      // An uncollided flux is forward only (see CheckConfigurationErrors), so the first-collision
-      // source uses the forward transfer and production matrices.
-      const auto& transfer_matrices = xs.GetTransferMatrices(false);
+      // In adjoint mode the first-collision source of the adjoint uncollided flux uses the
+      // transposed transfer and production matrices, as the adjoint transport sweep does.
+      const bool adjoint = options_.adjoint;
+      const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
       for (size_t i = 0; i < num_nodes; ++i)
       {
         const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
@@ -831,13 +838,14 @@ DiscreteOrdinatesProblem::InitializeFCS()
 
           if (ell == 0 and xs.IsFissionable())
           {
-            const auto& production = xs.GetProductionMatrix(false)[g];
+            const auto& production = xs.GetProductionMatrix(adjoint)[g];
             for (size_t gp = 0; gp < num_groups_; ++gp)
               rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
 
             if (include_delayed_production)
               for (size_t gp = 0; gp < num_groups_; ++gp)
-                rhs += ComputeDelayedFissionProduction(xs, g, gp) *
+                rhs += (adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
+                                : ComputeDelayedFissionProduction(xs, g, gp)) *
                        uncollided_flux_moments_local_[lhs_uk_map + gp];
           }
 

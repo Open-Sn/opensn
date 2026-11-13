@@ -102,9 +102,6 @@ UncollidedProblem::CheckConfigurationErrors(std::vector<std::string>& errors) co
     errors.emplace_back("only point sources are supported.");
   if (GetPointSources().empty())
     errors.emplace_back("at least one point source is required.");
-  // The generator computes the forward uncollided flux of its point sources.
-  if (options_.adjoint)
-    errors.emplace_back("uncollided flux generation does not support adjoint mode.");
   // The near-source list is indexed one-to-one with the point-source list.
   const auto planes = ComputeReflectionPlanes(errors);
   // A source on a reflecting plane coincides with its own image.
@@ -656,6 +653,12 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
                        GetName() + ": failed to write group count.");
   OpenSnLogicalErrorIf(not H5CreateAttribute<unsigned int>(file, "max moment order", ell_max_),
                        GetName() + ": failed to write maximum moment order.");
+  // The uncollided flux of a point source depends only on sigma_t, which is the same in both modes.
+  // The mode is recorded so a collided problem pairs a forward source with a forward solve and an
+  // adjoint (detector) source with an adjoint solve.
+  OpenSnLogicalErrorIf(
+    not H5CreateAttribute<unsigned int>(file, "adjoint", options_.adjoint ? 1U : 0U),
+    GetName() + ": failed to write the transport mode.");
   OpenSnLogicalErrorIf(
     not H5CreateAttribute<uint64_t>(file, "global cell count", grid_->GetGlobalNumberOfCells()),
     GetName() + ": failed to write global cell count.");
