@@ -136,4 +136,16 @@ TEST(ParametersTest, ArrayElementsKeepIndexOrder)
   EXPECT_EQ(converted.GetVectorValue<int>(),
             std::vector<int>({100, 101, 102, 103, 104, 105, 106, 108, 109, 110}));
   EXPECT_THROW(converted.AddParameter("10", 0), std::invalid_argument);
+
+  // A name that is not an index is rejected, and the block is left unchanged.
+  ParameterBlock not_indexed("not_indexed");
+  not_indexed.AddParameter("10", 110);
+  not_indexed.AddParameter("9", 109);
+  not_indexed.AddParameter("x", 0);
+  EXPECT_THROW(not_indexed.ChangeToArray(), std::logic_error);
+  EXPECT_EQ(not_indexed.GetType(), ParameterBlockType::BLOCK);
+  std::vector<std::string> names;
+  for (const auto& param : not_indexed.GetParameters())
+    names.push_back(param.GetName());
+  EXPECT_EQ(names, std::vector<std::string>({"10", "9", "x"}));
 }
