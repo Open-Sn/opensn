@@ -22,11 +22,14 @@
 #include <numeric>
 #include <utility>
 #include <unordered_map>
+#include <unordered_set>
 #include <cmath>
 #include <exception>
 #include <algorithm>
 #include <array>
 #include <limits>
+#include <thread>
+#include <vector>
 
 namespace opensn
 {
@@ -46,6 +49,36 @@ FormatDuration(const double seconds)
          << std::setw(2) << remaining_seconds;
   return output.str();
 }
+
+/**
+ * Worker threads that are joined when the object goes out of scope. If launching a later thread
+ * throws, the threads already launched are joined before the exception propagates, rather than
+ * destroyed while joinable, which would terminate the program.
+ */
+class WorkerThreads
+{
+public:
+  explicit WorkerThreads(const size_t capacity) { threads_.reserve(capacity); }
+  ~WorkerThreads() { JoinAll(); }
+  WorkerThreads(const WorkerThreads&) = delete;
+  WorkerThreads& operator=(const WorkerThreads&) = delete;
+
+  template <typename Function>
+  void Launch(Function&& function, const size_t thread_id)
+  {
+    threads_.emplace_back(std::forward<Function>(function), thread_id);
+  }
+
+  void JoinAll()
+  {
+    for (auto& thread : threads_)
+      if (thread.joinable())
+        thread.join();
+  }
+
+private:
+  std::vector<std::thread> threads_;
+};
 
 } // namespace
 
@@ -169,9 +202,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
 
   ComputeUnitIntegrals();
 
-  // Pre-compute per-cell bounding-box diagonals for RayTracer tolerance scaling.
-  // Without this, RayTracer::TraceRay() recomputes it on every call by iterating
-  // over all cell vertices.
+  // Per-cell bounding-box diagonals, which scale geometric tolerances.
   cell_sizes_.resize(grid_->GetLocalCellCount());
   for (const auto& cell : grid_->GetLocalCells())
   {
@@ -202,55 +233,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
   if (not all_cells_convex_)
     log.Log() << "Non-convex cells detected; concavity checks enabled globally.";
 
-  // Precompute flat face vertex data when all cells are convex and all faces fit in FaceVertData.
-  // This bypasses the std::map-backed VertexHandler and the two O(log N) GlobalCellHandler lookups
-  // per while-loop iteration in RaytraceLineInto, replacing them with flat-array and unordered_map
-  // accesses that hit the L2 cache instead of chasing red-black tree nodes.
-  if (all_cells_convex_)
-  {
-    size_t total_faces = 0;
-    bool can_fast = true;
-    for (const auto& cell : grid_->GetLocalCells())
-    {
-      for (const auto& face : cell->faces)
-      {
-        if (face.vertex_ids.size() > FaceVertData::max_sides)
-        {
-          can_fast = false;
-          break;
-        }
-      }
-      if (not can_fast)
-        break;
-      total_faces += cell->faces.size();
-    }
-
-    if (can_fast)
-    {
-      all_face_verts_.resize(total_faces);
-      cell_face_offsets_.resize(grid_->GetLocalCellCount());
-      cell_num_faces_.resize(grid_->GetLocalCellCount());
-      global_to_local_id_.reserve(grid_->GetLocalCellCount());
-      size_t offset = 0;
-      for (const auto& cell : grid_->GetLocalCells())
-      {
-        cell_face_offsets_[cell->local_id] = static_cast<uint32_t>(offset);
-        cell_num_faces_[cell->local_id] = static_cast<uint32_t>(cell->faces.size());
-        global_to_local_id_[cell->global_id] = static_cast<uint32_t>(cell->local_id);
-        for (const auto& face : cell->faces)
-        {
-          auto& fv = all_face_verts_[offset++];
-          fv.num_sides = static_cast<uint32_t>(face.vertex_ids.size());
-          for (size_t s = 0; s < fv.num_sides; ++s)
-            fv.verts[s] = grid_->GlobalVertex(face.vertex_ids[s]);
-          fv.centroid = face.centroid;
-          fv.neighbor_id = face.neighbor_id;
-          fv.pad = 0;
-        }
-      }
-      use_fast_trace_ = true;
-    }
-  }
+  segment_tracer_ = std::make_unique<SegmentTracer>(*grid_);
 }
 
 std::vector<UncollidedProblem::ReflectionPlane>
@@ -749,8 +732,7 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
 // NOLINTEND(clang-analyzer-security.ArrayBound)
 
 void
-UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
-                                    const Cell& cell,
+UncollidedProblem::RaytraceLineInto(const Cell& cell,
                                     const Vector3& qp_xyz,
                                     const SourcePoint& source_point,
                                     std::vector<double>& phi_out,
@@ -787,7 +769,8 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
   std::sort(scratch_bp.begin(), scratch_bp.end());
 
   scratch_segs.clear();
-  size_t cell_id = cell.local_id;
+  thread_local std::vector<SegmentTracer::Segment> traced;
+  auto cell_id = static_cast<std::uint32_t>(cell.local_id);
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
     Vector3 segment_start = qp_xyz + scratch_bp[interval] * unfolded_direction;
@@ -800,181 +783,40 @@ UncollidedProblem::RaytraceLineInto(RayTracer& ray_tracer,
         segment_end = ReflectPoint(segment_end, plane);
       }
 
-    double remaining_distance = (segment_end - segment_start).Norm();
-    if (remaining_distance <= tolerance)
+    if ((segment_end - segment_start).Norm() <= tolerance)
       continue;
 
-    Vector3 segment_omega = (segment_end - segment_start).Normalized();
-    if (interval > 0 and all_cells_convex_)
+    const Vector3 segment_omega = (segment_end - segment_start).Normalized();
+    if (interval > 0)
     {
       // A fold can land where a reflecting boundary meets an internal face or edge. The reflected
-      // segment may then enter a different incident cell than the segment that reached the fold.
-      const double probe_distance =
-        std::min(0.5 * remaining_distance, cell_sizes_[cell_id] * 1.0e-8);
-      const Vector3 probe = segment_start + probe_distance * segment_omega;
-      const auto contains_probe = [this, &probe](const Cell& candidate)
-      {
-        const double point_tolerance = cell_sizes_[candidate.local_id] * 1.0e-10;
-        return std::all_of(candidate.faces.begin(),
-                           candidate.faces.end(),
-                           [&probe, point_tolerance](const CellFace& face)
-                           { return face.normal.Dot(probe - face.centroid) <= point_tolerance; });
-      };
-      if (not contains_probe(grid_->GetLocalCell(cell_id)))
-      {
-        const auto containing_cell = std::find_if(grid_->GetLocalCells().begin(),
-                                                  grid_->GetLocalCells().end(),
-                                                  [&contains_probe](const auto& candidate)
-                                                  { return contains_probe(*candidate); });
-        OpenSnLogicalErrorIf(containing_cell == grid_->GetLocalCells().end(),
-                             GetName() +
-                               ": reflected image-source ray could not locate its re-entry cell.");
-        cell_id = (*containing_cell)->local_id;
-      }
+      // segment continues in the cell that it enters there.
+      const auto entered = segment_tracer_->LocateAhead(cell_id, segment_start, segment_omega);
+      OpenSnLogicalErrorIf(not entered,
+                           GetName() +
+                             ": reflected image-source ray could not locate its re-entry cell.");
+      cell_id = *entered;
     }
-    Vector3 line_point = segment_start;
-    while (remaining_distance > tolerance)
+
+    traced.clear();
+    if (not segment_tracer_->Trace(cell_id, segment_start, segment_end, traced))
     {
-      double dist_in_cell = NAN;
-      Vector3 exit_point;
-      uint64_t dest_neighbor = 0;
-      bool destination_has_neighbor = false;
-      uint32_t destination_face_index = 0;
-
-      if (use_fast_trace_)
-      {
-        // Fast path: precomputed flat face vertex data -- no std::map traversal.
-        const double cell_size = cell_sizes_[cell_id];
-        const double back_tol = cell_size * 1.0e-10;
-        const uint32_t face_off = cell_face_offsets_[cell_id];
-        const uint32_t n_faces = cell_num_faces_[cell_id];
-
-        bool found = false;
-        dist_in_cell = std::numeric_limits<double>::max();
-        for (uint32_t f = 0; f < n_faces; ++f)
-        {
-          const auto& fv = all_face_verts_[face_off + f];
-          const auto& v2 = fv.centroid;
-          const uint32_t ns = fv.num_sides;
-          for (uint32_t s = 0; s < ns; ++s)
-          {
-            const auto& v0 = fv.verts[s];
-            const auto& v1 = fv.verts[s + 1 < ns ? s + 1 : 0];
-            if ((v1 - v0).Cross(v2 - v0).Dot(segment_omega) < 0.0)
-              continue;
-            Vector3 candidate;
-            if (CheckLineIntersectTriangle2(v0, v1, v2, line_point, segment_omega, candidate))
-            {
-              const double d = (candidate - line_point).Norm();
-              if (d > back_tol and d < dist_in_cell)
-              {
-                exit_point = candidate;
-                dist_in_cell = d;
-                dest_neighbor = fv.neighbor_id;
-                destination_has_neighbor = grid_->GetLocalCell(cell_id).faces[f].has_neighbor;
-                destination_face_index = f;
-                found = true;
-              }
-            }
-          }
-        }
-
-        if (not found)
-        {
-          // Rare fallback for degenerate cases (point on a face/vertex): let TraceRay nudge.
-          auto trace_point = line_point;
-          auto trace_direction = segment_omega;
-          const auto oi =
-            ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), trace_point, trace_direction);
-          OpenSnLogicalErrorIf(oi.particle_lost,
-                               GetName() +
-                                 ": reflected image-source ray lost in fast-trace fallback.");
-          dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
-          exit_point = oi.pos_f;
-          dest_neighbor = oi.destination_face_neighbor;
-          destination_has_neighbor =
-            grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
-          destination_face_index = oi.destination_face_index;
-        }
-      }
-      else
-      {
-        // Original path: used for non-convex meshes or faces with >max_sides vertices.
-        auto trace_point = line_point;
-        auto trace_direction = segment_omega;
-        const auto oi =
-          ray_tracer.TraceRay(grid_->GetLocalCell(cell_id), trace_point, trace_direction);
-        OpenSnLogicalErrorIf(oi.particle_lost,
-                             GetName() + ": ray lost in mesh during segment traversal.");
-        dist_in_cell = (oi.pos_f - line_point).Dot(segment_omega);
-        exit_point = oi.pos_f;
-        dest_neighbor = oi.destination_face_neighbor;
-        destination_has_neighbor =
-          grid_->GetLocalCell(cell_id).faces[oi.destination_face_index].has_neighbor;
-        destination_face_index = oi.destination_face_index;
-      }
-
-      const double endpoint_tolerance = std::max(tolerance, cell_sizes_[cell_id] * 1.0e-10);
-      const auto& destination_face = grid_->GetLocalCell(cell_id).faces[destination_face_index];
-      if (not destination_has_neighbor)
-      {
-        // TraceRay can nudge its working origin when a ray lies on a face or edge. Recompute a
-        // boundary hit from the unchanged analytic ray and the boundary-face plane so the nudge
-        // cannot shorten a segment ending on a reflecting plane.
-        const double denominator = destination_face.normal.Dot(segment_omega);
-        if (std::abs(denominator) > endpoint_tolerance)
-        {
-          const double boundary_distance =
-            destination_face.normal.Dot(destination_face.centroid - line_point) / denominator;
-          if (boundary_distance > endpoint_tolerance)
-            dist_in_cell = boundary_distance;
-        }
-      }
-
-      // Keep the traversal on the analytic segment. Reusing an intersection point computed from
-      // a face triangulation can accumulate transverse roundoff over many polyhedral cells.
-      exit_point = line_point + dist_in_cell * segment_omega;
-      const double endpoint_error = (exit_point - segment_end).Norm();
-      const bool endpoint_on_destination_face =
-        not destination_has_neighbor and
-        std::abs(destination_face.normal.Dot(segment_end - destination_face.centroid)) <=
-          endpoint_tolerance;
-      const bool reaches_segment_end = remaining_distance <= dist_in_cell + endpoint_tolerance or
-                                       endpoint_error <= endpoint_tolerance or
-                                       endpoint_on_destination_face;
-      OpenSnLogicalErrorIf(
-        not destination_has_neighbor and not reaches_segment_end,
-        GetName() + ": reflected image-source ray left the mesh " + std::to_string(endpoint_error) +
-          " from its segment endpoint. target=" + qp_xyz.PrintStr() +
-          ", image=" + pt_loc.PrintStr() + ", segment_start=" + segment_start.PrintStr() +
-          ", segment_end=" + segment_end.PrintStr() + ", hit=" + exit_point.PrintStr() +
-          ", cell=" + std::to_string(cell_id) + ".");
-      const double distance_in_cell = reaches_segment_end ? remaining_distance : dist_in_cell;
-      OpenSnLogicalErrorIf(distance_in_cell <= tolerance,
-                           GetName() + ": reflected image-source ray failed to advance.");
-      scratch_segs.emplace_back(cell_id, distance_in_cell);
-      remaining_distance -= distance_in_cell;
-      if (reaches_segment_end or remaining_distance <= tolerance)
-        break;
-
-      if (use_fast_trace_)
-      {
-        // O(1) unordered_map lookup replaces two O(log N) std::map calls.
-        auto it = global_to_local_id_.find(dest_neighbor);
-        OpenSnLogicalErrorIf(
-          it == global_to_local_id_.end(),
-          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = it->second;
-      }
-      else
-      {
-        OpenSnLogicalErrorIf(
-          not grid_->IsCellLocal(dest_neighbor),
-          GetName() + ": reflected image-source ray left the mesh before reaching the source.");
-        cell_id = grid_->GetGlobalCell(dest_neighbor).local_id;
-      }
-      line_point = exit_point;
+      OpenSnLogicalErrorIf(not source_point.reflection_planes.empty(),
+                           GetName() +
+                             ": reflected image-source ray left the mesh before reaching "
+                             "its source. target=" +
+                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() + ".");
+      // The line to the source leaves a non-convex domain. Through a vacuum boundary, the source
+      // contributes no uncollided flux at this point.
+      ++rays_left_mesh_;
+      scratch_mfp.assign(num_groups_, std::numeric_limits<double>::infinity());
+      phi_out.assign(num_groups_, 0.0);
+      return;
     }
+    for (const auto& segment : traced)
+      scratch_segs.emplace_back(segment.cell_local_id, segment.length);
+    if (not traced.empty())
+      cell_id = traced.back().cell_local_id;
   }
 
   scratch_mfp.assign(num_groups_, 0.0);
@@ -1016,7 +858,6 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
   {
     try
     {
-      RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
       double local_removal = 0.0;
       double local_outflow = 0.0;
       // Pre-allocate scratch buffers once per thread to avoid heap allocation in the hot loop.
@@ -1046,14 +887,8 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           for (const auto& qp : fe_vol_data.GetQuadraturePointIndices())
           {
             const auto& qp_xyz = fe_vol_data.QPointXYZ(qp);
-            RaytraceLineInto(ray_tracer,
-                             cell,
-                             qp_xyz,
-                             source_point,
-                             phi_qp,
-                             scratch_segs,
-                             scratch_bp,
-                             scratch_mfp);
+            RaytraceLineInto(
+              cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t i = 0; i < cell_num_nodes; ++i)
             {
               const double integrand = fe_vol_data.ShapeValue(i, qp) * fe_vol_data.JxW(qp);
@@ -1123,14 +958,8 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
               const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
               const auto omega = ComputeOmega(source_point.location, qp_xyz);
               const double integrand = omega.Dot(face.normal) * fe_srf_data.JxW(qp);
-              RaytraceLineInto(ray_tracer,
-                               cell,
-                               qp_xyz,
-                               source_point,
-                               phi_qp,
-                               scratch_segs,
-                               scratch_bp,
-                               scratch_mfp);
+              RaytraceLineInto(
+                cell, qp_xyz, source_point, phi_qp, scratch_segs, scratch_bp, scratch_mfp);
               for (size_t g = 0; g < num_groups_; ++g)
                 local_outflow += phi_qp[g] * integrand;
             }
@@ -1194,13 +1023,11 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
     }
   };
 
-  std::vector<std::thread> workers;
-  workers.reserve(num_threads > 0 ? num_threads - 1 : 0);
+  WorkerThreads workers(num_threads > 0 ? num_threads - 1 : 0);
   for (size_t thread_id = 1; thread_id < num_threads; ++thread_id)
-    workers.emplace_back(ProjectCells, thread_id);
+    workers.Launch(ProjectCells, thread_id);
   ProjectCells(0);
-  for (auto& worker : workers)
-    worker.join();
+  workers.JoinAll();
   if (worker_exception)
     std::rethrow_exception(worker_exception);
 
@@ -1220,12 +1047,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   const Vector3& pt_loc = source_point.location;
   const std::vector<double>& strength = source_point.strength;
 
-  RayTracer ray_tracer(grid_, &cell_sizes_, not all_cells_convex_);
-
   // Face leakages
   std::unordered_map<size_t, std::vector<std::vector<double>>> leakages;
-  std::vector<std::vector<double>> cell_leakage;
-  std::vector<double> face_leakage;
 
   // Face orientations
   constexpr auto FOPARALLEL = FaceOrientation::PARALLEL;
@@ -1271,11 +1094,28 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     }
   }
 
-  // Ray-trace near-source region cells
-  for (size_t c : near_spls_)
+  // Each near-source cell is processed in two steps. The first depends on the cell alone and does
+  // all of the ray tracing: the exact integrals, the outgoing face leakages, the source of the
+  // neighboring bulk cells, and the projected flux. It runs on several threads. The second applies
+  // the conservation correction, which needs the corrected leakages of the upstream cells, in
+  // sweep order. The cells are processed in chunks, so the first step stores the results of a
+  // bounded number of cells.
+  struct TracedCell
+  {
+    bool is_source_cell = false;
+    bool has_exact_integrals = false;
+    /// Outgoing leakage through each face, [face][group]; zero for the other faces.
+    std::vector<std::vector<double>> leakage;
+    /// RHS contributions for bulk region cells adjacent to the cell.
+    std::unordered_map<size_t, std::vector<double>> bulk_rhs;
+    std::vector<std::vector<std::pair<size_t, double>>> bulk_face_rhs_weights;
+    /// Projected flux, [group][node].
+    std::vector<Vector<double>> phi;
+  };
+
+  const auto TraceCell = [&](const size_t c, TracedCell& traced)
   {
     const Cell& cell = grid_->GetLocalCell(c);
-    bool cell_current_mismatched = false;
 
     // Cell mapping
     auto coord_sys = grid_->GetCoordinateSystem();
@@ -1286,8 +1126,9 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
     // RHS contributions for bulk region cells adjacent to a raytraced cell.
-    std::unordered_map<size_t, std::vector<double>> cell_bulk_rhs;
-    std::vector<std::vector<std::pair<size_t, double>>> bulk_face_rhs_weights(cell_num_faces);
+    auto& cell_bulk_rhs = traced.bulk_rhs;
+    auto& bulk_face_rhs_weights = traced.bulk_face_rhs_weights;
+    bulk_face_rhs_weights.assign(cell_num_faces, {});
 
     // The flux is singular at a point source, so neither the least-squares projection nor the
     // face quadrature resolves it in the cell that contains the source. That cell instead gets
@@ -1299,21 +1140,13 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                   source_point.subscribers.end(),
                   [c](const auto& subscriber) { return subscriber.cell_local_id == c; });
     if (is_source_cell or is_exact_neighbor[c])
-      exact_integrals = IntegrateCellExactly(ray_tracer, cell, source_point);
-    if (is_exact_neighbor[c])
-      ++(exact_integrals ? exact_neighbor_count : exact_neighbor_fallback_count);
-    if (is_source_cell)
-    {
-      if (not exact_integrals)
-        log.Log0Warning() << GetName() << ": cell " << cell.global_id
-                          << " containing the point source at " << pt_loc.PrintStr()
-                          << " has a face that is not directly visible from the source. Its "
-                             "flux is projected from quadrature points, which is inaccurate "
-                             "near the source.";
-    }
+      exact_integrals = IntegrateCellExactly(cell, source_point);
+    traced.is_source_cell = is_source_cell;
+    traced.has_exact_integrals = exact_integrals.has_value();
 
     // Compute leakages
-    cell_leakage.resize(cell_num_faces);
+    traced.leakage.assign(cell_num_faces, std::vector<double>(num_groups_, 0.0));
+    std::vector<double> face_leakage;
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto orientation = cell_face_orientations_[c][f];
@@ -1336,7 +1169,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         {
           const auto& qp_xyz = fe_srf_data.QPointXYZ(qp);
           const auto omega = ComputeOmega(pt_loc, qp_xyz);
-          const auto phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+          const auto phi_qp = RaytraceLine(cell, qp_xyz, source_point);
           const double integrand = (*swf)(qp_xyz)*omega.Dot(normal) * fe_srf_data.JxW(qp);
 
           for (size_t g = 0; g < num_groups_; ++g)
@@ -1431,26 +1264,15 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         } // if face.has_neighbor
       } // if outgoing
 
-      // Retrieve leakage in from incoming face
-      else if (orientation == FOINCOMING)
-      {
-        if (not cell.faces[f].has_neighbor)
-          continue;
-
-        size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
-        size_t neigh_face_ind = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
-        face_leakage = leakages[neigh_id][neigh_face_ind];
-      }
-
-      // Save leakage through face
-      cell_leakage[f] = face_leakage;
+      // Save the outgoing leakage through the face. The incoming leakages come from the
+      // upstream cells after their correction.
+      if (orientation == FOOUTGOING)
+        traced.leakage[f] = face_leakage;
     }
 
-    // Save leakage through cell faces
-    leakages.emplace(c, cell_leakage);
-
     // Ray-traced solution in cell
-    std::vector<Vector<double>> phi(num_groups_, Vector<double>(cell_num_nodes, 0.));
+    auto& phi = traced.phi;
+    phi.assign(num_groups_, Vector<double>(cell_num_nodes, 0.));
 
     if (exact_integrals and is_source_cell)
     {
@@ -1468,7 +1290,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         // Raytrace to point
         Vector3 qp_xyz = fe_vol_data.QPointXYZ(qp);
 
-        std::vector<double> phi_qp = RaytraceLine(ray_tracer, cell, qp_xyz, source_point);
+        std::vector<double> phi_qp = RaytraceLine(cell, qp_xyz, source_point);
 
         for (unsigned int i = 0; i < cell_num_nodes; ++i)
         {
@@ -1507,133 +1329,207 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         }
       }
     }
+  };
 
-    // Transport view
-    const auto& transport_view = cell_transport_views_[c];
-    const auto& xs = transport_view.GetXS();
-    const auto& sigma_t = xs.GetSigmaTotal();
-
-    const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
-    const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
-
-    // Enforce conservation
-    std::vector<double> source(num_groups_, 0.);
-
-    // Use the point source subscriber list as the source of truth instead of
-    // re-testing geometry.  This matters for sources exactly on a face or
-    // vertex: subscriber discovery intentionally includes every incident cell,
-    // while a sharp point-in-cell test can reject some of those cells through
-    // roundoff.  The uncollided flux streams radially from the source, so each
-    // incident cell receives the fraction of the source emitted into the solid
-    // angle it subtends, not a volume-weighted share.
-    if (is_source_cell)
+  const size_t num_threads = std::max<size_t>(1, opensn_num_threads);
+  constexpr size_t chunk_size = 16384;
+  std::vector<TracedCell> traced_cells;
+  for (size_t begin = 0; begin < near_spls_.size(); begin += chunk_size)
+  {
+    const size_t end = std::min(begin + chunk_size, near_spls_.size());
+    traced_cells.assign(end - begin, TracedCell{});
+    const size_t chunk_threads = std::min(num_threads, end - begin);
+    std::exception_ptr worker_exception;
+    std::mutex exception_mutex;
+    const auto TraceCells = [&](const size_t thread_id)
     {
-      const double angle_fraction = SubtendedAngleFraction(cell, pt_loc);
-      source_angle_fraction += angle_fraction;
-      for (size_t g = 0; g < num_groups_; ++g)
-        source[g] += strength[g] * angle_fraction;
-    }
+      try
+      {
+        for (size_t k = begin + thread_id; k < end; k += chunk_threads)
+          TraceCell(near_spls_[k], traced_cells[k - begin]);
+      }
+      catch (...)
+      {
+        const std::scoped_lock lock(exception_mutex);
+        if (not worker_exception)
+          worker_exception = std::current_exception();
+      }
+    };
+    WorkerThreads workers(chunk_threads - 1);
+    for (size_t thread_id = 1; thread_id < chunk_threads; ++thread_id)
+      workers.Launch(TraceCells, thread_id);
+    TraceCells(0);
+    workers.JoinAll();
+    if (worker_exception)
+      std::rethrow_exception(worker_exception);
 
-    // Incoming leakage contributes to the available cell source.
-    for (size_t f = 0; f < cell_num_faces; ++f)
-      if (cell_face_orientations_[c][f] == FOINCOMING)
+    for (size_t k = begin; k < end; ++k)
+    {
+      const size_t c = near_spls_[k];
+      auto& traced = traced_cells[k - begin];
+      const Cell& cell = grid_->GetLocalCell(c);
+      bool cell_current_mismatched = false;
+      const size_t cell_num_faces = cell.faces.size();
+      const size_t cell_num_nodes = sdm.GetCellMapping(cell).GetNumNodes();
+      const bool is_source_cell = traced.is_source_cell;
+      if (is_exact_neighbor[c])
+        ++(traced.has_exact_integrals ? exact_neighbor_count : exact_neighbor_fallback_count);
+      if (is_source_cell)
+      {
+        if (not traced.has_exact_integrals)
+          log.Log0Warning() << GetName() << ": cell " << cell.global_id
+                            << " containing the point source at " << pt_loc.PrintStr()
+                            << " has a face that is not directly visible from the source. Its "
+                               "flux is projected from quadrature points, which is inaccurate "
+                               "near the source.";
+      }
+
+      // Incoming leakage through each face, from the corrected leakage of the upstream cell.
+      auto cell_leakage = std::move(traced.leakage);
+      for (size_t f = 0; f < cell_num_faces; ++f)
+        if (cell_face_orientations_[c][f] == FOINCOMING and cell.faces[f].has_neighbor)
+        {
+          const size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
+          const size_t neigh_face_ind = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
+          cell_leakage[f] = leakages[neigh_id][neigh_face_ind];
+        }
+
+      // Save leakage through cell faces
+      leakages.emplace(c, std::move(cell_leakage));
+
+      auto& phi = traced.phi;
+      auto& cell_bulk_rhs = traced.bulk_rhs;
+      const auto& bulk_face_rhs_weights = traced.bulk_face_rhs_weights;
+
+      // Transport view
+      const auto& transport_view = cell_transport_views_[c];
+      const auto& xs = transport_view.GetXS();
+      const auto& sigma_t = xs.GetSigmaTotal();
+
+      const auto& fe_intgrl_values = unit_cell_matrices_[cell.local_id];
+      const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
+
+      // Enforce conservation
+      std::vector<double> source(num_groups_, 0.);
+
+      // Use the point source subscriber list as the source of truth instead of
+      // re-testing geometry.  This matters for sources exactly on a face or
+      // vertex: subscriber discovery intentionally includes every incident cell,
+      // while a sharp point-in-cell test can reject some of those cells through
+      // roundoff.  The uncollided flux streams radially from the source, so each
+      // incident cell receives the fraction of the source emitted into the solid
+      // angle it subtends, not a volume-weighted share.
+      if (is_source_cell)
+      {
+        const double angle_fraction = SubtendedAngleFraction(cell, pt_loc);
+        source_angle_fraction += angle_fraction;
         for (size_t g = 0; g < num_groups_; ++g)
-          source[g] += leakages[c][f][g];
+          source[g] += strength[g] * angle_fraction;
+      }
 
-    // Apply the cell-wise correction from Woodsford et al. (2026), Eqs. (24)-(25).
-    for (size_t g = 0; g < num_groups_; ++g)
-    {
-      double outgoing_leakage = 0.0;
+      // Incoming leakage contributes to the available cell source.
       for (size_t f = 0; f < cell_num_faces; ++f)
-        if (cell_face_orientations_[c][f] == FOOUTGOING)
-          outgoing_leakage += leakages[c][f][g];
+        if (cell_face_orientations_[c][f] == FOINCOMING)
+          for (size_t g = 0; g < num_groups_; ++g)
+            source[g] += leakages[c][f][g];
 
-      double projected_integral = 0.0;
+      // Apply the cell-wise correction from Woodsford et al. (2026), Eqs. (24)-(25).
+      for (size_t g = 0; g < num_groups_; ++g)
+      {
+        double outgoing_leakage = 0.0;
+        for (size_t f = 0; f < cell_num_faces; ++f)
+          if (cell_face_orientations_[c][f] == FOOUTGOING)
+            outgoing_leakage += leakages[c][f][g];
+
+        double projected_integral = 0.0;
+        for (size_t i = 0; i < cell_num_nodes; ++i)
+          projected_integral += IntV_shapeI(i) * phi[g](i);
+        const double raw_removal = outgoing_leakage + sigma_t[g] * projected_integral;
+        const double removal_tolerance = 1.0e-12 * std::abs(source[g]);
+        OpenSnLogicalErrorIf(not std::isfinite(raw_removal) or raw_removal < -removal_tolerance,
+                             GetName() +
+                               ": near-source ray tracing produced an invalid removal for "
+                               "cell " +
+                               std::to_string(cell.global_id) + ", group " + std::to_string(g) +
+                               ".");
+
+        const bool use_leakage_fallback = raw_removal <= removal_tolerance and source[g] > 0.0;
+        const double alpha =
+          use_leakage_fallback ? 1.0 : (raw_removal > 0.0 ? source[g] / raw_removal : 1.0);
+        OpenSnLogicalErrorIf(not std::isfinite(alpha) or alpha < 0.0,
+                             GetName() +
+                               ": near-source conservation produced an invalid scale "
+                               "factor for cell " +
+                               std::to_string(cell.global_id) + ", group " + std::to_string(g) +
+                               ".");
+        phi[g].Scale(alpha);
+
+        const double relative_change = std::abs(alpha - 1.0);
+        constexpr double significant_relative_change = 0.01;
+        if (relative_change > significant_relative_change)
+        {
+          cell_current_mismatched = true;
+          ++mismatched_cell_group_count;
+          original_outgoing_sum += raw_removal;
+          outgoing_change_sum += relative_change * raw_removal;
+          max_relative_outgoing_change = std::max(max_relative_outgoing_change, relative_change);
+        }
+
+        if (use_leakage_fallback)
+        {
+          size_t outgoing_face_count = 0;
+          for (size_t f = 0; f < cell_num_faces; ++f)
+            if (cell_face_orientations_[c][f] == FOOUTGOING)
+              ++outgoing_face_count;
+          OpenSnLogicalErrorIf(outgoing_face_count == 0,
+                               GetName() + ": near-source cell " + std::to_string(cell.global_id) +
+                                 " has a positive source but no outgoing face.");
+
+          for (auto& [jr, rhs_g] : cell_bulk_rhs)
+            rhs_g[g] = 0.0;
+
+          const double face_share = source[g] / static_cast<double>(outgoing_face_count);
+          for (size_t f = 0; f < cell_num_faces; ++f)
+            if (cell_face_orientations_[c][f] == FOOUTGOING)
+            {
+              leakages[c][f][g] = face_share;
+              for (const auto& [jr, weight] : bulk_face_rhs_weights[f])
+                cell_bulk_rhs[jr][g] += face_share * weight;
+            }
+        }
+        else
+        {
+          // Apply the shared correction to leakage and the bulk interface source.
+          for (size_t f = 0; f < cell_num_faces; ++f)
+            if (cell_face_orientations_[c][f] == FOOUTGOING)
+              leakages[c][f][g] *= alpha;
+          for (auto& [jr, rhs_g] : cell_bulk_rhs)
+            rhs_g[g] *= alpha;
+        }
+
+        for (size_t f = 0; f < cell_num_faces; ++f)
+          if (not cell.faces[f].has_neighbor and
+              not IsReflectingBoundary(cell.faces[f].neighbor_id) and
+              cell_face_orientations_[c][f] == FOOUTGOING)
+            out_flow_ += leakages[c][f][g];
+      }
+
+      // The bulk sweep receives the analytic ray-traced interface current.
+      for (const auto& [ir, rhs_g] : cell_bulk_rhs)
+        for (size_t g = 0; g < num_groups_; ++g)
+          destination_phi_[ir * num_groups_ + g] += rhs_g[g];
+
+      // Update flux solution
       for (size_t i = 0; i < cell_num_nodes; ++i)
-        projected_integral += IntV_shapeI(i) * phi[g](i);
-      const double raw_removal = outgoing_leakage + sigma_t[g] * projected_integral;
-      const double removal_tolerance = 1.0e-12 * std::abs(source[g]);
-      OpenSnLogicalErrorIf(not std::isfinite(raw_removal) or raw_removal < -removal_tolerance,
-                           GetName() +
-                             ": near-source ray tracing produced an invalid removal for "
-                             "cell " +
-                             std::to_string(cell.global_id) + ", group " + std::to_string(g) + ".");
-
-      const bool use_leakage_fallback = raw_removal <= removal_tolerance and source[g] > 0.0;
-      const double alpha =
-        use_leakage_fallback ? 1.0 : (raw_removal > 0.0 ? source[g] / raw_removal : 1.0);
-      OpenSnLogicalErrorIf(not std::isfinite(alpha) or alpha < 0.0,
-                           GetName() +
-                             ": near-source conservation produced an invalid scale "
-                             "factor for cell " +
-                             std::to_string(cell.global_id) + ", group " + std::to_string(g) + ".");
-      phi[g].Scale(alpha);
-
-      const double relative_change = std::abs(alpha - 1.0);
-      constexpr double significant_relative_change = 0.01;
-      if (relative_change > significant_relative_change)
       {
-        cell_current_mismatched = true;
-        ++mismatched_cell_group_count;
-        original_outgoing_sum += raw_removal;
-        outgoing_change_sum += relative_change * raw_removal;
-        max_relative_outgoing_change = std::max(max_relative_outgoing_change, relative_change);
+        const auto ir = sdm.MapDOFLocal(cell, i);
+        for (size_t g = 0; g < num_groups_; ++g)
+          destination_phi_[ir * num_groups_ + g] = phi[g](i);
       }
 
-      if (use_leakage_fallback)
-      {
-        size_t outgoing_face_count = 0;
-        for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
-            ++outgoing_face_count;
-        OpenSnLogicalErrorIf(outgoing_face_count == 0,
-                             GetName() + ": near-source cell " + std::to_string(cell.global_id) +
-                               " has a positive source but no outgoing face.");
-
-        for (auto& [jr, rhs_g] : cell_bulk_rhs)
-          rhs_g[g] = 0.0;
-
-        const double face_share = source[g] / static_cast<double>(outgoing_face_count);
-        for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
-          {
-            leakages[c][f][g] = face_share;
-            for (const auto& [jr, weight] : bulk_face_rhs_weights[f])
-              cell_bulk_rhs[jr][g] += face_share * weight;
-          }
-      }
-      else
-      {
-        // Apply the shared correction to leakage and the bulk interface source.
-        for (size_t f = 0; f < cell_num_faces; ++f)
-          if (cell_face_orientations_[c][f] == FOOUTGOING)
-            leakages[c][f][g] *= alpha;
-        for (auto& [jr, rhs_g] : cell_bulk_rhs)
-          rhs_g[g] *= alpha;
-      }
-
-      for (size_t f = 0; f < cell_num_faces; ++f)
-        if (not cell.faces[f].has_neighbor and
-            not IsReflectingBoundary(cell.faces[f].neighbor_id) and
-            cell_face_orientations_[c][f] == FOOUTGOING)
-          out_flow_ += leakages[c][f][g];
+      if (cell_current_mismatched)
+        ++mismatched_cell_count;
     }
-
-    // The bulk sweep receives the analytic ray-traced interface current.
-    for (const auto& [ir, rhs_g] : cell_bulk_rhs)
-      for (size_t g = 0; g < num_groups_; ++g)
-        destination_phi_[ir * num_groups_ + g] += rhs_g[g];
-
-    // Update flux solution
-    for (size_t i = 0; i < cell_num_nodes; ++i)
-    {
-      const auto ir = sdm.MapDOFLocal(cell, i);
-      for (size_t g = 0; g < num_groups_; ++g)
-        destination_phi_[ir * num_groups_ + g] = phi[g](i);
-    }
-
-    if (cell_current_mismatched)
-      ++mismatched_cell_count;
   }
 
   // A source on the domain boundary emits part of its strength directly out of the domain.
@@ -1689,8 +1585,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 }
 
 std::vector<double>
-UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
-                                const Cell& cell,
+UncollidedProblem::RaytraceLine(const Cell& cell,
                                 const Vector3& qp_xyz,
                                 const SourcePoint& source_point,
                                 const double tolerance)
@@ -1702,7 +1597,7 @@ UncollidedProblem::RaytraceLine(RayTracer& ray_tracer,
   scratch_segs.reserve(16);
   scratch_bp.reserve(8);
   RaytraceLineInto(
-    ray_tracer, cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
+    cell, qp_xyz, source_point, phi, scratch_segs, scratch_bp, scratch_mfp, tolerance);
   return phi;
 }
 
@@ -1871,9 +1766,7 @@ ForEachVisibleSideTriangle(const Mesh& grid,
 } // namespace
 
 std::optional<UncollidedProblem::ExactCellIntegrals>
-UncollidedProblem::IntegrateCellExactly(RayTracer& ray_tracer,
-                                        const Cell& cell,
-                                        const SourcePoint& source_point)
+UncollidedProblem::IntegrateCellExactly(const Cell& cell, const SourcePoint& source_point)
 {
   const Vector3& source = source_point.location;
   const bool contains_source = std::any_of(source_point.subscribers.begin(),
@@ -1954,8 +1847,7 @@ UncollidedProblem::IntegrateCellExactly(RayTracer& ray_tracer,
             const double chord = std::max(0.0, R - R_in);
 
             // On return, scratch_mfp holds the optical depth from the source to x.
-            RaytraceLineInto(
-              ray_tracer, cell, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
+            RaytraceLineInto(cell, x, source_point, phi, scratch_segs, scratch_bp, scratch_mfp);
             for (size_t g = 0; g < num_groups_; ++g)
             {
               const double optical_chord = sigma_t[g] * chord;
@@ -2219,15 +2111,13 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
     }
   };
 
-  std::vector<std::thread> workers;
-  workers.reserve(num_group_threads > 0 ? num_group_threads - 1 : 0);
+  WorkerThreads workers(num_group_threads > 0 ? num_group_threads - 1 : 0);
   for (size_t thread_id = 1; thread_id < num_group_threads; ++thread_id)
-    workers.emplace_back(SweepGroupsCapturingExceptions, thread_id);
+    workers.Launch(SweepGroupsCapturingExceptions, thread_id);
 
   SweepGroupsCapturingExceptions(0);
 
-  for (auto& worker : workers)
-    worker.join();
+  workers.JoinAll();
   if (worker_exception)
     std::rethrow_exception(worker_exception);
 }
