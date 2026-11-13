@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/scheduler/spmd_threadpool.h"
+#include "framework/gpu/device_binding.h"
 #include <cassert>
 
 namespace opensn
@@ -92,6 +93,8 @@ SPMD_ThreadPool::WaitAll()
 void
 SPMD_ThreadPool::InfiniteLoop(std::size_t thread_idx)
 {
+  // Tasks may launch GPU work, which uses the calling thread's current device
+  UseBoundDevice();
   while (true)
   {
     {
