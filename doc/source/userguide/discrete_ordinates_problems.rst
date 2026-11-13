@@ -818,6 +818,12 @@ stores the integrated vacuum outflow for combined balance accounting. The
 near-source correction rescales the physical source's uncollided flux moments
 and outgoing currents together, as specified by the published algorithm.
 
+The PWLD flux can be negative on the outgoing faces of optically thick cells at
+a vacuum boundary, far from the source where the uncollided flux is small. The
+net outflow can then be slightly negative, and the removal slightly larger than
+the production, while the balance still holds. The generator warns when this
+happens. Refining those boundary cells reduces it.
+
 Field-Function Interface
 ========================
 

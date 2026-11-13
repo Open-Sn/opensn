@@ -2440,11 +2440,6 @@ UncollidedProblem::FinalizeBalance(hid_t file)
   CALI_CXX_MARK_SCOPE("FinalizeBalance");
 
   const double correction_scale = std::max(1.0, production_);
-  OpenSnLogicalErrorIf(
-    physical_removal_ > production_ + 1.0e-10 * correction_scale,
-    GetName() + ": physical uncollided removal (" + std::to_string(physical_removal_) +
-      ") exceeds the physical source rate (" + std::to_string(production_) + ").");
-
   const double total_removal = physical_removal_ + reflected_removal_;
   const double balance = production_ - (total_removal + out_flow_);
   const double conservation_error = (production_ == 0.0) ? 0.0 : (balance / production_);
@@ -2453,6 +2448,15 @@ UncollidedProblem::FinalizeBalance(hid_t file)
   if (std::abs(balance) > balance_warning_tolerance * correction_scale)
     log.Log0Warning() << GetName() << ": uncollided balance residual is " << std::setprecision(6)
                       << std::scientific << balance << ".";
+
+  // The PWLD flux can be negative on the outgoing faces of optically thick boundary cells, so the
+  // net outflow can be slightly negative and the removal can exceed the production while the
+  // balance holds. This is a discretization error, not a failure.
+  if (out_flow_ < -1.0e-10 * correction_scale)
+    log.Log0Warning() << GetName() << ": the net uncollided outflow is negative ("
+                      << std::setprecision(6) << std::scientific << out_flow_
+                      << ") because the PWLD flux is negative on outgoing boundary faces. Refine "
+                         "optically thick cells at vacuum boundaries to reduce it.";
 
   log.Log() << "\nBalance table:\n"
             << std::setprecision(6) << std::scientific

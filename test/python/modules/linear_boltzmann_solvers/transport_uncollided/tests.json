@@ -1045,5 +1045,27 @@
         "abs_tol": 1e-10
       }
     ]
+  },
+  {
+    "file": "uncollided_thick_boundary_outflow.py",
+    "comment": "Generation completes when optically thick vacuum-boundary cells make the net PWLD outflow negative. The outflow matches the exact escape fraction of the box.",
+    "num_procs": 1,
+    "env": {
+      "OPENSN_NUM_THREADS": 4
+    },
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedThickBoundaryNegativeOutflow=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedThickBoundaryOutflowError=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-04
+      }
+    ]
   }
 ]
