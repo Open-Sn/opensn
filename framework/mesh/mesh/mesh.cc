@@ -12,6 +12,8 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <cmath>
+#include <limits>
 #include <set>
 #include <stdexcept>
 
@@ -517,6 +519,21 @@ Mesh::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
 {
   const auto& grid_ref = *this;
 
+  // Tolerance for the signed distance of the point from a plane through cell vertices. The
+  // round-off of that distance grows with the magnitude of the coordinates, so a point on a face
+  // shared by two cells could otherwise fall outside both of them.
+  const auto PlaneTolerance = [&point](const Vector3& on_plane)
+  {
+    const double scale = std::max({1.0,
+                                   std::abs(point.x),
+                                   std::abs(point.y),
+                                   std::abs(point.z),
+                                   std::abs(on_plane.x),
+                                   std::abs(on_plane.y),
+                                   std::abs(on_plane.z)});
+    return std::max(1.0e-12, 64.0 * std::numeric_limits<double>::epsilon() * scale);
+  };
+
   // Check each cell edge. A point inside the cell will return a negative value. A point on either
   // edge will return a zero value, and a point outside the cell will return a positive value.
   if (cell.GetType() == CellType::SLAB)
@@ -532,7 +549,7 @@ Mesh::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
   if (cell.GetType() == CellType::POLYGON)
   {
     for (const auto& face : cell.faces)
-      if ((point - face.centroid).Dot(face.normal) > 0.0)
+      if ((point - face.centroid).Dot(face.normal) > PlaneTolerance(face.centroid))
         return false;
     return true;
   }
@@ -544,7 +561,7 @@ Mesh::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
     // Helper for returning whether the given point is considered "inside" a plane,
     // where inside will mean on the interior of a tetrahedron (determined by the ordering
     // of the vertices)
-    const auto InsidePlane = [&point](const std::array<Vector3, 3>& v)
+    const auto InsidePlane = [&point, &PlaneTolerance](const std::array<Vector3, 3>& v)
     {
       const auto v01 = v[1] - v[0];
       const auto v02 = v[2] - v[0];
@@ -557,7 +574,7 @@ Mesh::CheckPointInsideCell(const Cell& cell, const Vector3& point) const
         return true;
 
       // Positive is inside, zero is within the plane, negative is outside
-      return pc.Dot(n) > -1.e-12;
+      return pc.Dot(n) >= -PlaneTolerance(c);
     };
 
     for (const auto& face : cell.faces)

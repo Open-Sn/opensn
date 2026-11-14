@@ -1,0 +1,21 @@
+$MeshFormat
+2.2 0 8
+$EndMeshFormat
+$Comments
+Two tetrahedra that share a face on the plane x + y = 31200 cm, from a Gmsh mesh of the
+urban source example in OpenSnExamples. Element 1 (physical 2) lies on the side x + y < 31200
+and element 2 (physical 1) on the side x + y > 31200. Used by MeshTest.PointOnSharedFace.
+$EndComments
+$Nodes
+5
+1 14019.18997947634 17180.81002052366 256.5260820441376
+2 13912.75843537748 17287.24156462252 0
+3 13584.03039520935 17199.93381108421 0
+4 13785.85810564716 17414.14189435284 266.011904003266
+5 14122.60835130834 17514.46141613685 337.4943840891742
+$EndNodes
+$Elements
+2
+1 4 2 2 2 1 2 3 4
+2 4 2 1 1 4 1 2 5
+$EndElements
