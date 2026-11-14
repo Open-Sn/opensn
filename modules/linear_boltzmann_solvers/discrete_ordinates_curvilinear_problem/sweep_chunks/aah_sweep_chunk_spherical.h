@@ -11,6 +11,7 @@ namespace opensn
 
 class LBSGroupset;
 class DiscreteOrdinatesProblem;
+class CurvilinearProductQuadrature;
 
 /**
  * AAH sweep chunk for 1D spherical geometry.
@@ -24,7 +25,7 @@ class DiscreteOrdinatesProblem;
  * angle). The recursion starts from the zero-weight direction mu = -1, which has no angular term.
  * The 1/r term uses mass matrices with weight r. Directions must reach each cell in order of
  * increasing mu: the angle aggregation groups them into an inward and an outward set and the inward
- * set precedes the outward set.
+ * set precedes the outward set. SINGLE aggregation chains individual directions in the same order.
  *
  * A boundary face at r = 0 (the center of a solid sphere) has zero area and receives no incident
  * flux; any other boundary face, including the inner surface of a hollow sphere, uses the
@@ -38,6 +39,16 @@ public:
   void Sweep(AngleSet& angle_set) override;
 
 private:
+  void Sweep_Generic(AngleSet& angle_set);
+
+  /// Two-node radial cells use the same blocked SIMD solve as the RZ chunks.
+  template <unsigned int NumNodes>
+  void Sweep_FixedN(AngleSet& angle_set);
+
+  /// Validated spherical quadrature, owned by the groupset.
+  const CurvilinearProductQuadrature& curvilinear_quadrature_;
+  /// Number of groups solved in one block.
+  const unsigned int group_block_size_;
   /// Mass matrices with radial weight r for the 1/r angular-redistribution term.
   const std::vector<UnitCellMatrices>& secondary_unit_cell_matrices_;
   /// Unknown manager for the angular-edge flux (one vector of groupset groups per node).

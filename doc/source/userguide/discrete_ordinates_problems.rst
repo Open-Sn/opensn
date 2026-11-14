@@ -423,6 +423,8 @@ Practical recommendation:
 * ``AAH`` remains the default production choice and is the safer option for
   most users, particularly for problems with cyclic sweep dependencies.
 * Both ``AAH`` and ``CBC`` support time-dependent (transient) mode.
+* Both ``AAH`` and ``CBC`` are available for CPU curvilinear
+  :py:class:`pyopensn.solver.DiscreteOrdinatesCurvilinearProblem` solves.
 * Choose ``CBC`` only when the sweep graph is known to be acyclic or when
   you have verified it meets the acyclicity requirement for your specific
   problem.
@@ -1099,7 +1101,10 @@ Requirements and current limitations:
 * ``angle_aggregation_type`` must be ``"single"`` (the default) or
   ``"azimuthal"``. In 1D spherical geometry ``"azimuthal"`` forms one inward and
   one outward angle set.
-* ``sweep_type`` must be ``"AAH"``.
+* ``sweep_type`` may be ``"AAH"`` or ``"CBC"`` in both geometries on the CPU.
+  CBC requires an acyclic spatial sweep graph, which the 1D radial mesh satisfies.
+  Both sweep types use the same angular redistribution, starting
+  direction, and boundary treatment.
 * In ``r-z``, reflecting boundaries are supported only on the symmetry axis
   (``rmin`` at :math:`r = 0`) and on constant-``z`` boundaries. An inner radial
   boundary at :math:`r > 0` (an annulus) may be vacuum or isotropic.
