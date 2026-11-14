@@ -75,3 +75,6 @@ for i in range({{outer_repetition}}):
     ss_solver = SteadyStateSourceSolver(problem=phys)
     ss_solver.Initialize()
     ss_solver.Execute()
+
+    del ss_solver
+    del phys
