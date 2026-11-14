@@ -23,6 +23,7 @@
 #include <limits>
 #include <optional>
 #include <stdexcept>
+#include <string>
 #include <string_view>
 #include <utility>
 
@@ -117,10 +118,13 @@ SweepOrderingOmega(const AngularQuadrature& quadrature,
 namespace
 {
 
-// Pass any exception message to `on_failure` from within its catch block.
+// Pass any exception message to `on_failure` from within its catch block. `sweep_type` names the
+// sweep whose setup runs, for the diagnostic.
 template <typename Function, typename OnFailure>
 void
-RunAAHSetupStep(const Function& function, const OnFailure& on_failure)
+RunSweepSetupStep(const Function& function,
+                  const OnFailure& on_failure,
+                  const std::string& sweep_type)
 {
   try
   {
@@ -128,30 +132,34 @@ RunAAHSetupStep(const Function& function, const OnFailure& on_failure)
   }
   catch (const std::exception& error)
   {
-    std::string_view message = error.what();
-    on_failure(message.empty() ? std::string_view("Unknown exception during AAH setup.") : message);
+    const std::string_view message = error.what();
+    if (message.empty())
+      on_failure("Unknown exception during " + sweep_type + " setup.");
+    else
+      on_failure(message);
   }
   catch (...)
   {
-    on_failure(std::string_view("Unknown exception during AAH setup."));
+    on_failure("Unknown exception during " + sweep_type + " setup.");
   }
 }
 
 // Propagate failures collectively from work that does not call MPI.
 template <typename Function>
 void
-RunAAHSetupCollectively(const Function& function)
+RunSweepSetupCollectively(const Function& function, const std::string& sweep_type)
 {
   bool local_failed = false;
   std::array<char, 2048> error_buffer{};
-  RunAAHSetupStep(function,
-                  [&](std::string_view message)
-                  {
-                    local_failed = true;
-                    std::copy_n(message.begin(),
-                                std::min(message.size(), error_buffer.size() - 1),
-                                error_buffer.begin());
-                  });
+  RunSweepSetupStep(
+    function,
+    [&](std::string_view message)
+    {
+      local_failed = true;
+      std::copy_n(
+        message.begin(), std::min(message.size(), error_buffer.size() - 1), error_buffer.begin());
+    },
+    sweep_type);
 
   const int comm_size = opensn::mpi_comm.size();
   const int local_failure_rank = local_failed ? opensn::mpi_comm.rank() : comm_size;
@@ -162,22 +170,24 @@ RunAAHSetupCollectively(const Function& function)
 
   opensn::mpi_comm.broadcast(
     error_buffer.data(), static_cast<int>(error_buffer.size()), failure_rank);
-  throw std::logic_error("AAH sweep setup failed on rank " + std::to_string(failure_rank) + ": " +
-                         error_buffer.data());
+  throw std::logic_error(sweep_type + " sweep setup failed on rank " +
+                         std::to_string(failure_rank) + ": " + error_buffer.data());
 }
 
 // Abort if work containing collectives fails because peers may already be blocked.
 template <typename Function>
 void
-RunAAHCollectiveSequence(const Function& function)
+RunSweepCollectiveSequence(const Function& function, const std::string& sweep_type)
 {
-  RunAAHSetupStep(function,
-                  [](std::string_view message)
-                  {
-                    log.LogAllError() << "AAH setup failed during MPI exchange: " << message;
-                    opensn::mpi_comm.abort(1);
-                    throw;
-                  });
+  RunSweepSetupStep(
+    function,
+    [&](std::string_view message)
+    {
+      log.LogAllError() << sweep_type << " setup failed during MPI exchange: " << message;
+      opensn::mpi_comm.abort(1);
+      throw;
+    },
+    sweep_type);
 }
 
 // Developer-only diagnostic for tiny sweep graphs. Populate with AAH_SPDS ids when debugging.
@@ -800,21 +810,23 @@ BuildAAHGlobalSweepGraph(SweepRuntime& runtime)
   for (size_t batch_begin = 0; batch_begin < spds_list.size(); batch_begin += batch_size)
   {
     const size_t batch_end = std::min(batch_begin + batch_size, spds_list.size());
-    RunAAHCollectiveSequence([&]
-                             { GatherAAHGlobalEdgeWeights(spds_list, batch_begin, batch_end); });
+    RunSweepCollectiveSequence(
+      [&] { GatherAAHGlobalEdgeWeights(spds_list, batch_begin, batch_end); }, "AAH");
 
     std::vector<std::optional<AAH_SPDS::GlobalSweepMetadata>> metadata;
-    RunAAHSetupCollectively(
+    RunSweepSetupCollectively(
       [&]
       {
         metadata.resize(batch_end - batch_begin);
         for (size_t i = batch_begin; i < batch_end; ++i)
           if (opensn::mpi_comm.rank() == GetSweepGraphOwner(i, spds_list.size()))
             metadata[i - batch_begin] = spds_list[i]->BuildGlobalSweepMetadata();
-      });
+      },
+      "AAH");
 
-    RunAAHCollectiveSequence(
-      [&] { DistributeAAHGlobalSweepMetadata(spds_list, batch_begin, batch_end, metadata); });
+    RunSweepCollectiveSequence(
+      [&] { DistributeAAHGlobalSweepMetadata(spds_list, batch_begin, batch_end, metadata); },
+      "AAH");
   }
   PrintRequestedSweepGraphs(spds_list);
 }
@@ -921,7 +933,7 @@ BuildSweepRuntime(const std::string& problem_name,
 
   if (sweep_type == "AAH")
   {
-    RunAAHSetupCollectively(
+    RunSweepSetupCollectively(
       [&]
       {
         BuildAAHSPDS(runtime,
@@ -930,7 +942,8 @@ BuildSweepRuntime(const std::string& problem_name,
                      quadrature_allow_cycles_map,
                      quadrature_aggregation_map,
                      use_gpus);
-      });
+      },
+      "AAH");
     BuildAAHGlobalSweepGraph(runtime);
   }
   else if (sweep_type == "CBC")
