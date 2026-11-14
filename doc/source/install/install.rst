@@ -258,6 +258,13 @@ additional packages required for running regression tests:
 Run regression tests
 --------------------
 
+The regression inputs use NumPy and ``mpi4py``. Install them in the virtual
+environment:
+
+.. code-block:: shell
+
+   python -m pip install numpy mpi4py
+
 Run the regression tests to verify your installation:
 
 .. code-block:: shell
