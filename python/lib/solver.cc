@@ -73,6 +73,8 @@ BalanceTableToDict(const BalanceTable& table)
     values["actual_inventory_change"] = table.actual_inventory_change.value();
   if (table.inventory_residual.has_value())
     values["inventory_residual"] = table.inventory_residual.value();
+  if (table.uncollided_outflow_rate.has_value())
+    values["uncollided_outflow_rate"] = table.uncollided_outflow_rate.value();
   return values;
 }
 
@@ -1815,12 +1817,15 @@ WrapLBS(py::module& slv)
         domain minus that in the directions that leave it, each weighted by
         :math:`|\Omega\cdot n|`. On a vacuum boundary it is the adjoint flux of the particles
         entering through the boundary.
+        For a problem with an uncollided flux the arrays hold the leakage of the collided part
+        alone, since the angular flux holds only that part. The uncollided outflow is the
+        ``uncollided_outflow_rate`` of :py:meth:`ComputeBalanceTable`, in total over all
+        boundaries and groups.
 
     Raises
     ------
     ValueError
-        If one or more boundary ids are not present on the current mesh, or if the problem has an
-        uncollided flux, whose angular flux holds only the collided part.
+        If one or more boundary ids are not present on the current mesh.
     )",
     py::arg("bnd_names")
   );
@@ -2251,6 +2256,10 @@ WrapSteadyState(py::module& slv)
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
           tallies, including reflecting boundaries (see ``inflow_rate``).
+        - ``uncollided_outflow_rate``:
+          Present only for a problem with an uncollided flux. The outflow of the
+          uncollided flux, which ``outflow_rate`` includes and
+          :py:meth:`ComputeLeakage` does not.
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2473,6 +2482,10 @@ WrapTransient(py::module& slv)
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
           tallies, including reflecting boundaries (see ``inflow_rate``).
+        - ``uncollided_outflow_rate``:
+          Present only for a problem with an uncollided flux. The outflow of the
+          uncollided flux, which ``outflow_rate`` includes and
+          :py:meth:`ComputeLeakage` does not.
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2643,6 +2656,10 @@ WrapNLKEigen(py::module& slv)
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
           tallies, including reflecting boundaries (see ``inflow_rate``).
+        - ``uncollided_outflow_rate``:
+          Present only for a problem with an uncollided flux. The outflow of the
+          uncollided flux, which ``outflow_rate`` includes and
+          :py:meth:`ComputeLeakage` does not.
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.
@@ -2782,6 +2799,10 @@ WrapPIteration(py::module& slv)
         - ``outflow_rate``:
           Global outgoing boundary contribution accumulated from face outflow
           tallies, including reflecting boundaries (see ``inflow_rate``).
+        - ``uncollided_outflow_rate``:
+          Present only for a problem with an uncollided flux. The outflow of the
+          uncollided flux, which ``outflow_rate`` includes and
+          :py:meth:`ComputeLeakage` does not.
         - ``balance``:
           Rate balance,
           ``production_rate + inflow_rate - absorption_rate - outflow_rate``.

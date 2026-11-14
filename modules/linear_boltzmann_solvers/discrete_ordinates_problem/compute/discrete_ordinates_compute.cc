@@ -431,8 +431,10 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
   double global_in_flow = global_balance_table.at(2);
   double global_out_flow = global_balance_table.at(3);
   double global_balance = global_balance_table.at(4);
+  std::optional<double> uncollided_outflow_rate;
   if (do_problem.HasUncollidedFlux())
   {
+    uncollided_outflow_rate = do_problem.GetUncollidedOutflowRate();
     global_production += do_problem.GetUncollidedSourceRate();
     global_out_flow += do_problem.GetUncollidedOutflowRate();
     global_balance = global_production + global_in_flow - (global_absorption + global_out_flow);
@@ -543,7 +545,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
                              global_final,
                              predicted_inventory_change,
                              actual_inventory_change,
-                             inventory_residual};
+                             inventory_residual,
+                             uncollided_outflow_rate};
     opensn::mpi_comm.barrier();
     return table;
   }
@@ -564,7 +567,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
           std::nullopt,
           std::nullopt,
           std::nullopt,
-          std::nullopt};
+          std::nullopt,
+          uncollided_outflow_rate};
 }
 
 void
@@ -602,8 +606,11 @@ LogBalanceTable(const BalanceTable& table, const double dt)
               << " Absorption rate             = " << table.absorption_rate << "\n"
               << " Production rate             = " << table.production_rate << "\n"
               << " In-flow rate                = " << table.inflow_rate << "\n"
-              << " Out-flow rate               = " << table.outflow_rate << "\n"
-              << " Balance                     = " << table.balance << "\n\n";
+              << " Out-flow rate               = " << table.outflow_rate << "\n";
+    if (table.uncollided_outflow_rate.has_value())
+      log.Log() << "  of which uncollided        = " << table.uncollided_outflow_rate.value()
+                << "\n";
+    log.Log() << " Balance                     = " << table.balance << "\n\n";
   }
 }
 
@@ -622,9 +629,6 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
                const unsigned int groupset_id,
                const uint64_t boundary_id)
 {
-  OpenSnInvalidArgumentIf(do_problem.HasUncollidedFlux(),
-                          "ComputeLeakage is not available with an uncollided flux: the outflow "
-                          "is computed from the angular flux, which holds only the collided part.");
   OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
   const auto& grid = do_problem.GetGrid();
@@ -682,10 +686,6 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 std::map<uint64_t, std::vector<double>>
 ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
 {
-  OpenSnInvalidArgumentIf(do_problem.HasUncollidedFlux(),
-                          "ComputeLeakage is not available with an uncollided flux: the outflow "
-                          "is computed from the angular flux, which holds only the collided part.");
-
   const auto& grid = do_problem.GetGrid();
   const auto uniq = grid->GetUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)

@@ -20,9 +20,11 @@ leave the problem as it was, so a steady-state solve afterwards must reproduce t
 identical fresh problem exactly.
 
 Only the scalar flux receives the uncollided component; the stored angular flux is the collided
-part. The outputs computed from it would silently miss the uncollided flux, so after a solve
-WriteAngularFluxes, WriteSurfaceAngularFluxes, ComputeLeakage, and a sigma_t sensitivity that takes
-the forward angular flux from the problem must be rejected.
+part. The outputs that stand for the full angular flux would silently miss the uncollided flux, so
+after a solve WriteAngularFluxes, WriteSurfaceAngularFluxes, and a sigma_t sensitivity that takes
+the forward angular flux from the problem must be rejected. ComputeLeakage returns the leakage of
+the collided part, and the balance table reports the uncollided outflow separately: the two must
+add up to the outflow rate of the balance table.
 
 Checks:
   UncollidedCtorTimeDependentRejected, UncollidedCtorAdjointRejected,
@@ -37,7 +39,9 @@ Checks:
     an uncollided flux (with its point source) after the rejected SetAdjoint(True).
   UncollidedCtorBoundaryRejected, UncollidedLaterBoundaryRejected: 1 if an isotropic boundary is
     rejected with the uncollided-flux error at construction and when set afterwards.
-  UncollidedAngularOutputsRejected: 1 if all four angular-flux outputs are rejected.
+  UncollidedAngularOutputsRejected: 1 if all three angular-flux outputs are rejected.
+  UncollidedLeakageResidual: |collided leakage + uncollided outflow - outflow rate| relative to
+    the outflow rate.
 """
 
 import importlib
@@ -159,10 +163,11 @@ def rejected(action, expected):
 
 
 def solve(problem):
+    """Solves the problem and returns its scalar flux with the solver, for the balance table."""
     solver = SteadyStateSourceSolver(problem=problem)
     solver.Initialize()
     solver.Execute()
-    return list(problem.GetPhiNewLocal())
+    return list(problem.GetPhiNewLocal()), solver
 
 
 if __name__ == "__main__":
@@ -225,10 +230,17 @@ if __name__ == "__main__":
     )
 
     max_diff = float("inf")
+    leakage_residual = float("inf")
     if unchanged:
-        phi = solve(problem)
-        phi_fresh = solve(make_problem(grid, xs, file_name))
+        phi, solver = solve(problem)
+        phi_fresh, _ = solve(make_problem(grid, xs, file_name))
         max_diff = max(abs(a - b) for a, b in zip(phi, phi_fresh))
+        # The collided leakage and the uncollided outflow make up the outflow of the balance table.
+        collided_leakage = sum(sum(values) for values in problem.ComputeLeakage([]).values())
+        balance = solver.ComputeBalanceTable()
+        leakage_residual = abs(
+            collided_leakage + balance["uncollided_outflow_rate"] - balance["outflow_rate"]
+        ) / balance["outflow_rate"]
 
     # The problem has been solved, so only the collided-only angular flux makes these fail. The
     # forward angular flux is checked before the adjoint file is opened, so any other error, such as
@@ -251,7 +263,6 @@ if __name__ == "__main__":
                 "uncollided_mode_rejections_surf", boundary_surfaces=["xmin"]
             )
         ),
-        angular_output_rejected(lambda: problem.ComputeLeakage([])),
         angular_output_rejected(
             lambda: CrossSectionSensitivityPostprocessor(
                 problem=problem,
@@ -294,4 +305,5 @@ if __name__ == "__main__":
         print(f"UncollidedCtorBoundaryRejected={int(ctor_boundary)}")
         print(f"UncollidedLaterBoundaryRejected={int(later_boundary)}")
         print(f"UncollidedAngularOutputsRejected={int(all(angular_outputs))}")
+        print(f"UncollidedLeakageResidual={leakage_residual:.8e}")
         sys.stdout.flush()
