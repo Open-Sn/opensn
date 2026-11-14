@@ -16,6 +16,7 @@ Directory raytrace
 Files
 -----
 
+- :ref:`file_framework_mesh_raytrace_mesh_segment_tracer.h`
 - :ref:`file_framework_mesh_raytrace_raytracer.h`
 
 

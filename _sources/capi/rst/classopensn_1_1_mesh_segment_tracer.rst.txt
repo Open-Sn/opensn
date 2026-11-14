@@ -1,0 +1,28 @@
+.. _exhale_class_classopensn_1_1_mesh_segment_tracer:
+
+Class MeshSegmentTracer
+=======================
+
+- Defined in :ref:`file_framework_mesh_raytrace_mesh_segment_tracer.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_ray`
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_segment`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::MeshSegmentTracer
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

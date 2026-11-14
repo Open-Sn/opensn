@@ -402,7 +402,7 @@
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
-<dd class="field-even"><p>A map of boundary ids to group-wise leakages. Throws std::invalid_argument for a problem with an uncollided flux, whose angular flux holds only the collided part. </p>
+<dd class="field-even"><p>A map of boundary ids to group-wise leakages. For a problem with an uncollided flux these are the leakages of the collided part alone, since the angular flux holds only that part; the uncollided outflow is the uncollided_outflow_rate of the balance table. </p>
 </dd>
 </dl>
 </dd></dl>

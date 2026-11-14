@@ -154,6 +154,10 @@ amounts to <code class="docutils literal notranslate"><span class="pre">inflow_r
 <li><p><code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code>:
 Global outgoing boundary contribution accumulated from face outflow
 tallies, including reflecting boundaries (see <code class="docutils literal notranslate"><span class="pre">inflow_rate</span></code>).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">uncollided_outflow_rate</span></code>:
+Present only for a problem with an uncollided flux. The outflow of the
+uncollided flux, which <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> includes and
+<code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeLeakage()</span></code> does not.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">balance</span></code>:
 Rate balance,
 <code class="docutils literal notranslate"><span class="pre">production_rate</span> <span class="pre">+</span> <span class="pre">inflow_rate</span> <span class="pre">-</span> <span class="pre">absorption_rate</span> <span class="pre">-</span> <span class="pre">outflow_rate</span></code>.</p></li>

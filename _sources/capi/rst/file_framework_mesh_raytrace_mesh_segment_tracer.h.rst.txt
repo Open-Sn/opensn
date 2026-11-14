@@ -1,0 +1,70 @@
+
+.. _file_framework_mesh_raytrace_mesh_segment_tracer.h:
+
+File mesh_segment_tracer.h
+==========================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_mesh_raytrace>` (``framework/mesh/raytrace``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/mesh/raytrace/mesh_segment_tracer.h``)
+--------------------------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_mesh_raytrace_mesh_segment_tracer.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``cstdint``
+
+- ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
+
+- ``limits``
+
+- ``optional``
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Classes
+-------
+
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_ray`
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_segment`
+
+- :ref:`exhale_class_classopensn_1_1_mesh_segment_tracer`
+

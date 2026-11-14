@@ -126,6 +126,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">predicted_inventory_change</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">actual_inventory_change</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">inventory_residual</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Outflow of the uncollided flux, which outflow_rate includes. Present only for a problem with</span>
+<span class="w">  </span><span class="c1">/// an uncollided flux. ComputeLeakage does not include it.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">uncollided_outflow_rate</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="cm">/**</span>
@@ -155,8 +158,9 @@
 <span class="cm"> * \param groupset_id The groupset for which to compute the leakage.</span>
 <span class="cm"> * \param boundary_id The boundary id for which to perform the integration.</span>
 <span class="cm"> *</span>
-<span class="cm"> * \return The leakage as a value. Throws std::invalid_argument for a problem with an uncollided</span>
-<span class="cm"> * flux, whose angular flux holds only the collided part.</span>
+<span class="cm"> * \return The leakage as a value. For a problem with an uncollided flux this is the leakage of the</span>
+<span class="cm"> * collided part alone, since the angular flux holds only that part; the uncollided outflow is the</span>
+<span class="cm"> * uncollided_outflow_rate of the balance table.</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ComputeLeakage</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">                                   </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
@@ -167,8 +171,9 @@
 <span class="cm"> *</span>
 <span class="cm"> * \param do_problem The discrete ordinates problem supplying the current angular flux state.</span>
 <span class="cm"> * \param boundary_ids The boundary ids to compute leakages on.</span>
-<span class="cm"> * \return A map of boundary ids to group-wise leakages. Throws std::invalid_argument for a problem</span>
-<span class="cm"> * with an uncollided flux, whose angular flux holds only the collided part.</span>
+<span class="cm"> * \return A map of boundary ids to group-wise leakages. For a problem with an uncollided flux these</span>
+<span class="cm"> * are the leakages of the collided part alone, since the angular flux holds only that part; the</span>
+<span class="cm"> * uncollided outflow is the uncollided_outflow_rate of the balance table.</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">ComputeLeakage</span><span class="p">(</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">do_problem</span><span class="p">,</span>
 <span class="w">                                                       </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">boundary_ids</span><span class="p">);</span>

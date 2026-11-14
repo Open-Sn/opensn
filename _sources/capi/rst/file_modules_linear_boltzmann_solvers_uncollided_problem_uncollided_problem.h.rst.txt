@@ -44,9 +44,11 @@ Includes
 
 - ``framework/mesh/mesh/mesh.h`` (:ref:`file_framework_mesh_mesh_mesh.h`)
 
-- ``framework/mesh/raytrace/raytracer.h`` (:ref:`file_framework_mesh_raytrace_raytracer.h`)
+- ``framework/mesh/raytrace/mesh_segment_tracer.h`` (:ref:`file_framework_mesh_raytrace_mesh_segment_tracer.h`)
 
 - ``hdf5.h``
+
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
 
@@ -81,8 +83,6 @@ Classes
 - :ref:`exhale_struct_structopensn_1_1_uncollided_matrices`
 
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_exact_cell_integrals`
-
-- :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_face_vert_data`
 
 - :ref:`exhale_struct_structopensn_1_1_uncollided_problem_1_1_moment`
 

@@ -223,14 +223,17 @@ In adjoint mode the sweep runs along the opposite directions, so the value is th
 adjoint current entering the domain: the adjoint flux in the directions that enter the
 domain minus that in the directions that leave it, each weighted by
 <span class="math notranslate nohighlight">\(|\Omega\cdot n|\)</span>. On a vacuum boundary it is the adjoint flux of the particles
-entering through the boundary.</p>
+entering through the boundary.
+For a problem with an uncollided flux the arrays hold the leakage of the collided part
+alone, since the angular flux holds only that part. The uncollided outflow is the
+<code class="docutils literal notranslate"><span class="pre">uncollided_outflow_rate</span></code> of <code class="xref py py-meth docutils literal notranslate"><span class="pre">ComputeBalanceTable()</span></code>, in total over all
+boundaries and groups.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>Dict[str, numpy.ndarray]</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If one or more boundary ids are not present on the current mesh, or if the problem has an
-    uncollided flux, whose angular flux holds only the collided part.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If one or more boundary ids are not present on the current mesh.</p>
 </dd>
 </dl>
 </dd></dl>

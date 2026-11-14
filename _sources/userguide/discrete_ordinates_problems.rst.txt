@@ -510,11 +510,16 @@ scattering regions where a conventional angular quadrature would otherwise
 produce strong ray effects.
 
 Only the scalar flux receives the uncollided component. The stored angular flux
-is the collided part, so the outputs computed from it are not available with an
-uncollided flux: ``WriteAngularFluxes``, ``WriteSurfaceAngularFluxes``,
-``ComputeLeakage``, and ``sigma_t`` cross-section sensitivities that take the
-forward angular flux from the problem raise ``ValueError``. ``GetPsi`` returns
-the collided part.
+is the collided part, so the outputs that would stand for the full angular flux
+are not available with an uncollided flux: ``WriteAngularFluxes``,
+``WriteSurfaceAngularFluxes``, and ``sigma_t`` cross-section sensitivities that
+take the forward angular flux from the problem raise ``ValueError``. ``GetPsi``
+returns the collided part. ``ComputeLeakage`` returns the leakage of the
+collided part in each group on each boundary; the balance table includes the
+uncollided outflow in ``outflow_rate`` and reports it separately as
+``uncollided_outflow_rate``, in total over all boundaries and groups, so the
+total leakage of a monoenergetic source is the collided leakage plus the
+uncollided outflow in the source group.
 
 Two-stage workflow
 ------------------
@@ -524,7 +529,12 @@ OpenSn transport calculations. Construct the problem and solver, then call
 ``Initialize`` and ``Execute``:
 
 Uncollided generation is restricted to three-dimensional Cartesian meshes and
-must run with exactly one MPI rank.
+must run with exactly one MPI rank. Every cell must be star-shaped about its
+centroid (the average of its vertices). The centroid must lie on the inner side
+of every triangle formed by two consecutive vertices of a face and the face
+centroid. Convex cells always satisfy this. The uncollided problem rejects a
+mesh with a cell that does not. Such cells are also the source of the mesh
+quality warning about negative-volume sub-elements.
 
 The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
@@ -535,7 +545,8 @@ to disable progress reporting.
 Internal threading used by the uncollided solver is capped by the environment
 variable ``OPENSN_NUM_THREADS``. If the variable is unset or invalid, OpenSn
 uses ``1`` thread. The current uncollided implementation applies this cap to
-reflected-image projection and to the bulk-sweep group solve.
+the ray tracing of the near-source region, to reflected-image projection, and to
+the bulk-sweep group solve.
 
 .. code-block:: python
 

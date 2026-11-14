@@ -94,13 +94,14 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh/mesh.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/logical_volume/logical_volume.h&quot;</span>
-<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/raytrace/raytracer.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/raytrace/mesh_segment_tracer.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh/cell.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/dense_matrix.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;hdf5.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;atomic&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mutex&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
@@ -195,8 +196,7 @@
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ProjectReflectedImageSources</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">progress_interval</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">RaytraceLine</span><span class="p">(</span><span class="n">RayTracer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_tracer</span><span class="p">,</span>
-<span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">RaytraceLine</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">qp_xyz</span><span class="p">,</span>
 <span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">,</span>
 <span class="w">                                   </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">);</span>
@@ -205,8 +205,7 @@
 <span class="w">  </span><span class="c1">/// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call</span>
 <span class="w">  </span><span class="c1">/// (they are reset internally each call, so no manual clearing is needed between calls).</span>
 <span class="w">  </span><span class="c1">/// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RaytraceLineInto</span><span class="p">(</span><span class="n">RayTracer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_tracer</span><span class="p">,</span>
-<span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RaytraceLineInto</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
 <span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">qp_xyz</span><span class="p">,</span>
 <span class="w">                        </span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">,</span>
 <span class="w">                        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">phi_out</span><span class="p">,</span>
@@ -245,8 +244,8 @@
 <span class="cm">   * the source, when a face is not directly visible from it. Also returns std::nullopt when the</span>
 <span class="cm">   * source is on the inner side of a face that is not outgoing.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ExactCellIntegrals</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="n">IntegrateCellExactly</span><span class="p">(</span><span class="n">RayTracer</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray_tracer</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">ExactCellIntegrals</span><span class="o">&gt;</span><span class="w"> </span><span class="n">IntegrateCellExactly</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                                                         </span><span class="k">const</span><span class="w"> </span><span class="n">SourcePoint</span><span class="o">&amp;</span><span class="w"> </span><span class="n">source_point</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Returns the fraction of the full solid angle that a cell subtends at a point on or in it.</span>
@@ -294,31 +293,17 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">CellRegion</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_regions_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">destination_phi_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Bounding-box diagonal for each local cell, pre-computed once for RayTracer tolerance scaling.</span>
+<span class="w">  </span><span class="c1">/// Bounding-box diagonal of each local cell, which scales geometric tolerances.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_sizes_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// False when the mesh contains any geometrically non-convex cell; true for standard hex/tet</span>
 <span class="w">  </span><span class="c1">/// meshes.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">all_cells_convex_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Precomputed face vertex data -- bypasses the std::map-backed VertexHandler in the hot path.</span>
-<span class="w">  </span><span class="c1">/// Supports faces with up to max_sides vertices (covers common polyhedral mesh faces).</span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">FaceVertData</span>
-<span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">max_sides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">verts</span><span class="p">[</span><span class="n">max_sides</span><span class="p">];</span><span class="w"> </span><span class="c1">// inline vertex positions (no tree traversal)</span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">centroid</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">neighbor_id</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">num_sides</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">pad</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">  </span><span class="p">};</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">FaceVertData</span><span class="o">&gt;</span>
-<span class="w">    </span><span class="n">all_face_verts_</span><span class="p">;</span><span class="w"> </span><span class="c1">// flat: [cell_0_face_0, cell_0_face_1, ..., cell_1_face_0, ...]</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_face_offsets_</span><span class="p">;</span><span class="w"> </span><span class="c1">// [num_cells] first face index in all_face_verts_</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_num_faces_</span><span class="p">;</span><span class="w">    </span><span class="c1">// [num_cells] number of faces per cell</span>
-<span class="w">  </span><span class="c1">/// O(1) global-to-local cell-ID lookup; replaces two O(log N) std::map calls per while-loop step.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unordered_map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">global_to_local_id_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// True when all_cells_convex_ and all faces have &lt;= FaceVertData::max_sides vertices.</span>
-<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_fast_trace_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Exact traversal of the rays from quadrature points to the point sources.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">MeshSegmentTracer</span><span class="o">&gt;</span><span class="w"> </span><span class="n">mesh_segment_tracer_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Rays from quadrature points to a point source that left the mesh before reaching it. In a</span>
+<span class="w">  </span><span class="c1">/// non-convex domain with vacuum boundaries their uncollided flux is zero.</span>
+<span class="w">  </span><span class="k">mutable</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">rays_left_mesh_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">ell_max_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Integrate the leakages and volume integrals of the cells that share a vertex with a point</span>

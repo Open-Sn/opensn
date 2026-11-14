@@ -635,18 +635,28 @@ transport state.</p>
 scattering regions where a conventional angular quadrature would otherwise
 produce strong ray effects.</p>
 <p>Only the scalar flux receives the uncollided component. The stored angular flux
-is the collided part, so the outputs computed from it are not available with an
-uncollided flux: <code class="docutils literal notranslate"><span class="pre">WriteAngularFluxes</span></code>, <code class="docutils literal notranslate"><span class="pre">WriteSurfaceAngularFluxes</span></code>,
-<code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code>, and <code class="docutils literal notranslate"><span class="pre">sigma_t</span></code> cross-section sensitivities that take the
-forward angular flux from the problem raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. <code class="docutils literal notranslate"><span class="pre">GetPsi</span></code> returns
-the collided part.</p>
+is the collided part, so the outputs that would stand for the full angular flux
+are not available with an uncollided flux: <code class="docutils literal notranslate"><span class="pre">WriteAngularFluxes</span></code>,
+<code class="docutils literal notranslate"><span class="pre">WriteSurfaceAngularFluxes</span></code>, and <code class="docutils literal notranslate"><span class="pre">sigma_t</span></code> cross-section sensitivities that
+take the forward angular flux from the problem raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. <code class="docutils literal notranslate"><span class="pre">GetPsi</span></code>
+returns the collided part. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code> returns the leakage of the
+collided part in each group on each boundary; the balance table includes the
+uncollided outflow in <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> and reports it separately as
+<code class="docutils literal notranslate"><span class="pre">uncollided_outflow_rate</span></code>, in total over all boundaries and groups, so the
+total leakage of a monoenergetic source is the collided leakage plus the
+uncollided outflow in the source group.</p>
 <section id="two-stage-workflow">
 <h3><span class="section-number">11.8.1. </span>Two-stage workflow<a class="headerlink" href="#two-stage-workflow" title="Link to this heading"></a></h3>
 <p>The uncollided calculation follows the same problem/solver lifecycle as other
 OpenSn transport calculations. Construct the problem and solver, then call
 <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> and <code class="docutils literal notranslate"><span class="pre">Execute</span></code>:</p>
 <p>Uncollided generation is restricted to three-dimensional Cartesian meshes and
-must run with exactly one MPI rank.</p>
+must run with exactly one MPI rank. Every cell must be star-shaped about its
+centroid (the average of its vertices). The centroid must lie on the inner side
+of every triangle formed by two consecutive vertices of a face and the face
+centroid. Convex cells always satisfy this. The uncollided problem rejects a
+mesh with a cell that does not. Such cells are also the source of the mesh
+quality warning about negative-volume sub-elements.</p>
 <p>The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
 estimated remaining time. Set <code class="docutils literal notranslate"><span class="pre">progress_interval</span></code> on
@@ -655,7 +665,8 @@ to disable progress reporting.</p>
 <p>Internal threading used by the uncollided solver is capped by the environment
 variable <code class="docutils literal notranslate"><span class="pre">OPENSN_NUM_THREADS</span></code>. If the variable is unset or invalid, OpenSn
 uses <code class="docutils literal notranslate"><span class="pre">1</span></code> thread. The current uncollided implementation applies this cap to
-reflected-image projection and to the bulk-sweep group solve.</p>
+the ray tracing of the near-source region, to reflected-image projection, and to
+the bulk-sweep group solve.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.aquad</span><span class="w"> </span><span class="kn">import</span> <span class="n">GLCProductQuadrature3DXYZ</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.logvol</span><span class="w"> </span><span class="kn">import</span> <span class="n">RPPLogicalVolume</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">pyopensn.solver</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
