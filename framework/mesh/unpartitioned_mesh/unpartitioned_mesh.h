@@ -103,13 +103,26 @@ public:
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
   std::vector<Vector3>& GetVertices() { return vertices_; }
 
-  /// Establishes neighbor connectivity for the light-weight mesh.
+  /**
+   * Establishes neighbor connectivity for the light-weight mesh.
+   *
+   * Two faces are connected when they have the same vertices. Throws std::logic_error when the
+   * mesh is folded, that is, when the two cells of an interior face lie on the same side of it and
+   * overlap, or when a face belongs to more than two cells.
+   */
   void BuildMeshConnectivity();
 
   /// Compute centroids for all cells.
   void ComputeCentroids();
 
-  /// Check element quality
+  /**
+   * Checks the quality of the cells.
+   *
+   * Throws std::logic_error when a polygon or polyhedron is inverted, with its faces ordered
+   * inward, or has zero area or volume, or when an edge is shorter than 1e-12. Warns when the
+   * centroid of a cell lies outside the plane of a triangle of one of its faces, as it can in a
+   * non-convex cell.
+   */
   void CheckQuality();
 
   /// Makes or gets a boundary that uniquely identifies the given name.

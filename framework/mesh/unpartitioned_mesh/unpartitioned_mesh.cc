@@ -6,10 +6,93 @@
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
+#include "framework/utils/error.h"
 #include <algorithm>
+#include <cmath>
+#include <sstream>
+#include <string>
 
 namespace opensn
 {
+
+namespace
+{
+
+/// A cell whose area or volume is at most this fraction of the square or cube of its longest edge
+/// is degenerate.
+constexpr double degenerate_measure_tolerance = 1.0e-12;
+
+/// Returns the center of a face: the average of its vertices.
+Vector3
+FaceCenter(const UnpartitionedMesh::LightWeightFace& face, const std::vector<Vector3>& vertices)
+{
+  Vector3 center;
+  for (const auto vid : face.vertex_ids)
+    center += vertices[vid];
+  return center / static_cast<double>(face.vertex_ids.size());
+}
+
+/// Returns the area vector of a face of a polygon or polyhedron, oriented by the order of its
+/// vertices. For a polygon, whose faces are edges in the x-y plane, it is the edge length times the
+/// normal that points to the right of the edge. For a polyhedron, it is the sum of the area vectors
+/// of the triangles that join each edge of the face to its center. The faces of a valid cell are
+/// ordered so that this vector points out of the cell.
+Vector3
+FaceAreaVector(const CellType cell_type,
+               const UnpartitionedMesh::LightWeightFace& face,
+               const std::vector<Vector3>& vertices)
+{
+  if (cell_type == CellType::POLYGON)
+  {
+    const auto& v0 = vertices[face.vertex_ids[0]];
+    const auto& v1 = vertices[face.vertex_ids[1]];
+    return (v1 - v0).Cross(Vector3(0.0, 0.0, 1.0));
+  }
+
+  const auto center = FaceCenter(face, vertices);
+  const size_t num_vertices = face.vertex_ids.size();
+  Vector3 area;
+  for (size_t i = 0; i < num_vertices; ++i)
+  {
+    const auto& v0 = vertices[face.vertex_ids[i]];
+    const auto& v1 = vertices[face.vertex_ids[(i + 1) % num_vertices]];
+    area += 0.5 * (v0 - center).Cross(v1 - center);
+  }
+  return area;
+}
+
+/// Returns the signed area of a polygon or the signed volume of a polyhedron, from the divergence
+/// theorem over its faces. It is positive when the faces are ordered outward, negative when the
+/// cell is inverted, and zero when it is degenerate. Concave cells are measured exactly.
+double
+SignedCellMeasure(const UnpartitionedMesh::LightWeightCell& cell,
+                  const std::vector<Vector3>& vertices)
+{
+  const double dimension = cell.type == CellType::POLYGON ? 2.0 : 3.0;
+  double measure = 0.0;
+  for (const auto& face : cell.faces)
+    measure +=
+      (FaceCenter(face, vertices) - cell.centroid).Dot(FaceAreaVector(cell.type, face, vertices));
+  return measure / dimension;
+}
+
+/// Returns the length of the longest edge of the faces of a cell.
+double
+LongestEdge(const UnpartitionedMesh::LightWeightCell& cell, const std::vector<Vector3>& vertices)
+{
+  double longest = 0.0;
+  for (const auto& face : cell.faces)
+  {
+    const size_t num_vertices = face.vertex_ids.size();
+    for (size_t i = 0; i < num_vertices; ++i)
+      longest = std::max(
+        longest,
+        (vertices[face.vertex_ids[(i + 1) % num_vertices]] - vertices[face.vertex_ids[i]]).Norm());
+  }
+  return longest;
+}
+
+} // namespace
 
 UnpartitionedMesh::UnpartitionedMesh()
   : dim_(0), coord_sys_(CoordinateSystemType::CARTESIAN), mesh_type_(UNSTRUCTURED), extruded_(false)
@@ -167,6 +250,46 @@ UnpartitionedMesh::CheckQuality()
                         << " This issue could result in incorrect quantities"
                         << " under some circumstances.";
   log.Log() << "Done checking cell-center-to-face orientations";
+
+  // An inverted cell has its faces ordered inward, so its face normals point into it. A degenerate
+  // cell has no volume. Neither can be transported through.
+  log.Log0Verbose1() << "Checking cell volumes";
+  size_t num_inverted = 0;
+  size_t num_degenerate = 0;
+  size_t first_bad_cell = 0;
+  double first_bad_measure = 0.0;
+  for (size_t c = 0; c < raw_cells_.size(); ++c)
+  {
+    const auto& cell = *raw_cells_[c];
+    if (cell.type != CellType::POLYGON and cell.type != CellType::POLYHEDRON)
+      continue;
+    const double measure = SignedCellMeasure(cell, vertices_);
+    const double scale =
+      std::pow(LongestEdge(cell, vertices_), cell.type == CellType::POLYGON ? 2.0 : 3.0);
+    const bool degenerate = std::fabs(measure) <= degenerate_measure_tolerance * scale;
+    if (not degenerate and measure > 0.0)
+      continue;
+    if (num_inverted + num_degenerate == 0)
+    {
+      first_bad_cell = c;
+      first_bad_measure = measure;
+    }
+    if (degenerate)
+      ++num_degenerate;
+    else
+      ++num_inverted;
+  }
+  if (num_inverted + num_degenerate > 0)
+  {
+    std::ostringstream message;
+    message << "The mesh has " << num_inverted << " inverted cells and " << num_degenerate
+            << " cells of zero volume. The first is cell " << first_bad_cell << " at centroid "
+            << raw_cells_[first_bad_cell]->centroid.PrintStr() << ", with volume "
+            << std::scientific << first_bad_measure
+            << ". A cell is inverted when its faces are ordered inward, for example a polygon "
+               "whose vertices are ordered clockwise.";
+    OpenSnLogicalError(message.str());
+  }
 }
 
 uint64_t
@@ -235,7 +358,13 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
   log.Log() << program_timer.GetTimeString() << " Vertex cell subscriptions complete.";
 
-  // Process raw cells
+  // Process raw cells. The two cells of an interior face must lie on opposite sides of it, so their
+  // copies of the face have opposite area vectors. When they have the same direction, the cells lie
+  // on the same side and overlap: the mesh is folded.
+  size_t num_folded_faces = 0;
+  uint64_t first_folded_cell = 0;
+  uint64_t first_folded_neighbor = 0;
+  Vector3 first_folded_center;
   {
     uint64_t aux_counter = 0;
     uint64_t cur_cell_id = 0;
@@ -273,6 +402,19 @@ UnpartitionedMesh::BuildMeshConnectivity()
               cur_cell_face.has_neighbor = true;
               adj_cell_face.has_neighbor = true;
 
+              if ((cell->type == CellType::POLYGON or cell->type == CellType::POLYHEDRON) and
+                  FaceAreaVector(cell->type, cur_cell_face, vertices_)
+                      .Dot(FaceAreaVector(adj_cell->type, adj_cell_face, vertices_)) >= 0.0)
+              {
+                if (num_folded_faces == 0)
+                {
+                  first_folded_cell = cur_cell_id;
+                  first_folded_neighbor = adj_cell_id;
+                  first_folded_center = FaceCenter(cur_cell_face, vertices_);
+                }
+                ++num_folded_faces;
+              }
+
               goto face_neighbor_found;
             }
           } // for adjacent cell face
@@ -290,6 +432,66 @@ UnpartitionedMesh::BuildMeshConnectivity()
         ++aux_counter;
       }
     } // for cell
+  }
+
+  if (num_folded_faces > 0)
+    OpenSnLogicalError(
+      "The mesh is folded: " + std::to_string(num_folded_faces) +
+      " interior faces have both of their cells on the same side, so the cells overlap. The first "
+      "is the face between cells " +
+      std::to_string(first_folded_cell) + " and " + std::to_string(first_folded_neighbor) + " at " +
+      first_folded_center.PrintStr() + ".");
+
+  // A face that is still unconnected must not be a face of any other cell. If it is, the face
+  // belongs to more than two cells, of which only two were connected.
+  {
+    size_t num_shared_faces = 0;
+    uint64_t first_shared_cell = 0;
+    Vector3 first_shared_center;
+    uint64_t cur_cell_id = 0;
+    for (const auto& cell : raw_cells_)
+    {
+      for (const auto& face : cell->faces)
+      {
+        if (face.has_neighbor)
+          continue;
+        const std::set<uint64_t> fvids(face.vertex_ids.begin(), face.vertex_ids.end());
+        std::set<uint64_t> cells_to_search;
+        for (const uint64_t vid : fvids)
+          for (const uint64_t cell_id : vertex_cell_subscriptions_.at(vid))
+            if (cell_id != cur_cell_id)
+              cells_to_search.insert(cell_id);
+        const bool shared = std::any_of(
+          cells_to_search.begin(),
+          cells_to_search.end(),
+          [&](const uint64_t adj_cell_id)
+          {
+            const auto& adj_faces = raw_cells_.at(adj_cell_id)->faces;
+            return std::any_of(adj_faces.begin(),
+                               adj_faces.end(),
+                               [&](const LightWeightFace& adj_face)
+                               {
+                                 return std::set<uint64_t>(adj_face.vertex_ids.begin(),
+                                                           adj_face.vertex_ids.end()) == fvids;
+                               });
+          });
+        if (shared)
+        {
+          if (num_shared_faces == 0)
+          {
+            first_shared_cell = cur_cell_id;
+            first_shared_center = FaceCenter(face, vertices_);
+          }
+          ++num_shared_faces;
+        }
+      }
+      ++cur_cell_id;
+    }
+    if (num_shared_faces > 0)
+      OpenSnLogicalError("The mesh is not conforming: " + std::to_string(num_shared_faces) +
+                         " faces belong to more than two cells. The first is a face of cell " +
+                         std::to_string(first_shared_cell) + " at " +
+                         first_shared_center.PrintStr() + ".");
   }
 
   log.Log() << program_timer.GetTimeString() << " Establishing cell boundary connectivity.";
