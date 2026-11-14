@@ -1014,11 +1014,25 @@ preconditioner solves its diffusion system only approximately.</p>
 <dt>apply_wgdsa: bool, default=False</dt><dd><p>Enable within-group DSA for this groupset. After each groupset iteration, one
 diffusion solve corrects the scalar flux of every group of the groupset. The
 system is block diagonal in energy: the source of group g is the change of its
-within-group scattering source, and the groups are not coupled. With
-<code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code> and charged-particle groups in the groupset, each group’s
-diffusion operator also removes the CSDA slowing-down rate <code class="docutils literal notranslate"><span class="pre">S_g</span> <span class="pre">/</span> <span class="pre">dE_g</span></code>, and
-the groups are solved one at a time in energy order, coupled by in-groupset
-scattering and slowing-down. See <a class="reference internal" href="../../theory/csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a>.</p>
+within-group scattering source, and the groups are not coupled, unless
+<code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code> is set. With <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code> and charged-particle groups
+in the groupset, each group’s diffusion operator also removes the CSDA
+slowing-down rate <code class="docutils literal notranslate"><span class="pre">S_g</span> <span class="pre">/</span> <span class="pre">dE_g</span></code>, and the groups are solved one at a time in energy
+order, coupled by in-groupset scattering and slowing-down. See
+<a class="reference internal" href="../../theory/csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a>.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>wgdsa_energy_coupling: bool, default=False</dt><dd><p>Couple the WGDSA corrections of the groupset in energy. The source of group g is
+the change of the scattering into g from every groupset group, and the groups are
+solved one at a time from the highest energy, each also receiving the in-groupset
+downscatter of the corrections of the groups above it. Upscatter of the
+corrections is not included, so groupsets dominated by upscatter gain less. Each
+group has its own diffusion solver, and <code class="docutils literal notranslate"><span class="pre">wgdsa_direct_solve_threshold</span></code> counts the
+unknowns of one group, so a run on one MPI process can factor every group directly.
+In 3D, that can cost more than <code class="docutils literal notranslate"><span class="pre">wgdsa_solver_policy='iterative'</span></code>. Requires
+<code class="docutils literal notranslate"><span class="pre">apply_wgdsa</span></code>. See <a class="reference internal" href="../../theory/iterative.html#theory-wgdsa-energy-coupling"><span class="std std-ref">Energy-Coupled Within-group Acceleration</span></a>.</p>
 </dd>
 </dl>
 </li>
@@ -1040,9 +1054,10 @@ right-hand side (the name is historical).</p>
 </li>
 <li><dl class="simple">
 <dt>wgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the WGDSA solver. Options must carry the solver’s
-prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA</span></code>. With <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code>, a groupset
-with charged-particle groups has one solver per group, whose prefix is the problem
-name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA_g</span></code> and the global group index.</p>
+prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA</span></code>. With <code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code>, or
+with <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code> and charged-particle groups in the groupset, the groupset has
+one solver per group, whose prefix is the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA_g</span></code> and
+the global group index.</p>
 </dd>
 </dl>
 </li>
@@ -1056,8 +1071,9 @@ conjugate gradients preconditioned by BoomerAMG otherwise. <code class="docutils
 </li>
 <li><dl class="simple">
 <dt>wgdsa_direct_solve_threshold: int, default=20000</dt><dd><p>Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
-number of spatial nodes times the number of groups in the groupset. The
-CSDA operator solves one group at a time, so the count is that of one group.</p>
+number of spatial nodes times the number of groups in the groupset. With
+<code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code> or CSDA, the groups are solved one at a time, so the count
+is that of one group.</p>
 </dd>
 </dl>
 </li>

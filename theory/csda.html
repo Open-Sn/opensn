@@ -311,8 +311,10 @@ transport and removal cross sections of the standard WGDSA operator, and
 preconditioned vector when WGDSA preconditions a Krylov solve). All sums run
 over groupset groups. The feed <span class="math notranslate nohighlight">\(R_{g-1}f_{g-1}\)</span> is present only when the
 material has nonzero stopping power in both groups, as in the sweep.</p>
-<p>The operator is lower triangular in energy apart from in-groupset upscatter,
-which enters only through the residual. Solving the groups in order therefore
+<p>Without the CSDA terms this is the operator of the groupset option
+<code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code> (see <a class="reference internal" href="iterative.html#theory-wgdsa-energy-coupling"><span class="std std-ref">Energy-Coupled Within-group Acceleration</span></a>). The
+operator is lower triangular in energy apart from in-groupset upscatter, which
+enters only through the residual. Solving the groups in order therefore
 solves the coupled system with one single-group MIP diffusion solve per group.
 Without the energy coupling, a correction of group <span class="math notranslate nohighlight">\(g\)</span> reaches the groups
 below it only through the next sweep, which can amplify the error transiently

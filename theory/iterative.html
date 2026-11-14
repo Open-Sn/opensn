@@ -68,19 +68,20 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#within-group-acceleration">6.3. Within-group Acceleration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">6.4. Thermal Upscattering Acceleration</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#power-iterations">6.5. Power Iterations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">6.6. Acceleration of Power Iterations</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#coarse-mesh-finite-difference-acceleration">6.7. Coarse-Mesh Finite Difference Acceleration</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#restriction-and-energy-collapse">6.7.1. Restriction and energy collapse</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#coarse-diffusion-balance">6.7.2. Coarse diffusion balance</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#matrix-form-and-coarse-solve">6.7.3. Matrix form and coarse solve</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#prolongation-and-damping">6.7.4. Prolongation and damping</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#cmfd-iteration-outline">6.7.5. CMFD Iteration Outline</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#energy-coupled-within-group-acceleration">6.4. Energy-Coupled Within-group Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#thermal-upscattering-acceleration">6.5. Thermal Upscattering Acceleration</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#power-iterations">6.6. Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#acceleration-of-power-iterations">6.7. Acceleration of Power Iterations</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#coarse-mesh-finite-difference-acceleration">6.8. Coarse-Mesh Finite Difference Acceleration</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#restriction-and-energy-collapse">6.8.1. Restriction and energy collapse</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#coarse-diffusion-balance">6.8.2. Coarse diffusion balance</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#matrix-form-and-coarse-solve">6.8.3. Matrix form and coarse solve</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#prolongation-and-damping">6.8.4. Prolongation and damping</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cmfd-iteration-outline">6.8.5. CMFD Iteration Outline</a></li>
 </ul>
 </li>
-<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">6.8. Uncollided-flux Treatment</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#references">6.9. References</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#uncollided-flux-treatment">6.9. Uncollided-flux Treatment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#references">6.10. References</a></li>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="parallelization.html">7. Parallel Sweeps</a></li>
@@ -310,8 +311,9 @@ the groups. <span class="math notranslate nohighlight">\(\delta\phi_g\)</span> i
 angular fluxes (opposing reflecting boundaries and broken sweep cycles),
 <span class="math notranslate nohighlight">\(\delta\phi_g\)</span> is also added to them as the isotropic correction
 <span class="math notranslate nohighlight">\(\delta\psi_g = \delta\phi_g\)</span>, since the quadrature weights sum to one.
-Groupsets with charged-particle groups use the operator of
-<a class="reference internal" href="csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a> instead.</p>
+The groupset option <code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code> couples the correction in energy
+(see <a class="reference internal" href="#theory-wgdsa-energy-coupling"><span class="std std-ref">Energy-Coupled Within-group Acceleration</span></a>). Groupsets with charged-particle
+groups use the operator of <a class="reference internal" href="csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a> instead.</p>
 <p>Reflecting boundaries are zero-current boundaries of the correction, with one
 exception. Of a pair of opposing reflecting boundaries, the sweep lags the
 incoming angular flux of the one with the smaller boundary id. In 1D spherical
@@ -428,8 +430,47 @@ when <span class="math notranslate nohighlight">\(D_g \le 0\)</span>),</p>
 <span class="math notranslate nohighlight">\(\theta_c = 0\)</span>. The exact coercivity condition has 12 in place of 6; the
 rule uses it with a safety factor 2.</p>
 </section>
+<section id="energy-coupled-within-group-acceleration">
+<span id="theory-wgdsa-energy-coupling"></span><h2><span class="section-number">6.4. </span>Energy-Coupled Within-group Acceleration<a class="headerlink" href="#energy-coupled-within-group-acceleration" title="Link to this heading"></a></h2>
+<p>The WGDSA source above contains only the within-group scattering of each group,
+and the groups are corrected independently. Within a groupset, the scattering
+from one group into the groups below it is then left to the next sweep. When a
+group scatters most of its neutrons back into itself and the rest into the
+group below, the error that WGDSA leaves in one group becomes, at the next
+iteration, a source of error in the next group. An error can then pass down a
+chain of strongly scattering groups one group per iteration without decaying.
+In an infinite medium without upscatter, the WGDSA iteration matrix of the flat
+error mode is strictly lower triangular in energy. Its spectral radius is zero,
+but its powers vanish only after one iteration per group of the chain, and its
+off-diagonal entries are close to
+<span class="math notranslate nohighlight">\(\sigma_{s0,g \leftarrow g-1}/(\sigma_{t,g}-\sigma_{s0,g \leftarrow g})\)</span>,
+which can be of order one.</p>
+<p>With the groupset option <code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code>, the correction includes the
+scattering between the groups of the groupset. For the groups of the groupset,
+from the highest energy down, <span class="math notranslate nohighlight">\(\delta\phi_g\)</span> solves</p>
+<div class="math notranslate nohighlight">
+\[-\nabla \cdot D_g \nabla \delta\phi_g + \sigma_{r,g}\, \delta\phi_g
+= \sum_{g'} \sigma_{s0,g \leftarrow g'}
+  \left( \phi_{g'}^{(i+1/2)} - \phi_{g'}^{(i)} \right)
++ \sum_{g' &lt; g} \sigma_{s0,g \leftarrow g'}\, \delta\phi_{g'} \,,\]</div>
+<p>where both sums run over the groups of the groupset and <span class="math notranslate nohighlight">\(D_g\)</span> and
+<span class="math notranslate nohighlight">\(\sigma_{r,g}\)</span> are those of WGDSA. The first sum is the change of the
+scattering into group <span class="math notranslate nohighlight">\(g\)</span> from every groupset group, and the second is the
+downscatter of the corrections already computed. Apart from in-groupset
+upscatter, which enters only through the first sum, the operator is lower
+triangular in energy. Solving the groups in order therefore solves the coupled
+system with one single-group MIP diffusion solve per group, and in an infinite
+medium without upscatter it removes the flat error mode exactly. With upscatter
+the single pass in energy leaves an error mode coupled through the upscatter,
+which TGDSA (below) addresses. The correction is applied, and on lagged
+reflecting boundaries supplemented by the inward partial current of the change
+of the lagged flux, exactly as for WGDSA. It vanishes at convergence, so it
+does not change the converged solution. This is the operator of
+<a class="reference internal" href="csda.html#theory-csda-wgdsa"><span class="std std-ref">Within-group diffusion synthetic acceleration</span></a> without the CSDA slowing-down terms, and groupsets with
+charged-particle groups always use that form.</p>
+</section>
 <section id="thermal-upscattering-acceleration">
-<span id="theory-two-grid"></span><h2><span class="section-number">6.4. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
+<span id="theory-two-grid"></span><h2><span class="section-number">6.5. </span>Thermal Upscattering Acceleration<a class="headerlink" href="#thermal-upscattering-acceleration" title="Link to this heading"></a></h2>
 <p>In low-leakage configurations containing materials with low neutron
 absorption (e.g., graphite or heavy water), the thermal iterations can
 converge very slowly, and acceleration is required. This acceleration
@@ -532,7 +573,7 @@ limited by the sign of an eigenvalue and should be used with TGDSA for such
 groupsets.</p>
 </section>
 <section id="power-iterations">
-<h2><span class="section-number">6.5. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.6. </span>Power Iterations<a class="headerlink" href="#power-iterations" title="Link to this heading"></a></h2>
 <p>For eigenvalue problems, the problem has the following form:</p>
 <div class="math notranslate nohighlight">
 \[L\Psi = M\Sigma\Phi + \frac{1}{k_\text{eff}}MF\Phi\]</div>
@@ -553,7 +594,7 @@ for each of these iterative schemes):</p>
 \[L\Psi^{\text{(o+1,$i$+1)}} = M\Sigma\Phi^{\text{(o+1,$i$)}} + \frac{1}{k^{\text{(o)}}_\text{eff}} M S_f^{\text{(o)}} \,.\]</div>
 </section>
 <section id="acceleration-of-power-iterations">
-<h2><span class="section-number">6.6. </span>Acceleration of Power Iterations<a class="headerlink" href="#acceleration-of-power-iterations" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.7. </span>Acceleration of Power Iterations<a class="headerlink" href="#acceleration-of-power-iterations" title="Link to this heading"></a></h2>
 <div class="line-block">
 <div class="line">Power Iterations can be slow to converge when the dominance ratio
 (ratio of the largest eigenvalue to the second largest eigenvalue) is
@@ -611,7 +652,7 @@ convergence of the transport problem.</p>
 </div></blockquote>
 </section>
 <section id="coarse-mesh-finite-difference-acceleration">
-<h2><span class="section-number">6.7. </span>Coarse-Mesh Finite Difference Acceleration<a class="headerlink" href="#coarse-mesh-finite-difference-acceleration" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.8. </span>Coarse-Mesh Finite Difference Acceleration<a class="headerlink" href="#coarse-mesh-finite-difference-acceleration" title="Link to this heading"></a></h2>
 <p>OpenSn provides Coarse-Mesh Finite Difference (CMFD) acceleration for
 discrete-ordinates power iteration. The implementation is a nonlinear
 low-order acceleration scheme. During each outer power iteration OpenSn
@@ -673,7 +714,7 @@ are made consistent with the latest transport sweep, how the coarse
 k-eigenvalue problem is solved, and how the coarse solution is prolonged
 back to the fine transport unknowns.</p>
 <section id="restriction-and-energy-collapse">
-<h3><span class="section-number">6.7.1. </span>Restriction and energy collapse<a class="headerlink" href="#restriction-and-energy-collapse" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.8.1. </span>Restriction and energy collapse<a class="headerlink" href="#restriction-and-energy-collapse" title="Link to this heading"></a></h3>
 <p>Let <span class="math notranslate nohighlight">\(\phi_{i,n,g_f}\)</span> denote the transport scalar flux in fine cell
 <span class="math notranslate nohighlight">\(i\)</span>, node <span class="math notranslate nohighlight">\(n\)</span>, and transport group <span class="math notranslate nohighlight">\(g_f\)</span>, and let
 <span class="math notranslate nohighlight">\(V_{i,n}\)</span> denote the nodal volume contribution from the transport
@@ -755,7 +796,7 @@ responsible for making the assembled face current match the latest
 transport current at the current iterate.</p>
 </section>
 <section id="coarse-diffusion-balance">
-<h3><span class="section-number">6.7.2. </span>Coarse diffusion balance<a class="headerlink" href="#coarse-diffusion-balance" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.8.2. </span>Coarse diffusion balance<a class="headerlink" href="#coarse-diffusion-balance" title="Link to this heading"></a></h3>
 <p>For each coarse cell <span class="math notranslate nohighlight">\(I\)</span> and coarse group <span class="math notranslate nohighlight">\(g_c\)</span>, OpenSn
 assembles a balance equation of the form</p>
 <div class="math notranslate nohighlight">
@@ -981,7 +1022,7 @@ low-order correction is actually consistent with transport. Either way,
 the gate also requires the current correction to not have been skipped.</p>
 </section>
 <section id="matrix-form-and-coarse-solve">
-<h3><span class="section-number">6.7.3. </span>Matrix form and coarse solve<a class="headerlink" href="#matrix-form-and-coarse-solve" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.8.3. </span>Matrix form and coarse solve<a class="headerlink" href="#matrix-form-and-coarse-solve" title="Link to this heading"></a></h3>
 <p>The assembled system may be written as</p>
 <div class="math notranslate nohighlight">
 \[A(\Phi^{\text{HO}})\Phi
@@ -1028,7 +1069,7 @@ k^{(m)}
 <p>The production sum is reduced globally over all MPI ranks.</p>
 </section>
 <section id="prolongation-and-damping">
-<h3><span class="section-number">6.7.4. </span>Prolongation and damping<a class="headerlink" href="#prolongation-and-damping" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.8.4. </span>Prolongation and damping<a class="headerlink" href="#prolongation-and-damping" title="Link to this heading"></a></h3>
 <p>After the coarse solve, OpenSn applies a multiplicative scalar-flux
 correction to the high-order transport iterate. First, the coarse
 solution is relaxed toward the restricted post-transport coarse flux.
@@ -1081,7 +1122,7 @@ with the high-order transport state rather than stagnating on a stale
 accelerated value.</p>
 </section>
 <section id="cmfd-iteration-outline">
-<h3><span class="section-number">6.7.5. </span>CMFD Iteration Outline<a class="headerlink" href="#cmfd-iteration-outline" title="Link to this heading"></a></h3>
+<h3><span class="section-number">6.8.5. </span>CMFD Iteration Outline<a class="headerlink" href="#cmfd-iteration-outline" title="Link to this heading"></a></h3>
 <p>CMFD is a power-iteration accelerator in OpenSn. For each outer power
 iteration:</p>
 <ol class="arabic simple">
@@ -1117,7 +1158,7 @@ and accelerates the all-groups scalar-flux balance.</p>
 </section>
 </section>
 <section id="uncollided-flux-treatment">
-<h2><span class="section-number">6.8. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.9. </span>Uncollided-flux Treatment<a class="headerlink" href="#uncollided-flux-treatment" title="Link to this heading"></a></h2>
 <p>In streaming regions (low-density material), in regions with low amount
 of scattering, and with localized small sources, the <span class="math notranslate nohighlight">\(S_n\)</span> method
 will exhibit ray effects (angular discretization error). These ray
@@ -1322,7 +1363,7 @@ source in this problem.</p></li>
 </ol>
 </section>
 <section id="references">
-<h2><span class="section-number">6.9. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
+<h2><span class="section-number">6.10. </span>References<a class="headerlink" href="#references" title="Link to this heading"></a></h2>
 <div class="docutils container" id="id27">
 <div role="list" class="citation-list">
 <div class="citation" id="id56" role="doc-biblioentry">
