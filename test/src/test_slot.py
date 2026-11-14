@@ -22,6 +22,15 @@ RUN_DIRECTORY_RE = re.compile(r"^\..+\.run-[0-9a-f]+$")
 OUTPUT_DIRECTORIES = {"out", "__pycache__"}
 # Input-directory entries that are not linked into working directories
 UNLINKED_ENTRIES = OUTPUT_DIRECTORIES | {"gold", "tests.json"}
+# Open MPI binds the ranks of each mpiexec to cores counted from the first core, unaware of the
+# other tests running at the same time, so concurrent tests share a few cores while the rest sit
+# idle. The CPU slot budget already limits concurrency, so these leave placement to the OS unless
+# the environment sets them. Open MPI 4 reads the first, Open MPI 5 the second, and other MPI
+# implementations ignore both.
+UNBOUND_MPI_ENV = {
+    "OMPI_MCA_hwloc_base_binding_policy": "none",
+    "PRTE_MCA_hwloc_default_binding_policy": "none",
+}
 
 
 def IsRunnerDirectory(name: str) -> bool:
@@ -259,6 +268,8 @@ class TestSlot:
 
         process_env = os.environ.copy()
         process_env.update(test.env)
+        for key, value in UNBOUND_MPI_ENV.items():
+            process_env.setdefault(key, value)
 
         base_name, extension = os.path.splitext(test.filename)
         cmd = self.argv.mpi_cmd + " " + str(test.num_procs) + " "
