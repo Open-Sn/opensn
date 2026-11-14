@@ -670,6 +670,12 @@ LBSProblem::GetOptionsBlock()
                               "Default: 3.20435e-11 Joule (corresponding to 200 MeV per fission).");
   params.AddOptionalParameter(
     "csda_enabled", false, "Enable CSDA charged-particle transport with energy-slope solve.");
+  params.AddOptionalParameter(
+    "dsa_void_sigma_tr",
+    MultiGroupXS::DIFFUSION_SIGMA_TR_MIN,
+    "Transport cross section (1/cm) below which a group of a material is void for the diffusion "
+    "acceleration methods. In such groups they use the diffusion coefficient V/S of the material "
+    "instead of 1/(3 sigma_tr), and SMM rejects the problem. With 0, no group is void.");
   params.AddOptionalParameter("field_function_prefix_option",
                               "prefix",
                               "Prefix option on field function names. Default: `\"prefix\"`. Can "
@@ -709,6 +715,7 @@ LBSProblem::GetOptionsBlock()
   params.ConstrainParameterRange("max_ags_iterations", AllowableRangeLowLimit::New(0));
   params.ConstrainParameterRange("ags_tolerance", AllowableRangeLowLimit::New(1.0e-18));
   params.ConstrainParameterRange("power_default_kappa", AllowableRangeLowLimit::New(0.0, false));
+  params.ConstrainParameterRange("dsa_void_sigma_tr", AllowableRangeLowLimit::New(0.0));
 
   return params;
 }
@@ -793,6 +800,8 @@ LBSProblem::ParseOptions(const InputParameters& input)
      { options_.power_default_kappa = spec.GetValue<double>(); }},
     {"csda_enabled",
      [this](const ParameterBlock& spec) { options_.csda_enabled = spec.GetValue<bool>(); }},
+    {"dsa_void_sigma_tr",
+     [this](const ParameterBlock& spec) { options_.dsa_void_sigma_tr = spec.GetValue<double>(); }},
     {"field_function_prefix_option",
      [this](const ParameterBlock& spec)
      { options_.field_function_prefix_option = spec.GetValue<std::string>(); }},

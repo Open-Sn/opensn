@@ -920,6 +920,55 @@
     ]
   },
   {
+    "file": "transport_3d_void_duct_dsa.py",
+    "comment": "3D void dog-leg duct through a c = 0.99 scatterer with WGDSA. The void diffusion coefficient is V / S = 3240 / 2232 cm, counted independently from the duct geometry. The within-group iteration limit of 18 is met with it (14 iterations) but not with the previous void coefficient of 3.3e11 cm (29). The particle balance anchors the converged solution.",
+    "num_procs": 4,
+    "args": [
+      "wgs_max_its=18"
+    ],
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BALANCE_REL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
+    "file": "transport_3d_void_duct_dsa.py",
+    "comment": "The void dog-leg duct with sigma_t = 1e-6 /cm in the duct, which the problem option dsa_void_sigma_tr = 1e-3 makes a void. WGDSA then uses D = V / S in the duct and meets the within-group iteration limit of 18. Without the option the duct uses D = 1 / (3e-6) cm and does not.",
+    "num_procs": 4,
+    "args": [
+      "wgs_max_its=18",
+      "void_sigma_t=1.0e-6",
+      "dsa_void_sigma_tr=1.0e-3"
+    ],
+    "outfileprefix": "transport_3d_void_duct_dsa_option",
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "StrCompare",
+        "key": "WGS groups [0-0] iteration =",
+        "wordnum": 18,
+        "gold": "converged"
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "BALANCE_REL=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      }
+    ]
+  },
+  {
     "file": "transport_3d_3a_dsa_ortho.py",
     "comment": "3D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 (group 39) and Max-value2 (group 120) are checked against the fully converged values 0.0949528 and 0.0944793 (AGS tolerance 1e-10, FGMRES, WGDSA and TGDSA tolerances 1e-10, 4 ranks), Max-value2 within the one-pass error, which is below 0.2% for the DSA boundary closures and penalty lengths tested",
     "num_procs": 4,
