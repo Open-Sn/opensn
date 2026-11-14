@@ -473,6 +473,12 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
       errors.emplace_back("Groupset " + std::to_string(groupset.id) +
                           ": apply_tgdsa requires at least two groups, but the groupset has one.");
 
+  // The energy coupling changes the WGDSA correction, so it has no meaning without WGDSA.
+  for (const auto& groupset : groupsets_)
+    if (groupset.wgdsa_energy_coupling and not groupset.apply_wgdsa)
+      errors.emplace_back("Groupset " + std::to_string(groupset.id) +
+                          ": wgdsa_energy_coupling requires apply_wgdsa.");
+
   // Quadratures: every groupset needs one, with a common scattering order and the mesh dimension.
   const auto grid_dim = grid_->GetDimension();
   for (const auto& groupset : groupsets_)
