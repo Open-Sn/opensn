@@ -3,6 +3,8 @@
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/mesh_mapping/mesh_mapping.h"
 #include "framework/runtime.h"
+#include <filesystem>
+#include <string>
 
 using namespace opensn;
 
@@ -81,6 +83,38 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
   }
 }
 
+/// Maps one extruded polygon onto itself: every face must map to the face of the same index.
+void
+TestSelfMapping(const std::string& polygon_file_name, const std::size_t num_faces)
+{
+  const auto file_name =
+    std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / polygon_file_name;
+  const auto fine_grid_ptr = BuildExtrudedMeshFromFile(file_name, 1.0, 1);
+  const auto coarse_grid_ptr = BuildExtrudedMeshFromFile(file_name, 1.0, 1);
+  ASSERT_EQ(fine_grid_ptr->GetLocalCellCount(), std::size_t(1));
+  ASSERT_EQ(coarse_grid_ptr->GetLocalCellCount(), std::size_t(1));
+  const auto& fine_cell = fine_grid_ptr->GetLocalCell(0);
+  const auto& coarse_cell = coarse_grid_ptr->GetLocalCell(0);
+  ASSERT_EQ(fine_cell.faces.size(), num_faces);
+  ASSERT_EQ(coarse_cell.faces.size(), num_faces);
+
+  MeshMapping mesh_mapping;
+  ASSERT_NO_THROW(mesh_mapping.Build(fine_grid_ptr, coarse_grid_ptr));
+
+  const auto& fine_mapping = mesh_mapping.GetFineMapping(fine_cell);
+  const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(coarse_cell);
+  EXPECT_EQ(fine_mapping.coarse_cell, &coarse_cell);
+  ASSERT_EQ(coarse_mapping.fine_cells.size(), std::size_t(1));
+  EXPECT_EQ(coarse_mapping.fine_cells[0], &fine_cell);
+
+  for (std::size_t face_i = 0; face_i < fine_cell.faces.size(); ++face_i)
+  {
+    EXPECT_EQ(fine_mapping.coarse_faces[face_i], face_i);
+    ASSERT_EQ(coarse_mapping.fine_faces[face_i].size(), std::size_t(1));
+    EXPECT_EQ(coarse_mapping.fine_faces[face_i][0], std::make_pair(&fine_cell, face_i));
+  }
+}
+
 } // namespace
 
 TEST(MeshMappingTest, Test1D)
@@ -118,6 +152,43 @@ TEST(MeshMappingTest, Test3D)
   const auto coarse_grid_ptr =
     BuildOrthogonalMesh({{-1.0, 0.0, 1.0}, {-1.0, 0.0, 1.0}, {-1.0, -0.5, 0.0, 0.5, 1.0}});
   TestMapping(fine_grid_ptr, coarse_grid_ptr);
+}
+
+TEST(MeshMappingTest, ConcaveFaces)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // One cell mapped onto itself: the L-shaped polygon (0,0), (3,0), (3,1), (1,1), (1,3), (0,3)
+  // extruded over z in [0, 1]. The centroid of its top and bottom faces, the average of their
+  // vertices, is at (4/3, 4/3), outside the faces, so it cannot be the point that finds the
+  // coarse face of a fine face.
+  TestSelfMapping("l_shaped_polygon.obj", 8);
+}
+
+TEST(MeshMappingTest, ConcaveFacesCollinearVertices)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // The same cell with one more vertex, (1.5, 0), in the middle of the first edge of the polygon.
+  // The first three vertices of the top face are collinear and the centroid of their triangle,
+  // (1.5, 0), is on an edge of the cell, which the top face shares with a side face that comes
+  // before it. That point cannot be the one that finds the coarse face of the top face.
+  TestSelfMapping("l_shaped_polygon_split_edge.obj", 9);
+}
+
+TEST(MeshMappingTest, ConcaveFacesCentroidNearEdge)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // The L-shaped polygon (0,0), (3,0), (3,1), (1,1), (1,h), (0,h) with h = 2.0000015, extruded
+  // into one cell. The centroid of its top and bottom faces, (4/3, 1.0000005), is 5e-7 from their
+  // edge from (3,1) to (1,1), which each shares with a side face that comes before it. The
+  // point-in-face test accepts the centroid, which is within its tolerance of the edge, for these
+  // faces and for the side face: it cannot be the point that finds the coarse face of a fine face.
+  TestSelfMapping("l_shaped_polygon_centroid_near_edge.obj", 8);
 }
 
 TEST(MeshMappingTest, GetCoarseMappingMissing)

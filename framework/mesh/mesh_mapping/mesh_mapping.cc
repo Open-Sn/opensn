@@ -7,10 +7,89 @@
 #include "framework/mesh/mesh/cell.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include <algorithm>
+#include <limits>
 #include <sstream>
 
 namespace opensn
 {
+
+namespace
+{
+
+/// Distance from a point to the closest edge of a face of a cell.
+double
+DistanceToFaceEdges(const Mesh& grid, const CellFace& face, const Vector3& point)
+{
+  double distance = std::numeric_limits<double>::max();
+  const size_t num_vertices = face.vertex_ids.size();
+  for (size_t i = 0; i < num_vertices; ++i)
+  {
+    const auto& a = grid.GlobalVertex(face.vertex_ids[i]);
+    const auto& b = grid.GlobalVertex(face.vertex_ids[(i + 1) % num_vertices]);
+    const Vector3 edge = b - a;
+    const double length_2 = edge.NormSquare();
+    const double s =
+      (length_2 > 0.0) ? std::clamp((point - a).Dot(edge) / length_2, 0.0, 1.0) : 0.0;
+    distance = std::min(distance, (point - (a + s * edge)).Norm());
+  }
+  return distance;
+}
+
+/**
+ * A point inside a face of a cell, used to find the coarse face that contains a fine face.
+ *
+ * The point must be away from the edges of the face: a point on an edge of a cell is on two of
+ * its faces, and Mesh::CheckPointInsideCellFace accepts a point within its tolerance of an edge.
+ *
+ * This is the face centroid, the average of the vertices, when it is on the face and further
+ * from the edges than that tolerance, as it is for a convex face that is not that small. The
+ * centroid of a concave face can be outside the face or next to one of its edges. The point is
+ * then, among the centroid and the centroids of the triangles of three consecutive vertices,
+ * the one on the face that is the furthest from the edges. A simple polygon always has such a
+ * triangle with its centroid inside the polygon. Three collinear vertices are not chosen over
+ * it: the centroid of their triangle is on an edge.
+ */
+Vector3
+PointOnFace(const Mesh& grid, const Cell& cell, const size_t face_i)
+{
+  // Tolerance of Mesh::CheckPointInsideCellFace
+  constexpr double tolerance = 1.0e-6;
+
+  const auto& face = cell.faces[face_i];
+  // The face of a 1D or 2D cell is a vertex or a segment
+  if (face.vertex_ids.size() < 3)
+    return face.centroid;
+
+  Vector3 best_point = face.centroid;
+  double best_distance = -1.0;
+  if (grid.CheckPointInsideCellFace(cell, face_i, face.centroid))
+  {
+    best_distance = DistanceToFaceEdges(grid, face, face.centroid);
+    if (best_distance > tolerance)
+      return face.centroid;
+  }
+
+  const size_t num_vertices = face.vertex_ids.size();
+  for (size_t i = 0; i < num_vertices; ++i)
+  {
+    const auto point = (grid.GlobalVertex(face.vertex_ids[i]) +
+                        grid.GlobalVertex(face.vertex_ids[(i + 1) % num_vertices]) +
+                        grid.GlobalVertex(face.vertex_ids[(i + 2) % num_vertices])) /
+                       3.0;
+    if (not grid.CheckPointInsideCellFace(cell, face_i, point))
+      continue;
+    const double distance = DistanceToFaceEdges(grid, face, point);
+    if (distance > best_distance)
+    {
+      best_point = point;
+      best_distance = distance;
+    }
+  }
+  return best_point;
+}
+
+} // namespace
 
 const size_t MeshMapping::invalid_face_index = std::numeric_limits<size_t>::max();
 
@@ -84,7 +163,7 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
                                " volumetric mapping failed.");
   }
 
-  // Surface mapping; find the coarse cell face that contains a fine cell face centroid
+  // Surface mapping; find the coarse cell face that contains a point of a fine cell face
   for (auto& [fine_cell_ptr, fine_mapping] : fine_to_coarse_)
   {
     const auto& fine_cell = *fine_cell_ptr;
@@ -92,10 +171,10 @@ MeshMapping::Build(const std::shared_ptr<Mesh>& fine_grid, const std::shared_ptr
     auto& coarse_mapping = coarse_to_fine_.at(&coarse_cell);
     for (size_t fine_face_i = 0; fine_face_i < fine_cell.faces.size(); ++fine_face_i)
     {
-      const auto& fine_face = fine_cell.faces[fine_face_i];
+      const auto fine_face_point = PointOnFace(*fine_grid, fine_cell, fine_face_i);
       for (size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size(); ++coarse_face_i)
       {
-        if (coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face.centroid))
+        if (coarse_grid->CheckPointInsideCellFace(coarse_cell, coarse_face_i, fine_face_point))
         {
           coarse_mapping.fine_faces[coarse_face_i].emplace_back(fine_cell_ptr, fine_face_i);
           fine_mapping.coarse_faces[fine_face_i] = coarse_face_i;

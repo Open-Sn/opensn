@@ -1,0 +1,9 @@
+# One L-shaped (concave) polygon. The average of its vertices, (4/3, 4/3), is outside it.
+o l_shaped_polygon
+v 0.0 0.0 0.0
+v 3.0 0.0 0.0
+v 3.0 1.0 0.0
+v 1.0 1.0 0.0
+v 1.0 3.0 0.0
+v 0.0 3.0 0.0
+f 1 2 3 4 5 6
