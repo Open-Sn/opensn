@@ -220,12 +220,12 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
   }
 }
 
-// Groupset defaults: Marshak closure and the "face_side" length for WGDSA and TGDSA.
+// Groupset defaults: closure R and the "face_side" length for WGDSA and TGDSA.
 TEST(DiffusionMIPSidePenalty, GroupsetDefaults)
 {
   auto params = LBSGroupset::GetInputParameters();
-  EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_boundary_closure"), "marshak");
-  EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_boundary_closure"), "marshak");
+  EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_boundary_closure"), "closure_r");
+  EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_boundary_closure"), "closure_r");
   EXPECT_EQ(params.GetParamValue<std::string>("wgdsa_h_perp_convention"), "face_side");
   EXPECT_EQ(params.GetParamValue<std::string>("tgdsa_h_perp_convention"), "face_side");
 }

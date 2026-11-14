@@ -304,8 +304,8 @@ applies the factor 2 there for uniformity with polyhedra and a larger stability
 margin.
 
 On boundaries with a prescribed incoming flux the error has no incoming
-component, so the correction is a vacuum problem. The default
-(``wgdsa_boundary_closure = "marshak"``) imposes it through the natural Marshak
+component, so the correction is a vacuum problem. The option
+``wgdsa_boundary_closure = "marshak"`` imposes it through the natural Marshak
 condition :math:`\tfrac14\delta\Phi + \tfrac12 D\,\partial_n\delta\Phi = 0`. The
 original OpenSn treatment (``"dirichlet"``) imposes :math:`\delta\Phi = 0` with
 the interior-penalty boundary term; under mesh refinement this limits the
@@ -315,7 +315,7 @@ error vanishes across most of the cell and the zero-correction condition is the
 better one: the Marshak condition leaves a boundary mode with a spectral radius
 near 0.47 there.
 
-``"closure_r"`` blends the two face by face. Its boundary term is
+``"closure_r"``, the default, blends the two face by face. Its boundary term is
 
 .. math:: \beta_f(1+\theta_f)\int_f \delta\Phi\, v
           - \frac{1-\theta_f}{2}\int_f D\,\big(v\,\partial_n\delta\Phi

@@ -429,7 +429,7 @@
   },
   {
     "file": "transport_2d_cyl_dsa_closures.py",
-    "comment": "RZ WGDSA with the default boundary closure (Marshak) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the unaccelerated source-iteration solution (transport_2d_cyl_dsa_closures_no_dsa)",
+    "comment": "RZ WGDSA with the default boundary closure (closure R, blended on these 2.5 mfp cells; trace constant with the r weight) and penalty length (face_side): c = 0.99 cylinder, source iteration capped at 60, which converges only with working DSA; values checked against the unaccelerated source-iteration solution (transport_2d_cyl_dsa_closures_no_dsa)",
     "num_procs": 4,
     "checks": [
       {
@@ -484,11 +484,11 @@
   },
   {
     "file": "transport_2d_cyl_dsa_closures.py",
-    "comment": "Same as transport_2d_cyl_dsa_closures with the closure R DSA boundary closure (blended on these 2.5 mfp cells; trace constant with the r weight)",
-    "outfileprefix": "transport_2d_cyl_dsa_closures_closure_r",
+    "comment": "Same as transport_2d_cyl_dsa_closures with the Marshak DSA boundary closure",
+    "outfileprefix": "transport_2d_cyl_dsa_closures_marshak",
     "num_procs": 4,
     "args": [
-      "boundary_closure=\"closure_r\""
+      "boundary_closure=\"marshak\""
     ],
     "checks": [
       {
