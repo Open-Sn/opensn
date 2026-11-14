@@ -116,6 +116,13 @@
 <dd><p>Logical operation for surface mesh. </p>
 </dd></dl>
 
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16RCCLogicalVolume14GetBoundingBoxER7Vector3R7Vector3">
+<span class="target" id="classopensn_1_1_r_c_c_logical_volume_1aa9148da44ea145745f10a4f49d01e9a3"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundingBox</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">lo</span></span>, <a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">hi</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn16RCCLogicalVolume14GetBoundingBoxER7Vector3R7Vector3" title="Link to this definition"></a><br /></dt>
+<dd><p>Gets an axis-aligned box [lo, hi] that contains every point for which <a class="reference internal" href="#classopensn_1_1_r_c_c_logical_volume_1a4c9dbb7421cba9f5371d787f5b1e9c0d"><span class="std std-ref">Inside()</span></a> is true, so that callers can skip points outside it. </p>
+<p>A bound may be infinite. Returns false, and leaves lo and hi unchanged, when the volume does not provide a box. </p>
+</dd></dl>
+
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-static-functions">Public Static Functions</p>
