@@ -445,6 +445,8 @@ TransientSolver::AdvanceSolver()
   const bool step_converged =
     CheckTransportSolveConverged("Time step " + std::to_string(step_ + 1));
   converged_ = step_converged and converged_.value_or(true);
+  // Recorded at t^{n+theta}, where the sweeps evaluated the boundaries.
+  do_problem_->RecordBoundaryInflow();
 
   if (verbose_)
   {

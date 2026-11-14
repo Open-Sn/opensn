@@ -941,7 +941,7 @@
   },
   {
     "file": "uncollided_mode_rejections.py",
-    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode",
+    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode. Outputs computed from the angular flux, which holds only the collided part, are rejected.",
     "num_procs": 1,
     "checks": [
       {
@@ -1013,6 +1013,12 @@
       {
         "type": "KeyValuePair",
         "key": "UncollidedLaterBoundaryRejected=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedAngularOutputsRejected=",
         "goldvalue": 1,
         "abs_tol": 0
       },

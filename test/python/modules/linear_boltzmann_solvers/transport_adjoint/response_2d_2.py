@@ -4,8 +4,12 @@
 """
 2D Transport test with point source FWD
 SDM: PWLD
-Test: QoI Value=2.90386e-05
-      Inner Product=2.90543e-05
+
+The forward QoI and the adjoint inner product (the point source folded against the adjoint
+flux) agree through the discrete forward-adjoint identity to the solver tolerance (1e-10).
+Test: QoI Value=2.90312e-05
+      Inner Product=2.90312e-05
+      ADJOINT_IDENTITY_REL_DIFF ~ 1e-8
 """
 
 import os
@@ -81,7 +85,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, 0),
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
                 "gmres_restart_interval": 100,
             },
@@ -133,6 +137,7 @@ if __name__ == "__main__":
     if rank == 0:
         print(f"QoI Value={fwd_qoi:.5e}")
         print(f"Inner Product={adj_qoi:.5e}")
+        print(f"ADJOINT_IDENTITY_REL_DIFF={abs(adj_qoi / fwd_qoi - 1.0):.6e}")
 
     # Cleanup
     barrier()

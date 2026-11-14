@@ -179,9 +179,20 @@ public:
 
   bool DiffusionInitialized() const { return diffusion_initialized_; }
 
-  const std::vector<double>& GetSigmaTransport() const { return sigma_tr_; }
+  /**
+   * Returns the transport cross section sigma_t - sum of P1 out-scatter, of the transposed P1
+   * matrix when adjoint is true.
+   */
+  const std::vector<double>& GetSigmaTransport(bool adjoint) const
+  {
+    return adjoint ? adjoint_sigma_tr_ : sigma_tr_;
+  }
 
-  const std::vector<double>& GetDiffusionCoefficient() const { return diffusion_coeff_; }
+  /// Returns the diffusion coefficient 1/(3 sigma_tr) for the forward or the adjoint mode.
+  const std::vector<double>& GetDiffusionCoefficient(bool adjoint) const
+  {
+    return adjoint ? adjoint_diffusion_coeff_ : diffusion_coeff_;
+  }
 
   const std::vector<double>& GetSigmaRemoval() const { return sigma_r_; }
 
@@ -281,6 +292,9 @@ private:
   std::vector<double> sigma_tr_;
   /// Transport corrected diffusion coefficient
   std::vector<double> diffusion_coeff_;
+  /// Transport cross section and diffusion coefficient of the transposed (adjoint) scattering
+  std::vector<double> adjoint_sigma_tr_;
+  std::vector<double> adjoint_diffusion_coeff_;
   /// Removal cross section
   std::vector<double> sigma_r_;
   /// Within-group scattering cross section

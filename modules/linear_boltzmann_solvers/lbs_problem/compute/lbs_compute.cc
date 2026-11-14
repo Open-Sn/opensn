@@ -172,6 +172,9 @@ ComputePrecursors(LBSProblem& lbs_problem)
 
   auto& precursor_new_local = lbs_problem.GetPrecursorsNewLocal();
   precursor_new_local.assign(precursor_new_local.size(), 0.0);
+  // An adjoint flux has no precursor concentrations: the formula above applies to a forward flux.
+  if (lbs_problem.IsAdjoint())
+    return;
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();

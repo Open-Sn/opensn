@@ -48,6 +48,7 @@ std::map<unsigned int, Multigroup_D_and_sigR>
 PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
                unsigned int first_grp_index,
                unsigned int last_group_index,
+               bool adjoint,
                double time_absorption_scale)
 {
   OpenSnInvalidArgumentIf(last_group_index < first_grp_index,
@@ -64,7 +65,7 @@ PackGroupsetXS(const BlockID2XSMap& blkid_to_xs_map,
     std::vector<double> sigma_r(num_gs_groups, 0.0);
 
     unsigned int g = 0;
-    const auto& diffusion_coeff = xs->GetDiffusionCoefficient();
+    const auto& diffusion_coeff = xs->GetDiffusionCoefficient(adjoint);
     const auto& sigma_removal = xs->GetSigmaRemoval();
     const auto& inv_velocity = xs->GetInverseVelocity();
     OpenSnLogicalErrorIf(time_absorption_scale > 0.0 and inv_velocity.size() < last_group_index + 1,

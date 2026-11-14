@@ -143,12 +143,17 @@ WrapPostprocessors(py::module& post)
     logical_volumes : List[LogicalVolume], optional
         Logical volumes to restrict the computation to.
     sensitivity_type : str, optional
-        Sensitivity type: 'sigma_t' (default), 'scatter', or 'production'.
+        Sensitivity type: 'sigma_t' (default), 'scatter', or 'production'. 'production' is the
+        sensitivity to nu_sigma_f of the selected source group with the fission spectra and the
+        delayed-neutron fraction held fixed, so it scales column ``group`` of the fission
+        production operator the solvers apply (prompt and, with delayed neutrons included,
+        delayed production). Where nu_sigma_f of that group is zero, the column does not define
+        the spectrum, so the relative sensitivity is zero and the absolute one is rejected.
     group : int, optional
         Group for sigma_t or production sensitivities.
     moment : int, optional
-        Scattering moment/order for scatter sensitivities. Aliased by 'ell'; specify at
-        most one of the two.
+        Legendre order of the scattering moment for scatter sensitivities, at most the problem's
+        scattering order. Aliased by 'ell'. Specify at most one of the two.
     ell : int, optional
         Alias for 'moment'. Specify at most one of 'moment' and 'ell'.
     from_group : int, optional
@@ -158,18 +163,45 @@ WrapPostprocessors(py::module& post)
     relative : bool, optional
         Return relative sensitivities x*dR/dx instead of dR/dx. Default False.
     forward_flux_moments : str, optional
-        Forward flux-moment file prefix. Empty (default) uses the current phi.
+        Forward flux-moment file prefix. Empty (default) uses the current phi, which requires a
+        forward problem. The file must have been written by a forward problem.
     adjoint_flux_moments : str, optional
-        Adjoint flux-moment file prefix. Empty (default) uses the current phi.
+        Adjoint flux-moment file prefix. Empty (default) uses the current phi, which requires an
+        adjoint problem whose solver has finished. The file must have been written by an adjoint
+        problem after its solver finished, so that it holds the physically oriented adjoint.
     forward_angular_fluxes : str, optional
-        Forward angular-flux file prefix. Empty (default) uses the current psi.
+        Forward angular-flux file prefix. Empty (default) uses the current psi, which requires a
+        forward problem without an uncollided flux (its psi holds only the collided part). The
+        file must have been written by a forward problem.
     adjoint_angular_fluxes : str, optional
-        Adjoint angular-flux file prefix. Empty (default) uses the current psi.
+        Adjoint angular-flux file prefix. Empty (default) uses the current psi, which requires an
+        adjoint problem whose solver has finished. The file must have been written by an adjoint
+        problem after its solver finished.
     flux_moments_single_file : bool, optional
         Read flux moments from the single file ``<prefix>.h5`` instead of the per-rank file
         ``<prefix><rank>.h5``. Default False. Serial runs only: in a multi-rank run, reading the
         flux moments (``Execute`` or ``ApplyKEigenvalueScaling``) raises ``ValueError`` before
         any file is opened.
+
+    Raises
+    ------
+    ValueError
+        If a selection is invalid or selects no cells. ``Execute`` and
+        ``ApplyKEigenvalueScaling`` raise ``ValueError`` if a forward term would come from the
+        current state of an adjoint problem or an adjoint term from the current state of a forward
+        problem or of an adjoint problem whose solver has not finished. This also rejects leaving
+        both prefixes of a pair empty. ``Execute`` also raises ``ValueError`` for an absolute
+        production sensitivity when a selected fissionable block has zero nu_sigma_f in the
+        selected group.
+    RuntimeError
+        ``Execute`` and ``ApplyKEigenvalueScaling`` raise ``RuntimeError`` if a file cannot be
+        read or does not match the problem, if a forward term would come from an adjoint file, or
+        if an adjoint term would come from a forward or solver-oriented file.
+
+    Notes
+    -----
+    Construction, :meth:`Execute`, and :meth:`ApplyKEigenvalueScaling` are collective. Every MPI
+    rank must construct the postprocessor with the same selections and call them together.
     )"
   );
   xs_sens.def(
@@ -191,10 +223,20 @@ WrapPostprocessors(py::module& post)
     R"(
     Scale the previously computed sensitivities to k-eigenvalue sensitivities.
 
+    The normalization is :math:`\langle \phi^\dagger, F \phi \rangle`, with :math:`F` the
+    fission production operator the solvers apply (prompt and, with delayed neutrons included,
+    delayed production). Collective.
+
     Parameters
     ----------
     k_eff : float
         Forward k-eigenvalue used in the first-order k-sensitivity normalization.
+
+    Raises
+    ------
+    RuntimeError
+        If ``Execute`` has not been called, or the current values are already scaled. Call
+        ``Execute`` again before scaling again.
     )"
   );
   xs_sens.def(

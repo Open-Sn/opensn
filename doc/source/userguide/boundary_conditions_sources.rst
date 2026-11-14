@@ -350,8 +350,15 @@ Important behavior:
 
 * ``clear_boundary_conditions=True`` removes the current set before applying the
   new list
-* :py:meth:`LBSProblem.SetAdjoint` clears all boundary conditions during a mode
-  transition, so they must be reapplied afterward
+
+.. warning::
+
+   :py:meth:`pyopensn.solver.LBSProblem.SetAdjoint` and
+   :py:meth:`pyopensn.solver.LBSProblem.SetForward` clear all point and
+   volumetric sources and all isotropic and arbitrary boundaries when they change
+   the mode. Those boundaries become vacuum, and OpenSn logs a warning. Vacuum
+   and reflecting boundaries are kept. Apply the sources for the new mode before
+   solving again (see :doc:`adjoint_response`).
 
 .. note::
 
@@ -921,8 +928,9 @@ Best Practices
 * Prefer ``start_time``/``end_time`` for simple on/off source behavior.
 * Prefer callbacks when source strength must vary continuously with group or
   time.
-* After calling :py:meth:`LBSProblem.SetAdjoint`, reapply sources
-  and boundary conditions before solving again.
+* After calling :py:meth:`LBSProblem.SetAdjoint`, apply the sources and
+  boundary sources of the new mode before solving again. Vacuum and reflecting
+  boundaries are kept.
 
 .. note::
 

@@ -1,7 +1,7 @@
 [
   {
     "file": "response_2d_1.py",
-    "comment": "2D transport response evaluation test with material source",
+    "comment": "In a 2D transport problem with a material source, the forward QoI and the adjoint inner product agree by the discrete forward-adjoint identity.",
     "num_procs": 4,
     "weight_class": "intermediate",
     "checks": [
@@ -9,33 +9,45 @@
         "type": "KeyValuePair",
         "key": "QoI Value=",
         "goldvalue": 1.38397e-05,
-        "abs_tol": 1e-08
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
-        "goldvalue": 1.38405e-05,
-        "abs_tol": 1e-08
+        "goldvalue": 1.38397e-05,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_IDENTITY_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
       }
     ]
   },
   {
     "file": "response_2d_2.py",
-    "comment": "2D transport response evaluation test with point source",
+    "comment": "In a 2D transport problem with a point source, the forward QoI and the adjoint inner product agree by the discrete forward-adjoint identity.",
     "num_procs": 4,
     "weight_class": "intermediate",
     "checks": [
       {
         "type": "KeyValuePair",
         "key": "QoI Value=",
-        "goldvalue": 2.90419e-05,
-        "abs_tol": 1e-08
+        "goldvalue": 2.90312e-05,
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
-        "goldvalue": 2.90439e-05,
-        "abs_tol": 1e-08
+        "goldvalue": 2.90312e-05,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_IDENTITY_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
       }
     ]
   },
@@ -107,27 +119,27 @@
       {
         "type": "KeyValuePair",
         "key": "Inner Product=",
-        "goldvalue": 3.30497e-06,
+        "goldvalue": 3.30429e-06,
         "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
-        "key": "ADJOINT_IDENTITY_DIFF=",
+        "key": "ADJOINT_IDENTITY_REL_DIFF=",
         "goldvalue": 0.0,
-        "abs_tol": 1e-10
+        "abs_tol": 1e-06
       }
     ]
   },
   {
     "file": "response_2d_4.py",
-    "comment": "2D transport response evaluation test with material source - adjoint part",
+    "comment": "This is the adjoint part of response_2d_1. Its inner product equals the forward QoI of the same problem in response_2d_1 (1.3839677491e-05).",
     "num_procs": 4,
     "checks": [
       {
         "type": "KeyValuePair",
-        "key": "Inner Product=",
-        "goldvalue": 1.38402e-5,
-        "abs_tol": 1e-8
+        "key": "Inner Product exact=",
+        "goldvalue": 1.3839677491e-05,
+        "rel_tol": 1e-06
       }
     ]
   },
@@ -517,6 +529,67 @@
         "key": "SURFACE_VALIDATION_PASSED=",
         "goldvalue": 1,
         "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "mode_switch_boundaries.py",
+    "comment": "A mode change keeps vacuum and reflecting boundaries and clears isotropic and arbitrary boundary sources. Kept reflecting boundaries give the exact infinite-medium flux in both modes. Without an adjoint source the cleared boundaries give an exactly zero adjoint flux. Cleared source moments make the adjoint solve fail until they are read again.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_REFLECTING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_REFLECTING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_AGAIN_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_BOUNDARY_DRIVEN=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_SOURCE_FREE_MAX=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_VACUUM_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_FWD_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_CLEARED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
       }
     ]
   },
@@ -1237,6 +1310,411 @@
         "key": "FWD_BALANCE_VAC_REL=",
         "goldvalue": 0.0,
         "abs_tol": 1e-10
+      }
+    ]
+  },
+  {
+    "file": "response_consistency.py",
+    "comment": "Response evaluation matches the forward solve for a func volumetric source through the consistent mass matrix, for source time windows, and for a forward flux as a data set. Mismatched data sets, solver-oriented adjoint angular fluxes, and bad inputs are rejected on every rank.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_FUNC_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_WINDOW_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_FORWARD_DATA_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_QUADRATURE_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_PARTITION_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_MISSING_FILE_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_INPUT_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "RESP_SOLVER_ORIENTATION_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_source_moments.py",
+    "comment": "Source moments made from an adjoint flux by CreateAndWriteSourceMoments and ReadFluxMomentsAndMakeSourceMoments are in the solver orientation: with P1 scattering they satisfy the exact identity phi_A = L0^-1 q + L0^-1 S^T phi_A. A forward problem rejects an adjoint flux file.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_SRC_MOMENTS_CREATE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_SRC_MOMENTS_READ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_SRC_MOMENTS_FORWARD_FILE_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_dsa_equivalence.py",
+    "comment": "With P1 scattering, WGDSA and TGDSA iterates of an adjoint problem equal those of the forward problem with transposed scattering, with lagged reflecting boundaries and broken cycles, so the adjoint diffusion coefficients use the transposed transport correction. The converged infinite medium is exact.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_SWEEP_MISMATCH=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_INF_MEDIUM_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "adjoint_dsa_equivalence.py",
+    "comment": "GPU variant of adjoint_dsa_equivalence.py.",
+    "outfileprefix": "adjoint_dsa_equivalence_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_SWEEP_MISMATCH=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DSA_INF_MEDIUM_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "adjoint_duality_3d_p1_groupsets.py",
+    "comment": "Forward-adjoint duality of a detector response for a 3D, two-group problem with P1 up- and downscatter in two groupsets and a reflecting boundary. Forward and adjoint are solved independently.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DUALITY_3D_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "response_surf_1d.py",
+    "comment": "On a 1D slab with P1 scattering, the surface responses of a plane and of the boundaries match the volume duality of the same adjoint data, for an adjoint driven by a detector source and by an arbitrary incoming adjoint flux.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_1D_A_PLANE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_1D_B_PLANE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_1D_B_ZMAX_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_1D_A_ZMAX_FRACTION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_1D_A_ZMIN_FRACTION=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_equivalence.py",
+    "comment": "The adjoint k-eigenvalue equals the forward one with a lagged reflecting boundary, broken cycles, WGDSA, and TGDSA, for power iteration with and without SCDSA or CMFD and for the nonlinear solver, also after a second Execute and after a forward-to-adjoint mode switch.",
+    "num_procs": 2,
+    "weight_class": "intermediate",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KEIGEN_ADJ_MAX_REL_DK=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_keigen_equivalence.py",
+    "comment": "GPU variant of adjoint_keigen_equivalence.py.",
+    "outfileprefix": "adjoint_keigen_equivalence_gpu",
+    "num_procs": 2,
+    "weight_class": "intermediate",
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "KEIGEN_ADJ_MAX_REL_DK=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "response_surf_bc_change.py",
+    "comment": "Surface data pair the angular flux with the boundary values of the solve that produced it, also when the boundary conditions are changed before writing, so the xmin and plane surface responses match the forward detector response. With source moments the solve uses no boundary flux, and the surface data record none. Writing an angular flux that has not come from a completed solve is rejected.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_INCOMING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_PLANE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_MOMENTS_INCOMING=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_UNSOLVED_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "response_surf_bc_change.py",
+    "comment": "GPU variant of response_surf_bc_change.py.",
+    "outfileprefix": "response_surf_bc_change_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_INCOMING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_PLANE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_MOMENTS_INCOMING=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "SURF_BC_CHANGE_UNSOLVED_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "adjoint_duality_3d_p1_groupsets.py",
+    "comment": "CBC-sweep variant of adjoint_duality_3d_p1_groupsets.py.",
+    "outfileprefix": "adjoint_duality_3d_p1_groupsets_cbc",
+    "num_procs": 2,
+    "args": [
+      "sweep_type=\"CBC\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DUALITY_3D_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_duality_3d_p1_groupsets.py",
+    "comment": "GPU variant of adjoint_duality_3d_p1_groupsets.py.",
+    "outfileprefix": "adjoint_duality_3d_p1_groupsets_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DUALITY_3D_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "adjoint_duality_3d_p1_groupsets.py",
+    "comment": "GPU CBC-sweep variant of adjoint_duality_3d_p1_groupsets.py.",
+    "outfileprefix": "adjoint_duality_3d_p1_groupsets_cbc_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "ADJ_DUALITY_3D_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "mode_switch_boundaries.py",
+    "comment": "GPU variant of mode_switch_boundaries.py.",
+    "outfileprefix": "mode_switch_boundaries_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_REFLECTING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_REFLECTING_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_AGAIN_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_FWD_BOUNDARY_DRIVEN=",
+        "goldvalue": 1.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_SOURCE_FREE_MAX=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_ADJ_VACUUM_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_FWD_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_CLEARED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "MODE_SWITCH_SRC_MOMENTS_ADJ_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
       }
     ]
   }

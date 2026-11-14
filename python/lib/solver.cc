@@ -355,7 +355,8 @@ WrapLBS(py::module& slv)
     -------
     float
         The total fission rate, integrated over the physical volume. In RZ and 1D spherical
-        geometry the integral covers the full revolution (factors of 2*pi and 4*pi).
+        geometry the integral covers the full revolution (factors of 2*pi and 4*pi). In adjoint
+        mode it is :math:`\sum_g \sigma_{f,g} \phi^\dagger_g` of the adjoint flux.
 
     Raises
     ------
@@ -397,7 +398,10 @@ WrapLBS(py::module& slv)
     -------
     float
         The total fission production, integrated over the physical volume. In RZ and 1D spherical
-        geometry the integral covers the full revolution (factors of 2*pi and 4*pi).
+        geometry the integral covers the full revolution (factors of 2*pi and 4*pi). In adjoint
+        mode the fission operator is transposed, so this is the integral of the adjoint fission
+        source, :math:`\sum_g \nu\sigma_{f,g} \sum_{g'} \chi_{g'} \phi^\dagger_{g'}` for a
+        fission spectrum.
 
     Raises
     ------
@@ -462,6 +466,10 @@ WrapLBS(py::module& slv)
     R"(
     Write source moments from latest flux iterate to file.
 
+    Source moments are in the solver orientation that :py:meth:`LBSProblem.ReadSourceMoments`
+    expects: after an adjoint solve, the moments are made from the adjoint flux mapped back from
+    its physical orientation.
+
     Parameters
     ----------
     file_base: str
@@ -473,13 +481,27 @@ WrapLBS(py::module& slv)
     "ReadFluxMomentsAndMakeSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
+      // Source moments are used in the solver orientation, so a physical adjoint flux is mapped
+      // back. The file must record the problem's mode.
       std::vector<double> file_phi;
-      LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, file_phi);
+      const auto orientation = LBSSolverIO::ReadFluxMoments(
+        self,
+        file_base,
+        single_file_flag,
+        file_phi,
+        self.IsAdjoint() ? FluxSolutionRole::ADJOINT : FluxSolutionRole::FORWARD);
+      if (orientation == AdjointFluxOrientation::PHYSICAL)
+        self.ReverseMomentDirections(file_phi);
       log.Log() << "Making source moments from flux file.";
       self.SetExtSrcMomentsFrom(self.MakeSourceMomentsFromPhi(file_phi));
     },
     R"(
     Read flux moments and compute corresponding source moments.
+
+    The file must have been written by :py:meth:`LBSProblem.WriteFluxMoments` from a problem in the
+    same forward or adjoint mode as this one. An adjoint flux written after its solve, in physical
+    orientation, is mapped to the solver orientation that source moments use. This call is
+    collective.
 
     Parameters
     ----------
@@ -503,6 +525,10 @@ WrapLBS(py::module& slv)
     },
     R"(
     Read source moments from file.
+
+    In adjoint mode, source moments are in the solver orientation: a moment of odd degree describes
+    the adjoint source for the opposite direction. :py:meth:`LBSProblem.CreateAndWriteSourceMoments`
+    writes them that way.
 
     Parameters
     ----------
@@ -550,6 +576,12 @@ WrapLBS(py::module& slv)
     ----------
     file_base: str
         File basename.
+
+    Raises
+    ------
+    ValueError
+        If the problem has an uncollided flux, whose stored angular flux holds only the collided
+        part.
     )",
     py::arg("file_base")
   );
@@ -610,17 +642,25 @@ WrapLBS(py::module& slv)
     k-eigenvalue solve, which leaves the stored angular flux as the adjoint flux for the listed
     direction, so forward and adjoint data with the same indices refer to the same direction.
     Restart data are loaded in the internal sweep orientation, so execute an adjoint solver after
-    a restart read before writing.
+    a restart read before writing. For boundary tags the file also holds the boundary-condition
+    values of the directions entering the domain. They are those the solve that produced the
+    angular flux used, which the solver records when it finishes, so boundary conditions changed
+    after the solve do not affect the file. An angular flux that has not come from a completed
+    solve, because it was zeroed, read from a file, loaded from restart data, or reset by a mode
+    change, has no such record and cannot be written.
 
     Raises
     ------
     ValueError
-        If ``options.save_angular_flux`` is false; if the problem is in adjoint mode and its
-        solution is not in the physical orientation left by an adjoint solve; if a boundary name is
+        If ``options.save_angular_flux`` is false; if the stored angular flux has not come from a
+        completed solve; if the problem is in adjoint mode and its solution is not in the physical
+        orientation left by an adjoint solve; if a boundary name is
         unknown or not on the mesh; or if an interior surface has an invalid axis, lies outside the
         mesh, cuts through a cell, shares a plane with another interior surface, coincides with an
         exterior boundary, matches no mesh faces, or has a name or generated tag equal to a requested boundary
         name.
+        A problem with an uncollided flux is also rejected, because its stored angular flux holds
+        only the collided part.
     RuntimeError
         If no rank requests a surface, or if the file cannot be written.
     )",
@@ -732,7 +772,8 @@ WrapLBS(py::module& slv)
         boundary tag, 'upwind_psi' (empty for an interior tag), laid out like 'psi', holds the face
         value upwind of each direction along the direction the data transport in (Omega for forward
         data, -Omega for adjoint data): 'psi' for a direction leaving the domain, and the
-        boundary-condition value the sweep used for one entering it.
+        boundary-condition value the solve used for one entering it (for a reflecting boundary,
+        the reflected angular flux of the final iterate).
 
     Notes
     -----
@@ -976,11 +1017,22 @@ WrapLBS(py::module& slv)
       1. ``options={'adjoint': ...}`` in the problem constructor.
       2. ``SetAdjoint(...)`` (this method).
 
+    .. warning::
+
+       Changing the mode clears **all point and volumetric sources**, **all source moments**,
+       and **all boundary sources** (isotropic and arbitrary boundaries, which become vacuum).
+       Apply the sources for the new mode before solving. Otherwise the solve silently uses no
+       sources, or, with ``use_source_moments=True``, raises ``ValueError`` until new source
+       moments are read. Vacuum and reflecting boundaries are kept. A warning is logged on every
+       mode change.
+
     If this changes mode, OpenSn performs a full mode-transition reset:
       - Materials are reinitialized in the selected mode.
-      - Point and volumetric sources are cleared.
-      - Boundary conditions are cleared.
+      - Point and volumetric sources and source moments are cleared.
+      - Isotropic and arbitrary boundaries are cleared and become vacuum.
+      - Vacuum and reflecting boundaries are kept.
       - Scalar and angular flux vectors are zeroed.
+      - A warning listing what must be reapplied is logged on rank 0.
 
     If this is called with the same mode as the current setting, no reset is performed.
 
@@ -988,13 +1040,14 @@ WrapLBS(py::module& slv)
     The mode change applies to this problem only. Other problems that share the mapped
     ``MultiGroupXS`` objects keep their own mode.
 
-    After a mode change, reapply the desired driving terms before solving, typically:
+    After a mode change, apply the driving terms of the new mode before solving, typically:
       - :meth:`LBSProblem.SetPointSources`
       - :meth:`LBSProblem.SetVolumetricSources`
-      - :meth:`DiscreteOrdinatesProblem.SetBoundaryOptions`
+      - :meth:`DiscreteOrdinatesProblem.SetBoundaryOptions` for boundary sources
+      - :meth:`LBSProblem.ReadSourceMoments` with ``use_source_moments=True``
 
-    This routine is intentionally destructive with respect to source/boundary/flux state
-    to avoid hidden coupling between forward and adjoint setups.
+    Sources are cleared because a forward source is not an adjoint source, and keeping them would
+    silently couple the forward and adjoint setups.
 
     This is a collective operation and must be called on all ranks.
     )"
@@ -1005,7 +1058,9 @@ WrapLBS(py::module& slv)
     R"(
     Set forward transport mode.
 
-    Equivalent to ``SetAdjoint(False)``.
+    Equivalent to ``SetAdjoint(False)``, including its mode-transition reset. Changing the mode
+    clears all point and volumetric sources, all source moments, and all isotropic and arbitrary
+    boundary sources, which become vacuum. Vacuum and reflecting boundaries are kept.
     )"
   );
   lbs_problem.def(
@@ -1537,8 +1592,9 @@ WrapLBS(py::module& slv)
 
     Notes
     -----
-    Mode transitions via :meth:`LBSProblem.SetAdjoint` clear all boundary conditions.
-    Reapply boundaries with this method before solving in the new mode.
+    Mode transitions via :meth:`LBSProblem.SetAdjoint` clear isotropic and arbitrary boundaries,
+    which become vacuum, and keep vacuum and reflecting boundaries. Apply the boundary sources of
+    the new mode with this method before solving.
 
     This is a collective operation and must be called on all ranks.
     )"
@@ -1571,7 +1627,7 @@ WrapLBS(py::module& slv)
     Return psi as a list of NumPy arrays (float64).
 
     The arrays are copies of the current angular-flux state. Mutating them does not
-    mutate the problem.
+    mutate the problem. With an uncollided flux they hold only the collided part.
     )"
   );
   do_problem.def(
@@ -1741,11 +1797,17 @@ WrapLBS(py::module& slv)
         vacuum boundary this equals the outgoing current; on a boundary with an incident flux it
         is reduced by the inflow and can be negative; on a reflecting boundary it vanishes at
         convergence. In RZ geometry the surface integral covers the full revolution.
+        In adjoint mode the sweep runs along the opposite directions, so the value is the net
+        adjoint current entering the domain: the adjoint flux in the directions that enter the
+        domain minus that in the directions that leave it, each weighted by
+        :math:`|\Omega\cdot n|`. On a vacuum boundary it is the adjoint flux of the particles
+        entering through the boundary.
 
     Raises
     ------
     ValueError
-        If one or more boundary ids are not present on the current mesh.
+        If one or more boundary ids are not present on the current mesh, or if the problem has an
+        uncollided flux, whose angular flux holds only the collided part.
     )",
     py::arg("bnd_names")
   );

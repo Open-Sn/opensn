@@ -9,11 +9,13 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/parameters/parameter_block.h"
+#include <map>
 #include <memory>
 #include <optional>
 #include <set>
 #include <string>
 #include <tuple>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -195,6 +197,34 @@ public:
 
   bool IsAdjointSolutionReoriented() const override { return adjoint_solution_reoriented_; }
 
+  /**
+   * Records the incoming angular flux of the stored solution on every boundary face node of the
+   * local cells, for each direction that enters the domain in the sweeps: 0 for a vacuum boundary,
+   * the boundary-source value, and the reflected angular flux of the final iterate for a reflecting
+   * boundary. Solvers call it when a solve completes, before an adjoint solution is reoriented, so
+   * the record is indexed by sweep direction and holds the values of that solve whatever the
+   * boundaries are changed to afterward. Does nothing without a stored angular flux. Local.
+   */
+  void RecordBoundaryInflow();
+
+  /// Discards the boundary inflow record. Called whenever the stored angular flux is replaced.
+  void ClearBoundaryInflow();
+
+  /// Whether the stored angular flux has the boundary inflow record of the solve that produced it.
+  bool HasBoundaryInflow() const { return not boundary_inflow_.empty(); }
+
+  /**
+   * Returns the recorded incoming angular flux at face node `fi` of boundary face `face` of local
+   * cell `cell_local_id`, for sweep direction `direction` and groupset-local group `gsg`. Zero for
+   * a direction that leaves the domain. Requires HasBoundaryInflow().
+   */
+  double GetBoundaryInflow(unsigned int groupset_id,
+                           std::uint32_t cell_local_id,
+                           unsigned int face,
+                           unsigned int fi,
+                           unsigned int direction,
+                           unsigned int gsg) const;
+
   /// Zeroes all the outflow data-structures required to compute balance.
   void ZeroOutflowBalanceVars(LBSGroupset& groupset);
 
@@ -218,7 +248,7 @@ public:
   void SetSaveAngularFlux(bool save);
 
   void SetBoundaryOptions(const std::vector<InputParameters>& boundary_params, bool clear_existing);
-  void ClearBoundaries() override;
+  void ClearBoundarySources() override;
   BoundaryCarrier* GetBoundaryCarrier() { return boundary_carrier_.get(); }
   const BoundaryCarrier* GetBoundaryCarrier() const { return boundary_carrier_.get(); }
 
@@ -425,6 +455,10 @@ protected:
   double uncollided_outflow_rate_ = 0.0;
   bool uncollided_flux_applied_ = false;
   bool adjoint_solution_reoriented_ = false;
+  /// First face-node slot of each boundary face, keyed by (cell local id, face index).
+  std::map<std::pair<std::uint32_t, unsigned int>, std::size_t> boundary_inflow_slots_;
+  /// Per groupset, the boundary inflow at each face-node slot, direction, and group.
+  std::vector<std::vector<double>> boundary_inflow_;
   std::shared_ptr<AGSLinearSolver> ags_solver_;
   std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;

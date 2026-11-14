@@ -202,10 +202,12 @@ DistributeSurfaceAngularFluxes(const std::string& file_base,
  *   `X_d` normal (the negative axis), which gives -R and swaps and negates `outgoing` and
  *   `incoming`.
  * Each response is split into `outgoing` (mu_{f,d} > 0) and `incoming` (mu_{f,d} < 0) parts; the
- * response is their sum (SurfaceResponse::Total). OpenSn quadrature weights sum to 1, so for an
- * adjoint problem driven by a volumetric, material, or point response source, R equals the response
- * it carries across the surface. Forward and adjoint directions are paired by equal direction
- * vectors and must have equal weights. Face nodes are paired by location.
+ * response is their sum (SurfaceResponse::Total). Each direction is weighted by W w_d, with W the
+ * sum of the quadrature weights (1 for OpenSn quadratures), because moment sources enter each
+ * direction divided by W. So for an adjoint problem driven by a volumetric, material, or point
+ * response source, R equals the response it carries across the surface. Forward and adjoint
+ * directions are paired by equal direction vectors and must have equal weights. Face nodes are
+ * paired by location.
  *
  * \param forward Forward data. Must not be adjoint.
  * \param adjoint Adjoint data. Must be adjoint and must be distributed over `comm`.

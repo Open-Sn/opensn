@@ -1,5 +1,60 @@
 [
   {
+    "file": "provenance_rejected.py",
+    "comment": "Sensitivity files read as forward must be forward, and files read as adjoint must be physically oriented adjoint. Swapped, solver-oriented, and source-moment files are rejected, as is a current state paired with itself. The problem is a 1D infinite medium with a semi-analytic reference.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SIGMA_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SCATTER_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SWAPPED_PSI_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SOLVER_PSI_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SWAPPED_PHI_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SOLVER_PHI_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_SOURCE_MOMENTS_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_PROVENANCE_CURRENT_STATE_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "fixed_source_1d_infinite_medium.py",
     "comment": "1D reflective infinite-medium fixed-source semi-analytic sigma_t and scatter sensitivities",
     "num_procs": 1,
@@ -59,6 +114,12 @@
         "key": "XS_SENS_KEIGEN_2D_SCATTER_P1_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_KEIGEN_2D_INPUT_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
       }
     ]
   },
@@ -88,6 +149,207 @@
       {
         "type": "KeyValuePair",
         "key": "XS_SENS_SCATTER_FWD_MODE_RELATIVE_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigen_fission_operator_infinite_medium.py",
+    "comment": "In a 2-group infinite medium, the k-eigenvalue production, sigma_t, and scatter sensitivities, normalized with the solver's fission operator, match exact eigenvector derivatives. The fission data are an explicit non-separable PRODUCTION_MATRIX with a CHI block. Repeated or premature k-eigenvalue scaling is rejected.",
+    "args": [
+      "scenario=\"matrix\""
+    ],
+    "outfileprefix": "keigen_fission_operator_infinite_medium_matrix",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_K_SCALING_GUARDED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SCATTER_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigen_fission_operator_infinite_medium.py",
+    "comment": "In a 2-group infinite medium, the k-eigenvalue production, sigma_t, and scatter sensitivities, normalized with the solver's fission operator, match exact eigenvector derivatives. The fission data are prompt and delayed, with use_precursors=True.",
+    "args": [
+      "scenario=\"delayed_on\""
+    ],
+    "outfileprefix": "keigen_fission_operator_infinite_medium_delayed_on",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SCATTER_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigen_fission_operator_infinite_medium.py",
+    "comment": "In a 2-group infinite medium, the k-eigenvalue production, sigma_t, and scatter sensitivities, normalized with the solver's fission operator, match exact eigenvector derivatives. The fission data are prompt and delayed, with use_precursors=False, so the operator is prompt only.",
+    "args": [
+      "scenario=\"delayed_off\""
+    ],
+    "outfileprefix": "keigen_fission_operator_infinite_medium_delayed_off",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SCATTER_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigen_fission_operator_infinite_medium.py",
+    "comment": "An explicit production matrix with a zero column, so nu_sigma_f of group 1 is zero. The relative production sensitivity to group 1 is exactly zero, the absolute one is rejected because the zero column does not define the spectrum, and the other sensitivities match exact eigenvector derivatives.",
+    "args": [
+      "scenario=\"zero_column\""
+    ],
+    "outfileprefix": "keigen_fission_operator_infinite_medium_zero_column",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_ZERO_COLUMN_RELATIVE=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_ZERO_COLUMN_ABSOLUTE_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SCATTER_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
+  },
+  {
+    "file": "keigen_fission_operator_infinite_medium.py",
+    "comment": "GPU variant of keigen_fission_operator_infinite_medium.py (scenario matrix).",
+    "outfileprefix": "keigen_fission_operator_infinite_medium_matrix_gpu",
+    "num_procs": 2,
+    "requires_gpu": true,
+    "args": [
+      "scenario=\"matrix\"",
+      "use_gpus=True"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_K_SCALING_GUARDED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_K_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_PRODUCTION_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SIGMA_T_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "XS_SENS_FISSION_OP_SCATTER_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-08
       }

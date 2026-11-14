@@ -87,6 +87,7 @@ SteadyStateSourceSolver::ExecuteSolver()
   auto& ags_solver = *do_problem_->GetAGSSolver();
   ags_solver.Solve();
   converged_ = CheckTransportSolveConverged("The steady-state solve");
+  do_problem_->RecordBoundaryInflow();
 
   if (do_problem_->HasUncollidedFlux())
     do_problem_->ComputeFluxFromUncollided();

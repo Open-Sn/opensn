@@ -1446,7 +1446,35 @@ LBSProblem::HasCapableDevices()
 std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()
 {
-  return MakeSourceMomentsFromPhi(phi_new_local_);
+  if (not IsAdjointSolutionReoriented())
+    return MakeSourceMomentsFromPhi(phi_new_local_);
+  auto phi = phi_new_local_;
+  ReverseMomentDirections(phi);
+  return MakeSourceMomentsFromPhi(phi);
+}
+
+void
+LBSProblem::ReverseMomentDirections(std::vector<double>& phi) const
+{
+  OpenSnLogicalErrorIf(phi.size() != phi_new_local_.size(),
+                       GetName() + ": ReverseMomentDirections size mismatch.");
+  for (const auto& groupset : groupsets_)
+  {
+    const auto& moment_map = groupset.quadrature->GetMomentToHarmonicsIndexMap();
+    for (const auto& cell : grid_->GetLocalCells())
+    {
+      const auto& transport_view = cell_transport_views_[cell->local_id];
+      for (int i = 0; i < transport_view.GetNumNodes(); ++i)
+        for (unsigned int m = 0; m < num_moments_; ++m)
+        {
+          if (moment_map[m].ell % 2 == 0)
+            continue;
+          const auto dof_map = transport_view.MapDOF(i, m, 0);
+          for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
+            phi[dof_map + g] = -phi[dof_map + g];
+        }
+    }
+  }
 }
 
 std::vector<double>
@@ -1590,10 +1618,13 @@ LBSProblem::SetAdjoint(bool adjoint)
 
   options_.adjoint = adjoint;
 
-  // Forward and adjoint sources are fundamentally different.
+  // Forward and adjoint sources are fundamentally different. Vacuum and reflecting boundaries mean
+  // the same in both modes, so only the boundary sources are cleared. Source moments are cleared
+  // but use_source_moments is kept, so a solve requires new moments.
   point_sources_.clear();
   volumetric_sources_.clear();
-  ClearBoundaries();
+  ClearBoundarySources();
+  ext_src_moments_local_.clear();
 
   // Rebuild the materials, and everything that depends on them, in the new mode.
   RebuildRuntimeObjects();
@@ -1602,6 +1633,14 @@ LBSProblem::SetAdjoint(bool adjoint)
   ZeroPhi();
   ResetDerivedSolutionVectors();
   ZeroPrecursors();
+
+  log.Log0Warning() << GetName() << ": SetAdjoint(" << (adjoint ? "True" : "False")
+                    << ") switched the problem to " << (adjoint ? "adjoint" : "forward")
+                    << " mode and cleared all point sources, volumetric sources, source moments, "
+                       "and isotropic and arbitrary boundary sources. Those boundaries are now "
+                       "vacuum. Vacuum and reflecting boundaries are kept. Apply the sources for "
+                       "the new mode with SetPointSources, SetVolumetricSources, "
+                       "SetBoundaryOptions, or ReadSourceMoments before solving.";
 }
 
 void

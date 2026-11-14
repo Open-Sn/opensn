@@ -106,8 +106,10 @@ SMMAcceleration::Initialize()
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), DSABoundaryClosure::MARSHAK);
 
   // Create the diffusion materials
-  const auto xs_map =
-    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
+  const auto xs_map = PackGroupsetXS(do_problem_.GetBlockID2XSMap(),
+                                     front_gs_.first_group,
+                                     front_gs_.last_group,
+                                     do_problem_.GetOptions().adjoint);
 
   // Create the appropriate solver
   log.Log() << "Creating diffusion solver";
@@ -575,7 +577,7 @@ SMMAcceleration::ComputeSourceCorrection() const
     const auto& K = K_tensor_matrices_[cell->local_id];
 
     const auto& xs = matid_to_xs_map.at(cell->block_id);
-    const auto& sigma_tr = xs->GetSigmaTransport();
+    const auto& sigma_tr = xs->GetSigmaTransport(do_problem_.GetOptions().adjoint);
 
     // Volumetric term
     for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
