@@ -419,6 +419,8 @@ protected:
   std::string uncollided_flux_file_;
   /// Cross sections the uncollided flux was computed with.
   BlockID2XSMap uncollided_xs_map_;
+  /// Transport mode the uncollided flux file was loaded in.
+  bool uncollided_adjoint_ = false;
   std::vector<double> uncollided_flux_moments_local_;
   std::vector<double> first_collision_source_moments_local_;
   double uncollided_source_rate_ = 0.0;
