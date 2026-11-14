@@ -7,6 +7,8 @@
 #include "framework/mesh/mesh/cell.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_continuous.h"
+#include <algorithm>
+#include <limits>
 #include <sstream>
 
 namespace opensn
@@ -15,19 +17,58 @@ namespace opensn
 namespace
 {
 
+/// Distance from a point to the closest edge of a face of a cell.
+double
+DistanceToFaceEdges(const Mesh& grid, const CellFace& face, const Vector3& point)
+{
+  double distance = std::numeric_limits<double>::max();
+  const size_t num_vertices = face.vertex_ids.size();
+  for (size_t i = 0; i < num_vertices; ++i)
+  {
+    const auto& a = grid.GlobalVertex(face.vertex_ids[i]);
+    const auto& b = grid.GlobalVertex(face.vertex_ids[(i + 1) % num_vertices]);
+    const Vector3 edge = b - a;
+    const double length_2 = edge.NormSquare();
+    const double s =
+      (length_2 > 0.0) ? std::clamp((point - a).Dot(edge) / length_2, 0.0, 1.0) : 0.0;
+    distance = std::min(distance, (point - (a + s * edge)).Norm());
+  }
+  return distance;
+}
+
 /**
- * A point on a face of a cell, used to find the coarse face that contains a fine face.
+ * A point inside a face of a cell, used to find the coarse face that contains a fine face.
  *
- * This is the face centroid, the average of the vertices, unless the face is concave and its
- * centroid is outside it. It is then the centroid of the first triangle of three consecutive
- * vertices that is on the face; a simple polygon always has such a triangle.
+ * The point must be away from the edges of the face: a point on an edge of a cell is on two of
+ * its faces, and Mesh::CheckPointInsideCellFace accepts a point within its tolerance of an edge.
+ *
+ * This is the face centroid, the average of the vertices, when it is on the face and further
+ * from the edges than that tolerance, as it is for a convex face that is not that small. The
+ * centroid of a concave face can be outside the face or next to one of its edges. The point is
+ * then, among the centroid and the centroids of the triangles of three consecutive vertices,
+ * the one on the face that is the furthest from the edges. A simple polygon always has such a
+ * triangle with its centroid inside the polygon. Three collinear vertices are not chosen over
+ * it: the centroid of their triangle is on an edge.
  */
 Vector3
 PointOnFace(const Mesh& grid, const Cell& cell, const size_t face_i)
 {
+  // Tolerance of Mesh::CheckPointInsideCellFace
+  constexpr double tolerance = 1.0e-6;
+
   const auto& face = cell.faces[face_i];
-  if (grid.CheckPointInsideCellFace(cell, face_i, face.centroid))
+  // The face of a 1D or 2D cell is a vertex or a segment
+  if (face.vertex_ids.size() < 3)
     return face.centroid;
+
+  Vector3 best_point = face.centroid;
+  double best_distance = -1.0;
+  if (grid.CheckPointInsideCellFace(cell, face_i, face.centroid))
+  {
+    best_distance = DistanceToFaceEdges(grid, face, face.centroid);
+    if (best_distance > tolerance)
+      return face.centroid;
+  }
 
   const size_t num_vertices = face.vertex_ids.size();
   for (size_t i = 0; i < num_vertices; ++i)
@@ -36,10 +77,16 @@ PointOnFace(const Mesh& grid, const Cell& cell, const size_t face_i)
                         grid.GlobalVertex(face.vertex_ids[(i + 1) % num_vertices]) +
                         grid.GlobalVertex(face.vertex_ids[(i + 2) % num_vertices])) /
                        3.0;
-    if (grid.CheckPointInsideCellFace(cell, face_i, point))
-      return point;
+    if (not grid.CheckPointInsideCellFace(cell, face_i, point))
+      continue;
+    const double distance = DistanceToFaceEdges(grid, face, point);
+    if (distance > best_distance)
+    {
+      best_point = point;
+      best_distance = distance;
+    }
   }
-  return face.centroid;
+  return best_point;
 }
 
 } // namespace
