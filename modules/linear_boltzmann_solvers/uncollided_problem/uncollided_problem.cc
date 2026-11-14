@@ -233,7 +233,7 @@ UncollidedProblem::InitializeSpatialDiscretization()
   if (not all_cells_convex_)
     log.Log() << "Non-convex cells detected; concavity checks enabled globally.";
 
-  segment_tracer_ = std::make_unique<SegmentTracer>(*grid_);
+  mesh_segment_tracer_ = std::make_unique<MeshSegmentTracer>(*grid_);
 }
 
 std::vector<UncollidedProblem::ReflectionPlane>
@@ -724,6 +724,12 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   if (not reflected_source_points_.empty())
     ProjectReflectedImageSources(progress_interval);
 
+  if (rays_left_mesh_ > 0)
+    log.Log0Warning() << GetName() << ": " << rays_left_mesh_.load()
+                      << " rays from quadrature points to point sources left the mesh before "
+                         "reaching the source, so the source contributes no uncollided flux at "
+                         "those points. This happens only in a non-convex domain.";
+
   WriteFluxMoments(file);
 
   // Finalize balance calculation
@@ -769,7 +775,7 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
   std::sort(scratch_bp.begin(), scratch_bp.end());
 
   scratch_segs.clear();
-  thread_local std::vector<SegmentTracer::Segment> traced;
+  thread_local std::vector<MeshSegmentTracer::Segment> traced;
   auto cell_id = static_cast<std::uint32_t>(cell.local_id);
   for (size_t interval = 0; interval + 1 < scratch_bp.size(); ++interval)
   {
@@ -791,7 +797,7 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
     {
       // A fold can land where a reflecting boundary meets an internal face or edge. The reflected
       // segment continues in the cell that it enters there.
-      const auto entered = segment_tracer_->LocateAhead(cell_id, segment_start, segment_omega);
+      const auto entered = mesh_segment_tracer_->LocateAhead(cell_id, segment_start, segment_omega);
       OpenSnLogicalErrorIf(not entered,
                            GetName() +
                              ": reflected image-source ray could not locate its re-entry cell.");
@@ -799,7 +805,7 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
     }
 
     traced.clear();
-    if (not segment_tracer_->Trace(cell_id, segment_start, segment_end, traced))
+    if (not mesh_segment_tracer_->Trace(cell_id, segment_start, segment_end, traced))
     {
       OpenSnLogicalErrorIf(not source_point.reflection_planes.empty(),
                            GetName() +

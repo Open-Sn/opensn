@@ -7,7 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_problem.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/logical_volume/logical_volume.h"
-#include "framework/mesh/raytrace/segment_tracer.h"
+#include "framework/mesh/raytrace/mesh_segment_tracer.h"
 #include "framework/mesh/mesh/cell.h"
 #include "framework/data_types/dense_matrix.h"
 #include "framework/data_types/vector.h"
@@ -213,7 +213,7 @@ protected:
   bool all_cells_convex_ = true;
 
   /// Exact traversal of the rays from quadrature points to the point sources.
-  std::unique_ptr<SegmentTracer> segment_tracer_;
+  std::unique_ptr<MeshSegmentTracer> mesh_segment_tracer_;
   /// Rays from quadrature points to a point source that left the mesh before reaching it. In a
   /// non-convex domain with vacuum boundaries their uncollided flux is zero.
   mutable std::atomic<size_t> rays_left_mesh_ = 0;

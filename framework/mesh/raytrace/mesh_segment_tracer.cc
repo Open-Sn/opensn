@@ -1,15 +1,18 @@
 // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "framework/mesh/raytrace/segment_tracer.h"
+#include "framework/mesh/raytrace/mesh_segment_tracer.h"
 #include "framework/mesh/mesh/mesh.h"
+#include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <initializer_list>
 #include <limits>
 #include <string>
 #include <unordered_map>
+#include <utility>
 
 namespace opensn
 {
@@ -19,8 +22,25 @@ namespace
 
 /// Directions within this cosine of a plane are treated as parallel to it.
 constexpr double parallel_cosine = 1.0e-14;
-/// Tolerance of geometric tests relative to the size of the cell or of the coordinates.
+/// Tolerance of geometric tests relative to the size of the cell or of the segment.
 constexpr double relative_tolerance = 1.0e-10;
+/// Allowance for the round-off of a plane evaluation relative to the magnitude of the
+/// coordinates, about 450 times the machine epsilon.
+constexpr double coordinate_roundoff = 1.0e-13;
+/// Shortest altitude of a side triangle, relative to the size of its cell, below which the
+/// direction of its plane normal, whose error is the round-off of the vertices over the
+/// altitude, is too uncertain for the tolerance at the far side of the cell.
+constexpr double thin_altitude = 1.0e-3;
+
+/// Largest magnitude of a coordinate of the points.
+double
+CoordinateScale(std::initializer_list<Vector3> points)
+{
+  double scale = 0.0;
+  for (const auto& p : points)
+    scale = std::max({scale, std::abs(p.x), std::abs(p.y), std::abs(p.z)});
+  return scale;
+}
 
 struct Plane
 {
@@ -43,13 +63,21 @@ PlaneAwayFrom(const Vector3& p, const Vector3& q, const Vector3& r, const Vector
   return Plane{normal, normal.Dot(p)};
 }
 
+/// Shortest altitude of the triangle p, q, r: twice its area over its longest edge.
+double
+ShortestAltitude(const Vector3& p, const Vector3& q, const Vector3& r)
+{
+  const double longest = std::max({(q - p).Norm(), (r - q).Norm(), (p - r).Norm()});
+  return longest > 0.0 ? (q - p).Cross(r - p).Norm() / longest : 0.0;
+}
+
 } // namespace
 
-SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
+MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cells)
 {
   const auto& cells = grid.GetLocalCells();
   const size_t num_cells = cells.size();
-  OpenSnLogicalErrorIf(num_cells >= no_neighbor, "SegmentTracer: too many local cells.");
+  OpenSnLogicalErrorIf(num_cells >= no_neighbor, "MeshSegmentTracer: too many local cells.");
   cell_convex_.assign(num_cells, false);
   cell_size_.assign(num_cells, 0.0);
   cell_piece_offset_.assign(1, 0);
@@ -63,7 +91,7 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
     const Cell& cell = *cell_ptr;
     const auto c = static_cast<std::uint32_t>(cell.local_id);
     OpenSnLogicalErrorIf(c != cell_vertex_offset_.size() - 1,
-                         "SegmentTracer: local cells are not ordered by local id.");
+                         "MeshSegmentTracer: local cells are not ordered by local id.");
 
     // Compact vertex indices and the cell size.
     Vector3 lo = grid.GlobalVertex(cell.vertex_ids.front());
@@ -80,7 +108,8 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
     cell_vertex_offset_.push_back(static_cast<std::uint32_t>(cell_vertices_.size()));
     const double size = (hi - lo).Norm();
     cell_size_[c] = size;
-    const double tolerance = relative_tolerance * std::max(size, 1.0e-300);
+    const double tolerance = relative_tolerance * std::max(size, 1.0e-300) +
+                             coordinate_roundoff * CoordinateScale({lo, hi});
 
     // The planes of the side triangles of every face, oriented outward, with their neighbors.
     // A planar face contributes its plane once.
@@ -93,7 +122,17 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
         neighbor = static_cast<std::uint32_t>(grid.GetGlobalCell(face.neighbor_id).local_id);
       const size_t num_sides = face.vertex_ids.size();
       const size_t first_plane = planes.size();
+      // The sides in the order of the shortest altitude of their triangles, so that a planar
+      // face keeps the plane of its best conditioned side triangle.
+      std::vector<std::pair<double, size_t>> sides;
       for (size_t s = 0; s < num_sides; ++s)
+      {
+        const auto& a = grid.GlobalVertex(face.vertex_ids[s]);
+        const auto& b = grid.GlobalVertex(face.vertex_ids[(s + 1) % num_sides]);
+        sides.emplace_back(-ShortestAltitude(a, b, face.centroid), s);
+      }
+      std::sort(sides.begin(), sides.end());
+      for (const auto& [negative_altitude, s] : sides)
       {
         const auto& a = grid.GlobalVertex(face.vertex_ids[s]);
         const auto& b = grid.GlobalVertex(face.vertex_ids[(s + 1) % num_sides]);
@@ -110,6 +149,8 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
                       });
         if (repeated)
           continue;
+        if (-negative_altitude < thin_altitude * size)
+          ++num_thin_side_triangles_;
         planes.push_back(*plane);
         neighbors.push_back(neighbor);
       }
@@ -161,29 +202,35 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
           const auto& f = face.centroid;
           const auto& m = cell.centroid;
           const Vector3 outward = (a - f).Cross(b - f);
-          OpenSnInvalidArgumentIf(outward.Dot(m - a) > tolerance * outward.Norm(),
-                                  "SegmentTracer: cell " + std::to_string(cell.global_id) +
+          // The height of the cell centroid above the plane of the side triangle, times the
+          // norm of outward, positive on the outer side.
+          const double centroid_height = outward.Dot(m - a);
+          OpenSnInvalidArgumentIf(centroid_height > tolerance * outward.Norm(),
+                                  "MeshSegmentTracer: cell " + std::to_string(cell.global_id) +
                                     " (centroid " + m.PrintStr() + "), face " +
                                     std::to_string(f_index) + ", side " + std::to_string(s) +
                                     ": the cell centroid lies on the outer side of the plane of "
                                     "the side triangle, so the cell is not star-shaped about its "
                                     "centroid.");
+          // A side tetrahedron whose apex lies in the plane of its side triangle, or whose side
+          // triangle is degenerate, has no volume. The other side tetrahedra fill the cell
+          // without it. Its planes would coincide, and a ray in that plane would lie in it
+          // without an entry or an exit.
+          if (centroid_height >= -tolerance * outward.Norm())
+            continue;
           const std::array<std::array<Vector3, 4>, 4> triangles = {
             {{a, b, f, m}, {a, b, m, f}, {a, f, m, b}, {b, f, m, a}}};
-          std::array<std::optional<Plane>, 4> tet_planes;
-          bool degenerate = false;
           for (size_t k = 0; k < 4; ++k)
           {
             const auto& tri = triangles[k];
-            tet_planes[k] = PlaneAwayFrom(tri[0], tri[1], tri[2], tri[3]);
-            degenerate = degenerate or not tet_planes[k];
-          }
-          if (degenerate)
-            continue;
-          for (size_t k = 0; k < 4; ++k)
-          {
-            plane_normal_.push_back(tet_planes[k]->normal);
-            plane_offset_.push_back(tet_planes[k]->offset);
+            const auto plane = PlaneAwayFrom(tri[0], tri[1], tri[2], tri[3]);
+            OpenSnLogicalErrorIf(not plane,
+                                 "MeshSegmentTracer: a face of a side tetrahedron with volume "
+                                 "is degenerate.");
+            if (ShortestAltitude(tri[0], tri[1], tri[2]) < thin_altitude * size)
+              ++num_thin_side_triangles_;
+            plane_normal_.push_back(plane->normal);
+            plane_offset_.push_back(plane->offset);
             plane_neighbor_.push_back(k == 0 ? neighbor : no_neighbor);
           }
           piece_plane_offset_.push_back(static_cast<std::uint32_t>(plane_normal_.size()));
@@ -204,16 +251,29 @@ SegmentTracer::SegmentTracer(const Mesh& grid, const bool split_all_cells)
   for (std::uint32_t c = 0; c < num_cells; ++c)
     for (auto k = cell_vertex_offset_[c]; k < cell_vertex_offset_[c + 1]; ++k)
       vertex_cells_[fill[cell_vertices_[k]]++] = c;
+
+  if (num_thin_side_triangles_ > 0)
+    log.LogAllWarning() << "MeshSegmentTracer: " << num_thin_side_triangles_
+                        << " side triangles of faces are thinner than " << thin_altitude
+                        << " of their cell, so the planes computed from them are less accurate "
+                           "than the tracing tolerance. A segment that crosses such a plane may "
+                           "have a small part assigned to the neighboring cell.";
 }
 
 void
-SegmentTracer::PieceInterval(const std::uint32_t piece,
-                             const Ray& ray,
-                             double& entry,
-                             double& exit,
-                             std::vector<std::uint32_t>* exit_neighbors,
-                             const double exit_tolerance) const
+MeshSegmentTracer::PieceInterval(const std::uint32_t piece,
+                                 const Ray& ray,
+                                 const double t,
+                                 double& entry,
+                                 double& exit,
+                                 std::vector<std::uint32_t>* exit_neighbors) const
 {
+  // Whether the point of the ray at t lies in a half-space is decided from its signed distance
+  // to the plane, which rounds off like the coordinates. The value of t at which the ray crosses
+  // the plane is that distance divided by the cosine, so for a plane the ray grazes it is far
+  // less accurate, and it is only used for planes that the point lies clear of.
+  const double tol = ray.tolerance;
+  const Vector3 point = ray.start + t * ray.omega;
   entry = -std::numeric_limits<double>::infinity();
   exit = std::numeric_limits<double>::infinity();
   const auto first = piece_plane_offset_[piece];
@@ -221,42 +281,55 @@ SegmentTracer::PieceInterval(const std::uint32_t piece,
   for (auto k = first; k < last; ++k)
   {
     const double cosine = plane_normal_[k].Dot(ray.omega);
-    const double room = plane_offset_[k] - plane_normal_[k].Dot(ray.start);
-    if (std::abs(cosine) <= parallel_cosine)
+    // The distance from the point to the plane, positive on the inner side.
+    const double room = plane_offset_[k] - plane_normal_[k].Dot(point);
+    if (room < -tol)
     {
-      // The ray is parallel to the plane: inside the piece's half-space or never.
-      if (room < -ray.tolerance)
+      // The point lies outside the half-space: the ray enters it later, or never.
+      if (cosine < -parallel_cosine)
+        entry = std::max(entry, t + room / cosine);
+      else
       {
         entry = std::numeric_limits<double>::infinity();
         exit = -std::numeric_limits<double>::infinity();
         return;
       }
-      continue;
     }
-    const double t = room / cosine;
-    if (cosine > 0.0)
-      exit = std::min(exit, t);
-    else
-      entry = std::max(entry, t);
-  }
-  if (exit_neighbors and exit > entry)
-    for (auto k = first; k < last; ++k)
+    else if (room <= tol)
     {
-      const double cosine = plane_normal_[k].Dot(ray.omega);
-      if (cosine > parallel_cosine and plane_neighbor_[k] != no_neighbor)
-      {
-        const double t = (plane_offset_[k] - plane_normal_[k].Dot(ray.start)) / cosine;
-        if (t <= exit + exit_tolerance)
-          exit_neighbors->push_back(plane_neighbor_[k]);
-      }
+      // The point lies on the plane: the ray leaves or enters the half-space at t, or runs
+      // along the plane.
+      if (cosine > parallel_cosine)
+        exit = std::min(exit, t);
+      else if (cosine < -parallel_cosine)
+        entry = std::max(entry, t);
     }
+    else
+    {
+      // The point lies inside the half-space.
+      if (cosine > parallel_cosine)
+        exit = std::min(exit, t + room / cosine);
+      else if (cosine < -parallel_cosine)
+        entry = std::max(entry, t + room / cosine);
+    }
+  }
+  if (exit_neighbors and exit > entry and std::isfinite(exit))
+  {
+    // The neighbors across the planes on which the exit point lies.
+    const Vector3 exit_point = ray.start + exit * ray.omega;
+    for (auto k = first; k < last; ++k)
+      if (plane_neighbor_[k] != no_neighbor and
+          plane_normal_[k].Dot(ray.omega) > parallel_cosine and
+          plane_offset_[k] - plane_normal_[k].Dot(exit_point) <= tol)
+        exit_neighbors->push_back(plane_neighbor_[k]);
+  }
 }
 
 std::optional<double>
-SegmentTracer::ExitAfter(const std::uint32_t cell,
-                         const Ray& ray,
-                         const double t,
-                         std::vector<std::uint32_t>* exit_neighbors) const
+MeshSegmentTracer::ExitAfter(const std::uint32_t cell,
+                             const Ray& ray,
+                             const double t,
+                             std::vector<std::uint32_t>* exit_neighbors) const
 {
   const double tol = ray.tolerance;
   const auto first = cell_piece_offset_[cell];
@@ -268,7 +341,7 @@ SegmentTracer::ExitAfter(const std::uint32_t cell,
   {
     double entry = 0.0;
     double exit = 0.0;
-    PieceInterval(first, ray, entry, exit, exit_neighbors, tol);
+    PieceInterval(first, ray, t, entry, exit, exit_neighbors);
     if (entry <= t + tol and exit > t + tol)
       return exit;
     if (exit_neighbors)
@@ -276,44 +349,53 @@ SegmentTracer::ExitAfter(const std::uint32_t cell,
     return std::nullopt;
   }
 
-  // A non-convex cell: join the intervals of its side tetrahedra that continue from t.
+  // A non-convex cell: join the intervals of the side tetrahedra that continue the ray from t.
+  // Each piece is decided at the point that the joined interval has reached, so that a piece
+  // entered through a plane that the ray grazes is found from the distance to that plane.
   const auto num_pieces = last - first;
-  std::vector<double> entries(num_pieces);
-  std::vector<double> exits(num_pieces);
-  for (std::uint32_t p = 0; p < num_pieces; ++p)
-    PieceInterval(first + p, ray, entries[p], exits[p], nullptr, tol);
   double reach = t;
-  bool extended = true;
-  while (extended)
+  for (std::uint32_t pass = 0;; ++pass)
   {
-    extended = false;
+    OpenSnLogicalErrorIf(pass > num_pieces,
+                         "MeshSegmentTracer: the side tetrahedra of a cell did not stop extending "
+                         "the interval of a ray.");
+    bool extended = false;
     for (std::uint32_t p = 0; p < num_pieces; ++p)
-      if (entries[p] <= reach + tol and exits[p] > reach + tol)
+    {
+      double entry = 0.0;
+      double exit = 0.0;
+      PieceInterval(first + p, ray, reach, entry, exit, nullptr);
+      if (entry <= reach + tol and exit > reach + tol)
       {
-        reach = exits[p];
+        reach = exit;
         extended = true;
       }
+    }
+    if (not extended)
+      break;
   }
   if (reach <= t + tol)
     return std::nullopt;
   if (exit_neighbors)
     for (std::uint32_t p = 0; p < num_pieces; ++p)
-      if (exits[p] > entries[p] and std::abs(exits[p] - reach) <= tol)
-      {
-        double entry = 0.0;
-        double exit = 0.0;
-        PieceInterval(first + p, ray, entry, exit, exit_neighbors, tol);
-      }
+    {
+      // The pieces that the reach lies in or on, which the ray leaves there.
+      double entry = 0.0;
+      double exit = 0.0;
+      PieceInterval(first + p, ray, reach, entry, exit, nullptr);
+      if (entry <= reach + tol and exit >= reach - tol)
+        PieceInterval(first + p, ray, reach, entry, exit, exit_neighbors);
+    }
   return reach;
 }
 
 std::optional<std::uint32_t>
-SegmentTracer::FindNext(const std::uint32_t cell,
-                        const Ray& ray,
-                        const double t,
-                        const std::vector<std::uint32_t>& exit_neighbors,
-                        std::vector<std::uint32_t>& visited,
-                        double& exit) const
+MeshSegmentTracer::FindNext(const std::uint32_t cell,
+                            const Ray& ray,
+                            const double t,
+                            const std::vector<std::uint32_t>& exit_neighbors,
+                            std::vector<std::uint32_t>& visited,
+                            double& exit) const
 {
   std::optional<std::uint32_t> best;
   double best_exit = t + ray.tolerance;
@@ -367,23 +449,21 @@ SegmentTracer::FindNext(const std::uint32_t cell,
 }
 
 bool
-SegmentTracer::Trace(const std::uint32_t start_cell,
-                     const Vector3& start,
-                     const Vector3& end,
-                     std::vector<Segment>& segments) const
+MeshSegmentTracer::Trace(const std::uint32_t start_cell,
+                         const Vector3& start,
+                         const Vector3& end,
+                         std::vector<Segment>& segments) const
 {
   const double length = (end - start).Norm();
   if (length == 0.0)
     return true;
-  const double scale = std::max({std::abs(start.x),
-                                 std::abs(start.y),
-                                 std::abs(start.z),
-                                 std::abs(end.x),
-                                 std::abs(end.y),
-                                 std::abs(end.z),
-                                 length,
-                                 cell_size_[start_cell]});
-  const Ray ray{start, (end - start) / length, relative_tolerance * scale};
+  // Values of t within the tolerance are equal: a cell may be entered or left that much early
+  // or late. The tolerance covers the round-off of the plane evaluations at the coordinates of
+  // the segment, and a small fraction of the geometry so that slivers and repeated planes are
+  // tolerated.
+  const double tolerance = relative_tolerance * std::max(length, cell_size_[start_cell]) +
+                           coordinate_roundoff * CoordinateScale({start, end});
+  const Ray ray{start, (end - start) / length, tolerance};
 
   // The start must lie in or on the start cell.
   {
@@ -397,8 +477,8 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
         inside = inside and plane_normal_[k].Dot(start) - plane_offset_[k] <= ray.tolerance;
       contains = inside;
     }
-    OpenSnLogicalErrorIf(not contains,
-                         "SegmentTracer: the start of a segment does not lie in its start cell.");
+    OpenSnLogicalErrorIf(
+      not contains, "MeshSegmentTracer: the start of a segment does not lie in its start cell.");
   }
 
   std::vector<std::uint32_t> exit_neighbors;
@@ -410,10 +490,18 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
     exit = *start_exit;
   else
   {
-    // The segment only touches the start cell.
+    // The segment only touches the start cell. One that is shorter than the tolerance, and
+    // that no cell continues, lies in the start cell up to the tolerance.
     const auto next = FindNext(cell, ray, t, exit_neighbors, visited, exit);
     if (not next)
+    {
+      if (length <= ray.tolerance)
+      {
+        segments.push_back({cell, length});
+        return true;
+      }
       return false;
+    }
     cell = *next;
     ExitAfter(cell, ray, t, &exit_neighbors);
   }
@@ -435,18 +523,18 @@ SegmentTracer::Trace(const std::uint32_t start_cell,
     cell = *next;
     ExitAfter(cell, ray, t, &exit_neighbors);
   }
-  OpenSnLogicalError("SegmentTracer: a segment did not terminate after " +
+  OpenSnLogicalError("MeshSegmentTracer: a segment did not terminate after " +
                      std::to_string(max_steps) + " cells.");
 }
 
 std::optional<std::uint32_t>
-SegmentTracer::LocateAhead(const std::uint32_t hint_cell,
-                           const Vector3& point,
-                           const Vector3& omega) const
+MeshSegmentTracer::LocateAhead(const std::uint32_t hint_cell,
+                               const Vector3& point,
+                               const Vector3& omega) const
 {
-  const double scale =
-    std::max({std::abs(point.x), std::abs(point.y), std::abs(point.z), cell_size_[hint_cell]});
-  const Ray ray{point, omega, relative_tolerance * scale};
+  const double tolerance =
+    relative_tolerance * cell_size_[hint_cell] + coordinate_roundoff * CoordinateScale({point});
+  const Ray ray{point, omega, tolerance};
   if (ExitAfter(hint_cell, ray, 0.0, nullptr))
     return hint_cell;
   double exit = 0.0;

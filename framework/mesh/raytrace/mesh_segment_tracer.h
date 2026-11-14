@@ -29,17 +29,22 @@ class Mesh;
  * direction. For each convex piece the tracer computes the exact interval of t in which the line
  * lies in the piece, from the planes of the piece alone. It never moves the ray or uses a point
  * computed in another cell. A cell continues the traversal at t when its interval begins at t,
- * within a tolerance scaled to the coordinates, and extends beyond it. The next cell is looked
- * for first among the neighbors across the faces through which the ray leaves, then among all
- * cells that share a vertex with the current cell, and then among the cells that share a vertex
- * with those. A ray that leaves a cell exactly through an edge or vertex, or that only touches a
- * cell, is therefore continued in the cell it enters. Each step advances t, and the lengths of
- * a completed traversal sum to the segment length exactly.
+ * within a tolerance, and extends beyond it. The tolerance is 1e-10 of the cell size or segment
+ * length plus the round-off of the coordinates, so that it stays far below the cell size
+ * wherever the mesh lies. Whether a point of the line lies in a piece is decided from its
+ * distances to the planes, which round off like the coordinates, and not from the values of t
+ * at which the line crosses them, which lose accuracy for a plane that the line grazes. The
+ * next cell is looked for first among the neighbors across the faces
+ * through which the ray leaves, then among all cells that share a vertex with the current cell,
+ * and then among the cells that share a vertex with those. A ray that leaves a cell exactly
+ * through an edge or vertex, or that only touches a cell, is therefore continued in the cell it
+ * enters. Each step advances t, and the lengths of a completed traversal sum to the segment
+ * length exactly.
  *
  * The tracer works on the local cells of a mesh and treats a face whose neighbor is not local as
  * a boundary face.
  */
-class SegmentTracer
+class MeshSegmentTracer
 {
 public:
   /// A part of a segment in one local cell.
@@ -58,7 +63,7 @@ public:
    * is. The result is the same up to round-off; the option exists to test that path on meshes of
    * convex cells.
    */
-  explicit SegmentTracer(const Mesh& grid, bool split_all_cells = false);
+  explicit MeshSegmentTracer(const Mesh& grid, bool split_all_cells = false);
 
   /**
    * Traces the segment from start to end, beginning in the local cell start_cell, which must
@@ -86,6 +91,15 @@ public:
   /// Whether the cell is traced as one convex piece rather than through its side tetrahedra.
   bool IsConvexCell(std::uint32_t cell_local_id) const { return cell_convex_[cell_local_id]; }
 
+  /**
+   * Number of side triangles, among those whose planes the tracer uses, that are thinner than
+   * 1e-3 of their cell. The direction of a plane computed from such a triangle is uncertain by
+   * more than the tracing tolerance at the far side of the cell, so a segment that crosses it may
+   * have a small part assigned to the neighboring cell. The constructor warns when this is not
+   * zero.
+   */
+  size_t NumThinSideTriangles() const { return num_thin_side_triangles_; }
+
 private:
   /// The line start + t omega, with the absolute tolerance used to compare values of t.
   struct Ray
@@ -105,13 +119,18 @@ private:
                                   double t,
                                   std::vector<std::uint32_t>* exit_neighbors) const;
 
-  /// Interval of t in which the ray lies in a convex piece; empty when exit <= entry.
+  /**
+   * Interval of t in which the ray lies in a convex piece, decided from the distances of the
+   * point of the ray at t to the planes of the piece; empty when exit <= entry. When
+   * exit_neighbors is given, appends the neighbors across the planes on which the exit point
+   * lies.
+   */
   void PieceInterval(std::uint32_t piece,
                      const Ray& ray,
+                     double t,
                      double& entry,
                      double& exit,
-                     std::vector<std::uint32_t>* exit_neighbors,
-                     double exit_tolerance) const;
+                     std::vector<std::uint32_t>* exit_neighbors) const;
 
   /**
    * Returns the cell that continues the ray at t, searching outward from cell. visited is
@@ -128,6 +147,7 @@ private:
 
   std::vector<bool> cell_convex_;
   std::vector<double> cell_size_;
+  size_t num_thin_side_triangles_ = 0;
   /// Pieces of each cell: [cell_piece_offset_[c], cell_piece_offset_[c + 1]).
   std::vector<std::uint32_t> cell_piece_offset_;
   /// Planes of each piece: [piece_plane_offset_[p], piece_plane_offset_[p + 1]).

@@ -510,11 +510,16 @@ scattering regions where a conventional angular quadrature would otherwise
 produce strong ray effects.
 
 Only the scalar flux receives the uncollided component. The stored angular flux
-is the collided part, so the outputs computed from it are not available with an
-uncollided flux: ``WriteAngularFluxes``, ``WriteSurfaceAngularFluxes``,
-``ComputeLeakage``, and ``sigma_t`` cross-section sensitivities that take the
-forward angular flux from the problem raise ``ValueError``. ``GetPsi`` returns
-the collided part.
+is the collided part, so the outputs that would stand for the full angular flux
+are not available with an uncollided flux: ``WriteAngularFluxes``,
+``WriteSurfaceAngularFluxes``, and ``sigma_t`` cross-section sensitivities that
+take the forward angular flux from the problem raise ``ValueError``. ``GetPsi``
+returns the collided part. ``ComputeLeakage`` returns the leakage of the
+collided part in each group on each boundary; the balance table includes the
+uncollided outflow in ``outflow_rate`` and reports it separately as
+``uncollided_outflow_rate``, in total over all boundaries and groups, so the
+total leakage of a monoenergetic source is the collided leakage plus the
+uncollided outflow in the source group.
 
 Two-stage workflow
 ------------------

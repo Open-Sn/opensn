@@ -973,7 +973,7 @@
   },
   {
     "file": "uncollided_mode_rejections.py",
-    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode. Outputs computed from the angular flux, which holds only the collided part, are rejected.",
+    "comment": "Uncollided flux rejects time-dependent and adjoint modes at construction and on later mode changes; a rejected change leaves the problem unchanged; uncollided generation rejects a point source outside its near-source volume; an incoming-flux boundary is rejected; the generator rejects adjoint mode. Outputs that stand for the full angular flux, which holds only the collided part, are rejected. The collided leakage and the uncollided outflow of the balance table add up to its outflow rate.",
     "num_procs": 1,
     "checks": [
       {
@@ -1053,6 +1053,12 @@
         "key": "UncollidedAngularOutputsRejected=",
         "goldvalue": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedLeakageResidual=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       },
       {
         "type": "KeyValuePair",
