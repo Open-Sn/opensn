@@ -71,7 +71,8 @@ public:
    * \param file_base File name base
    * \param opt_dest Optional angular flux destination vector
    * \param expected_role Required solution role, or unspecified to accept any role.
-   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.
+   * \param expected_orientation Required orientation of a file that records the adjoint role, or
+   * unspecified to accept any. Files of other roles, and files without provenance, pass.
    *
    * The file must have been written with the same rank count, partition, and quadrature; files
    * that record their quadrature are checked against the problem's. Collective: a file that
@@ -158,9 +159,10 @@ public:
    * `upwind_psi`, read for boundary tags only and laid out like `psi`, holds the face value upwind
    * of each direction along the direction the data transport in (`Omega_d` for forward data,
    * `-Omega_d` for adjoint data): the cell value of `psi` for a direction that leaves the domain
-   * and the boundary-condition value the sweep used for one that enters it (0 for vacuum, the
-   * incoming flux for isotropic and arbitrary boundaries, the reflected angular flux for
-   * reflecting boundaries). It is empty for interior tags.
+   * and the boundary-condition value the solve used for one that enters it (0 for vacuum, the
+   * incoming flux for isotropic and arbitrary boundaries, the reflected final-iterate angular flux
+   * for reflecting boundaries), as recorded by DiscreteOrdinatesProblem::RecordBoundaryInflow. It
+   * is empty for interior tags.
    */
   struct SurfaceData
   {

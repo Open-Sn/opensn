@@ -19,6 +19,11 @@ A rejected SetTimeDependentMode(), SetAdjoint(True), SetXSMap(), or SetVolumetri
 leave the problem as it was, so a steady-state solve afterwards must reproduce the solve of an
 identical fresh problem exactly.
 
+Only the scalar flux receives the uncollided component; the stored angular flux is the collided
+part. The outputs computed from it would silently miss the uncollided flux, so after a solve
+WriteAngularFluxes, WriteSurfaceAngularFluxes, ComputeLeakage, and a sigma_t sensitivity that takes
+the forward angular flux from the problem must be rejected.
+
 Checks:
   UncollidedCtorTimeDependentRejected, UncollidedCtorAdjointRejected,
   UncollidedSetTimeDependentRejected, UncollidedSetAdjointRejected, UncollidedSetXSMapRejected,
@@ -32,6 +37,7 @@ Checks:
     an uncollided flux (with its point source) after the rejected SetAdjoint(True).
   UncollidedCtorBoundaryRejected, UncollidedLaterBoundaryRejected: 1 if an isotropic boundary is
     rejected with the uncollided-flux error at construction and when set afterwards.
+  UncollidedAngularOutputsRejected: 1 if all four angular-flux outputs are rejected.
 """
 
 import importlib
@@ -47,6 +53,7 @@ if "opensn_console" not in globals():
     from pyopensn.aquad import GLCProductQuadrature3DXYZ
     from pyopensn.logvol import RPPLogicalVolume
     from pyopensn.mesh import ExtruderMeshGenerator, FromFileMeshGenerator
+    from pyopensn.post import CrossSectionSensitivityPostprocessor
     from pyopensn.solver import (
         DiscreteOrdinatesProblem,
         SteadyStateSourceSolver,
@@ -223,6 +230,41 @@ if __name__ == "__main__":
         phi_fresh = solve(make_problem(grid, xs, file_name))
         max_diff = max(abs(a - b) for a, b in zip(phi, phi_fresh))
 
+    # The problem has been solved, so only the collided-only angular flux makes these fail. The
+    # forward angular flux is checked before the adjoint file is opened, so any other error, such as
+    # the missing adjoint file, counts as not rejected.
+    collided_only = "holds only the collided part"
+
+    def angular_output_rejected(action):
+        try:
+            action()
+        except (ValueError, RuntimeError) as error:
+            return collided_only in str(error)
+        return False
+
+    angular_outputs = [
+        angular_output_rejected(
+            lambda: problem.WriteAngularFluxes("uncollided_mode_rejections_psi")
+        ),
+        angular_output_rejected(
+            lambda: problem.WriteSurfaceAngularFluxes(
+                "uncollided_mode_rejections_surf", boundary_surfaces=["xmin"]
+            )
+        ),
+        angular_output_rejected(lambda: problem.ComputeLeakage([])),
+        angular_output_rejected(
+            lambda: CrossSectionSensitivityPostprocessor(
+                problem=problem,
+                sensitivity_type="sigma_t",
+                group=0,
+                adjoint_angular_fluxes="uncollided_mode_rejections_no_adjoint",
+            ).Execute()
+        ),
+    ]
+    # Before the rejection the writers created files.
+    for prefix in ("uncollided_mode_rejections_psi", "uncollided_mode_rejections_surf"):
+        remove_file(f"{prefix}{rank}.h5")
+
     # An incoming-flux boundary would be silently ignored with an uncollided flux.
     boundary = [{"name": "xmin", "type": "isotropic", "group_strength": [1.0]}]
     ctor_boundary = rejected(
@@ -251,4 +293,5 @@ if __name__ == "__main__":
         print(f"UncollidedGeneratorUnchanged={int(generator_unchanged)}")
         print(f"UncollidedCtorBoundaryRejected={int(ctor_boundary)}")
         print(f"UncollidedLaterBoundaryRejected={int(later_boundary)}")
+        print(f"UncollidedAngularOutputsRejected={int(all(angular_outputs))}")
         sys.stdout.flush()

@@ -13,6 +13,8 @@
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "mpicpp-lite/mpicpp-lite.h"
+#include <algorithm>
+#include <cmath>
 
 namespace mpi = mpicpp_lite;
 
@@ -136,15 +138,26 @@ ResponseEvaluator::SetDataOptions(const InputParameters& input)
   OpenSnInvalidArgumentIf(not surfaces.empty() and not prefixes.Has("surface_angular_fluxes"),
                           "\"surfaces\" requires a \"surface_angular_fluxes\" file prefix.");
 
+  // Adjoint data must be in physical orientation so that the boundary term pairs directions
+  // correctly. Forward data is also accepted, for example to integrate a forward flux against a
+  // material source.
   FluxMomentData phi;
   if (prefixes.Has("flux_moments"))
-    LBSSolverIO::ReadFluxMoments(
-      *do_problem_, prefixes.GetParamValue<std::string>("flux_moments"), false, phi);
+    LBSSolverIO::ReadFluxMoments(*do_problem_,
+                                 prefixes.GetParamValue<std::string>("flux_moments"),
+                                 false,
+                                 phi,
+                                 FluxSolutionRole::UNSPECIFIED,
+                                 AdjointFluxOrientation::PHYSICAL);
 
   AngularFluxData psi;
   if (prefixes.Has("angular_fluxes"))
     DiscreteOrdinatesProblemIO::ReadAngularFluxes(
-      *do_problem_, prefixes.GetParamValue<std::string>("angular_fluxes"), psi);
+      *do_problem_,
+      prefixes.GetParamValue<std::string>("angular_fluxes"),
+      psi,
+      FluxSolutionRole::UNSPECIFIED,
+      AdjointFluxOrientation::PHYSICAL);
 
   SurfaceAngularFluxData surf_psi;
   if (prefixes.Has("surface_angular_fluxes"))
@@ -283,6 +296,20 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                           "Expected " +
                             std::to_string(do_problem_->GetNumGroups()) + " but got " +
                             std::to_string(values.size()) + ".");
+  OpenSnInvalidArgumentIf(std::any_of(values.begin(),
+                                      values.end(),
+                                      [](double value) { return not std::isfinite(value); }),
+                          "Material source strengths must be finite.");
+
+  std::uint64_t local_cell_count = 0;
+  for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
+    if (cell->block_id == blkid)
+      ++local_cell_count;
+  std::uint64_t global_cell_count = 0;
+  mpi_comm.all_reduce(local_cell_count, global_cell_count, mpi::op::sum<std::uint64_t>());
+  OpenSnInvalidArgumentIf(global_cell_count == 0,
+                          "Material source block id " + std::to_string(blkid) +
+                            " does not select any mesh cells.");
 
   material_sources_[blkid] = values;
   log.Log0Verbose1() << "Material source for block id " << blkid << " added to the stack.";
@@ -291,33 +318,31 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
 void
 ResponseEvaluator::SetBoundarySourceOptions(const InputParameters& params)
 {
+  // The schema restricts "type" to "isotropic".
   const auto bndry_name = params.GetParamValue<std::string>("name");
-  if (params.IsParameterValid("function"))
-    throw std::runtime_error("Boundary '" + bndry_name +
-                             "' in ResponseEvaluator does not support \"function\".");
-  const auto bndry_type = params.GetParamValue<std::string>("type");
-
   const auto bid_opt = do_problem_->FindBoundaryID(bndry_name);
   OpenSnInvalidArgumentIf(not bid_opt.has_value(),
                           "Boundary \"" + bndry_name + "\" does not exist.");
   const auto bid = *bid_opt;
-  if (bndry_type == "isotropic")
-  {
-    OpenSnInvalidArgumentIf(not params.Has("group_strength"),
-                            "Parameter \"group_strength\" is required for "
-                            "boundaries of type \"isotropic\".");
-    params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
-    const auto values = params.GetParamVectorValue<double>("group_strength");
-    OpenSnInvalidArgumentIf(values.size() != do_problem_->GetNumGroups(),
-                            "The number of boundary source values does not match the "
-                            "number of groups. Expected " +
-                              std::to_string(do_problem_->GetNumGroups()) + " but got " +
-                              std::to_string(values.size()) + ".");
+  OpenSnInvalidArgumentIf(boundary_sources_.count(bid) > 0,
+                          "A boundary source for boundary \"" + bndry_name + "\" already exists.");
 
-    boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC, values};
-  }
-  else
-    log.Log0Warning() << "Unsupported boundary type. Skipping the entry.";
+  OpenSnInvalidArgumentIf(not params.Has("group_strength"),
+                          "Parameter \"group_strength\" is required for "
+                          "boundaries of type \"isotropic\".");
+  params.RequireParameterBlockTypeIs("group_strength", ParameterBlockType::ARRAY);
+  const auto values = params.GetParamVectorValue<double>("group_strength");
+  OpenSnInvalidArgumentIf(values.size() != do_problem_->GetNumGroups(),
+                          "The number of boundary source values does not match the "
+                          "number of groups. Expected " +
+                            std::to_string(do_problem_->GetNumGroups()) + " but got " +
+                            std::to_string(values.size()) + ".");
+  OpenSnInvalidArgumentIf(std::any_of(values.begin(),
+                                      values.end(),
+                                      [](double value) { return not std::isfinite(value); }),
+                          "Boundary source strengths must be finite.");
+
+  boundary_sources_[bid] = {LBSBoundaryType::ISOTROPIC, values};
 }
 
 void
@@ -364,7 +389,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
                        "If point sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
   OpenSnLogicalErrorIf(not volumetric_sources_.empty() and phi_dagger.empty(),
-                       "if volumetric sources are set, adjoint flux moments "
+                       "If volumetric sources are set, adjoint flux moments "
                        "must be available for response evaluation.");
   OpenSnLogicalErrorIf(not boundary_sources_.empty() and psi_dagger.empty(),
                        "If boundary sources are set, adjoint angular fluxes "
@@ -375,6 +400,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto num_groups = do_problem_->GetNumGroups();
+  // Point and volumetric sources are evaluated as the forward source assembly evaluates them: at
+  // the problem's time, skipping sources that are inactive then.
+  const double time = do_problem_->GetTime();
 
   double local_response = 0.0;
 
@@ -431,10 +459,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
             for (size_t fi = 0; fi < num_face_nodes; ++fi)
             {
               const auto i = cell_mapping.MapFaceNode(f, fi);
-              const auto& node = grid->GlobalVertex(cell->vertex_ids[i]);
               const auto& intF_shapeI = fe_values.intS_shapeI[f](i);
 
-              const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, node, groupset);
+              const auto psi_bndry = EvaluateBoundaryCondition(bndry_id, groupset);
 
               for (size_t n = 0; n < num_gs_angles; ++n)
               {
@@ -462,12 +489,15 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
 
   // Point sources
   for (const auto& point_source : point_sources_)
+  {
+    if (not point_source->IsActive(time))
+      continue;
     for (const auto& subscriber : point_source->GetSubscribers())
     {
       const auto& cell = grid->GetLocalCell(subscriber.cell_local_id);
       const auto& transport_view = transport_views[cell.local_id];
 
-      const auto src = point_source->GetStrength(0.0, num_groups);
+      const auto src = point_source->GetStrength(time, num_groups);
       const auto& vol_wt = subscriber.volume_weight;
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
@@ -479,26 +509,35 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
           local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
       } // for node i
     } // for subscriber
+  }
 
-  // Volumetric sources
+  // Volumetric sources. The forward solve applies the mass matrix to the nodal source values, so
+  // the response is sum_ij phi_dagger_i M_ij q_j.
   for (const auto& volumetric_source : volumetric_sources_)
+  {
+    if (not volumetric_source->IsActive(time))
+      continue;
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
       const auto& cell = grid->GetLocalCell(local_id);
       const auto& transport_view = transport_views[cell.local_id];
-      const auto& fe_values = unit_cell_matrices[cell.local_id];
+      const auto& mass = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
       const auto& nodes = discretization.GetCellNodeLocations(cell);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
+      std::vector<std::vector<double>> node_values(num_cell_nodes);
+      for (int j = 0; j < num_cell_nodes; ++j)
+        node_values[j] = volumetric_source->Evaluate(cell, nodes[j], num_groups, time);
+
       for (int i = 0; i < num_cell_nodes; ++i)
       {
-        const auto& V_i = fe_values.intV_shapeI(i);
         const auto dof_map = transport_view.MapDOF(i, 0, 0);
-        const auto& vals = volumetric_source->Evaluate(cell, nodes[i], num_groups, 0.0);
-        for (unsigned int g = 0; g < num_groups; ++g)
-          local_response += vals[g] * phi_dagger[dof_map + g] * V_i;
+        for (int j = 0; j < num_cell_nodes; ++j)
+          for (unsigned int g = 0; g < num_groups; ++g)
+            local_response += phi_dagger[dof_map + g] * mass(i, j) * node_values[j][g];
       }
     }
+  }
 
   // Report a physical response: curvilinear unit integrals omit the angular extent (2*pi in RZ).
   local_response *= IntegralMeasureScale(grid->GetCoordinateSystem());
@@ -536,9 +575,7 @@ ResponseEvaluator::EvaluateSurfaceResponse(const std::string& fwd_data,
 
 std::vector<double>
 ResponseEvaluator::EvaluateBoundaryCondition(const uint64_t boundary_id,
-                                             const Vector3& node,
-                                             const LBSGroupset& groupset,
-                                             const double /*unused*/) const
+                                             const LBSGroupset& groupset) const
 {
   const auto num_gs_angles = groupset.quadrature->GetNumAngles();
   const auto num_gs_groups = groupset.GetNumGroups();

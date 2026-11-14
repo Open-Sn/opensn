@@ -622,7 +622,9 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
                const unsigned int groupset_id,
                const uint64_t boundary_id)
 {
-
+  OpenSnInvalidArgumentIf(do_problem.HasUncollidedFlux(),
+                          "ComputeLeakage is not available with an uncollided flux: the outflow "
+                          "is computed from the angular flux, which holds only the collided part.");
   OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
   const auto& grid = do_problem.GetGrid();
@@ -680,6 +682,9 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 std::map<uint64_t, std::vector<double>>
 ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
 {
+  OpenSnInvalidArgumentIf(do_problem.HasUncollidedFlux(),
+                          "ComputeLeakage is not available with an uncollided flux: the outflow "
+                          "is computed from the angular flux, which holds only the collided part.");
 
   const auto& grid = do_problem.GetGrid();
   const auto uniq = grid->GetUniqueBoundaryIDs();

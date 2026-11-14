@@ -71,13 +71,15 @@ public:
    * \param opt_dest Optional destination vector to populate instead of the problem-owned flux
    * moments.
    * \param expected_role Required solution role, or unspecified to accept any role.
-   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.
+   * \param expected_orientation Required orientation of a file that records the adjoint role, or
+   * unspecified to accept any. Files of other roles, and files without provenance, pass.
    *
    * The file must have been written with the same rank count and partition. Collective: a file
    * that cannot be read or does not match the problem raises an error on every rank, and the
-   * destination is left unchanged.
+   * destination is left unchanged. Returns the adjoint orientation recorded in this rank's file,
+   * unspecified for a forward file or a file without provenance.
    */
-  static void ReadFluxMoments(
+  static AdjointFluxOrientation ReadFluxMoments(
     LBSProblem& lbs_problem,
     const std::string& file_base,
     bool single_file,

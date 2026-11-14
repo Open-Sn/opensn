@@ -2,9 +2,14 @@
 # -*- coding: utf-8 -*-
 
 """
-2D PWLD adjoint transport test with localized material source
-Test: QoI Value=1.38399e-05
-      Inner Product=1.38405e-05
+2D PWLD adjoint transport test with localized material source.
+
+The forward QoI (the flux integrated over the QoI region) and the adjoint inner product (the
+material source folded against the adjoint flux) are separate computations of the same quantity.
+The discrete forward-adjoint identity makes them equal to the solver tolerance (1e-10).
+Test: QoI Value=1.38397e-05
+      Inner Product=1.38397e-05
+      ADJOINT_IDENTITY_REL_DIFF ~ 1e-8
 """
 
 import os
@@ -100,7 +105,7 @@ if __name__ == "__main__":
                 "groups_from_to": (0, 0),
                 "angular_quadrature": pquad,
                 "inner_linear_method": "petsc_gmres",
-                "l_abs_tol": 1.0e-6,
+                "l_abs_tol": 1.0e-10,
                 "l_max_its": 500,
                 "gmres_restart_interval": 100,
             },
@@ -155,6 +160,8 @@ if __name__ == "__main__":
     if rank == 0:
         print(f"QoI Value={fwd_qoi:.5e}")
         print(f"Inner Product={adj_qoi:.5e}")
+        print(f"ADJOINT_IDENTITY_REL_DIFF={abs(adj_qoi / fwd_qoi - 1.0):.6e}")
+        print(f"QoI Value exact={fwd_qoi:.10e}")
 
     # Cleanup
     barrier()

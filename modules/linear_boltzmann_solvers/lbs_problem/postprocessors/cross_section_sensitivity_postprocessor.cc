@@ -7,8 +7,11 @@
 #include "framework/runtime.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/io/discrete_ordinates_problem_io.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/io/lbs_problem_io.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include <algorithm>
 #include <cmath>
+#include <limits>
+#include <map>
 #include <stdexcept>
 
 namespace opensn
@@ -146,8 +149,16 @@ CrossSectionSensitivityPostprocessor::CreateSpatialRestriction()
       cell_local_ids_[i] = GetLogicalVolumeCellIDs(logical_volumes_[i]);
   }
 
-  OpenSnLogicalErrorIf(cell_local_ids_.empty(),
-                       "No mesh cells were selected by a CrossSectionSensitivityPostprocessor.");
+  for (size_t i = 0; i < cell_local_ids_.size(); ++i)
+  {
+    const std::uint64_t local_count = cell_local_ids_[i].size();
+    std::uint64_t global_count = 0;
+    mpi_comm.all_reduce(local_count, global_count, mpi::op::sum<std::uint64_t>());
+    OpenSnInvalidArgumentIf(
+      global_count == 0,
+      "Spatial restriction " + std::to_string(i) +
+        " of CrossSectionSensitivityPostprocessor does not select any mesh cells.");
+  }
 }
 
 std::vector<std::uint32_t>
@@ -220,9 +231,10 @@ CrossSectionSensitivityPostprocessor::ValidateSelectedCoefficient() const
 
   OpenSnInvalidArgumentIf(scattering_moments_.empty(), "No scattering moments were selected.");
   for (const auto ell : scattering_moments_)
-    OpenSnInvalidArgumentIf(ell >= do_problem_->GetNumMoments(),
-                            "Selected scattering moment must be less than the number of flux "
-                            "moments.");
+    OpenSnInvalidArgumentIf(ell > do_problem_->GetScatteringOrder(),
+                            "Selected scattering moment must not exceed the problem's scattering "
+                            "order (" +
+                              std::to_string(do_problem_->GetScatteringOrder()) + ").");
 }
 
 void
@@ -230,16 +242,38 @@ CrossSectionSensitivityPostprocessor::LoadAngularFluxes(
   std::vector<std::vector<double>>& forward_psi, std::vector<std::vector<double>>& adjoint_psi)
 {
   if (forward_angular_fluxes_prefix_.empty())
+  {
+    OpenSnInvalidArgumentIf(do_problem_->IsAdjoint(),
+                            "A forward angular-flux file is required when the problem's current "
+                            "solution is adjoint.");
+    OpenSnInvalidArgumentIf(do_problem_->HasUncollidedFlux(),
+                            "sigma_t sensitivities are not available with an uncollided flux: the "
+                            "angular flux holds only the collided part.");
     forward_psi = do_problem_->GetPsiNewLocal();
+  }
   else
-    DiscreteOrdinatesProblemIO::ReadAngularFluxes(
-      *do_problem_, forward_angular_fluxes_prefix_, forward_psi);
+    DiscreteOrdinatesProblemIO::ReadAngularFluxes(*do_problem_,
+                                                  forward_angular_fluxes_prefix_,
+                                                  forward_psi,
+                                                  FluxSolutionRole::FORWARD,
+                                                  AdjointFluxOrientation::UNSPECIFIED);
 
   if (adjoint_angular_fluxes_prefix_.empty())
+  {
+    OpenSnInvalidArgumentIf(not do_problem_->IsAdjoint(),
+                            "An adjoint angular-flux file is required when the problem's current "
+                            "solution is forward.");
+    OpenSnInvalidArgumentIf(not do_problem_->IsAdjointSolutionReoriented(),
+                            "The current adjoint angular flux is still in solver orientation; "
+                            "solve the adjoint problem first.");
     adjoint_psi = do_problem_->GetPsiNewLocal();
+  }
   else
-    DiscreteOrdinatesProblemIO::ReadAngularFluxes(
-      *do_problem_, adjoint_angular_fluxes_prefix_, adjoint_psi);
+    DiscreteOrdinatesProblemIO::ReadAngularFluxes(*do_problem_,
+                                                  adjoint_angular_fluxes_prefix_,
+                                                  adjoint_psi,
+                                                  FluxSolutionRole::ADJOINT,
+                                                  AdjointFluxOrientation::PHYSICAL);
 
   OpenSnInvalidArgumentIf(forward_psi.empty() or adjoint_psi.empty(),
                           "sigma_t sensitivities require forward and adjoint angular fluxes.");
@@ -256,16 +290,37 @@ CrossSectionSensitivityPostprocessor::LoadFluxMoments(std::vector<double>& forwa
                                                       std::vector<double>& adjoint_phi)
 {
   if (forward_flux_moments_prefix_.empty())
+  {
+    OpenSnInvalidArgumentIf(do_problem_->IsAdjoint(),
+                            "A forward flux-moment file is required when the problem's current "
+                            "solution is adjoint.");
     forward_phi = do_problem_->GetPhiNewLocal();
+  }
   else
-    LBSSolverIO::ReadFluxMoments(
-      *do_problem_, forward_flux_moments_prefix_, flux_moments_single_file_, forward_phi);
+    LBSSolverIO::ReadFluxMoments(*do_problem_,
+                                 forward_flux_moments_prefix_,
+                                 flux_moments_single_file_,
+                                 forward_phi,
+                                 FluxSolutionRole::FORWARD,
+                                 AdjointFluxOrientation::UNSPECIFIED);
 
   if (adjoint_flux_moments_prefix_.empty())
+  {
+    OpenSnInvalidArgumentIf(not do_problem_->IsAdjoint(),
+                            "An adjoint flux-moment file is required when the problem's current "
+                            "solution is forward.");
+    OpenSnInvalidArgumentIf(not do_problem_->IsAdjointSolutionReoriented(),
+                            "The current adjoint flux moments are still in solver orientation; "
+                            "solve the adjoint problem first.");
     adjoint_phi = do_problem_->GetPhiNewLocal();
+  }
   else
-    LBSSolverIO::ReadFluxMoments(
-      *do_problem_, adjoint_flux_moments_prefix_, flux_moments_single_file_, adjoint_phi);
+    LBSSolverIO::ReadFluxMoments(*do_problem_,
+                                 adjoint_flux_moments_prefix_,
+                                 flux_moments_single_file_,
+                                 adjoint_phi,
+                                 FluxSolutionRole::ADJOINT,
+                                 AdjointFluxOrientation::PHYSICAL);
 
   OpenSnInvalidArgumentIf(forward_phi.empty() or adjoint_phi.empty(),
                           "scatter and production sensitivities require forward and adjoint flux "
@@ -307,18 +362,27 @@ CrossSectionSensitivityPostprocessor::Execute()
         values_(i, j) = sensitivities[j];
     }
   }
+
+  executed_ = true;
+  k_eigenvalue_scaled_ = false;
 }
 
 void
 CrossSectionSensitivityPostprocessor::ApplyKEigenvalueScaling(const double k_eff)
 {
   OpenSnInvalidArgumentIf(k_eff <= 0.0, "The forward k-eigenvalue must be positive.");
+  OpenSnLogicalErrorIf(not executed_,
+                       "ApplyKEigenvalueScaling requires the sensitivities of Execute.");
+  OpenSnLogicalErrorIf(k_eigenvalue_scaled_,
+                       "The sensitivities are already k-eigenvalue scaled. Call Execute to "
+                       "recompute them before scaling again.");
 
   std::vector<double> forward_phi;
   std::vector<double> adjoint_phi;
   LoadFluxMoments(forward_phi, adjoint_phi);
 
   ScaleForKEigenvalueSensitivity(k_eff, ComputeFissionDenominator(forward_phi, adjoint_phi));
+  k_eigenvalue_scaled_ = true;
 }
 
 std::vector<double>
@@ -473,6 +537,31 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
 }
 
 std::vector<double>
+CrossSectionSensitivityPostprocessor::GetFissionProductionMatrix(const MultiGroupXS& xs) const
+{
+  const auto num_groups = do_problem_->GetNumGroups();
+  std::vector<double> production(static_cast<size_t>(num_groups) * num_groups, 0.0);
+  if (not xs.IsFissionable())
+    return production;
+
+  // The forward data, whatever mode the problem is in. When delayed neutrons are included, the
+  // production matrix is prompt only and the delayed production is added, as in the solvers.
+  const auto& F = xs.GetProductionMatrix(false);
+  OpenSnLogicalErrorIf(F.size() != num_groups,
+                       "The fission production matrix does not contain all energy groups.");
+  const bool include_delayed = UseDelayedNeutronProduction(*do_problem_);
+  for (unsigned int g = 0; g < num_groups; ++g)
+  {
+    OpenSnLogicalErrorIf(F[g].size() != num_groups,
+                         "The fission production matrix does not contain all energy groups.");
+    for (unsigned int gp = 0; gp < num_groups; ++gp)
+      production[g * num_groups + gp] =
+        F[g][gp] + (include_delayed ? ComputeDelayedFissionProduction(xs, g, gp) : 0.0);
+  }
+  return production;
+}
+
+std::vector<double>
 CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   const std::vector<std::uint32_t>& cell_local_ids,
   const std::vector<double>& forward_phi,
@@ -481,8 +570,18 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
   const auto& grid = do_problem_->GetGrid();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
+  const auto num_groups = do_problem_->GetNumGroups();
   const auto group = selected_group_.value_or(0);
 
+  // The coefficient is nu_sigma_f of the selected source group g' with the fission spectra and
+  // the delayed fraction held fixed, so column g' of the fission production matrix F scales with
+  // it: dF[g][g'] / d(nu_sigma_f[g']) = F[g][g'] / nu_sigma_f[g']. The relative sensitivity
+  // nu_sigma_f[g'] dR/d(nu_sigma_f[g']) is therefore <phi^dagger, F[:, g'] phi_g'>.
+  // Where nu_sigma_f[g'] is zero, column g' of F is zero and does not define the spectrum. The
+  // relative sensitivity is then zero, but the absolute sensitivity is undefined and rejected.
+  const auto no_block = std::numeric_limits<unsigned int>::max();
+  auto local_zero_block = no_block;
+  std::map<const MultiGroupXS*, std::vector<double>> production_by_xs;
   double local = 0.0;
   for (const auto cell_id : cell_local_ids)
   {
@@ -494,24 +593,20 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
     if (not xs->IsFissionable())
       continue;
 
-    const auto& chi = xs->GetChi();
     const auto& nu_sigma_f = xs->GetNuSigmaF();
-
     OpenSnLogicalErrorIf(group >= nu_sigma_f.size(),
                          "Production sensitivity group is outside the fission XS data.");
-    OpenSnLogicalErrorIf(chi.size() < do_problem_->GetNumGroups(),
-                         "The fission spectrum does not contain all energy groups.");
-
-    // Sensitivity is with respect to nu_sigma_f (see post_processors.rst: absolute =
-    // dR/d(nu_sigma_f), relative = nu_sigma_f * dR/d(nu_sigma_f)), not sigma_f - the
-    // loop below already accumulates dR/d(nu_sigma_f) directly, so the absolute case
-    // needs no extra factor. Scaling by nu_sigma_f/sigma_f (i.e. nu, holding nu fixed)
-    // would instead give dR/d(sigma_f), a different coefficient than the one this
-    // function is documented to report.
-    const double coefficient = relative_ ? nu_sigma_f[group] : 1.0;
-
-    if (coefficient == 0.0)
+    if (nu_sigma_f[group] == 0.0)
+    {
+      if (not relative_)
+        local_zero_block = std::min(local_zero_block, cell.block_id);
       continue;
+    }
+    const double coefficient = relative_ ? 1.0 : 1.0 / nu_sigma_f[group];
+    auto it = production_by_xs.find(xs.get());
+    if (it == production_by_xs.end())
+      it = production_by_xs.emplace(xs.get(), GetFissionProductionMatrix(*xs)).first;
+    const auto& production = it->second;
 
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
@@ -519,8 +614,8 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
       const auto dof_i = transport_view.MapDOF(i, 0, 0);
 
       double adjoint_fission_importance = 0.0;
-      for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
-        adjoint_fission_importance += chi[g] * adjoint_phi[dof_i + g];
+      for (unsigned int g = 0; g < num_groups; ++g)
+        adjoint_fission_importance += production[g * num_groups + group] * adjoint_phi[dof_i + g];
 
       for (int j = 0; j < num_nodes; ++j)
       {
@@ -530,6 +625,15 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
       }
     }
   }
+
+  auto zero_block = no_block;
+  mpi_comm.all_reduce(local_zero_block, zero_block, mpi::op::min<unsigned int>());
+  OpenSnInvalidArgumentIf(zero_block != no_block,
+                          "The absolute production sensitivity to group " + std::to_string(group) +
+                            " is undefined in block " + std::to_string(zero_block) +
+                            ", where nu_sigma_f of that group is zero and does not define the "
+                            "fission spectrum. Use relative=True, which is zero there, or exclude "
+                            "the block.");
 
   double global = 0.0;
   mpi_comm.all_reduce(local, global, mpi::op::sum<double>());
@@ -543,40 +647,44 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
   const auto& grid = do_problem_->GetGrid();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
   const auto& transport_views = do_problem_->GetCellTransportViews();
+  const auto num_groups = do_problem_->GetNumGroups();
 
+  // <phi^dagger, F phi> with the fission production operator the solvers apply.
+  std::map<const MultiGroupXS*, std::vector<double>> production_by_xs;
   double local = 0.0;
   for (const auto& cell : grid->GetLocalCells())
   {
     const auto& xs = do_problem_->GetBlockID2XSMap().at(cell->block_id);
     if (not xs->IsFissionable())
       continue;
+    auto it = production_by_xs.find(xs.get());
+    if (it == production_by_xs.end())
+      it = production_by_xs.emplace(xs.get(), GetFissionProductionMatrix(*xs)).first;
+    const auto& production = it->second;
 
     const auto& fe_values = unit_cell_matrices[cell->local_id];
     const auto& transport_view = transport_views[cell->local_id];
-    const auto& chi = xs->GetChi();
-    const auto& nu_sigma_f = xs->GetNuSigmaF();
-
-    OpenSnLogicalErrorIf(chi.size() < do_problem_->GetNumGroups() or
-                           nu_sigma_f.size() < do_problem_->GetNumGroups(),
-                         "Fission XS data does not contain all energy groups.");
-
     const auto num_nodes = transport_view.GetNumNodes();
-    std::vector<double> adjoint_fission_importance(num_nodes, 0.0);
-    std::vector<double> forward_fission_production(num_nodes, 0.0);
-    for (int i = 0; i < num_nodes; ++i)
+    std::vector<double> forward_fission_source(static_cast<size_t>(num_nodes) * num_groups, 0.0);
+    for (int j = 0; j < num_nodes; ++j)
     {
-      const auto dof_map = transport_view.MapDOF(i, 0, 0);
-      for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
-      {
-        adjoint_fission_importance[i] += chi[g] * adjoint_phi[dof_map + g];
-        forward_fission_production[i] += nu_sigma_f[g] * forward_phi[dof_map + g];
-      }
+      const auto dof_j = transport_view.MapDOF(j, 0, 0);
+      for (unsigned int g = 0; g < num_groups; ++g)
+        for (unsigned int gp = 0; gp < num_groups; ++gp)
+          forward_fission_source[j * num_groups + g] +=
+            production[g * num_groups + gp] * forward_phi[dof_j + gp];
     }
 
     for (int i = 0; i < num_nodes; ++i)
+    {
+      const auto dof_i = transport_view.MapDOF(i, 0, 0);
       for (int j = 0; j < num_nodes; ++j)
-        local += adjoint_fission_importance[i] * fe_values.intV_shapeI_shapeJ(i, j) *
-                 forward_fission_production[j];
+      {
+        const double M_ij = fe_values.intV_shapeI_shapeJ(i, j);
+        for (unsigned int g = 0; g < num_groups; ++g)
+          local += adjoint_phi[dof_i + g] * M_ij * forward_fission_source[j * num_groups + g];
+      }
+    }
   }
 
   double global = 0.0;

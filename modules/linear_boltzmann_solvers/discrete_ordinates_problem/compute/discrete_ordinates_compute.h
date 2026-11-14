@@ -68,7 +68,8 @@ void ComputeBalance(DiscreteOrdinatesProblem& do_problem, double scaling_factor 
  * \param groupset_id The groupset for which to compute the leakage.
  * \param boundary_id The boundary id for which to perform the integration.
  *
- * \return The leakage as a value.
+ * \return The leakage as a value. Throws std::invalid_argument for a problem with an uncollided
+ * flux, whose angular flux holds only the collided part.
  */
 std::vector<double> ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
                                    unsigned int groupset_id,
@@ -79,7 +80,8 @@ std::vector<double> ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
  *
  * \param do_problem The discrete ordinates problem supplying the current angular flux state.
  * \param boundary_ids The boundary ids to compute leakages on.
- * \return A map of boundary ids to group-wise leakages.
+ * \return A map of boundary ids to group-wise leakages. Throws std::invalid_argument for a problem
+ * with an uncollided flux, whose angular flux holds only the collided part.
  */
 std::map<uint64_t, std::vector<double>> ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
                                                        const std::vector<uint64_t>& boundary_ids);

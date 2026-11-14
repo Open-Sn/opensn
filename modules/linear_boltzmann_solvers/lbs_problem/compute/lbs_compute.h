@@ -33,7 +33,7 @@ double ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector
  */
 double ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi);
 
-/// Compute the steady state delayed neutron precursor concentrations.
+/// Compute the steady state delayed neutron precursor concentrations (zero in adjoint mode).
 void ComputePrecursors(LBSProblem& lbs_problem);
 
 } // namespace opensn

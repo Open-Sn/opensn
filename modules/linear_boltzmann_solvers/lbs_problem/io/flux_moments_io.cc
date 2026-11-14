@@ -198,7 +198,7 @@ LBSSolverIO::ReadFileMeshNodes(const hid_t file,
   return mesh;
 }
 
-void
+AdjointFluxOrientation
 LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
                              const std::string& file_base,
                              bool single_file,
@@ -223,6 +223,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   // Each rank validates its own file; a failure on any rank is raised on every rank. The result is
   // published only after the whole file has been validated.
   std::vector<double> result;
+  auto recorded_orientation = AdjointFluxOrientation::UNSPECIFIED;
   RunWithCollectiveErrors(
     [&]
     {
@@ -263,13 +264,14 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
           ((file_role == static_cast<unsigned int>(FluxSolutionRole::ADJOINT)) !=
            (file_orientation != static_cast<unsigned int>(AdjointFluxOrientation::UNSPECIFIED))),
         "Inconsistent solution role and adjoint orientation in " + file_name + ".");
+      recorded_orientation = static_cast<AdjointFluxOrientation>(file_orientation);
       OpenSnLogicalErrorIf(
         expected_role != FluxSolutionRole::UNSPECIFIED and
           (not has_role or file_role != static_cast<unsigned int>(expected_role)),
         "The solution role in " + file_name + " does not match the requested role.");
       OpenSnLogicalErrorIf(expected_orientation != AdjointFluxOrientation::UNSPECIFIED and
-                             (not has_orientation or
-                              file_orientation != static_cast<unsigned int>(expected_orientation)),
+                             file_role == static_cast<unsigned int>(FluxSolutionRole::ADJOINT) and
+                             file_orientation != static_cast<unsigned int>(expected_orientation),
                            "The adjoint orientation in " + file_name +
                              " does not match the requested orientation.");
       if (not opt_dest.has_value() and has_role)
@@ -332,6 +334,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   if (not opt_dest.has_value())
     lbs_problem.RestoreAdjointSolutionOrientation();
   dest = std::move(result);
+  return recorded_orientation;
 }
 
 } // namespace opensn

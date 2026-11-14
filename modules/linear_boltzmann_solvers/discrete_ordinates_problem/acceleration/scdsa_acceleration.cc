@@ -69,8 +69,10 @@ SCDSAAcceleration::Initialize()
   const auto bcs = TranslateBCs(do_problem_.GetSweepBoundaries(), DSABoundaryClosure::DIRICHLET);
 
   // Make xs map
-  const auto matid_2_mgxs_map =
-    PackGroupsetXS(do_problem_.GetBlockID2XSMap(), front_gs_.first_group, front_gs_.last_group);
+  const auto matid_2_mgxs_map = PackGroupsetXS(do_problem_.GetBlockID2XSMap(),
+                                               front_gs_.first_group,
+                                               front_gs_.last_group,
+                                               do_problem_.GetOptions().adjoint);
 
   // Create solver
   const auto& sdm = do_problem_.GetSpatialDiscretization();

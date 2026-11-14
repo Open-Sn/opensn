@@ -707,6 +707,24 @@
         "abs_tol": 0.05
       }
     ]
+  },
+  {
+    "file": "csda_wgdsa_shared_adjoint_xs.py",
+    "comment": "CSDA WGDSA uses the forward problem's mode. An adjoint problem that shares the cross sections does not change the sweep count, and both solves match the exact infinite-medium solution.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_WGDSA_SHARED_EXTRA_SWEEPS=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CSDA_WGDSA_SHARED_MAX_PHI_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      }
+    ]
   }
-
 ]

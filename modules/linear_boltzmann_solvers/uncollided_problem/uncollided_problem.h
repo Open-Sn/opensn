@@ -36,7 +36,7 @@ class UncollidedProblem : public LBSProblem
 public:
   ~UncollidedProblem() override;
 
-  void ClearBoundaries() override {}
+  void ClearBoundarySources() override {}
 
   /// Generation steps run by UncollidedSolver: locate the point sources, add their images in the
   /// reflecting planes, and compute and write the uncollided flux moments.

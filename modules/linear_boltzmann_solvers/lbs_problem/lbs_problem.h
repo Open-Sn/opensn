@@ -96,9 +96,12 @@ public:
    * Toggle forward/adjoint transport mode.
    *
    * If the requested mode differs from the current mode, this performs a
-   * mode-transition reset. Materials are reinitialized in the selected mode,
-   * sources and boundaries are cleared, and solution vectors are zeroed.
-   * Adjoint mode is supported only for Cartesian geometries.
+   * mode-transition reset. Materials are reinitialized in the selected mode.
+   * Point and volumetric sources, source moments, and the boundary sources
+   * (isotropic and arbitrary boundaries, which become vacuum) are cleared. Vacuum and reflecting
+   * boundaries are kept because they mean the same in both modes. Solution
+   * vectors are zeroed, and a warning naming what must be reapplied is logged on
+   * rank 0. Adjoint mode is supported only for Cartesian geometries. Collective.
    */
   void SetAdjoint(bool adjoint = true);
 
@@ -199,8 +202,11 @@ public:
   /// Constant accessor to the list of volumetric sources.
   const std::vector<std::shared_ptr<VolumetricSource>>& GetVolumetricSources() const;
 
-  /// Clears all the boundary conditions from the solver.
-  virtual void ClearBoundaries() = 0;
+  /**
+   * Removes the boundary sources (isotropic and arbitrary boundaries), so those boundaries become
+   * vacuum. Vacuum and reflecting boundaries are kept. Collective.
+   */
+  virtual void ClearBoundarySources() = 0;
 
   /// Returns a reference to the map of material ids to XSs.
   const BlockID2XSMap& GetBlockID2XSMap() const;
@@ -363,7 +369,11 @@ public:
 
   void UpdateRestartWriteTime() { options_.restart.MarkWriteComplete(); }
 
-  /// Makes a source-moments vector from scattering and fission based on the latest phi-solution.
+  /**
+   * Makes a source-moments vector from scattering and fission based on the latest phi-solution.
+   * Like all source moments, the result is in the solver orientation, so a physically reoriented
+   * adjoint flux is mapped back first.
+   */
   std::vector<double> MakeSourceMomentsFromPhi();
 
   /// Makes a source-moments vector from scattering and fission based on the given flux moments.
@@ -381,6 +391,13 @@ public:
 
   /// Whether the stored adjoint fluxes use the physical rather than internal sweep orientation.
   virtual bool IsAdjointSolutionReoriented() const { return false; }
+
+  /**
+   * Maps local flux moments to those of the angular flux at the opposite directions by multiplying
+   * each moment of degree ell by (-1)^ell. This converts adjoint flux moments between the solver
+   * and the physical orientation, in either direction.
+   */
+  void ReverseMomentDirections(std::vector<double>& phi) const;
 
   /**
    * Flag indicating if OpenSn is compiled with GPU-aware MPI.
