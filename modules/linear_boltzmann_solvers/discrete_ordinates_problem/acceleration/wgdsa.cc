@@ -82,10 +82,15 @@ TallyDelayedSource(const DiscreteOrdinatesProblem& do_problem,
   groupset.angle_agg->TallyDelayedIncomingCurrent(subtract_old, tally);
 }
 
-/// True when CSDA is enabled and the groupset contains a charged-particle group.
+/**
+ * True when the WGDSA corrections of the groupset are coupled in energy: with
+ * wgdsa_energy_coupling, or with CSDA enabled and a charged-particle group in the groupset.
+ */
 bool
-UsesCSDAOperator(const DiscreteOrdinatesProblem& do_problem, const LBSGroupset& groupset)
+UsesEnergyOrderedSolve(const DiscreteOrdinatesProblem& do_problem, const LBSGroupset& groupset)
 {
+  if (groupset.wgdsa_energy_coupling)
+    return true;
   if (not do_problem.GetOptions().csda_enabled)
     return false;
   const auto ranges =
@@ -98,18 +103,21 @@ UsesCSDAOperator(const DiscreteOrdinatesProblem& do_problem, const LBSGroupset& 
 }
 
 /**
- * Builds one single-group diffusion solver per groupset group. Charged groups add the CSDA
- * removal S_g/dE_g to the removal cross section and to the transport cross section of the
+ * Builds one single-group diffusion solver per groupset group. With CSDA, charged groups add the
+ * CSDA removal S_g/dE_g to the removal cross section and to the transport cross section of the
  * diffusion coefficient.
  */
 void
-InitCSDA(DiscreteOrdinatesProblem& do_problem,
-         LBSGroupset& groupset,
-         const std::map<uint64_t, BoundaryCondition>& bcs)
+InitEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
+                  LBSGroupset& groupset,
+                  const std::map<uint64_t, BoundaryCondition>& bcs)
 {
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
+  // Only CSDA needs the energy group structure, which neutron data need not provide.
   const auto energy =
-    MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map, do_problem.GetNumGroups());
+    do_problem.GetOptions().csda_enabled
+      ? MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map, do_problem.GetNumGroups())
+      : EnergyGroupStructure{};
 
   opensn::UnknownManager uk_man;
   uk_man.AddUnknown(UnknownType::VECTOR_N, 1);
@@ -142,30 +150,33 @@ InitCSDA(DiscreteOrdinatesProblem& do_problem,
     SetSolverOptions(*solver, groupset);
     solver->Initialize();
     solver->AssembleAand_b(dummy_rhs);
-    groupset.wgdsa_csda_solvers.push_back(solver);
+    groupset.wgdsa_group_solvers.push_back(solver);
   }
 }
 
 /**
- * CSDA counterpart of the assemble-solve-disassemble sequence. The residual source of group g is
- * the P0 scattering of `phi_change` from every groupset group into g. The groups are then solved in
- * energy order; group g also receives the in-groupset scattering and CSDA slowing-down of the
- * corrections of groups above it, so the correction is coupled in energy like the sweep.
+ * Energy-coupled counterpart of the assemble-solve-disassemble sequence. The residual source of
+ * group g is the P0 scattering of `phi_change` from every groupset group into g. The groups are
+ * then solved in energy order. Group g also receives the in-groupset scattering (and, with CSDA,
+ * the slowing-down) of the corrections of the groups above it, so the correction is coupled in
+ * energy like the sweep. Upscatter of the corrections is not included.
  */
 void
-ApplyCSDA(DiscreteOrdinatesProblem& do_problem,
-          const LBSGroupset& groupset,
-          const std::vector<double>& phi_change,
-          const bool subtract_old_delayed_psi,
-          std::vector<double>& phi_new)
+ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
+                   const LBSGroupset& groupset,
+                   const std::vector<double>& phi_change,
+                   const bool subtract_old_delayed_psi,
+                   std::vector<double>& phi_new)
 {
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
   const auto energy =
-    MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map, do_problem.GetNumGroups());
-  const auto& solvers = groupset.wgdsa_csda_solvers;
+    do_problem.GetOptions().csda_enabled
+      ? MultiGroupXS::ResolveEnergyGroupStructure(block_id_to_xs_map, do_problem.GetNumGroups())
+      : EnergyGroupStructure{};
+  const auto& solvers = groupset.wgdsa_group_solvers;
   const auto& dphi_uk_man = solvers.front()->GetUnknownStructure();
 
   const auto gsi = groupset.first_group;
@@ -289,9 +300,9 @@ WGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
     const auto closure = DSABoundaryClosureFromString(groupset.wgdsa_boundary_closure);
     auto bcs = TranslateBCs(sweep_boundaries, closure);
 
-    if (UsesCSDAOperator(do_problem, groupset))
+    if (UsesEnergyOrderedSolve(do_problem, groupset))
     {
-      InitCSDA(do_problem, groupset, bcs);
+      InitEnergyOrdered(do_problem, groupset, bcs);
       return;
     }
 
@@ -410,9 +421,9 @@ WGDSA::Apply(DiscreteOrdinatesProblem& do_problem,
              const bool subtract_old_delayed_psi,
              std::vector<double>& phi_new)
 {
-  if (not groupset.wgdsa_csda_solvers.empty())
+  if (not groupset.wgdsa_group_solvers.empty())
   {
-    ApplyCSDA(do_problem, groupset, phi_change, subtract_old_delayed_psi, phi_new);
+    ApplyEnergyOrdered(do_problem, groupset, phi_change, subtract_old_delayed_psi, phi_new);
     return;
   }
 
@@ -442,7 +453,7 @@ WGDSA::CleanUp(LBSGroupset& groupset)
   if (groupset.apply_wgdsa)
   {
     groupset.wgdsa_solver = nullptr;
-    groupset.wgdsa_csda_solvers.clear();
+    groupset.wgdsa_group_solvers.clear();
   }
 }
 
@@ -454,11 +465,15 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
+
+  // One node of the scalar flux of every groupset group, the layout of the uncoupled WGDSA system.
+  // It is built here so that it does not depend on which WGDSA solvers exist.
+  UnknownManager dphi_uk_man;
+  dphi_uk_man.AddUnknown(UnknownType::VECTOR_N, gss);
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
@@ -494,11 +509,15 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
+
+  // One node of the scalar flux of every groupset group, the layout of the uncoupled WGDSA system.
+  // It is built here so that it does not depend on which WGDSA solvers exist.
+  UnknownManager dphi_uk_man;
+  dphi_uk_man.AddUnknown(UnknownType::VECTOR_N, gss);
 
   for (const auto& cell : grid->GetLocalCells())
   {

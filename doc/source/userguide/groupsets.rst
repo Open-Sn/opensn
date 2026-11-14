@@ -360,11 +360,22 @@ of the groupset is lagged by the groupset iteration as well, and the error
 mode it couples is the target of TGDSA. See :doc:`../theory/iterative` for the
 equations.
 
-A groupset that contains charged-particle groups with ``csda_enabled`` is the
-exception. There WGDSA solves one diffusion problem per group, in energy order.
-The source of each group also contains the in-groupset scattering and the CSDA
-slowing-down of the corrections of the groups above it, so the corrections are
-coupled in energy (see :doc:`csda`).
+With ``wgdsa_energy_coupling``, WGDSA instead solves one diffusion problem per
+group, from the highest energy down. The source of each group is the change of
+the scattering into it from every group of the groupset, plus the in-groupset
+downscatter of the corrections of the groups above it, so the corrections are
+coupled in energy like the sweep. The uncoupled correction lets an error pass
+down a chain of strongly scattering groups one group per iteration, and the
+energy coupling removes that error. It helps most where groups scatter strongly
+both within themselves and into the groups below, as in fast-neutron shields of
+steel, copper, or tungsten, where it can halve the number of iterations. Each
+group has its own diffusion system (see ``wgdsa_solver_policy`` below). Upscatter of the corrections is not included, so groupsets that are
+slow because of thermal upscatter gain less. With energy coupling, check whether
+TGDSA still reduces the number of iterations before keeping it.
+
+A groupset that contains charged-particle groups with ``csda_enabled`` always
+uses the energy-coupled form. The source of each group then also contains the
+CSDA slowing-down of the corrections of the groups above it (see :doc:`csda`).
 
 This is most useful when the groups of the groupset scatter strongly within
 themselves in optically thick regions. If source iteration of the groupset is
@@ -373,6 +384,7 @@ about.
 
 The main WGDSA controls are:
 
+* ``wgdsa_energy_coupling``
 * ``wgdsa_l_abs_tol``
 * ``wgdsa_l_max_its``
 * ``wgdsa_verbose``
@@ -387,9 +399,12 @@ correction. ``"auto"`` uses a direct PETSc LU solve when the problem runs on one
 MPI process and the global WGDSA diffusion unknown count is at or below
 ``wgdsa_direct_solve_threshold``, and an iterative solve otherwise. All groups
 of the groupset are solved in one system, so the unknown count is the number of
-spatial nodes times the number of groups in the groupset. In a groupset with
-charged-particle groups and ``csda_enabled``, each group has its own system,
-and the count is that of one group. The iterative solve
+spatial nodes times the number of groups in the groupset. With
+``wgdsa_energy_coupling``, or in a groupset with charged-particle groups and
+``csda_enabled``, each group has its own system, and the count is that of one
+group. On one MPI process, ``"auto"`` can then factor every group of the
+groupset. In 3D, that setup can cost more than the iterative solve, so compare
+with ``"iterative"``. The iterative solve
 is conjugate gradients preconditioned by BoomerAMG. It stops when the residual,
 relative to the norm of the right-hand side, is below ``wgdsa_l_abs_tol``, or
 after ``wgdsa_l_max_its`` iterations. The direct solve ignores both.

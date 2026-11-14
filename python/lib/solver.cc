@@ -1189,11 +1189,22 @@ WrapLBS(py::module& slv)
               Enable within-group DSA for this groupset. After each groupset iteration, one
               diffusion solve corrects the scalar flux of every group of the groupset. The
               system is block diagonal in energy: the source of group g is the change of its
-              within-group scattering source, and the groups are not coupled. With
-              ``csda_enabled`` and charged-particle groups in the groupset, each group's
-              diffusion operator also removes the CSDA slowing-down rate ``S_g / dE_g``, and
-              the groups are solved one at a time in energy order, coupled by in-groupset
-              scattering and slowing-down. See :ref:`theory_csda_wgdsa`.
+              within-group scattering source, and the groups are not coupled, unless
+              ``wgdsa_energy_coupling`` is set. With ``csda_enabled`` and charged-particle groups
+              in the groupset, each group's diffusion operator also removes the CSDA
+              slowing-down rate ``S_g / dE_g``, and the groups are solved one at a time in energy
+              order, coupled by in-groupset scattering and slowing-down. See
+              :ref:`theory_csda_wgdsa`.
+          - wgdsa_energy_coupling: bool, default=False
+              Couple the WGDSA corrections of the groupset in energy. The source of group g is
+              the change of the scattering into g from every groupset group, and the groups are
+              solved one at a time from the highest energy, each also receiving the in-groupset
+              downscatter of the corrections of the groups above it. Upscatter of the
+              corrections is not included, so groupsets dominated by upscatter gain less. Each
+              group has its own diffusion solver, and ``wgdsa_direct_solve_threshold`` counts the
+              unknowns of one group, so a run on one MPI process can factor every group directly.
+              In 3D, that can cost more than ``wgdsa_solver_policy='iterative'``. Requires
+              ``apply_wgdsa``. See :ref:`theory_wgdsa_energy_coupling`.
           - wgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1203,9 +1214,10 @@ WrapLBS(py::module& slv)
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
               PETSc options string for the WGDSA solver. Options must carry the solver's
-              prefix, the problem name followed by ``_WGDSA``. With ``csda_enabled``, a groupset
-              with charged-particle groups has one solver per group, whose prefix is the problem
-              name followed by ``_WGDSA_g`` and the global group index.
+              prefix, the problem name followed by ``_WGDSA``. With ``wgdsa_energy_coupling``, or
+              with ``csda_enabled`` and charged-particle groups in the groupset, the groupset has
+              one solver per group, whose prefix is the problem name followed by ``_WGDSA_g`` and
+              the global group index.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
@@ -1213,8 +1225,9 @@ WrapLBS(py::module& slv)
               ``wgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
-              number of spatial nodes times the number of groups in the groupset. The
-              CSDA operator solves one group at a time, so the count is that of one group.
+              number of spatial nodes times the number of groups in the groupset. With
+              ``wgdsa_energy_coupling`` or CSDA, the groups are solved one at a time, so the count
+              is that of one group.
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face
@@ -1824,7 +1837,18 @@ WrapLBS(py::module& slv)
               Enable within-group DSA for this groupset. After each groupset iteration, one
               diffusion solve corrects the scalar flux of every group of the groupset. The
               system is block diagonal in energy: the source of group g is the change of its
-              within-group scattering source, and the groups are not coupled.
+              within-group scattering source, and the groups are not coupled, unless
+              ``wgdsa_energy_coupling`` is set.
+          - wgdsa_energy_coupling: bool, default=False
+              Couple the WGDSA corrections of the groupset in energy. The source of group g is
+              the change of the scattering into g from every groupset group, and the groups are
+              solved one at a time from the highest energy, each also receiving the in-groupset
+              downscatter of the corrections of the groups above it. Upscatter of the
+              corrections is not included, so groupsets dominated by upscatter gain less. Each
+              group has its own diffusion solver, and ``wgdsa_direct_solve_threshold`` counts the
+              unknowns of one group, so a run on one MPI process can factor every group directly.
+              In 3D, that can cost more than ``wgdsa_solver_policy='iterative'``. Requires
+              ``apply_wgdsa``. See :ref:`theory_wgdsa_energy_coupling`.
           - wgdsa_l_abs_tol: float, default=1.0e-4
               Residual tolerance of the WGDSA diffusion solve, relative to the norm of its
               right-hand side (the name is historical).
@@ -1834,7 +1858,9 @@ WrapLBS(py::module& slv)
               Verbose WGDSA output.
           - wgdsa_petsc_options: str, default=''
               PETSc options string for the WGDSA solver. Options must carry the solver's
-              prefix, the problem name followed by ``_WGDSA``.
+              prefix, the problem name followed by ``_WGDSA``. With ``wgdsa_energy_coupling``,
+              the groupset has one solver per group, whose prefix is the problem name followed by
+              ``_WGDSA_g`` and the global group index.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
@@ -1842,7 +1868,8 @@ WrapLBS(py::module& slv)
               ``wgdsa_petsc_options`` control the PETSc KSP/PC setup.
           - wgdsa_direct_solve_threshold: int, default=20000
               Maximum global WGDSA diffusion unknown count for the automatic direct solve, the
-              number of spatial nodes times the number of groups in the groupset.
+              number of spatial nodes times the number of groups in the groupset, or of one
+              group with ``wgdsa_energy_coupling``.
           - wgdsa_boundary_closure: {'marshak', 'closure_r', 'dirichlet'}, default='marshak'
               Boundary condition of the WGDSA diffusion correction on vacuum, isotropic and
               arbitrary boundaries. ``marshak`` imposes the natural Marshak condition, a face

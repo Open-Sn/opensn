@@ -214,8 +214,9 @@ the groups. :math:`\delta\phi_g` is added to the scalar flux of group
 angular fluxes (opposing reflecting boundaries and broken sweep cycles),
 :math:`\delta\phi_g` is also added to them as the isotropic correction
 :math:`\delta\psi_g = \delta\phi_g`, since the quadrature weights sum to one.
-Groupsets with charged-particle groups use the operator of
-:ref:`theory_csda_wgdsa` instead.
+The groupset option ``wgdsa_energy_coupling`` couples the correction in energy
+(see :ref:`theory_wgdsa_energy_coupling`). Groupsets with charged-particle
+groups use the operator of :ref:`theory_csda_wgdsa` instead.
 
 Reflecting boundaries are zero-current boundaries of the correction, with one
 exception. Of a pair of opposing reflecting boundaries, the sweep lags the
@@ -344,6 +345,50 @@ The floor :math:`\theta_c` keeps the operator positive definite. Let
 :math:`[0, 1]` of :math:`(1-\theta)^2/(1+\theta) = r`; otherwise
 :math:`\theta_c = 0`. The exact coercivity condition has 12 in place of 6; the
 rule uses it with a safety factor 2.
+
+.. _theory_wgdsa_energy_coupling:
+
+Energy-Coupled Within-group Acceleration
+----------------------------------------
+
+The WGDSA source above contains only the within-group scattering of each group,
+and the groups are corrected independently. Within a groupset, the scattering
+from one group into the groups below it is then left to the next sweep. When a
+group scatters most of its neutrons back into itself and the rest into the
+group below, the error that WGDSA leaves in one group becomes, at the next
+iteration, a source of error in the next group. An error can then pass down a
+chain of strongly scattering groups one group per iteration without decaying.
+In an infinite medium without upscatter, the WGDSA iteration matrix of the flat
+error mode is strictly lower triangular in energy. Its spectral radius is zero,
+but its powers vanish only after one iteration per group of the chain, and its
+off-diagonal entries are close to
+:math:`\sigma_{s0,g \leftarrow g-1}/(\sigma_{t,g}-\sigma_{s0,g \leftarrow g})`,
+which can be of order one.
+
+With the groupset option ``wgdsa_energy_coupling``, the correction includes the
+scattering between the groups of the groupset. For the groups of the groupset,
+from the highest energy down, :math:`\delta\phi_g` solves
+
+.. math:: -\nabla \cdot D_g \nabla \delta\phi_g + \sigma_{r,g}\, \delta\phi_g
+          = \sum_{g'} \sigma_{s0,g \leftarrow g'}
+            \left( \phi_{g'}^{(i+1/2)} - \phi_{g'}^{(i)} \right)
+          + \sum_{g' < g} \sigma_{s0,g \leftarrow g'}\, \delta\phi_{g'} \,,
+
+where both sums run over the groups of the groupset and :math:`D_g` and
+:math:`\sigma_{r,g}` are those of WGDSA. The first sum is the change of the
+scattering into group :math:`g` from every groupset group, and the second is the
+downscatter of the corrections already computed. Apart from in-groupset
+upscatter, which enters only through the first sum, the operator is lower
+triangular in energy. Solving the groups in order therefore solves the coupled
+system with one single-group MIP diffusion solve per group, and in an infinite
+medium without upscatter it removes the flat error mode exactly. With upscatter
+the single pass in energy leaves an error mode coupled through the upscatter,
+which TGDSA (below) addresses. The correction is applied, and on lagged
+reflecting boundaries supplemented by the inward partial current of the change
+of the lagged flux, exactly as for WGDSA. It vanishes at convergence, so it
+does not change the converged solution. This is the operator of
+:ref:`theory_csda_wgdsa` without the CSDA slowing-down terms, and groupsets with
+charged-particle groups always use that form.
 
 .. _theory_two_grid:
 
