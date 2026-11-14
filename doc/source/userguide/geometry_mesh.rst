@@ -194,7 +194,11 @@ Supported import families include:
 
 * ``.obj``: Wavefront OBJ exporters from Blender, MeshLab, FreeCAD, and many
   CAD or geometry tools.
-* ``.msh``: Gmsh.
+* ``.msh``: Gmsh, in MSH format 2.2 (ASCII) or 4.1 (ASCII or binary), with first-order
+  tetrahedra, hexahedra, prisms, and pyramids in 3D, or triangles and quadrilaterals in 2D.
+  The physical tag of each cell becomes its block ID. Named physical surfaces (curves in 2D)
+  become named boundaries. Gmsh numbers physical groups separately in each dimension, so a
+  boundary group may have the same tag as a volume group.
 * ``.e``: ExodusII-producing tools such as Cubit, Coreform Cubit, SEACAS
   tools, and some finite-element preprocessors.
 * ``.vtu``: VTK or ParaView writers, ``meshio``, and many FEM or CFD tools

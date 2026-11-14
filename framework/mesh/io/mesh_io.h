@@ -60,6 +60,15 @@ private:
   static std::shared_ptr<UnpartitionedMesh>
   FromGmshV41Binary(const UnpartitionedMesh::Options& options, int data_size);
   static std::shared_ptr<UnpartitionedMesh> FromGmshV22(const UnpartitionedMesh::Options& options);
+
+  /**
+   * Appends the outward faces of a Gmsh 6-node prism (element type 6) or 5-node pyramid (type 7)
+   * to a cell whose vertex_ids are in Gmsh node order. The faces are in the order of the VTK
+   * reader and the extruder: for a prism the three quadrilateral sides, the top triangle, and the
+   * bottom triangle; for a pyramid the quadrilateral base and then the four triangular sides.
+   */
+  static void AddGmshPrismOrPyramidFaces(int element_type,
+                                         UnpartitionedMesh::LightWeightCell& cell);
 };
 
 } // namespace opensn
