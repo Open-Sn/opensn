@@ -47,7 +47,7 @@ Example:
        options={
            "max_ags_iterations": 100,
            "ags_tolerance": 1.0e-6,
-           "ags_convergence_check": "l2",
+           "ags_convergence_check": "pointwise",
        },
    )
 
@@ -354,6 +354,15 @@ reflecting boundaries and broken sweep cycles must also change by less than
 ``l_abs_tol``, each measured relative to the scalar flux where the sweep reads
 it, or to the lagged value itself when it is larger.
 
+The test is relative at every node, so it also covers values close to zero, such
+as the small negative fluxes that the spatial discretization produces in
+optically thick cells. Such a value can change sign between iterations while the
+downscatter source is still reaching the lower groups of the groupset. The
+printed change is then close to 2 and the rate estimate close to 1, although the
+rest of the flux has nearly converged. The change falls once the source has
+reached every group. These values must meet the same relative tolerance as the
+rest of the flux, so they can add a few iterations.
+
 ``l_abs_tol``
 ^^^^^^^^^^^^^
 
@@ -486,22 +495,30 @@ Why this matters:
 
 Allowed values are:
 
+- ``"pointwise"`` (the default)
 - ``"l2"``
-- ``"pointwise"``
 
-``l2`` is the default and is usually the simplest first choice. It measures
-the L2 norm of the change of all flux moments over all spatial unknowns. The
-norm is not normalized by the flux, so ``ags_tolerance`` is in the units of the
-flux. Like the ``pointwise`` check, it stops when that change is below
-:math:`(1-\varrho)\,` ``ags_tolerance``, where :math:`\varrho` is the estimated
-convergence rate, so that the remaining error, about
-:math:`\varrho/(1-\varrho)` times the last change, stays near the tolerance
-even when the groupsets are strongly coupled.
+``pointwise`` measures the largest change of any flux moment at any node and in
+any group, relative to the local scalar flux of that group or to the moment
+itself, whichever is larger. It is relative, so the test does not depend on how
+the source is normalized, on the number of nodes, or on how much flux a group
+carries: every group, including the low-flux ones, is converged to
+``ags_tolerance``.
+Values close to zero are included, so the test can read close to 2 in early
+passes, as described for ``classic_richardson`` above.
 
-``pointwise`` is stricter in a different sense: it tracks the maximum local
-relative change in the flux vector, measuring each flux moment relative to the
-local scalar flux or to the moment itself, whichever is larger. It can be useful
-when localized solution changes matter more than the global norm.
+``l2`` measures the L2 norm of the change of all flux moments over all spatial
+unknowns. The norm is not normalized by the flux or weighted by volume, so
+``ags_tolerance`` is in the units of the flux, the test tightens as the mesh is
+refined, and the groups with the most flux dominate it. Scaling the source down
+loosens it: a low-flux group can stop far from converged while the test passes.
+Use it only when the flux scale and the mesh are fixed and an absolute tolerance
+is wanted.
+
+Both checks stop when the change is below :math:`(1-\varrho)\,`
+``ags_tolerance``, where :math:`\varrho` is the estimated convergence rate, so
+that the remaining error, about :math:`\varrho/(1-\varrho)` times the last
+change, stays near the tolerance even when the groupsets are strongly coupled.
 
 .. _iterative_ags_tolerance:
 
@@ -544,10 +561,23 @@ Compare the two in the same terms:
   ``pointwise`` check is relative.
 - The AGS test also scales ``ags_tolerance`` by :math:`1-\varrho`.
 
-When the inner error is above the AGS test, the AGS iteration does not stop at
-the inner tolerance. It runs slowly. A groupset whose PETSc solve starts below
-``l_abs_tol`` takes no Krylov iteration, but the sweep that rebuilds its angular
-flux after the solve still applies one source iteration to it. Each AGS pass
+One pass over the groupsets solves the coupling between them exactly when no
+groupset receives a source from a groupset solved after it: no material scatters
+from a later groupset into an earlier one (in an adjoint problem, with the
+transposed scattering), no fission is emitted from one groupset into another,
+and the problem does not use continuous slowing down. A power iteration holds
+the fission source fixed during each transport solve, so there only the
+scattering counts. The AGS iteration then stops after the first pass in which
+every groupset solve converges, without testing the change between passes. The
+accuracy of the result is then that of the groupset solves, so set ``l_abs_tol``
+for the accuracy you need. A further pass would only continue the groupset
+solves.
+
+When the groupsets are coupled and the inner error is above the AGS test, the
+AGS iteration does not stop at the inner tolerance. It runs slowly. A groupset
+whose PETSc solve starts below ``l_abs_tol`` takes no Krylov iteration, but the
+sweep that rebuilds its angular flux after the solve still applies one source
+iteration to it. Each AGS pass
 then advances that groupset by one source iteration, and the AGS iteration can
 take tens of passes or reach ``max_ags_iterations``. The log shows this as
 groupsets that converge at iteration 0 while the AGS change decreases slowly.
@@ -590,7 +620,7 @@ Example:
    options = {
        "max_ags_iterations": 100,
        "ags_tolerance": 1.0e-6,
-       "ags_convergence_check": "l2",
+       "ags_convergence_check": "pointwise",
    }
 
 

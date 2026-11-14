@@ -21,7 +21,9 @@ Program Listing for File sweep_chunk.h
    #include "modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
    #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
+   #include <algorithm>
    #include <functional>
+   #include <vector>
    
    namespace opensn
    {
@@ -161,5 +163,38 @@ Program Listing for File sweep_chunk.h
      bool include_rhs_time_term_ = true;
      const Cell* cell_;
    };
+   
+   /**
+    * Evaluate the angular source of one direction at the nodes of a cell for every group of a
+    * groupset: nodal_source[i * gs_size + g] = sum over m of m2d_row[m] * q(i, m, gs_gi + g).
+    *
+    * The source moments of a node are contiguous in memory, ordered by moment and then by group, so
+    * this reads them in memory order. The moments are summed in increasing order. A sweep kernel
+    * calls this once per cell and direction and then applies the mass matrix once per group, not
+    * once per moment. `nodal_source` must hold num_nodes * gs_size values.
+    */
+   inline void
+   ComputeAngularSource(const CellLBSView& cell_transport_view,
+                        std::size_t num_nodes,
+                        unsigned int num_moments,
+                        unsigned int gs_gi,
+                        std::size_t gs_size,
+                        const double* m2d_row,
+                        const std::vector<double>& source_moments,
+                        double* nodal_source)
+   {
+     std::fill_n(nodal_source, num_nodes * gs_size, 0.0);
+     for (std::size_t i = 0; i < num_nodes; ++i)
+     {
+       double* __restrict s_i = nodal_source + i * gs_size;
+       for (unsigned int m = 0; m < num_moments; ++m)
+       {
+         const double w = m2d_row[m];
+         const double* __restrict q = &source_moments[cell_transport_view.MapDOF(i, m, gs_gi)];
+         for (std::size_t g = 0; g < gs_size; ++g)
+           s_i[g] += w * q[g];
+       }
+     }
+   }
    
    } // namespace opensn

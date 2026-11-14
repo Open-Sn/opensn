@@ -705,9 +705,9 @@ the thermal ones.</p></li>
 <li><p><strong>A fast groupset and a thermal groupset.</strong> The fast groupset holds the groups
 above the upscatter range, and the thermal groupset holds the rest. No
 neutron scatters from the thermal groupset into the fast one, so the fast
-groupset converges once. In a fixed-source problem whose groupsets are each
-converged well below the AGS tolerance, the AGS iteration then converges in
-two passes, the second confirming the first. The thermal
+groupset converges once. In a fixed-source problem without fission, no
+groupset then feeds one solved before it, and the AGS iteration stops after
+the first pass in which every groupset converges. The thermal
 iterations no longer sweep the fast groups. This usually reduces the total
 work, and each groupset’s Krylov vectors are smaller. Give the fast groupset
 WGDSA if its groups scatter strongly within themselves, as in hydrogenous
@@ -825,9 +825,12 @@ iteration to converge the coupling between them.</p>
 <ul class="simple">
 <li><p>if multiple groupsets are used and there is upscatter coupling across
 groupset boundaries, AGS iteration must be enabled and converged.</p></li>
-<li><p>converge each groupset well below the AGS tolerance. Otherwise the AGS
-iteration runs slowly, one source iteration per pass, even without upscatter
-between the groupsets (see <a class="reference internal" href="iterative_methods.html#iterative-ags-tolerance"><span class="std std-ref">ags_tolerance</span></a>).</p></li>
+<li><p>when the groupsets are coupled, converge each groupset well below the AGS
+tolerance. Otherwise the AGS iteration runs slowly, one source iteration per
+pass (see <a class="reference internal" href="iterative_methods.html#iterative-ags-tolerance"><span class="std std-ref">ags_tolerance</span></a>).</p></li>
+<li><p>when no groupset feeds one solved before it, the AGS iteration stops after
+one pass, and the accuracy of the result is that of the groupset solves. Set
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> for the accuracy you need.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

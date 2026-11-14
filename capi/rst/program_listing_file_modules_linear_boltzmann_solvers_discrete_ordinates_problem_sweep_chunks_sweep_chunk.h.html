@@ -96,7 +96,9 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;algorithm&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;functional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -236,6 +238,39 @@
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">include_rhs_time_term_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">true</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">*</span><span class="w"> </span><span class="n">cell_</span><span class="p">;</span>
 <span class="p">};</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Evaluate the angular source of one direction at the nodes of a cell for every group of a</span>
+<span class="cm"> * groupset: nodal_source[i * gs_size + g] = sum over m of m2d_row[m] * q(i, m, gs_gi + g).</span>
+<span class="cm"> *</span>
+<span class="cm"> * The source moments of a node are contiguous in memory, ordered by moment and then by group, so</span>
+<span class="cm"> * this reads them in memory order. The moments are summed in increasing order. A sweep kernel</span>
+<span class="cm"> * calls this once per cell and direction and then applies the mass matrix once per group, not</span>
+<span class="cm"> * once per moment. `nodal_source` must hold num_nodes * gs_size values.</span>
+<span class="cm"> */</span>
+<span class="kr">inline</span><span class="w"> </span><span class="kt">void</span>
+<span class="nf">ComputeAngularSource</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">CellLBSView</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_transport_view</span><span class="p">,</span>
+<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_nodes</span><span class="p">,</span>
+<span class="w">                     </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_moments</span><span class="p">,</span>
+<span class="w">                     </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">gs_gi</span><span class="p">,</span>
+<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">gs_size</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">m2d_row</span><span class="p">,</span>
+<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">source_moments</span><span class="p">,</span>
+<span class="w">                     </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="n">nodal_source</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">fill_n</span><span class="p">(</span><span class="n">nodal_source</span><span class="p">,</span><span class="w"> </span><span class="n">num_nodes</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gs_size</span><span class="p">,</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
+<span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_nodes</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="k">__restrict</span><span class="w"> </span><span class="n">s_i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">nodal_source</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">gs_size</span><span class="p">;</span>
+<span class="w">    </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">m</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">num_moments</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">m</span><span class="p">)</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">m2d_row</span><span class="p">[</span><span class="n">m</span><span class="p">];</span>
+<span class="w">      </span><span class="k">const</span><span class="w"> </span><span class="kt">double</span><span class="o">*</span><span class="w"> </span><span class="k">__restrict</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="o">&amp;</span><span class="n">source_moments</span><span class="p">[</span><span class="n">cell_transport_view</span><span class="p">.</span><span class="n">MapDOF</span><span class="p">(</span><span class="n">i</span><span class="p">,</span><span class="w"> </span><span class="n">m</span><span class="p">,</span><span class="w"> </span><span class="n">gs_gi</span><span class="p">)];</span>
+<span class="w">      </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w"> </span><span class="n">g</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">gs_size</span><span class="p">;</span><span class="w"> </span><span class="o">++</span><span class="n">g</span><span class="p">)</span>
+<span class="w">        </span><span class="n">s_i</span><span class="p">[</span><span class="n">g</span><span class="p">]</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">w</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">q</span><span class="p">[</span><span class="n">g</span><span class="p">];</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
 </pre></div>

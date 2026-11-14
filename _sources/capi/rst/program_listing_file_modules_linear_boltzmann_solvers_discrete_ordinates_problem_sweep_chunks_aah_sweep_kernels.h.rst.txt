@@ -76,6 +76,7 @@ Program Listing for File aah_sweep_kernels.h
      DenseMatrix<double> Atemp(data.max_num_cell_dofs, data.max_num_cell_dofs);
      std::vector<Vector<double>> b(gs_size, Vector<double>(data.max_num_cell_dofs, 0.0));
      std::vector<double> source(data.max_num_cell_dofs);
+     std::vector<double> nodal_source(static_cast<size_t>(data.max_num_cell_dofs) * gs_size);
    
      const auto& spds = angle_set.GetSPDS();
      const auto& spls = spds.GetLocalSubgrid();
@@ -193,6 +194,15 @@ Program Listing for File aah_sweep_kernels.h
          const double* m2d_row = m2d_op.data() + direction_num * static_cast<size_t>(data.num_moments);
          const double* d2m_row = d2m_op.data() + direction_num * static_cast<size_t>(data.num_moments);
    
+         ComputeAngularSource(cell_transport_view,
+                              cell_num_nodes,
+                              data.num_moments,
+                              gs_gi,
+                              gs_size,
+                              m2d_row,
+                              data.source_moments,
+                              nodal_source.data());
+   
          for (size_t gsg = 0; gsg < gs_size; ++gsg)
          {
            double sigma_tg = sigma_t[gs_gi + gsg];
@@ -201,12 +211,7 @@ Program Listing for File aah_sweep_kernels.h
    
            for (size_t i = 0; i < cell_num_nodes; ++i)
            {
-             double temp_src = 0.0;
-             for (unsigned int m = 0; m < data.num_moments; ++m)
-             {
-               const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-               temp_src += m2d_row[m] * data.source_moments[ir];
-             }
+             double temp_src = nodal_source[i * gs_size + gsg];
    
              if constexpr (time_dependent)
              {
@@ -363,6 +368,7 @@ Program Listing for File aah_sweep_kernels.h
      sigma_block.reserve(data.group_block_size);
      std::vector<double> A_scratch(max_n * max_n * Simd::size, 0.0);
      std::vector<double> rhs_scratch(max_n * Simd::size, 0.0);
+     std::vector<double> nodal_source(max_n * gs_size, 0.0);
      std::vector<double> face_mu_values;
      std::vector<std::vector<size_t>> moment_dof_map(data.num_moments);
      for (auto& row : moment_dof_map)
@@ -476,6 +482,15 @@ Program Listing for File aah_sweep_kernels.h
          const double* m2d_row = m2d_op.data() + dir_moment_offset;
          const double* d2m_row = d2m_op.data() + dir_moment_offset;
    
+         ComputeAngularSource(cell_transport_view,
+                              N,
+                              data.num_moments,
+                              gs_gi,
+                              gs_size,
+                              m2d_row,
+                              data.source_moments,
+                              nodal_source.data());
+   
          for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
          {
            const auto g1 = std::min(g0 + data.group_block_size, gs_size);
@@ -488,17 +503,12 @@ Program Listing for File aah_sweep_kernels.h
              sigma_block[rel] = sigma_t[gs_gi + gsg];
    
              double* __restrict bg = &b[static_cast<size_t>(gsg) * N];
-             for (unsigned int m = 0; m < data.num_moments; ++m)
+             for (size_t i = 0; i < N; ++i)
              {
-               const double w = m2d_row[m];
-               for (size_t i = 0; i < N; ++i)
-               {
-                 double value = 0.0;
-                 for (size_t j = 0; j < N; ++j)
-                   value +=
-                     mass_matrix[Idx(i, j)] * (w * data.source_moments[moment_dof_map[m][j] + gsg]);
-                 bg[i] += value;
-               }
+               double value = 0.0;
+               for (size_t j = 0; j < N; ++j)
+                 value += mass_matrix[Idx(i, j)] * nodal_source[j * gs_size + gsg];
+               bg[i] += value;
              }
            }
    
@@ -525,16 +535,18 @@ Program Listing for File aah_sweep_kernels.h
                                            &b[gsg * N],
                                            A_scratch.data());
            }
+         }
    
-           for (size_t gsg = g0; gsg < g1; ++gsg)
+         // Add the angular flux to the flux moments of each node for all groups. The moments of a
+         // node are contiguous in memory, so this writes them in order.
+         for (size_t i = 0; i < N; ++i)
+         {
+           for (unsigned int m = 0; m < data.num_moments; ++m)
            {
-             const double* __restrict bg = &b[gsg * N];
-             for (unsigned int m = 0; m < data.num_moments; ++m)
-             {
-               const double w = d2m_row[m];
-               for (size_t i = 0; i < N; ++i)
-                 data.destination_phi[moment_dof_map[m][i] + gsg] += w * bg[i];
-             }
+             const double w = d2m_row[m];
+             double* __restrict phi = &data.destination_phi[moment_dof_map[m][i]];
+             for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
+               phi[gsg] += w * b[static_cast<size_t>(gsg) * N + i];
            }
          }
    

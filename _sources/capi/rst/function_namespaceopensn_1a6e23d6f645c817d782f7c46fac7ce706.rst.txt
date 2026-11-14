@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6e23d6f645c817d782f7c46fac7ce706:
+
+Function opensn::ComputeAngularSource
+=====================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::ComputeAngularSource(const CellLBSView&, std::size_t, unsigned int, unsigned int, std::size_t, const double *, const std::vector<double>&, double *)
+   :project: opensn

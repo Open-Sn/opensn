@@ -612,9 +612,9 @@ With every upscatter cycle in one groupset, two layouts work well.
 * **A fast groupset and a thermal groupset.** The fast groupset holds the groups
   above the upscatter range, and the thermal groupset holds the rest. No
   neutron scatters from the thermal groupset into the fast one, so the fast
-  groupset converges once. In a fixed-source problem whose groupsets are each
-  converged well below the AGS tolerance, the AGS iteration then converges in
-  two passes, the second confirming the first. The thermal
+  groupset converges once. In a fixed-source problem without fission, no
+  groupset then feeds one solved before it, and the AGS iteration stops after
+  the first pass in which every groupset converges. The thermal
   iterations no longer sweep the fast groups. This usually reduces the total
   work, and each groupset's Krylov vectors are smaller. Give the fast groupset
   WGDSA if its groups scatter strongly within themselves, as in hydrogenous
@@ -741,9 +741,12 @@ Practical rule:
 
 * if multiple groupsets are used and there is upscatter coupling across
   groupset boundaries, AGS iteration must be enabled and converged.
-* converge each groupset well below the AGS tolerance. Otherwise the AGS
-  iteration runs slowly, one source iteration per pass, even without upscatter
-  between the groupsets (see :ref:`iterative_ags_tolerance`).
+* when the groupsets are coupled, converge each groupset well below the AGS
+  tolerance. Otherwise the AGS iteration runs slowly, one source iteration per
+  pass (see :ref:`iterative_ags_tolerance`).
+* when no groupset feeds one solved before it, the AGS iteration stops after
+  one pass, and the accuracy of the result is that of the groupset solves. Set
+  ``l_abs_tol`` for the accuracy you need.
 
 .. note::
 

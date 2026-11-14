@@ -22,6 +22,7 @@ Program Listing for File cbc_sweep_kernels.h
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbc_async_comm.h"
    #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
+   #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
    #include <algorithm>
    #include <span>
    
@@ -50,6 +51,8 @@ Program Listing for File cbc_sweep_kernels.h
      std::vector<double> rhs_values;
      std::vector<double> sigma_t_group_block;
      std::vector<std::size_t> moment_dof_map;
+     /// Angular source of one direction at the nodes of the cell, node-major then group.
+     std::vector<double> nodal_angular_source;
      std::vector<double> face_mu_values;
    };
    
@@ -254,6 +257,17 @@ Program Listing for File cbc_sweep_kernels.h
        const double* m2d_row = m2d_op.data() + dir_moment_offset;
        const double* d2m_row = d2m_op.data() + dir_moment_offset;
    
+       auto& nodal_angular_source = sweep_chunk.workspace_.nodal_angular_source;
+       nodal_angular_source.resize(cell_num_nodes * gs_size);
+       ComputeAngularSource(cell_transport_view,
+                            cell_num_nodes,
+                            sweep_chunk.num_moments_,
+                            gs_gi,
+                            gs_size,
+                            m2d_row,
+                            sweep_chunk.source_moments_,
+                            nodal_angular_source.data());
+   
        for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
        {
          double sigma_tg = sigma_t[gs_gi + gsg];
@@ -262,12 +276,7 @@ Program Listing for File cbc_sweep_kernels.h
    
          for (std::size_t i = 0; i < cell_num_nodes; ++i)
          {
-           double temp_src = 0.0;
-           for (unsigned int m = 0; m < sweep_chunk.num_moments_; ++m)
-           {
-             const auto ir = cell_transport_view.MapDOF(i, m, gs_gi + gsg);
-             temp_src += m2d_row[m] * sweep_chunk.source_moments_[ir];
-           }
+           double temp_src = nodal_angular_source[i * gs_size + gsg];
    
            if constexpr (time_dependent)
            {

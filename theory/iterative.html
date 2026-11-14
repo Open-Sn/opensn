@@ -212,10 +212,11 @@ expected from the previous one, <span class="math notranslate nohighlight">\(\va
 No fixed floor is applied to the tolerance; only changes below the round-off
 level of a relative change (<span class="math notranslate nohighlight">\(100\,\epsilon_{\text{machine}}\)</span>) pass
 regardless of <span class="math notranslate nohighlight">\(\varrho\)</span>.</p>
-<p>The default <code class="docutils literal notranslate"><span class="pre">l2</span></code> AGS check estimates <span class="math notranslate nohighlight">\(\varrho\)</span> from ratios of the
-L2 norm of the change of all flux moments and stops when that norm is below
-<span class="math notranslate nohighlight">\((1-\varrho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">tol</span></code>. The norm is not divided by
-<span class="math notranslate nohighlight">\(\|\Phi^{(i+1)}\|\)</span>, so its round-off level is
+<p>The default AGS check is the pointwise one above. The optional <code class="docutils literal notranslate"><span class="pre">l2</span></code> AGS check
+estimates <span class="math notranslate nohighlight">\(\varrho\)</span> from ratios of the L2 norm of the change of all flux
+moments and stops when that norm is below <span class="math notranslate nohighlight">\((1-\varrho)\,\)</span> <code class="docutils literal notranslate"><span class="pre">tol</span></code>. The
+norm is not divided by <span class="math notranslate nohighlight">\(\|\Phi^{(i+1)}\|\)</span>, so the test depends on the
+scale of the flux, and its round-off level is
 <span class="math notranslate nohighlight">\(100\,\epsilon_{\text{machine}}\,\|\Phi^{(i+1)}\|\)</span>.</p>
 <p>Classic Richardson also requires the lagged angular fluxes to settle: the
 incoming angular fluxes of opposing reflecting boundaries and of broken sweep

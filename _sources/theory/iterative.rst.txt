@@ -103,10 +103,11 @@ No fixed floor is applied to the tolerance; only changes below the round-off
 level of a relative change (:math:`100\,\epsilon_{\text{machine}}`) pass
 regardless of :math:`\varrho`.
 
-The default ``l2`` AGS check estimates :math:`\varrho` from ratios of the
-L2 norm of the change of all flux moments and stops when that norm is below
-:math:`(1-\varrho)\,` ``tol``. The norm is not divided by
-:math:`\|\Phi^{(i+1)}\|`, so its round-off level is
+The default AGS check is the pointwise one above. The optional ``l2`` AGS check
+estimates :math:`\varrho` from ratios of the L2 norm of the change of all flux
+moments and stops when that norm is below :math:`(1-\varrho)\,` ``tol``. The
+norm is not divided by :math:`\|\Phi^{(i+1)}\|`, so the test depends on the
+scale of the flux, and its round-off level is
 :math:`100\,\epsilon_{\text{machine}}\,\|\Phi^{(i+1)}\|`.
 
 Classic Richardson also requires the lagged angular fluxes to settle: the
