@@ -302,7 +302,19 @@ WrapMeshGenerator(py::module& mesh)
   mesh_generator.def(
     "Execute",
     &MeshGenerator::Execute,
-    "Final execution step."
+    R"(
+    Build the mesh and partition it over the ranks.
+
+    Collective: every rank must call it. Rank 0 partitions the mesh. A
+    :py:class:`pyopensn.mesh.DistributedMeshGenerator` or
+    :py:class:`pyopensn.mesh.SplitFileMeshGenerator` also builds the mesh on rank 0 only.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, when building or partitioning the mesh fails on rank 0, for example
+        when the mesh is folded or has an inverted cell.
+    )"
   );
 
   // extruded mesh generator

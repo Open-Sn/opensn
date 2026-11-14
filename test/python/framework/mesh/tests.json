@@ -97,5 +97,24 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "distributed_mesh_error.py",
+    "comment": "A mesh that rank 0 rejects while DistributedMeshGenerator builds it raises the error on every rank, and the ranks stay in step for the next mesh.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Ranks that rejected the folded mesh =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cells of the valid mesh =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      }
+    ]
   }
 ]

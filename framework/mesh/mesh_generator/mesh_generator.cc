@@ -11,6 +11,7 @@
 #include "framework/mesh/mesh/cell.h"
 #include "framework/utils/caliper_scopes.h"
 #include "framework/utils/error.h"
+#include "framework/utils/collective_error.h"
 #include <memory>
 
 namespace opensn
@@ -61,8 +62,14 @@ MeshGenerator::Execute()
   std::vector<int> cell_pids;
   const auto num_partitions = mpi_comm.size();
 
-  if (mpi_comm.rank() == 0)
-    cell_pids = PartitionMesh(*current_umesh, num_partitions);
+  // Only rank 0 partitions the mesh. A failure there is raised on every rank, so that the other
+  // ranks do not wait for the partition.
+  RunWithCollectiveErrors(
+    [&]
+    {
+      if (mpi_comm.rank() == 0)
+        cell_pids = PartitionMesh(*current_umesh, num_partitions);
+    });
   BroadcastPIDs(cell_pids, 0, mpi_comm);
 
   std::vector<size_t> partI_num_cells(num_partitions, 0);
