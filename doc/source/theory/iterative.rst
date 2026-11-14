@@ -354,8 +354,10 @@ Diffusion Coefficient in Voids
 
 In a void the transport cross section is zero, and :math:`1/(3\sigma_{tr,g})` is
 infinite. A group of a material is void when
-:math:`|\sigma_{tr,g}| < 10^{-12}`. Every other group, including the groups of
-thin gases such as air, uses :math:`D_g = 1/(3\sigma_{tr,g})`.
+:math:`|\sigma_{tr,g}| < \sigma_{void}`, where :math:`\sigma_{void}` is the
+problem option ``dsa_void_sigma_tr`` with the default :math:`10^{-12}`. Every
+other group, including the groups of thin gases such as air, uses
+:math:`D_g = 1/(3\sigma_{tr,g})`.
 
 A void bounded by scattering walls carries the error between the walls by
 streaming. Suppose the walls emit an isotropic flux :math:`\phi` that varies
@@ -381,12 +383,13 @@ that is not reflecting. :math:`V/S` is a quarter of the mean chord length
 :math:`\lambda(x)/3` because the number of iterations depends weakly on
 :math:`D` near :math:`V/S`. A material whose cells form several separate regions
 gets a single value from the sum of their volumes and wall areas. A material
-without such faces keeps :math:`D_g = 1/(3 \cdot 10^{-12})`. In one and two
-dimensions, :math:`V` and :math:`S` are the measures of the mesh cells and
-faces. The diffusion coefficient changes only the convergence of the iteration,
-not the converged solution. SMM does not support void groups. Its low-order
-source correction divides the second-moment closure by the transport cross
-section, so it is undefined there, and SMM rejects such a problem.
+without such faces keeps :math:`D_g = 1/(3\sigma_{tr,g})`, which is limited to
+:math:`1/(3 \cdot 10^{-12})`. In one and two dimensions, :math:`V` and :math:`S`
+are the measures of the mesh cells and faces. The diffusion coefficient changes
+only the convergence of the iteration, not the converged solution. SMM does not
+support void groups. Its low-order source correction divides the second-moment
+closure by the transport cross section, so it is undefined there, and SMM
+rejects such a problem.
 
 .. _theory_two_grid:
 

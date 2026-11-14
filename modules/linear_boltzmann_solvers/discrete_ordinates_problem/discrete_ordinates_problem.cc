@@ -1280,7 +1280,7 @@ DiscreteOrdinatesProblem::BuildDSAVoidDiffusionCoefficients()
   mpi_comm.all_reduce(
     local_vs.data(), static_cast<int>(local_vs.size()), global_vs.data(), mpi::op::sum<double>());
 
-  constexpr double sigma_tr_min = MultiGroupXS::DIFFUSION_SIGMA_TR_MIN;
+  const double sigma_tr_min = options_.dsa_void_sigma_tr;
   for (size_t m = 0; m < num_materials; ++m)
   {
     const auto& xs = *materials[m];
@@ -1303,7 +1303,7 @@ DiscreteOrdinatesProblem::BuildDSAVoidDiffusionCoefficients()
       continue;
     log.Log0Verbose1() << "DSA void diffusion: material " << m << " (V = " << volume
                        << ", S = " << surface << ") uses D = V / S = " << length << " in "
-                       << num_void_groups << " void groups.";
+                       << num_void_groups << " groups with sigma_tr below " << sigma_tr_min << ".";
     dsa_void_diffusion_coeff_.emplace(&xs, std::move(diffusion_coeff));
   }
 }

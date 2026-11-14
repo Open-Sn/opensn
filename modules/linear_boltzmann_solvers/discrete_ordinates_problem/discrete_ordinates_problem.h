@@ -81,10 +81,10 @@ public:
    * Returns the diffusion coefficient of a material for the diffusion acceleration methods (WGDSA,
    * TGDSA, SCDSA, SMM, and CMFD), indexed by group. It is the material's own coefficient of the
    * problem's mode (MultiGroupXS::GetDiffusionCoefficient), except in void groups, whose transport
-   * cross section of that mode is below MultiGroupXS::DIFFUSION_SIGMA_TR_MIN. There it is V / S,
-   * with V the volume of the material's cells and S the area of their faces that border another
-   * material or a boundary that is not reflecting. The reference stays valid until the runtime
-   * objects of the problem are rebuilt.
+   * cross section of that mode is below the option dsa_void_sigma_tr
+   * (LBSOptions::dsa_void_sigma_tr). There it is V / S, with V the volume of the material's cells
+   * and S the area of their faces that border another material or a boundary that is not
+   * reflecting. The reference stays valid until the runtime objects of the problem are rebuilt.
    */
   const std::vector<double>& GetDSADiffusionCoefficient(const MultiGroupXS& xs) const;
 

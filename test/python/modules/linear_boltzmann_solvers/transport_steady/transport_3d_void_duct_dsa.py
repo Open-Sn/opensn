@@ -10,6 +10,10 @@ WGDSA uses the void diffusion coefficient V / S of the duct, its volume over the
 walls and open ends. It changes only the convergence of the iteration, so the converged
 solution satisfies the particle balance.
 
+The duct is a true void (sigma_t = 0) unless the parameter void_sigma_t gives it a total cross
+section. The parameter dsa_void_sigma_tr, when given, sets the problem option of that name, so
+that a thin duct material is treated as a void as well.
+
 Checks:
   WGS status: converged within the within-group iteration limit (parameter wgs_max_its).
   BALANCE_REL: |production - absorption - net outflow| / production.
@@ -33,6 +37,8 @@ if "opensn_console" not in globals():
 if __name__ == "__main__":
 
     wgs_max_its = globals().get("wgs_max_its", 1000)
+    void_sigma_t = globals().get("void_sigma_t", 0.0)
+    dsa_void_sigma_tr = globals().get("dsa_void_sigma_tr", None)
 
     # 60 cm cube of 2 cm cells
     nodes = [2.0 * i for i in range(31)]
@@ -52,7 +58,7 @@ if __name__ == "__main__":
     wall = MultiGroupXS()
     wall.CreateSimpleOneGroup(1.0, 0.99)
     void = MultiGroupXS()
-    void.CreateSimpleOneGroup(0.0, 0.0)
+    void.CreateSimpleOneGroup(void_sigma_t, 0.0)
 
     source = VolumetricSource(
         logical_volume=RPPLogicalVolume(xmin=0.0, xmax=6.0, ymin=10.0, ymax=16.0, zmin=z0, zmax=z1),
@@ -79,6 +85,7 @@ if __name__ == "__main__":
         ],
         xs_map=[{"block_ids": [0], "xs": wall}, {"block_ids": [1], "xs": void}],
         volumetric_sources=[source],
+        options={} if dsa_void_sigma_tr is None else {"dsa_void_sigma_tr": dsa_void_sigma_tr},
     )
     solver = SteadyStateSourceSolver(problem=problem)
     solver.Initialize()

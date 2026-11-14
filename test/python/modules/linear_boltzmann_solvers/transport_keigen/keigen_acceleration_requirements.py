@@ -26,11 +26,13 @@ configuration that satisfies it:
 12. SCDSA with sdm="pwlc" in 1D spherical geometry (rejected: the correction diverges), and
 13. SCDSA with sdm="pwld" in 1D spherical geometry (accepted).
 14. SMM with a void block (rejected: the SMM source correction divides by the transport cross
-    section), and
-15. the same geometry with sigma_t = 1e-6 /cm in that block (accepted).
+    section),
+15. the same geometry with sigma_t = 1e-6 /cm in that block (accepted), and
+16. the same with the problem option dsa_void_sigma_tr = 1e-3 /cm, which makes the thin block a
+    void (rejected).
 
 Checks:
-  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 15) that behave as described.
+  KEIGEN_ACCELERATION_REQUIREMENTS_PASSED: number of cases (of 16) that behave as described.
 """
 
 import os
@@ -263,7 +265,7 @@ if __name__ == "__main__":
         outcome(pi(problem, SCDSAAcceleration(problem=problem, sdm="pwld"))) == "accepted"
     )
 
-    # Cases 14 and 15
+    # Cases 14 to 16
     problem = two_block_problem(xy_grid2, fissile, absorbers[0.0], [groupset((0, 0), xy_quad())],
                                 save_psi)
     passed += on_all_ranks(
@@ -273,6 +275,13 @@ if __name__ == "__main__":
     problem = two_block_problem(xy_grid2, fissile, absorbers[1.0e-6],
                                 [groupset((0, 0), xy_quad())], save_psi)
     passed += on_all_ranks(outcome(pi(problem, SMMAcceleration(problem=problem))) == "accepted")
+    problem = two_block_problem(xy_grid2, fissile, absorbers[1.0e-6],
+                                [groupset((0, 0), xy_quad())],
+                                {**save_psi, "dsa_void_sigma_tr": 1.0e-3})
+    passed += on_all_ranks(
+        outcome(pi(problem, SMMAcceleration(problem=problem)),
+                "block 1 is void in group 0", "option dsa_void_sigma_tr") == "rejected"
+    )
 
     MPIAllReduce(0)
     if rank == 0:

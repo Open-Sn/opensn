@@ -1428,6 +1428,14 @@ WrapLBS(py::module& slv)
             uses a CSDA diffusion operator in groupsets with charged-particle
             groups. All materials must supply identical per-group energy bounds
             or omit them; at least one material must supply the shared structure.
+          - dsa_void_sigma_tr: float, default=1e-12
+            Transport cross section (1/cm) below which a group of a material is void for the
+            diffusion acceleration methods (WGDSA, TGDSA, SCDSA, and CMFD). In such groups they
+            use the diffusion coefficient ``V/S`` of the material, its volume over the area of
+            its faces that border another material or a non-reflecting boundary, instead of
+            ``1/(3 sigma_tr)``. SMM rejects a problem with a void group in the accelerated
+            groupset. Must be at least 0. With 0 no group is void. The option changes only the
+            convergence of the iterations, not the converged solution.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
@@ -2051,6 +2059,14 @@ WrapLBS(py::module& slv)
             Enable CSDA charged-particle transport for CEPXS data loaded with
             ``csda_format=True``. CSDA is not supported for this curvilinear
             problem class.
+          - dsa_void_sigma_tr: float, default=1e-12
+            Transport cross section (1/cm) below which a group of a material is void for the
+            diffusion acceleration methods (WGDSA, TGDSA, SCDSA, and CMFD). In such groups they
+            use the diffusion coefficient ``V/S`` of the material, its volume over the area of
+            its faces that border another material or a non-reflecting boundary, instead of
+            ``1/(3 sigma_tr)``. SMM rejects a problem with a void group in the accelerated
+            groupset. Must be at least 0. With 0 no group is void. The option changes only the
+            convergence of the iterations, not the converged solution.
           - verbose_inner_iterations: bool, default=True
             Print inner iteration details, including WGS and AGS iterations.
           - verbose_outer_iterations: bool, default=True
@@ -2867,7 +2883,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
        SMM acceleration is **experimental** and should be used with caution!
        SMM acceleration only supports problems with isotropic scattering.
        SMM acceleration does not support void groups, in which the transport cross section of a
-       material is below 1e-12.
+       material is below the problem option ``dsa_void_sigma_tr`` (default 1e-12).
 
     Parameters
     ----------
