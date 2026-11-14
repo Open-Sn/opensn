@@ -286,6 +286,18 @@
 </dd></dl>
 
 <dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem22boundary_inflow_slots_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1afb320a3ecbc24fd43d4369a0f87e7a04"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">map</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_inflow_slots_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem22boundary_inflow_slots_E" title="Link to this definition"></a><br /></dt>
+<dd><p>First face-node slot of each boundary face, keyed by (cell local id, face index). </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem16boundary_inflow_E">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a39df6a54f132cfb0b05b8caacec1be6c"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">boundary_inflow_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem16boundary_inflow_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Per groupset, the boundary inflow at each face-node slot, direction, and group. </p>
+</dd></dl>
+
+<dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem11ags_solver_E">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a01a93eb89ac03b435695a20c742e3920"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_a_g_s_linear_solver.html#_CPPv4N6opensn15AGSLinearSolverE" title="opensn::AGSLinearSolver"><span class="n"><span class="pre">AGSLinearSolver</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ags_solver_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem11ags_solver_E" title="Link to this definition"></a><br /></dt>
 <dd><p>Max level size. </p>
@@ -479,6 +491,32 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem27IsAdjointSolutionReorientedEv">
 <span class="target" id="classopensn_1_1_discrete_ordinates_problem_1aa383334d34bf87a55a85f2e3e3c54c47"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAdjointSolutionReoriented</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem27IsAdjointSolutionReorientedEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Returns the sweep boundaries as a read-only reference. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20RecordBoundaryInflowEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1abfae2796544acfda38f5f7c4665f965f"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">RecordBoundaryInflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20RecordBoundaryInflowEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Records the incoming angular flux of the stored solution on every boundary face node of the local cells, for each direction that enters the domain in the sweeps: 0 for a vacuum boundary, the boundary-source value, and the reflected angular flux of the final iterate for a reflecting boundary. </p>
+<p>Solvers call it when a solve completes, before an adjoint solution is reoriented, so the record is indexed by sweep direction and holds the values of that solve whatever the boundaries are changed to afterward. Does nothing without a stored angular flux. Local. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem19ClearBoundaryInflowEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1af3e306803fcbc7b733b7ffa01eb0d51e"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaryInflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem19ClearBoundaryInflowEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Discards the boundary inflow record. Called whenever the stored angular flux is replaced. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem17HasBoundaryInflowEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1acd9db081bf8c8f64a2ea4691a2c96bd2"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">HasBoundaryInflow</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem17HasBoundaryInflowEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Whether the stored angular flux has the boundary inflow record of the solve that produced it. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn24DiscreteOrdinatesProblem17GetBoundaryInflowEjNSt8uint32_tEjjjj">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a9f411083aaf25d7c6df2b7ad38da7cd9"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetBoundaryInflow</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">cell_local_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">face</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">fi</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">direction</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">gsg</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn24DiscreteOrdinatesProblem17GetBoundaryInflowEjNSt8uint32_tEjjjj" title="Link to this definition"></a><br /></dt>
+<dd><p>Returns the recorded incoming angular flux at face node <code class="docutils literal notranslate"><span class="pre">fi</span></code> of boundary face <code class="docutils literal notranslate"><span class="pre">face</span></code> of local cell <code class="docutils literal notranslate"><span class="pre">cell_local_id</span></code>, for sweep direction <code class="docutils literal notranslate"><span class="pre">direction</span></code> and groupset-local group <code class="docutils literal notranslate"><span class="pre">gsg</span></code>. </p>
+<p>Zero for a direction that leaves the domain. Requires <a class="reference internal" href="#classopensn_1_1_discrete_ordinates_problem_1acd9db081bf8c8f64a2ea4691a2c96bd2"><span class="std std-ref">HasBoundaryInflow()</span></a>. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -828,9 +866,10 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem15ClearBoundariesEv">
-<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1a82a5f96f075e5208b0aec54b02285a2f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Clears all the boundary conditions from the solver. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn24DiscreteOrdinatesProblem20ClearBoundarySourcesEv">
+<span class="target" id="classopensn_1_1_discrete_ordinates_problem_1ae6b1cc97f2ee17c4e0810cc9a16d5bd9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundarySources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DiscreteOrdinatesProblem20ClearBoundarySourcesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Removes the boundary sources (isotropic and arbitrary boundaries), so those boundaries become vacuum. </p>
+<p>Vacuum and reflecting boundaries are kept. Collective. </p>
 </dd></dl>
 
 <dl class="cpp function">

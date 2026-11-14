@@ -266,9 +266,20 @@
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">DiffusionInitialized</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">diffusion_initialized_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetSigmaTransport</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sigma_tr_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the transport cross section sigma_t - sum of P1 out-scatter, of the transposed P1</span>
+<span class="cm">   * matrix when adjoint is true.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetSigmaTransport</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">adjoint_sigma_tr_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">sigma_tr_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
-<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDiffusionCoefficient</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">diffusion_coeff_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">  </span><span class="c1">/// Returns the diffusion coefficient 1/(3 sigma_tr) for the forward or the adjoint mode.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetDiffusionCoefficient</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">)</span><span class="w"> </span><span class="k">const</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="n">adjoint_diffusion_coeff_</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="n">diffusion_coeff_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">}</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetSigmaRemoval</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">sigma_r_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
@@ -368,6 +379,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sigma_tr_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Transport corrected diffusion coefficient</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">diffusion_coeff_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Transport cross section and diffusion coefficient of the transposed (adjoint) scattering</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">adjoint_sigma_tr_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">adjoint_diffusion_coeff_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Removal cross section</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">sigma_r_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Within-group scattering cross section</span>

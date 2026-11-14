@@ -289,10 +289,12 @@
 <span class="cm"> *   `X_d` normal (the negative axis), which gives -R and swaps and negates `outgoing` and</span>
 <span class="cm"> *   `incoming`.</span>
 <span class="cm"> * Each response is split into `outgoing` (mu_{f,d} &gt; 0) and `incoming` (mu_{f,d} &lt; 0) parts; the</span>
-<span class="cm"> * response is their sum (SurfaceResponse::Total). OpenSn quadrature weights sum to 1, so for an</span>
-<span class="cm"> * adjoint problem driven by a volumetric, material, or point response source, R equals the response</span>
-<span class="cm"> * it carries across the surface. Forward and adjoint directions are paired by equal direction</span>
-<span class="cm"> * vectors and must have equal weights. Face nodes are paired by location.</span>
+<span class="cm"> * response is their sum (SurfaceResponse::Total). Each direction is weighted by W w_d, with W the</span>
+<span class="cm"> * sum of the quadrature weights (1 for OpenSn quadratures), because moment sources enter each</span>
+<span class="cm"> * direction divided by W. So for an adjoint problem driven by a volumetric, material, or point</span>
+<span class="cm"> * response source, R equals the response it carries across the surface. Forward and adjoint</span>
+<span class="cm"> * directions are paired by equal direction vectors and must have equal weights. Face nodes are</span>
+<span class="cm"> * paired by location.</span>
 <span class="cm"> *</span>
 <span class="cm"> * \param forward Forward data. Must not be adjoint.</span>
 <span class="cm"> * \param adjoint Adjoint data. Must be adjoint and must be distributed over `comm`.</span>

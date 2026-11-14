@@ -103,27 +103,28 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html">12. CSDA Charged-Particle Transport</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html">13. preCICE Multiphysics Coupling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">14. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">15. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#validation-and-lifecycle">16. Validation and lifecycle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">17. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">18. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">19. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">20. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">21. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">22. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">23. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">24. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">25. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">26. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">27. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">28. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">29. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">30. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">31. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">32. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html">12. Adjoint Problems and Response Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html">13. CSDA Charged-Particle Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html">14. preCICE Multiphysics Coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">15. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">16. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#validation-and-lifecycle">17. Validation and lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">18. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">19. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">20. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">21. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">22. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">23. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">24. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">25. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">26. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">27. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">28. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">29. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">30. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">31. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">32. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">33. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -472,9 +473,16 @@ boundary replacement between solves.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">clear_boundary_conditions=True</span></code> removes the current set before applying the
 new list</p></li>
-<li><p><code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code> clears all boundary conditions during a mode
-transition, so they must be reapplied afterward</p></li>
 </ul>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetAdjoint" title="pyopensn.solver.LBSProblem.SetAdjoint"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetAdjoint()</span></code></a> and
+<a class="reference internal" href="../pyapi/generated/pyopensn.solver.LBSProblem.html#pyopensn.solver.LBSProblem.SetForward" title="pyopensn.solver.LBSProblem.SetForward"><code class="xref py py-meth docutils literal notranslate"><span class="pre">pyopensn.solver.LBSProblem.SetForward()</span></code></a> clear all point and
+volumetric sources and all isotropic and arbitrary boundaries when they change
+the mode. Those boundaries become vacuum, and OpenSn logs a warning. Vacuum
+and reflecting boundaries are kept. Apply the sources for the new mode before
+solving again (see <a class="reference internal" href="adjoint_response.html"><span class="doc">Adjoint Problems and Response Evaluation</span></a>).</p>
+</div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>Boundary-condition updates are a natural way to steer a problem between
@@ -1009,8 +1017,9 @@ based.</p></li>
 <li><p>Prefer <code class="docutils literal notranslate"><span class="pre">start_time</span></code>/<code class="docutils literal notranslate"><span class="pre">end_time</span></code> for simple on/off source behavior.</p></li>
 <li><p>Prefer callbacks when source strength must vary continuously with group or
 time.</p></li>
-<li><p>After calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code>, reapply sources
-and boundary conditions before solving again.</p></li>
+<li><p>After calling <code class="xref py py-meth docutils literal notranslate"><span class="pre">LBSProblem.SetAdjoint()</span></code>, apply the sources and
+boundary sources of the new mode before solving again. Vacuum and reflecting
+boundaries are kept.</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>

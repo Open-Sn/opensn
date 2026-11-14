@@ -17,6 +17,7 @@ OpenSn User Guide (Draft)
    CMFD Acceleration <cmfd_acceleration>
    Boundary Conditions and Sources <boundary_conditions_sources>
    Discrete-Ordinates Problems <discrete_ordinates_problems>
+   Adjoint Problems and Response Evaluation <adjoint_response>
    CSDA Charged-Particle Transport <csda>
    preCICE Multiphysics Coupling <precice_coupling>
    Solvers <solvers>

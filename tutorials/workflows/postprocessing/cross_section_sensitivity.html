@@ -230,7 +230,7 @@ R=\int_0^L\phi_1(z)\,dz
 </section>
 <section id="Solve-the-adjoint-response-problem">
 <h2><span class="section-number">4.1.3.2. </span>Solve the adjoint response problem<a class="headerlink" href="#Solve-the-adjoint-response-problem" title="Link to this heading"></a></h2>
-<p>The response is the group-1 scalar flux integrated over the entire slab, so the adjoint problem uses a uniform unit source in group 1 and zero source in group 0. <code class="docutils literal notranslate"><span class="pre">SetAdjoint(True)</span></code> clears the previous source, boundary, and flux state; the response source and reflecting boundaries must therefore be applied again before executing the solver.</p>
+<p>The response is the group-1 scalar flux integrated over the entire slab, so the adjoint problem uses a uniform unit source in group 1 and zero source in group 0. <code class="docutils literal notranslate"><span class="pre">SetAdjoint(True)</span></code> clears the previous sources and zeroes the flux, so the response source must be applied before executing the solver. The reflecting boundaries are kept.</p>
 <p>Only the forward state is written to files. When an adjoint prefix is omitted from a sensitivity postprocessor, it reads the current adjoint state from <code class="docutils literal notranslate"><span class="pre">problem</span></code>.</p>
 <div class="nbinput nblast docutils container">
 <div class="prompt highlight-none notranslate"><div class="highlight"><pre><span></span>[ ]:
@@ -238,7 +238,6 @@ R=\int_0^L\phi_1(z)\,dz
 </div>
 <div class="input_area highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">response_source</span> <span class="o">=</span> <span class="n">VolumetricSource</span><span class="p">(</span><span class="n">block_ids</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">group_strength</span><span class="o">=</span><span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">])</span>
 <span class="n">problem</span><span class="o">.</span><span class="n">SetAdjoint</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">problem</span><span class="o">.</span><span class="n">SetBoundaryOptions</span><span class="p">(</span><span class="n">boundary_conditions</span><span class="o">=</span><span class="n">boundaries</span><span class="p">)</span>
 <span class="n">problem</span><span class="o">.</span><span class="n">SetVolumetricSources</span><span class="p">(</span><span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">response_source</span><span class="p">])</span>
 <span class="n">solver</span><span class="o">.</span><span class="n">Execute</span><span class="p">()</span>
 </pre></div>

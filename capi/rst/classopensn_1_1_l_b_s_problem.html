@@ -204,7 +204,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem10SetAdjointEb">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a48dd135e54c0215cd159dea54b81e765"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SetAdjoint</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">adjoint</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">true</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem10SetAdjointEb" title="Link to this definition"></a><br /></dt>
 <dd><p>Toggle forward/adjoint transport mode. </p>
-<p>If the requested mode differs from the current mode, this performs a mode-transition reset. Materials are reinitialized in the selected mode, sources and boundaries are cleared, and solution vectors are zeroed. Adjoint mode is supported only for Cartesian geometries. </p>
+<p>If the requested mode differs from the current mode, this performs a mode-transition reset. Materials are reinitialized in the selected mode. Point and volumetric sources, source moments, and the boundary sources (isotropic and arbitrary boundaries, which become vacuum) are cleared. Vacuum and reflecting boundaries are kept because they mean the same in both modes. Solution vectors are zeroed, and a warning naming what must be reapplied is logged on rank 0. Adjoint mode is supported only for Cartesian geometries. Collective. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -426,9 +426,10 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem15ClearBoundariesEv">
-<span class="target" id="classopensn_1_1_l_b_s_problem_1a0fc3695393b9286ebf139592080d2a74"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundaries</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem15ClearBoundariesEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Clears all the boundary conditions from the solver. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem20ClearBoundarySourcesEv">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1a8edc96a026bd0ffb43a73f7b3310311e"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearBoundarySources</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem20ClearBoundarySourcesEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Removes the boundary sources (isotropic and arbitrary boundaries), so those boundaries become vacuum. </p>
+<p>Vacuum and reflecting boundaries are kept. Collective. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -717,6 +718,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10LBSProblem24MakeSourceMomentsFromPhiEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1a4701a3019974bda5566e663bf492f921"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">MakeSourceMomentsFromPhi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10LBSProblem24MakeSourceMomentsFromPhiEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Makes a source-moments vector from scattering and fission based on the latest phi-solution. </p>
+<p>Like all source moments, the result is in the solver orientation, so a physically reoriented adjoint flux is mapped back first. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -745,6 +747,13 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem27IsAdjointSolutionReorientedEv">
 <span class="target" id="classopensn_1_1_l_b_s_problem_1aad28f8c7bf0426357f368d1b2a792d55"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">IsAdjointSolutionReoriented</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem27IsAdjointSolutionReorientedEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Whether the stored adjoint fluxes use the physical rather than internal sweep orientation. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10LBSProblem23ReverseMomentDirectionsERNSt6vectorIdEE">
+<span class="target" id="classopensn_1_1_l_b_s_problem_1abcb3683825db18a6ede723f0d90ecabe"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReverseMomentDirections</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">phi</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10LBSProblem23ReverseMomentDirectionsERNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
+<dd><p>Maps local flux moments to those of the angular flux at the opposite directions by multiplying each moment of degree ell by (-1)^ell. </p>
+<p>This converts adjoint flux moments between the solver and the physical orientation, in either direction. </p>
 </dd></dl>
 
 </div>

@@ -23,6 +23,8 @@
       <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
       <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
       <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+      <script>window.MathJax = {"tex": {"inlineMath": [["$", "$"], ["\\(", "\\)"]], "processEscapes": true}, "options": {"ignoreHtmlClass": "tex2jax_ignore|mathjax_ignore|document", "processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
@@ -118,9 +120,16 @@
 <dt class="sig sig-object py" id="pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling">
 <span class="sig-name descname"><span class="pre">ApplyKEigenvalueScaling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.post.CrossSectionSensitivityPostprocessor" title="pyopensn.post.CrossSectionSensitivityPostprocessor"><span class="pre">pyopensn.post.CrossSectionSensitivityPostprocessor</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">arg0</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling" title="Link to this definition"></a></dt>
 <dd><p>Scale the previously computed sensitivities to k-eigenvalue sensitivities.</p>
+<p>The normalization is <span class="math notranslate nohighlight">\(\langle \phi^\dagger, F \phi \rangle\)</span>, with <span class="math notranslate nohighlight">\(F\)</span> the
+fission production operator the solvers apply (prompt and, with delayed neutrons included,
+delayed production). Collective.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>k_eff</strong> (<em>float</em>) – Forward k-eigenvalue used in the first-order k-sensitivity normalization.</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><p><strong>RuntimeError</strong> – If <code class="docutils literal notranslate"><span class="pre">Execute</span></code> has not been called, or the current values are already scaled. Call
+    <code class="docutils literal notranslate"><span class="pre">Execute</span></code> again before scaling again.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -149,25 +158,54 @@ sensitivities use flux moments.</p>
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>DiscreteOrdinatesProblem</em></a>) – A handle to an existing discrete ordinates problem.</p></li>
 <li><p><strong>block_ids</strong> (<em>List</em><em>[</em><em>int</em><em>]</em><em>, </em><em>optional</em>) – Block restriction for the postprocessor. Empty/unspecified means no block restriction.</p></li>
 <li><p><strong>logical_volumes</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.logvol.LogicalVolume.html#pyopensn.logvol.LogicalVolume" title="pyopensn.logvol.LogicalVolume"><em>LogicalVolume</em></a><em>]</em><em>, </em><em>optional</em>) – Logical volumes to restrict the computation to.</p></li>
-<li><p><strong>sensitivity_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Sensitivity type: ‘sigma_t’ (default), ‘scatter’, or ‘production’.</p></li>
+<li><p><strong>sensitivity_type</strong> (<em>str</em><em>, </em><em>optional</em>) – Sensitivity type: ‘sigma_t’ (default), ‘scatter’, or ‘production’. ‘production’ is the
+sensitivity to nu_sigma_f of the selected source group with the fission spectra and the
+delayed-neutron fraction held fixed, so it scales column <code class="docutils literal notranslate"><span class="pre">group</span></code> of the fission
+production operator the solvers apply (prompt and, with delayed neutrons included,
+delayed production). Where nu_sigma_f of that group is zero, the column does not define
+the spectrum, so the relative sensitivity is zero and the absolute one is rejected.</p></li>
 <li><p><strong>group</strong> (<em>int</em><em>, </em><em>optional</em>) – Group for sigma_t or production sensitivities.</p></li>
-<li><p><strong>moment</strong> (<em>int</em><em>, </em><em>optional</em>) – Scattering moment/order for scatter sensitivities. Aliased by ‘ell’; specify at
-most one of the two.</p></li>
+<li><p><strong>moment</strong> (<em>int</em><em>, </em><em>optional</em>) – Legendre order of the scattering moment for scatter sensitivities, at most the problem’s
+scattering order. Aliased by ‘ell’. Specify at most one of the two.</p></li>
 <li><p><strong>ell</strong> (<em>int</em><em>, </em><em>optional</em>) – Alias for ‘moment’. Specify at most one of ‘moment’ and ‘ell’.</p></li>
 <li><p><strong>from_group</strong> (<em>int</em><em>, </em><em>optional</em>) – Source group for the scatter coefficient.</p></li>
 <li><p><strong>to_group</strong> (<em>int</em><em>, </em><em>optional</em>) – Destination group for the scatter coefficient.</p></li>
 <li><p><strong>relative</strong> (<em>bool</em><em>, </em><em>optional</em>) – Return relative sensitivities x*dR/dx instead of dR/dx. Default False.</p></li>
-<li><p><strong>forward_flux_moments</strong> (<em>str</em><em>, </em><em>optional</em>) – Forward flux-moment file prefix. Empty (default) uses the current phi.</p></li>
-<li><p><strong>adjoint_flux_moments</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint flux-moment file prefix. Empty (default) uses the current phi.</p></li>
-<li><p><strong>forward_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Forward angular-flux file prefix. Empty (default) uses the current psi.</p></li>
-<li><p><strong>adjoint_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint angular-flux file prefix. Empty (default) uses the current psi.</p></li>
+<li><p><strong>forward_flux_moments</strong> (<em>str</em><em>, </em><em>optional</em>) – Forward flux-moment file prefix. Empty (default) uses the current phi, which requires a
+forward problem. The file must have been written by a forward problem.</p></li>
+<li><p><strong>adjoint_flux_moments</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint flux-moment file prefix. Empty (default) uses the current phi, which requires an
+adjoint problem whose solver has finished. The file must have been written by an adjoint
+problem after its solver finished, so that it holds the physically oriented adjoint.</p></li>
+<li><p><strong>forward_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Forward angular-flux file prefix. Empty (default) uses the current psi, which requires a
+forward problem without an uncollided flux (its psi holds only the collided part). The
+file must have been written by a forward problem.</p></li>
+<li><p><strong>adjoint_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint angular-flux file prefix. Empty (default) uses the current psi, which requires an
+adjoint problem whose solver has finished. The file must have been written by an adjoint
+problem after its solver finished.</p></li>
 <li><p><strong>flux_moments_single_file</strong> (<em>bool</em><em>, </em><em>optional</em>) – Read flux moments from the single file <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;.h5</span></code> instead of the per-rank file
 <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;&lt;rank&gt;.h5</span></code>. Default False. Serial runs only: in a multi-rank run, reading the
 flux moments (<code class="docutils literal notranslate"><span class="pre">Execute</span></code> or <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code>) raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before
 any file is opened.</p></li>
 </ul>
 </dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If a selection is invalid or selects no cells. <code class="docutils literal notranslate"><span class="pre">Execute</span></code> and
+    <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code> raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> if a forward term would come from the
+    current state of an adjoint problem or an adjoint term from the current state of a forward
+    problem or of an adjoint problem whose solver has not finished. This also rejects leaving
+    both prefixes of a pair empty. <code class="docutils literal notranslate"><span class="pre">Execute</span></code> also raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> for an absolute
+    production sensitivity when a selected fissionable block has zero nu_sigma_f in the
+    selected group.</p></li>
+<li><p><strong>RuntimeError</strong> – <code class="docutils literal notranslate"><span class="pre">Execute</span></code> and <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code> raise <code class="docutils literal notranslate"><span class="pre">RuntimeError</span></code> if a file cannot be
+    read or does not match the problem, if a forward term would come from an adjoint file, or
+    if an adjoint term would come from a forward or solver-oriented file.</p></li>
+</ul>
+</dd>
 </dl>
+<p class="rubric">Notes</p>
+<p>Construction, <a class="reference internal" href="#pyopensn.post.CrossSectionSensitivityPostprocessor.Execute" title="pyopensn.post.CrossSectionSensitivityPostprocessor.Execute"><code class="xref py py-meth docutils literal notranslate"><span class="pre">Execute()</span></code></a>, and <a class="reference internal" href="#pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling" title="pyopensn.post.CrossSectionSensitivityPostprocessor.ApplyKEigenvalueScaling"><code class="xref py py-meth docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling()</span></code></a> are collective. Every MPI
+rank must construct the postprocessor with the same selections and call them together.</p>
 </dd></dl>
 
 </dd></dl>

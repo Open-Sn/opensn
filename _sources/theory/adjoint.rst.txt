@@ -76,7 +76,8 @@ where
 
 #. Interpret the :math:`S_n` source in direction :math:`\vec{\Omega}`
    as the adjoint source evaluated in direction :math:`-\vec{\Omega}`.
-   The user is responsible for doing this.
+   The user is responsible for doing this for direction-dependent adjoint
+   data. See :doc:`../userguide/adjoint_response`.
 
 | Finally, it is important for the user to recognize that because the
   multigroup inner product is the dot product, the adjoint multigroup

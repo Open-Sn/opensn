@@ -158,13 +158,15 @@
 <span class="cm">   * \param opt_dest Optional destination vector to populate instead of the problem-owned flux</span>
 <span class="cm">   * moments.</span>
 <span class="cm">   * \param expected_role Required solution role, or unspecified to accept any role.</span>
-<span class="cm">   * \param expected_orientation Required adjoint orientation, or unspecified to accept any.</span>
+<span class="cm">   * \param expected_orientation Required orientation of a file that records the adjoint role, or</span>
+<span class="cm">   * unspecified to accept any. Files of other roles, and files without provenance, pass.</span>
 <span class="cm">   *</span>
 <span class="cm">   * The file must have been written with the same rank count and partition. Collective: a file</span>
 <span class="cm">   * that cannot be read or does not match the problem raises an error on every rank, and the</span>
-<span class="cm">   * destination is left unchanged.</span>
+<span class="cm">   * destination is left unchanged. Returns the adjoint orientation recorded in this rank&#39;s file,</span>
+<span class="cm">   * unspecified for a forward file or a file without provenance.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">ReadFluxMoments</span><span class="p">(</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">AdjointFluxOrientation</span><span class="w"> </span><span class="nf">ReadFluxMoments</span><span class="p">(</span>
 <span class="w">    </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem</span><span class="p">,</span>
 <span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">file_base</span><span class="p">,</span>
 <span class="w">    </span><span class="kt">bool</span><span class="w"> </span><span class="n">single_file</span><span class="p">,</span>

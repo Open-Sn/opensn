@@ -96,11 +96,13 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/mesh/mesh/mesh.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/parameters/parameter_block.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;map&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;set&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;tuple&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;utility&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -282,6 +284,34 @@
 
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsAdjointSolutionReoriented</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="k">override</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">adjoint_solution_reoriented_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Records the incoming angular flux of the stored solution on every boundary face node of the</span>
+<span class="cm">   * local cells, for each direction that enters the domain in the sweeps: 0 for a vacuum boundary,</span>
+<span class="cm">   * the boundary-source value, and the reflected angular flux of the final iterate for a reflecting</span>
+<span class="cm">   * boundary. Solvers call it when a solve completes, before an adjoint solution is reoriented, so</span>
+<span class="cm">   * the record is indexed by sweep direction and holds the values of that solve whatever the</span>
+<span class="cm">   * boundaries are changed to afterward. Does nothing without a stored angular flux. Local.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RecordBoundaryInflow</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Discards the boundary inflow record. Called whenever the stored angular flux is replaced.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaryInflow</span><span class="p">();</span>
+
+<span class="w">  </span><span class="c1">/// Whether the stored angular flux has the boundary inflow record of the solve that produced it.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">HasBoundaryInflow</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="k">not</span><span class="w"> </span><span class="n">boundary_inflow_</span><span class="p">.</span><span class="n">empty</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the recorded incoming angular flux at face node `fi` of boundary face `face` of local</span>
+<span class="cm">   * cell `cell_local_id`, for sweep direction `direction` and groupset-local group `gsg`. Zero for</span>
+<span class="cm">   * a direction that leaves the domain. Requires HasBoundaryInflow().</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">GetBoundaryInflow</span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">groupset_id</span><span class="p">,</span>
+<span class="w">                           </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_id</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">face</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fi</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span>
+<span class="w">                           </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">gsg</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
 <span class="w">  </span><span class="c1">/// Zeroes all the outflow data-structures required to compute balance.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ZeroOutflowBalanceVars</span><span class="p">(</span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">);</span>
 
@@ -305,7 +335,7 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSaveAngularFlux</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">save</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundaryOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">InputParameters</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">boundary_params</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">clear_existing</span><span class="p">);</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundaries</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearBoundarySources</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 <span class="w">  </span><span class="n">BoundaryCarrier</span><span class="o">*</span><span class="w"> </span><span class="nf">GetBoundaryCarrier</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_carrier_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">BoundaryCarrier</span><span class="o">*</span><span class="w"> </span><span class="nf">GetBoundaryCarrier</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">boundary_carrier_</span><span class="p">.</span><span class="n">get</span><span class="p">();</span><span class="w"> </span><span class="p">}</span>
 
@@ -512,6 +542,10 @@
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_outflow_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">uncollided_flux_applied_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint_solution_reoriented_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// First face-node slot of each boundary face, keyed by (cell local id, face index).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">boundary_inflow_slots_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Per groupset, the boundary inflow at each face-node slot, direction, and group.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">boundary_inflow_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">AGSLinearSolver</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ags_solver_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">WGSContext</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_contexts_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>

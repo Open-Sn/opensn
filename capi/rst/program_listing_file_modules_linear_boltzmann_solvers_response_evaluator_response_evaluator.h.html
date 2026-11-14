@@ -147,8 +147,13 @@
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">BoundarySources</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="n">BoundarySource</span><span class="o">&gt;</span><span class="p">;</span>
 
 <span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// Construct the evaluator and apply its options with SetOptions. Collective.</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">ResponseEvaluator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Add data sets with SetDataOptions and forward sources with SetSourceOptions. Collective, and</span>
+<span class="cm">   * every rank must give the same options.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
@@ -163,8 +168,13 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetDataOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Add forward sources. Collective. A material source counts its cells over all ranks, so every</span>
+<span class="cm">   * rank must add the same sources in the same order.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetSourceOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">input</span><span class="p">);</span>
 
+<span class="w">  </span><span class="c1">/// Add one material source. Collective, as described for SetSourceOptions.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetMaterialSourceOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SetBoundarySourceOptions</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
@@ -181,6 +191,10 @@
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Evaluate a response by folding the currently defined forward sources against the adjoint flux</span>
 <span class="cm">   * moments and angular fluxes of the named data set added with SetDataOptions.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Point and volumetric sources are evaluated at the problem&#39;s time and skipped when inactive</span>
+<span class="cm">   * then, as in the forward source assembly. Volumetric sources use the consistent mass matrix.</span>
+<span class="cm">   * Boundary sources require adjoint angular fluxes in physical orientation.</span>
 <span class="cm">   *</span>
 <span class="cm">   * Collective. Throws `std::invalid_argument` for an unknown data set and `std::logic_error` if</span>
 <span class="cm">   * the data set lacks the flux moments or angular fluxes that the defined sources require.</span>
@@ -212,17 +226,12 @@
 
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Evaluates a boundary source and returns the angular flux on the boundary.</span>
-<span class="cm">   *</span>
-<span class="cm">   * This returns the full angular flux at a particular spatial location, for a particular</span>
-<span class="cm">   * groupset, at a particular time, for a particular boundary. No boundary normal information</span>
-<span class="cm">   * is included in the evaluation. The incident fluxes are obtained within the EvaluateResponse</span>
-<span class="cm">   * routine.</span>
+<span class="cm">   * Returns the angular flux of a boundary source for every direction and group of a groupset,</span>
+<span class="cm">   * direction-major. Isotropic boundary sources are uniform on the boundary, and the incident</span>
+<span class="cm">   * directions are selected within EvaluateResponse.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">EvaluateBoundaryCondition</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">boundary_id</span><span class="p">,</span>
-<span class="w">                                                </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">node</span><span class="p">,</span>
-<span class="w">                                                </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">,</span>
-<span class="w">                                                </span><span class="kt">double</span><span class="w"> </span><span class="n">time</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">                                                </span><span class="k">const</span><span class="w"> </span><span class="n">LBSGroupset</span><span class="o">&amp;</span><span class="w"> </span><span class="n">groupset</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&gt;</span><span class="w"> </span><span class="n">do_problem_</span><span class="p">;</span>
 

@@ -132,11 +132,31 @@ configurations and convolve them against all available adjoint data sets.</p>
 <span class="sig-name descname"><span class="pre">EvaluateResponse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.EvaluateResponse" title="Link to this definition"></a></dt>
 <dd><p>Evaluate a response by folding the currently defined forward sources against the adjoint
 flux moments and angular fluxes of a data set added with <code class="docutils literal notranslate"><span class="pre">SetOptions(data=...)</span></code> or
-<a class="reference internal" href="#pyopensn.response.ResponseEvaluator.SetDataOptions" title="pyopensn.response.ResponseEvaluator.SetDataOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetDataOptions()</span></code></a>. This call is collective.</p>
+<a class="reference internal" href="#pyopensn.response.ResponseEvaluator.SetDataOptions" title="pyopensn.response.ResponseEvaluator.SetDataOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetDataOptions()</span></code></a>.</p>
+<p>For adjoint data <span class="math notranslate nohighlight">\(\phi^\dagger, \psi^\dagger\)</span> this returns
+<span class="math notranslate nohighlight">\(R = \int \phi^\dagger q\,dV + W \sum_{n:\,\Omega_n\cdot n &lt; 0} w_n \int_{\partial D}
+|\Omega_n\cdot n| \psi^\dagger_n \psi^{\text{in}}_n\,dA\)</span> over the material, point,
+volumetric, and boundary sources. The boundary sum runs over the incoming directions of each
+boundary face, <span class="math notranslate nohighlight">\(w_n\)</span> is the quadrature weight, and <span class="math notranslate nohighlight">\(W\)</span> is the sum of the
+quadrature weights (1 for OpenSn quadratures, applied per groupset). For data from a
+fixed-source adjoint solve, this equals the forward response to the adjoint source that
+produced the data, for a forward problem with the same mesh, cross sections, quadrature, and
+vacuum and reflecting boundaries. A k-eigenvalue adjoint has an arbitrary normalization and
+gives no detector response.
+Volumetric sources are integrated with the consistent mass matrix, as in the forward solve.
+Point and volumetric sources are evaluated at the problem’s current time, and sources that
+are inactive then are skipped. In RZ geometry the result includes the <span class="math notranslate nohighlight">\(2\pi\)</span> azimuthal
+factor. This call is collective.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>data_name</strong> (<em>str</em>) – Name of the data set holding the adjoint flux moments (<code class="docutils literal notranslate"><span class="pre">flux_moments</span></code>) and, for boundary
 sources, adjoint angular fluxes (<code class="docutils literal notranslate"><span class="pre">angular_fluxes</span></code>).</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>The response, identical on every rank.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>float</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
 <dd class="field-even"><ul class="simple">
@@ -157,9 +177,10 @@ been written by different numbers of ranks and partitions, and neither needs to 
 partitioning of the current run.</p>
 <p>For a surface <span class="math notranslate nohighlight">\(S\)</span> with faces <span class="math notranslate nohighlight">\(f\)</span>, the response carried across it is</p>
 <div class="math notranslate nohighlight">
-\[R = \sum_{f \in S} \sum_{d \in D_f} \mu_{f,d}\, w_d \sum_{ij} M_{f,ij} \sum_g
+\[R = W \sum_{f \in S} \sum_{d \in D_f} \mu_{f,d}\, w_d \sum_{ij} M_{f,ij} \sum_g
     \psi_{f,i,d,g}\, \psi^\dagger_{f,j,d,g},\]</div>
-<p>with <span class="math notranslate nohighlight">\(\mu_{f,d} = \Omega_d \cdot n_f\)</span>, <span class="math notranslate nohighlight">\(w_d\)</span> the quadrature weight,
+<p>with <span class="math notranslate nohighlight">\(\mu_{f,d} = \Omega_d \cdot n_f\)</span>, <span class="math notranslate nohighlight">\(w_d\)</span> the quadrature weight, <span class="math notranslate nohighlight">\(W\)</span> the
+sum of the quadrature weights (1 for OpenSn quadratures, applied per groupset),
 <span class="math notranslate nohighlight">\(M_{f,ij}\)</span> the mass matrix of face <span class="math notranslate nohighlight">\(f\)</span>, and <span class="math notranslate nohighlight">\(\psi_{f,i,d,g}\)</span> and
 <span class="math notranslate nohighlight">\(\psi^\dagger_{f,j,d,g}\)</span> the forward and adjoint angular fluxes at nodes <span class="math notranslate nohighlight">\(i\)</span> and
 <span class="math notranslate nohighlight">\(j\)</span> of face <span class="math notranslate nohighlight">\(f\)</span>.</p>
@@ -172,7 +193,9 @@ flux that of the face’s cell. This is the boundary term of the discrete adjoin
 boundary response is exact for the discretization, like an interior surface response: its
 <code class="docutils literal notranslate"><span class="pre">outgoing</span></code> part is the response to the particles leaving through the boundary (for a
 detector outside the domain, represented by an adjoint boundary source, the detector
-response), and its <code class="docutils literal notranslate"><span class="pre">incoming</span></code> part minus the response to a forward boundary source on it.</p>
+response), and its <code class="docutils literal notranslate"><span class="pre">incoming</span></code> part minus the response to a forward boundary source on it.
+On a reflecting boundary both sides use the reflected angular flux of the final iterate, so its
+response is zero to the iteration tolerance.</p>
 <p>The surface files record whether each tag is a boundary or one side of an interior surface,
 so a boundary is evaluated as a boundary whatever its name, including names ending in <code class="docutils literal notranslate"><span class="pre">_u</span></code>
 or <code class="docutils literal notranslate"><span class="pre">_d</span></code>.</p>
@@ -266,11 +289,22 @@ can access.</p>
 </ul>
 </dd>
 </dl>
+<p>Flux-moment and angular-flux files must also match the problem’s quadrature and groups.
+Adjoint data must be in physical orientation, as written after its solver finished.
+Forward data is also accepted.</p>
 </p></li>
 <li><p><strong>surfaces</strong> (<em>List</em><em>[</em><em>str</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Surfaces to read. Required with <code class="docutils literal notranslate"><span class="pre">surface_angular_fluxes</span></code>, and rejected without it. Each
 entry is a boundary name or an interior surface name, which reads both stored sides
 <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_u</span></code> and <code class="docutils literal notranslate"><span class="pre">&lt;name&gt;_d</span></code>. A single side’s tag is rejected unless its other side is
 also requested, because a surface response needs both sides.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the name is already used, or <code class="docutils literal notranslate"><span class="pre">surfaces</span></code> and <code class="docutils literal notranslate"><span class="pre">surface_angular_fluxes</span></code> are not given
+    together.</p></li>
+<li><p><strong>RuntimeError</strong> – If a file cannot be read, does not match the problem, or holds adjoint data in solver
+    orientation.</p></li>
 </ul>
 </dd>
 </dl>
@@ -280,17 +314,19 @@ also requested, because a surface response needs both sides.</p></li>
 <dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetOptions">
 <span class="sig-name descname"><span class="pre">SetOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetOptions" title="Link to this definition"></a></dt>
 <dd><p>Set options for the response evaluator for adding data sets and defining forward sources.</p>
+<p>This call is collective. Every rank must give the same options, because adding data sets and
+material sources communicates over all ranks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>data</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – A list of dictionaries containing data set specifications, each as accepted by
 <a class="reference internal" href="#pyopensn.response.ResponseEvaluator.SetDataOptions" title="pyopensn.response.ResponseEvaluator.SetDataOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetDataOptions()</span></code></a>.</p></li>
 <li><p><strong>clear_sources</strong> (<em>bool</em><em>, </em><em>default=False</em>) – A flag to clear existing sources.</p></li>
-<li><p><strong>sources</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – <dl class="simple">
+<li><p><strong>sources</strong> (<em>Dict</em><em>, </em><em>default={}</em>) – <dl>
 <dt>Dictionary describing forward sources. Supported keys:</dt><dd><ul>
 <li><dl class="simple">
 <dt>material: List[Dict], default=[]</dt><dd><dl class="simple">
-<dt>Each dictionary supports:</dt><dd><ul>
+<dt>Each dictionary supports:</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>block_id: int (required)</dt><dd><p>Block id for the material source.</p>
 </dd>
@@ -317,30 +353,26 @@ also requested, because a surface response needs both sides.</p></li>
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>boundary: List[Dict], default=[]</dt><dd><dl class="simple">
-<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl>
+<dt>boundary: List[Dict], default=[]</dt><dd><dl>
+<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+<dt>type: {‘isotropic’} (required)</dt><dd><p>Boundary type. Only isotropic boundary sources are supported.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+<dt>group_strength: List[float] (required)</dt><dd><p>Isotropic incident angular flux per group.</p>
 </dd>
 </dl>
 </li>
 </ul>
+<p>A boundary may have only one boundary source.</p>
 </dd>
 </dl>
 </dd>
@@ -359,6 +391,8 @@ also requested, because a surface response needs both sides.</p></li>
 <dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.SetSourceOptions">
 <span class="sig-name descname"><span class="pre">SetSourceOptions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.SetSourceOptions" title="Link to this definition"></a></dt>
 <dd><p>Add forward sources from the options block to the response evaluator.</p>
+<p>This call is collective. Every rank must add the same sources in the same order, because a
+material source counts its cells over all ranks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
@@ -380,7 +414,7 @@ also requested, because a surface response needs both sides.</p></li>
 </p></li>
 <li><p><strong>point</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.PointSource.html#pyopensn.source.PointSource" title="pyopensn.source.PointSource"><em>pyopensn.source.PointSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Point source handles.</p></li>
 <li><p><strong>volumetric</strong> (<em>List</em><em>[</em><a class="reference internal" href="pyopensn.source.VolumetricSource.html#pyopensn.source.VolumetricSource" title="pyopensn.source.VolumetricSource"><em>pyopensn.source.VolumetricSource</em></a><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – Volumetric source handles.</p></li>
-<li><p><strong>boundary</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl class="simple">
+<li><p><strong>boundary</strong> (<em>List</em><em>[</em><em>Dict</em><em>]</em><em>, </em><em>default=</em><em>[</em><em>]</em>) – <dl>
 <dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
 <li><dl class="simple">
 <dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
@@ -388,21 +422,17 @@ also requested, because a surface response needs both sides.</p></li>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+<dt>type: {‘isotropic’} (required)</dt><dd><p>Boundary type. Only isotropic boundary sources are supported.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+<dt>group_strength: List[float] (required)</dt><dd><p>Isotropic incident angular flux per group.</p>
 </dd>
 </dl>
 </li>
 </ul>
+<p>A boundary may have only one boundary source.</p>
 </dd>
 </dl>
 </p></li>
@@ -415,14 +445,16 @@ also requested, because a surface response needs both sides.</p></li>
 <dt class="sig sig-object py" id="pyopensn.response.ResponseEvaluator.__init__">
 <span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.response.ResponseEvaluator" title="pyopensn.response.ResponseEvaluator"><span class="pre">pyopensn.response.ResponseEvaluator</span></a></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#pyopensn.response.ResponseEvaluator.__init__" title="Link to this definition"></a></dt>
 <dd><p>Construct a response evaluator object.</p>
+<p>This call is collective. Every rank must give the same options, because adding data sets and
+material sources communicates over all ranks.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>problem</strong> (<a class="reference internal" href="pyopensn.solver.DiscreteOrdinatesProblem.html#pyopensn.solver.DiscreteOrdinatesProblem" title="pyopensn.solver.DiscreteOrdinatesProblem"><em>pyopensn.solver.DiscreteOrdinatesProblem</em></a>) – A handle to an existing LBS problem.</p></li>
-<li><p><strong>options</strong> (<em>Dict</em>) – <dl class="simple">
+<li><p><strong>options</strong> (<em>Dict</em>) – <dl>
 <dt>The specification of data sets and forward sources to use. Supported keys:</dt><dd><ul>
 <li><dl class="simple">
-<dt>data: List[Dict], default=[]</dt><dd><p>Data set specifications, as for <a class="reference internal" href="#pyopensn.response.ResponseEvaluator.SetOptions" title="pyopensn.response.ResponseEvaluator.SetOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetOptions()</span></code></a>.</p>
+<dt>data: List[Dict], default=[]</dt><dd><p>Data set specifications, as for <a class="reference internal" href="#pyopensn.response.ResponseEvaluator.SetDataOptions" title="pyopensn.response.ResponseEvaluator.SetDataOptions"><code class="xref py py-meth docutils literal notranslate"><span class="pre">SetDataOptions()</span></code></a>.</p>
 </dd>
 </dl>
 </li>
@@ -431,12 +463,12 @@ also requested, because a surface response needs both sides.</p></li>
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>sources: Dict, default={}</dt><dd><dl class="simple">
+<li><dl>
+<dt>sources: Dict, default={}</dt><dd><dl>
 <dt>Dictionary describing forward sources. Supported keys:</dt><dd><ul>
 <li><dl class="simple">
 <dt>material: List[Dict], default=[]</dt><dd><dl class="simple">
-<dt>Each dictionary supports:</dt><dd><ul>
+<dt>Each dictionary supports:</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>block_id: int (required)</dt><dd><p>Block id for the material source.</p>
 </dd>
@@ -463,30 +495,26 @@ also requested, because a surface response needs both sides.</p></li>
 </dd>
 </dl>
 </li>
-<li><dl class="simple">
-<dt>boundary: List[Dict], default=[]</dt><dd><dl class="simple">
-<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul>
+<li><dl>
+<dt>boundary: List[Dict], default=[]</dt><dd><dl>
+<dt>Boundary source dictionaries. Each dictionary supports:</dt><dd><ul class="simple">
 <li><dl class="simple">
 <dt>name: str (required)</dt><dd><p>Boundary name that identifies the specific boundary.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>type: {‘vacuum’, ‘isotropic’, ‘reflecting’} (required)</dt><dd><p>Boundary type specification. Only <code class="docutils literal notranslate"><span class="pre">isotropic</span></code> is used for responses.</p>
+<dt>type: {‘isotropic’} (required)</dt><dd><p>Boundary type. Only isotropic boundary sources are supported.</p>
 </dd>
 </dl>
 </li>
 <li><dl class="simple">
-<dt>group_strength: List[float], optional</dt><dd><p>Required when <code class="docutils literal notranslate"><span class="pre">type='isotropic'</span></code>. Isotropic strength per group.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>function_name: str, optional, default=’’</dt><dd><p>Name of a registered function to evaluate on the boundary.</p>
+<dt>group_strength: List[float] (required)</dt><dd><p>Isotropic incident angular flux per group.</p>
 </dd>
 </dl>
 </li>
 </ul>
+<p>A boundary may have only one boundary source.</p>
 </dd>
 </dl>
 </dd>

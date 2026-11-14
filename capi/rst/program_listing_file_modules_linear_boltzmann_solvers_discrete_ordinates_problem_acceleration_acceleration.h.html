@@ -205,11 +205,13 @@
 <span class="cm"> *</span>
 <span class="cm"> * `time_absorption_scale` is 1/(theta dt) for a time-dependent problem and 0 otherwise. The time</span>
 <span class="cm"> * absorption tau_g = 1/(v_g theta dt) is added to the removal cross section and to the transport</span>
-<span class="cm"> * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)).</span>
+<span class="cm"> * cross section in the diffusion coefficient, D_g = 1/(3 (sigma_tr,g + tau_g)). `adjoint` selects</span>
+<span class="cm"> * the diffusion coefficient of the transposed scattering.</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="p">,</span><span class="w"> </span><span class="n">Multigroup_D_and_sigR</span><span class="o">&gt;</span><span class="w"> </span><span class="n">PackGroupsetXS</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">BlockID2XSMap</span><span class="o">&amp;</span><span class="w"> </span><span class="n">blkid_to_xs_map</span><span class="p">,</span>
 <span class="w">                                                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">first_grp_index</span><span class="p">,</span>
 <span class="w">                                                             </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">last_group_index</span><span class="p">,</span>
+<span class="w">                                                             </span><span class="kt">bool</span><span class="w"> </span><span class="n">adjoint</span><span class="p">,</span>
 <span class="w">                                                             </span><span class="kt">double</span><span class="w"> </span><span class="n">time_absorption_scale</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">);</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>

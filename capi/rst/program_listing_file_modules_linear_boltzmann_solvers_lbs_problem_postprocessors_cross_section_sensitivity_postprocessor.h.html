@@ -142,6 +142,13 @@
 
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="nf">ComputeFissionDenominator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">forward_phi</span><span class="p">,</span>
 <span class="w">                                   </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">adjoint_phi</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The forward fission production matrix that the problem&#39;s solvers apply, dense and row-major</span>
+<span class="cm">   * (destination group g, source group g&#39;): the production matrix, plus the delayed production</span>
+<span class="cm">   * when the problem includes delayed neutrons.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetFissionProductionMatrix</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">MultiGroupXS</span><span class="o">&amp;</span><span class="w"> </span><span class="n">xs</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ScaleForKEigenvalueSensitivity</span><span class="p">(</span><span class="kt">double</span><span class="w"> </span><span class="n">k_eff</span><span class="p">,</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">denominator</span><span class="p">);</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ValidateSelectedCoefficient</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
@@ -154,6 +161,9 @@
 
 <span class="w">  </span><span class="n">SensitivityType</span><span class="w"> </span><span class="n">sensitivity_type_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">SensitivityType</span><span class="o">::</span><span class="n">SIGMA_T</span><span class="p">;</span>
 <span class="w">  </span><span class="n">NDArray</span><span class="o">&lt;</span><span class="kt">double</span><span class="p">,</span><span class="w"> </span><span class="mi">2</span><span class="o">&gt;</span><span class="w"> </span><span class="n">values_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Whether values_ holds the result of Execute, and whether it has been scaled to k.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">executed_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">k_eigenvalue_scaled_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">selected_group_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ell_</span><span class="p">;</span>

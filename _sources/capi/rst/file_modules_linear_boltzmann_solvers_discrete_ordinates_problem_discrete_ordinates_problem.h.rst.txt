@@ -34,6 +34,8 @@ Includes
 
 - ``framework/parameters/parameter_block.h`` (:ref:`file_framework_parameters_parameter_block.h`)
 
+- ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)
+
 - ``memory`` (:ref:`file_framework_utils_memory.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/boundary_bank.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_boundary_boundary_bank.h`)
@@ -51,6 +53,8 @@ Includes
 - ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
 
 - ``tuple``
+
+- ``utility``
 
 - ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
 

@@ -65,27 +65,28 @@
 <li class="toctree-l2"><a class="reference internal" href="cmfd_acceleration.html">9. CMFD Acceleration</a></li>
 <li class="toctree-l2"><a class="reference internal" href="boundary_conditions_sources.html">10. Boundary Conditions and Sources</a></li>
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html">11. Discrete-Ordinates Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html">12. CSDA Charged-Particle Transport</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html">13. preCICE Multiphysics Coupling</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html">14. Solvers</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">15. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#validation-and-lifecycle">16. Validation and lifecycle</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">17. Base Classes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">18. LBS Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">19. Discrete Ordinates Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">20. Steady-State Source Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">21. Transient Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">22. Power Iteration k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">23. Nonlinear k-Eigen Solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">24. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">25. Field Functions and Solver Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html">26. Example Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html">27. Post Processors</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html">28. Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html">29. Running Problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">30. Iterative Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">31. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html">32. FAQ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html">12. Adjoint Problems and Response Evaluation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html">13. CSDA Charged-Particle Transport</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html">14. preCICE Multiphysics Coupling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html">15. Solvers</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#overview">16. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#validation-and-lifecycle">17. Validation and lifecycle</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#base-classes">18. Base Classes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#lbs-problem">19. LBS Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">20. Discrete Ordinates Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#steady-state-source-solver">21. Steady-State Source Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#transient-solver">22. Transient Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">23. Power Iteration k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">24. Nonlinear k-Eigen Solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">25. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">26. Field Functions and Solver Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html">27. Example Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html">28. Post Processors</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html">29. Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html">30. Running Problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html">31. Iterative Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html">32. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html">33. FAQ</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/index.html">Theory Manual</a></li>
@@ -245,168 +246,176 @@
 <li class="toctree-l2"><a class="reference internal" href="discrete_ordinates_problems.html#practical-guidance">11.16. Practical Guidance</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="csda.html">12. CSDA Charged-Particle Transport</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#basic-workflow">12.1. Basic Workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#cepxs-csda-data">12.2. CEPXS CSDA Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#problem-requirements">12.3. Problem Requirements</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#derived-field-functions">12.4. Derived Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#balance-table-entries">12.5. Balance Table Entries</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#within-group-dsa">12.6. Within-Group DSA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="csda.html#convergence-and-verification">12.7. Convergence and Verification</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adjoint_response.html">12. Adjoint Problems and Response Evaluation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html#supported-cases">12.1. Supported Cases</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html#selecting-the-mode">12.2. Selecting the Mode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html#adjoint-sources-and-boundary-conditions">12.3. Adjoint Sources and Boundary Conditions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html#solving-and-writing-the-adjoint">12.4. Solving and Writing the Adjoint</a></li>
+<li class="toctree-l2"><a class="reference internal" href="adjoint_response.html#response-evaluation">12.5. Response Evaluation</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="precice_coupling.html">13. preCICE Multiphysics Coupling</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#building">13.1. Building</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#overview">13.2. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-1-solve-the-transport-problem">13.3. Step 1: Solve the transport problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-2-create-the-energy-deposition-field">13.4. Step 2: Create the energy-deposition field</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-3-convert-the-field-to-watts">13.5. Step 3: Convert the field to watts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-4-describe-the-geometry">13.6. Step 4: Describe the geometry</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-5-remove-finite-element-undershoots-optional">13.7. Step 5: Remove finite-element undershoots (optional)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-6-write-the-precice-configuration">13.8. Step 6: Write the preCICE configuration</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-7-set-up-the-receiving-solver">13.9. Step 7: Set up the receiving solver</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-8-run-and-verify">13.10. Step 8: Run and verify</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#complete-examples">13.11. Complete examples</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#mapping-behavior">13.12. Mapping behavior</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#troubleshooting">13.13. Troubleshooting</a></li>
-<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#api-reference">13.14. API reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="csda.html">13. CSDA Charged-Particle Transport</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#basic-workflow">13.1. Basic Workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#cepxs-csda-data">13.2. CEPXS CSDA Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#problem-requirements">13.3. Problem Requirements</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#derived-field-functions">13.4. Derived Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#balance-table-entries">13.5. Balance Table Entries</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#within-group-dsa">13.6. Within-Group DSA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="csda.html#convergence-and-verification">13.7. Convergence and Verification</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html">14. Solvers</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#overview">15. Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#validation-and-lifecycle">16. Validation and lifecycle</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#base-classes">17. Base Classes</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#lbs-problem">18. LBS Problem</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">19. Discrete Ordinates Problem</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#time-dependent-and-steady-state-modes">19.1. Time-Dependent and Steady-State Modes</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#angular-flux-specific-features">19.2. Angular-Flux-Specific Features</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#discreteordinatescurvilinearproblem">19.3. DiscreteOrdinatesCurvilinearProblem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="precice_coupling.html">14. preCICE Multiphysics Coupling</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#building">14.1. Building</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#overview">14.2. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-1-solve-the-transport-problem">14.3. Step 1: Solve the transport problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-2-create-the-energy-deposition-field">14.4. Step 2: Create the energy-deposition field</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-3-convert-the-field-to-watts">14.5. Step 3: Convert the field to watts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-4-describe-the-geometry">14.6. Step 4: Describe the geometry</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-5-remove-finite-element-undershoots-optional">14.7. Step 5: Remove finite-element undershoots (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-6-write-the-precice-configuration">14.8. Step 6: Write the preCICE configuration</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-7-set-up-the-receiving-solver">14.9. Step 7: Set up the receiving solver</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#step-8-run-and-verify">14.10. Step 8: Run and verify</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#complete-examples">14.11. Complete examples</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#mapping-behavior">14.12. Mapping behavior</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#troubleshooting">14.13. Troubleshooting</a></li>
+<li class="toctree-l2"><a class="reference internal" href="precice_coupling.html#api-reference">14.14. API reference</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#steady-state-source-solver">20. Steady-State Source Solver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#constructor">20.1. Constructor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#gpu-support">20.2. GPU support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#how-it-operates">20.3. How It Operates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#adjoint-steady-state-solves">20.4. Adjoint Steady-State Solves</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html">15. Solvers</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#overview">16. Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#validation-and-lifecycle">17. Validation and lifecycle</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#base-classes">18. Base Classes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#lbs-problem">19. LBS Problem</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#discrete-ordinates-problem">20. Discrete Ordinates Problem</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#time-dependent-and-steady-state-modes">20.1. Time-Dependent and Steady-State Modes</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#angular-flux-specific-features">20.2. Angular-Flux-Specific Features</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#discreteordinatescurvilinearproblem">20.3. DiscreteOrdinatesCurvilinearProblem</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#transient-solver">21. Transient Solver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#supported-problems">21.1. Supported problems</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id1">21.2. Constructor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#using-execute">21.3. Using Execute</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#using-an-explicit-python-timestep-loop">21.4. Using an Explicit Python Timestep Loop</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#balance-reporting">21.5. Balance Reporting</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#steady-state-source-solver">21. Steady-State Source Solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#constructor">21.1. Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#gpu-support">21.2. GPU support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#how-it-operates">21.3. How It Operates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#adjoint-steady-state-solves">21.4. Adjoint Steady-State Solves</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">22. Power Iteration k-Eigen Solver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id2">22.1. Constructor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id3">22.2. GPU support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id4">22.3. How It Operates</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#flux-normalization">22.4. Flux normalization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#transient-solver">22. Transient Solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#supported-problems">22.1. Supported problems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id1">22.2. Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#using-execute">22.3. Using Execute</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#using-an-explicit-python-timestep-loop">22.4. Using an Explicit Python Timestep Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#balance-reporting">22.5. Balance Reporting</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">23. Nonlinear k-Eigen Solver</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id5">23.1. Constructor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#id6">23.2. GPU support</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#groupsets-and-dsa">23.3. Groupsets and DSA</a></li>
-<li class="toctree-l2"><a class="reference internal" href="solvers.html#statuses-and-errors">23.4. Statuses and errors</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#power-iteration-k-eigen-solver">23. Power Iteration k-Eigen Solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id2">23.1. Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id3">23.2. GPU support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id4">23.3. How It Operates</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#flux-normalization">23.4. Flux normalization</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">24. Initialization Order and Common Patterns</a></li>
-<li class="toctree-l1"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">25. Field Functions and Solver Output</a></li>
-<li class="toctree-l1"><a class="reference internal" href="example_problems.html">26. Example Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#common-input-structure">26.1. Common Input Structure</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#overview">26.2. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#common-building-blocks">26.3. Common Building Blocks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-1-source-driven-steady-state-problem">26.4. Example 1: Source-Driven Steady-State Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-2-multi-material-fixed-source-problem">26.5. Example 2: Multi-Material Fixed-Source Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-3-boundary-driven-problem">26.6. Example 3: Boundary-Driven Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-4-time-dependent-source-problem">26.7. Example 4: Time-Dependent Source Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-5-explicit-python-time-loop">26.8. Example 5: Explicit Python Time Loop</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-6-power-iteration-k-eigenvalue-problem">26.9. Example 6: Power-Iteration k-Eigenvalue Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-7-nonlinear-k-eigenvalue-problem">26.10. Example 7: Nonlinear k-Eigenvalue Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-8-curvilinear-problem">26.11. Example 8: Curvilinear Problem</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-9-updating-a-problem-in-place">26.12. Example 9: Updating a Problem In Place</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-10-field-function-output">26.13. Example 10: Field-Function Output</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-11-balance-and-leakage-checks">26.14. Example 11: Balance and Leakage Checks</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-12-reusing-flux-data">26.15. Example 12: Reusing Flux Data</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-13-writing-and-reading-restart-dumps">26.16. Example 13: Writing and Reading Restart Dumps</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-14-starting-a-transient-from-a-steady-state-restart">26.17. Example 14: Starting a Transient from a Steady-State Restart</a></li>
-<li class="toctree-l2"><a class="reference internal" href="example_problems.html#choosing-a-template">26.18. Choosing a Template</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#nonlinear-k-eigen-solver">24. Nonlinear k-Eigen Solver</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id5">24.1. Constructor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#id6">24.2. GPU support</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#groupsets-and-dsa">24.3. Groupsets and DSA</a></li>
+<li class="toctree-l2"><a class="reference internal" href="solvers.html#statuses-and-errors">24.4. Statuses and errors</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="post_processors.html">27. Post Processors</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#overview">27.1. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#updating-existing-field-functions">27.2. Updating Existing Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#scalar-flux-field-functions">27.3. Scalar Flux Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#derived-field-functions">27.4. Derived Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#angular-flux-field-functions">27.5. Angular Flux Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#exporting-field-functions">27.6. Exporting Field Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#field-function-interpolation">27.7. Field-Function Interpolation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#volume-postprocessor">27.8. Volume Postprocessor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#cross-section-sensitivity-postprocessor">27.9. Cross-Section Sensitivity Postprocessor</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#other-useful-post-processing-paths">27.10. Other Useful Post-Processing Paths</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#transient-workflows">27.11. Transient Workflows</a></li>
-<li class="toctree-l2"><a class="reference internal" href="post_processors.html#practical-guidance">27.12. Practical Guidance</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#initialization-order-and-common-patterns">25. Initialization Order and Common Patterns</a></li>
+<li class="toctree-l1"><a class="reference internal" href="solvers.html#field-functions-and-solver-output">26. Field Functions and Solver Output</a></li>
+<li class="toctree-l1"><a class="reference internal" href="example_problems.html">27. Example Problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#common-input-structure">27.1. Common Input Structure</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#overview">27.2. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#common-building-blocks">27.3. Common Building Blocks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-1-source-driven-steady-state-problem">27.4. Example 1: Source-Driven Steady-State Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-2-multi-material-fixed-source-problem">27.5. Example 2: Multi-Material Fixed-Source Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-3-boundary-driven-problem">27.6. Example 3: Boundary-Driven Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-4-time-dependent-source-problem">27.7. Example 4: Time-Dependent Source Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-5-explicit-python-time-loop">27.8. Example 5: Explicit Python Time Loop</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-6-power-iteration-k-eigenvalue-problem">27.9. Example 6: Power-Iteration k-Eigenvalue Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-7-nonlinear-k-eigenvalue-problem">27.10. Example 7: Nonlinear k-Eigenvalue Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-8-curvilinear-problem">27.11. Example 8: Curvilinear Problem</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-9-updating-a-problem-in-place">27.12. Example 9: Updating a Problem In Place</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-10-field-function-output">27.13. Example 10: Field-Function Output</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-11-balance-and-leakage-checks">27.14. Example 11: Balance and Leakage Checks</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-12-reusing-flux-data">27.15. Example 12: Reusing Flux Data</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-13-writing-and-reading-restart-dumps">27.16. Example 13: Writing and Reading Restart Dumps</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#example-14-starting-a-transient-from-a-steady-state-restart">27.17. Example 14: Starting a Transient from a Steady-State Restart</a></li>
+<li class="toctree-l2"><a class="reference internal" href="example_problems.html#choosing-a-template">27.18. Choosing a Template</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="visualization.html">28. Visualization</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#overview">28.1. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-the-mesh">28.2. Visualizing the Mesh</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-scalar-flux">28.3. Visualizing Scalar Flux</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-power">28.4. Visualizing Power</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#exporting-several-fields-together">28.5. Exporting Several Fields Together</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#transient-visualization">28.6. Transient Visualization</a></li>
-<li class="toctree-l2"><a class="reference internal" href="visualization.html#practical-advice">28.7. Practical Advice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="post_processors.html">28. Post Processors</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#overview">28.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#updating-existing-field-functions">28.2. Updating Existing Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#scalar-flux-field-functions">28.3. Scalar Flux Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#derived-field-functions">28.4. Derived Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#angular-flux-field-functions">28.5. Angular Flux Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#exporting-field-functions">28.6. Exporting Field Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#field-function-interpolation">28.7. Field-Function Interpolation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#volume-postprocessor">28.8. Volume Postprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#cross-section-sensitivity-postprocessor">28.9. Cross-Section Sensitivity Postprocessor</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#other-useful-post-processing-paths">28.10. Other Useful Post-Processing Paths</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#transient-workflows">28.11. Transient Workflows</a></li>
+<li class="toctree-l2"><a class="reference internal" href="post_processors.html#practical-guidance">28.12. Practical Guidance</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="running_problems.html">29. Running Problems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#basic-command-line-usage">29.1. Basic command-line usage</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#running-under-mpi">29.2. Running under MPI</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#running-with-gpus">29.3. Running with GPUs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#typical-execution-pattern">29.4. Typical execution pattern</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#inputs-logs-and-outputs">29.5. Inputs, logs, and outputs</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#restart-and-repeated-solves">29.6. Restart and repeated solves</a></li>
-<li class="toctree-l2"><a class="reference internal" href="running_problems.html#practical-advice">29.7. Practical advice</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">29. Visualization</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#overview">29.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-the-mesh">29.2. Visualizing the Mesh</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-scalar-flux">29.3. Visualizing Scalar Flux</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#visualizing-power">29.4. Visualizing Power</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#exporting-several-fields-together">29.5. Exporting Several Fields Together</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#transient-visualization">29.6. Transient Visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="visualization.html#practical-advice">29.7. Practical Advice</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="iterative_best_practices.html">30. Iterative Best Practices</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#overview">30.1. Overview</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#core-rules">30.2. Core Rules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#upscatter-across-groupsets-must-be-converged">30.3. Upscatter Across Groupsets Must Be Converged</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#single-groupset-first-then-split-deliberately">30.4. Single Groupset First, Then Split Deliberately</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#choose-the-inner-method-pragmatically">30.5. Choose the Inner Method Pragmatically</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#use-dsa-when-the-physics-suggests-it">30.6. Use DSA When the Physics Suggests It</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#watch-maximum-iteration-counts">30.7. Watch Maximum Iteration Counts</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#be-careful-with-nested-solver-expectations">30.8. Be Careful with Nested Solver Expectations</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#transient-best-practices">30.9. Transient Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#eigenvalue-best-practices">30.10. Eigenvalue Best Practices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#what-to-check-first-when-convergence-looks-bad">30.11. What to Check First When Convergence Looks Bad</a></li>
-<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#recommended-starting-habits">30.12. Recommended Starting Habits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="running_problems.html">30. Running Problems</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#basic-command-line-usage">30.1. Basic command-line usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#running-under-mpi">30.2. Running under MPI</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#running-with-gpus">30.3. Running with GPUs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#typical-execution-pattern">30.4. Typical execution pattern</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#inputs-logs-and-outputs">30.5. Inputs, logs, and outputs</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#restart-and-repeated-solves">30.6. Restart and repeated solves</a></li>
+<li class="toctree-l2"><a class="reference internal" href="running_problems.html#practical-advice">30.7. Practical advice</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">31. Troubleshooting</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#start-with-the-simplest-question">31.1. Start with the simplest question</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-code-fails-immediately">31.2. If the code fails immediately</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-solution-does-not-converge">31.3. If the solution does not converge</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-physics-looks-wrong">31.4. If the physics looks wrong</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-field-functions-are-confusing">31.5. If field functions are confusing</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-parallel-behavior-looks-odd">31.6. If parallel behavior looks odd</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-imported-cross-sections-behave-unexpectedly">31.7. If imported cross sections behave unexpectedly</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#general-debugging-workflow">31.8. General debugging workflow</a></li>
-<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#when-to-look-elsewhere-in-the-manual">31.9. When to look elsewhere in the manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="iterative_best_practices.html">31. Iterative Best Practices</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#overview">31.1. Overview</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#core-rules">31.2. Core Rules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#upscatter-across-groupsets-must-be-converged">31.3. Upscatter Across Groupsets Must Be Converged</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#single-groupset-first-then-split-deliberately">31.4. Single Groupset First, Then Split Deliberately</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#choose-the-inner-method-pragmatically">31.5. Choose the Inner Method Pragmatically</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#use-dsa-when-the-physics-suggests-it">31.6. Use DSA When the Physics Suggests It</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#watch-maximum-iteration-counts">31.7. Watch Maximum Iteration Counts</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#be-careful-with-nested-solver-expectations">31.8. Be Careful with Nested Solver Expectations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#transient-best-practices">31.9. Transient Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#eigenvalue-best-practices">31.10. Eigenvalue Best Practices</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#what-to-check-first-when-convergence-looks-bad">31.11. What to Check First When Convergence Looks Bad</a></li>
+<li class="toctree-l2"><a class="reference internal" href="iterative_best_practices.html#recommended-starting-habits">31.12. Recommended Starting Habits</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="faq.html">32. FAQ</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#why-is-my-problem-split-into-a-problem-object-and-a-solver-object">32.1. Why is my problem split into a problem object and a solver object?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#should-i-start-with-multiple-groupsets">32.2. Should I start with multiple groupsets?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#why-is-my-field-function-not-updating">32.3. Why is my field function not updating?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#how-do-i-get-normalized-power-or-xs-weighted-outputs">32.4. How do I get normalized power or XS-weighted outputs?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#when-should-i-use-execute-and-when-should-i-use-advance">32.5. When should I use <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> and when should I use <code class="docutils literal notranslate"><span class="pre">Advance()</span></code>?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-quadrature-order-should-i-use">32.6. What quadrature order should I use?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#is-single-angle-aggregation-always-necessary-when-using-unstructured-meshes">32.7. Is single-angle aggregation always necessary when using unstructured meshes?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-safest-default-sweep-type">32.8. What is the safest default sweep type?</a></li>
-<li class="toctree-l2"><a class="reference internal" href="faq.html#do-i-need-to-export-field-functions-during-every-run">32.9. Do I need to export field functions during every run?</a></li>
+<li class="toctree-l1"><a class="reference internal" href="troubleshooting.html">32. Troubleshooting</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#start-with-the-simplest-question">32.1. Start with the simplest question</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-code-fails-immediately">32.2. If the code fails immediately</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-solution-does-not-converge">32.3. If the solution does not converge</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-the-physics-looks-wrong">32.4. If the physics looks wrong</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-field-functions-are-confusing">32.5. If field functions are confusing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-parallel-behavior-looks-odd">32.6. If parallel behavior looks odd</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#if-imported-cross-sections-behave-unexpectedly">32.7. If imported cross sections behave unexpectedly</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#general-debugging-workflow">32.8. General debugging workflow</a></li>
+<li class="toctree-l2"><a class="reference internal" href="troubleshooting.html#when-to-look-elsewhere-in-the-manual">32.9. When to look elsewhere in the manual</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">33. FAQ</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-is-my-problem-split-into-a-problem-object-and-a-solver-object">33.1. Why is my problem split into a problem object and a solver object?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#should-i-start-with-multiple-groupsets">33.2. Should I start with multiple groupsets?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#why-is-my-field-function-not-updating">33.3. Why is my field function not updating?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#how-do-i-get-normalized-power-or-xs-weighted-outputs">33.4. How do I get normalized power or XS-weighted outputs?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#when-should-i-use-execute-and-when-should-i-use-advance">33.5. When should I use <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> and when should I use <code class="docutils literal notranslate"><span class="pre">Advance()</span></code>?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-quadrature-order-should-i-use">33.6. What quadrature order should I use?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#is-single-angle-aggregation-always-necessary-when-using-unstructured-meshes">33.7. Is single-angle aggregation always necessary when using unstructured meshes?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#what-is-the-safest-default-sweep-type">33.8. What is the safest default sweep type?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="faq.html#do-i-need-to-export-field-functions-during-every-run">33.9. Do I need to export field functions during every run?</a></li>
 </ul>
 </li>
 </ul>

@@ -1307,7 +1307,7 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ae7b499513b903d1588322ea3e6fbfcca`
 
-- :ref:`exhale_function_namespaceopensn_1a88e965c01be5911d4c0fd3dc14cdc8ba`
+- :ref:`exhale_function_namespaceopensn_1af9d4adbcda87b8ecacf6cea10ccf45a6`
 
 - :ref:`exhale_function_namespaceopensn_1a315bfb0e24539afe8ca380d6350fd9c6`
 
