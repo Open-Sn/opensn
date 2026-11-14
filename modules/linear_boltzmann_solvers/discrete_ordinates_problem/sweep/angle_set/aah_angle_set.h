@@ -21,7 +21,8 @@ public:
                std::map<uint64_t, std::shared_ptr<SweepBoundary>>& boundaries,
                int maximum_message_size,
                bool csda_enabled,
-               const SweepCommunicator& sweep_communicator);
+               const SweepCommunicator& sweep_communicator,
+               std::shared_ptr<SweepSendWindow> send_window);
 
   void InitializeDelayedUpstreamData() override;
 

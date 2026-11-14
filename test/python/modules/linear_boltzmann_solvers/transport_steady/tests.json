@@ -500,6 +500,35 @@
     ]
   },
   {
+    "file": "aah_send_window.py",
+    "comment": "AAH sweep limited to 1 posted send per rank (max_mpi_outstanding_sends), with split messages and delayed successors from partition cycles, agrees bitwise with the unlimited run and conserves particles. CBC rejects the option.",
+    "outfileprefix": "aah_send_window_steady",
+    "num_procs": 4,
+    "args": [
+      "case=\"steady\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_PHI_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_LEAKAGE_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10},
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_CBC_REJECTED=", "goldvalue": 1, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "aah_send_window.py",
+    "comment": "CSDA AAH sweep limited to 1 posted send per rank, so each psi and psiE pair is larger than the limit, agrees bitwise with the unlimited run and conserves particles.",
+    "outfileprefix": "aah_send_window_csda",
+    "num_procs": 4,
+    "args": [
+      "case=\"csda\""
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_PHI_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_LEAKAGE_MATCH=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "SEND_WINDOW_RELATIVE_BALANCE=", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
     "file": "transport_2d_4a_dsa_ortho.py",
     "comment": "2D LinearBSolver test of a block of graphite with an air cavity. DSA and TG. One AGS pass (max_ags_iterations=1); Max-value1 (group 39) and Max-value2 (group 120) are checked against the fully converged values 0.1447349 and 1.896061 (AGS tolerance 1e-10, FGMRES, WGDSA and TGDSA tolerances 1e-10, 4 ranks) within the one-pass error, which is below 0.8% in group 120 for the DSA boundary closures and penalty lengths tested",
     "num_procs": 4,
