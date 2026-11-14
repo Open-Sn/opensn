@@ -616,23 +616,57 @@ Mesh::CheckPointInsideCellFace(const Cell& cell,
   if (std::abs((point - face.centroid).Dot(face.normal)) > tol)
     return false;
 
-  // Helper for computing if the point is on the inside of an edge defined by
-  // the face vertices v1 and v2 where inside is opposite the outward normal
-  // of the edge (outward normal points from face centroid -> edge)
-  const auto InsideEdge = [this, &point, &face](const auto vi1, const auto vi2)
-  {
-    const auto edge_centroid =
-      (GlobalVertex(face.vertex_ids[vi1]) + GlobalVertex(face.vertex_ids[vi2])) / 2.0;
-    const auto normal = (edge_centroid - face.centroid).Normalized();
-    return (point - edge_centroid).Dot(normal) <= 0.0;
-  };
+  // The face is a simple polygon, convex or not, and the point is projected on its plane. The
+  // point is on the face when it is within the tolerance of an edge, or when a half-line from
+  // the point crosses the edges an odd number of times. Neither test uses the face centroid,
+  // which is the average of the vertices and can be outside a concave face.
 
-  // Check all of the way around the polygon
-  for (size_t i = 0; i < (face.vertex_ids.size() - 1); ++i)
-    if (!InsideEdge(i, i + 1))
-      return false;
-  // Last vertex is checked with the first vertex
-  return InsideEdge(face.vertex_ids.size() - 1, 0);
+  // Two unit vectors that span the plane of the face, built from the coordinate axis that is
+  // the furthest from the face normal
+  const double nx = std::abs(face.normal.x);
+  const double ny = std::abs(face.normal.y);
+  const double nz = std::abs(face.normal.z);
+  Vector3 axis(0.0, 0.0, 1.0);
+  if (nx <= ny and nx <= nz)
+    axis = Vector3(1.0, 0.0, 0.0);
+  else if (ny <= nz)
+    axis = Vector3(0.0, 1.0, 0.0);
+  const Vector3 tangent_1 = face.normal.Cross(axis).Normalized();
+  const Vector3 tangent_2 = face.normal.Cross(tangent_1).Normalized();
+
+  // In-plane coordinates (x, y) of the vertices, with the point at the origin. The edges go from
+  // vertex a to vertex b, starting with the edge that closes the polygon.
+  const Vector3 to_last = GlobalVertex(face.vertex_ids.back()) - point;
+  double ax = to_last.Dot(tangent_1);
+  double ay = to_last.Dot(tangent_2);
+  bool odd_crossings = false;
+  for (const auto vertex_id : face.vertex_ids)
+  {
+    const Vector3 to_vertex = GlobalVertex(vertex_id) - point;
+    const double bx = to_vertex.Dot(tangent_1);
+    const double by = to_vertex.Dot(tangent_2);
+    const double ex = bx - ax;
+    const double ey = by - ay;
+
+    // Distance from the point to the edge
+    const double edge_length_2 = ex * ex + ey * ey;
+    const double s =
+      (edge_length_2 > 0.0) ? std::clamp(-(ax * ex + ay * ey) / edge_length_2, 0.0, 1.0) : 0.0;
+    const double cx = ax + s * ex;
+    const double cy = ay + s * ey;
+    if (cx * cx + cy * cy <= tol * tol)
+      return true;
+
+    // Crossing of the half-line y = 0, x > 0. An edge end on the line y = 0 counts as below it,
+    // so the two edges that share a vertex on the half-line count it consistently: twice when
+    // the boundary only touches the half-line there, once when it crosses it.
+    if ((ay > 0.0) != (by > 0.0) and ax - ay * ex / ey > 0.0)
+      odd_crossings = not odd_crossings;
+
+    ax = bx;
+    ay = by;
+  }
+  return odd_crossings;
 }
 
 NDArray<uint64_t, 3>

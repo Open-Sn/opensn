@@ -5,6 +5,7 @@
 #include "framework/parameters/parameter_block.h"
 #include "framework/runtime.h"
 #include <cmath>
+#include <filesystem>
 
 using namespace opensn;
 
@@ -219,6 +220,145 @@ TEST(MeshTest, PointInsideCellFace3D)
 {
   const auto grid_ptr = BuildOrthogonalMesh({{-1.0, 1.0}, {0.0, 0.5, 1.0}, {-1.0, 0.0, 1.0}});
   TestPointInsideCellFace(grid_ptr);
+}
+
+TEST(MeshTest, PointInsideCellFaceTetrahedra)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // Triangular faces of general shape: the direction from the face centroid to the middle of an
+  // edge is not normal to the edge.
+  const auto grid_ptr = BuildMeshFromFile(std::filesystem::path(OPENSN_TEST_ROOT) / "assets" /
+                                          "mesh" / "uncollided_cube_coarse.msh");
+  TestPointInsideCellFace(grid_ptr);
+}
+
+namespace
+{
+
+/// Index of the face of the cell with the given outward normal.
+std::size_t
+FaceWithNormal(const Cell& cell, const Vector3& normal)
+{
+  for (std::size_t face_i = 0; face_i < cell.faces.size(); ++face_i)
+    if (cell.faces[face_i].normal.AbsoluteEquals(normal, 1.0e-12))
+      return face_i;
+  ADD_FAILURE() << "The cell has no face with normal " << normal.PrintStr();
+  return 0;
+}
+
+} // namespace
+
+TEST(MeshTest, PointInsideCellFaceTolerance)
+{
+  // Four cells of size 2 x 1 x 1, so that every rank has one on up to four ranks. On the face
+  // z = 1 of each cell, [x0, x0 + 2] x [y0, y0 + 1], the tolerance of the test is 1e-6, in the
+  // direction normal to the face and in its plane.
+  const auto grid_ptr = BuildOrthogonalMesh({{0.0, 2.0, 4.0}, {0.0, 1.0, 2.0}, {0.0, 1.0}});
+  const double within = 0.5e-6;
+  const double beyond = 2.0e-6;
+  for (const auto& cell : grid_ptr->GetLocalCells())
+  {
+    const double x0 = cell->centroid.x - 1.0;
+    const double y0 = cell->centroid.y - 0.5;
+    const auto face_i = FaceWithNormal(*cell, Vector3(0.0, 0.0, 1.0));
+    const auto on_face = [&](double dx, double dy, double z)
+    { return grid_ptr->CheckPointInsideCellFace(*cell, face_i, Vector3(x0 + dx, y0 + dy, z)); };
+
+    // Either side of the plane of the face
+    EXPECT_TRUE(on_face(1.0, 0.5, 1.0 + within));
+    EXPECT_TRUE(on_face(1.0, 0.5, 1.0 - within));
+    EXPECT_FALSE(on_face(1.0, 0.5, 1.0 + beyond));
+    EXPECT_FALSE(on_face(1.0, 0.5, 1.0 - beyond));
+
+    // In the plane, either side of the edge dy = 0 and of the edge dx = 2
+    EXPECT_TRUE(on_face(1.0, beyond, 1.0));
+    EXPECT_TRUE(on_face(1.0, -within, 1.0));
+    EXPECT_FALSE(on_face(1.0, -beyond, 1.0));
+    EXPECT_TRUE(on_face(2.0 - beyond, 0.5, 1.0));
+    EXPECT_TRUE(on_face(2.0 + within, 0.5, 1.0));
+    EXPECT_FALSE(on_face(2.0 + beyond, 0.5, 1.0));
+
+    // Beyond the vertex (2, 1), along the diagonal: the distance to the face decides, not the
+    // distance to the line of each edge
+    const double diagonal = std::sqrt(0.5);
+    EXPECT_TRUE(on_face(2.0 + within * diagonal, 1.0 + within * diagonal, 1.0));
+    EXPECT_FALSE(on_face(2.0 + beyond * diagonal, 1.0 + beyond * diagonal, 1.0));
+    EXPECT_FALSE(on_face(2.0 + 0.9e-6, 1.0 + 0.9e-6, 1.0));
+
+    // Out of the plane and out of the edge at once
+    EXPECT_TRUE(on_face(1.0, -within, 1.0 + within));
+    EXPECT_FALSE(on_face(1.0, -beyond, 1.0 + within));
+    EXPECT_FALSE(on_face(1.0, -within, 1.0 + beyond));
+  }
+}
+
+TEST(MeshTest, PointInsideCellFaceConcave)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+
+  // One cell: the L-shaped polygon (0,0), (3,0), (3,1), (1,1), (1,3), (0,3) extruded over
+  // z in [0, 1]. Its top and bottom faces are concave, with a reflex vertex at (1, 1), and the
+  // average of their vertices, (4/3, 4/3), is outside them.
+  const auto grid_ptr = BuildExtrudedMeshFromFile(
+    std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" / "l_shaped_polygon.obj", 1.0, 1);
+  ASSERT_EQ(grid_ptr->GetLocalCells().size(), std::size_t(1));
+  const auto& cell = *grid_ptr->GetLocalCells()[0];
+
+  for (const double z : {0.0, 1.0})
+  {
+    const auto face_i = FaceWithNormal(cell, Vector3(0.0, 0.0, (z == 0.0) ? -1.0 : 1.0));
+    ASSERT_EQ(cell.faces[face_i].vertex_ids.size(), std::size_t(6));
+    const auto on_face = [&](double x, double y)
+    { return grid_ptr->CheckPointInsideCellFace(cell, face_i, Vector3(x, y, z)); };
+
+    // In the two arms and in the corner they share
+    EXPECT_TRUE(on_face(1.5, 0.9));
+    EXPECT_TRUE(on_face(2.9, 0.1));
+    EXPECT_TRUE(on_face(0.9, 1.5));
+    EXPECT_TRUE(on_face(0.1, 2.9));
+    EXPECT_TRUE(on_face(0.5, 0.5));
+    EXPECT_TRUE(on_face(0.999, 0.999));
+
+    // In the notch, which the bounding box of the face contains
+    EXPECT_FALSE(on_face(2.0, 2.0));
+    EXPECT_FALSE(on_face(1.1, 1.1));
+    EXPECT_FALSE(on_face(4.0 / 3.0, 4.0 / 3.0));
+    EXPECT_FALSE(on_face(2.9, 1.1));
+    EXPECT_FALSE(on_face(1.1, 2.9));
+
+    // Outside the bounding box
+    EXPECT_FALSE(on_face(-0.1, 0.5));
+    EXPECT_FALSE(on_face(3.1, 0.5));
+    EXPECT_FALSE(on_face(0.5, -0.1));
+    EXPECT_FALSE(on_face(0.5, 3.1));
+
+    // Either side of the edges that meet at the reflex vertex, and of that vertex
+    EXPECT_TRUE(on_face(2.0, 1.0 + 0.5e-6));
+    EXPECT_FALSE(on_face(2.0, 1.0 + 2.0e-6));
+    EXPECT_TRUE(on_face(1.0 + 0.5e-6, 2.0));
+    EXPECT_FALSE(on_face(1.0 + 2.0e-6, 2.0));
+    EXPECT_TRUE(on_face(1.0 + 0.5e-6, 1.0 + 0.5e-6));
+    EXPECT_FALSE(on_face(1.0 + 2.0e-6, 1.0 + 2.0e-6));
+
+    // Vertices and middles of the edges
+    const auto& vertex_ids = cell.faces[face_i].vertex_ids;
+    for (std::size_t i = 0; i < vertex_ids.size(); ++i)
+    {
+      const auto& v1 = grid_ptr->GlobalVertex(vertex_ids[i]);
+      const auto& v2 = grid_ptr->GlobalVertex(vertex_ids[(i + 1) % vertex_ids.size()]);
+      EXPECT_TRUE(grid_ptr->CheckPointInsideCellFace(cell, face_i, v1));
+      EXPECT_TRUE(grid_ptr->CheckPointInsideCellFace(cell, face_i, 0.5 * (v1 + v2)));
+    }
+  }
+
+  // The vertices of one concave face are not on the other
+  const auto bottom = FaceWithNormal(cell, Vector3(0.0, 0.0, -1.0));
+  const auto top = FaceWithNormal(cell, Vector3(0.0, 0.0, 1.0));
+  for (const auto vid : cell.faces[top].vertex_ids)
+    EXPECT_FALSE(grid_ptr->CheckPointInsideCellFace(cell, bottom, grid_ptr->GlobalVertex(vid)));
 }
 
 namespace

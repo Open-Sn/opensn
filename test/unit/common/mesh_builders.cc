@@ -1,6 +1,7 @@
 #include "test/unit/common/mesh_builders.h"
 #include "framework/parameters/parameter_block.h"
 #include "framework/mesh/mesh_generator/orthogonal_mesh_generator.h"
+#include "framework/mesh/mesh_generator/extruder_mesh_generator.h"
 #include "framework/mesh/mesh_generator/from_file_mesh_generator.h"
 
 using namespace opensn;
@@ -93,4 +94,34 @@ BuildMeshFromFile(std::filesystem::path file_name)
   auto params = FromFileMeshGenerator::GetInputParameters();
   params.AssignParameters(block);
   return FromFileMeshGenerator(params).Execute();
+}
+
+std::shared_ptr<opensn::Mesh>
+BuildExtrudedMeshFromFile(std::filesystem::path file_name, double height, unsigned int num_layers)
+{
+  ParameterBlock file_block;
+  file_block.AddParameter("filename", file_name.string());
+  auto file_params = FromFileMeshGenerator::GetInputParameters();
+  file_params.AssignParameters(file_block);
+  const std::shared_ptr<MeshGenerator> file_generator =
+    std::make_shared<FromFileMeshGenerator>(file_params);
+
+  ParameterBlock inputs("inputs");
+  inputs.AddParameter(ParameterBlock("1", file_generator));
+  inputs.ChangeToArray();
+
+  ParameterBlock layer("1");
+  layer.AddParameter("z", height);
+  layer.AddParameter("n", num_layers);
+  ParameterBlock layers("layers");
+  layers.AddParameter(layer);
+  layers.ChangeToArray();
+
+  ParameterBlock block("");
+  block.AddParameter(inputs);
+  block.AddParameter(layers);
+
+  auto params = ExtruderMeshGenerator::GetInputParameters();
+  params.AssignParameters(block);
+  return ExtruderMeshGenerator(params).Execute();
 }

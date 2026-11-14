@@ -1,0 +1,12 @@
+# The L-shaped (concave) polygon of l_shaped_polygon.obj with one more vertex, in the middle of
+# its first edge: the first three vertices are collinear. The average of the vertices,
+# (19/14, 8/7), is outside the polygon.
+o l_shaped_polygon_split_edge
+v 0.0 0.0 0.0
+v 1.5 0.0 0.0
+v 3.0 0.0 0.0
+v 3.0 1.0 0.0
+v 1.0 1.0 0.0
+v 1.0 3.0 0.0
+v 0.0 3.0 0.0
+f 1 2 3 4 5 6 7

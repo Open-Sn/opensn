@@ -1,0 +1,11 @@
+# An L-shaped (concave) polygon with a shorter arm than that of l_shaped_polygon.obj. The average
+# of its vertices, (4/3, 1.0000005), is outside the polygon, 5e-7 from its edge from (3, 1) to
+# (1, 1).
+o l_shaped_polygon_centroid_near_edge
+v 0.0 0.0 0.0
+v 3.0 0.0 0.0
+v 3.0 1.0 0.0
+v 1.0 1.0 0.0
+v 1.0 2.0000015 0.0
+v 0.0 2.0000015 0.0
+f 1 2 3 4 5 6
