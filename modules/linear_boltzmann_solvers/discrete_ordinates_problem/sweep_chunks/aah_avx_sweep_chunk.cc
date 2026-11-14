@@ -34,6 +34,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   std::vector<double> sigma_block;
   sigma_block.reserve(data.group_block_size);
   std::vector<double> face_mu_values;
+  std::vector<double> nodal_source(static_cast<std::size_t>(NumNodes) * gs_size);
+  std::vector<std::array<size_t, NumNodes>> moment_dof_map(data.num_moments);
 
   const auto& spds = angle_set.GetSPDS();
   const auto& spls = spds.GetLocalSubgrid();
@@ -78,7 +80,6 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     }
 
     std::array<double, matrix_size> Amat{};
-    std::vector<std::array<size_t, NumNodes>> moment_dof_map(data.num_moments);
     for (unsigned int m = 0; m < data.num_moments; ++m)
     {
       PRAGMA_UNROLL
@@ -184,6 +185,15 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
           : nullptr;
 
+      ComputeAngularSource(cell_transport_view,
+                           NumNodes,
+                           data.num_moments,
+                           gs_gi,
+                           gs_size,
+                           m2d_row,
+                           data.source_moments,
+                           nodal_source.data());
+
       for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
       {
         const auto g1 = std::min(g0 + data.group_block_size, gs_size);
@@ -199,22 +209,15 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
           sigma_block[rel] = sigma_tg;
 
           double* __restrict bg = &b[static_cast<std::size_t>(gsg) * NumNodes];
-          for (unsigned int m = 0; m < data.num_moments; ++m)
+          PRAGMA_UNROLL
+          for (int i = 0; i < NumNodes; ++i)
           {
-            const double w = m2d_row[m];
-            std::array<double, NumNodes> nodal_source{};
-            for (int i = 0; i < NumNodes; ++i)
-              nodal_source[i] = w * data.source_moments[moment_dof_map[m][i] + gsg];
-
-            for (int i = 0; i < NumNodes; ++i)
-            {
-              double value = 0.0;
-              const double* row = &mass_matrix[Idx(i, 0)];
-              PRAGMA_UNROLL
-              for (int j = 0; j < NumNodes; ++j)
-                value += row[j] * nodal_source[j];
-              bg[i] += value;
-            }
+            double value = 0.0;
+            const double* row = &mass_matrix[Idx(i, 0)];
+            PRAGMA_UNROLL
+            for (int j = 0; j < NumNodes; ++j)
+              value += row[j] * nodal_source[static_cast<std::size_t>(j) * gs_size + gsg];
+            bg[i] += value;
           }
         }
 
@@ -288,20 +291,18 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
             bg[pivot] /= A[Idx(pivot, pivot)];
           }
         }
+      }
 
-        for (size_t gsg = g0; gsg < g1; ++gsg)
+      // Add the angular flux to the flux moments of each node for all groups. The moments of a
+      // node are contiguous in memory, so this writes them in order.
+      for (int i = 0; i < NumNodes; ++i)
+      {
+        for (unsigned int m = 0; m < data.num_moments; ++m)
         {
-          const double* __restrict bg = &b[gsg * NumNodes];
-          for (unsigned int m = 0; m < data.num_moments; ++m)
-          {
-            const double w = d2m_row[m];
-            PRAGMA_UNROLL
-            for (int i = 0; i < NumNodes; ++i)
-            {
-              const size_t dof = cell_transport_view.MapDOF(i, m, gs_gi);
-              data.destination_phi[dof + gsg] += w * bg[i];
-            }
-          }
+          const double w = d2m_row[m];
+          double* __restrict phi = &data.destination_phi[moment_dof_map[m][i]];
+          for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
+            phi[gsg] += w * b[static_cast<std::size_t>(gsg) * NumNodes + i];
         }
       }
 

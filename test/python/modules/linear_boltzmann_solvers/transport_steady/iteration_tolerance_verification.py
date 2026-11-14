@@ -13,7 +13,7 @@ for: only changes at the round-off level pass regardless.
   B. Three groupsets (one group each) with down- and upscattering in a 2D infinite medium, with
      the pointwise across-groupset convergence check and ags_tolerance = 1e-12:
      phi = (diag(sigma_t) - S)^-1 q.
-  C. Two groupsets (one group each) in a 2D infinite medium with the default l2 across-groupset
+  C. Two groupsets (one group each) in a 2D infinite medium with the l2 across-groupset
      check, ags_tolerance = 1e-8, and strong two-way coupling: the across-groupset (block
      Gauss-Seidel) iteration contracts by rho = (s_01 s_10) / ((sigma_t - s_00)(sigma_t - s_11))
      = 0.950625 per pass. Its error is rho / (1 - rho) times its last change, so stopping at a
@@ -179,7 +179,7 @@ if __name__ == "__main__":
          for g in range(2)],
         two_group, Q_C, ("xmin", "xmax", "ymin", "ymax"),
         {"verbose_inner_iterations": False, "max_ags_iterations": 2000,
-         "ags_tolerance": AGS_TOL_C})
+         "ags_tolerance": AGS_TOL_C, "ags_convergence_check": "l2"})
     err_c = global_l2_error(problem_c, exact_flux(SIGMA_T_C, TRANSFER_C, Q_C)) / AGS_TOL_C
 
     if rank == 0:
