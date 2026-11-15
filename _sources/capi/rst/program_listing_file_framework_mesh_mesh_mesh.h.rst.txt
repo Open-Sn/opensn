@@ -237,7 +237,11 @@ Program Listing for File mesh.h
      /// Counts the number of cells within a logical volume across all partitions.
      size_t CountCellsInLogicalVolume(const LogicalVolume& log_vol) const;
    
-     /// Checks whether a point is within a cell.
+     /**
+      * Checks whether a point is within a cell. A point on the boundary of the cell is within it.
+      * The plane tests use a tolerance that grows with the magnitude of the coordinates, so a point
+      * on a face shared by two cells is within at least one of them, and may be within both.
+      */
      bool CheckPointInsideCell(const Cell& cell, const Vector3& point) const;
      /// Checks whether a point is within a cell face.
      bool CheckPointInsideCellFace(const Cell& cell, size_t face_i, const Vector3& point) const;

@@ -171,10 +171,13 @@
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * Returns component values for multiple field functions at multiple points.</span>
 <span class="cm">   *</span>
-<span class="cm">   * Point locations and MPI reductions are shared across the field functions. All field functions</span>
-<span class="cm">   * must use the same mesh. The outer result index selects the field function, the middle index</span>
-<span class="cm">   * selects the point, and the inner index selects the component. A point on a face of a</span>
-<span class="cm">   * discontinuous field gets the average over all cells containing it. Collective.</span>
+<span class="cm">   * Point locations and MPI reductions are shared across the field functions. Each rank bins its</span>
+<span class="cm">   * local cells by their bounding boxes, about one cell per bin on average, and tests a point only</span>
+<span class="cm">   * against the cells of its bin. The cost then grows with the number of points plus the number</span>
+<span class="cm">   * of local cells, unless the cell sizes vary so strongly that some bins hold many cells. All</span>
+<span class="cm">   * field functions must use the same mesh. The outer result index selects the field function, the</span>
+<span class="cm">   * middle index selects the point, and the inner index selects the component. A point on a face of</span>
+<span class="cm">   * a discontinuous field gets the average over all cells containing it. Collective.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&gt;&gt;</span>
 <span class="w">  </span><span class="n">GetPointValues</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">FFList</span><span class="o">&amp;</span><span class="w"> </span><span class="n">field_functions</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">points</span><span class="p">);</span>

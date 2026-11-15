@@ -536,6 +536,8 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">uncollided_flux_file_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Cross sections the uncollided flux was computed with.</span>
 <span class="w">  </span><span class="n">BlockID2XSMap</span><span class="w"> </span><span class="n">uncollided_xs_map_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Transport mode the uncollided flux file was loaded in.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">uncollided_adjoint_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">uncollided_flux_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">first_collision_source_moments_local_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">uncollided_source_rate_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>

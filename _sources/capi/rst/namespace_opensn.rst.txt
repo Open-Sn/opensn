@@ -1163,6 +1163,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a`
 
+- :ref:`exhale_function_namespaceopensn_1a8ba64c6ef9a444d84fe569d5120fea86`
+
 - :ref:`exhale_function_namespaceopensn_1a3421c2233a94d6135eaad57a9a2cb6dc`
 
 - :ref:`exhale_function_namespaceopensn_1a5df30a26f7dca0055b610d3aea546155`

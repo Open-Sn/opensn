@@ -152,8 +152,9 @@ that contain, for every direction, an opposite direction of equal weight,</p></l
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>, or
 <a class="reference internal" href="../pyapi/generated/pyopensn.solver.NonLinearKEigenSolver.html#pyopensn.solver.NonLinearKEigenSolver" title="pyopensn.solver.NonLinearKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.NonLinearKEigenSolver</span></code></a>.</p></li>
 </ul>
-<p>Time-dependent mode, CSDA (<code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code>), and an uncollided flux are rejected
-in adjoint mode. Groupsets, DSA, CMFD, and delayed neutrons
+<p>Time-dependent mode and CSDA (<code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code>) are rejected in adjoint mode. An
+uncollided flux is supported with the steady-state solver when it was generated
+in adjoint mode from point detectors (see <a class="reference internal" href="discrete_ordinates_problems.html#userguide-uncollided"><span class="std std-ref">Uncollided and First-Collision Transport</span></a>). Groupsets, DSA, CMFD, and delayed neutrons
 (<code class="docutils literal notranslate"><span class="pre">use_precursors</span></code>) work as in forward mode. The energy transfer and fission
 production, including the delayed production, are transposed. The diffusion
 coefficients of DSA, CMFD, and SMM use the transport correction of the

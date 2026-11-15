@@ -488,16 +488,15 @@ the ranks automatically.</p>
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><p><strong>adjoint</strong> (<em>bool</em><em>, </em><em>default=True</em>) – <code class="docutils literal notranslate"><span class="pre">True</span></code> enables adjoint mode and <code class="docutils literal notranslate"><span class="pre">False</span></code> enables forward mode. Adjoint mode is
 supported only for Cartesian geometries with standard quadrature operators
-(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>), in steady-state mode, and without an
-uncollided flux. Uncollided flux generation (<a class="reference internal" href="pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedProblem</span></code></a>) is
-forward only. An unsupported request raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before any state
-changes.</p>
+(<code class="docutils literal notranslate"><span class="pre">operator_method='standard'</span></code>) and in steady-state mode. A problem constructed with
+an <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file keeps the mode the file was generated in. An unsupported
+request raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before any state changes.</p>
 </dd>
 <dt class="field-even">Raises<span class="colon">:</span></dt>
-<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">adjoint=True</span></code> and the problem is time-dependent, has
-    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code>, was constructed with an
-    <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file, or is an <a class="reference internal" href="pyopensn.solver.UncollidedProblem.html#pyopensn.solver.UncollidedProblem" title="pyopensn.solver.UncollidedProblem"><code class="xref py py-class docutils literal notranslate"><span class="pre">UncollidedProblem</span></code></a>. The problem
-    is left unchanged.</p>
+<dd class="field-even"><p><strong>ValueError</strong> – If <code class="docutils literal notranslate"><span class="pre">adjoint=True</span></code> and the problem is time-dependent or has
+    <code class="docutils literal notranslate"><span class="pre">options.csda_enabled=True</span></code>, or if the problem was constructed with an
+    <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> file and the mode would change. The problem is left
+    unchanged.</p>
 </dd>
 </dl>
 <p class="rubric">Notes</p>

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a8ba64c6ef9a444d84fe569d5120fea86:
+
+Function opensn::H5AttributeHasOneElement
+=========================================
+
+- Defined in :ref:`file_framework_utils_hdf_utils.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::H5AttributeHasOneElement(hid_t)
+   :project: opensn

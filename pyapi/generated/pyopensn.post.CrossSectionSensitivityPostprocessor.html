@@ -180,8 +180,8 @@ problem after its solver finished, so that it holds the physically oriented adjo
 forward problem without an uncollided flux (its psi holds only the collided part). The
 file must have been written by a forward problem.</p></li>
 <li><p><strong>adjoint_angular_fluxes</strong> (<em>str</em><em>, </em><em>optional</em>) – Adjoint angular-flux file prefix. Empty (default) uses the current psi, which requires an
-adjoint problem whose solver has finished. The file must have been written by an adjoint
-problem after its solver finished.</p></li>
+adjoint problem without an uncollided flux whose solver has finished. The file must have
+been written by an adjoint problem after its solver finished.</p></li>
 <li><p><strong>flux_moments_single_file</strong> (<em>bool</em><em>, </em><em>optional</em>) – Read flux moments from the single file <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;.h5</span></code> instead of the per-rank file
 <code class="docutils literal notranslate"><span class="pre">&lt;prefix&gt;&lt;rank&gt;.h5</span></code>. Default False. Serial runs only: in a multi-rank run, reading the
 flux moments (<code class="docutils literal notranslate"><span class="pre">Execute</span></code> or <code class="docutils literal notranslate"><span class="pre">ApplyKEigenvalueScaling</span></code>) raises <code class="docutils literal notranslate"><span class="pre">ValueError</span></code> before

@@ -143,10 +143,13 @@ has already been destroyed.</p>
 <em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">GetPointValues</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">field_functions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#pyopensn.fieldfunc.FieldFunctionGridBased" title="pyopensn.fieldfunc.FieldFunctionGridBased"><span class="pre">pyopensn.fieldfunc.FieldFunctionGridBased</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="pyopensn.math.Vector3.html#pyopensn.math.Vector3" title="pyopensn.math.Vector3"><span class="pre">pyopensn.math.Vector3</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.fieldfunc.FieldFunctionGridBased.GetPointValues" title="Link to this definition"></a></dt>
 <dd><p>Evaluate multiple grid-based field functions at multiple points.</p>
 <p>Each point is located once for all fields, and the results for all points and fields are
-combined in two MPI reductions, instead of one pair of reductions per point and field. Point
-location still tests each point against the locally owned cells. All field functions must use
-the same mesh, and all MPI ranks must call this method with the same points in the same order.
-A point on a face shared by several cells gets the average of their values. Collective.</p>
+combined in two MPI reductions, instead of one pair of reductions per point and field. Each
+rank bins its local cells by their bounding boxes, about one cell per bin on average, and tests
+a point only against the cells of its bin. The cost then grows with the number of points plus
+the number of local cells, unless the cell sizes vary so strongly that some bins hold many
+cells. All field functions must use the same mesh, and all MPI ranks must call this method
+with the same points in the same order. A point on a face shared by several cells gets the
+average of their values. Collective.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">

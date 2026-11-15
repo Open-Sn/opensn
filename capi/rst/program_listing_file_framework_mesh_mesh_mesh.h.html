@@ -312,7 +312,11 @@
 <span class="w">  </span><span class="c1">/// Counts the number of cells within a logical volume across all partitions.</span>
 <span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">CountCellsInLogicalVolume</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">LogicalVolume</span><span class="o">&amp;</span><span class="w"> </span><span class="n">log_vol</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="c1">/// Checks whether a point is within a cell.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Checks whether a point is within a cell. A point on the boundary of the cell is within it.</span>
+<span class="cm">   * The plane tests use a tolerance that grows with the magnitude of the coordinates, so a point</span>
+<span class="cm">   * on a face shared by two cells is within at least one of them, and may be within both.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckPointInsideCell</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Checks whether a point is within a cell face.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">CheckPointInsideCellFace</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Cell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span><span class="w"> </span><span class="kt">size_t</span><span class="w"> </span><span class="n">face_i</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>

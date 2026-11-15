@@ -1167,21 +1167,24 @@ and collided components <span id="id24">Hanus <em>et al.</em> [<a class="referen
 <div class="math notranslate nohighlight">
 \[\Psi = \Psi^u + \Psi^c \,.\]</div>
 <p>Then, the original transport problem
-<span class="math notranslate nohighlight">\(L\Psi = M\Sigma \Phi + Q_{\text{ext}}\)</span> can be split into</p>
+<span class="math notranslate nohighlight">\(L\Psi = M\Sigma \Phi + MF\Phi + Q_{\text{ext}}\)</span> can be split into</p>
 <ol class="arabic">
 <li><p>The uncollided problem:</p>
 <div class="math notranslate nohighlight">
 \[L\Psi^u =  Q_{\text{ext}}\]</div>
 <p>For this uncollided transport solve, one can compute the uncollided
-flux moments <span class="math notranslate nohighlight">\(D\Psi^u\)</span> and the first-collision scattering
-source moments</p>
+flux moments <span class="math notranslate nohighlight">\(D\Psi^u\)</span> and the first-collision source moments</p>
 <div class="math notranslate nohighlight">
-\[Q_{\text{fc}} =  M\Sigma \Phi^u\]</div>
+\[Q_{\text{fc}} =  M\Sigma \Phi^u + MF\Phi^u\]</div>
+<p>from scattering and, in a fissile material, fission production.
+<span class="math notranslate nohighlight">\(F\)</span> is the fission production operator. It acts on the scalar
+moment only and includes delayed production whenever the fission source
+of the transport solve does.</p>
 </li>
 <li><p>The collided problem:</p>
 <div class="math notranslate nohighlight">
 \[\begin{split}\begin{cases}
-        L\Psi^c &amp; = M\Sigma \Phi^c  + Q_{\text{fc}} \\
+        L\Psi^c &amp; = M\Sigma \Phi^c + MF\Phi^c + Q_{\text{fc}} \\
         \Phi^c  &amp; = D \Psi^c
     \end{cases}\end{split}\]</div>
 </li>
@@ -1360,8 +1363,22 @@ order of the collided calculation.</p>
 </li>
 <li><p>The collided problem is quite similar to a standard <span class="math notranslate nohighlight">\(S_n\)</span> so
 the solution techniques described early apply straightforwardly. The
-first-collision scattering source plays the role of the external
-source in this problem.</p></li>
+first-collision source plays the role of the external source in this
+problem.</p></li>
+<li><p>The same split applies to the adjoint problem with a point detector as the
+adjoint source. OpenSn solves the adjoint along the quadrature directions
+with the transposed transfer and production matrices (see
+<a class="reference internal" href="adjoint.html"><span class="doc">Adjoint Flux Formalism</span></a>). In that orientation the adjoint uncollided flux of a point
+detector is the uncollided flux above, because it depends only on
+<span class="math notranslate nohighlight">\(\sigma_t\)</span>, and the first-collision source is
+<span class="math notranslate nohighlight">\(Q^\dagger_{\text{fc}} = M\Sigma^T \Phi^{u\dagger} + MF^T \Phi^{u\dagger}\)</span>,
+with the delayed production in <span class="math notranslate nohighlight">\(F^T\)</span> transposed as well. The
+uncollided moments are added to the collided solution before the adjoint
+solution is reoriented, which
+multiplies the moments of degree <span class="math notranslate nohighlight">\(\ell\)</span> by <span class="math notranslate nohighlight">\((-1)^\ell\)</span>. The
+physical adjoint uncollided angular flux at <span class="math notranslate nohighlight">\(\vec{r}\)</span> is therefore
+concentrated in the direction <span class="math notranslate nohighlight">\(-\vec{\Omega}_s(\vec{r})\)</span>, toward
+the detector.</p></li>
 </ol>
 </section>
 <section id="references">

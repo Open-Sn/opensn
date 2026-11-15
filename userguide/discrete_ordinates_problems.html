@@ -619,7 +619,7 @@ deliberate about when they switch it on.</p>
 </section>
 </section>
 <section id="uncollided-and-first-collision-transport">
-<h2><span class="section-number">11.8. </span>Uncollided and First-Collision Transport<a class="headerlink" href="#uncollided-and-first-collision-transport" title="Link to this heading"></a></h2>
+<span id="userguide-uncollided"></span><h2><span class="section-number">11.8. </span>Uncollided and First-Collision Transport<a class="headerlink" href="#uncollided-and-first-collision-transport" title="Link to this heading"></a></h2>
 <p>First-collision transport splits the total angular flux into uncollided and
 collided components:</p>
 <div class="math notranslate nohighlight">
@@ -638,9 +638,9 @@ produce strong ray effects.</p>
 is the collided part, so the outputs that would stand for the full angular flux
 are not available with an uncollided flux: <code class="docutils literal notranslate"><span class="pre">WriteAngularFluxes</span></code>,
 <code class="docutils literal notranslate"><span class="pre">WriteSurfaceAngularFluxes</span></code>, and <code class="docutils literal notranslate"><span class="pre">sigma_t</span></code> cross-section sensitivities that
-take the forward angular flux from the problem raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>. <code class="docutils literal notranslate"><span class="pre">GetPsi</span></code>
-returns the collided part. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code> returns the leakage of the
-collided part in each group on each boundary; the balance table includes the
+take the forward or adjoint angular flux from the problem raise <code class="docutils literal notranslate"><span class="pre">ValueError</span></code>.
+<code class="docutils literal notranslate"><span class="pre">GetPsi</span></code> returns the collided part. <code class="docutils literal notranslate"><span class="pre">ComputeLeakage</span></code> returns the leakage of
+the collided part in each group on each boundary; the balance table includes the
 uncollided outflow in <code class="docutils literal notranslate"><span class="pre">outflow_rate</span></code> and reports it separately as
 <code class="docutils literal notranslate"><span class="pre">uncollided_outflow_rate</span></code>, in total over all boundaries and groups, so the
 total leakage of a monoenergetic source is the collided leakage plus the
@@ -743,8 +743,13 @@ source and any incoming-flux boundary; see <a class="reference internal" href="#
 <p>The group-wise point-source strengths are total angle-integrated emission
 rates. Angular distributions are not currently supported by the uncollided
 problem.</p>
-<p>Uncollided generation is forward only. The generator rejects adjoint mode, both
-<code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">True}</span></code> at construction and a later <code class="docutils literal notranslate"><span class="pre">SetAdjoint(True)</span></code>.</p>
+<p>In adjoint mode (<code class="docutils literal notranslate"><span class="pre">options={'adjoint':</span> <span class="pre">True}</span></code>) the point sources are adjoint
+sources, such as a point detector with a group-wise response, and the file holds
+their adjoint uncollided flux. The uncollided flux depends only on the total
+cross sections, so the two modes compute it identically. The file records the
+mode, and only a collided problem in the same mode accepts it. A file written
+before the mode was recorded is read as a forward file. As for any problem,
+<code class="docutils literal notranslate"><span class="pre">SetAdjoint</span></code> clears the point sources.</p>
 <p>Every point source requires a corresponding entry in <code class="docutils literal notranslate"><span class="pre">near_source</span></code>. The two
 lists are matched by position, so <code class="docutils literal notranslate"><span class="pre">near_source</span></code> is required whenever
 <code class="docutils literal notranslate"><span class="pre">point_sources</span></code> is nonempty.</p>
@@ -900,10 +905,14 @@ performed using global cell IDs. Cross sections cannot be replaced through
 <section id="supported-problem-mode">
 <h3><span class="section-number">11.8.7. </span>Supported problem mode<a class="headerlink" href="#supported-problem-mode" title="Link to this heading"></a></h3>
 <p>The collided use of <code class="docutils literal notranslate"><span class="pre">uncollided_flux</span></code> is supported for steady-state forward
-fixed-source calculations. It is not supported for:</p>
+and adjoint fixed-source calculations. The file must have been generated in the
+problem’s mode. In adjoint mode the first-collision source uses the transposed
+scattering and production matrices, as the adjoint sweep does, and the
+uncollided moments are added to the collided solution before the adjoint
+solution is reoriented. The transport mode cannot be changed after the file is
+loaded. It is not supported for:</p>
 <ul class="simple">
 <li><p>time-dependent calculations,</p></li>
-<li><p>adjoint calculations,</p></li>
 <li><p>k-eigenvalue solvers.</p></li>
 </ul>
 <p>The first-collision source replaces the fixed sources of the collided problem.
@@ -929,6 +938,11 @@ volume quadrature point and are not near-source corrected. The generator
 stores the integrated vacuum outflow for combined balance accounting. The
 near-source correction rescales the physical source’s uncollided flux moments
 and outgoing currents together, as specified by the published algorithm.</p>
+<p>The PWLD flux can be negative on the outgoing faces of optically thick cells at
+a vacuum boundary, far from the source where the uncollided flux is small. The
+net outflow can then be slightly negative, and the removal slightly larger than
+the production, while the balance still holds. The generator warns when this
+happens. Refining those boundary cells reduces it.</p>
 </section>
 </section>
 <section id="field-function-interface">
