@@ -103,13 +103,16 @@ if __name__ == "__main__":
     except Exception as error:
         xs_mismatch_rejected = "total cross-section mismatch" in str(error)
 
-    # A valid problem with an uncollided file must not be switchable to adjoint mode.
+    # The file holds a forward uncollided flux, so a problem that loaded it must not be switchable
+    # to adjoint mode.
     adjoint_switch_rejected = False
     problem = make_collided_problem(grid, xs_reference, 0, moment_file)
     try:
         problem.SetAdjoint(True)
     except Exception as error:
-        adjoint_switch_rejected = "uncollided flux is not supported for adjoint" in str(error)
+        adjoint_switch_rejected = (
+            "transport mode cannot be changed after loading an uncollided flux file" in str(error)
+        )
 
     remove_file(moment_file)
     remove_file(xs_file)

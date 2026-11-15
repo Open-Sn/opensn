@@ -53,8 +53,22 @@ private:
 template <typename T>
 hid_t get_datatype();
 
+/// Read a scalar attribute. Returns false if the attribute is missing, does not hold exactly one
+/// element, or cannot be read.
 template <typename T>
 bool H5ReadAttribute(hid_t id, const std::string& name, T& value);
+
+/// Return true if the open attribute holds exactly one element.
+inline bool
+H5AttributeHasOneElement(hid_t attribute)
+{
+  const hid_t dataspace = H5Aget_space(attribute);
+  if (dataspace == H5I_INVALID_HID)
+    return false;
+  const bool one_element = H5Sget_simple_extent_npoints(dataspace) == 1;
+  H5Sclose(dataspace);
+  return one_element;
+}
 
 template <>
 inline hid_t
@@ -396,7 +410,9 @@ H5ReadAttribute(hid_t id, const std::string& name, T& value)
     auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
     if (attribute != H5I_INVALID_HID)
     {
-      if (H5Aread(attribute, get_datatype<T>(), &value) >= 0)
+      // A larger attribute would be read past the end of value.
+      if (H5AttributeHasOneElement(attribute) and
+          H5Aread(attribute, get_datatype<T>(), &value) >= 0)
         success = true;
       H5Aclose(attribute);
     }
@@ -462,7 +478,7 @@ H5ReadAttribute<bool>(hid_t id, const std::string& name, bool& value)
     return false;
 
   unsigned char tmp = 0;
-  if (H5Aread(attribute, H5T_NATIVE_UCHAR, &tmp) >= 0)
+  if (H5AttributeHasOneElement(attribute) and H5Aread(attribute, H5T_NATIVE_UCHAR, &tmp) >= 0)
   {
     value = static_cast<bool>(tmp);
     success = true;

@@ -126,6 +126,41 @@ TEST(MeshTest, PointInsideCell3D)
   TestPointInsideCell(grid_ptr);
 }
 
+// A point on a face shared by two cells must be inside at least one of them. The asset holds two
+// tetrahedra from a mesh in cm whose shared face lies on the plane x + y = 31200, and the point is
+// a dose-map Gauss point of that mesh that lies on the plane to round-off. With coordinates near
+// 1.5e4, the signed distances to the face carry round-off of about 1e-11, and an absolute
+// tolerance of 1e-12 rejected the point from both cells. Points 1e-6 cm off the face, far beyond
+// the round-off, must be inside only the cell on their side.
+TEST(MeshTest, PointOnSharedFace)
+{
+  if (mpi_comm.size() > 1)
+    GTEST_SKIP() << "the test needs every cell of the mesh on one rank";
+  const auto grid = BuildMeshFromFile(std::filesystem::path(OPENSN_TEST_ROOT) / "assets" / "mesh" /
+                                      "tets_shared_face_cm.msh");
+  ASSERT_EQ(grid->GetGlobalNumberOfCells(), 2);
+
+  // The cell on each side of the plane: the one whose centroid has x + y below or above it.
+  const Cell* below = nullptr;
+  const Cell* above = nullptr;
+  for (const auto& cell : grid->GetLocalCells())
+    (cell->centroid.x + cell->centroid.y < 31200.0 ? below : above) = cell.get();
+  ASSERT_NE(below, nullptr);
+  ASSERT_NE(above, nullptr);
+
+  const Vector3 on_face(0x1.b2dbc2ab962a0p+13, 0x1.0e121eaa34eb0p+14, 0x1.01bc2ab9629fcp+7);
+  EXPECT_TRUE(grid->CheckPointInsideCell(*below, on_face) or
+              grid->CheckPointInsideCell(*above, on_face));
+
+  const Vector3 normal = Vector3(1.0, 1.0, 0.0).Normalized();
+  const Vector3 beyond = on_face + normal * 1.0e-6;
+  const Vector3 short_of = on_face - normal * 1.0e-6;
+  EXPECT_TRUE(grid->CheckPointInsideCell(*above, beyond));
+  EXPECT_FALSE(grid->CheckPointInsideCell(*below, beyond));
+  EXPECT_TRUE(grid->CheckPointInsideCell(*below, short_of));
+  EXPECT_FALSE(grid->CheckPointInsideCell(*above, short_of));
+}
+
 namespace
 {
 

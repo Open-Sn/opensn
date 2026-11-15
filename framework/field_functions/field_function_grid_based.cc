@@ -10,7 +10,11 @@
 #include "framework/logging/log.h"
 #include "framework/utils/error.h"
 #include "framework/runtime.h"
+#include <algorithm>
+#include <array>
+#include <cmath>
 #include <limits>
+#include <span>
 #include <petsc.h>
 #include <vtkUnstructuredGrid.h>
 #include <vtkCellData.h>
@@ -19,6 +23,146 @@
 
 namespace opensn
 {
+
+namespace
+{
+
+/**
+ * Uniform bins over the bounding box of the local cells, for locating points in cells.
+ *
+ * Each bin lists, in increasing order, the local cells whose bounding box overlaps it. A cell
+ * contains only points inside its bounding box, so the cells that can contain a point are the
+ * ones listed in the bin of the point. The bounding boxes are padded so that this also holds for
+ * points that Mesh::CheckPointInsideCell accepts within its tolerance. The bins are sized for
+ * about one cell each on average, so building them and locating the points take time that grows
+ * with the number of cells plus the number of points, instead of their product, unless the cell
+ * sizes vary so strongly that some bins hold many cells.
+ */
+class LocalCellBins
+{
+public:
+  LocalCellBins(const Mesh& grid, const Vector3& box_min, const Vector3& box_max) : origin_(box_min)
+  {
+    const auto& cells = grid.GetLocalCells();
+    const std::array<double, 3> extent = {
+      box_max.x - box_min.x, box_max.y - box_min.y, box_max.z - box_min.z};
+    // The pad also exceeds the tolerance of Mesh::CheckPointInsideCell, which grows with the
+    // magnitude of the coordinates.
+    const double scale = std::max({extent[0], extent[1], extent[2], 1.0});
+    const double magnitude = std::max({1.0,
+                                       std::abs(box_min.x),
+                                       std::abs(box_min.y),
+                                       std::abs(box_min.z),
+                                       std::abs(box_max.x),
+                                       std::abs(box_max.y),
+                                       std::abs(box_max.z)});
+    pad_ = std::max(1.0e-9 * scale, 128.0 * std::numeric_limits<double>::epsilon() * magnitude);
+
+    // Bins per axis, about one cell per bin, on the axes along which the mesh has extent. An axis
+    // shorter than one bin gets a single bin and is dropped, and the bins are resized over the
+    // other axes. The product of the bin counts of the remaining axes is then at most the number
+    // of cells, so a thin domain does not get many more bins than cells.
+    const auto num_cells = static_cast<double>(std::max<size_t>(cells.size(), 1));
+    std::array<bool, 3> binned = {};
+    for (int a = 0; a < 3; ++a)
+      binned[a] = extent[a] > pad_;
+    double bins_per_length = 0.0;
+    for (bool dropped = true; dropped;)
+    {
+      double binned_volume = 1.0;
+      int num_binned = 0;
+      for (int a = 0; a < 3; ++a)
+        if (binned[a])
+        {
+          binned_volume *= extent[a];
+          ++num_binned;
+        }
+      bins_per_length =
+        num_binned > 0 ? std::pow(num_cells / binned_volume, 1.0 / num_binned) : 0.0;
+      dropped = false;
+      for (int a = 0; a < 3; ++a)
+        if (binned[a] and extent[a] * bins_per_length < 1.0)
+        {
+          binned[a] = false;
+          dropped = true;
+        }
+    }
+    for (int a = 0; a < 3; ++a)
+    {
+      num_bins_[a] = 1;
+      if (binned[a])
+        num_bins_[a] =
+          static_cast<size_t>(std::clamp(std::floor(extent[a] * bins_per_length), 1.0, num_cells));
+      width_[a] = extent[a] > pad_ ? extent[a] / static_cast<double>(num_bins_[a]) : 1.0;
+    }
+
+    // Two passes over the cells: count the cells of each bin, then list them.
+    std::vector<std::array<size_t, 6>> ranges(cells.size());
+    offsets_.assign(num_bins_[0] * num_bins_[1] * num_bins_[2] + 1, 0);
+    for (size_t c = 0; c < cells.size(); ++c)
+    {
+      Vector3 lo = grid.GlobalVertex(cells[c]->vertex_ids.front());
+      Vector3 hi = lo;
+      for (const auto vid : cells[c]->vertex_ids)
+      {
+        const auto& v = grid.GlobalVertex(vid);
+        lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
+        hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));
+      }
+      const std::array<double, 3> lo_a = {lo.x, lo.y, lo.z};
+      const std::array<double, 3> hi_a = {hi.x, hi.y, hi.z};
+      auto& range = ranges[c];
+      for (int a = 0; a < 3; ++a)
+      {
+        range[a] = BinIndex(a, lo_a[a] - pad_);
+        range[3 + a] = BinIndex(a, hi_a[a] + pad_);
+      }
+      ForEachBin(range, [this](size_t bin) { ++offsets_[bin + 1]; });
+    }
+    for (size_t b = 1; b < offsets_.size(); ++b)
+      offsets_[b] += offsets_[b - 1];
+    cell_indices_.resize(offsets_.back());
+    std::vector<size_t> fill(offsets_.begin(), offsets_.end() - 1);
+    for (size_t c = 0; c < cells.size(); ++c)
+      ForEachBin(ranges[c], [&](size_t bin) { cell_indices_[fill[bin]++] = c; });
+  }
+
+  /// Return the indices of the local cells that can contain the point, in increasing order.
+  std::span<const size_t> Candidates(const Vector3& point) const
+  {
+    if (not(std::isfinite(point.x) and std::isfinite(point.y) and std::isfinite(point.z)))
+      return {};
+    const size_t bin = (BinIndex(2, point.z) * num_bins_[1] + BinIndex(1, point.y)) * num_bins_[0] +
+                       BinIndex(0, point.x);
+    return {cell_indices_.data() + offsets_[bin], offsets_[bin + 1] - offsets_[bin]};
+  }
+
+private:
+  size_t BinIndex(int axis, double coordinate) const
+  {
+    const std::array<double, 3> origin = {origin_.x, origin_.y, origin_.z};
+    const double index = std::floor((coordinate - origin[axis]) / width_[axis]);
+    return static_cast<size_t>(std::clamp(index, 0.0, static_cast<double>(num_bins_[axis] - 1)));
+  }
+
+  template <typename Function>
+  void ForEachBin(const std::array<size_t, 6>& range, const Function& function) const
+  {
+    for (size_t k = range[2]; k <= range[5]; ++k)
+      for (size_t j = range[1]; j <= range[4]; ++j)
+        for (size_t i = range[0]; i <= range[3]; ++i)
+          function((k * num_bins_[1] + j) * num_bins_[0] + i);
+  }
+
+  Vector3 origin_;
+  double pad_ = 0.0;
+  std::array<size_t, 3> num_bins_ = {1, 1, 1};
+  std::array<double, 3> width_ = {1.0, 1.0, 1.0};
+  std::vector<size_t> offsets_;
+  std::vector<size_t> cell_indices_;
+};
+
+} // namespace
 
 InputParameters
 FieldFunctionGridBased::GetInputParameters()
@@ -262,6 +406,8 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
   std::vector<size_t> local_num_point_hits(points.size(), 0);
   std::vector<double> local_values(num_values, 0.0);
   const auto& [xyz_min, xyz_max] = master.local_grid_bounding_box_;
+  const auto& local_cells = master_grid->GetLocalCells();
+  const LocalCellBins bins(*master_grid, xyz_min, xyz_max);
 
   for (size_t p = 0; p < points.size(); ++p)
   {
@@ -270,8 +416,9 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         point.z < xyz_min.z or point.z > xyz_max.z)
       continue;
 
-    for (const auto& cell : master_grid->GetLocalCells())
+    for (const size_t c : bins.Candidates(point))
     {
+      const auto& cell = local_cells[c];
       if (not master_grid->CheckPointInsideCell(*cell, point))
         continue;
 

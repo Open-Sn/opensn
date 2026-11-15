@@ -1,15 +1,18 @@
 #!/usr/bin/env python3
 """
-Verify that a problem with an uncollided flux rejects time-dependent and adjoint modes, both at
-construction and when the mode is changed afterwards, rejects replacement cross sections (the
-first-collision source was computed from the original ones), rejects other sources (the
-first-collision source replaces fixed sources, which would be silently ignored), both at
-construction and when added afterwards, and that a rejected change leaves the problem unchanged.
+Verify that a problem with an uncollided flux rejects time-dependent mode, and a change of the
+transport mode, both at construction and when the mode is changed afterwards, rejects replacement
+cross sections (the first-collision source was computed from the original ones), rejects other
+sources (the first-collision source replaces fixed sources, which would be silently ignored), both
+at construction and when added afterwards, and that a rejected change leaves the problem unchanged.
 Uncollided generation itself rejects a point source outside its near-source logical volume at
 construction (it used to fail partway through UncollidedSolver.Execute()).
 
-The generator (UncollidedProblem) computes a forward flux, so it rejects adjoint mode at
-construction and through SetAdjoint(True); SetAdjoint would otherwise also clear its point sources.
+The generator (UncollidedProblem) records its transport mode in the file. A forward file is
+rejected by an adjoint problem and an adjoint file by a forward problem, because the point sources
+of the two modes are different physical sources. An adjoint problem accepts an adjoint file.
+SetAdjoint(True) on the generator clears its point sources, as for any problem, so generation then
+rejects the missing point source.
 
 Incoming-flux boundaries are fixed sources too: with an uncollided flux the sweep does not apply
 boundary sources, so an isotropic boundary would be silently ignored. It must be rejected at
@@ -22,26 +25,31 @@ identical fresh problem exactly.
 Only the scalar flux receives the uncollided component; the stored angular flux is the collided
 part. The outputs that stand for the full angular flux would silently miss the uncollided flux, so
 after a solve WriteAngularFluxes, WriteSurfaceAngularFluxes, and a sigma_t sensitivity that takes
-the forward angular flux from the problem must be rejected. ComputeLeakage returns the leakage of
-the collided part, and the balance table reports the uncollided outflow separately: the two must
-add up to the outflow rate of the balance table.
+the forward angular flux from the problem must be rejected. So must a sigma_t sensitivity that takes
+the adjoint angular flux from a solved adjoint problem with an adjoint file. ComputeLeakage returns
+the leakage of the collided part, and the balance table reports the uncollided outflow separately:
+the two must add up to the outflow rate of the balance table. The balance table of the adjoint
+problem, which includes the source rate and the outflow of the adjoint file, must close.
 
 Checks:
-  UncollidedCtorTimeDependentRejected, UncollidedCtorAdjointRejected,
-  UncollidedSetTimeDependentRejected, UncollidedSetAdjointRejected, UncollidedSetXSMapRejected,
-  UncollidedCtorSourceRejected, UncollidedLaterSourceRejected: 1 if rejected with the
-    uncollided-flux error.
+  UncollidedCtorTimeDependentRejected, UncollidedSetTimeDependentRejected,
+  UncollidedSetAdjointRejected, UncollidedSetXSMapRejected, UncollidedCtorSourceRejected,
+  UncollidedLaterSourceRejected: 1 if rejected with the uncollided-flux error.
+  UncollidedCtorAdjointRejected: 1 if an adjoint problem rejects the forward file.
   UncollidedNearSourceRejected: 1 if the misplaced near-source volume is rejected.
   UncollidedRejectedStateUnchanged: 1 if the problem is still steady-state and forward.
   UncollidedRejectedMaxDiff: max |phi - phi_fresh| after the rejected changes.
-  UncollidedGeneratorCtorAdjointRejected, UncollidedGeneratorSetAdjointRejected: 1 if the generator
-    rejects adjoint mode; UncollidedGeneratorUnchanged: 1 if it is still forward and still generates
-    an uncollided flux (with its point source) after the rejected SetAdjoint(True).
+  UncollidedAdjointFileForwardRejected: 1 if a forward problem rejects an adjoint file.
+  UncollidedAdjointFileAdjointAccepted: 1 if an adjoint problem accepts an adjoint file.
+  UncollidedGeneratorSetAdjointClearsSources: 1 if SetAdjoint(True) on the generator succeeds and
+    generation then rejects the missing point source.
   UncollidedCtorBoundaryRejected, UncollidedLaterBoundaryRejected: 1 if an isotropic boundary is
     rejected with the uncollided-flux error at construction and when set afterwards.
-  UncollidedAngularOutputsRejected: 1 if all three angular-flux outputs are rejected.
+  UncollidedAngularOutputsRejected: 1 if all four angular-flux outputs are rejected.
   UncollidedLeakageResidual: |collided leakage + uncollided outflow - outflow rate| relative to
     the outflow rate.
+  UncollidedAdjointBalanceResidual: |balance| of the adjoint problem relative to its production
+    rate.
 """
 
 import importlib
@@ -73,8 +81,9 @@ extruded_mesh = uncollided_utils.extruded_mesh
 remove_file = uncollided_utils.remove_file
 
 STEADY_ONLY = "uncollided flux is only supported for steady-state"
-FORWARD_ONLY = "uncollided flux is not supported for adjoint"
-GENERATOR_FORWARD_ONLY = "uncollided flux generation does not support adjoint mode"
+MODE_CHANGE = "transport mode cannot be changed after loading an uncollided flux file"
+FORWARD_FILE_IN_ADJOINT = "was generated in forward mode, but the problem is in adjoint mode"
+ADJOINT_FILE_IN_FORWARD = "was generated in adjoint mode, but the problem is in forward mode"
 
 
 def make_generator(grid, xs, options=None):
@@ -191,12 +200,13 @@ if __name__ == "__main__":
 
     ctor_td = rejected(lambda: make_problem(grid, xs, file_name, time_dependent=True), STEADY_ONLY)
     ctor_adj = rejected(
-        lambda: make_problem(grid, xs, file_name, options={"adjoint": True}), FORWARD_ONLY
+        lambda: make_problem(grid, xs, file_name, options={"adjoint": True}),
+        FORWARD_FILE_IN_ADJOINT,
     )
 
     problem = make_problem(grid, xs, file_name)
     set_td = rejected(problem.SetTimeDependentMode, STEADY_ONLY)
-    set_adj = rejected(lambda: problem.SetAdjoint(True), FORWARD_ONLY)
+    set_adj = rejected(lambda: problem.SetAdjoint(True), MODE_CHANGE)
     other_xs = MultiGroupXS()
     other_xs.CreateSimpleOneGroup(sigma_t=0.7, c=0.3, velocity=1.0)
     set_xs = rejected(
@@ -219,14 +229,30 @@ if __name__ == "__main__":
 
     near_source = near_source_outside_rejected(grid, xs)
 
-    generator_ctor_adjoint = rejected(
-        lambda: make_generator(grid, xs, {"adjoint": True}), GENERATOR_FORWARD_ONLY
+    # An adjoint file holds the uncollided flux of a detector, which only an adjoint problem uses.
+    adjoint_file_name = "uncollided_mode_rejections_adjoint.h5"
+    remove_file(adjoint_file_name)
+    adjoint_generator = make_generator(grid, xs, {"adjoint": True})
+    solver_adjoint = UncollidedSolver(problem=adjoint_generator, file_name=adjoint_file_name)
+    solver_adjoint.Initialize()
+    solver_adjoint.Execute()
+    adjoint_file_forward = rejected(
+        lambda: make_problem(grid, xs, adjoint_file_name), ADJOINT_FILE_IN_FORWARD
     )
+    adjoint_file_adjoint = accepted(
+        lambda: make_problem(grid, xs, adjoint_file_name, options={"adjoint": True})
+    )
+    adjoint_problem = make_problem(grid, xs, adjoint_file_name, options={"adjoint": True})
+    _, adjoint_solver = solve(adjoint_problem)
+    adjoint_balance = adjoint_solver.ComputeBalanceTable()
+    adjoint_balance_residual = abs(adjoint_balance["balance"]) / adjoint_balance["production_rate"]
+
+    # SetAdjoint clears the point sources, so generation has nothing to trace.
     generator = make_generator(grid, xs)
-    generator_set_adjoint = rejected(lambda: generator.SetAdjoint(True), GENERATOR_FORWARD_ONLY)
-    # The rejected change left a valid forward generator: generation revalidates it and must run.
-    generator_unchanged = not generator.IsAdjoint() and accepted(
-        lambda: run_generator(generator, "uncollided_mode_rejections_generator.h5")
+    generator.SetAdjoint(True)
+    generator_cleared = generator.IsAdjoint() and rejected(
+        lambda: run_generator(generator, "uncollided_mode_rejections_generator.h5"),
+        "at least one point source is required",
     )
 
     max_diff = float("inf")
@@ -242,9 +268,9 @@ if __name__ == "__main__":
             collided_leakage + balance["uncollided_outflow_rate"] - balance["outflow_rate"]
         ) / balance["outflow_rate"]
 
-    # The problem has been solved, so only the collided-only angular flux makes these fail. The
-    # forward angular flux is checked before the adjoint file is opened, so any other error, such as
-    # the missing adjoint file, counts as not rejected.
+    # The problems have been solved, so only the collided-only angular flux makes these fail. The
+    # angular flux of the problem is checked before a file is opened, so any other error, such as
+    # the missing forward or adjoint file, counts as not rejected.
     collided_only = "holds only the collided part"
 
     def angular_output_rejected(action):
@@ -271,6 +297,14 @@ if __name__ == "__main__":
                 adjoint_angular_fluxes="uncollided_mode_rejections_no_adjoint",
             ).Execute()
         ),
+        angular_output_rejected(
+            lambda: CrossSectionSensitivityPostprocessor(
+                problem=adjoint_problem,
+                sensitivity_type="sigma_t",
+                group=0,
+                forward_angular_fluxes="uncollided_mode_rejections_no_forward",
+            ).Execute()
+        ),
     ]
     # Before the rejection the writers created files.
     for prefix in ("uncollided_mode_rejections_psi", "uncollided_mode_rejections_surf"):
@@ -287,6 +321,7 @@ if __name__ == "__main__":
     )
 
     remove_file(file_name)
+    remove_file(adjoint_file_name)
 
     if rank == 0:
         print(f"UncollidedCtorTimeDependentRejected={int(ctor_td)}")
@@ -299,9 +334,10 @@ if __name__ == "__main__":
         print(f"UncollidedNearSourceRejected={int(near_source)}")
         print(f"UncollidedRejectedStateUnchanged={int(unchanged)}")
         print(f"UncollidedRejectedMaxDiff={max_diff:.8e}")
-        print(f"UncollidedGeneratorCtorAdjointRejected={int(generator_ctor_adjoint)}")
-        print(f"UncollidedGeneratorSetAdjointRejected={int(generator_set_adjoint)}")
-        print(f"UncollidedGeneratorUnchanged={int(generator_unchanged)}")
+        print(f"UncollidedAdjointFileForwardRejected={int(adjoint_file_forward)}")
+        print(f"UncollidedAdjointFileAdjointAccepted={int(adjoint_file_adjoint)}")
+        print(f"UncollidedAdjointBalanceResidual={adjoint_balance_residual:.8e}")
+        print(f"UncollidedGeneratorSetAdjointClearsSources={int(generator_cleared)}")
         print(f"UncollidedCtorBoundaryRejected={int(ctor_boundary)}")
         print(f"UncollidedLaterBoundaryRejected={int(later_boundary)}")
         print(f"UncollidedAngularOutputsRejected={int(all(angular_outputs))}")

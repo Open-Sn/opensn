@@ -29,6 +29,8 @@ struct UncollidedFluxData
   std::uint64_t global_cell_count = 0;
   double source_rate = 0.0;
   double outflow_rate = 0.0;
+  /// True when the file holds the uncollided flux of adjoint (detector) point sources.
+  bool adjoint = false;
   std::vector<double> local_flux_moments;
 };
 

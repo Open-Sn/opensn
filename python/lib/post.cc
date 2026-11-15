@@ -175,8 +175,8 @@ WrapPostprocessors(py::module& post)
         file must have been written by a forward problem.
     adjoint_angular_fluxes : str, optional
         Adjoint angular-flux file prefix. Empty (default) uses the current psi, which requires an
-        adjoint problem whose solver has finished. The file must have been written by an adjoint
-        problem after its solver finished.
+        adjoint problem without an uncollided flux whose solver has finished. The file must have
+        been written by an adjoint problem after its solver finished.
     flux_moments_single_file : bool, optional
         Read flux moments from the single file ``<prefix>.h5`` instead of the per-rank file
         ``<prefix><rank>.h5``. Default False. Serial runs only: in a multi-rank run, reading the

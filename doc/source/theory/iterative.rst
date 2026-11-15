@@ -1202,24 +1202,28 @@ and collided components :cite:t:`hanuvs2019uncollided`:
 .. math:: \Psi = \Psi^u + \Psi^c \,.
 
 Then, the original transport problem
-:math:`L\Psi = M\Sigma \Phi + Q_{\text{ext}}` can be split into
+:math:`L\Psi = M\Sigma \Phi + MF\Phi + Q_{\text{ext}}` can be split into
 
 #. The uncollided problem:
 
    .. math:: L\Psi^u =  Q_{\text{ext}}
 
    For this uncollided transport solve, one can compute the uncollided
-   flux moments :math:`D\Psi^u` and the first-collision scattering
-   source moments
+   flux moments :math:`D\Psi^u` and the first-collision source moments
 
-   .. math:: Q_{\text{fc}} =  M\Sigma \Phi^u
+   .. math:: Q_{\text{fc}} =  M\Sigma \Phi^u + MF\Phi^u
+
+   from scattering and, in a fissile material, fission production.
+   :math:`F` is the fission production operator. It acts on the scalar
+   moment only and includes delayed production whenever the fission source
+   of the transport solve does.
 
 #. The collided problem:
 
    .. math::
 
       \begin{cases}
-              L\Psi^c & = M\Sigma \Phi^c  + Q_{\text{fc}} \\
+              L\Psi^c & = M\Sigma \Phi^c + MF\Phi^c + Q_{\text{fc}} \\
               \Phi^c  & = D \Psi^c
           \end{cases}
 
@@ -1422,8 +1426,23 @@ Notes:
 
 #. The collided problem is quite similar to a standard :math:`S_n` so
    the solution techniques described early apply straightforwardly. The
-   first-collision scattering source plays the role of the external
-   source in this problem.
+   first-collision source plays the role of the external source in this
+   problem.
+
+#. The same split applies to the adjoint problem with a point detector as the
+   adjoint source. OpenSn solves the adjoint along the quadrature directions
+   with the transposed transfer and production matrices (see
+   :doc:`adjoint`). In that orientation the adjoint uncollided flux of a point
+   detector is the uncollided flux above, because it depends only on
+   :math:`\sigma_t`, and the first-collision source is
+   :math:`Q^\dagger_{\text{fc}} = M\Sigma^T \Phi^{u\dagger} + MF^T \Phi^{u\dagger}`,
+   with the delayed production in :math:`F^T` transposed as well. The
+   uncollided moments are added to the collided solution before the adjoint
+   solution is reoriented, which
+   multiplies the moments of degree :math:`\ell` by :math:`(-1)^\ell`. The
+   physical adjoint uncollided angular flux at :math:`\vec{r}` is therefore
+   concentrated in the direction :math:`-\vec{\Omega}_s(\vec{r})`, toward
+   the detector.
 
 
 References
