@@ -9,7 +9,16 @@
 #include <cstddef>
 #include <cstdint>
 
-#if __clang__ || __INTEL_COMPILER
+#ifdef __has_feature
+#if __has_feature(undefined_behavior_sanitizer)
+// Clang 17 cannot unroll the local solve loops once UBSan instruments them and reports the
+// failed pragma. The hint has no value in an instrumented build, so drop it under UBSan.
+#define PRAGMA_UNROLL
+#endif
+#endif
+
+#ifdef PRAGMA_UNROLL
+#elif __clang__ || __INTEL_COMPILER
 #define PRAGMA_UNROLL _Pragma("unroll")
 #elif __GNUC__
 #define PRAGMA_UNROLL _Pragma("GCC unroll 8")

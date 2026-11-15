@@ -34,12 +34,18 @@ TEST(ConvergenceRateEstimator, GeometricSequenceScalesTolerance)
   {
     estimator.Update(change);
     if (n >= 2)
+    {
       EXPECT_NEAR(estimator.GetRate(), rho, kRateTolerance);
+    }
     converged = estimator.Converged(tolerance);
     if (converged)
+    {
       EXPECT_LT(change, tolerance * (1.0 - rho) * (1.0 + kRateTolerance));
+    }
     else if (n >= 2)
+    {
       EXPECT_GE(change, tolerance * (1.0 - rho) * (1.0 - kRateTolerance));
+    }
     change *= rho;
   }
   EXPECT_TRUE(converged);

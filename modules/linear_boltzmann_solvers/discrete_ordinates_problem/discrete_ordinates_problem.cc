@@ -545,10 +545,8 @@ DiscreteOrdinatesProblem::CheckConfigurationErrors(std::vector<std::string>& err
 void
 DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& errors) const
 {
-  // Same in-plane tolerance that LebedevQuadrature2DXY uses to report its pole.
   if (geometry_type_ != GeometryType::TWOD_CARTESIAN)
     return;
-  constexpr double tol = 1.0e-12;
   for (const auto& groupset : groupsets_)
   {
     if (not groupset.quadrature)
@@ -557,7 +555,12 @@ DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& 
     if (std::none_of(omegas.begin(),
                      omegas.end(),
                      [](const auto& om)
-                     { return std::fabs(om.x) < tol and std::fabs(om.y) < tol; }))
+                     {
+                       // Same in-plane tolerance that LebedevQuadrature2DXY uses to report its
+                       // pole.
+                       constexpr double tol = 1.0e-12;
+                       return std::fabs(om.x) < tol and std::fabs(om.y) < tol;
+                     }))
       continue;
 
     auto invalid_block = std::numeric_limits<unsigned int>::max();
