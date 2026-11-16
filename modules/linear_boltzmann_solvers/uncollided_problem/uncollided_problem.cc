@@ -806,7 +806,10 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
                            GetName() +
                              ": reflected image-source ray left the mesh before reaching "
                              "its source. target=" +
-                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() + ".");
+                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() +
+                             ", segment from " + segment_start.PrintStr() + " to " +
+                             segment_end.PrintStr() + " from cell " + std::to_string(cell_id) +
+                             ".");
       // The line to the source leaves a non-convex domain. Through a vacuum boundary, the source
       // contributes no uncollided flux at this point.
       ++rays_left_mesh_;

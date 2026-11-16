@@ -385,7 +385,9 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   }
 
   for (const auto& point : points_)
-    scale_ = std::max({scale_, std::abs(point.x), std::abs(point.y), std::abs(point.z)});
+    scale_ = Vector3(std::max(scale_.x, std::abs(point.x)),
+                     std::max(scale_.y, std::abs(point.y)),
+                     std::max(scale_.z, std::abs(point.z)));
 
   vertex_cell_offset_.assign(1, 0);
   for (const auto& list : vertex_cells)
@@ -470,7 +472,9 @@ MeshSegmentTracer::ExitTriangle(const std::uint32_t piece, const Vector3& p, con
 }
 
 bool
-MeshSegmentTracer::WithinRoundoff(const Triangle& triangle, const Vector3& point) const
+MeshSegmentTracer::WithinRoundoff(const Triangle& triangle,
+                                  const Vector3& point,
+                                  const Vector3& allowance) const
 {
   const auto& a = points_[triangle.a];
   const auto& b = points_[triangle.b];
@@ -479,7 +483,7 @@ MeshSegmentTracer::WithinRoundoff(const Triangle& triangle, const Vector3& point
   const double norm = normal.Norm();
   if (norm == 0.0)
     return false;
-  return std::abs(normal.Dot(point - a)) / norm <= std::max(Roundoff(a, point), Roundoff(b, c));
+  return std::abs(normal.Dot(point - a)) / norm <= Along(allowance, normal / norm);
 }
 
 std::optional<std::uint32_t>
@@ -564,6 +568,8 @@ MeshSegmentTracer::Walk(const std::uint32_t start_cell,
   if (not start)
     return Outcome::no_start;
   const double length = (q - p).Norm();
+  // The round-off allowed to the ends of the segment, which the caller computed.
+  const Vector3 allowance = Roundoff(p, q);
   const auto Add = [&](const std::uint32_t cell, const double piece_length)
   {
     if (not segments.empty() and segments.back().cell_local_id == cell)
@@ -595,7 +601,7 @@ MeshSegmentTracer::Walk(const std::uint32_t start_cell,
     const bool grazing = std::abs(denominator) < grazing_cosine * normal.Norm() * length;
     // An end within the round-off of its coordinates of the plane of a boundary triangle, as an
     // end that the caller computed to lie on a boundary face can be.
-    const bool end_near_boundary = exit.across == boundary and WithinRoundoff(exit, q);
+    const bool end_near_boundary = exit.across == boundary and WithinRoundoff(exit, q, allowance);
     double chord_hi = length;
     if (grazing or end_near_boundary)
     {
@@ -640,8 +646,9 @@ MeshSegmentTracer::Walk(const std::uint32_t start_cell,
       return Outcome::reached;
     }
     const double stop = std::clamp(std::isfinite(crossing) ? crossing : lo, lo, hi);
-    if (end_near_boundary and (chord_hi >= length * (1.0 - end_fraction) or
-                               length - stop <= std::max(end_fraction * length, Roundoff(p, q))))
+    if (end_near_boundary and
+        (chord_hi >= length * (1.0 - end_fraction) or
+         length - stop <= std::max(end_fraction * length, Along(allowance, d / length))))
     {
       // The end lies outside the plane of a boundary triangle by round-off, and either over that
       // triangle, since the chord of the line over it reaches the end, or within round-off of the
@@ -663,30 +670,148 @@ MeshSegmentTracer::Walk(const std::uint32_t start_cell,
                      std::to_string(max_steps) + " pieces.");
 }
 
-double
+Vector3
 MeshSegmentTracer::Roundoff(const Vector3& p, const Vector3& q) const
 {
-  double scale = scale_;
-  for (const double c : {p.x, p.y, p.z, q.x, q.y, q.z})
-    scale = std::max(scale, std::abs(c));
-  return 64.0 * std::ldexp(1.0, std::ilogb(std::max(scale, 1.0e-300)) - 52);
+  const auto Ulps = [](const double scale)
+  { return 64.0 * std::ldexp(1.0, std::ilogb(std::max(scale, 1.0e-300)) - 52); };
+  // The extent of the mesh along each axis enters: a point that a caller computed from
+  // coordinates of this mesh, such as the crossing of a ray with a reflecting plane, carries the
+  // round-off of those coordinates even where its own coordinate is small, as on a plane through
+  // the origin.
+  return Vector3(Ulps(std::max({scale_.x, std::abs(p.x), std::abs(q.x)})),
+                 Ulps(std::max({scale_.y, std::abs(p.y), std::abs(q.y)})),
+                 Ulps(std::max({scale_.z, std::abs(p.z), std::abs(q.z)})));
+}
+
+double
+MeshSegmentTracer::Along(const Vector3& allowance, const Vector3& direction)
+{
+  return allowance.x * std::abs(direction.x) + allowance.y * std::abs(direction.y) +
+         allowance.z * std::abs(direction.z);
 }
 
 Vector3
-MeshSegmentTracer::Displacement(const Vector3& p,
-                                const Vector3& q,
+MeshSegmentTracer::Displacement(const Vector3& point,
+                                const Vector3& other,
                                 const int direction,
-                                const bool far_end) const
+                                const bool far_end,
+                                const Vector3& interior) const
 {
+  // Twice (three times for the far end) the round-off allowed to a point computed by a caller
+  // along each axis, so that a start or end that lies outside the mesh by that round-off is moved
+  // inside for some direction.
+  const double factor = far_end ? 3.0 : 2.0;
+  const Vector3 allowance = Roundoff(point, other);
+  if (direction >= 8)
+  {
+    const Vector3 toward = (direction == 8 ? interior : other) - point;
+    const double distance = toward.Norm();
+    if (distance == 0.0)
+      return {};
+    return factor * Along(allowance, toward / distance) / distance * toward;
+  }
   const double sx = (direction & 1) != 0 ? -1.0 : 1.0;
   const double sy = (direction & 2) != 0 ? -1.0 : 1.0;
   const double sz = (direction & 4) != 0 ? -1.0 : 1.0;
-  const Vector3 unit = far_end ? Vector3(sx * 3.0, sy * 1.0, sz * 2.0).Normalized()
-                               : Vector3(sx * 1.0, sy * 2.0, sz * 3.0).Normalized();
-  // Twice (three times for the far end) the round-off allowed to a point computed by a caller,
-  // so that a start or end that lies outside the mesh by that round-off is moved inside for some
-  // direction.
-  return (far_end ? 3.0 : 2.0) * Roundoff(p, q) * unit;
+  // Components along every axis, in different proportions for the two ends.
+  return far_end ? Vector3(sx * allowance.x, sy * allowance.y / 3.0, sz * 2.0 * allowance.z / 3.0) *
+                     factor
+                 : Vector3(sx * allowance.x / 3.0, sy * 2.0 * allowance.y / 3.0, sz * allowance.z) *
+                     factor;
+}
+
+bool
+MeshSegmentTracer::Contains(const std::uint32_t piece, const Vector3& point) const
+{
+  for (auto t = piece_triangle_offset_[piece]; t < piece_triangle_offset_[piece + 1]; ++t)
+  {
+    const auto& tri = triangles_[t];
+    if (Orient3D(points_[tri.a], points_[tri.b], points_[tri.c], point) < 0)
+      return false;
+  }
+  return true;
+}
+
+std::vector<std::uint32_t>
+MeshSegmentTracer::CellsContaining(const Vector3& point,
+                                   const std::optional<std::uint32_t> near_cell) const
+{
+  const auto CellContains = [&](const std::uint32_t cell)
+  {
+    for (auto piece = cell_piece_offset_[cell]; piece < cell_piece_offset_[cell + 1]; ++piece)
+      if (Contains(piece, point))
+        return true;
+    return false;
+  };
+  std::vector<std::uint32_t> cells;
+  if (near_cell)
+  {
+    // The cell and the cells within two layers of it.
+    std::vector<std::uint32_t> visited = {*near_cell};
+    std::vector<std::uint32_t> layer = {*near_cell};
+    for (int depth = 0; depth < 2; ++depth)
+    {
+      std::vector<std::uint32_t> next;
+      for (const auto c : layer)
+        for (auto k = cell_vertex_offset_[c]; k < cell_vertex_offset_[c + 1]; ++k)
+        {
+          const auto v = cell_vertices_[k];
+          for (auto j = vertex_cell_offset_[v]; j < vertex_cell_offset_[v + 1]; ++j)
+          {
+            const auto candidate = vertex_cells_[j];
+            if (std::find(visited.begin(), visited.end(), candidate) == visited.end())
+            {
+              visited.push_back(candidate);
+              next.push_back(candidate);
+            }
+          }
+        }
+      layer = std::move(next);
+    }
+    for (const auto c : visited)
+      if (CellContains(c))
+        cells.push_back(c);
+    return cells;
+  }
+  // Every cell, filtered by its bounding box.
+  for (std::uint32_t c = 0; c + 1 < cell_piece_offset_.size(); ++c)
+  {
+    Vector3 lo = points_[cell_vertices_[cell_vertex_offset_[c]]];
+    Vector3 hi = lo;
+    for (auto k = cell_vertex_offset_[c]; k < cell_vertex_offset_[c + 1]; ++k)
+    {
+      const auto& v = points_[cell_vertices_[k]];
+      lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
+      hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));
+    }
+    if (point.x < lo.x or point.x > hi.x or point.y < lo.y or point.y > hi.y or point.z < lo.z or
+        point.z > hi.z)
+      continue;
+    if (CellContains(c))
+      cells.push_back(c);
+  }
+  return cells;
+}
+
+std::vector<Vector3>
+MeshSegmentTracer::InwardDisplacements(const Vector3& point,
+                                       const Vector3& other,
+                                       const bool far_end,
+                                       const std::uint32_t cell) const
+{
+  std::vector<Vector3> displacements;
+  const auto Toward = [&](const Vector3& target)
+  {
+    const Vector3 displacement = Displacement(point, other, 8, far_end, target);
+    if (displacement.Norm() > 0.0)
+      displacements.push_back(displacement);
+  };
+  const Vector3& interior = cell_interior_[cell];
+  Toward(interior);
+  for (auto k = cell_vertex_offset_[cell]; k < cell_vertex_offset_[cell + 1]; ++k)
+    Toward(0.5 * (interior + points_[cell_vertices_[k]]));
+  return displacements;
 }
 
 std::optional<bool>
@@ -708,7 +833,7 @@ MeshSegmentTracer::Resolve(const std::uint32_t start_cell,
       // A start computed by the caller to lie on a face of the start cell can fall outside it by
       // round-off: move it toward the interior of the start cell by the round-off allowance.
       const Vector3 inward = (cell_interior_[start_cell] - start).Normalized();
-      const Vector3 p = start + 2.0 * Roundoff(start, end) * inward;
+      const Vector3 p = start + 2.0 * Along(Roundoff(start, end), inward) * inward;
       traced.clear();
       outcome = Walk(start_cell, p, end, traced, false);
       const double factor = (end - start).Norm() / (end - p).Norm();
@@ -742,48 +867,84 @@ MeshSegmentTracer::Resolve(const std::uint32_t start_cell,
     traced.clear();
   }
   // The line of the segment meets an edge or a vertex, or lies in a face plane. The ends are
-  // displaced independently, by a few units in the last place, in every pair of octant
-  // directions, which moves the line off the degeneracy. A displaced end may fall outside the
+  // displaced independently, by a few units in the last place, in every pair of the octant
+  // directions, the direction toward the interior of the start cell, and the direction along the
+  // segment, which moves the line off the degeneracy. A displaced end may fall outside the
   // mesh where the segment ends on the boundary, so the segment reaches its end if any
   // displacement does, and otherwise leaves the mesh where the displacement that stays inside
   // longest does: a segment on the boundary counts as inside.
   std::optional<std::vector<Segment>> left;
   double left_length = 0.0;
-  for (int i = 0; i < num_directions; ++i)
-    for (int j = 0; j < num_directions; ++j)
-    {
-      const Vector3 p = start + Displacement(start, end, i, false);
-      const Vector3 q = end + Displacement(start, end, j, true);
-      traced.clear();
-      Outcome outcome = Outcome::no_start;
-      try
+  const auto TryPairs = [&](const std::vector<Vector3>& start_displacements,
+                            const std::vector<Vector3>& end_displacements,
+                            const size_t skip_start,
+                            const size_t skip_end)
+  {
+    for (size_t i = 0; i < start_displacements.size(); ++i)
+      for (size_t j = 0; j < end_displacements.size(); ++j)
       {
-        outcome = Walk(start_cell, p, q, traced, true);
+        if (i < skip_start and j < skip_end)
+          continue;
+        const Vector3 p = start + start_displacements[i];
+        const Vector3 q = end + end_displacements[j];
+        traced.clear();
+        Outcome outcome = Outcome::no_start;
+        try
+        {
+          outcome = Walk(start_cell, p, q, traced, true);
+        }
+        catch (const Degenerate&)
+        {
+          continue;
+        }
+        // The displaced segment differs in length by a few units in the last place.
+        const double factor = (end - start).Norm() / (q - p).Norm();
+        double traced_length = 0.0;
+        for (auto& segment : traced)
+        {
+          segment.length *= factor;
+          traced_length += segment.length;
+        }
+        if (outcome == Outcome::reached)
+        {
+          segments.insert(segments.end(), traced.begin(), traced.end());
+          return true;
+        }
+        if ((outcome == Outcome::left or outcome == Outcome::left_near_end) and
+            (not left or traced_length > left_length))
+        {
+          left = traced;
+          left_length = traced_length;
+        }
       }
-      catch (const Degenerate&)
-      {
-        continue;
-      }
-      // The displaced segment differs in length by a few units in the last place.
-      const double factor = (end - start).Norm() / (q - p).Norm();
-      double traced_length = 0.0;
-      for (auto& segment : traced)
-      {
-        segment.length *= factor;
-        traced_length += segment.length;
-      }
-      if (outcome == Outcome::reached)
-      {
-        segments.insert(segments.end(), traced.begin(), traced.end());
-        return true;
-      }
-      if ((outcome == Outcome::left or outcome == Outcome::left_near_end) and
-          (not left or traced_length > left_length))
-      {
-        left = traced;
-        left_length = traced_length;
-      }
-    }
+    return false;
+  };
+  std::vector<Vector3> start_displacements;
+  std::vector<Vector3> end_displacements;
+  for (int direction = 0; direction < num_directions; ++direction)
+  {
+    start_displacements.push_back(
+      Displacement(start, end, direction, false, cell_interior_[start_cell]));
+    end_displacements.push_back(
+      Displacement(end, start, direction, true, cell_interior_[start_cell]));
+  }
+  if (TryPairs(start_displacements, end_displacements, 0, 0))
+    return true;
+  // The cone of the mesh at an end can be thinner than every direction above enters, as at the
+  // apex of a sliver, and the interior of the start cell need not lie in the cone at the far end.
+  // The directions toward the interiors of the other cells that contain each end enter their
+  // cones. The cells containing the end are searched over the whole mesh, which is only reached
+  // for a segment that the displacements above cannot resolve.
+  const size_t first_starts = start_displacements.size();
+  const size_t first_ends = end_displacements.size();
+  for (const auto cell : CellsContaining(start, start_cell))
+    for (const auto& displacement : InwardDisplacements(start, end, false, cell))
+      start_displacements.push_back(displacement);
+  for (const auto cell : CellsContaining(end, std::nullopt))
+    for (const auto& displacement : InwardDisplacements(end, start, true, cell))
+      end_displacements.push_back(displacement);
+  if (TryPairs(start_displacements, end_displacements, first_starts, first_ends))
+    return true;
   if (exact_left)
   {
     // No displacement keeps the segment inside: it left where the exact traversal says.

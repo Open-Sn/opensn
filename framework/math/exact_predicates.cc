@@ -19,11 +19,11 @@ namespace
  * multiply-add for the exact rounding error.
  */
 /// At most 192 components are needed for the exact orientation determinant (Shewchuk 1997).
-struct Expansion
+// The components are left uninitialized on purpose: only the first n are ever read, and an
+// expansion is created on every exact evaluation.
+struct Expansion // NOLINT(cppcoreguidelines-pro-type-member-init)
 {
-  // Left uninitialized on purpose: only the first n components are ever read, and the expansion
-  // is created on every exact evaluation.
-  std::array<double, 256> c; // NOLINT(cppcoreguidelines-pro-type-member-init)
+  std::array<double, 256> c;
   int n = 0;
   double operator[](const int k) const { return c[k]; }
   bool empty() const { return n == 0; }

@@ -136,14 +136,33 @@ private:
   const Triangle& ExitTriangle(std::uint32_t piece, const Vector3& p, const Vector3& q) const;
 
   /**
-   * The round-off allowed to points computed by a caller, such as the crossing of a ray with a
-   * boundary plane: 64 units in the last place of the largest coordinate of the mesh and of the
-   * points.
+   * The round-off allowed to the ends of a segment that a caller computed, such as the crossing
+   * of a ray with a reflecting plane, along each axis: 64 units in the last place of the largest
+   * coordinate of the mesh and of the two ends along that axis. The allowances differ between axes
+   * when the mesh is far from the origin along one of them and thin along another. The extent of
+   * the mesh enters because the caller computes such points from coordinates of the mesh: a mesh
+   * whose extent along an axis exceeds the size of its cells by more than about 1e13 cannot be
+   * traced to the cell size along that axis.
    */
-  double Roundoff(const Vector3& p, const Vector3& q) const;
+  Vector3 Roundoff(const Vector3& p, const Vector3& q) const;
 
-  /// Whether the point lies within the round-off of its coordinates of the plane of the triangle.
-  bool WithinRoundoff(const Triangle& triangle, const Vector3& point) const;
+  /// Whether the point lies in or on the piece (exact).
+  bool Contains(std::uint32_t piece, const Vector3& point) const;
+
+  /**
+   * The local cells that contain the point, in or on: among the cell near_cell and the cells
+   * within two layers of it, or, without near_cell, among all local cells. O(cells) in the second
+   * form.
+   */
+  std::vector<std::uint32_t> CellsContaining(const Vector3& point,
+                                             std::optional<std::uint32_t> near_cell) const;
+
+  /// The round-off of a point with the allowances along a direction (a unit vector).
+  static double Along(const Vector3& allowance, const Vector3& direction);
+
+  /// Whether the point lies within the given allowance of the plane of the triangle.
+  bool
+  WithinRoundoff(const Triangle& triangle, const Vector3& point, const Vector3& allowance) const;
 
   /**
    * The piece in which the segment from p to q starts: a piece that contains p and that the
@@ -176,25 +195,41 @@ private:
   /**
    * Displacement of an end of a degenerate segment: a few units in the last place of the
    * coordinates along one of the eight directions with components along every axis, one per
-   * octant, so that one of them points into the mesh at any boundary point. The far end uses
-   * another direction and a larger step, so that the displaced line is never parallel to the
-   * line of the segment and leaves every degeneracy of it.
+   * octant, or toward the given interior point of the start cell, which points into the mesh at a
+   * boundary point however thin the cell is there. The far end uses other directions and a larger
+   * step, so that the displaced line is never parallel to the line of the segment and leaves
+   * every degeneracy of it.
    */
-  Vector3 Displacement(const Vector3& p, const Vector3& q, int direction, bool far_end) const;
+  Vector3 Displacement(const Vector3& point,
+                       const Vector3& other,
+                       int direction,
+                       bool far_end,
+                       const Vector3& interior) const;
 
   static constexpr std::uint32_t boundary = std::numeric_limits<std::uint32_t>::max();
-  /// Directions of displacement tried for each end of a degenerate segment.
-  static constexpr int num_directions = 8;
+  /// Directions of displacement tried for each end of a degenerate segment: the eight octants,
+  /// the direction toward the interior of the start cell, and the direction along the segment.
+  static constexpr int num_directions = 10;
+
+  /**
+   * Displacements of an end of a segment into a cell that contains it: toward the interior point
+   * of the cell and toward the midpoints between that point and the vertices of the cell, which
+   * lie inside a convex piece and break the symmetry that keeps a displaced line on a face plane.
+   */
+  std::vector<Vector3> InwardDisplacements(const Vector3& point,
+                                           const Vector3& other,
+                                           bool far_end,
+                                           std::uint32_t cell) const;
 
   /// Mesh vertices, face centroids, and cell centroids used by the pieces.
   std::vector<Vector3> points_;
-  /// Largest magnitude of a coordinate of the mesh.
-  double scale_ = 0.0;
+  /// Largest magnitude of a coordinate of the mesh along each axis.
+  Vector3 scale_;
   /// The plane of the first triangle of a face of a piece, for ordering the exit candidates.
   struct Plane
   {
     Vector3 normal;
-    double offset;
+    double offset = 0.0;
   };
 
   /// Triangles of each piece: [piece_triangle_offset_[p], piece_triangle_offset_[p + 1]).

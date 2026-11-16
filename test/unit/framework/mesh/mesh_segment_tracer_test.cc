@@ -1271,3 +1271,119 @@ TEST(MeshSegmentTracer, AlongBoundaryFaceWithRoundedCentroidFarFromOrigin)
     }
   }
 }
+
+// A box 1e-4 wide in x, 1 in y and z, placed at z = 1e12. The round-off allowance along z is
+// about 1e-4, the whole width of the box, while along x it is 1e-20: a degenerate segment (through
+// the centers of the faces normal to y) displaced by the z allowance along x would leave the box
+// for every direction. Allowances are per axis.
+TEST(MeshSegmentTracer, AnisotropicBoxFarFromOriginAlongOneAxis)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const double z0 = 1.0e12;
+  const auto grid =
+    BuildOrthogonalMesh({{0.0, 0.5e-4, 1.0e-4}, {0.0, 0.5, 1.0}, {z0, z0 + 0.5, z0 + 1.0}});
+  for (const bool split : {false, true})
+  {
+    const MeshSegmentTracer tracer(*grid, split);
+    const Vector3 a(0.5e-4, 0.25, z0 + 0.5);
+    const Vector3 b(0.5e-4, 0.75, z0 + 0.5);
+    const auto hint = ContainingCells(*grid, a).front();
+    std::vector<MeshSegmentTracer::Segment> segments;
+    EXPECT_TRUE(tracer.Trace(hint, a, b, segments)) << "split " << split;
+    double total = 0.0;
+    for (const auto& segment : segments)
+      total += segment.length;
+    EXPECT_NEAR(total, 0.5, 1.0e-9) << "split " << split;
+  }
+}
+
+// Tetrahedra whose solid angle at the vertex (0, 0, 0) is thin, with half-widths h down to 1e-6,
+// around the diagonal edge from that vertex to (1, 1, 1). A segment along that edge meets edges
+// exactly, and every octant displacement of its start (a few units in the last place along each
+// axis, all of extent 1) lies outside the cone once h is small enough; the displacement toward
+// the interior of the cell does not.
+TEST(MeshSegmentTracer, AlongEdgeOfThinTetrahedron)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  for (const double h : {1.0e-2, 1.0e-4, 1.0e-6})
+  {
+    const Vector3 u(1.0, 1.0, 1.0);
+    const std::vector<Vector3> points = {
+      Vector3(0.0, 0.0, 0.0), u, u + h * Vector3(1.0, -1.0, 0.0), u + h * Vector3(1.0, 1.0, -2.0)};
+    // Faces counterclockwise seen from outside.
+    const std::vector<std::vector<std::vector<size_t>>> cells = {
+      {{0, 2, 1}, {0, 1, 3}, {1, 2, 3}, {0, 3, 2}}};
+    const auto grid = BuildPolyhedraMesh(points, cells);
+    const MeshSegmentTracer tracer(*grid);
+    const Vector3 a(0.0, 0.0, 0.0);
+    const Vector3 b = 0.5 * u;
+    for (const auto& [start, end] : {std::pair{a, b}, std::pair{b, a}})
+    {
+      std::vector<MeshSegmentTracer::Segment> segments;
+      EXPECT_TRUE(tracer.Trace(0, start, end, segments)) << "h " << h;
+      double total = 0.0;
+      for (const auto& segment : segments)
+        total += segment.length;
+      EXPECT_NEAR(total, b.Norm(), 1.0e-12) << "h " << h;
+    }
+  }
+}
+
+// Three convex cells: two tetrahedra whose cones at the apexes (0, 0, 0) and (1, 0, 0) are thin
+// (height 1e-10 over a base of 0.5), joined by the convex hull of their bases and four far points.
+// The segment between the apexes runs along the axis of both cones, through vertices and in face
+// planes. Displacements of the far end toward the interior of the start cell would miss the cone
+// at the far end, and octant displacements leave it; the displacement along the segment stays in
+// the closed mesh.
+TEST(MeshSegmentTracer, BetweenApexesOfThinCones)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const double h = 1.0e-10;
+  const std::vector<Vector3> points = {Vector3(0.0, 0.0, 0.0),
+                                       Vector3(0.25, -0.25, 0.0),
+                                       Vector3(0.25, 0.25, 0.0),
+                                       Vector3(0.25, 0.0, h),
+                                       Vector3(0.75, -0.25, 0.0),
+                                       Vector3(0.75, 0.25, 0.0),
+                                       Vector3(0.75, 0.0, -h),
+                                       Vector3(0.5, -1.0, -1.0),
+                                       Vector3(0.5, -1.0, 1.0),
+                                       Vector3(0.5, 1.0, -1.0),
+                                       Vector3(0.5, 1.0, 1.0),
+                                       Vector3(1.0, 0.0, 0.0)};
+  // Faces counterclockwise seen from outside each cell; the caps (1, 2, 3) and (4, 5, 6) are
+  // shared between a tetrahedron and the hull.
+  const std::vector<std::vector<std::vector<size_t>>> cells = {
+    {{3, 1, 2}, {1, 3, 0}, {2, 1, 0}, {3, 2, 0}},
+    {{8, 1, 7},
+     {7, 4, 8},
+     {9, 2, 10},
+     {10, 5, 9},
+     {2, 1, 3},
+     {3, 1, 8},
+     {10, 3, 8},
+     {10, 2, 3},
+     {9, 6, 7},
+     {6, 4, 7},
+     {9, 5, 6},
+     {5, 4, 6},
+     {7, 1, 2, 9},
+     {8, 4, 5, 10}},
+    {{6, 4, 5}, {4, 6, 11}, {5, 4, 11}, {6, 5, 11}}};
+  const auto grid = BuildPolyhedraMesh(points, cells);
+  const MeshSegmentTracer tracer(*grid);
+  const Vector3 a(0.0, 0.0, 0.0);
+  const Vector3 b(1.0, 0.0, 0.0);
+  for (const auto& [start, end, hint] : {std::tuple{a, b, 0U}, std::tuple{b, a, 2U}})
+  {
+    std::vector<MeshSegmentTracer::Segment> segments;
+    EXPECT_TRUE(tracer.Trace(hint, start, end, segments)) << "from " << start.PrintStr();
+    double total = 0.0;
+    for (const auto& segment : segments)
+      total += segment.length;
+    EXPECT_NEAR(total, 1.0, 1.0e-12) << "from " << start.PrintStr();
+  }
+}

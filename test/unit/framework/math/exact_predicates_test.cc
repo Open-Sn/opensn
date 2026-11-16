@@ -4,7 +4,7 @@
 #include "framework/math/exact_predicates.h"
 #include "gtest/gtest.h"
 #include <cmath>
-#include <random>
+#include <cstdint>
 
 using namespace opensn;
 
@@ -29,6 +29,32 @@ ReferenceSign(const Vector3& a, const Vector3& b, const Vector3& c, const Vector
     adx * (bdy * cdz - bdz * cdy) - ady * (bdx * cdz - bdz * cdx) + adz * (bdx * cdy - bdy * cdx);
   return det > 0 ? 1 : det < 0 ? -1 : 0;
 }
+
+/// A deterministic sequence of coordinates in [lo, hi): splitmix64 from a fixed state, so that
+/// the fixtures are the same in every run without a seeded standard engine.
+class Coordinates
+{
+public:
+  Coordinates(const std::uint64_t state, const double lo, const double hi)
+    : state_(state), lo_(lo), hi_(hi)
+  {
+  }
+
+  double operator()()
+  {
+    state_ += 0x9e3779b97f4a7c15ULL;
+    std::uint64_t z = state_;
+    z = (z ^ (z >> 30)) * 0xbf58476d1ce4e5b9ULL;
+    z = (z ^ (z >> 27)) * 0x94d049bb133111ebULL;
+    z ^= z >> 31;
+    return lo_ + (hi_ - lo_) * static_cast<double>(z >> 11) * std::ldexp(1.0, -53);
+  }
+
+private:
+  std::uint64_t state_;
+  double lo_;
+  double hi_;
+};
 
 } // namespace
 
@@ -63,14 +89,13 @@ TEST(ExactPredicates, Orient3DNearlyDegenerate)
   // Points a tiny distance off a plane, far from the origin, where the floating-point filter
   // cannot decide: the exact sign must agree with a high-precision reference and must be
   // antisymmetric under swapping two points.
-  std::mt19937_64 rng(7);
-  std::uniform_real_distribution<double> coord(1.0e6, 1.0e6 + 1.0);
+  Coordinates coord(7, 1.0e6, 1.0e6 + 1.0);
   int undecided_by_reference = 0;
   for (int k = 0; k < 20000; ++k)
   {
-    const Vector3 a(coord(rng), coord(rng), coord(rng));
-    const Vector3 b(coord(rng), coord(rng), coord(rng));
-    const Vector3 c(coord(rng), coord(rng), coord(rng));
+    const Vector3 a(coord(), coord(), coord());
+    const Vector3 b(coord(), coord(), coord());
+    const Vector3 c(coord(), coord(), coord());
     // d close to the plane: a point of the plane plus a few ulps along the normal.
     const Vector3 in_plane = a + 0.3 * (b - a) + 0.4 * (c - a);
     const Vector3 normal = (b - a).Cross(c - a).Normalized();
@@ -92,14 +117,41 @@ TEST(ExactPredicates, Orient3DConsistentAcrossSharedEdge)
 {
   // The predicate of a segment against a shared edge is the same number whichever triangle
   // evaluates it, so it is odd under reversing the edge: both cells agree on the side exactly.
-  std::mt19937_64 rng(11);
-  std::uniform_real_distribution<double> coord(-1000.0, 1000.0);
+  Coordinates coord(11, -1000.0, 1000.0);
   for (int k = 0; k < 10000; ++k)
   {
-    const Vector3 p(coord(rng), coord(rng), coord(rng));
-    const Vector3 q(coord(rng), coord(rng), coord(rng));
-    const Vector3 u(coord(rng), coord(rng), coord(rng));
-    const Vector3 v(coord(rng), coord(rng), coord(rng));
+    const Vector3 p(coord(), coord(), coord());
+    const Vector3 q(coord(), coord(), coord());
+    const Vector3 u(coord(), coord(), coord());
+    const Vector3 v(coord(), coord(), coord());
     EXPECT_EQ(Orient3D(p, q, u, v), -Orient3D(p, q, v, u));
   }
+}
+
+// A determinant that is exactly 1 while every first-stage product rounds to the same value: with
+// N = 2^27, N * N and (N - 1) * (N + 1) = N * N - 1 both round to 2^54. The adaptive stages must
+// recover the sign, in both orientations.
+TEST(ExactPredicates, Orient3DExactCancellation)
+{
+  const double n = std::ldexp(1.0, 27);
+  const Vector3 a(n, n - 1.0, 0.0);
+  const Vector3 b(n + 1.0, n, 0.0);
+  const Vector3 c(0.0, 0.0, 1.0);
+  const Vector3 d(0.0, 0.0, 0.0);
+  EXPECT_EQ(Orient3D(a, b, c, d), 1);
+  EXPECT_EQ(Orient3D(b, a, c, d), -1);
+}
+
+// The rounded differences erase the determinant and the first-order correction cancels too, so
+// only the exact expansion arithmetic on the subtraction tails decides: the determinant is
+// 1 - 3 * 2^54, negative.
+TEST(ExactPredicates, Orient3DExactFallback)
+{
+  const double s = std::ldexp(1.0, 54);
+  const Vector3 a(1.0, 0.0, 0.0);
+  const Vector3 b(0.0, 1.0, 0.0);
+  const Vector3 c(0.0, 0.0, 1.0);
+  const Vector3 d(s, s, s);
+  EXPECT_EQ(Orient3D(a, b, c, d), -1);
+  EXPECT_EQ(Orient3D(b, a, c, d), 1);
 }
