@@ -6,6 +6,9 @@
 #include "framework/logging/log.h"
 #include <cstdint>
 #include <fstream>
+#include <map>
+#include <string>
+#include <utility>
 
 namespace opensn
 {
@@ -50,8 +53,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       break;
     }
 
-  // map from physical name ID to [dim, physical name]
-  std::map<int, std::tuple<int, std::string>> physical_names;
+  // Map from [dim, physical tag] to physical name. Gmsh numbers physical groups separately in
+  // each dimension, so the tag alone does not identify a name.
+  std::map<std::pair<int, int>, std::string> physical_names;
   if (has_physical_names_section)
   {
     std::getline(file, file_line);
@@ -78,7 +82,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
         throw std::logic_error(fname + ": Failed to read physical name.");
       name = name.substr(1, name.length() - 2);
 
-      physical_names[phys_name_id] = {dim, name};
+      physical_names[{dim, phys_name_id}] = name;
     }
   }
 
@@ -136,8 +140,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       case 5:
         return CellType::HEXAHEDRON;
       case 6:
+        return CellType::WEDGE;
       case 7:
-        return CellType::POLYHEDRON;
+        return CellType::PYRAMID;
       default:
         return CellType::GHOST;
     }
@@ -244,6 +249,10 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       num_cell_nodes = 4;
     else if (element_type == 5) // 8-node hexahedron
       num_cell_nodes = 8;
+    else if (element_type == 6) // 6-node prism
+      num_cell_nodes = 6;
+    else if (element_type == 7) // 5-node pyramid
+      num_cell_nodes = 5;
 
     auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
     auto& raw_cells = mesh->GetRawCells();
@@ -349,6 +358,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
       for (auto& lw_face : lw_faces)
         cell.faces.push_back(lw_face);
     }
+    else if (element_type == 6 or element_type == 7) // prism or pyramid
+      AddGmshPrismOrPyramidFaces(element_type, cell);
     else
       throw std::runtime_error(fname + ": Unsupported cell type");
 
@@ -358,14 +369,9 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   // create boundary names and IDs
   unsigned int dimension = mesh_is_2D ? 2 : 3;
-  for (auto& [id, e] : physical_names)
-  {
-    if (std::get<0>(e) == dimension - 1)
-    {
-      auto name = std::get<1>(e);
-      mesh->AddBoundary(id, name);
-    }
-  }
+  for (const auto& [dim_and_tag, name] : physical_names)
+    if (dim_and_tag.first == static_cast<int>(dimension) - 1)
+      mesh->AddBoundary(dim_and_tag.second, name);
 
   mesh->SetDimension(dimension);
   mesh->SetType(UNSTRUCTURED);
