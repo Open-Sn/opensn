@@ -8,7 +8,7 @@
 #include <cstddef>  // std::size_t
 
 #include "caribou/backend.hpp"
-#include "caribou/sycl/stream.hpp"  // caribou::impl::null_stream
+#include "caribou/sycl/stream.hpp"  // caribou::impl::get_null_stream_handle
 
 namespace caribou::impl {
 
@@ -28,12 +28,14 @@ class HostAllocator {
         if (n == 0) {
             return nullptr;
         }
-        T * result = ::sycl::aligned_alloc_host<T>(4096, n, null_stream);
+        StreamNativeHandle & null_stream = get_null_stream_handle();
+        T * result = ::sycl::malloc_host<T>(n, null_stream);
         null_stream.wait_and_throw();
         return result;
     }
     void deallocate(T * ptr, std::size_t n) noexcept {
         if (ptr) {
+            StreamNativeHandle & null_stream = get_null_stream_handle();
             sycl::free(ptr, null_stream);
             null_stream.wait_and_throw();
         }

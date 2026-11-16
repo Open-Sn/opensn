@@ -5,13 +5,15 @@
  */
 #pragma once
 
-#include <cstdint>      // std::uintptr_t
+#include <cstdint>      // std::uint32_t, std::uintptr_t
+#include <memory>       // std::shared_ptr, std::get_deleter
 #include <tuple>        // std::tuple, std::apply
 #include <type_traits>  // std::remove_pointer_t, std::decay_t
 #include <utility>      // std::forward
 
 #include "caribou/backend.hpp"
 #include "caribou/cuhip/api.hpp"        // GPU_API
+#include "caribou/cuhip/device.hpp"     // caribou::impl::get_current_device
 #include "caribou/cuhip/exception.hpp"  // caribou::impl::check_error
 
 namespace caribou::impl {
@@ -23,21 +25,32 @@ using StreamNativeHandle = ::GPU_API(Stream_t);
 
 using Stream = std::shared_ptr<std::remove_pointer<::GPU_API(Stream_t)>::type>;
 
-inline constexpr StreamNativeHandle null_stream = nullptr;
+constexpr StreamNativeHandle get_null_stream_handle(void) { return nullptr; }
 
 inline StreamNativeHandle get_handle(Stream & stream) { return stream.get(); }
+
+struct StreamDeleter {
+    std::uint32_t device_id;
+
+    void operator()(StreamNativeHandle stream_handle) const {
+        if (stream_handle) {
+            static_cast<void>(::GPU_API(StreamDestroy)(stream_handle));
+        }
+    }
+};
 
 // Stream creation
 // ---------------
 
 inline void create_stream(Stream & stream, bool is_nonblocking) {
+    const std::uint32_t device_id = get_current_device();
     StreamNativeHandle result;
     if (is_nonblocking) {
         check_error(::GPU_API(StreamCreateWithFlags)(&result, GPU_API(StreamNonBlocking)));
     } else {
         check_error(::GPU_API(StreamCreate)(&result));
     }
-    stream = Stream(result, ::GPU_API(StreamDestroy));
+    stream = Stream(result, StreamDeleter{device_id});
 }
 
 inline void destroy_stream(StreamNativeHandle stream_handle) {
@@ -69,6 +82,16 @@ void add_callback(Stream & stream, Function && callback, Args &&... args) {
     data[1] = reinterpret_cast<std::uintptr_t>(p_args);
     check_error(::GPU_API(StreamAddCallback)(stream.get(), stream_callback_wrapper<Function, Args...>,
                                              reinterpret_cast<void *>(data), 0));
+}
+
+// Stream device
+// -------------
+
+inline std::uint32_t get_stream_device(const Stream & stream) {
+    if (const StreamDeleter * deleter = std::get_deleter<StreamDeleter>(stream)) {
+        return deleter->device_id;
+    }
+    return get_current_device();
 }
 
 // Stream synchronization

@@ -5,10 +5,13 @@
  */
 #pragma once
 
-#include <stdexcept>  // std::runtime_error
-#include <utility>    // std::forward, std::move
+#include <cstdint>     // std::uint32_t
+#include <functional>  // std::invoke
+#include <utility>     // std::forward, std::move
+#include <vector>      // std::vector
 
 #include "caribou/backend.hpp"
+#include "caribou/sycl/device.hpp"  // caribou::impl::get_current_gpu_device
 
 namespace caribou::impl {
 
@@ -19,7 +22,7 @@ using StreamNativeHandle = ::sycl::queue;
 
 using Stream = ::sycl::queue;
 
-extern StreamNativeHandle null_stream;
+StreamNativeHandle & get_null_stream_handle(void);
 
 inline StreamNativeHandle get_handle(Stream & stream) { return stream; }
 
@@ -27,16 +30,10 @@ inline StreamNativeHandle get_handle(Stream & stream) { return stream; }
 // ---------------
 
 inline void create_stream(Stream & stream, bool is_nonblocking) {
-    stream = Stream(::sycl::gpu_selector_v, ::sycl::property::queue::in_order{});
+    stream = Stream(get_current_gpu_device(), ::sycl::property::queue::in_order{});
 }
 
-inline StreamNativeHandle create_default_stream() {
-    StreamNativeHandle default_stream(::sycl::gpu_selector_v, ::sycl::property::queue::in_order{});
-    if (not default_stream.get_device().has(::sycl::aspect::fp64)) {
-        throw ::sycl::exception(::sycl::make_error_code(sycl::errc::runtime), "Device doesn't support fp64.");
-    }
-    return default_stream;
-}
+std::vector<StreamNativeHandle> create_default_streams(void);
 
 inline void destroy_stream(StreamNativeHandle stream_handle) {}
 
@@ -53,20 +50,23 @@ void add_callback(Stream & stream, Function && callback, Args &&... args) {
         });
 }
 
+// Stream device
+// -------------
+
+std::uint32_t get_stream_device(const Stream & stream);
+
 // Stream synchronization
 // ----------------------
 
 inline void synchronize(Stream & stream) { stream.wait_and_throw(); }
-
-#if !defined(SYCL_EXT_ONEAPI_QUEUE_EMPTY) || !defined(SYCL_KHR_QUEUE_EMPTY_QUERY)
-    #error No extension for querying queue completeness
-#endif
 
 inline bool query(Stream & stream) {
 #if defined(SYCL_EXT_ONEAPI_QUEUE_EMPTY)
     return stream.ext_oneapi_empty();
 #elif defined(SYCL_KHR_QUEUE_EMPTY_QUERY)
     return stream.khr_empty();
+#else
+    #error No extension for querying queue completeness.
 #endif
 }
 

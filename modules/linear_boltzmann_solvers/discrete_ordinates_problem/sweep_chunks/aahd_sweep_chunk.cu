@@ -43,16 +43,8 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
   // Fused-kernel launch parameters in units of the device's warp (wavefront) size and
   // compute-unit count, so they scale across NVIDIA, AMD, and Intel GPUs.
   const std::size_t warp_size = crb::get_warp_size();
-#if defined(__NVCC__) || defined(__HIPCC__)
-  const auto num_compute_units = static_cast<std::size_t>(crb::impl::get_device_attribute(
-    crb::impl::get_current_device(),
-    ::CUDA_OR_HIP(DevAttrMultiProcessorCount, DeviceAttributeMultiprocessorCount)));
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  const auto num_compute_units = static_cast<std::size_t>(
-    lanes_.front().stream.get_device().get_info<::sycl::info::device::max_compute_units>());
-#else
-  const std::size_t num_compute_units = 1;
-#endif
+  const auto num_compute_units =
+    static_cast<std::size_t>(crb::get_num_compute_units(lanes_.front().stream.get_device()));
   fused_launch_.linear_block_size = static_cast<unsigned int>(2 * warp_size);
   fused_launch_.min_small_level_stride = static_cast<unsigned int>(warp_size / 4);
   fused_launch_.linear_mapping_min_threads = 4 * warp_size * num_compute_units;
@@ -86,17 +78,8 @@ AAHDSweepChunk::Sweep(AngleSet& angle_set)
     crb::Dim3 grid_size(grid_size_x, grid_size_y);
     // perform the sweep on device
     const std::uint32_t* level_data = spds.GetDeviceLevelVector(level);
-#if defined(__NVCC__) || defined(__HIPCC__)
-    gpu_kernel::SweepKernel<SweepKind::AAH><<<grid_size, block_size, 0, stream>>>(
+    crb::KernelLauncher<gpu_kernel::SweepKernel<SweepKind::AAH>>(grid_size, block_size, 0, stream)(
       args, level_data, static_cast<unsigned int>(level_size), saved_psi);
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-    stream.parallel_for(sycl::nd_range<3>(grid_size * block_size, block_size),
-                        [=](sycl::nd_item<3> work_index)
-                        {
-                          gpu_kernel::SweepKernel<SweepKind::AAH>(
-                            args, level_data, static_cast<unsigned int>(level_size), saved_psi);
-                        });
-#endif
   }
 }
 
@@ -113,15 +96,8 @@ LaunchFusedLevel(crb::Stream& stream,
                  crb::Dim3 block,
                  bool linear_mapping)
 {
-#if defined(__NVCC__) || defined(__HIPCC__)
-  gpu_kernel::AAHDFusedSweepKernel<fixed_ndofs>
-    <<<grid, block, 0, stream>>>(shared_args, level_slots, linear_mapping);
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  stream.parallel_for(
-    sycl::nd_range<3>(grid * block, block),
-    [=](sycl::nd_item<3> work_index)
-    { gpu_kernel::AAHDFusedSweepKernel<fixed_ndofs>(shared_args, level_slots, linear_mapping); });
-#endif
+  crb::KernelLauncher<gpu_kernel::AAHDFusedSweepKernel<fixed_ndofs>>(grid, block, 0, stream)(
+    shared_args, level_slots, linear_mapping);
 }
 
 } // namespace

@@ -70,7 +70,7 @@ SlotArguments(const Arguments<SweepKind::AAH>& shared_args, const AAHD_BatchSlot
 
 /**
  * Sweep the current level of every batch slot, with one thread per cell and angle-group.
- * Each grid-z slice (blockIdx.z, or SYCL dimension 0) is a different angle set's current level.
+ * Each grid-z slice (block index along axis 2) is a different angle set's current level.
  * One launch therefore covers many angle sets instead of one. The per-thread work is the same
  * solver.h Sweep as `SweepKernel` in main.h. Its arguments are assembled from the shared launch
  * data and the thread's batch slot.
@@ -84,20 +84,15 @@ SlotArguments(const Arguments<SweepKind::AAH>& shared_args, const AAHD_BatchSlot
  */
 template <std::uint32_t fixed_ndofs>
 __CRB_GLOBAL_FUNC__ void
-AAHDFusedSweepKernel(Arguments<SweepKind::AAH> shared_args,
+AAHDFusedSweepKernel(crb::Index index,
+                     Arguments<SweepKind::AAH> shared_args,
                      const AAHD_BatchSlot* batch_slots,
                      bool linear_mapping)
 {
-#if defined(__NVCC__) || defined(__HIPCC__)
-  unsigned int slot_idx = blockIdx.z;
-  unsigned int x_idx = threadIdx.x + blockDim.x * blockIdx.x;
-  unsigned int y_idx = threadIdx.y + blockDim.y * blockIdx.y;
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
-  unsigned int slot_idx = work_index.get_global_id(0);
-  unsigned int x_idx = work_index.get_global_id(2);
-  unsigned int y_idx = work_index.get_global_id(1);
-#endif
+  // Blocks have a z extent of 1, so the grid-z block index is the slot index.
+  unsigned int slot_idx = index.get_group<2>();
+  unsigned int x_idx = index.get_global_id<0>();
+  unsigned int y_idx = index.get_global_id<1>();
   const AAHD_BatchSlot& slot = batch_slots[slot_idx];
   const unsigned int slot_stride = shared_args.groupset_size * slot.angleset_size;
   unsigned int cell_idx = linear_mapping ? x_idx / slot_stride : y_idx;
