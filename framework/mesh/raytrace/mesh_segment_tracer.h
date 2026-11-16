@@ -146,15 +146,14 @@ private:
    */
   Vector3 Roundoff(const Vector3& p, const Vector3& q) const;
 
-  /// Whether the point lies in or on the piece (exact).
-  bool Contains(std::uint32_t piece, const Vector3& point) const;
-
   /**
-   * The local cells that contain the point, in or on: among the cell near_cell and the cells
-   * within two layers of it, or, without near_cell, among all local cells. O(cells) in the second
-   * form.
+   * The local cells that contain the point, in or on, or hold it outside their planes by at most
+   * the allowance along each axis: among the cell near_cell and the cells within two layers of it,
+   * or, without near_cell, among all local cells. O(cells) in the second form. A floating-point
+   * selection of candidates; the traversal decides exactly.
    */
   std::vector<std::uint32_t> CellsContaining(const Vector3& point,
+                                             const Vector3& allowance,
                                              std::optional<std::uint32_t> near_cell) const;
 
   /// The round-off of a point with the allowances along a direction (a unit vector).

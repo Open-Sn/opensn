@@ -1375,15 +1375,63 @@ TEST(MeshSegmentTracer, BetweenApexesOfThinCones)
     {{6, 4, 5}, {4, 6, 11}, {5, 4, 11}, {6, 5, 11}}};
   const auto grid = BuildPolyhedraMesh(points, cells);
   const MeshSegmentTracer tracer(*grid);
-  const Vector3 a(0.0, 0.0, 0.0);
-  const Vector3 b(1.0, 0.0, 0.0);
-  for (const auto& [start, end, hint] : {std::tuple{a, b, 0U}, std::tuple{b, a, 2U}})
+  // The apexes exactly, and the apexes rounded outward by one unit in the last place, as a caller
+  // computing them could produce: the cells that hold such an end within round-off must still
+  // supply the inward directions.
+  const double outside = std::nextafter(1.0, 2.0) - 1.0;
+  for (const auto& [a, b] :
+       {std::pair{Vector3(0.0, 0.0, 0.0), Vector3(1.0, 0.0, 0.0)},
+        std::pair{Vector3(-outside, 0.0, 0.0), Vector3(1.0 + outside, 0.0, 0.0)}})
+    for (const auto& [start, end, hint] : {std::tuple{a, b, 0U}, std::tuple{b, a, 2U}})
+    {
+      std::vector<MeshSegmentTracer::Segment> segments;
+      EXPECT_TRUE(tracer.Trace(hint, start, end, segments)) << "from " << start.PrintStr();
+      double total = 0.0;
+      for (const auto& segment : segments)
+        total += segment.length;
+      EXPECT_NEAR(total, (b - a).Norm(), 1.0e-12) << "from " << start.PrintStr();
+    }
+}
+
+// A unit cube whose top is dented to a pyramid with its apex at z = 0.1: five planar square
+// faces, whose fans share a plane four times, and four triangles. The average of its points lies
+// in the cavity, outside the cell, so the kernel point (below the apex) must be found by the
+// search, whose ascent at a ridge between a square and a dent plane needs the two distinct planes.
+TEST(MeshSegmentTracer, DentedCubeKernelSearch)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const std::vector<Vector3> points = {Vector3(0.0, 0.0, 0.0),
+                                       Vector3(1.0, 0.0, 0.0),
+                                       Vector3(1.0, 1.0, 0.0),
+                                       Vector3(0.0, 1.0, 0.0),
+                                       Vector3(0.0, 0.0, 1.0),
+                                       Vector3(1.0, 0.0, 1.0),
+                                       Vector3(1.0, 1.0, 1.0),
+                                       Vector3(0.0, 1.0, 1.0),
+                                       Vector3(0.5, 0.5, 0.1)};
+  // Faces counterclockwise seen from outside.
+  const std::vector<std::vector<std::vector<size_t>>> cells = {{{0, 3, 2, 1},
+                                                                {0, 1, 5, 4},
+                                                                {1, 2, 6, 5},
+                                                                {2, 3, 7, 6},
+                                                                {3, 0, 4, 7},
+                                                                {4, 5, 8},
+                                                                {5, 6, 8},
+                                                                {6, 7, 8},
+                                                                {7, 4, 8}}};
+  const auto grid = BuildPolyhedraMesh(points, cells);
+  std::unique_ptr<MeshSegmentTracer> tracer;
+  ASSERT_NO_THROW(tracer = std::make_unique<MeshSegmentTracer>(*grid));
+  for (const auto& [a, b] : {std::pair{Vector3(0.1, 0.1, 0.05), Vector3(0.9, 0.9, 0.05)},
+                             std::pair{Vector3(0.05, 0.5, 0.9), Vector3(0.05, 0.5, 0.02)},
+                             std::pair{Vector3(0.1, 0.9, 0.8), Vector3(0.1, 0.1, 0.8)}})
   {
     std::vector<MeshSegmentTracer::Segment> segments;
-    EXPECT_TRUE(tracer.Trace(hint, start, end, segments)) << "from " << start.PrintStr();
+    EXPECT_TRUE(tracer->Trace(0, a, b, segments)) << a.PrintStr();
     double total = 0.0;
     for (const auto& segment : segments)
       total += segment.length;
-    EXPECT_NEAR(total, 1.0, 1.0e-12) << "from " << start.PrintStr();
+    EXPECT_NEAR(total, (b - a).Norm(), 1.0e-12 * (b - a).Norm()) << a.PrintStr();
   }
 }

@@ -202,15 +202,24 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
       // of the point, so its maximum (the center of the largest ball in the kernel) is found by
       // climbing from the average point along the inward normal of the nearest plane and the
       // axes, with a step that halves when no direction improves. The result is verified exactly.
+      // The distinct planes of the triangles: the fan triangles of a planar face share a plane,
+      // which must appear once so that the nearest planes at a point are distinct.
       std::vector<Vector3> inward_normals;
       std::vector<Vector3> anchors;
       for (const auto& tri : cell_triangles)
       {
         const Vector3& a = points_[tri[0]];
         const Vector3 n = (points_[tri[1]] - a).Cross(points_[tri[2]] - a);
-        if (n.Norm() > 0.0)
+        if (n.Norm() == 0.0)
+          continue;
+        const Vector3 inward = -1.0 / n.Norm() * n;
+        bool duplicate = false;
+        for (size_t k = 0; k < inward_normals.size() and not duplicate; ++k)
+          duplicate = (inward_normals[k] - inward).Norm() < 1.0e-12 and
+                      std::abs(inward_normals[k].Dot(a - anchors[k])) < 1.0e-12 * cell_size_[c];
+        if (not duplicate)
         {
-          inward_normals.push_back(-1.0 / n.Norm() * n);
+          inward_normals.push_back(inward);
           anchors.push_back(a);
         }
       }
@@ -241,10 +250,11 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
         return smallest[0];
       };
       Vector3 center = interior;
-      double value = SmallestDistance(center);
       double step = 0.25 * cell_size_[c];
       for (int iteration = 0; iteration < 1000 and step > 1.0e-12 * cell_size_[c]; ++iteration)
       {
+        // The nearest planes of the center itself, not of the last candidate evaluated.
+        double value = SmallestDistance(center);
         const Vector3 n0 = inward_normals[nearest[0]];
         const Vector3 n1 = inward_normals[nearest[1]];
         const Vector3 n2 = inward_normals[nearest[2]];
@@ -721,26 +731,34 @@ MeshSegmentTracer::Displacement(const Vector3& point,
                      factor;
 }
 
-bool
-MeshSegmentTracer::Contains(const std::uint32_t piece, const Vector3& point) const
-{
-  for (auto t = piece_triangle_offset_[piece]; t < piece_triangle_offset_[piece + 1]; ++t)
-  {
-    const auto& tri = triangles_[t];
-    if (Orient3D(points_[tri.a], points_[tri.b], points_[tri.c], point) < 0)
-      return false;
-  }
-  return true;
-}
-
 std::vector<std::uint32_t>
 MeshSegmentTracer::CellsContaining(const Vector3& point,
+                                   const Vector3& allowance,
                                    const std::optional<std::uint32_t> near_cell) const
 {
+  // A piece holds the point within the allowance when the point lies on the inner side of the
+  // plane of every triangle of the piece, or outside it by at most the allowance along its
+  // normal. A floating-point test: the walk from the displaced point decides exactly.
+  const auto PieceHolds = [&](const std::uint32_t piece)
+  {
+    for (auto t = piece_triangle_offset_[piece]; t < piece_triangle_offset_[piece + 1]; ++t)
+    {
+      const auto& tri = triangles_[t];
+      const Vector3& a = points_[tri.a];
+      const Vector3 normal = (points_[tri.b] - a).Cross(points_[tri.c] - a);
+      const double norm = normal.Norm();
+      if (norm == 0.0)
+        continue;
+      const Vector3 unit = normal / norm;
+      if (unit.Dot(point - a) > Along(allowance, unit))
+        return false;
+    }
+    return true;
+  };
   const auto CellContains = [&](const std::uint32_t cell)
   {
     for (auto piece = cell_piece_offset_[cell]; piece < cell_piece_offset_[cell + 1]; ++piece)
-      if (Contains(piece, point))
+      if (PieceHolds(piece))
         return true;
     return false;
   };
@@ -785,8 +803,9 @@ MeshSegmentTracer::CellsContaining(const Vector3& point,
       lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
       hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));
     }
-    if (point.x < lo.x or point.x > hi.x or point.y < lo.y or point.y > hi.y or point.z < lo.z or
-        point.z > hi.z)
+    if (point.x < lo.x - allowance.x or point.x > hi.x + allowance.x or
+        point.y < lo.y - allowance.y or point.y > hi.y + allowance.y or
+        point.z < lo.z - allowance.z or point.z > hi.z + allowance.z)
       continue;
     if (CellContains(c))
       cells.push_back(c);
@@ -937,10 +956,11 @@ MeshSegmentTracer::Resolve(const std::uint32_t start_cell,
   // for a segment that the displacements above cannot resolve.
   const size_t first_starts = start_displacements.size();
   const size_t first_ends = end_displacements.size();
-  for (const auto cell : CellsContaining(start, start_cell))
+  const Vector3 allowance = Roundoff(start, end);
+  for (const auto cell : CellsContaining(start, allowance, start_cell))
     for (const auto& displacement : InwardDisplacements(start, end, false, cell))
       start_displacements.push_back(displacement);
-  for (const auto cell : CellsContaining(end, std::nullopt))
+  for (const auto cell : CellsContaining(end, allowance, std::nullopt))
     for (const auto& displacement : InwardDisplacements(end, start, true, cell))
       end_displacements.push_back(displacement);
   if (TryPairs(start_displacements, end_displacements, first_starts, first_ends))
