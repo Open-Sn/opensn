@@ -341,7 +341,14 @@ determine the file type.</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">.obj</span></code>: Wavefront OBJ exporters from Blender, MeshLab, FreeCAD, and many
 CAD or geometry tools.</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">.msh</span></code>: Gmsh.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">.msh</span></code>: Gmsh, in MSH format 2.2 (ASCII) or 4.1 (ASCII or binary), with first-order
+tetrahedra, hexahedra, prisms, and pyramids in 3D, or triangles and quadrilaterals in 2D.
+The physical tag of each cell becomes its block ID. Cells of an entity without a physical
+tag get block ID 0. Named physical surfaces (curves in 2D) become named boundaries. Gmsh
+numbers physical groups separately in each dimension, so a boundary group may have the same
+tag as a volume group. In MSH 4.1, an entity that belongs to more than one physical group
+keeps only the first: its cells or faces get that group’s tag, a boundary named by another
+group gets no faces, and OpenSn warns about it.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.e</span></code>: ExodusII-producing tools such as Cubit, Coreform Cubit, SEACAS
 tools, and some finite-element preprocessors.</p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">.vtu</span></code>: VTK or ParaView writers, <code class="docutils literal notranslate"><span class="pre">meshio</span></code>, and many FEM or CFD tools

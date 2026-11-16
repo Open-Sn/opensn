@@ -147,6 +147,15 @@
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnpartitionedMesh</span><span class="o">&gt;</span>
 <span class="w">  </span><span class="n">FromGmshV41Binary</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnpartitionedMesh</span><span class="o">::</span><span class="n">Options</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">data_size</span><span class="p">);</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">UnpartitionedMesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">FromGmshV22</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">UnpartitionedMesh</span><span class="o">::</span><span class="n">Options</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Appends the outward faces of a Gmsh 6-node prism (element type 6) or 5-node pyramid (type 7)</span>
+<span class="cm">   * to a cell whose vertex_ids are in Gmsh node order. The faces are in the order of the VTK</span>
+<span class="cm">   * reader and the extruder: for a prism the three quadrilateral sides, the top triangle, and the</span>
+<span class="cm">   * bottom triangle; for a pyramid the quadrilateral base and then the four triangular sides.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">void</span><span class="w"> </span><span class="nf">AddGmshPrismOrPyramidFaces</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">element_type</span><span class="p">,</span>
+<span class="w">                                         </span><span class="n">UnpartitionedMesh</span><span class="o">::</span><span class="n">LightWeightCell</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
