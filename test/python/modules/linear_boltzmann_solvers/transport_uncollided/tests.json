@@ -741,7 +741,7 @@
   },
   {
     "file": "uncollided_kobayashi_case_i_xfine.py",
-    "comment": "Long Kobayashi case-i collided solve on the extra-fine (111,272-cell) tetrahedral mesh. Golds from main 3145c2ac0 with the near-source cell-average treatment of #1213 and the exact-predicate ray tracer of this change, gcc 14.4.0, 32 ranks; the previous golds predated #1213 and the old tracer lost rays on this mesh.",
+    "comment": "Long Kobayashi case-i collided solve on the extra-fine (111,272-cell) tetrahedral mesh",
     "num_procs": 32,
     "dependency": "uncollided_kobayashi_xfine_generate.py",
     "weight_class": "long",

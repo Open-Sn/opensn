@@ -1435,3 +1435,41 @@ TEST(MeshSegmentTracer, DentedCubeKernelSearch)
     EXPECT_NEAR(total, (b - a).Norm(), 1.0e-12 * (b - a).Norm()) << a.PrintStr();
   }
 }
+
+// A triangular prism whose bottom face is replaced by three triangles meeting at the origin, far
+// up inside the prism: the cell is star-shaped about w / 32, w = (1, 1, 8), but not about the
+// average of its points, and at the corner of the search function reached from that average every
+// ascent direction that the climb tries decreases one of the three active distances. The complete
+// fallback must find the kernel.
+TEST(MeshSegmentTracer, DentedPrismKernelFallback)
+{
+  if (opensn::mpi_comm.size() != 1)
+    return;
+  const Vector3 w(1.0, 1.0, 8.0);
+  const std::vector<Vector3> rim = {Vector3(-1.0, -3.0, -20.0) / 16.0,
+                                    Vector3(-3.0, -1.0, -20.0) / 16.0,
+                                    Vector3(-4.0, -4.0, -24.0) / 16.0};
+  std::vector<Vector3> points = rim;
+  for (const auto& v : rim)
+    points.push_back(v + 0.25 * w);
+  points.emplace_back(0.0, 0.0, 0.0);
+  // Faces counterclockwise seen from outside: top, three sides, three triangles of the dent.
+  const std::vector<std::vector<std::vector<size_t>>> cells = {
+    {{3, 4, 5}, {0, 1, 4, 3}, {1, 2, 5, 4}, {2, 0, 3, 5}, {1, 0, 6}, {2, 1, 6}, {0, 2, 6}}};
+  const auto grid = BuildPolyhedraMesh(points, cells);
+  std::unique_ptr<MeshSegmentTracer> tracer;
+  ASSERT_NO_THROW(tracer = std::make_unique<MeshSegmentTracer>(*grid));
+  // Segments along and near the axis of the prism, above the apex of the dent.
+  const Vector3 kernel = w / 32.0;
+  for (const auto& [a, b] : {std::pair{Vector3(0.0, 0.0, 0.02), Vector3(0.0625, 0.0625, 0.5)},
+                             std::pair{kernel, Vector3(0.03, 0.02, 0.3)},
+                             std::pair{Vector3(0.07, 0.07, 0.55), Vector3(0.005, 0.01, 0.1)}})
+  {
+    std::vector<MeshSegmentTracer::Segment> segments;
+    EXPECT_TRUE(tracer->Trace(0, a, b, segments)) << a.PrintStr();
+    double total = 0.0;
+    for (const auto& segment : segments)
+      total += segment.length;
+    EXPECT_NEAR(total, (b - a).Norm(), 1.0e-12 * (b - a).Norm()) << a.PrintStr();
+  }
+}

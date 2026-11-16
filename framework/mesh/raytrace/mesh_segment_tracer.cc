@@ -286,6 +286,41 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
         if (not improved)
           step *= 0.5;
       }
+      if (not StarShapedAbout(center))
+      {
+        // The climb can stall at a corner of the function whose ascent cone is narrower than every
+        // direction tried. The kernel is the set of points at a positive signed distance from every
+        // plane, and projecting the point onto the most violated half-space, with a margin, finds a
+        // point of it whenever the kernel has an interior (the relaxation method of Motzkin and
+        // Schoenberg, 1954). The margin shrinks until the kernel admits it.
+        for (int level = 1; level <= 4; ++level)
+        {
+          const double margin = std::pow(1.0e-3, level) * cell_size_[c];
+          Vector3 x = interior;
+          for (int iteration = 0; iteration < 100000; ++iteration)
+          {
+            size_t worst = 0;
+            double smallest = std::numeric_limits<double>::infinity();
+            for (size_t k = 0; k < inward_normals.size(); ++k)
+            {
+              const double d = inward_normals[k].Dot(x - anchors[k]);
+              if (d < smallest)
+              {
+                smallest = d;
+                worst = k;
+              }
+            }
+            if (smallest >= margin)
+              break;
+            x = x + (margin - smallest) * inward_normals[worst];
+          }
+          if (StarShapedAbout(x))
+          {
+            center = x;
+            break;
+          }
+        }
+      }
       OpenSnInvalidArgumentIf(not StarShapedAbout(center),
                               "MeshSegmentTracer: cell " + std::to_string(cell->global_id) +
                                 " (centroid " + interior.PrintStr() +
