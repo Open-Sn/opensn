@@ -8,8 +8,7 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
-#include <functional>
-#include <numeric>
+#include <stdexcept>
 #include <utility>
 
 namespace opensn
@@ -23,7 +22,8 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
   std::size_t num_angles,
   int max_mpi_message_size,
   bool csda_enabled,
-  const SweepCommunicator& sweep_communicator)
+  const SweepCommunicator& sweep_communicator,
+  std::shared_ptr<SweepSendWindow> send_window)
   : AsynchronousCommunicator(fluds, groupset_id, angle_set_id, sweep_communicator),
     num_groups_(num_groups),
     num_angles_(num_angles),
@@ -31,8 +31,12 @@ AAH_ASynchronousCommunicator::AAH_ASynchronousCommunicator(
     csda_enabled_(csda_enabled),
     done_sending_(false),
     data_initialized_(false),
-    upstream_data_initialized_(false)
+    upstream_data_initialized_(false),
+    send_window_(std::move(send_window)),
+    send_unit_size_(csda_enabled ? 2 : 1)
 {
+  if (not send_window_)
+    throw std::invalid_argument("AAH_ASynchronousCommunicator: Missing send window.");
   // CSDA psi and psiE messages use separate tag blocks.
   num_message_tag_blocks_ = csda_enabled_ ? 2 : 1;
   BuildMessageStructure();
@@ -50,21 +54,68 @@ AAH_ASynchronousCommunicator::ClearLocalAndReceiveBuffers()
   fluds_.ClearLocalAndReceivePsi();
 }
 
-void
-AAH_ASynchronousCommunicator::ClearDownstreamBuffers()
+bool
+AAH_ASynchronousCommunicator::UndelayedSendsPosted() const
 {
-  if (done_sending_)
+  return sends_queued_ and next_send_unit_ == send_units_.size();
+}
+
+void
+AAH_ASynchronousCommunicator::RetireCompletedSends()
+{
+  if (posted_requests_.empty())
     return;
 
-  if (not mpi::test_all(deploc_msg_request_))
+  if (not mpi::test_some(posted_requests_, completed_requests_) or completed_requests_.empty())
     return;
 
-  if (csda_enabled_ and not mpi::test_all(deploc_msgE_request_))
+  // MPI sets completed requests to MPI_REQUEST_NULL. Remove them so later tests skip them.
+  std::erase_if(posted_requests_,
+                [](const mpi::Request& request)
+                { return static_cast<const MPI_Request&>(request) == MPI_REQUEST_NULL; });
+  // MPI_Testsome reports the completion count as an int.
+  send_window_->Release(static_cast<int>(completed_requests_.size()));
+}
+
+void
+AAH_ASynchronousCommunicator::PostSendUnits(const std::vector<SendUnit>& units, std::size_t& next)
+{
+  const auto& comm = sweep_communicator_.GetCommunicator();
+  while (next < units.size() and send_window_->TryAcquire(send_unit_size_))
+  {
+    const auto& [successor, m] = units[next];
+    const auto& [dest, size, block_pos] = deploc_msg_data_[successor][m];
+    const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[successor];
+    posted_requests_.push_back(
+      comm.isend(dest, GetMessageTag(m, 0), &outgoing_psi[block_pos], size));
+    // The receiver takes psi only once psiE has also arrived, so the pair is posted together.
+    if (csda_enabled_)
+    {
+      const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[successor];
+      posted_requests_.push_back(
+        comm.isend(dest, GetMessageTag(m, 1), &outgoing_psiE[block_pos], size));
+    }
+    ++next;
+  }
+}
+
+void
+AAH_ASynchronousCommunicator::ProgressDownstreamPsi(bool post_delayed)
+{
+  if (done_sending_ or not sends_queued_)
     return;
 
-  done_sending_ = true;
+  RetireCompletedSends();
+  PostSendUnits(send_units_, next_send_unit_);
+  if (post_delayed)
+    PostSendUnits(delayed_send_units_, next_delayed_send_unit_);
 
-  fluds_.ClearSendPsi();
+  if (next_send_unit_ == send_units_.size() and
+      next_delayed_send_unit_ == delayed_send_units_.size() and posted_requests_.empty())
+  {
+    done_sending_ = true;
+    fluds_.ClearSendPsi();
+  }
 }
 
 void
@@ -73,6 +124,11 @@ AAH_ASynchronousCommunicator::Reset()
   done_sending_ = false;
   data_initialized_ = false;
   upstream_data_initialized_ = false;
+  sends_queued_ = false;
+  next_send_unit_ = 0;
+  next_delayed_send_unit_ = 0;
+  if (not posted_requests_.empty())
+    throw std::logic_error("AAH_ASynchronousCommunicator: Reset with sweep sends outstanding.");
 
   for (auto& rcv_flags : preloc_msg_received_)
     rcv_flags.assign(rcv_flags.size(), false);
@@ -118,14 +174,22 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     max_num_messages_,
     sweep_communicator_,
     max_mpi_message_size_);
-  std::size_t total_deploc_messages = std::transform_reduce(deploc_msg_data_.begin(),
-                                                            deploc_msg_data_.end(),
-                                                            0UL,
-                                                            std::plus<>{},
-                                                            [](const auto& v) { return v.size(); });
-  deploc_msg_request_.resize(total_deploc_messages);
-  if (csda_enabled_)
-    deploc_msgE_request_.resize(total_deploc_messages);
+  // Split the messages by whether the successor takes them during or after the sweep.
+  const auto& successors = spds.GetLocationSuccessors();
+  const auto& delayed_successors = spds.GetDelayedLocationSuccessors();
+  send_units_.clear();
+  delayed_send_units_.clear();
+  for (std::size_t i = 0; i < deploc_msg_data_.size(); ++i)
+  {
+    const bool delayed =
+      std::find(delayed_successors.begin(), delayed_successors.end(), successors[i]) !=
+      delayed_successors.end();
+    auto& units = delayed ? delayed_send_units_ : send_units_;
+    // SetupMessageData counts the messages of a location in an int.
+    const auto num_messages = static_cast<int>(deploc_msg_data_[i].size());
+    for (int m = 0; m < num_messages; ++m)
+      units.push_back({i, m});
+  }
 }
 
 void
@@ -225,40 +289,18 @@ AAH_ASynchronousCommunicator::ReceiveUpstreamPsi()
           preloc_msg_received_[i][m] = true;
       }
     }
-
-    if (not all_messages_received)
-      return AngleSetStatus::RECEIVING;
   }
 
-  return AngleSetStatus::READY_TO_EXECUTE;
+  // Every available message is taken before returning, so that senders get their transmit
+  // resources back and no matching waits on another dependency.
+  return all_messages_received ? AngleSetStatus::READY_TO_EXECUTE : AngleSetStatus::RECEIVING;
 }
 
 void
 AAH_ASynchronousCommunicator::SendDownstreamPsi()
 {
-
-  const auto& spds = fluds_.GetSPDS();
-  const auto& location_successors = spds.GetLocationSuccessors();
-  const std::size_t num_successors = location_successors.size();
-  const auto& comm = sweep_communicator_.GetCommunicator();
-
-  for (std::size_t i = 0, req = 0; i < num_successors; ++i)
-  {
-    const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[i];
-
-    for (int m = 0; m < deploc_msg_data_[i].size(); ++m, ++req)
-    {
-      const auto& [dest, size, block_pos] = deploc_msg_data_[i][m];
-      const int psi_tag = GetMessageTag(m, 0);
-      deploc_msg_request_[req] = comm.isend(dest, psi_tag, &outgoing_psi[block_pos], size);
-      if (csda_enabled_)
-      {
-        const int psiE_tag = GetMessageTag(m, 1);
-        const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[i];
-        deploc_msgE_request_[req] = comm.isend(dest, psiE_tag, &outgoing_psiE[block_pos], size);
-      }
-    }
-  }
+  sends_queued_ = true;
+  ProgressDownstreamPsi(false);
 }
 
 void
