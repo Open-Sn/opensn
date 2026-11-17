@@ -87,6 +87,15 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-communicators-aah-async-comm-h"><span class="std std-ref">File aah_async_comm.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_a_a_h___a_synchronous_communicator_1_1_send_unit.html#exhale-struct-structopensn-1-1-a-a-h-a-synchronous-communicator-1-1-send-unit"><span class="std std-ref">Struct AAH_ASynchronousCommunicator::SendUnit</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -105,8 +114,8 @@
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator28AAH_ASynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tEjNSt6size_tEibRK17SweepCommunicator">
-<span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1ae38c23976d9e32121aaf7fdc25d4f7d0"></span><span class="sig-name descname"><span class="n"><span class="pre">AAH_ASynchronousCommunicator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_angles</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_mpi_message_size</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">csda_enabled</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sweep_communicator.html#_CPPv4N6opensn17SweepCommunicatorE" title="opensn::SweepCommunicator"><span class="n"><span class="pre">SweepCommunicator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sweep_communicator</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator28AAH_ASynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tEjNSt6size_tEibRK17SweepCommunicator" title="Link to this definition"></a><br /></dt>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator28AAH_ASynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tEjNSt6size_tEibRK17SweepCommunicatorNSt10shared_ptrI15SweepSendWindowEE">
+<span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1ab01d1767feaa6aa48b331da53e41f264"></span><span class="sig-name descname"><span class="n"><span class="pre">AAH_ASynchronousCommunicator</span></span></span><span class="sig-paren">(</span><a class="reference internal" href="classopensn_1_1_f_l_u_d_s.html#_CPPv4N6opensn5FLUDSE" title="opensn::FLUDS"><span class="n"><span class="pre">FLUDS</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">fluds</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">groupset_id</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">angle_set_id</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_groups</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_angles</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">max_mpi_message_size</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">csda_enabled</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_sweep_communicator.html#_CPPv4N6opensn17SweepCommunicatorE" title="opensn::SweepCommunicator"><span class="n"><span class="pre">SweepCommunicator</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">sweep_communicator</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_sweep_send_window.html#_CPPv4N6opensn15SweepSendWindowE" title="opensn::SweepSendWindow"><span class="n"><span class="pre">SweepSendWindow</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">send_window</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator28AAH_ASynchronousCommunicatorER5FLUDSNSt6size_tENSt6size_tEjNSt6size_tEibRK17SweepCommunicatorNSt10shared_ptrI15SweepSendWindowEE" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
 
 <dl class="cpp function">
@@ -131,7 +140,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator17SendDownstreamPsiEv">
 <span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1a641ad821dca624c67a95c6be0395e313"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">SendDownstreamPsi</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator17SendDownstreamPsiEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Sends downstream psi. This method gets called after a sweep chunk has executed. </p>
+<dd><p>Queue the downstream psi messages after the sweep chunk has executed. </p>
+<p>As many messages as the send window admits are posted right away. Messages to delayed successors are posted only by ProgressDownstreamPsi(true), because their receivers take them after the sweep. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -141,9 +151,26 @@
 </dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator22ClearDownstreamBuffersEv">
-<span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1a5bdeae9a1bc21d3c19e7dc17866175ce"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ClearDownstreamBuffers</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator22ClearDownstreamBuffersEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Sends downstream psi. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn28AAH_ASynchronousCommunicator21ProgressDownstreamPsiEb">
+<span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1ac53eb47b5d82cf3a93c9ebe566e5419d"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ProgressDownstreamPsi</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">post_delayed</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn28AAH_ASynchronousCommunicator21ProgressDownstreamPsiEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Retire completed downstream sends and post queued ones as the send window admits them. </p>
+<p>Once every message has been posted and has completed, the send buffers are cleared.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>post_delayed</strong> – Whether messages to delayed successors may also be posted. It is true only after the sweep, when their receivers take them. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn28AAH_ASynchronousCommunicator20UndelayedSendsPostedEv">
+<span class="target" id="classopensn_1_1_a_a_h___a_synchronous_communicator_1afe7dc99ba31ee1b6add0eb1577c21d55"></span><span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">UndelayedSendsPosted</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn28AAH_ASynchronousCommunicator20UndelayedSendsPostedEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Check whether every message to a non-delayed successor has been posted. </p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>True once the sweep chunk has run and all of those messages are posted. </p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="cpp function">

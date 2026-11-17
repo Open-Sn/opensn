@@ -92,8 +92,10 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aah_message_struct.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/sweep_send_window.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;mpicpp-lite/mpicpp-lite.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">mpi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nn">mpicpp_lite</span><span class="p">;</span>
@@ -114,7 +116,8 @@
 <span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles</span><span class="p">,</span>
 <span class="w">                               </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size</span><span class="p">,</span>
 <span class="w">                               </span><span class="kt">bool</span><span class="w"> </span><span class="n">csda_enabled</span><span class="p">,</span>
-<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">SweepCommunicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_communicator</span><span class="p">);</span>
+<span class="w">                               </span><span class="k">const</span><span class="w"> </span><span class="n">SweepCommunicator</span><span class="o">&amp;</span><span class="w"> </span><span class="n">sweep_communicator</span><span class="p">,</span>
+<span class="w">                               </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepSendWindow</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_window</span><span class="p">);</span>
 
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">GetMaxNumMessages</span><span class="p">;</span>
 <span class="w">  </span><span class="k">using</span><span class="w"> </span><span class="n">AsynchronousCommunicator</span><span class="o">::</span><span class="n">SetMaxNumMessages</span><span class="p">;</span>
@@ -137,14 +140,34 @@
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeLocalAndDownstreamBuffers</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Sends downstream psi. This method gets called after a sweep chunk has executed</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Queue the downstream psi messages after the sweep chunk has executed.</span>
+<span class="cm">   *</span>
+<span class="cm">   * As many messages as the send window admits are posted right away. Messages to delayed</span>
+<span class="cm">   * successors are posted only by ProgressDownstreamPsi(true), because their receivers take them</span>
+<span class="cm">   * after the sweep.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">SendDownstreamPsi</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Receives delayed data from successor locations.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">ReceiveDelayedData</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Sends downstream psi.</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ClearDownstreamBuffers</span><span class="p">();</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Retire completed downstream sends and post queued ones as the send window admits them.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Once every message has been posted and has completed, the send buffers are cleared.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param post_delayed Whether messages to delayed successors may also be posted. It is true only</span>
+<span class="cm">   *        after the sweep, when their receivers take them.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ProgressDownstreamPsi</span><span class="p">(</span><span class="kt">bool</span><span class="w"> </span><span class="n">post_delayed</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Check whether every message to a non-delayed successor has been posted.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \return True once the sweep chunk has run and all of those messages are posted.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">UndelayedSendsPosted</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="c1">/// Check if all upstream dependencies have been met and receives it as it becomes available.</span>
 <span class="w">  </span><span class="n">AngleSetStatus</span><span class="w"> </span><span class="nf">ReceiveUpstreamPsi</span><span class="p">();</span>
@@ -172,6 +195,31 @@
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildMessageStructure</span><span class="p">();</span>
 
 <span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="c1">/// One psi message (and its psiE partner with CSDA), posted as a unit.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">SendUnit</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="c1">/// Index of the successor location.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">successor</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// Index of the message among the messages to that successor.</span>
+<span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">message</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Post queued units while the send window admits them.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param units Queue of units to post.</span>
+<span class="cm">   * \param next Index of the next unit to post. It is advanced past the posted units.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PostSendUnits</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SendUnit</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">units</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="o">&amp;</span><span class="w"> </span><span class="n">next</span><span class="p">);</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Return the send-window slots of completed downstream sends and drop their requests.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Only posted, incomplete requests are tested, so a poll costs time proportional to the sends in</span>
+<span class="cm">   * flight rather than to all messages of the angle set.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">RetireCompletedSends</span><span class="p">();</span>
+
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_angles_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">max_mpi_message_size_</span><span class="p">;</span>
@@ -186,9 +234,26 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_received_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">delayed_preloc_msg_data_</span><span class="p">;</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deploc_msg_request_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">deploc_msgE_request_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">AAH_MessageDetails</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">deploc_msg_data_</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Limit on posted sends, shared by the angle sets of the groupset.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">SweepSendWindow</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_window_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Number of MPI requests in one send unit: psi, and psiE with CSDA.</span>
+<span class="w">  </span><span class="kt">int</span><span class="w"> </span><span class="n">send_unit_size_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Messages to successors that take them during the sweep.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SendUnit</span><span class="o">&gt;</span><span class="w"> </span><span class="n">send_units_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Messages to delayed successors, which take them after the sweep.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SendUnit</span><span class="o">&gt;</span><span class="w"> </span><span class="n">delayed_send_units_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Index of the next unit in `send_units_` to post.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">next_send_unit_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Index of the next unit in `delayed_send_units_` to post.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">next_delayed_send_unit_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Flag that is set once the sweep chunk has filled the send buffers.</span>
+<span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">sends_queued_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Posted downstream send requests of this angle set that have not completed.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">mpi</span><span class="o">::</span><span class="n">Request</span><span class="o">&gt;</span><span class="w"> </span><span class="n">posted_requests_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Scratch indices of the requests that a test found complete.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">completed_requests_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

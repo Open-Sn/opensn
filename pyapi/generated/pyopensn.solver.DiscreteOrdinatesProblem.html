@@ -1241,6 +1241,20 @@ are split into messages of at most this size.</p>
 </dl>
 </li>
 <li><dl class="simple">
+<dt>max_mpi_outstanding_sends: int, default=0</dt><dd><p>Maximum number of sweep MPI sends that each rank may have posted and not yet
+completed. Further messages wait until earlier ones complete, and an angle set
+whose messages exceed the limit sends them in turn. With CSDA, a psi message and
+its psiE partner count as 2 sends and are posted together when no other send is
+outstanding, so a limit of 1 allows 2 posted sends. Set it below the network
+transmit queue size when MPI runs out of transmit resources, for example below
+<code class="docutils literal notranslate"><span class="pre">FI_CXI_DEFAULT_TX_SIZE</span></code> on Slingshot when MPICH warns about rendezvous message
+resource exhaustion. The solution does not depend on it. 0 means no limit. Must
+be at least 0. Requires <code class="docutils literal notranslate"><span class="pre">sweep_type=&quot;AAH&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">use_gpus=False</span></code> when
+positive.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
 <dt>restart_writes_enabled: bool, default=False</dt><dd><p>Enable restart dump writes for solvers that support restart output.</p>
 </dd>
 </dl>

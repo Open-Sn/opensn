@@ -30,9 +30,13 @@ Includes
 --------
 
 
+- ``memory`` (:ref:`file_framework_utils_memory.h`)
+
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/aah_message_struct.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_message_struct.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/async_comm.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`)
+
+- ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/sweep_send_window.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_sweep_send_window.h`)
 
 - ``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/sweep.h`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep.h`)
 
@@ -61,6 +65,8 @@ Namespaces
 Classes
 -------
 
+
+- :ref:`exhale_struct_structopensn_1_1_a_a_h___a_synchronous_communicator_1_1_send_unit`
 
 - :ref:`exhale_class_classopensn_1_1_a_a_h___a_synchronous_communicator`
 

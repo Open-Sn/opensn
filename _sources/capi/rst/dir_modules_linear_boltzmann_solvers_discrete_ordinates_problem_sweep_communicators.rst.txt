@@ -22,5 +22,6 @@ Files
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_async_comm.h`
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbc_async_comm.h`
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_cbcd_async_comm.h`
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_sweep_send_window.h`
 
 
