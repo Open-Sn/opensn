@@ -622,11 +622,13 @@ WrapGraphPartitioner(py::module& mesh)
     brick-shaped cellsets. Each cell goes to the cellset that contains its
     centroid. A centroid that lies on a cut goes to the cellset above it.
 
-    Cuts must be finite and strictly increasing, and every slab between cuts
-    must contain cell centroids. An axis on which the mesh has no extent must
-    have one partition. A 2D mesh needs ``nz=1``, and a 1D mesh, which lies
-    along ``z``, needs ``nx=1`` and ``ny=1``. Mesh generation raises
-    ``ValueError`` when one of these rules is broken.
+    Each axis needs ``n - 1`` cuts that are finite and strictly increasing,
+    and the constructor raises ``ValueError`` otherwise. Every slab between
+    cuts must contain cell centroids. An axis on which the mesh has no extent
+    must have one partition. A 2D mesh needs ``nz=1``, and a 1D mesh, which
+    lies along ``z``, needs ``nx=1`` and ``ny=1``. These rules depend on the
+    mesh, so ``Execute`` of the mesh generator raises ``RuntimeError`` on every
+    rank when one of them is broken.
 
     With ``nx * ny * nz`` equal to the number of MPI ranks, the rank-level
     sweep graph is acyclic for every direction. With more cellsets than ranks,

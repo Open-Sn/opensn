@@ -22,13 +22,15 @@ namespace
 /// compute it is zero to within rounding, and degenerate. It is about 4500 times the unit roundoff.
 constexpr double degenerate_measure_tolerance = 1.0e-12;
 
-/// Returns the center of a face: the average of its vertices.
+/// Returns the center of a face, the average of its vertices, relative to `origin`.
 Vector3
-FaceCenter(const UnpartitionedMesh::LightWeightFace& face, const std::vector<Vector3>& vertices)
+FaceCenter(const UnpartitionedMesh::LightWeightFace& face,
+           const std::vector<Vector3>& vertices,
+           const Vector3& origin = Vector3())
 {
   Vector3 center;
   for (const auto vid : face.vertex_ids)
-    center += vertices[vid];
+    center += vertices[vid] - origin;
   return center / static_cast<double>(face.vertex_ids.size());
 }
 
@@ -36,11 +38,13 @@ FaceCenter(const UnpartitionedMesh::LightWeightFace& face, const std::vector<Vec
 /// vertices. For a polygon, whose faces are edges in the x-y plane, it is the edge length times the
 /// normal that points to the right of the edge. For a polyhedron, it is the sum of the area vectors
 /// of the triangles that join each edge of the face to its center. The faces of a valid cell are
-/// ordered so that this vector points out of the cell.
+/// ordered so that this vector points out of the cell. The vertices are taken relative to `origin`,
+/// which changes the vector only by rounding.
 Vector3
 FaceAreaVector(const CellType cell_type,
                const UnpartitionedMesh::LightWeightFace& face,
-               const std::vector<Vector3>& vertices)
+               const std::vector<Vector3>& vertices,
+               const Vector3& origin = Vector3())
 {
   if (cell_type == CellType::POLYGON)
   {
@@ -49,13 +53,13 @@ FaceAreaVector(const CellType cell_type,
     return (v1 - v0).Cross(Vector3(0.0, 0.0, 1.0));
   }
 
-  const auto center = FaceCenter(face, vertices);
+  const auto center = FaceCenter(face, vertices, origin);
   const size_t num_vertices = face.vertex_ids.size();
   Vector3 area;
   for (size_t i = 0; i < num_vertices; ++i)
   {
-    const auto& v0 = vertices[face.vertex_ids[i]];
-    const auto& v1 = vertices[face.vertex_ids[(i + 1) % num_vertices]];
+    const auto v0 = vertices[face.vertex_ids[i]] - origin;
+    const auto v1 = vertices[face.vertex_ids[(i + 1) % num_vertices]] - origin;
     area += 0.5 * (v0 - center).Cross(v1 - center);
   }
   return area;
@@ -75,16 +79,25 @@ struct CellMeasure
 
 /// Returns the signed area of a polygon or the signed volume of a polyhedron, from the divergence
 /// theorem over its faces. Concave cells are measured exactly.
+///
+/// The faces are measured relative to a vertex of the cell. Far from the origin, absolute
+/// coordinates round with errors much larger than the volume of a thin cell, while the difference
+/// of two nearby coordinates is exact. The divergence theorem holds for any reference point, so the
+/// vertex is also the point that the face arms start from. A cell without vertices has measure
+/// zero.
 CellMeasure
 SignedCellMeasure(const UnpartitionedMesh::LightWeightCell& cell,
                   const std::vector<Vector3>& vertices)
 {
   const double dimension = cell.type == CellType::POLYGON ? 2.0 : 3.0;
   CellMeasure measure;
+  if (cell.vertex_ids.empty())
+    return measure;
+  const Vector3& origin = vertices[cell.vertex_ids.front()];
   for (const auto& face : cell.faces)
   {
-    const Vector3 arm = FaceCenter(face, vertices) - cell.centroid;
-    const Vector3 area = FaceAreaVector(cell.type, face, vertices);
+    const Vector3 arm = FaceCenter(face, vertices, origin);
+    const Vector3 area = FaceAreaVector(cell.type, face, vertices, origin);
     measure.value += arm.Dot(area);
     measure.scale += arm.Norm() * area.Norm();
   }
@@ -366,7 +379,8 @@ UnpartitionedMesh::BuildMeshConnectivity()
   // sharing a face connects it first. Every later cell with the same face then finds that copy
   // already connected before any other unconnected copy, whether or not the cells after it pair up
   // among themselves.
-  size_t num_folded_faces = 0;
+  // Copies of each folded face, which are disconnected again before the error is raised.
+  std::vector<std::pair<LightWeightFace*, LightWeightFace*>> folded_faces;
   uint64_t first_folded_cell = 0;
   uint64_t first_folded_neighbor = 0;
   Vector3 first_folded_center;
@@ -430,13 +444,13 @@ UnpartitionedMesh::BuildMeshConnectivity()
                 FaceAreaVector(cell->type, cur_cell_face, vertices_)
                     .Dot(FaceAreaVector(adj_cell->type, adj_cell_face, vertices_)) >= 0.0)
             {
-              if (num_folded_faces == 0)
+              if (folded_faces.empty())
               {
                 first_folded_cell = cur_cell_id;
                 first_folded_neighbor = adj_cell_id;
                 first_folded_center = FaceCenter(cur_cell_face, vertices_);
               }
-              ++num_folded_faces;
+              folded_faces.emplace_back(&cur_cell_face, &adj_cell_face);
             }
 
             goto face_neighbor_found;
@@ -457,13 +471,24 @@ UnpartitionedMesh::BuildMeshConnectivity()
     } // for cell
   }
 
-  if (num_folded_faces > 0)
+  if (not folded_faces.empty())
+  {
+    // Connected faces are skipped when the connectivity is built again, so a folded pair left
+    // connected would then be accepted. Faces of more than two cells need no reset, because their
+    // extra copies were never connected.
+    for (const auto& [face, adj_face] : folded_faces)
+      for (auto* folded_face : {face, adj_face})
+      {
+        folded_face->has_neighbor = false;
+        folded_face->neighbor = LightWeightFace().neighbor;
+      }
     OpenSnLogicalError(
-      "The mesh is folded: " + std::to_string(num_folded_faces) +
+      "The mesh is folded: " + std::to_string(folded_faces.size()) +
       " interior faces have both of their cells on the same side, so the cells overlap. The first "
       "is the face between cells " +
       std::to_string(first_folded_cell) + " and " + std::to_string(first_folded_neighbor) + " at " +
       first_folded_center.PrintStr() + ".");
+  }
 
   if (num_shared_faces > 0)
     OpenSnLogicalError("The mesh is not conforming: " + std::to_string(num_shared_faces) +

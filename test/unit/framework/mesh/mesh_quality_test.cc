@@ -5,7 +5,9 @@
 #include "framework/mesh/unpartitioned_mesh/unpartitioned_mesh.h"
 #include <gtest/gtest.h>
 #include <filesystem>
+#include <memory>
 #include <stdexcept>
+#include <vector>
 
 using namespace opensn;
 
@@ -48,6 +50,32 @@ TEST(MeshQualityTest, FoldedNeighborsAreRejected)
   EXPECT_THROW(ReadMesh("two_triangles_folded.msh"), std::logic_error);
 }
 
+// Building the connectivity of a folded mesh again after the error raises the error again, instead
+// of skipping the faces that the first attempt connected.
+TEST(MeshQualityTest, FoldIsRejectedOnRepeatedCall)
+{
+  auto mesh = std::make_shared<UnpartitionedMesh>();
+  mesh->GetVertices() = {Vector3(0.0, 0.0, 0.0),
+                         Vector3(1.0, 0.0, 0.0),
+                         Vector3(0.0, 1.0, 0.0),
+                         Vector3(0.0, 0.0, 1.0),
+                         Vector3(0.2, 0.2, 0.5)};
+  // Both tetrahedra have their apex above the base (0, 1, 2), so they overlap. Faces are
+  // counterclockwise seen from outside.
+  for (const uint64_t apex : {3, 4})
+  {
+    auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
+                                                                     CellType::TETRAHEDRON);
+    cell->vertex_ids = {0, 1, 2, apex};
+    for (const std::vector<uint64_t>& face :
+         {std::vector<uint64_t>{0, 2, 1}, {0, 1, apex}, {1, 2, apex}, {0, apex, 2}})
+      cell->faces.emplace_back(face);
+    mesh->AddCell(cell);
+  }
+  EXPECT_THROW(mesh->BuildMeshConnectivity(), std::logic_error);
+  EXPECT_THROW(mesh->BuildMeshConnectivity(), std::logic_error);
+}
+
 // A third tetrahedron on a face that two others already share is rejected, instead of leaving its
 // copy of the face unconnected as if it were on the boundary.
 TEST(MeshQualityTest, FaceOfThreeCellsIsRejected)
@@ -76,6 +104,14 @@ TEST(MeshQualityTest, InvertedCellIsRejected)
 TEST(MeshQualityTest, FlatCellIsRejected)
 {
   EXPECT_THROW(ReadMesh("tet_flat.msh"), std::logic_error);
+}
+
+// A flat tetrahedron in a tilted plane, with vertices near 2^21 that are exactly coplanar, is
+// rejected as well. Computed from absolute coordinates, its volume is a rounding residual of 1e-11
+// to 1e-10, far above the tolerance, and the cell can pass as valid or be reported as inverted.
+TEST(MeshQualityTest, FlatCellFarFromOriginIsRejected)
+{
+  EXPECT_THROW(ReadMesh("tet_flat_far.msh"), std::logic_error);
 }
 
 // A needle-shaped tetrahedron, with an edge of length sqrt(3) and a width of about 1e-6, has volume
