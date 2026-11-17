@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a59761a469b5f0b9286bc8bfd1db5d745:
+
+Function opensn::Orient3D
+=========================
+
+- Defined in :ref:`file_framework_math_exact_predicates.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::Orient3D(const Vector3&, const Vector3&, const Vector3&, const Vector3&)
+   :project: opensn

@@ -425,12 +425,22 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_mesh_segment_tracer_1_1_ray.rst
+   structopensn_1_1_mesh_segment_tracer_1_1_degenerate.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_mesh_segment_tracer_1_1_plane.rst
 
 .. toctree::
    :maxdepth: 1
 
    structopensn_1_1_mesh_segment_tracer_1_1_segment.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_mesh_segment_tracer_1_1_triangle.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2983,6 +2993,11 @@ Files
    :maxdepth: 1
 
    file_framework_utils_error.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_math_exact_predicates.h.rst
 
 .. toctree::
    :maxdepth: 1

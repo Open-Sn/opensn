@@ -1,0 +1,44 @@
+
+.. _program_listing_file_framework_math_exact_predicates.h:
+
+Program Listing for File exact_predicates.h
+===========================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_framework_math_exact_predicates.h>` (``framework/math/exact_predicates.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/data_types/vector3.h"
+   
+   namespace opensn
+   {
+   
+   /**
+    * Exact sign of the orientation determinant
+    *
+    *   | a.x - d.x  a.y - d.y  a.z - d.z |
+    *   | b.x - d.x  b.y - d.y  b.z - d.z |
+    *   | c.x - d.x  c.y - d.y  c.z - d.z |
+    *
+    * which is positive when d lies on the side of the plane through a, b, and c opposite to the
+    * normal (b - a) x (c - a), that is, when a, b, c appear counterclockwise seen from d... seen
+    * from the side away from d. Equivalently, for a triangle (a, b, c) oriented counterclockwise
+    * seen from outside a convex body, the result is positive for a point d strictly inside the body,
+    * zero for a point in the plane, and negative for a point outside.
+    *
+    * The determinant is first evaluated in floating point with a rigorous error bound, and exactly
+    * with floating-point expansions when the bound does not decide the sign, following Shewchuk,
+    * "Adaptive Precision Floating-Point Arithmetic and Fast Robust Geometric Predicates" (1997).
+    * The result is therefore the exact sign for the given double-precision coordinates, which makes
+    * decisions taken in different cells from the same points agree.
+    */
+   int Orient3D(const Vector3& a, const Vector3& b, const Vector3& c, const Vector3& d);
+   
+   } // namespace opensn

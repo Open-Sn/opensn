@@ -91,6 +91,7 @@
 <span class="cp">#pragma once</span>
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/data_types/vector3.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
@@ -102,31 +103,33 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">Mesh</span><span class="p">;</span>
 
 <span class="cm">/**</span>
-<span class="cm"> * Exact traversal of straight segments through the local cells of a mesh.</span>
+<span class="cm"> * Traversal of straight segments through the local cells of a mesh, decided by exact geometric</span>
+<span class="cm"> * predicates.</span>
 <span class="cm"> *</span>
-<span class="cm"> * Every cell is the union of its side tetrahedra, each formed by a side triangle of a face</span>
-<span class="cm"> * (two consecutive face vertices and the face centroid) and the cell centroid. This requires the</span>
-<span class="cm"> * cell centroid to lie on the inner side of every side triangle, as the piecewise-linear</span>
-<span class="cm"> * discretizations also do. The tracer rejects a cell that violates it. A cell for which</span>
-<span class="cm"> * all of its vertices and face centroids lie on the inner side of the plane of every side</span>
-<span class="cm"> * triangle is convex, and is the intersection of the half-spaces of its side triangles. Any</span>
-<span class="cm"> * other cell is traced through its side tetrahedra, which are convex.</span>
+<span class="cm"> * Every cell is traced as a set of convex pieces whose boundaries are triangles: a triangular</span>
+<span class="cm"> * face is one triangle, and a face with more vertices is the fan of triangles from its sides to</span>
+<span class="cm"> * its centroid. The centroid of a face is computed from the vertices in a canonical order, so</span>
+<span class="cm"> * that the two cells sharing a face hold bit-identical triangles. A cell that is convex, with</span>
+<span class="cm"> * every vertex of it on the inner side of every triangle, is one piece. Any other cell is split</span>
+<span class="cm"> * into its side tetrahedra, each formed by a boundary triangle and an interior point of the</span>
+<span class="cm"> * cell, which requires the cell to be star-shaped about that point; the tracer rejects a cell</span>
+<span class="cm"> * that is not.</span>
 <span class="cm"> *</span>
-<span class="cm"> * A segment from start to end is parameterized by its distance t from start along its fixed</span>
-<span class="cm"> * direction. For each convex piece the tracer computes the exact interval of t in which the line</span>
-<span class="cm"> * lies in the piece, from the planes of the piece alone. It never moves the ray or uses a point</span>
-<span class="cm"> * computed in another cell. A cell continues the traversal at t when its interval begins at t,</span>
-<span class="cm"> * within a tolerance, and extends beyond it. The tolerance is 1e-10 of the cell size or segment</span>
-<span class="cm"> * length plus the round-off of the coordinates, so that it stays far below the cell size</span>
-<span class="cm"> * wherever the mesh lies. Whether a point of the line lies in a piece is decided from its</span>
-<span class="cm"> * distances to the planes, which round off like the coordinates, and not from the values of t</span>
-<span class="cm"> * at which the line crosses them, which lose accuracy for a plane that the line grazes. The</span>
-<span class="cm"> * next cell is looked for first among the neighbors across the faces</span>
-<span class="cm"> * through which the ray leaves, then among all cells that share a vertex with the current cell,</span>
-<span class="cm"> * and then among the cells that share a vertex with those. A ray that leaves a cell exactly</span>
-<span class="cm"> * through an edge or vertex, or that only touches a cell, is therefore continued in the cell it</span>
-<span class="cm"> * enters. Each step advances t, and the lengths of a completed traversal sum to the segment</span>
-<span class="cm"> * length exactly.</span>
+<span class="cm"> * A segment leaves a convex piece through the one boundary triangle that its line threads</span>
+<span class="cm"> * outward, decided from the signs of the orientation predicate of the segment against the three</span>
+<span class="cm"> * edges of the triangle (Platis and Theoharis 2003, Lagae and Dutre 2008). The predicates are</span>
+<span class="cm"> * evaluated exactly (Shewchuk 1997), and the two pieces on either side of a triangle test the</span>
+<span class="cm"> * same edges from the same points, so the traversal never finds a gap or an overlap between</span>
+<span class="cm"> * pieces: it cannot lose a segment in the interior of a conforming mesh. Whether the segment</span>
+<span class="cm"> * ends in a piece is decided exactly as well. Only the distances along the segment at which it</span>
+<span class="cm"> * crosses the triangles are computed in floating point, and they are kept monotone, so the</span>
+<span class="cm"> * lengths of a traversal are nonnegative and sum to the segment length.</span>
+<span class="cm"> *</span>
+<span class="cm"> * A segment whose line passes exactly through an edge or a vertex, or lies in the plane of a</span>
+<span class="cm"> * face, makes a predicate zero. The tracer then traces the segment translated by a few units in</span>
+<span class="cm"> * the last place of the coordinates, in several directions, which keeps the lengths within that</span>
+<span class="cm"> * round-off, and reports the segment as reaching its end if the segment translated in any</span>
+<span class="cm"> * direction does.</span>
 <span class="cm"> *</span>
 <span class="cm"> * The tracer works on the local cells of a mesh and treats a face whose neighbor is not local as</span>
 <span class="cm"> * a boundary face.</span>
@@ -142,9 +145,10 @@
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Builds the planes of every local cell and the vertex-to-cell adjacency. O(cells). Throws</span>
-<span class="cm">   * std::invalid_argument if the centroid of a non-convex cell lies on the outer side of one of</span>
-<span class="cm">   * its side triangles.</span>
+<span class="cm">   * Builds the pieces of every local cell and the vertex-to-cell adjacency. O(cells). A cell that</span>
+<span class="cm">   * is not convex is traced through the tetrahedra of its triangles and an interior point about</span>
+<span class="cm">   * which it is star-shaped, searched for from the average of its points. Throws</span>
+<span class="cm">   * std::invalid_argument for a cell that is not star-shaped about any point.</span>
 <span class="cm">   *</span>
 <span class="cm">   * With split_all_cells, every cell is traced through its side tetrahedra, as a non-convex cell</span>
 <span class="cm">   * is. The result is the same up to round-off; the option exists to test that path on meshes of</span>
@@ -153,103 +157,194 @@
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">MeshSegmentTracer</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">split_all_cells</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Traces the segment from start to end, beginning in the local cell start_cell, which must</span>
-<span class="cm">   * contain start or have it on its boundary. Appends the cells that the segment crosses, in</span>
-<span class="cm">   * order, with the length of the segment in each, to segments.</span>
+<span class="cm">   * Traces the segment from start to end, beginning in the local cell start_cell, which</span>
+<span class="cm">   * contains start, has it on its boundary, or is next to the cell that does. A start that lies</span>
+<span class="cm">   * outside start_cell by the round-off of its coordinates, as a point computed to lie on one of</span>
+<span class="cm">   * its faces can, is moved into it. Appends the cells that the segment crosses, in order, with</span>
+<span class="cm">   * the length of the segment in each, to segments.</span>
 <span class="cm">   *</span>
-<span class="cm">   * Returns true when the segment reaches end. Returns false when the segment leaves the local</span>
-<span class="cm">   * cells first, through a boundary face, a face whose neighbor is not local, or a gap in a</span>
-<span class="cm">   * non-conforming mesh; segments then holds the part traced before the segment left. Throws</span>
-<span class="cm">   * if start does not lie in or on start_cell.</span>
+<span class="cm">   * Returns true when the segment reaches end, which includes an end that lies outside a</span>
+<span class="cm">   * boundary face by the round-off of its coordinates. Returns false when the segment leaves the</span>
+<span class="cm">   * local cells first, through a boundary face, a face whose neighbor is not local, or a gap in</span>
+<span class="cm">   * a non-conforming mesh; segments then holds the part traced before the segment left. Throws</span>
+<span class="cm">   * if start does not lie in, on, or near start_cell.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">Trace</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">start_cell</span><span class="p">,</span>
 <span class="w">             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">start</span><span class="p">,</span>
 <span class="w">             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">end</span><span class="p">,</span>
 <span class="w">             </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Segment</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">segments</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Returns the local cell that contains the points just after point along the unit direction</span>
-<span class="cm">   * omega: hint_cell if it does, else one of the cells near it. Returns std::nullopt if no local</span>
-<span class="cm">   * cell does, for example when the ray leaves the mesh at point.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span>
-<span class="w">  </span><span class="n">LocateAhead</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">hint_cell</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">omega</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
-
 <span class="w">  </span><span class="c1">/// Whether the cell is traced as one convex piece rather than through its side tetrahedra.</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="nf">IsConvexCell</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell_local_id</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">cell_convex_</span><span class="p">[</span><span class="n">cell_local_id</span><span class="p">];</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Number of side triangles, among those whose planes the tracer uses, that are thinner than</span>
-<span class="cm">   * 1e-3 of their cell. The direction of a plane computed from such a triangle is uncertain by</span>
-<span class="cm">   * more than the tracing tolerance at the far side of the cell, so a segment that crosses it may</span>
-<span class="cm">   * have a small part assigned to the neighboring cell. The constructor warns when this is not</span>
-<span class="cm">   * zero.</span>
-<span class="cm">   */</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="nf">NumThinSideTriangles</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">num_thin_side_triangles_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
-
 <span class="k">private</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// The line start + t omega, with the absolute tolerance used to compare values of t.</span>
-<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Ray</span>
+<span class="w">  </span><span class="c1">/// A boundary triangle of a piece, counterclockwise seen from outside the piece.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Triangle</span>
 <span class="w">  </span><span class="p">{</span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">start</span><span class="p">;</span>
-<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">omega</span><span class="p">;</span>
-<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">a</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">b</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">c</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// The piece across the triangle, or boundary.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">across</span><span class="p">;</span>
+<span class="w">    </span><span class="c1">/// The edges (a, b), (b, c), (c, a) as indices into the edges of the piece, and whether each</span>
+<span class="w">    </span><span class="c1">/// runs from the smaller to the larger point index, as the piece edge is stored.</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">edge</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="kt">bool</span><span class="p">,</span><span class="w"> </span><span class="mi">3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">forward</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Thrown inside a traversal when a predicate is zero.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Degenerate</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// The outcome of one traversal of a (possibly translated) segment.</span>
+<span class="w">  </span><span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">Outcome</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">reached</span><span class="p">,</span>
+<span class="w">    </span><span class="n">left</span><span class="p">,</span>
+<span class="w">    </span><span class="c1">/// Left through a boundary triangle whose plane holds the end within round-off, so that</span>
+<span class="w">    </span><span class="c1">/// displaced ends may keep the line inside.</span>
+<span class="w">    </span><span class="n">left_near_end</span><span class="p">,</span>
+<span class="w">    </span><span class="n">no_start</span>
 <span class="w">  </span><span class="p">};</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Returns the value of t at which the ray leaves the cell, if the ray lies in the cell just</span>
-<span class="cm">   * after t, and appends the local ids of the neighbors across the planes through which it</span>
-<span class="cm">   * leaves to exit_neighbors.</span>
+<span class="cm">   * The boundary triangle that the line from p to q threads outward (the exit of the line from</span>
+<span class="cm">   * the piece) or inward (its entry), by the exact signs of the orientation predicate of the line</span>
+<span class="cm">   * against its three edges, or nullptr when the line misses the piece. The triangles are tried in</span>
+<span class="cm">   * the order of the floating-point crossings of their planes, so that the answer is usually the</span>
+<span class="cm">   * first tried; the order decides nothing. Throws Degenerate when the line meets the line of an</span>
+<span class="cm">   * edge that is tested.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">ExitAfter</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
-<span class="w">                                  </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray</span><span class="p">,</span>
-<span class="w">                                  </span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">,</span>
-<span class="w">                                  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">exit_neighbors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Triangle</span><span class="o">*</span>
+<span class="w">  </span><span class="nf">Threaded</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">piece</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">,</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">outward</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// The exit of the line from p to q from the piece, which must exist.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">Triangle</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">ExitTriangle</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">piece</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Interval of t in which the ray lies in a convex piece, decided from the distances of the</span>
-<span class="cm">   * point of the ray at t to the planes of the piece; empty when exit &lt;= entry. When</span>
-<span class="cm">   * exit_neighbors is given, appends the neighbors across the planes on which the exit point</span>
-<span class="cm">   * lies.</span>
+<span class="cm">   * The round-off allowed to the ends of a segment that a caller computed, such as the crossing</span>
+<span class="cm">   * of a ray with a reflecting plane, along each axis: 64 units in the last place of the largest</span>
+<span class="cm">   * coordinate of the mesh and of the two ends along that axis. The allowances differ between axes</span>
+<span class="cm">   * when the mesh is far from the origin along one of them and thin along another. The extent of</span>
+<span class="cm">   * the mesh enters because the caller computes such points from coordinates of the mesh: a mesh</span>
+<span class="cm">   * whose extent along an axis exceeds the size of its cells by more than about 1e13 cannot be</span>
+<span class="cm">   * traced to the cell size along that axis.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">PieceInterval</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">piece</span><span class="p">,</span>
-<span class="w">                     </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray</span><span class="p">,</span>
-<span class="w">                     </span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">,</span>
-<span class="w">                     </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">entry</span><span class="p">,</span>
-<span class="w">                     </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exit</span><span class="p">,</span>
-<span class="w">                     </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;*</span><span class="w"> </span><span class="n">exit_neighbors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">Roundoff</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
 <span class="w">  </span><span class="cm">/**</span>
-<span class="cm">   * Returns the cell that continues the ray at t, searching outward from cell. visited is</span>
-<span class="cm">   * scratch storage, cleared on entry, that the caller reuses across calls.</span>
+<span class="cm">   * The local cells that contain the point, in or on, or hold it outside their planes by at most</span>
+<span class="cm">   * the allowance along each axis: among the cell near_cell and the cells within two layers of it,</span>
+<span class="cm">   * or, without near_cell, among all local cells. O(cells) in the second form. A floating-point</span>
+<span class="cm">   * selection of candidates; the traversal decides exactly.</span>
 <span class="cm">   */</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">FindNext</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
-<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">Ray</span><span class="o">&amp;</span><span class="w"> </span><span class="n">ray</span><span class="p">,</span>
-<span class="w">                                        </span><span class="kt">double</span><span class="w"> </span><span class="n">t</span><span class="p">,</span>
-<span class="w">                                        </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">exit_neighbors</span><span class="p">,</span>
-<span class="w">                                        </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">visited</span><span class="p">,</span>
-<span class="w">                                        </span><span class="kt">double</span><span class="o">&amp;</span><span class="w"> </span><span class="n">exit</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">CellsContaining</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">,</span>
+<span class="w">                                             </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">allowance</span><span class="p">,</span>
+<span class="w">                                             </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">near_cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
 
-<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">no_neighbor</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// The round-off of a point with the allowances along a direction (a unit vector).</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="nf">Along</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">allowance</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">direction</span><span class="p">);</span>
 
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_convex_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_size_</span><span class="p">;</span>
-<span class="w">  </span><span class="kt">size_t</span><span class="w"> </span><span class="n">num_thin_side_triangles_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Pieces of each cell: [cell_piece_offset_[c], cell_piece_offset_[c + 1]).</span>
+<span class="w">  </span><span class="c1">/// Whether the point lies within the given allowance of the plane of the triangle.</span>
+<span class="w">  </span><span class="kt">bool</span>
+<span class="w">  </span><span class="nf">WithinRoundoff</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Triangle</span><span class="o">&amp;</span><span class="w"> </span><span class="n">triangle</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">allowance</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The piece in which the segment from p to q starts: a piece that contains p and that the</span>
+<span class="cm">   * segment travels in, found from the pieces of the cell by following the triangles through</span>
+<span class="cm">   * which the line leaves the pieces that have p on their boundary. With search_neighbors, the</span>
+<span class="cm">   * cells within two layers of the cell are tried after it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">FindStartPiece</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell</span><span class="p">,</span>
+<span class="w">                                              </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">,</span>
+<span class="w">                                              </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">search_neighbors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// One traversal, which may throw Degenerate.</span>
+<span class="w">  </span><span class="n">Outcome</span><span class="w"> </span><span class="nf">Walk</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">start_cell</span><span class="p">,</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">p</span><span class="p">,</span>
+<span class="w">               </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">q</span><span class="p">,</span>
+<span class="w">               </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Segment</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">segments</span><span class="p">,</span>
+<span class="w">               </span><span class="kt">bool</span><span class="w"> </span><span class="n">search_neighbors</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * The traversal of the segment, with the displacements of a degenerate segment. Returns</span>
+<span class="cm">   * whether the segment reaches its end, or std::nullopt when its start does not lie in, on, or</span>
+<span class="cm">   * near start_cell.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Resolve</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">start_cell</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">start</span><span class="p">,</span>
+<span class="w">                              </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">end</span><span class="p">,</span>
+<span class="w">                              </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Segment</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">segments</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Displacement of an end of a degenerate segment: a few units in the last place of the</span>
+<span class="cm">   * coordinates along one of the eight directions with components along every axis, one per</span>
+<span class="cm">   * octant, or toward the given interior point of the start cell, which points into the mesh at a</span>
+<span class="cm">   * boundary point however thin the cell is there. The far end uses other directions and a larger</span>
+<span class="cm">   * step, so that the displaced line is never parallel to the line of the segment and leaves</span>
+<span class="cm">   * every degeneracy of it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="nf">Displacement</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">int</span><span class="w"> </span><span class="n">direction</span><span class="p">,</span>
+<span class="w">                       </span><span class="kt">bool</span><span class="w"> </span><span class="n">far_end</span><span class="p">,</span>
+<span class="w">                       </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">interior</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">boundary</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">numeric_limits</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;::</span><span class="n">max</span><span class="p">();</span>
+<span class="w">  </span><span class="c1">/// Directions of displacement tried for each end of a degenerate segment: the eight octants,</span>
+<span class="w">  </span><span class="c1">/// the direction toward the interior of the start cell, and the direction along the segment.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_directions</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span>
+
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Displacements of an end of a segment into a cell that contains it: toward the interior point</span>
+<span class="cm">   * of the cell and toward the midpoints between that point and the vertices of the cell, which</span>
+<span class="cm">   * lie inside a convex piece and break the symmetry that keeps a displaced line on a face plane.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">InwardDisplacements</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">point</span><span class="p">,</span>
+<span class="w">                                           </span><span class="k">const</span><span class="w"> </span><span class="n">Vector3</span><span class="o">&amp;</span><span class="w"> </span><span class="n">other</span><span class="p">,</span>
+<span class="w">                                           </span><span class="kt">bool</span><span class="w"> </span><span class="n">far_end</span><span class="p">,</span>
+<span class="w">                                           </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">cell</span><span class="p">)</span><span class="w"> </span><span class="k">const</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Mesh vertices, face centroids, and cell centroids used by the pieces.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">points_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Largest magnitude of a coordinate of the mesh along each axis.</span>
+<span class="w">  </span><span class="n">Vector3</span><span class="w"> </span><span class="n">scale_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The plane of the first triangle of a face of a piece, for ordering the exit candidates.</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Plane</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">Vector3</span><span class="w"> </span><span class="n">normal</span><span class="p">;</span>
+<span class="w">    </span><span class="kt">double</span><span class="w"> </span><span class="n">offset</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">0.0</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="c1">/// Triangles of each piece: [piece_triangle_offset_[p], piece_triangle_offset_[p + 1]).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Triangle</span><span class="o">&gt;</span><span class="w"> </span><span class="n">triangles_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">piece_triangle_offset_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The faces of each piece, [piece_face_offset_[p], piece_face_offset_[p + 1]), each the</span>
+<span class="w">  </span><span class="c1">/// triangles from face_first_triangle_[f] to the next face&#39;s first triangle or the end of the</span>
+<span class="w">  </span><span class="c1">/// piece, with the plane of its first triangle.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_first_triangle_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Plane</span><span class="o">&gt;</span><span class="w"> </span><span class="n">face_planes_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">piece_face_offset_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Distinct edges of each piece, from the smaller to the larger point index:</span>
+<span class="w">  </span><span class="c1">/// [piece_edge_offset_[p], piece_edge_offset_[p + 1]). A line is tested against each edge once.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">pair</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="p">,</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">edges_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">piece_edge_offset_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Cell of each piece, and pieces of each cell: [cell_piece_offset_[c], cell_piece_offset_[c +</span>
+<span class="w">  </span><span class="c1">/// 1]).</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">piece_cell_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_piece_offset_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Planes of each piece: [piece_plane_offset_[p], piece_plane_offset_[p + 1]).</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">piece_plane_offset_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Outward unit normal n and offset d of each plane: the piece lies where n . x &lt;= d.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plane_normal_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plane_offset_</span><span class="p">;</span>
-<span class="w">  </span><span class="c1">/// Local id of the cell across each plane, or no_neighbor for a boundary face, a face whose</span>
-<span class="w">  </span><span class="c1">/// neighbor is not local, or a plane inside a cell.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">plane_neighbor_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">bool</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_convex_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Diagonal of the bounding box of each cell.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_size_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The interior point of each cell about which it is star-shaped.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_interior_</span><span class="p">;</span>
 <span class="w">  </span><span class="c1">/// Local cells that share each vertex, and vertices of each cell, as compact vertex indices.</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_cell_offset_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_cells_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_vertex_offset_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_vertices_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">cell_vertex_offset_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_cells_</span><span class="p">;</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="o">&gt;</span><span class="w"> </span><span class="n">vertex_cell_offset_</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

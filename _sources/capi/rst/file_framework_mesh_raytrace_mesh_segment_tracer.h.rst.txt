@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``array`` (:ref:`file_framework_data_types_byte_array.h`)
+
 - ``cstdint``
 
 - ``framework/data_types/vector3.h`` (:ref:`file_framework_data_types_vector3.h`)
@@ -62,9 +64,13 @@ Classes
 -------
 
 
-- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_ray`
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_degenerate`
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_plane`
 
 - :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_segment`
+
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_triangle`
 
 - :ref:`exhale_class_classopensn_1_1_mesh_segment_tracer`
 

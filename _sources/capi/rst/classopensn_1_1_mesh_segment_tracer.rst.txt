@@ -13,8 +13,10 @@ Nested Relationships
 Nested Types
 ************
 
-- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_ray`
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_degenerate`
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_plane`
 - :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_segment`
+- :ref:`exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_triangle`
 
 
 Class Documentation

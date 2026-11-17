@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Struct MeshSegmentTracer::Ray &mdash; OpenSn 1.0.1 documentation</title>
+  <title>Struct MeshSegmentTracer::Degenerate &mdash; OpenSn 1.0.1 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
@@ -73,7 +73,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">Struct MeshSegmentTracer::Ray</li>
+      <li class="breadcrumb-item active">Struct MeshSegmentTracer::Degenerate</li>
       <li class="wy-breadcrumbs-aside">
       </li>
   </ul>
@@ -82,8 +82,8 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
              
-  <section id="struct-meshsegmenttracer-ray">
-<span id="exhale-struct-structopensn-1-1-mesh-segment-tracer-1-1-ray"></span><h1>Struct MeshSegmentTracer::Ray<a class="headerlink" href="#struct-meshsegmenttracer-ray" title="Link to this heading"></a></h1>
+  <section id="struct-meshsegmenttracer-degenerate">
+<span id="exhale-struct-structopensn-1-1-mesh-segment-tracer-1-1-degenerate"></span><h1>Struct MeshSegmentTracer::Degenerate<a class="headerlink" href="#struct-meshsegmenttracer-degenerate" title="Link to this heading"></a></h1>
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_framework_mesh_raytrace_mesh_segment_tracer.h.html#file-framework-mesh-raytrace-mesh-segment-tracer-h"><span class="std std-ref">File mesh_segment_tracer.h</span></a></p></li>
 </ul>
@@ -94,27 +94,9 @@
 <section id="struct-documentation">
 <h2>Struct Documentation<a class="headerlink" href="#struct-documentation" title="Link to this heading"></a></h2>
 <dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17MeshSegmentTracer3RayE">
-<span class="target" id="structopensn_1_1_mesh_segment_tracer_1_1_ray"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Ray</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17MeshSegmentTracer3RayE" title="Link to this definition"></a><br /></dt>
-<dd><p>The line start + t omega, with the absolute tolerance used to compare values of t. </p>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17MeshSegmentTracer3Ray5startE">
-<span class="target" id="structopensn_1_1_mesh_segment_tracer_1_1_ray_1a4748cbb088ed362682708a66f4caf65d"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">start</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17MeshSegmentTracer3Ray5startE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17MeshSegmentTracer3Ray5omegaE">
-<span class="target" id="structopensn_1_1_mesh_segment_tracer_1_1_ray_1a83ddc12a066957859f255ff2d50ce8bc"></span><a class="reference internal" href="structopensn_1_1_vector3.html#_CPPv4N6opensn7Vector3E" title="opensn::Vector3"><span class="n"><span class="pre">Vector3</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">omega</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17MeshSegmentTracer3Ray5omegaE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn17MeshSegmentTracer3Ray9toleranceE">
-<span class="target" id="structopensn_1_1_mesh_segment_tracer_1_1_ray_1aff6d215898bd7c8fd22096176e934d23"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">tolerance</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0.0</span></span><a class="headerlink" href="#_CPPv4N6opensn17MeshSegmentTracer3Ray9toleranceE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn17MeshSegmentTracer10DegenerateE">
+<span class="target" id="structopensn_1_1_mesh_segment_tracer_1_1_degenerate"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Degenerate</span></span></span><a class="headerlink" href="#_CPPv4N6opensn17MeshSegmentTracer10DegenerateE" title="Link to this definition"></a><br /></dt>
+<dd><p>Thrown inside a traversal when a predicate is zero. </p>
 </dd></dl>
 
 </section>

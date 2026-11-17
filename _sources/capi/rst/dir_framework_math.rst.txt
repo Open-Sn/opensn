@@ -28,6 +28,7 @@ Subdirectories
 Files
 -----
 
+- :ref:`file_framework_math_exact_predicates.h`
 - :ref:`file_framework_math_geometry.h`
 - :ref:`file_framework_math_math.h`
 - :ref:`file_framework_math_math_time_stepping.h`

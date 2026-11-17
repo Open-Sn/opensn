@@ -651,12 +651,20 @@ uncollided outflow in the source group.</p>
 OpenSn transport calculations. Construct the problem and solver, then call
 <code class="docutils literal notranslate"><span class="pre">Initialize</span></code> and <code class="docutils literal notranslate"><span class="pre">Execute</span></code>:</p>
 <p>Uncollided generation is restricted to three-dimensional Cartesian meshes and
-must run with exactly one MPI rank. Every cell must be star-shaped about its
-centroid (the average of its vertices). The centroid must lie on the inner side
-of every triangle formed by two consecutive vertices of a face and the face
-centroid. Convex cells always satisfy this. The uncollided problem rejects a
-mesh with a cell that does not. Such cells are also the source of the mesh
-quality warning about negative-volume sub-elements.</p>
+must run with exactly one MPI rank. Rays are traced through the cells with exact
+geometric predicates, so a ray cannot be lost between cells of a conforming
+mesh whatever the cell shapes, sizes, or coordinates. A convex cell is traced as
+one piece. Any other cell is traced through the tetrahedra formed by an interior
+point of the cell and the triangles of its faces (a triangular face as it is, a
+face with more vertices as the triangles between two consecutive vertices and
+the face centroid), which requires the cell to be star-shaped about that point.
+The tracer searches for such a point, starting from the average of the cell
+points. The uncollided problem rejects a mesh with a cell that is not star-shaped
+about any point. Such cells are also the source of the mesh
+quality warning about negative-volume sub-elements. A ray that passes exactly
+through an edge or a vertex, or along a face, is traced with its ends displaced
+by a few units in the last place of the coordinates, which changes the traced
+lengths by that much.</p>
 <p>The solver reports source-point progress every 5 percent by default. Each
 update includes the number of completed source points, elapsed time, and
 estimated remaining time. Set <code class="docutils literal notranslate"><span class="pre">progress_interval</span></code> on

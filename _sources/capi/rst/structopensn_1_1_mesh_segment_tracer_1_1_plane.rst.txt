@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_plane:
+
+Struct MeshSegmentTracer::Plane
+===============================
+
+- Defined in :ref:`file_framework_mesh_raytrace_mesh_segment_tracer.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_mesh_segment_tracer`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::MeshSegmentTracer::Plane
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

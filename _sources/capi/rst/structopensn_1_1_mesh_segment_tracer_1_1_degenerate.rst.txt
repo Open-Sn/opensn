@@ -1,7 +1,7 @@
-.. _exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_ray:
+.. _exhale_struct_structopensn_1_1_mesh_segment_tracer_1_1_degenerate:
 
-Struct MeshSegmentTracer::Ray
-=============================
+Struct MeshSegmentTracer::Degenerate
+====================================
 
 - Defined in :ref:`file_framework_mesh_raytrace_mesh_segment_tracer.h`
 
@@ -16,7 +16,7 @@ Struct Documentation
 --------------------
 
 
-.. doxygenstruct:: opensn::MeshSegmentTracer::Ray
+.. doxygenstruct:: opensn::MeshSegmentTracer::Degenerate
    :project: opensn
    :members:
    :protected-members:
