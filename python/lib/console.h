@@ -38,6 +38,12 @@ public:
   Console& operator=(const Console&) = delete;
 
 private:
+  /**
+   * Deletes the names the input defined in the main module's globals, in the order it defined them,
+   * and runs Python's garbage collector. Collective: every rank destroys the input's objects.
+   */
+  static void ReleaseInputObjects();
+
   std::vector<std::string> command_buffer_;
 };
 

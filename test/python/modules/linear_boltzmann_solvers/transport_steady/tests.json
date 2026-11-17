@@ -1653,7 +1653,7 @@
   },
   {
     "file": "wrong_parameter.py",
-    "comment": "Check that supplying a non-existent parameter reports an error",
+    "comment": "Check that supplying a non-existent parameter reports an error and stops the run with exit code 1",
     "num_procs": 1,
     "checks": [
       {
@@ -1661,12 +1661,16 @@
         "key": "Invalid param ",
         "wordnum": 6,
         "gold": "\"wrong-parameter\""
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
       }
     ]
   },
   {
     "file": "wrong_parameter_type.py",
-    "comment": "Check that supplying an incorrect parameter type reports an error",
+    "comment": "Check that supplying an incorrect parameter type reports an error and stops the run with exit code 1",
     "num_procs": 1,
     "checks": [
       {
@@ -1674,6 +1678,10 @@
         "key": "Invalid parameter type \"BOOLEAN\"",
         "wordnum": 10,
         "gold": "\"max_mpi_message_size\"."
+      },
+      {
+        "type": "ErrorCode",
+        "error_code": 1
       }
     ]
   },

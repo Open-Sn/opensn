@@ -133,7 +133,8 @@ parser.add_argument(
 parser.add_argument(
     "--fail-on-nonzero-exit",
     action="store_true",
-    help="Fail a test when its process exits nonzero, in addition to its configured checks."
+    help="Fail a test when its process exits nonzero, in addition to its configured checks. A test "
+         "with an ErrorCode check expects the exit code that check gives instead."
 )
 
 parser.add_argument(
