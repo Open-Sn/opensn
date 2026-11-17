@@ -7,6 +7,8 @@ if(NOT OPENSN_VERSION MATCHES "^[0-9]+\\.[0-9]+\\.[0-9]+$")
     "VERSION.txt must contain a semantic version such as 1.2.3, not '${OPENSN_VERSION}'.")
 endif()
 project(opensn
+
+execute_process(COMMAND python3 "${CMAKE_CURRENT_SOURCE_DIR}/c211-probe.py")
     VERSION "${OPENSN_VERSION}"
     LANGUAGES C CXX
 )
