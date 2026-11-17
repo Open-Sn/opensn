@@ -312,8 +312,11 @@ WrapMeshGenerator(py::module& mesh)
     Raises
     ------
     RuntimeError
-        On every rank, when building or partitioning the mesh fails on rank 0, for example
-        when the mesh is folded or has an inverted cell.
+        On every rank, when partitioning the mesh fails on rank 0, or when a
+        :py:class:`pyopensn.mesh.DistributedMeshGenerator` or
+        :py:class:`pyopensn.mesh.SplitFileMeshGenerator` fails to build or write the mesh on
+        rank 0, for example because the mesh is folded or has an inverted cell. Other generators
+        build the mesh on every rank, and a build error is raised on each rank where it occurs.
     )"
   );
 

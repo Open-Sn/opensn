@@ -214,7 +214,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
 
       serial_data.Clear();
     }
+    // The stream does not throw, so a failed write or close is visible only in its state.
     ofile.close();
+    if (not ofile)
+      throw std::runtime_error("Failed to write " + file_path.string() + ".");
 
     const auto fraction_complete = static_cast<double>(pid) / static_cast<double>(num_partitions);
     if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)
