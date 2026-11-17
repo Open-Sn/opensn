@@ -18,8 +18,8 @@ namespace opensn
 namespace
 {
 
-/// A cell whose area or volume is at most this fraction of the square or cube of its longest edge
-/// is degenerate.
+/// A cell whose area or volume is at most this fraction of the magnitude of the terms summed to
+/// compute it is zero to within rounding, and degenerate. It is about 4500 times the unit roundoff.
 constexpr double degenerate_measure_tolerance = 1.0e-12;
 
 /// Returns the center of a face: the average of its vertices.
@@ -61,35 +61,36 @@ FaceAreaVector(const CellType cell_type,
   return area;
 }
 
+/// Signed area of a polygon or signed volume of a polyhedron, with the scale of its rounding error.
+struct CellMeasure
+{
+  /// Positive when the faces are ordered outward, negative when the cell is inverted, and zero when
+  /// it is degenerate.
+  double value = 0.0;
+  /// Sum of the magnitudes of the terms summed for the value. The rounding error of the value is
+  /// a small multiple of the unit roundoff times this scale. It is much smaller than the cube of
+  /// the longest edge for a needle-shaped cell, whose faces are thin.
+  double scale = 0.0;
+};
+
 /// Returns the signed area of a polygon or the signed volume of a polyhedron, from the divergence
-/// theorem over its faces. It is positive when the faces are ordered outward, negative when the
-/// cell is inverted, and zero when it is degenerate. Concave cells are measured exactly.
-double
+/// theorem over its faces. Concave cells are measured exactly.
+CellMeasure
 SignedCellMeasure(const UnpartitionedMesh::LightWeightCell& cell,
                   const std::vector<Vector3>& vertices)
 {
   const double dimension = cell.type == CellType::POLYGON ? 2.0 : 3.0;
-  double measure = 0.0;
-  for (const auto& face : cell.faces)
-    measure +=
-      (FaceCenter(face, vertices) - cell.centroid).Dot(FaceAreaVector(cell.type, face, vertices));
-  return measure / dimension;
-}
-
-/// Returns the length of the longest edge of the faces of a cell.
-double
-LongestEdge(const UnpartitionedMesh::LightWeightCell& cell, const std::vector<Vector3>& vertices)
-{
-  double longest = 0.0;
+  CellMeasure measure;
   for (const auto& face : cell.faces)
   {
-    const size_t num_vertices = face.vertex_ids.size();
-    for (size_t i = 0; i < num_vertices; ++i)
-      longest = std::max(
-        longest,
-        (vertices[face.vertex_ids[(i + 1) % num_vertices]] - vertices[face.vertex_ids[i]]).Norm());
+    const Vector3 arm = FaceCenter(face, vertices) - cell.centroid;
+    const Vector3 area = FaceAreaVector(cell.type, face, vertices);
+    measure.value += arm.Dot(area);
+    measure.scale += arm.Norm() * area.Norm();
   }
-  return longest;
+  measure.value /= dimension;
+  measure.scale /= dimension;
+  return measure;
 }
 
 } // namespace
@@ -263,9 +264,7 @@ UnpartitionedMesh::CheckQuality()
     const auto& cell = *raw_cells_[c];
     if (cell.type != CellType::POLYGON and cell.type != CellType::POLYHEDRON)
       continue;
-    const double measure = SignedCellMeasure(cell, vertices_);
-    const double scale =
-      std::pow(LongestEdge(cell, vertices_), cell.type == CellType::POLYGON ? 2.0 : 3.0);
+    const auto [measure, scale] = SignedCellMeasure(cell, vertices_);
     const bool degenerate = std::fabs(measure) <= degenerate_measure_tolerance * scale;
     if (not degenerate and measure > 0.0)
       continue;

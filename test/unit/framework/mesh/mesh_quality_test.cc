@@ -77,3 +77,13 @@ TEST(MeshQualityTest, FlatCellIsRejected)
 {
   EXPECT_THROW(ReadMesh("tet_flat.msh"), std::logic_error);
 }
+
+// A needle-shaped tetrahedron, with an edge of length sqrt(3) and a width of about 1e-6, has volume
+// 1e-12. That is about 2e-13 of the cube of its longest edge, but its faces are thin, so the volume
+// is far above the rounding error of its computation. The cell is valid and is accepted.
+TEST(MeshQualityTest, NeedleCellIsAccepted)
+{
+  std::shared_ptr<UnpartitionedMesh> mesh;
+  ASSERT_NO_THROW(mesh = ReadMesh("tet_thin.msh"));
+  EXPECT_EQ(mesh->GetNumberOfCells(), 1);
+}

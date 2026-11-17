@@ -12,6 +12,7 @@ parts the run ends with a successful exit status and an incomplete split mesh.
 
 import os
 import resource
+import shutil
 import signal
 import sys
 
@@ -31,6 +32,8 @@ if __name__ == "__main__":
     num_cells = 20
     nodes = [i / num_cells for i in range(num_cells + 1)]
     file_size_limit = 1024 * 1024
+    # The directory is relative to the working directory, so the test writes nothing elsewhere.
+    split_mesh_dir = "split_mesh_write_error"
 
     # Exceeding the limit raises SIGXFSZ, which terminates the process unless it is ignored. The
     # write then fails with EFBIG instead.
@@ -41,7 +44,7 @@ if __name__ == "__main__":
         SplitFileMeshGenerator(
             inputs=[OrthogonalMeshGenerator(node_sets=[nodes, nodes, nodes])],
             num_partitions=2,
-            split_mesh_dir_path="split_mesh_write_error",
+            split_mesh_dir_path=split_mesh_dir,
         ).Execute()
         raised = 0
     except RuntimeError as error:
@@ -49,5 +52,7 @@ if __name__ == "__main__":
     finally:
         resource.setrlimit(resource.RLIMIT_FSIZE, old_limit)
         signal.signal(signal.SIGXFSZ, old_handler)
+        # Remove the incomplete part files.
+        shutil.rmtree(split_mesh_dir, ignore_errors=True)
 
     print(f"Split mesh write failure raised = {raised}")
