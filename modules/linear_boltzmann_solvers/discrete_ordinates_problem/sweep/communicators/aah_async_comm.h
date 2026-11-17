@@ -108,15 +108,13 @@ protected:
   void BuildMessageStructure();
 
 private:
-  /// One psi message (and its psiE partner with CSDA), posted and completed as a unit.
+  /// One psi message (and its psiE partner with CSDA), posted as a unit.
   struct SendUnit
   {
     /// Index of the successor location.
     std::size_t successor;
     /// Index of the message among the messages to that successor.
     int message;
-    /// Index of the request in the request vectors.
-    std::size_t request;
   };
 
   /**
@@ -127,7 +125,12 @@ private:
    */
   void PostSendUnits(const std::vector<SendUnit>& units, std::size_t& next);
 
-  /// Return the send-window slots of completed downstream sends.
+  /**
+   * Return the send-window slots of completed downstream sends and drop their requests.
+   *
+   * Only posted, incomplete requests are tested, so a poll costs time proportional to the sends in
+   * flight rather than to all messages of the angle set.
+   */
   void RetireCompletedSends();
 
   unsigned int num_groups_;
@@ -144,8 +147,6 @@ private:
   std::vector<std::vector<bool>> delayed_preloc_msg_received_;
   std::vector<std::vector<AAH_MessageDetails>> delayed_preloc_msg_data_;
 
-  std::vector<mpi::Request> deploc_msg_request_;
-  std::vector<mpi::Request> deploc_msgE_request_;
   std::vector<std::vector<AAH_MessageDetails>> deploc_msg_data_;
 
   /// Limit on posted sends, shared by the angle sets of the groupset.
@@ -162,8 +163,8 @@ private:
   std::size_t next_delayed_send_unit_ = 0;
   /// Flag that is set once the sweep chunk has filled the send buffers.
   bool sends_queued_ = false;
-  /// Number of posted requests of this angle set that have not completed.
-  int num_outstanding_requests_ = 0;
+  /// Posted downstream send requests of this angle set that have not completed.
+  std::vector<mpi::Request> posted_requests_;
   /// Scratch indices of the requests that a test found complete.
   std::vector<int> completed_requests_;
 };

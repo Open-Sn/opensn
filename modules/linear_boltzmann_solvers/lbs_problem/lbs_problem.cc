@@ -603,7 +603,9 @@ LBSProblem::GetOptionsBlock()
     "max_mpi_outstanding_sends",
     0,
     "The maximum number of sweep MPI sends that each rank may have posted and not completed in "
-    "CPU AAH sweeps. Further messages wait until earlier ones complete. Set it below the network "
+    "CPU AAH sweeps. Further messages wait until earlier ones complete. With CSDA, a psi message "
+    "and its psiE partner are posted together when no other send is outstanding, so a limit of 1 "
+    "allows 2 posted sends. Set it below the network "
     "transmit queue size, such as FI_CXI_DEFAULT_TX_SIZE on Slingshot, when MPI runs out of "
     "transmit resources. 0 means no limit.");
   params.AddOptionalParameter(

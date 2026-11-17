@@ -1379,7 +1379,9 @@ WrapLBS(py::module& slv)
           - max_mpi_outstanding_sends: int, default=0
               Maximum number of sweep MPI sends that each rank may have posted and not yet
               completed. Further messages wait until earlier ones complete, and an angle set
-              whose messages exceed the limit sends them in turn. Set it below the network
+              whose messages exceed the limit sends them in turn. With CSDA, a psi message and
+              its psiE partner count as 2 sends and are posted together when no other send is
+              outstanding, so a limit of 1 allows 2 posted sends. Set it below the network
               transmit queue size when MPI runs out of transmit resources, for example below
               ``FI_CXI_DEFAULT_TX_SIZE`` on Slingshot when MPICH warns about rendezvous message
               resource exhaustion. The solution does not depend on it. 0 means no limit. Must
@@ -2043,7 +2045,9 @@ WrapLBS(py::module& slv)
           - max_mpi_outstanding_sends: int, default=0
               Maximum number of sweep MPI sends that each rank may have posted and not yet
               completed. Further messages wait until earlier ones complete, and an angle set
-              whose messages exceed the limit sends them in turn. Set it below the network
+              whose messages exceed the limit sends them in turn. With CSDA, a psi message and
+              its psiE partner count as 2 sends and are posted together when no other send is
+              outstanding, so a limit of 1 allows 2 posted sends. Set it below the network
               transmit queue size when MPI runs out of transmit resources, for example below
               ``FI_CXI_DEFAULT_TX_SIZE`` on Slingshot when MPICH warns about rendezvous message
               resource exhaustion. The solution does not depend on it. 0 means no limit. Must

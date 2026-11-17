@@ -8,8 +8,6 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
-#include <functional>
-#include <numeric>
 #include <stdexcept>
 #include <utility>
 
@@ -65,18 +63,18 @@ AAH_ASynchronousCommunicator::UndelayedSendsPosted() const
 void
 AAH_ASynchronousCommunicator::RetireCompletedSends()
 {
-  if (num_outstanding_requests_ == 0)
+  if (posted_requests_.empty())
     return;
 
-  // Completed requests become MPI_REQUEST_NULL, which later tests skip.
-  int num_completed = 0;
-  if (mpi::test_some(deploc_msg_request_, completed_requests_))
-    num_completed += static_cast<int>(completed_requests_.size());
-  if (csda_enabled_ and mpi::test_some(deploc_msgE_request_, completed_requests_))
-    num_completed += static_cast<int>(completed_requests_.size());
+  if (not mpi::test_some(posted_requests_, completed_requests_) or completed_requests_.empty())
+    return;
 
-  num_outstanding_requests_ -= num_completed;
-  send_window_->Release(num_completed);
+  // MPI sets completed requests to MPI_REQUEST_NULL. Remove them so later tests skip them.
+  std::erase_if(posted_requests_,
+                [](const mpi::Request& request)
+                { return static_cast<const MPI_Request&>(request) == MPI_REQUEST_NULL; });
+  // MPI_Testsome reports the completion count as an int.
+  send_window_->Release(static_cast<int>(completed_requests_.size()));
 }
 
 void
@@ -85,19 +83,18 @@ AAH_ASynchronousCommunicator::PostSendUnits(const std::vector<SendUnit>& units, 
   const auto& comm = sweep_communicator_.GetCommunicator();
   while (next < units.size() and send_window_->TryAcquire(send_unit_size_))
   {
-    const auto& [successor, m, req] = units[next];
+    const auto& [successor, m] = units[next];
     const auto& [dest, size, block_pos] = deploc_msg_data_[successor][m];
     const auto& outgoing_psi = fluds_.DeplocIOutgoingPsi()[successor];
-    deploc_msg_request_[req] =
-      comm.isend(dest, GetMessageTag(m, 0), &outgoing_psi[block_pos], size);
+    posted_requests_.push_back(
+      comm.isend(dest, GetMessageTag(m, 0), &outgoing_psi[block_pos], size));
     // The receiver takes psi only once psiE has also arrived, so the pair is posted together.
     if (csda_enabled_)
     {
       const auto& outgoing_psiE = fluds_.DeplocIOutgoingPsiE()[successor];
-      deploc_msgE_request_[req] =
-        comm.isend(dest, GetMessageTag(m, 1), &outgoing_psiE[block_pos], size);
+      posted_requests_.push_back(
+        comm.isend(dest, GetMessageTag(m, 1), &outgoing_psiE[block_pos], size));
     }
-    num_outstanding_requests_ += send_unit_size_;
     ++next;
   }
 }
@@ -114,7 +111,7 @@ AAH_ASynchronousCommunicator::ProgressDownstreamPsi(bool post_delayed)
     PostSendUnits(delayed_send_units_, next_delayed_send_unit_);
 
   if (next_send_unit_ == send_units_.size() and
-      next_delayed_send_unit_ == delayed_send_units_.size() and num_outstanding_requests_ == 0)
+      next_delayed_send_unit_ == delayed_send_units_.size() and posted_requests_.empty())
   {
     done_sending_ = true;
     fluds_.ClearSendPsi();
@@ -130,7 +127,7 @@ AAH_ASynchronousCommunicator::Reset()
   sends_queued_ = false;
   next_send_unit_ = 0;
   next_delayed_send_unit_ = 0;
-  if (num_outstanding_requests_ != 0)
+  if (not posted_requests_.empty())
     throw std::logic_error("AAH_ASynchronousCommunicator: Reset with sweep sends outstanding.");
 
   for (auto& rcv_flags : preloc_msg_received_)
@@ -177,21 +174,12 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     max_num_messages_,
     sweep_communicator_,
     max_mpi_message_size_);
-  std::size_t total_deploc_messages = std::transform_reduce(deploc_msg_data_.begin(),
-                                                            deploc_msg_data_.end(),
-                                                            0UL,
-                                                            std::plus<>{},
-                                                            [](const auto& v) { return v.size(); });
-  deploc_msg_request_.resize(total_deploc_messages);
-  if (csda_enabled_)
-    deploc_msgE_request_.resize(total_deploc_messages);
-
   // Split the messages by whether the successor takes them during or after the sweep.
   const auto& successors = spds.GetLocationSuccessors();
   const auto& delayed_successors = spds.GetDelayedLocationSuccessors();
   send_units_.clear();
   delayed_send_units_.clear();
-  for (std::size_t i = 0, req = 0; i < deploc_msg_data_.size(); ++i)
+  for (std::size_t i = 0; i < deploc_msg_data_.size(); ++i)
   {
     const bool delayed =
       std::find(delayed_successors.begin(), delayed_successors.end(), successors[i]) !=
@@ -199,8 +187,8 @@ AAH_ASynchronousCommunicator::BuildMessageStructure()
     auto& units = delayed ? delayed_send_units_ : send_units_;
     // SetupMessageData counts the messages of a location in an int.
     const auto num_messages = static_cast<int>(deploc_msg_data_[i].size());
-    for (int m = 0; m < num_messages; ++m, ++req)
-      units.push_back({i, m, req});
+    for (int m = 0; m < num_messages; ++m)
+      units.push_back({i, m});
   }
 }
 

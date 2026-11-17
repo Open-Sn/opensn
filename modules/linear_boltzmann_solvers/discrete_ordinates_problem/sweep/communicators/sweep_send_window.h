@@ -14,8 +14,9 @@ namespace opensn
  * A rendezvous send holds a slot in the network transmit queue until the receiver matches it. When
  * a rank posts more sends than that queue holds, MPI can block inside the send call, and two ranks
  * blocked that way toward each other deadlock. A sender asks the window for slots before it posts a
- * unit of sends and returns them when the sends complete, so the rank never has more sends posted
- * than the limit.
+ * unit of sends and returns them when the sends complete. The rank has no more sends posted than
+ * the limit, except that a unit larger than the limit is posted alone when no other send is
+ * outstanding.
  *
  * The angle sets of one groupset share a window. Groupsets sweep one at a time and every sweep
  * completes its sends before it returns, so the window bounds all posted sweep sends of the rank.
@@ -24,7 +25,7 @@ class SweepSendWindow
 {
 public:
   /**
-   * Window that admits at most `max_outstanding_sends` posted sends.
+   * Window that admits at most `max_outstanding_sends` posted sends, or one larger unit alone.
    *
    * \param max_outstanding_sends Maximum number of posted sends that have not completed. Zero
    *        means no limit.

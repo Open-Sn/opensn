@@ -57,7 +57,8 @@ The ``max_mpi_outstanding_sends`` problem option limits how many sweep messages
 each rank may have posted and not yet completed in a CPU AAH sweep. Messages
 beyond the limit wait in a queue and are posted as earlier ones complete. With
 CSDA, the angular-flux message and its energy-derivative partner count as two
-sends and are posted together. The default, 0, sets no limit. Use the option
+sends and are posted together. A pair is posted when no other send is
+outstanding, so with CSDA a limit of 1 allows 2 posted sends. The default, 0, sets no limit. Use the option
 when the network runs out of transmit resources. On Slingshot, MPICH then warns
 that OFI is failing to make progress on posting a send because of rendezvous
 message resource exhaustion, and a run can hang. Set the limit a little below
