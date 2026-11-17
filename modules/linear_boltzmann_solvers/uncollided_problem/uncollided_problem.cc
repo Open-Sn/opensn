@@ -795,17 +795,9 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
     if ((segment_end - segment_start).Norm() <= tolerance)
       continue;
 
-    const Vector3 segment_omega = (segment_end - segment_start).Normalized();
-    if (interval > 0)
-    {
-      // A fold can land where a reflecting boundary meets an internal face or edge. The reflected
-      // segment continues in the cell that it enters there.
-      const auto entered = mesh_segment_tracer_->LocateAhead(cell_id, segment_start, segment_omega);
-      OpenSnLogicalErrorIf(not entered,
-                           GetName() +
-                             ": reflected image-source ray could not locate its re-entry cell.");
-      cell_id = *entered;
-    }
+    // After a fold, the segment begins on a boundary face of the cell where the previous segment
+    // ended, which may be where that face meets an internal face or edge. Trace begins the walk in
+    // the cell that the segment continues in.
 
     traced.clear();
     if (not mesh_segment_tracer_->Trace(cell_id, segment_start, segment_end, traced))
@@ -814,7 +806,10 @@ UncollidedProblem::RaytraceLineInto(const Cell& cell,
                            GetName() +
                              ": reflected image-source ray left the mesh before reaching "
                              "its source. target=" +
-                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() + ".");
+                             qp_xyz.PrintStr() + ", image=" + pt_loc.PrintStr() +
+                             ", segment from " + segment_start.PrintStr() + " to " +
+                             segment_end.PrintStr() + " from cell " + std::to_string(cell_id) +
+                             ".");
       // The line to the source leaves a non-convex domain. Through a vacuum boundary, the source
       // contributes no uncollided flux at this point.
       ++rays_left_mesh_;
