@@ -36,20 +36,6 @@ public:
             const SPDS& spds,
             const GridFaceHistogram& grid_face_histogram);
 
-  struct INCOMING_FACE_INFO
-  {
-    int slot_address = 0;
-    std::vector<short> upwind_dof_mapping;
-
-    void Setup(const std::pair<int, std::vector<short>>& input)
-    {
-      slot_address = input.first;
-      upwind_dof_mapping.resize(input.second.size());
-      std::copy(input.second.begin(), input.second.end(), upwind_dof_mapping.begin());
-    }
-
-    ~INCOMING_FACE_INFO() = default;
-  }; // TODO: Make common
 private:
   explicit AAH_FLUDSCommonData(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
                                const SPDS& spds,
@@ -107,28 +93,39 @@ protected:
   bool finalized_ = false;
 
   /**
-   * This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in
-   * the local psi vector where the first face dof will store its data
+   * The outgoing faces of the cell with sweep order index s are entries outb_face_offsets_[s] to
+   * outb_face_offsets_[s + 1] - 1 of the outgoing-face arrays, in the order of the cell's faces.
+   * The same holds for the incoming faces with a local neighbor and inco_face_offsets_. Every
+   * direction has its own sweep ordering and so its own copy of these arrays, so they are stored
+   * flat rather than as a vector per cell.
    */
-  std::vector<std::vector<uint64_t>> so_cell_outb_face_slot_indices_;
+  std::vector<std::uint32_t> outb_face_offsets_;
+
+  /// Lock-box slot of each outgoing face, where its first face node stores its data.
+  std::vector<std::uint32_t> outb_face_slots_;
 
   /**
-   * This is a vector [cell_sweep_order_index][outgoing_face_count]  which holds the face
-   * categorization for the face. i.e. the local psi vector that hold faces of the same category.
+   * Face category of each outgoing face, that is, the local psi vector that holds faces of its
+   * size. A delayed face, whose downwind cell reads lagged data, stores -category - 1.
    */
-  std::vector<std::vector<short>> so_cell_outb_face_face_category_;
+  std::vector<short> outb_face_categories_;
+
+  /// Offsets of the incoming faces with a local neighbor, as outb_face_offsets_.
+  std::vector<std::uint32_t> inco_face_offsets_;
+
+  /// Face category of each incoming face, encoded as outb_face_categories_.
+  std::vector<short> inco_face_categories_;
+
+  /// Lock-box slot where the upwind cell stores the data of each incoming face.
+  std::vector<std::uint32_t> inco_face_slots_;
 
   /**
-   * This is a vector [cell_sweep_order_index][incoming_face_count] which holds the face
-   * categorization for the face. i.e. the local  psi vector that hold faces of the same category.
+   * The grid nodal mapping of each incoming face, which maps its nodes to the nodes of the upwind
+   * face. The pointers address the face node mappings of the problem's grid nodal mappings, which
+   * are built once with the problem and outlive the sweep data built from them.
    */
-  std::vector<std::vector<short>> so_cell_inco_face_face_category_;
+  std::vector<const short*> inco_face_upwind_dofs_;
 
-  /**
-   * This is a vector [cell_sweep_order_index][incoming_face_count] that will hold a structure.
-   * struct.slot_address holds the slot address where this face's upwind data is stored.
-   * struct.upwind_dof_mapping is a mapping of each of this face's dofs to the upwinded face's dofs
-   */
 private:
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
 
@@ -158,8 +155,6 @@ private:
                           const SPDS& spds,
                           const std::vector<std::unordered_map<uint64_t, size_t>>& preloc_i_idx,
                           const std::vector<std::unordered_map<uint64_t, size_t>>& dpreloc_i_idx);
-
-  std::vector<std::vector<INCOMING_FACE_INFO>> so_cell_inco_face_dof_indices_;
 
   /**
    * This is a vector [non_local_outgoing_face_count]  that maps a face to a dependent location and

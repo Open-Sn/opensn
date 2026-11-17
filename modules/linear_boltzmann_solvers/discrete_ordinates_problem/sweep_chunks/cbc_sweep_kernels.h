@@ -53,7 +53,7 @@ PrepareNonlocalOutgoingPsi(CBCSweepWorkspace& workspace,
                            const CellMapping& cell_mapping,
                            const CellLBSView& cell_transport_view,
                            std::size_t group_angle_stride,
-                           const std::vector<FaceOrientation>& face_orientations)
+                           std::span<const FaceOrientation> face_orientations)
 {
   auto& nonlocal_outgoing_psi = workspace.nonlocal_outgoing_psi;
   auto& outgoing_psi_by_face = workspace.outgoing_psi_by_face;

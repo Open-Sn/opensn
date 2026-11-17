@@ -8,7 +8,10 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <limits>
 #include <memory>
+#include <stdexcept>
+#include <string>
 #include <unordered_set>
 #include <utility>
 
@@ -16,6 +19,21 @@ namespace opensn
 {
 
 using LockBox = std::vector<std::pair<std::optional<uint64_t>, short>>;
+
+namespace
+{
+
+/// Converts a face offset or lock-box slot to the 32-bit type of the face arrays.
+std::uint32_t
+ToFaceIndex(std::size_t value, const char* what)
+{
+  if (value > std::numeric_limits<std::uint32_t>::max())
+    throw std::runtime_error(std::string("AAH_FLUDSCommonData: ") + what + " " +
+                             std::to_string(value) + " exceeds the 32-bit face index range.");
+  return static_cast<std::uint32_t>(value);
+}
+
+} // namespace
 
 std::unique_ptr<AAH_FLUDSCommonData>
 AAH_FLUDSCommonData::MakeAlpha(const std::vector<CellFaceNodalMapping>& grid_nodal_mappings,
@@ -78,10 +96,18 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   LockBox delayed_lock_box;
   std::set<int> location_boundary_dependency_set;
 
+  // A face is incoming or outgoing, so the cells' face count bounds both face arrays.
+  std::size_t num_cell_faces = 0;
+  for (const auto cell_local_id : spls)
+    num_cell_faces += grid->GetLocalCell(cell_local_id).faces.size();
+  ToFaceIndex(num_cell_faces, "number of cell faces");
+  outb_face_offsets_.reserve(spls.size() + 1);
+  outb_face_slots_.reserve(num_cell_faces);
+  outb_face_categories_.reserve(num_cell_faces);
+  inco_face_offsets_.reserve(spls.size() + 1);
+  inco_face_categories_.reserve(num_cell_faces);
+
   // csoi = cell sweep order index
-  so_cell_inco_face_face_category_.reserve(spls.size());
-  so_cell_outb_face_slot_indices_.reserve(spls.size());
-  so_cell_outb_face_face_category_.reserve(spls.size());
   for (auto csoi = 0; csoi < spls.size(); ++csoi)
   {
     auto cell_local_id = spls[csoi];
@@ -92,12 +118,15 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
     SlotDynamics(cell, spds, grid_face_histogram, lock_boxes, delayed_lock_box);
 
   } // for csoi
+  outb_face_offsets_.push_back(ToFaceIndex(outb_face_slots_.size(), "face offset"));
+  inco_face_offsets_.push_back(ToFaceIndex(inco_face_categories_.size(), "face offset"));
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Slot Dynamics.";
 
   // PERFORM INCIDENT MAPPING
   // Loop over cells in sweep order
-  so_cell_inco_face_dof_indices_.reserve(spls.size());
+  inco_face_slots_.reserve(inco_face_categories_.size());
+  inco_face_upwind_dofs_.reserve(inco_face_categories_.size());
   for (auto csoi = 0; csoi < spls.size(); ++csoi)
   {
     auto cell_local_id = spls[csoi];
@@ -121,13 +150,18 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
 
   log.Log(Logger::LOG_LVL::LOG_0VERBOSE_2) << "Done with Local Incidence mapping.";
 
+  // The incident mapping visits the same incoming faces as the slot dynamics.
+  if (inco_face_slots_.size() != inco_face_categories_.size())
+    throw std::logic_error("AAH_FLUDSCommonData: incoming-face slots and categories differ in "
+                           "number.");
+
   // Clean up
-  so_cell_outb_face_slot_indices_.shrink_to_fit();
+  outb_face_slots_.shrink_to_fit();
+  outb_face_categories_.shrink_to_fit();
+  inco_face_categories_.shrink_to_fit();
 
   local_so_cell_mapping.clear();
   local_so_cell_mapping.shrink_to_fit();
-
-  so_cell_inco_face_dof_indices_.shrink_to_fit();
 
   nonlocal_outb_face_deplocI_slot_.shrink_to_fit();
 }
@@ -164,9 +198,7 @@ AAH_FLUDSCommonData::SlotDynamics(
   const auto cell_id = cell.local_id;
 
   // Incoming faces
-  std::vector<short> inco_face_face_category;
-  inco_face_face_category.reserve(cell.faces.size());
-
+  inco_face_offsets_.push_back(ToFaceIndex(inco_face_categories_.size(), "face offset"));
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
@@ -180,13 +212,13 @@ AAH_FLUDSCommonData::SlotDynamics(
       static_cast<short>(grid_face_histogram.MapFaceHistogramBins(num_face_dofs));
     const auto nbr_cell_id = face.GetNeighborLocalID(grid_ptr.get());
 
-    inco_face_face_category.push_back(face_categ);
+    inco_face_categories_.push_back(face_categ);
 
     // Mark as delayed ONLY if FAS says the incoming edge from this cell's neighbor
     // should be removed (neighbor -> cell).
     if (is_fas_edge(nbr_cell_id, cell_id))
     {
-      mark_delayed(inco_face_face_category.back());
+      mark_delayed(inco_face_categories_.back());
       continue;
     }
 
@@ -220,14 +252,8 @@ AAH_FLUDSCommonData::SlotDynamics(
     }
   }
 
-  so_cell_inco_face_face_category_.push_back(inco_face_face_category);
-
   // Outgoing faces
-  std::vector<uint64_t> outb_face_slot_indices;
-  std::vector<short> outb_face_face_category;
-  outb_face_slot_indices.reserve(cell.faces.size());
-  outb_face_face_category.reserve(cell.faces.size());
-
+  outb_face_offsets_.push_back(ToFaceIndex(outb_face_slots_.size(), "face offset"));
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
     const CellFace& face = cell.faces[f];
@@ -239,7 +265,7 @@ AAH_FLUDSCommonData::SlotDynamics(
     const auto num_face_dofs = face.vertex_ids.size();
     const auto face_categ =
       static_cast<short>(grid_face_histogram.MapFaceHistogramBins(num_face_dofs));
-    outb_face_face_category.push_back(face_categ);
+    outb_face_categories_.push_back(face_categ);
 
     // Choose target lock box (default non-delayed)
     auto* target_lock_box = &lock_boxes[face_categ];
@@ -252,7 +278,7 @@ AAH_FLUDSCommonData::SlotDynamics(
       if (is_fas_edge(cell_id, nbr_cell_id))
       {
         target_lock_box = &delayed_lock_box;
-        mark_delayed(outb_face_face_category.back());
+        mark_delayed(outb_face_categories_.back());
       }
     }
 
@@ -267,7 +293,7 @@ AAH_FLUDSCommonData::SlotDynamics(
     {
       if (lock_box[k].first < 0)
       {
-        outb_face_slot_indices.push_back(k);
+        outb_face_slots_.push_back(ToFaceIndex(k, "lock-box slot"));
         lock_box[k].first = cell.global_id;
         lock_box[k].second = static_cast<short>(f);
         slot_found = true;
@@ -276,7 +302,7 @@ AAH_FLUDSCommonData::SlotDynamics(
     }
     if (not slot_found)
     {
-      outb_face_slot_indices.push_back(lock_box.size());
+      outb_face_slots_.push_back(ToFaceIndex(lock_box.size(), "lock-box slot"));
       lock_box.emplace_back(cell.global_id, static_cast<short>(f));
     }
 
@@ -291,9 +317,6 @@ AAH_FLUDSCommonData::SlotDynamics(
       AddFaceViewToDepLocI(deplocI, cell.global_id, face_slot, face);
     }
   }
-
-  so_cell_outb_face_slot_indices_.push_back(outb_face_slot_indices);
-  so_cell_outb_face_face_category_.push_back(outb_face_face_category);
 }
 
 void
@@ -327,7 +350,6 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
 
   const auto grid = spds.GetGrid();
   const auto& cell_nodal_mapping = grid_nodal_mappings_[cell.local_id];
-  std::vector<std::pair<uint64_t, std::vector<short>>> inco_face_dof_mapping;
 
   // Loop over faces but process only incident faces
   for (auto f = 0; f < cell.faces.size(); ++f)
@@ -342,9 +364,6 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
       {
         // Find associated face for dof mapping
         auto adj_face_idx = cell_nodal_mapping[f].associated_face_;
-
-        std::pair<uint64_t, std::vector<short>> dof_mapping;
-        dof_mapping.second = cell_nodal_mapping[f].face_node_mapping_;
 
         // Find associated face counter for slot lookup
         const auto& adj_cell = grid->GetGlobalCell(face.neighbor_id);
@@ -367,20 +386,14 @@ AAH_FLUDSCommonData::LocalIncidentMapping(const Cell& cell,
           }
         }
 
-        dof_mapping.first = /*local_psi_stride*G**/
-          so_cell_outb_face_slot_indices_[adj_so_index][adj_f_counter];
-
-        dof_mapping.second.shrink_to_fit();
-        inco_face_dof_mapping.push_back(dof_mapping);
+        // The upwind cell stores this face's data in the slot of its outgoing face. The face's
+        // grid nodal mapping maps its nodes to the upwind face nodes.
+        inco_face_slots_.push_back(
+          outb_face_slots_[outb_face_offsets_[adj_so_index] + adj_f_counter]);
+        inco_face_upwind_dofs_.push_back(cell_nodal_mapping[f].face_node_mapping_.data());
       } // if local
     } // if incident
   } // for incindent f
-
-  std::vector<INCOMING_FACE_INFO> inco_face_info_array(inco_face_dof_mapping.size());
-  for (auto i = 0; i < inco_face_dof_mapping.size(); ++i)
-    inco_face_info_array[i].Setup(inco_face_dof_mapping[i]);
-
-  so_cell_inco_face_dof_indices_.push_back(inco_face_info_array);
 }
 
 void

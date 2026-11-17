@@ -7,12 +7,29 @@
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <limits>
 #include <vector>
 #include <queue>
 #include <stdexcept>
 
 namespace opensn
 {
+
+CellFaceOrientations::CellFaceOrientations(const Mesh& grid, const FaceOrientation value)
+{
+  const auto num_cells = grid.GetLocalCellCount();
+  offsets_.assign(num_cells + 1, 0);
+  std::size_t num_faces = 0;
+  for (std::size_t c = 0; c < num_cells; ++c)
+  {
+    num_faces += grid.GetLocalCell(c).faces.size();
+    if (num_faces > std::numeric_limits<std::uint32_t>::max())
+      throw std::runtime_error("CellFaceOrientations: the local cells have more than 2^32 - 1 "
+                               "faces.");
+    offsets_[c + 1] = static_cast<std::uint32_t>(num_faces);
+  }
+  orientations_.assign(num_faces, value);
+}
 
 SPDSFaceNeighborInfoVec
 BuildSPDSFaceNeighborInfo(const Mesh& grid)
@@ -106,9 +123,7 @@ SPDS::PopulateCellRelationships(
   constexpr auto FOINCOMING = FaceOrientation::INCOMING;
   constexpr auto FOOUTGOING = FaceOrientation::OUTGOING;
 
-  cell_face_orientations_.assign(grid_->GetLocalCellCount(), {});
-  for (const auto& cell : grid_->GetLocalCells())
-    cell_face_orientations_[cell->local_id].assign(cell->faces.size(), FOPARALLEL);
+  cell_face_orientations_ = CellFaceOrientations(*grid_, FOPARALLEL);
 
   for (const auto& cell : grid_->GetLocalCells())
   {

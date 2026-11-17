@@ -69,3 +69,37 @@ TEST(AAHSPDSTest, ComputesDownstreamDepthOnIrregularGlobalGraph)
   expected_depths[1] = 2;
   EXPECT_EQ(metadata.location_depths, expected_depths);
 }
+
+// The flat face orientations give each local cell a span over exactly its own faces.
+TEST(CellFaceOrientationsTest, GivesEachCellItsOwnFaces)
+{
+  EXPECT_EQ(CellFaceOrientations().size(), 0U);
+
+  auto grid = Mesh::New();
+  const std::vector<std::size_t> face_counts = {3, 5};
+  for (std::size_t i = 0; i < face_counts.size(); ++i)
+  {
+    auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::POLYHEDRON);
+    cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank()) * face_counts.size() + i;
+    cell->partition_id = mpi_comm.rank();
+    cell->faces.resize(face_counts[i]);
+    grid->AddGlobalCell(cell);
+  }
+
+  CellFaceOrientations orientations(*grid, FaceOrientation::PARALLEL);
+  ASSERT_EQ(orientations.size(), face_counts.size());
+  for (std::size_t c = 0; c < face_counts.size(); ++c)
+  {
+    ASSERT_EQ(orientations[c].size(), grid->GetLocalCell(c).faces.size());
+    for (const auto orientation : orientations[c])
+      EXPECT_EQ(orientation, FaceOrientation::PARALLEL);
+  }
+
+  // Writing the last face of one cell leaves the other cell unchanged.
+  const auto last = orientations[1].size() - 1;
+  orientations[1][last] = FaceOrientation::OUTGOING;
+  const auto& read_only = orientations;
+  EXPECT_EQ(read_only[1][last], FaceOrientation::OUTGOING);
+  for (const auto orientation : read_only[0])
+    EXPECT_EQ(orientation, FaceOrientation::PARALLEL);
+}
