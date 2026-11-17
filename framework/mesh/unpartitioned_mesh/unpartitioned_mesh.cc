@@ -18,8 +18,10 @@ namespace opensn
 namespace
 {
 
-/// A cell whose area or volume is at most this fraction of the magnitude of the terms summed to
-/// compute it is zero to within rounding, and degenerate. It is about 4500 times the unit roundoff.
+/**
+ * A cell whose area or volume is at most this fraction of the magnitude of the terms summed to
+ * compute it is zero to within rounding, and degenerate. It is about 4500 times the unit roundoff.
+ */
 constexpr double degenerate_measure_tolerance = 1.0e-12;
 
 /// Returns the center of a face, the average of its vertices, relative to `origin`.
@@ -34,12 +36,14 @@ FaceCenter(const UnpartitionedMesh::LightWeightFace& face,
   return center / static_cast<double>(face.vertex_ids.size());
 }
 
-/// Returns the area vector of a face of a polygon or polyhedron, oriented by the order of its
-/// vertices. For a polygon, whose faces are edges in the x-y plane, it is the edge length times the
-/// normal that points to the right of the edge. For a polyhedron, it is the sum of the area vectors
-/// of the triangles that join each edge of the face to its center. The faces of a valid cell are
-/// ordered so that this vector points out of the cell. The vertices are taken relative to `origin`,
-/// which changes the vector only by rounding.
+/**
+ * Returns the area vector of a face of a polygon or polyhedron, oriented by the order of its
+ * vertices. For a polygon, whose faces are edges in the x-y plane, it is the edge length times the
+ * normal that points to the right of the edge. For a polyhedron, it is the sum of the area vectors
+ * of the triangles that join each edge of the face to its center. The faces of a valid cell are
+ * ordered so that this vector points out of the cell. The vertices are taken relative to `origin`,
+ * which changes the vector only by rounding.
+ */
 Vector3
 FaceAreaVector(const CellType cell_type,
                const UnpartitionedMesh::LightWeightFace& face,
@@ -68,23 +72,29 @@ FaceAreaVector(const CellType cell_type,
 /// Signed area of a polygon or signed volume of a polyhedron, with the scale of its rounding error.
 struct CellMeasure
 {
-  /// Positive when the faces are ordered outward, negative when the cell is inverted, and zero when
-  /// it is degenerate.
+  /**
+   * Positive when the faces are ordered outward, negative when the cell is inverted, and zero when
+   * it is degenerate.
+   */
   double value = 0.0;
-  /// Sum of the magnitudes of the terms summed for the value. The rounding error of the value is
-  /// a small multiple of the unit roundoff times this scale. It is much smaller than the cube of
-  /// the longest edge for a needle-shaped cell, whose faces are thin.
+  /**
+   * Sum of the magnitudes of the terms summed for the value. The rounding error of the value is
+   * a small multiple of the unit roundoff times this scale. It is much smaller than the cube of
+   * the longest edge for a needle-shaped cell, whose faces are thin.
+   */
   double scale = 0.0;
 };
 
-/// Returns the signed area of a polygon or the signed volume of a polyhedron, from the divergence
-/// theorem over its faces. Concave cells are measured exactly.
-///
-/// The faces are measured relative to a vertex of the cell. Far from the origin, absolute
-/// coordinates round with errors much larger than the volume of a thin cell, while the difference
-/// of two nearby coordinates is exact. The divergence theorem holds for any reference point, so the
-/// vertex is also the point that the face arms start from. A cell without vertices has measure
-/// zero.
+/**
+ * Returns the signed area of a polygon or the signed volume of a polyhedron, from the divergence
+ * theorem over its faces. Concave cells are measured exactly.
+ *
+ * The faces are measured relative to a vertex of the cell. Far from the origin, absolute
+ * coordinates round with errors much larger than the volume of a thin cell, while the difference
+ * of two nearby coordinates is exact. The divergence theorem holds for any reference point, so the
+ * vertex is also the point that the face arms start from. A cell without vertices has measure
+ * zero.
+ */
 CellMeasure
 SignedCellMeasure(const UnpartitionedMesh::LightWeightCell& cell,
                   const std::vector<Vector3>& vertices)

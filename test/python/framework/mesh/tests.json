@@ -100,7 +100,7 @@
   },
   {
     "file": "distributed_mesh_error.py",
-    "comment": "A mesh that rank 0 rejects while DistributedMeshGenerator builds it raises the error on every rank, and the ranks stay in step for the next mesh.",
+    "comment": "A mesh that rank 0 rejects while DistributedMeshGenerator builds it, and a KBA partition that rank 0 rejects in distributed orthogonal generation, raise the error on every rank, and the ranks stay in step for the next mesh.",
     "num_procs": 2,
     "checks": [
       {
@@ -113,6 +113,18 @@
         "type": "KeyValuePair",
         "key": "Cells of the valid mesh =",
         "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Ranks that rejected the empty KBA slab =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cells of the valid distributed orthogonal mesh =",
+        "goldvalue": 4,
         "abs_tol": 0.0
       }
     ]
