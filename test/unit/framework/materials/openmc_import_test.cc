@@ -178,8 +178,12 @@ WriteOpenMCFile(const Datasets& set1, const std::int64_t delayed_groups = 2)
   const hid_t xs = H5Gopen2(file.Id(), "/set1/294K", H5P_DEFAULT);
   EXPECT_GE(xs, 0);
   for (const auto& [name, dataset] : set1)
+  {
     if (dataset)
+    {
       EXPECT_TRUE(WriteDataset(xs, name, *dataset)) << name;
+    }
+  }
   H5Gclose(xs);
 
   EXPECT_TRUE(H5CreateGroup(file.Id(), "/water/294K"));

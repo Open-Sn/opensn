@@ -552,7 +552,9 @@ TEST(QuadratureTest, GLProductQuadrature1DSphericalAngularSequence)
   {
     const auto n = sequence[p];
     if (p > 0)
+    {
       EXPECT_GT(omegas[n].z, omegas[sequence[p - 1]].z);
+    }
     EXPECT_GT(tau[n], 0.0);
     EXPECT_LE(tau[n], 1.0);
     mu_edge += 2.0 * weights[n];

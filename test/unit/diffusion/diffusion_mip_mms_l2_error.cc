@@ -228,7 +228,9 @@ TEST(DiffusionMIP, MMSL2Convergence3DHexesBothHPerpConventions)
                         << " err=" << errors[k] << " L2 rate=" << rate;
       EXPECT_LT(errors[k], errors[k - 1]);
       if (k + 1 == errors.size())
+      {
         EXPECT_GT(rate, 1.75);
+      }
     }
   }
 

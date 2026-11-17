@@ -215,7 +215,9 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
         const double h_face = FaceOrthogonalLength(*cell, f);
         EXPECT_NEAR(solver.HPerpendicular(*cell, f), h_face, 1.0e-10 * h_face);
         if (cell->faces.size() == 4)
+        {
           EXPECT_NEAR(FaceSideLength(*grid, *cell, f), 0.5 * h_face, 1.0e-10 * h_face);
+        }
       }
   }
 }
