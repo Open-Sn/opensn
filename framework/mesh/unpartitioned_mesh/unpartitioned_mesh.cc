@@ -361,10 +361,19 @@ UnpartitionedMesh::BuildMeshConnectivity()
   // Process raw cells. The two cells of an interior face must lie on opposite sides of it, so their
   // copies of the face have opposite area vectors. When they have the same direction, the cells lie
   // on the same side and overlap: the mesh is folded.
+  //
+  // A face must also belong to at most two cells. Cells are processed in order of ID and their
+  // candidate neighbors are searched in order of ID, so the cell with the lowest ID among those
+  // sharing a face connects it first. Every later cell with the same face then finds that copy
+  // already connected before any other unconnected copy, whether or not the cells after it pair up
+  // among themselves.
   size_t num_folded_faces = 0;
   uint64_t first_folded_cell = 0;
   uint64_t first_folded_neighbor = 0;
   Vector3 first_folded_center;
+  size_t num_shared_faces = 0;
+  uint64_t first_shared_cell = 0;
+  Vector3 first_shared_center;
   {
     uint64_t aux_counter = 0;
     uint64_t cur_cell_id = 0;
@@ -389,34 +398,49 @@ UnpartitionedMesh::BuildMeshConnectivity()
 
           for (auto& adj_cell_face : adj_cell->faces)
           {
-            if (adj_cell_face.has_neighbor)
+            // Every vertex of an equal face is a vertex of the current face. Testing that first
+            // rejects most faces without building their vertex sets.
+            const auto& adj_vids = adj_cell_face.vertex_ids;
+            if (not std::all_of(adj_vids.begin(),
+                                adj_vids.end(),
+                                [&cfvids](const uint64_t vid) { return cfvids.contains(vid); }))
               continue;
-            const std::set<uint64_t> afvids(adj_cell_face.vertex_ids.begin(),
-                                            adj_cell_face.vertex_ids.end());
+            const std::set<uint64_t> afvids(adj_vids.begin(), adj_vids.end());
+            if (cfvids != afvids)
+              continue;
 
-            if (cfvids == afvids)
+            // The face already connects two other cells.
+            if (adj_cell_face.has_neighbor)
             {
-              cur_cell_face.neighbor = adj_cell_id;
-              adj_cell_face.neighbor = cur_cell_id;
-
-              cur_cell_face.has_neighbor = true;
-              adj_cell_face.has_neighbor = true;
-
-              if ((cell->type == CellType::POLYGON or cell->type == CellType::POLYHEDRON) and
-                  FaceAreaVector(cell->type, cur_cell_face, vertices_)
-                      .Dot(FaceAreaVector(adj_cell->type, adj_cell_face, vertices_)) >= 0.0)
+              if (num_shared_faces == 0)
               {
-                if (num_folded_faces == 0)
-                {
-                  first_folded_cell = cur_cell_id;
-                  first_folded_neighbor = adj_cell_id;
-                  first_folded_center = FaceCenter(cur_cell_face, vertices_);
-                }
-                ++num_folded_faces;
+                first_shared_cell = cur_cell_id;
+                first_shared_center = FaceCenter(cur_cell_face, vertices_);
               }
-
+              ++num_shared_faces;
               goto face_neighbor_found;
             }
+
+            cur_cell_face.neighbor = adj_cell_id;
+            adj_cell_face.neighbor = cur_cell_id;
+
+            cur_cell_face.has_neighbor = true;
+            adj_cell_face.has_neighbor = true;
+
+            if ((cell->type == CellType::POLYGON or cell->type == CellType::POLYHEDRON) and
+                FaceAreaVector(cell->type, cur_cell_face, vertices_)
+                    .Dot(FaceAreaVector(adj_cell->type, adj_cell_face, vertices_)) >= 0.0)
+            {
+              if (num_folded_faces == 0)
+              {
+                first_folded_cell = cur_cell_id;
+                first_folded_neighbor = adj_cell_id;
+                first_folded_center = FaceCenter(cur_cell_face, vertices_);
+              }
+              ++num_folded_faces;
+            }
+
+            goto face_neighbor_found;
           } // for adjacent cell face
         }
       face_neighbor_found:;
@@ -442,57 +466,12 @@ UnpartitionedMesh::BuildMeshConnectivity()
       std::to_string(first_folded_cell) + " and " + std::to_string(first_folded_neighbor) + " at " +
       first_folded_center.PrintStr() + ".");
 
-  // A face that is still unconnected must not be a face of any other cell. If it is, the face
-  // belongs to more than two cells, of which only two were connected.
-  {
-    size_t num_shared_faces = 0;
-    uint64_t first_shared_cell = 0;
-    Vector3 first_shared_center;
-    uint64_t cur_cell_id = 0;
-    for (const auto& cell : raw_cells_)
-    {
-      for (const auto& face : cell->faces)
-      {
-        if (face.has_neighbor)
-          continue;
-        const std::set<uint64_t> fvids(face.vertex_ids.begin(), face.vertex_ids.end());
-        std::set<uint64_t> cells_to_search;
-        for (const uint64_t vid : fvids)
-          for (const uint64_t cell_id : vertex_cell_subscriptions_.at(vid))
-            if (cell_id != cur_cell_id)
-              cells_to_search.insert(cell_id);
-        const bool shared = std::any_of(
-          cells_to_search.begin(),
-          cells_to_search.end(),
-          [&](const uint64_t adj_cell_id)
-          {
-            const auto& adj_faces = raw_cells_.at(adj_cell_id)->faces;
-            return std::any_of(adj_faces.begin(),
-                               adj_faces.end(),
-                               [&](const LightWeightFace& adj_face)
-                               {
-                                 return std::set<uint64_t>(adj_face.vertex_ids.begin(),
-                                                           adj_face.vertex_ids.end()) == fvids;
-                               });
-          });
-        if (shared)
-        {
-          if (num_shared_faces == 0)
-          {
-            first_shared_cell = cur_cell_id;
-            first_shared_center = FaceCenter(face, vertices_);
-          }
-          ++num_shared_faces;
-        }
-      }
-      ++cur_cell_id;
-    }
-    if (num_shared_faces > 0)
-      OpenSnLogicalError("The mesh is not conforming: " + std::to_string(num_shared_faces) +
-                         " faces belong to more than two cells. The first is a face of cell " +
-                         std::to_string(first_shared_cell) + " at " +
-                         first_shared_center.PrintStr() + ".");
-  }
+  if (num_shared_faces > 0)
+    OpenSnLogicalError("The mesh is not conforming: " + std::to_string(num_shared_faces) +
+                       " cell faces coincide with a face that two other cells already share. The "
+                       "first is a face of cell " +
+                       std::to_string(first_shared_cell) + " at " + first_shared_center.PrintStr() +
+                       ".");
 
   log.Log() << program_timer.GetTimeString() << " Establishing cell boundary connectivity.";
 

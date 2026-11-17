@@ -55,6 +55,14 @@ TEST(MeshQualityTest, FaceOfThreeCellsIsRejected)
   EXPECT_THROW(ReadMesh("three_tets_shared_face.msh"), std::logic_error);
 }
 
+// Four tetrahedra on one face, with their apices above, below, above, and below it, form two pairs
+// on opposite sides of the face. Neither pair is folded and no copy of the face is left
+// unconnected, so the mesh is rejected only because the face belongs to four cells.
+TEST(MeshQualityTest, FaceOfFourCellsIsRejected)
+{
+  EXPECT_THROW(ReadMesh("four_tets_shared_face.msh"), std::logic_error);
+}
+
 // A cell whose faces are ordered inward, a tetrahedron with negative volume or a clockwise
 // triangle, is rejected.
 TEST(MeshQualityTest, InvertedCellIsRejected)
