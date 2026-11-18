@@ -19,16 +19,19 @@ TEST(AAHSPDSTest, DISABLED_ReportsGlobalCycle)
   auto cell = Cell(CellType::SLAB, CellType::SLAB);
   cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
   cell.partition_id = mpi_comm.rank();
-  std::map<std::uint64_t, std::vector<std::uint64_t>> cell_connect;
-  cell_connect[0] = {0, 1};
 
-  std::map<std::uint64_t, std::vector<CellFace>> cell_faces;
-  cell_faces[0] = {{}, {}};
-  std::map<std::uint64_t, std::vector<std::vector<std::uint64_t>>> cell_face_connect;
-  cell_face_connect[0] = {{0}, {1}};
+  UnpartitionedMesh::LightWeightCell raw_cell(CellType::SLAB, CellType::SLAB);
+  raw_cell.vertex_ids = {0, 1};
+  UnpartitionedMesh::LightWeightFace face;
+  face.vertex_ids = {0};
+  raw_cell.faces.push_back(face);
 
-  // grid->SetCells({cell}, {}, cell_connect);
-  // grid->SetCellFaces(cell_faces, cell_face_connect);
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+  cells.insert({{cell.partition_id, cell.global_id}, raw_cell});
+
+  std::vector<Cell> local_cells;
+  local_cells.push_back(std::move(cell));
+  grid->SetCells(std::move(local_cells), {}, cells);
 
   SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
