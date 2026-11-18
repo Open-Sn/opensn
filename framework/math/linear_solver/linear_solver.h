@@ -29,8 +29,8 @@ public:
 
   /**
    * Frees the storage that Setup() and Solve() allocate.
-   * The settings are kept, and the next Setup() allocates the storage again, so a later solve
-   * gives the same result.
+   * The settings are kept. The next Setup() or Solve() allocates the storage again, so a later
+   * solve gives the same result. The default implementation frees nothing.
    */
   virtual void ReleaseWorkspace() {}
 
