@@ -998,7 +998,11 @@ CMFDAcceleration::InitializeLinearSystem()
   OpenSnPETScCall(VecSetType(rhs_, VECMPI));
   OpenSnPETScCall(VecSetSizes(rhs_, local_unknowns, global_unknowns));
 
+  // Accelerations of other problems can have the same name, so the coarse solver reads its options
+  // from a database of its own. The previous KSP, which read the previous database, is destroyed.
+  petsc_options_db_ = std::make_unique<PETScOptionsDatabase>();
   OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
+  petsc_options_db_->Attach(ksp_);
   OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, GetName().c_str()));
   const bool petsc_options_policy = coarse_solver_policy_ == "petsc_options";
@@ -1009,7 +1013,7 @@ CMFDAcceleration::InitializeLinearSystem()
     ConfigureCoarseLinearSolver(using_direct_coarse_solver_);
   OpenSnPETScCall(KSPSetTolerances(ksp_, l_rel_tol_, l_abs_tol_, PETSC_DEFAULT, max_iters_));
   if ((petsc_options_policy or petsc_options_ != "ssss") and not petsc_options_.empty())
-    OpenSnPETScCall(PetscOptionsInsertString(nullptr, petsc_options_.c_str()));
+    petsc_options_db_->Insert(petsc_options_);
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
 }
 
@@ -1035,7 +1039,7 @@ CMFDAcceleration::ConfigureCoarseLinearSolver(const bool direct)
                                                  "pc_hypre_boomeramg_interp_type ext+i",
                                                  "pc_hypre_boomeramg_strong_threshold 0.5"};
     for (const auto& option : pc_options)
-      OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + GetName() + option).c_str()));
+      petsc_options_db_->Insert("-" + GetName() + option);
   }
 }
 

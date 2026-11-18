@@ -3148,5 +3148,61 @@
         "abs_tol": 1e-07
       }
     ]
+  },
+  {
+    "file": "petsc_options_isolation.py",
+    "comment": "PETSc options given to the WGDSA solver of one groupset do not change the WGDSA solver of another groupset or of a later problem with the same name, and options given to one CMFD acceleration do not change a later one. Infinite-medium flux and k are exact.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_WGDSA_APPLIED",
+        "wordnum": 1,
+        "gold": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_WGDSA_GROUPSET_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_WGDSA_PROBLEM_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_WGDSA_MAX_REL_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_CMFD_K_DIFF",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_CMFD_ITERATION_DIFF",
+        "wordnum": 1,
+        "gold": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "OPTIONS_CMFD_K_ERR",
+        "wordnum": 1,
+        "gold": 0.0,
+        "abs_tol": 1e-08
+      }
+    ]
   }
 ]

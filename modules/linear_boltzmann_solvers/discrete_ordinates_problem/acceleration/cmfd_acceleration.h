@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include <petscksp.h>
 #include <limits>
 #include <map>
@@ -170,6 +171,8 @@ private:
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;
   KSP ksp_ = nullptr;
+  /// Options of the coarse KSP and its preconditioner, which no other solver reads.
+  std::unique_ptr<PETScOptionsDatabase> petsc_options_db_;
   mutable int last_ksp_iterations_ = 0;
   mutable bool last_ksp_converged_ = true;
 

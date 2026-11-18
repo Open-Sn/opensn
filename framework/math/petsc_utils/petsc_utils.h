@@ -6,6 +6,7 @@
 #include "framework/utils/error.h"
 #include <petscksp.h>
 #include <petscsnes.h>
+#include <string>
 #include <vector>
 
 namespace opensn
@@ -197,6 +198,41 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat matrix,
                                                double rel_tol = PETSC_DEFAULT,
                                                double abs_tol = PETSC_DEFAULT,
                                                int64_t maximum_iterations = 100);
+
+/**
+ * An options database owned by one solver.
+ * Options inserted into the global database stay there and reach every later solver whose prefix
+ * they carry, such as the diffusion solvers of the other groupsets of a problem, which share one
+ * prefix, or the solvers of a later problem with the same name. Options inserted into this
+ * database reach only the objects attached to it.
+ *
+ * The database starts as a copy of the global database, which holds the options of PETSC_OPTIONS
+ * and the .petscrc files, so those still apply. Options inserted later take precedence.
+ */
+class PETScOptionsDatabase
+{
+public:
+  PETScOptionsDatabase();
+  ~PETScOptionsDatabase();
+  PETScOptionsDatabase(const PETScOptionsDatabase&) = delete;
+  PETScOptionsDatabase& operator=(const PETScOptionsDatabase&) = delete;
+  PETScOptionsDatabase(PETScOptionsDatabase&&) = delete;
+  PETScOptionsDatabase& operator=(PETScOptionsDatabase&&) = delete;
+
+  /// Inserts options given in the form of a PETSc command line.
+  void Insert(const std::string& options_string);
+
+  /**
+   * Makes a KSP and its preconditioner read their options from this database.
+   * Call it before the first KSPSetFromOptions.
+   *
+   * \warning The database must outlive the KSP, since PETSc does not reference count it.
+   */
+  void Attach(KSP ksp) const;
+
+private:
+  PetscOptions options_ = nullptr;
+};
 
 /// General monitor that print the residual norm relative to the right-hand side norm.
 PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* context);

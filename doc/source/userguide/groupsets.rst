@@ -420,13 +420,18 @@ process, ``"direct"`` requires a PETSc build with a parallel LU package.
 ``"petsc_options"`` lets ``wgdsa_petsc_options`` define the KSP/PC setup. The
 default threshold is ``20000`` global unknowns.
 
-``wgdsa_petsc_options`` is inserted into the PETSc options database with every
-policy. The WGDSA solver reads only the options that carry its prefix, the
+``wgdsa_petsc_options`` is given to the groupset's WGDSA solver with every
+policy. The solver reads only the options that carry its prefix, the
 problem ``name`` followed by ``_WGDSA``. For a problem with the default name,
 ``"-DiscreteOrdinatesProblem_WGDSAksp_type gmres"`` selects GMRES. The prefix
 is ``_TGDSA`` for TGDSA. In a groupset with charged-particle groups it is
 ``_WGDSA_g`` followed by the global group index, since each group has its own
-solver.
+solver. Each solver keeps its options in a PETSc options database of its own,
+so the options of one groupset do not reach the solvers of the other groupsets,
+which have the same prefix, or of a later problem with the same name. The
+database starts with the options of ``PETSC_OPTIONS`` and the ``.petscrc``
+files, which therefore apply to every solver, and the groupset options take
+precedence over them.
 
 ``wgdsa_boundary_closure`` sets the boundary condition of the diffusion
 correction on every boundary where the incoming angular flux is prescribed

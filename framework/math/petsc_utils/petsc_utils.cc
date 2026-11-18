@@ -25,6 +25,42 @@ ToPetscInt(const int64_t value, const char* name)
 }
 } // namespace
 
+PETScOptionsDatabase::PETScOptionsDatabase()
+{
+  OpenSnPETScCall(PetscOptionsCreate(&options_));
+  char* global_options = nullptr;
+  OpenSnPETScCall(PetscOptionsGetAll(nullptr, &global_options));
+  const PetscErrorCode insert_error = PetscOptionsInsertString(options_, global_options);
+  OpenSnPETScCall(PetscFree(global_options));
+  if (insert_error != PETSC_SUCCESS)
+    OpenSnPETScCall(PetscOptionsDestroy(&options_));
+  OpenSnPETScCall(insert_error);
+}
+
+PETScOptionsDatabase::~PETScOptionsDatabase()
+{
+  OpenSnPETScCall(PetscOptionsDestroy(&options_));
+}
+
+void
+PETScOptionsDatabase::Insert(const std::string& options_string)
+{
+  OpenSnPETScCall(PetscOptionsInsertString(options_, options_string.c_str()));
+}
+
+void
+PETScOptionsDatabase::Attach(KSP ksp) const
+{
+  // Every PETSc object begins with its PetscObject header, so PETSc casts object handles to
+  // PetscObject.
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  OpenSnPETScCall(PetscObjectSetOptions(reinterpret_cast<PetscObject>(ksp), options_));
+  PC pc = nullptr;
+  OpenSnPETScCall(KSPGetPC(ksp, &pc));
+  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
+  OpenSnPETScCall(PetscObjectSetOptions(reinterpret_cast<PetscObject>(pc), options_));
+}
+
 PETScSolverStatus
 KSPReasonToPETScSolverStatus(const KSPConvergedReason reason)
 {

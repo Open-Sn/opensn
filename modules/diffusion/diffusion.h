@@ -5,7 +5,9 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "petscksp.h"
+#include <memory>
 
 namespace opensn
 {
@@ -92,8 +94,9 @@ public:
    * Initializes the diffusion solver. This involves creating the sparse matrix with the appropriate
    * sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very
    * specialized parameters for Hypre's BooomerAMG. Note: `PCSetFromOptions` and `KSPSetFromOptions`
-   * are called at the end. Therefore, any number of additional PETSc options can be passed via the
-   * commandline.
+   * are called at the end, with the options of PETSC_OPTIONS and the .petscrc files, then the
+   * BoomerAMG parameters, then `options.additional_options_string`. The options are kept in a
+   * database of this solver, so they do not reach other solvers.
    */
   void Initialize();
 
@@ -154,6 +157,8 @@ protected:
   Vec rhs_ = nullptr;
   Vec x_ = nullptr;
   KSP ksp_ = nullptr;
+  /// Options of this solver's KSP and preconditioner, which no other solver reads.
+  std::unique_ptr<PETScOptionsDatabase> petsc_options_;
 
   const bool requires_ghosts_;
   const bool suppress_bcs_;

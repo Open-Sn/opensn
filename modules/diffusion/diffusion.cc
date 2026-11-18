@@ -201,8 +201,11 @@ DiffusionSolver::Initialize()
 
   OpenSnPETScCall(VecDuplicate(rhs_, &x_));
 
-  // Create KSP
+  // Create KSP. Solvers of the groupsets of a problem share a name, so each reads its options from
+  // a database of its own.
+  petsc_options_ = std::make_unique<PETScOptionsDatabase>();
   OpenSnPETScCall(KSPCreate(petsc_comm_, &ksp_));
+  petsc_options_->Attach(ksp_);
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, name_.c_str()));
 
   OpenSnPETScCall(
@@ -245,10 +248,10 @@ DiffusionSolver::Initialize()
       pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
     for (const auto& option : pc_options)
-      OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str()));
+      petsc_options_->Insert("-" + name_ + option);
   }
 
-  OpenSnPETScCall(PetscOptionsInsertString(nullptr, options.additional_options_string.c_str()));
+  petsc_options_->Insert(options.additional_options_string);
 
   OpenSnPETScCall(PCSetFromOptions(pc));
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
