@@ -276,6 +276,12 @@ as one configuration, not as unrelated toggles.
    interval grows. On large transport solves this can consume substantial
    memory.
 
+Groupsets are solved one at a time. In a problem with more than one groupset,
+each groupset's inner solver frees its Krylov vectors and its other storage
+after each solve and allocates them again at its next solve, so only the
+groupset being solved holds this storage. A problem with a single groupset
+keeps it from one solve to the next.
+
 Allowing cycles
 ---------------
 

@@ -26,6 +26,9 @@ public:
 
   void Solve() override;
 
+  /// Destroys the KSP, the operator, the vectors, and the saved source moments.
+  void ReleaseWorkspace() override;
+
 protected:
   void PreSetupCallback() override;
   void SetConvergenceTest() override;

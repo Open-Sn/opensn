@@ -27,6 +27,13 @@ public:
   /// Solve the system
   virtual void Solve() = 0;
 
+  /**
+   * Frees the storage that Setup() and Solve() allocate.
+   * The settings are kept, and the next Setup() allocates the storage again, so a later solve
+   * gives the same result.
+   */
+  virtual void ReleaseWorkspace() {}
+
   std::shared_ptr<LinearSolverContext> GetContext() { return context_ptr_; }
 
 protected:

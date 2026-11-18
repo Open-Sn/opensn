@@ -58,6 +58,14 @@ WGSLinearSolver::~WGSLinearSolver()
 }
 
 void
+WGSLinearSolver::ReleaseWorkspace()
+{
+  OpenSnPETScCall(VecDestroy(&rhs_preconditioned_work_));
+  saved_q_moments_local_ = std::vector<double>();
+  PETScLinearSolver::ReleaseWorkspace();
+}
+
+void
 WGSLinearSolver::Solve()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
