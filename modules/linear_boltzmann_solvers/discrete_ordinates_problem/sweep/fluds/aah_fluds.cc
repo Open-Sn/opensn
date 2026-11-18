@@ -53,23 +53,21 @@ AAH_FLUDS::OutgoingPsi(std::size_t cell_so_index,
                        std::size_t face_dof,
                        std::size_t n)
 {
-  // Face category
-  int fc = common_data_.so_cell_outb_face_face_category_[cell_so_index][outb_face_counter];
+  const std::size_t k = common_data_.outb_face_offsets_[cell_so_index] + outb_face_counter;
+  const int fc = common_data_.outb_face_categories_[k];
+  const std::size_t slot = common_data_.outb_face_slots_[k];
 
   if (fc >= 0)
   {
     size_t index = local_psi_Gn_block_strideG_[fc] * n +
-                   common_data_.so_cell_outb_face_slot_indices_[cell_so_index][outb_face_counter] *
-                     common_data_.local_psi_stride_[fc] * num_groups_ +
-                   face_dof * num_groups_;
+                   slot * common_data_.local_psi_stride_[fc] * num_groups_ + face_dof * num_groups_;
 
     return &local_psi_[fc][index];
   }
   else
   {
     size_t index = delayed_local_psi_Gn_block_strideG_ * n +
-                   common_data_.so_cell_outb_face_slot_indices_[cell_so_index][outb_face_counter] *
-                     common_data_.delayed_local_psi_stride_ * num_groups_ +
+                   slot * common_data_.delayed_local_psi_stride_ * num_groups_ +
                    face_dof * num_groups_;
 
     return &delayed_local_psi_[index];
@@ -82,22 +80,21 @@ AAH_FLUDS::OutgoingPsiE(std::size_t cell_so_index,
                         std::size_t face_dof,
                         std::size_t n)
 {
-  int fc = common_data_.so_cell_outb_face_face_category_[cell_so_index][outb_face_counter];
+  const std::size_t k = common_data_.outb_face_offsets_[cell_so_index] + outb_face_counter;
+  const int fc = common_data_.outb_face_categories_[k];
+  const std::size_t slot = common_data_.outb_face_slots_[k];
 
   if (fc >= 0)
   {
     size_t index = local_psi_Gn_block_strideG_[fc] * n +
-                   common_data_.so_cell_outb_face_slot_indices_[cell_so_index][outb_face_counter] *
-                     common_data_.local_psi_stride_[fc] * num_groups_ +
-                   face_dof * num_groups_;
+                   slot * common_data_.local_psi_stride_[fc] * num_groups_ + face_dof * num_groups_;
 
     return &local_psiE_[fc][index];
   }
   else
   {
     size_t index = delayed_local_psi_Gn_block_strideG_ * n +
-                   common_data_.so_cell_outb_face_slot_indices_[cell_so_index][outb_face_counter] *
-                     common_data_.delayed_local_psi_stride_ * num_groups_ +
+                   slot * common_data_.delayed_local_psi_stride_ * num_groups_ +
                    face_dof * num_groups_;
 
     return &delayed_local_psiE_[index];
@@ -175,34 +172,25 @@ AAH_FLUDS::UpwindPsi(std::size_t cell_so_index,
                      unsigned int g,
                      std::size_t n)
 {
-  // Face category
-  int fc = common_data_.so_cell_inco_face_face_category_[cell_so_index][inc_face_counter];
+  const std::size_t k = common_data_.inco_face_offsets_[cell_so_index] + inc_face_counter;
+  const int fc = common_data_.inco_face_categories_[k];
+  const std::size_t slot = common_data_.inco_face_slots_[k];
+  const auto upwind_dof =
+    static_cast<std::size_t>(common_data_.inco_face_upwind_dofs_[k][face_dof]);
 
   if (fc >= 0)
   {
-    size_t index =
-      local_psi_Gn_block_strideG_[fc] * n +
-      common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter].slot_address *
-        common_data_.local_psi_stride_[fc] * num_groups_ +
-      static_cast<size_t>(
-        common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter]
-          .upwind_dof_mapping[face_dof]) *
-        num_groups_ +
-      g;
+    size_t index = local_psi_Gn_block_strideG_[fc] * n +
+                   slot * common_data_.local_psi_stride_[fc] * num_groups_ +
+                   upwind_dof * num_groups_ + g;
 
     return &local_psi_[fc][index];
   }
   else
   {
-    size_t index =
-      delayed_local_psi_Gn_block_strideG_ * n +
-      common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter].slot_address *
-        common_data_.delayed_local_psi_stride_ * num_groups_ +
-      static_cast<size_t>(
-        common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter]
-          .upwind_dof_mapping[face_dof]) *
-        num_groups_ +
-      g;
+    size_t index = delayed_local_psi_Gn_block_strideG_ * n +
+                   slot * common_data_.delayed_local_psi_stride_ * num_groups_ +
+                   upwind_dof * num_groups_ + g;
 
     return &delayed_local_psi_old_[index];
   }
@@ -215,33 +203,25 @@ AAH_FLUDS::UpwindPsiE(std::size_t cell_so_index,
                       unsigned int g,
                       std::size_t n)
 {
-  int fc = common_data_.so_cell_inco_face_face_category_[cell_so_index][inc_face_counter];
+  const std::size_t k = common_data_.inco_face_offsets_[cell_so_index] + inc_face_counter;
+  const int fc = common_data_.inco_face_categories_[k];
+  const std::size_t slot = common_data_.inco_face_slots_[k];
+  const auto upwind_dof =
+    static_cast<std::size_t>(common_data_.inco_face_upwind_dofs_[k][face_dof]);
 
   if (fc >= 0)
   {
-    size_t index =
-      local_psi_Gn_block_strideG_[fc] * n +
-      common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter].slot_address *
-        common_data_.local_psi_stride_[fc] * num_groups_ +
-      static_cast<size_t>(
-        common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter]
-          .upwind_dof_mapping[face_dof]) *
-        num_groups_ +
-      g;
+    size_t index = local_psi_Gn_block_strideG_[fc] * n +
+                   slot * common_data_.local_psi_stride_[fc] * num_groups_ +
+                   upwind_dof * num_groups_ + g;
 
     return &local_psiE_[fc][index];
   }
   else
   {
-    size_t index =
-      delayed_local_psi_Gn_block_strideG_ * n +
-      common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter].slot_address *
-        common_data_.delayed_local_psi_stride_ * num_groups_ +
-      static_cast<size_t>(
-        common_data_.so_cell_inco_face_dof_indices_[cell_so_index][inc_face_counter]
-          .upwind_dof_mapping[face_dof]) *
-        num_groups_ +
-      g;
+    size_t index = delayed_local_psi_Gn_block_strideG_ * n +
+                   slot * common_data_.delayed_local_psi_stride_ * num_groups_ +
+                   upwind_dof * num_groups_ + g;
 
     return &delayed_local_psiE_old_[index];
   }
@@ -563,14 +543,16 @@ AAH_FLUDS::ForEachDelayedIncomingFace(const Fn& fn) const
       if (grid.IsCellLocal(face.neighbor_id))
       {
         ++local_face_counter;
-        if (common_data_.so_cell_inco_face_face_category_[so_index][local_face_counter] >= 0)
+        const std::size_t k = common_data_.inco_face_offsets_[so_index] + local_face_counter;
+        if (common_data_.inco_face_categories_[k] >= 0)
           continue;
-        const auto& face_dofs =
-          common_data_.so_cell_inco_face_dof_indices_[so_index][local_face_counter];
+        const std::size_t slot = common_data_.inco_face_slots_[k];
+        const auto& upwind_dofs =
+          common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_;
         block_stride = delayed_local_psi_Gn_block_strideG_;
         for (std::size_t fj = 0; fj < num_face_nodes; ++fj)
-          node_offsets[fj] = (face_dofs.slot_address * common_data_.delayed_local_psi_stride_ +
-                              static_cast<std::size_t>(face_dofs.upwind_dof_mapping[fj])) *
+          node_offsets[fj] = (slot * common_data_.delayed_local_psi_stride_ +
+                              static_cast<std::size_t>(upwind_dofs[fj])) *
                              num_groups_;
       }
       else

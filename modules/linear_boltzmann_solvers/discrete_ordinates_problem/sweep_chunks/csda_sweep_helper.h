@@ -11,6 +11,7 @@
 #include "framework/mesh/mesh/mesh.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+#include <span>
 #include <vector>
 
 namespace opensn
@@ -36,7 +37,7 @@ struct CSDALocalSolveContext
   const Vector<double>* v = nullptr;
   const Cell* cell = nullptr;
   const CellMapping* cell_mapping = nullptr;
-  const std::vector<FaceOrientation>* face_orientations = nullptr;
+  const std::span<const FaceOrientation>* face_orientations = nullptr;
   const std::vector<double>* face_mu_values = nullptr;
   const std::vector<Vector<double>>* int_f_shape_i = nullptr;
   const CellLBSView* cell_transport_view = nullptr;
