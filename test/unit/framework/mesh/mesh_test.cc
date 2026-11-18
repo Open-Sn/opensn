@@ -718,3 +718,144 @@ TEST(MeshTest, SetCellsMapOverload)
     }
   }
 }
+
+TEST(OrthogonalMeshGeneratorTest, DistributedGeneration)
+{
+  // 1D test: 8 cells on [0, 2]
+  {
+    std::vector<double> x_nodes = {0.0, 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2.0};
+    auto grid = BuildDistributedOrthogonalMesh({x_nodes});
+    auto grid_std = BuildOrthogonalMesh({x_nodes});
+
+    EXPECT_EQ(grid->GetDimension(), 1);
+    EXPECT_EQ(grid->GetType(), ORTHOGONAL);
+    EXPECT_EQ(grid->GetDimension(), grid_std->GetDimension());
+    EXPECT_EQ(grid->GetType(), grid_std->GetType());
+    EXPECT_EQ(grid->GetLocalCellCount(), grid_std->GetLocalCellCount());
+    EXPECT_EQ(grid->GhostCellCount(), grid_std->GhostCellCount());
+    EXPECT_EQ(grid->GetGlobalNumberOfCells(), grid_std->GetGlobalNumberOfCells());
+
+    size_t local_cells = grid->GetLocalCellCount();
+    size_t total_cells = 0;
+    mpi_comm.all_reduce(local_cells, total_cells, mpi::op::sum<size_t>());
+    EXPECT_EQ(total_cells, 8);
+    EXPECT_GT(local_cells, 0);
+
+    if (mpi_comm.size() > 1)
+      EXPECT_GT(grid->GhostCellCount(), 0);
+
+    double local_vol = 0.0;
+    for (uint32_t c = 0; c < grid->GetLocalCellCount(); ++c)
+    {
+      const auto& cell = grid->GetLocalCell(c);
+      EXPECT_TRUE(grid->IsCellLocal(cell.global_id));
+      EXPECT_GT(cell.volume, 0.0);
+      EXPECT_EQ(grid->GetCellFaceCount(c), 2);
+      for (uint32_t f = 0; f < grid->GetCellFaceCount(c); ++f)
+      {
+        const auto& face = grid->GetCellFace(c, f);
+        if (face.has_neighbor)
+          EXPECT_NO_THROW(grid->GetGlobalCell(face.neighbor_id));
+        else
+          EXPECT_TRUE(face.neighbor_id == ZMIN or face.neighbor_id == ZMAX);
+      }
+      local_vol += cell.volume;
+    }
+    double total_vol = 0.0;
+    mpi_comm.all_reduce(local_vol, total_vol, mpi::op::sum<double>());
+    EXPECT_NEAR(total_vol, 2.0, 1e-10);
+  }
+
+  // 2D test: 4x4 cells (16 cells) on [0, 1] x [0, 1]
+  {
+    std::vector<double> nodes = {0.0, 0.25, 0.5, 0.75, 1.0};
+    auto grid = BuildDistributedOrthogonalMesh({nodes, nodes});
+    auto grid_std = BuildOrthogonalMesh({nodes, nodes});
+
+    EXPECT_EQ(grid->GetDimension(), grid_std->GetDimension());
+    EXPECT_EQ(grid->GetType(), grid_std->GetType());
+    EXPECT_EQ(grid->GetLocalCellCount(), grid_std->GetLocalCellCount());
+    EXPECT_EQ(grid->GhostCellCount(), grid_std->GhostCellCount());
+    EXPECT_EQ(grid->GetGlobalNumberOfCells(), grid_std->GetGlobalNumberOfCells());
+
+    size_t local_cells = grid->GetLocalCellCount();
+    size_t total_cells = 0;
+    mpi_comm.all_reduce(local_cells, total_cells, mpi::op::sum<size_t>());
+    EXPECT_EQ(total_cells, 16);
+    EXPECT_GT(local_cells, 0);
+
+    if (mpi_comm.size() > 1)
+      EXPECT_GT(grid->GhostCellCount(), 0);
+
+    double local_vol = 0.0;
+    for (uint32_t c = 0; c < grid->GetLocalCellCount(); ++c)
+    {
+      const auto& cell = grid->GetLocalCell(c);
+      EXPECT_TRUE(grid->IsCellLocal(cell.global_id));
+      EXPECT_GT(cell.volume, 0.0);
+      EXPECT_EQ(grid->GetCellFaceCount(c), 4);
+      for (uint32_t f = 0; f < grid->GetCellFaceCount(c); ++f)
+      {
+        const auto& face = grid->GetCellFace(c, f);
+        EXPECT_GT(face.area, 0.0);
+        if (face.has_neighbor)
+          EXPECT_NO_THROW(grid->GetGlobalCell(face.neighbor_id));
+        else
+          EXPECT_TRUE(face.neighbor_id == XMIN or face.neighbor_id == XMAX or
+                      face.neighbor_id == YMIN or face.neighbor_id == YMAX);
+      }
+      local_vol += cell.volume;
+    }
+    double total_vol = 0.0;
+    mpi_comm.all_reduce(local_vol, total_vol, mpi::op::sum<double>());
+    EXPECT_NEAR(total_vol, 1.0, 1e-10);
+  }
+
+  // 3D test: 4x4x4 cells (64 cells) on [0, 1] x [0, 1] x [0, 1]
+  {
+    std::vector<double> nodes = {0.0, 0.25, 0.5, 0.75, 1.0};
+    auto grid = BuildDistributedOrthogonalMesh({nodes, nodes, nodes});
+    auto grid_std = BuildOrthogonalMesh({nodes, nodes, nodes});
+
+    EXPECT_EQ(grid->GetDimension(), 3);
+    EXPECT_EQ(grid->GetType(), ORTHOGONAL);
+    EXPECT_EQ(grid->GetDimension(), grid_std->GetDimension());
+    EXPECT_EQ(grid->GetType(), grid_std->GetType());
+    EXPECT_EQ(grid->GetLocalCellCount(), grid_std->GetLocalCellCount());
+    EXPECT_EQ(grid->GhostCellCount(), grid_std->GhostCellCount());
+    EXPECT_EQ(grid->GetGlobalNumberOfCells(), grid_std->GetGlobalNumberOfCells());
+
+    size_t local_cells = grid->GetLocalCellCount();
+    size_t total_cells = 0;
+    mpi_comm.all_reduce(local_cells, total_cells, mpi::op::sum<size_t>());
+    EXPECT_EQ(total_cells, 64);
+    EXPECT_GT(local_cells, 0);
+
+    if (mpi_comm.size() > 1)
+      EXPECT_GT(grid->GhostCellCount(), 0);
+
+    double local_vol = 0.0;
+    for (uint32_t c = 0; c < grid->GetLocalCellCount(); ++c)
+    {
+      const auto& cell = grid->GetLocalCell(c);
+      EXPECT_TRUE(grid->IsCellLocal(cell.global_id));
+      EXPECT_GT(cell.volume, 0.0);
+      EXPECT_EQ(grid->GetCellFaceCount(c), 6);
+      for (uint32_t f = 0; f < grid->GetCellFaceCount(c); ++f)
+      {
+        const auto& face = grid->GetCellFace(c, f);
+        EXPECT_GT(face.area, 0.0);
+        if (face.has_neighbor)
+          EXPECT_NO_THROW(grid->GetGlobalCell(face.neighbor_id));
+        else
+          EXPECT_TRUE(face.neighbor_id == XMIN or face.neighbor_id == XMAX or
+                      face.neighbor_id == YMIN or face.neighbor_id == YMAX or
+                      face.neighbor_id == ZMIN or face.neighbor_id == ZMAX);
+      }
+      local_vol += cell.volume;
+    }
+    double total_vol = 0.0;
+    mpi_comm.all_reduce(local_vol, total_vol, mpi::op::sum<double>());
+    EXPECT_NEAR(total_vol, 1.0, 1e-10);
+  }
+}

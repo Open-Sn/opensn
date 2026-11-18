@@ -8,6 +8,9 @@
 std::shared_ptr<opensn::Mesh>
 BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets);
 
+std::shared_ptr<opensn::Mesh>
+BuildDistributedOrthogonalMesh(const std::vector<std::vector<double>>& node_sets);
+
 std::shared_ptr<opensn::Mesh> BuildLineMesh(double length, unsigned int n, double xmin);
 
 std::shared_ptr<opensn::Mesh> BuildSquareMesh(double length, unsigned int n, double xmin);

@@ -22,6 +22,23 @@ BuildOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
   return OrthogonalMeshGenerator(params).Execute();
 }
 
+std::shared_ptr<Mesh>
+BuildDistributedOrthogonalMesh(const std::vector<std::vector<double>>& node_sets)
+{
+  ParameterBlock array("node_sets");
+  for (std::size_t i = 0; i < node_sets.size(); ++i)
+    array.AddParameter(ParameterBlock(std::to_string(i + 1), node_sets[i]));
+  array.ChangeToArray();
+
+  ParameterBlock block("");
+  block.AddParameter(array);
+  block.AddParameter("distributed_generation", true);
+
+  auto params = OrthogonalMeshGenerator::GetInputParameters();
+  params.AssignParameters(block);
+  return OrthogonalMeshGenerator(params).Execute();
+}
+
 std::shared_ptr<opensn::Mesh>
 BuildLineMesh(double length, unsigned int n, double xmin)
 {
