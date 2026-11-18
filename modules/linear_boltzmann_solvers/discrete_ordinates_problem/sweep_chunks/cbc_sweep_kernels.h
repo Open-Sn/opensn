@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/sweep_chunk.h"
 #include <algorithm>
 #include <span>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -20,10 +21,12 @@ namespace opensn
 /// Staged outgoing nonlocal CBC face psi.
 struct OutgoingFacePsi
 {
-  /// Downstream incoming face slot.
-  std::size_t incoming_face_slot = CBC_FLUDSCommonData::INVALID_FACE_SLOT;
-  /// SPDS successor peer index.
+  /// Downstream face slot.
+  std::size_t face_slot = CBC_FLUDSCommonData::INVALID_FACE_SLOT;
+  /// Index in the ordinary or delayed SPDS-successor list, selected by delayed.
   std::size_t peer_index = CBC_FLUDSCommonData::INVALID_PEER_INDEX;
+  /// Whether this face psi is lagged by a broken inter-partition cycle.
+  bool delayed = false;
   /// Face-node -> angleset subset -> group major psi values.
   std::vector<double> data;
 };
@@ -35,13 +38,63 @@ struct CBCSweepWorkspace
   std::vector<OutgoingFacePsi> nonlocal_outgoing_psi;
   /// Face-indexed lookup for staged outgoing psi.
   std::vector<OutgoingFacePsi*> outgoing_psi_by_face;
+  /// Number of active entries in `nonlocal_outgoing_psi`.
   std::size_t num_nonlocal_outgoing_psi = 0;
+  /// Fixed-node kernel right-hand-side storage.
   std::vector<double> rhs_values;
+  /// Fixed-node kernel total cross-section block.
   std::vector<double> sigma_t_group_block;
+  /// Fixed-node kernel moment degree-of-freedom map.
   std::vector<std::size_t> moment_dof_map;
   /// Angular source of one direction at the nodes of the cell, node-major then group.
   std::vector<double> nodal_angular_source;
+  /// Direction cosines for the current cell faces.
   std::vector<double> face_mu_values;
+  /// Generic-kernel transport operator.
+  DenseMatrix<double> system_matrix;
+  /// Generic-kernel group-specific transport operator.
+  DenseMatrix<double> system_matrix_work;
+  /// Generic-kernel angular flux right-hand sides by group.
+  std::vector<Vector<double>> rhs_vectors;
+  /// Generic-kernel nodal source values.
+  std::vector<double> source_values;
+  /// Generic transient-kernel time-removal coefficients.
+  std::vector<double> transient_coefficients;
+
+  /**
+   * Prepare generic-kernel work arrays for this sweep chunk.
+   *
+   * Subsequent calls reuse the arrays. Both dimensions must remain unchanged.
+   *
+   * \param max_num_cell_dofs Largest cell-node count supported by the chunk.
+   * \param num_groups Number of groups in its fixed groupset.
+   * \throw std::logic_error If either dimension changes after preparation.
+   */
+  void PrepareGeneric(std::size_t max_num_cell_dofs, std::size_t num_groups)
+  {
+    if (generic_prepared_)
+    {
+      if (max_num_cell_dofs != generic_max_num_cell_dofs_ or num_groups != generic_num_groups_)
+        throw std::logic_error("CBC generic workspace dimensions changed after preparation.");
+      return;
+    }
+
+    system_matrix.resize({max_num_cell_dofs, max_num_cell_dofs});
+    system_matrix_work.resize({max_num_cell_dofs, max_num_cell_dofs});
+    rhs_vectors.resize(num_groups);
+    for (auto& rhs : rhs_vectors)
+      rhs.Resize(static_cast<unsigned int>(max_num_cell_dofs));
+    source_values.resize(max_num_cell_dofs);
+    transient_coefficients.resize(num_groups);
+    generic_max_num_cell_dofs_ = max_num_cell_dofs;
+    generic_num_groups_ = num_groups;
+    generic_prepared_ = true;
+  }
+
+private:
+  std::size_t generic_max_num_cell_dofs_ = 0;
+  std::size_t generic_num_groups_ = 0;
+  bool generic_prepared_ = false;
 };
 
 /// Prepare staged nonlocal outgoing face psi for one cell.
@@ -76,8 +129,10 @@ PrepareNonlocalOutgoingPsi(CBCSweepWorkspace& workspace,
       nonlocal_outgoing_psi.emplace_back();
 
     auto& outgoing_psi = nonlocal_outgoing_psi[psi_index];
-    outgoing_psi.incoming_face_slot =
+    outgoing_psi.face_slot =
       common_data.OutgoingFaceSlot(cell_local_id, static_cast<unsigned int>(f));
+    outgoing_psi.delayed =
+      common_data.IsDelayedNonlocalOutgoingFace(cell_local_id, static_cast<unsigned int>(f));
     outgoing_psi.peer_index =
       common_data.OutgoingPeerIndex(cell_local_id, static_cast<unsigned int>(f));
     const auto psi_size = cell_mapping.GetNumFaceNodes(f) * group_angle_stride;
@@ -95,8 +150,10 @@ QueueNonlocalOutgoingPsi(CBCSweepWorkspace& workspace, CBC_AsynchronousCommunica
   {
     const auto& outgoing_psi = workspace.nonlocal_outgoing_psi[i];
     async_comm.QueueDownwindMessage(
+      outgoing_psi.delayed ? CBC_AsynchronousCommunicator::DownwindPsiType::DELAYED
+                           : CBC_AsynchronousCommunicator::DownwindPsiType::NORMAL,
       outgoing_psi.peer_index,
-      outgoing_psi.incoming_face_slot,
+      outgoing_psi.face_slot,
       std::span<const double>(outgoing_psi.data.data(), outgoing_psi.data.size()));
   }
 }
@@ -131,16 +188,19 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
   const auto& m2d_op = groupset.quadrature->GetMomentToDiscreteOperator();
   const auto& d2m_op = groupset.quadrature->GetDiscreteToMomentOperator();
 
-  DenseMatrix<double> Amat(sweep_chunk.max_num_cell_dofs_, sweep_chunk.max_num_cell_dofs_);
-  DenseMatrix<double> Atemp(sweep_chunk.max_num_cell_dofs_, sweep_chunk.max_num_cell_dofs_);
-  std::vector<Vector<double>> b(gs_size, Vector<double>(sweep_chunk.max_num_cell_dofs_));
-  std::vector<double> source(sweep_chunk.max_num_cell_dofs_);
-  std::vector<double> face_mu_values(cell_num_faces);
+  auto& workspace = sweep_chunk.workspace_;
+  workspace.PrepareGeneric(sweep_chunk.max_num_cell_dofs_, gs_size);
+  auto& Amat = workspace.system_matrix;
+  auto& Atemp = workspace.system_matrix_work;
+  auto& b = workspace.rhs_vectors;
+  auto& source = workspace.source_values;
+  auto& face_mu_values = workspace.face_mu_values;
+  face_mu_values.resize(cell_num_faces);
 
   const auto& face_orientations = angle_set.GetSPDS().GetCellFaceOrientations()[cell_local_id];
   const auto& sigma_t = sweep_chunk.xs_.at(cell.block_id)->GetSigmaTotal();
 
-  std::vector<double> tau_gsg;
+  auto& tau_gsg = workspace.transient_coefficients;
   if constexpr (time_dependent)
   {
     const auto& inv_velg = sweep_chunk.xs_.at(cell.block_id)->GetInverseVelocity();
@@ -149,7 +209,6 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     const double dt = sweep_chunk.problem_.GetTimeStep();
     const double inv_dt = 1.0 / dt;
 
-    tau_gsg.assign(gs_size, 0.0);
     for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
       tau_gsg[gsg] = inv_velg[gs_gi + gsg] * inv_theta * inv_dt;
   }
@@ -199,8 +258,18 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
         is_boundary_face
           ? nullptr
           : &common_data.GetFaceNodalMapping(cell_local_id, static_cast<unsigned int>(f));
+      const bool is_delayed_local_face =
+        is_local_face and
+        common_data.IsDelayedLocalIncomingFace(cell_local_id, static_cast<unsigned int>(f));
+      const bool is_delayed_nonlocal_face =
+        (not is_boundary_face) and (not is_local_face) and
+        common_data.IsDelayedNonlocalIncomingFace(cell_local_id, static_cast<unsigned int>(f));
+      const auto delayed_nonlocal_face_info = is_delayed_nonlocal_face
+                                                ? common_data.GetDelayedNonlocalFaceByLocalFace(
+                                                    cell_local_id, static_cast<unsigned int>(f))
+                                                : CBC_FLUDSCommonData::DelayedNonlocalFaceInfo{};
       const auto incoming_nonlocal_slot =
-        (is_boundary_face or is_local_face)
+        (is_boundary_face or is_local_face or is_delayed_nonlocal_face)
           ? CBC_FLUDSCommonData::INVALID_FACE_SLOT
           : common_data.IncomingFaceSlot(cell_local_id, static_cast<unsigned int>(f));
 
@@ -217,9 +286,18 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
 
           const double* psi = nullptr;
 
-          if (is_local_face)
-            psi = fluds.UpwindPsi(*cell_transport_view.FaceNeighbor(f),
-                                  face_nodal_mapping->cell_node_mapping_[fj],
+          if (is_delayed_local_face)
+            psi = fluds.DelayedUpwindPsi(cell_local_id,
+                                         static_cast<unsigned int>(f),
+                                         face_nodal_mapping->face_node_mapping_[fj],
+                                         as_ss_idx);
+          else if (is_delayed_nonlocal_face)
+            psi = fluds.DelayedNLUpwindPsi(
+              delayed_nonlocal_face_info, face_nodal_mapping->face_node_mapping_[fj], as_ss_idx);
+          else if (is_local_face)
+            psi = fluds.UpwindPsi(cell_local_id,
+                                  static_cast<unsigned int>(f),
+                                  face_nodal_mapping->face_node_mapping_[fj],
                                   as_ss_idx);
           else if (not is_boundary_face)
             psi = fluds.NLUpwindPsi(
@@ -345,6 +423,18 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
       const bool is_boundary_face = not face.has_neighbor;
       const bool is_reflecting_boundary_face =
         (is_boundary_face and angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting());
+      const bool is_delayed_local_outgoing =
+        is_local_face and
+        common_data.IsDelayedLocalOutgoingFace(cell_local_id, static_cast<unsigned int>(f));
+      std::uint32_t delayed_local_cell_local_id = 0;
+      unsigned int delayed_local_face_id = 0;
+      if (is_delayed_local_outgoing)
+      {
+        const auto& face_nodal_mapping =
+          common_data.GetFaceNodalMapping(cell_local_id, static_cast<unsigned int>(f));
+        delayed_local_cell_local_id = face.GetNeighborLocalID(fluds.GetSPDS().GetGrid().get());
+        delayed_local_face_id = static_cast<unsigned int>(face_nodal_mapping.associated_face_);
+      }
       const auto& IntF_shapeI = IntS_shapeI[f];
 
       const std::size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
@@ -361,8 +451,14 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
             f, gs_gi + gsg, wt * face_mu_values[f] * b[gsg](i) * IntF_shapeI(i));
 
         double* psi = nullptr;
-        if (is_local_face)
-          psi = fluds.OutgoingPsi(cell, i, as_ss_idx);
+        if (is_delayed_local_outgoing)
+          psi = fluds.DelayedLocalOutgoingPsi(delayed_local_cell_local_id,
+                                              delayed_local_face_id,
+                                              static_cast<unsigned int>(fi),
+                                              as_ss_idx);
+        else if (is_local_face)
+          psi = fluds.OutgoingPsi(
+            cell_local_id, static_cast<unsigned int>(f), static_cast<unsigned int>(fi), as_ss_idx);
         else if (not is_boundary_face)
           psi = fluds.NLOutgoingPsi(psi_nonlocal_outgoing, fi, as_ss_idx);
         else if (is_reflecting_boundary_face)

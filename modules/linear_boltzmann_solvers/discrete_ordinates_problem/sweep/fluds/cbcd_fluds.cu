@@ -1,285 +1,219 @@
 // SPDX-FileCopyrightText: 2025 The OpenSn Authors <https://open-sn.github.io/opensn/>
 // SPDX-License-Identifier: MIT
 
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/cbcd_angle_set.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/communicators/cbcd_async_comm.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/cbcd_sweep_chunk.h"
-#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/boundary/sweep_boundary.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/cbc.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/device/carrier/mesh_carrier.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "framework/mesh/mesh/mesh.h"
 #include "framework/math/unknown_manager/unknown_manager.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "caliper/cali.h"
 #include <algorithm>
-#include <cassert>
+#include <cstring>
+#include <set>
+#include <vector>
 
 namespace opensn
 {
 
+CBCD_NonLocalBank::CBCD_NonLocalBank(const std::vector<std::size_t>& range_sizes)
+  : range_begin_(range_sizes.size() + 1, 0),
+    reserved_(std::make_unique<std::atomic<std::size_t>[]>(range_sizes.size()))
+{
+  for (std::size_t range = 0; range < range_sizes.size(); ++range)
+    range_begin_[range + 1] = range_begin_[range] + range_sizes[range];
+  const auto size = range_begin_.back();
+  if (size == 0)
+    return;
+  if constexpr (LBSProblem::use_gpu_aware_mpi)
+  {
+    device_storage_ = crb::DeviceMemory<double>(size);
+    data_ = device_storage_.get();
+  }
+  else
+  {
+    host_storage_.resize(size);
+    data_ = host_storage_.data();
+  }
+}
+
+void
+CBCD_NonLocalBank::Reset()
+{
+  for (std::size_t range = 0; range < GetNumRanges(); ++range)
+    reserved_[range].store(0, std::memory_order_relaxed);
+}
+
+void
+CBCD_FLUDS::BuildNonLocalBanks(const std::vector<CBCD_FLUDS*>& fluds)
+{
+  std::set<int> partition_set;
+  for (const auto* angle_set_fluds : fluds)
+  {
+    const auto& partitions = angle_set_fluds->common_data_.GetDestinationPartitions();
+    partition_set.insert(partitions.begin(), partitions.end());
+  }
+  const std::vector<int> partitions(partition_set.begin(), partition_set.end());
+  std::vector<std::size_t> outgoing_sizes(partitions.size(), 0);
+  std::size_t num_incoming_values = 0;
+  for (auto* angle_set_fluds : fluds)
+  {
+    const auto& common_data = angle_set_fluds->common_data_;
+    auto& ranges = angle_set_fluds->outgoing_bank_ranges_;
+    ranges.clear();
+    for (const auto partition : common_data.GetDestinationPartitions())
+      ranges.push_back(static_cast<std::size_t>(
+        std::lower_bound(partitions.begin(), partitions.end(), partition) - partitions.begin()));
+    const auto stride = angle_set_fluds->GetStrideSize();
+    for (const auto& face : common_data.GetOutgoingNonlocalFaces())
+      outgoing_sizes[ranges[face.destination_index]] += std::size_t{face.num_face_nodes} * stride;
+    num_incoming_values += common_data.GetNumIncomingNonlocalNodes() * stride;
+  }
+  const auto incoming =
+    std::make_shared<CBCD_NonLocalBank>(std::vector<std::size_t>{num_incoming_values});
+  const auto outgoing = std::make_shared<CBCD_NonLocalBank>(outgoing_sizes);
+  for (auto* angle_set_fluds : fluds)
+  {
+    angle_set_fluds->nonlocal_incoming_psi_bank_ = incoming;
+    angle_set_fluds->nonlocal_outgoing_psi_bank_ = outgoing;
+  }
+}
+
 CBCD_FLUDS::CBCD_FLUDS(std::size_t num_groups,
                        std::size_t num_angles,
-                       std::size_t num_local_cells,
                        const CBCD_FLUDSCommonData& common_data,
-                       const UnknownManager& psi_uk_man,
-                       const SpatialDiscretization& sdm,
-                       bool save_angular_flux)
+                       const SpatialDiscretization& sdm)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
     common_data_(common_data),
-    psi_uk_man_(psi_uk_man),
-    sdm_(sdm),
-    num_angles_in_gs_quadrature_(psi_uk_man_.GetNumberOfUnknowns()),
-    num_quadrature_local_dofs_(sdm_.GetNumLocalDOFs(psi_uk_man_)),
-    num_local_spatial_dofs_(num_quadrature_local_dofs_ / num_angles_in_gs_quadrature_ /
-                            num_groups_),
-    local_psi_data_size_(num_local_spatial_dofs_ * num_groups_and_angles_),
-    incoming_boundary_node_map_(common_data_.GetIncomingBoundaryNodeMap()),
-    cell_to_outgoing_boundary_nodes_(common_data_.GetOutgoingBoundaryNodeMap()),
-    cell_to_incoming_nonlocal_nodes_(common_data_.GetIncomingNonlocalNodeMap()),
-    cell_to_outgoing_nonlocal_nodes_(common_data_.GetOutgoingNonlocalNodeMap()),
-    incoming_boundary_psi_(common_data_.GetNumIncomingBoundaryNodes() * num_groups_and_angles_),
-    outgoing_boundary_psi_(common_data_.GetNumOutgoingBoundaryNodes() * num_groups_and_angles_),
-    incoming_nonlocal_psi_(common_data_.GetNumIncomingNonlocalNodes() * num_groups_and_angles_),
-    outgoing_nonlocal_psi_(common_data_.GetNumOutgoingNonlocalNodes() * num_groups_and_angles_),
-    local_cell_ids_(num_local_cells),
-    save_angular_flux_(save_angular_flux),
-    local_psi_(local_psi_data_size_)
-{
-  if (save_angular_flux_ and host_saved_psi_.empty())
-  {
-    host_saved_psi_ = crb::HostVector<double>(local_psi_data_size_);
-    device_saved_psi_ = crb::DeviceMemory<double>(local_psi_data_size_);
-  }
-  CreatePointerSet();
-  deplocs_outgoing_messages_.reserve(common_data.GetNumIncomingNonlocalFaces());
-}
-
-CBCD_FLUDS::~CBCD_FLUDS()
-{
-  if (not host_saved_psi_.empty())
-  {
-    host_saved_psi_.clear();
-  }
-  local_cell_ids_.clear();
-  incoming_boundary_psi_.clear();
-  outgoing_boundary_psi_.clear();
-  incoming_nonlocal_psi_.clear();
-  outgoing_nonlocal_psi_.clear();
-}
-
-void
-CBCD_FLUDS::AllocateLocalAndSavedPsi()
+    num_saved_psi_values_(sdm.GetNumLocalNodes() * num_groups_and_angles_),
+    local_psi_(dynamic_cast<const CBC_SPDS&>(common_data.GetSPDS()).GetTotalLocalFaceSlotNodes() *
+               num_groups_and_angles_),
+    incoming_payload_offsets_(common_data.GetNumIncomingNonlocalFaces())
 {
 }
 
 void
-CBCD_FLUDS::CreatePointerSet()
+CBCD_FLUDS::SetSaveAngularFlux(bool save)
 {
-  pointer_set_.local_psi = local_psi_.get();
-  if (local_psi_data_size_ > 0)
-    assert(pointer_set_.local_psi != nullptr);
-
-  pointer_set_.incoming_boundary_psi = incoming_boundary_psi_.data();
-  if (common_data_.GetNumIncomingBoundaryNodes() > 0)
-    assert(pointer_set_.incoming_boundary_psi != nullptr);
-
-  pointer_set_.outgoing_boundary_psi = outgoing_boundary_psi_.data();
-  if (common_data_.GetNumOutgoingBoundaryNodes() > 0)
-    assert(pointer_set_.outgoing_boundary_psi != nullptr);
-
-  pointer_set_.nonlocal_incoming_psi = incoming_nonlocal_psi_.data();
-  if (common_data_.GetNumIncomingNonlocalNodes() > 0)
-    assert(pointer_set_.nonlocal_incoming_psi != nullptr);
-
-  pointer_set_.nonlocal_outgoing_psi = outgoing_nonlocal_psi_.data();
-  if (common_data_.GetNumOutgoingNonlocalNodes() > 0)
-    assert(pointer_set_.nonlocal_outgoing_psi != nullptr);
-
-  pointer_set_.stride_size = num_groups_and_angles_;
-}
-
-void
-CBCD_FLUDS::CopyIncomingBoundaryPsiToDevice(CBCDSweepChunk& sweep_chunk, CBCD_AngleSet* angle_set)
-{
-  const auto& angle_indices = angle_set->GetAngleIndices();
-  const auto& num_angles = angle_indices.size();
-  const auto& groupset = sweep_chunk.GetGroupset();
-
-  for (const auto& node : incoming_boundary_node_map_)
-  {
-    for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
-    {
-      auto direction_num = angle_indices[as_ss_idx];
-      double* dst_psi = incoming_boundary_psi_.data() +
-                        node.storage_index * num_groups_and_angles_ + as_ss_idx * num_groups_;
-      const double* src_psi = angle_set->PsiBoundary(node.boundary_id,
-                                                     direction_num,
-                                                     node.cell_local_id,
-                                                     node.face_id,
-                                                     node.face_node,
-                                                     0,
-                                                     sweep_chunk.IsSurfaceSourceActive());
-      std::copy(src_psi, src_psi + num_groups_, dst_psi);
-    }
-  }
-}
-
-void
-CBCD_FLUDS::CopyIncomingNonlocalPsiToDevice(CBCD_AngleSet* angle_set,
-                                            const std::vector<std::uint32_t>& cell_local_ids)
-{
-  if (cell_to_incoming_nonlocal_nodes_.empty())
+  if (save == save_angular_flux_)
     return;
-  const auto& angle_indices = angle_set->GetAngleIndices();
-  const auto& num_angles = angle_indices.size();
-  for (const auto& cell_local_id : cell_local_ids)
+  host_saved_psi_ =
+    save ? crb::HostVector<double>(num_saved_psi_values_) : crb::HostVector<double>();
+  device_saved_psi_ =
+    save ? crb::DeviceMemory<double>(num_saved_psi_values_) : crb::DeviceMemory<double>();
+  save_angular_flux_ = save;
+}
+
+void
+CBCD_FLUDS::BuildBoundaryMaps(AngleSet& angle_set)
+{
+  const auto& boundaries = angle_set.GetBoundaries();
+
+  std::vector<CBCD_BoundaryInput> incoming_map(common_data_.GetNumIncomingBoundaryNodes());
+  for (const auto& face : common_data_.GetIncomingBoundaryFaces())
   {
-    auto incoming_boundary_it = cell_to_incoming_nonlocal_nodes_.find(cell_local_id);
-    if (incoming_boundary_it == cell_to_incoming_nonlocal_nodes_.end())
+    auto& boundary = *boundaries.at(face.boundary_id);
+    for (std::uint32_t node = 0; node < face.num_face_nodes; ++node)
+      incoming_map[face.storage_offset + node] = {
+        boundary.GetOffsetToAngleset(
+          FaceNode(face.cell_local_id, face.face_id, node), angle_set, false),
+        boundary.IsReflecting(),
+        boundary.IsAngleDependent()};
+  }
+
+  std::vector<std::uint8_t> reflecting;
+  std::vector<std::uint64_t> outgoing_map;
+  for (const auto& face : common_data_.GetOutgoingBoundaryFaces())
+  {
+    auto& boundary = *boundaries.at(face.boundary_id);
+    if (not boundary.IsReflecting())
       continue;
-    for (const auto& node : incoming_boundary_it->second)
+    if (reflecting.empty())
     {
-      for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
-      {
-        double* dst_psi = incoming_nonlocal_psi_.data() +
-                          node.storage_index * num_groups_and_angles_ + as_ss_idx * num_groups_;
-        const double* src_psi =
-          NLUpwindPsi(node.cell_global_id, node.face_id, node.face_node_mapped, as_ss_idx);
-        std::copy(src_psi, src_psi + num_groups_, dst_psi);
-      }
+      reflecting.resize(common_data_.GetNumOutgoingBoundaryNodes(), 0);
+      outgoing_map.resize(common_data_.GetNumOutgoingBoundaryNodes());
+    }
+    for (std::uint32_t node = 0; node < face.num_face_nodes; ++node)
+    {
+      reflecting[face.storage_offset + node] = 1;
+      outgoing_map[face.storage_offset + node] = boundary.GetOffsetToAngleset(
+        FaceNode(face.cell_local_id, face.face_id, node), angle_set, true);
     }
   }
-}
 
-void
-CBCD_FLUDS::CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
-                                      CBCD_AngleSet* angle_set,
-                                      const std::vector<std::uint32_t>& cell_local_ids)
-{
-  if (cell_to_outgoing_boundary_nodes_.empty() and cell_to_outgoing_nonlocal_nodes_.empty())
-    return;
-  const auto& angle_indices = angle_set->GetAngleIndices();
-  const auto& num_angles = angle_indices.size();
-  const auto& grid = *(GetSPDS().GetGrid());
-  for (const auto& cell_local_id : cell_local_ids)
+  const auto Upload = []<typename T>(crb::DeviceMemory<T>& device, const std::vector<T>& host)
   {
-    const auto& cell = grid.GetLocalCell(cell_local_id);
-    auto outgoing_boundary_it = cell_to_outgoing_boundary_nodes_.find(cell_local_id);
-    if (outgoing_boundary_it != cell_to_outgoing_boundary_nodes_.end())
-      for (const auto& node : outgoing_boundary_it->second)
-      {
-        const auto& face = cell.faces[node.face_id];
-        if (angle_set->GetBoundaries().at(face.neighbor_id)->IsReflecting())
-        {
-          for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
-          {
-            auto direction_num = angle_indices[as_ss_idx];
-            double* dst_psi = angle_set->PsiReflected(
-              face.neighbor_id, direction_num, node.cell_local_id, node.face_id, node.face_node);
-            const double* src_psi = outgoing_boundary_psi_.data() +
-                                    node.storage_index * num_groups_and_angles_ +
-                                    as_ss_idx * num_groups_;
-            std::copy(src_psi, src_psi + num_groups_, dst_psi);
-          }
-        }
-      }
-    auto outgoing_nonlocal_it = cell_to_outgoing_nonlocal_nodes_.find(cell_local_id);
-    if (outgoing_nonlocal_it != cell_to_outgoing_nonlocal_nodes_.end())
-      for (const auto& node : outgoing_nonlocal_it->second)
-      {
-        const auto& face = cell.faces[node.face_id];
-        const auto& cell_mapping = sdm_.GetCellMapping(cell);
-        const auto& face_nodal_mapping =
-          common_data_.GetFaceNodalMapping(node.cell_local_id, node.face_id);
-        const auto& num_face_nodes = cell_mapping.GetNumFaceNodes(node.face_id);
-        const auto& face_data_size = num_face_nodes * num_groups_and_angles_;
-        const int locality =
-          sweep_chunk.GetCellTransportView(node.cell_local_id).FaceLocality(node.face_id);
-        auto& async_comm =
-          dynamic_cast<CBCD_AsynchronousCommunicator&>(*angle_set->GetCommunicator());
-        std::vector<double>* psi_nonlocal_outgoing = &async_comm.InitGetDownwindMessageData(
-          locality, face.neighbor_id, face_nodal_mapping.associated_face_, face_data_size);
-        for (std::size_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
-        {
-          auto* dst_psi = NLOutgoingPsi(psi_nonlocal_outgoing, node.face_node, as_ss_idx);
-          const double* src_psi = outgoing_nonlocal_psi_.data() +
-                                  node.storage_index * num_groups_and_angles_ +
-                                  as_ss_idx * num_groups_;
-          std::copy(src_psi, src_psi + num_groups_, dst_psi);
-        }
-      }
-  }
+    device = host.empty() ? crb::DeviceMemory<T>() : crb::DeviceMemory<T>(host.size());
+    if (not host.empty())
+      crb::copy(device, host, host.size());
+  };
+  Upload(incoming_boundary_map_, incoming_map);
+  Upload(outgoing_boundary_map_, outgoing_map);
+  Upload(outgoing_boundary_reflecting_, reflecting);
+}
+
+CBCD_FLUDSPointerSet
+CBCD_FLUDS::GetDevicePointerSet() const
+{
+  CBCD_FLUDSPointerSet pointer_set;
+  pointer_set.local_psi = local_psi_.get();
+  if (nonlocal_incoming_psi_bank_)
+    pointer_set.nonlocal_incoming_psi = nonlocal_incoming_psi_bank_->GetData();
+  if (nonlocal_outgoing_psi_bank_)
+    pointer_set.nonlocal_outgoing_psi = nonlocal_outgoing_psi_bank_->GetData();
+  pointer_set.incoming_boundary_map = incoming_boundary_map_.get();
+  pointer_set.outgoing_boundary_map = outgoing_boundary_map_.get();
+  pointer_set.outgoing_boundary_reflecting = outgoing_boundary_reflecting_.get();
+  pointer_set.stride_size = num_groups_and_angles_;
+  return pointer_set;
 }
 
 void
-CBCD_FLUDS::CopySavedPsiFromDevice()
+CBCD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& problem,
+                                                const LBSGroupset& groupset,
+                                                AngleSet& angle_set)
 {
   if (not save_angular_flux_)
     return;
+
+  CALI_CXX_MARK_SCOPE("CBCD_FLUDS::CopySaveAngularFluxToDestinationPsi");
+
   crb::copy(host_saved_psi_, device_saved_psi_, host_saved_psi_.size(), 0, 0, stream_);
-}
+  stream_.synchronize();
 
-void
-CBCD_FLUDS::CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_AngleSet* angle_set)
-{
-  if (not save_angular_flux_)
-    return;
-  DiscreteOrdinatesProblem& problem = sweep_chunk.GetProblem();
   auto* mesh = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
-  const auto& groupset = sweep_chunk.GetGroupset();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   const std::size_t groupset_angle_group_stride =
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
-  const auto& angle_indices = angle_set->GetAngleIndices();
-  const auto& num_angles = angle_set->GetNumAngles();
-  for (const auto& cell : grid->GetLocalCells())
+  const auto& angle_indices = angle_set.GetAngleIndices();
+  const auto num_angles = angle_set.GetNumAngles();
+  const std::size_t groups_bytes = num_groups_ * sizeof(double);
+  for (const auto& cell_ptr : GetSPDS().GetGrid()->GetLocalCells())
   {
-    double* dst_psi = &destination_psi[discretization.MapDOFLocal(*cell, 0, psi_uk_man_, 0, 0)];
+    const auto& cell = *cell_ptr;
+    double* dst_psi =
+      &destination_psi[discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi =
-      host_saved_psi_.data() + mesh->saved_psi_offset[cell->local_id] * GetStrideSize();
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(*cell).GetNumNodes();
-    for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
+      host_saved_psi_.data() + mesh->saved_psi_offset[cell.local_id] * GetStrideSize();
+    const std::uint32_t num_cell_nodes = discretization.GetCellMapping(cell).GetNumNodes();
+    for (std::uint32_t i = 0; i < num_cell_nodes; ++i)
     {
-      for (std::uint32_t as_ss_idx = 0; as_ss_idx < num_angles; ++as_ss_idx)
+      for (std::uint32_t angle_offset = 0; angle_offset < num_angles; ++angle_offset)
       {
-        auto direction_num = angle_indices[as_ss_idx];
+        const auto direction_num = angle_indices[angle_offset];
         double* dst = dst_psi + static_cast<std::size_t>(direction_num) * num_groups_;
-        double* src = src_psi + static_cast<std::size_t>(as_ss_idx) * num_groups_;
-        std::copy(src, src + num_groups_, dst);
+        double* src = src_psi + static_cast<std::size_t>(angle_offset) * num_groups_;
+        std::memcpy(dst, src, groups_bytes);
       }
       dst_psi += groupset_angle_group_stride;
       src_psi += num_groups_and_angles_;
     }
   }
-}
-
-double*
-CBCD_FLUDS::NLUpwindPsi(std::uint64_t cell_global_id,
-                        unsigned int face_id,
-                        unsigned int face_node_mapped,
-                        std::size_t as_ss_idx)
-{
-  auto it = deplocs_outgoing_messages_.find({cell_global_id, face_id});
-  if (it == deplocs_outgoing_messages_.end())
-    return nullptr;
-  auto& psi = it->second;
-  const std::size_t dof_map =
-    face_node_mapped * num_groups_and_angles_ + //  Offset to start of data for face_node_mapped
-    as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
-
-  assert(dof_map < psi.size());
-  return &psi[dof_map];
-}
-
-double*
-CBCD_FLUDS::NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing,
-                          std::size_t face_node,
-                          std::size_t as_ss_idx)
-{
-  assert(psi_nonlocal_outgoing != nullptr);
-  const std::size_t addr_offset = face_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
-  return &(*psi_nonlocal_outgoing)[addr_offset];
 }
 
 } // namespace opensn

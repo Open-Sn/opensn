@@ -20,6 +20,8 @@ The tolerances come from the angular discretization of the collided flux, which 
 and 0.4%, and with 8 x 16 they grow to 10% and 7%. Refining the mesh at fixed quadrature
 increases them, as ray effects sharpen.
 
+sweep_type selects AAH (default) or CBC. use_gpus=True accelerates only the collided solve.
+
 Checks:
   UncollidedReciprocityForwardError, UncollidedReciprocityAdjointError: relative errors with
     respect to the reference (below 0.03).
@@ -59,6 +61,8 @@ single_scatter_point_response = uncollided_utils.single_scatter_point_response
 
 SOURCE = (3.03, 4.11, 3.93)
 DETECTOR = (5.03, 4.11, 3.93)
+SWEEP_TYPE = globals().get("sweep_type", "AAH")
+USE_GPUS = globals().get("use_gpus", False)
 
 
 def near_source(point):
@@ -108,6 +112,8 @@ def solve(grid, xs, adjoint):
         ],
         xs_map=[{"block_ids": [0], "xs": xs}],
         uncollided_flux=file_name,
+        sweep_type=SWEEP_TYPE,
+        use_gpus=USE_GPUS,
         options={"adjoint": adjoint},
     )
     solver = SteadyStateSourceSolver(problem=problem)

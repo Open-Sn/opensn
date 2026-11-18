@@ -46,12 +46,10 @@ to run in parallel.
    intended decomposition.
 
 The ``max_mpi_message_size`` problem option sets the largest MPI message, in
-bytes, that an AAH sweep sends, on the CPU and on the GPU. Larger angular-flux
-transfers are split into messages of at most this size. The default, 4194304
-bytes (4 MiB), sends most transfers whole. Small limits split large transfers
-into many messages, and each one adds posting, matching, and polling work. With
-a 32 KiB limit, GPU sweeps on a few nodes ran up to 2.8 times slower. Messages
-below the limit are not affected, so the default rarely needs changing.
+bytes, for AAH on CPUs and GPUs and for CBC on CPUs. Larger angular-flux
+transfers are split into messages of at most this size. The default is
+4,194,304 bytes (4 MiB). Smaller limits can increase MPI posting, matching,
+and polling work.
 
 The ``max_mpi_outstanding_sends`` problem option limits how many sweep messages
 each rank may have posted and not yet completed in a CPU AAH sweep. Messages
@@ -106,6 +104,10 @@ Practical guidance:
   problem is steady-state or transient.
 * The batch system or manual GPU binding determines which GPU is associated
   with each MPI rank.
+* For each groupset, GPU CBC uses ``max(OPENSN_NUM_THREADS, 2) - 1`` sweep
+  workers per MPI rank, capped by the number of angle sets, plus one MPI
+  progress thread. Each sweep worker owns a GPU stream. The default
+  ``OPENSN_NUM_THREADS=1`` gives one sweep worker and one progress thread.
 
 .. note::
 
@@ -116,9 +118,10 @@ Practical guidance:
 GPU-aware MPI
 -------------
 
-With ``-DOPENSN_USE_GPU_AWARE_MPI=ON``, AAH sweeps on the GPU pass device
-buffers directly to MPI instead of copying them through host memory. The MPI
-library must support the GPU backend. CMake checks the library when it can:
+With ``-DOPENSN_USE_GPU_AWARE_MPI=ON``, GPU AAH and CBC pass device
+angular-flux buffers directly to MPI. The MPI library must support the GPU
+backend. With the option disabled, AAH stages fluxes through host memory and
+CBC uses mapped page-locked host memory. CMake's checks depend on the MPI library.
 
 * Cray MPICH: CMake links the GPU Transport Layer library (``libmpi_gtl_hsa``
   for HIP, ``libmpi_gtl_cuda`` for CUDA). Set ``MPICH_GPU_SUPPORT_ENABLED=1``

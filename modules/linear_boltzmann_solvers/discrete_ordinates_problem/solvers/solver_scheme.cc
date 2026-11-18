@@ -9,14 +9,60 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_linear_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/angle_set/angle_set.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include "framework/runtime.h"
 #include "framework/utils/error.h"
 #include <algorithm>
+#include <array>
+#include <stdexcept>
+#include <string_view>
 
 namespace opensn
 {
 
 namespace
 {
+
+/// Construct a sweep chunk collectively using a rank-local factory. Every rank throws
+/// std::logic_error with the lowest failing rank's diagnostic on failure.
+std::shared_ptr<SweepChunk>
+MakeSweepChunkCollectively(const SweepChunkFactory& factory, LBSGroupset& groupset)
+{
+  // Recording an allocation failure must not allocate.
+  constexpr std::size_t sweep_chunk_error_bytes = 2048;
+  std::array<char, sweep_chunk_error_bytes> error_buffer{};
+  bool local_failed = false;
+  const auto RecordFailure = [&](std::string_view message)
+  {
+    local_failed = true;
+    std::copy_n(
+      message.begin(), std::min(message.size(), error_buffer.size() - 1), error_buffer.begin());
+  };
+  std::shared_ptr<SweepChunk> chunk;
+  try
+  {
+    chunk = factory(groupset);
+  }
+  catch (const std::exception& error)
+  {
+    RecordFailure(error.what());
+  }
+  catch (...)
+  {
+    RecordFailure("Unknown exception during sweep chunk construction.");
+  }
+
+  const int comm_size = mpi_comm.size();
+  const int local_failure_rank = local_failed ? mpi_comm.rank() : comm_size;
+  int failure_rank = comm_size;
+  mpi_comm.all_reduce(local_failure_rank, failure_rank, mpi::op::min<int>());
+  if (failure_rank == comm_size)
+    return chunk;
+
+  mpi_comm.broadcast(error_buffer.data(), static_cast<int>(error_buffer.size()), failure_rank);
+  throw std::logic_error("Sweep chunk construction failed for groupset " +
+                         std::to_string(groupset.id) + " on rank " + std::to_string(failure_rank) +
+                         ": " + error_buffer.data());
+}
 
 void
 UpdateSweepWorkLimits(SolverScheme& scheme, LBSGroupset& groupset)
@@ -49,13 +95,14 @@ MakeWGSContext(DiscreteOrdinatesProblem& problem,
     APPLY_FIXED_SOURCES | APPLY_AGS_SCATTER_SOURCES | APPLY_AGS_FISSION_SOURCES;
   if (problem.IsTimeDependent())
     rhs_scope |= APPLY_PREVIOUS_PRECURSOR_SOURCES;
+  auto sweep_chunk = MakeSweepChunkCollectively(sweep_chunk_factory, groupset);
   return std::make_shared<SweepWGSContext>(problem,
                                            groupset,
                                            set_source_function,
                                            APPLY_WGS_SCATTER_SOURCES | APPLY_WGS_FISSION_SOURCES,
                                            rhs_scope,
                                            options.verbose_inner_iterations,
-                                           sweep_chunk_factory(groupset));
+                                           sweep_chunk);
 }
 
 std::shared_ptr<LinearSolver>

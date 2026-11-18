@@ -404,6 +404,9 @@ Reasonable values:
   problems, but routinely hitting the cap usually means the method, groupset
   structure, or acceleration setup needs attention
 
+SMM and SCDSA k-eigenvalue acceleration reject ``l_max_its=1`` for ``AAH`` and
+for ``CBC`` when any rank has delayed angular degrees of freedom.
+
 What tolerance to choose
 ------------------------
 

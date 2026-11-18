@@ -500,11 +500,8 @@ private:
 
   std::shared_ptr<FLUDS> CreateCBCD_FLUDS(std::size_t num_groups,
                                           std::size_t num_angles,
-                                          std::size_t num_local_cells,
                                           const FLUDSCommonData& common_data,
-                                          const UnknownManager& psi_uk_man,
-                                          const SpatialDiscretization& sdm,
-                                          bool save_angular_flux);
+                                          const SpatialDiscretization& sdm);
 
   std::shared_ptr<AngleSet>
   CreateCBCD_AngleSet(size_t id,

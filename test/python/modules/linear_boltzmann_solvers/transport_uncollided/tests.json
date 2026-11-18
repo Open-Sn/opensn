@@ -1206,5 +1206,69 @@
         "abs_tol": 1e-04
       }
     ]
+  },
+  {
+    "file": "uncollided_adjoint_transpose.py",
+    "comment": "Multiworker GPU CBC checks adjoint uncollided flux with P1 scattering and fission against transposed forward operators and sign-reversed P1 moments.",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedAdjointTransposeMaxRelDiff=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedAdjointTransposeSensitive=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "uncollided_adjoint_transpose_cbc_gpu_threads4",
+    "requires_gpu": true,
+    "weight_class": "short",
+    "env": {
+      "OPENSN_NUM_THREADS": "4"
+    },
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ]
+  },
+  {
+    "file": "uncollided_adjoint_reciprocity.py",
+    "comment": "Multiworker GPU CBC checks forward and adjoint reciprocity against an independent first-collision integral.",
+    "num_procs": 1,
+    "weight_class": "intermediate",
+    "env": {
+      "OPENSN_NUM_THREADS": "4"
+    },
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityForwardError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityAdjointError=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "UncollidedReciprocityDifference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.01
+      }
+    ],
+    "outfileprefix": "uncollided_adjoint_reciprocity_cbc_gpu_threads4",
+    "requires_gpu": true,
+    "args": [
+      "sweep_type=\"CBC\"",
+      "use_gpus=True"
+    ]
   }
 ]

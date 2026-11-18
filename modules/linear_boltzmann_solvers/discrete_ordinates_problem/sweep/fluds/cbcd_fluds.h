@@ -6,12 +6,12 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_structs.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbcd_fluds_common_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds.h"
-#include "framework/mesh/mesh/cell.h"
 #include "caribou/main.hpp"
+#include <atomic>
 #include <cstddef>
 #include <cstdint>
-#include <map>
-#include <unordered_map>
+#include <memory>
+#include <stdexcept>
 #include <vector>
 
 namespace crb = caribou;
@@ -19,146 +19,154 @@ namespace crb = caribou;
 namespace opensn
 {
 
-class CBCD_AngleSet;
-class UnknownManager;
+class AngleSet;
+class DiscreteOrdinatesProblem;
+class LBSGroupset;
 class SpatialDiscretization;
-class Cell;
-class CBCDSweepChunk;
 
-/// Device CBC FLUDS.
+/// Nonlocal angular-flux storage shared by a groupset's device CBC FLUDS.
+/// Each range holds a fixed number of doubles per sweep. GPU-aware MPI uses device memory.
+/// Otherwise MPI and the GPU access the same mapped page-locked host memory.
+class CBCD_NonLocalBank
+{
+public:
+  /// Allocate fixed ranges with capacities in doubles.
+  explicit CBCD_NonLocalBank(const std::vector<std::size_t>& range_sizes);
+
+  CBCD_NonLocalBank(const CBCD_NonLocalBank&) = delete;
+  CBCD_NonLocalBank& operator=(const CBCD_NonLocalBank&) = delete;
+
+  /// Borrow the shared GPU/MPI address until destruction. An empty bank returns nullptr.
+  double* GetData() const { return data_; }
+
+  std::size_t GetNumRanges() const { return range_begin_.size() - 1; }
+
+  /// Reserve a unique contiguous span in the range and return its offset in doubles from GetData().
+  /// Any worker may reserve space. Reservation does not publish payload writes.
+  std::size_t Reserve(std::size_t range, std::size_t num_values)
+  {
+    const auto offset =
+      range_begin_[range] + reserved_[range].fetch_add(num_values, std::memory_order_relaxed);
+    if (offset + num_values > range_begin_[range + 1])
+      throw std::length_error(
+        "CBCD nonlocal bank: a sweep reserves more values than a range holds");
+    return offset;
+  }
+
+  /// Release reservations between sweeps with all workers, GPU streams and MPI requests idle.
+  void Reset();
+
+private:
+  crb::DeviceMemory<double> device_storage_;
+  crb::MappedHostVector<double> host_storage_;
+  double* data_ = nullptr;
+  /// Offsets of the ranges in the bank, with the total at the end.
+  std::vector<std::size_t> range_begin_;
+  std::unique_ptr<std::atomic<std::size_t>[]> reserved_;
+};
+
+/// Device CBC angular-flux storage for one angle set. Local slots use contiguous angle/group
+/// values. The common data must outlive this object and all GPU work using it.
 class CBCD_FLUDS : public FLUDS
 {
 public:
+  /// \name Construction and common data
+  /// \{
+  /// Construct storage using immutable common data. Saved flux allocated by SetSaveAngularFlux uses
+  /// the device mesh node, angle and group order, with group contiguous.
   CBCD_FLUDS(std::size_t num_groups,
              std::size_t num_angles,
-             std::size_t num_local_cells,
              const CBCD_FLUDSCommonData& common_data,
-             const UnknownManager& psi_uk_man,
-             const SpatialDiscretization& sdm,
-             bool save_angular_flux);
-
-  ~CBCD_FLUDS() override;
+             const SpatialDiscretization& sdm);
 
   /// Get reference to the common data.
   const CBCD_FLUDSCommonData& GetCommonData() const { return common_data_; }
+  /// \}
 
-  /// Get reference to the associated device stream.
-  crb::Stream& GetStream() { return stream_; }
+  /// \name Shared nonlocal banks
+  /// \{
+  /// Share banks across every angle set's FLUDS. The outgoing bank has one range per destination
+  /// in partition order and the incoming bank has one range. Rebuild banks when the FLUDS are
+  /// rebuilt.
+  static void BuildNonLocalBanks(const std::vector<CBCD_FLUDS*>& fluds);
 
-  /// Allocate local and saved angular-flux buffers.
-  void AllocateLocalAndSavedPsi();
+  const std::shared_ptr<CBCD_NonLocalBank>& GetNonLocalIncomingPsiBank() const
+  {
+    return nonlocal_incoming_psi_bank_;
+  }
 
+  const std::shared_ptr<CBCD_NonLocalBank>& GetNonLocalOutgoingPsiBank() const
+  {
+    return nonlocal_outgoing_psi_bank_;
+  }
+
+  /// Map a CBCD_FLUDSCommonData destination index to a shared outgoing-bank range.
+  std::size_t GetOutgoingBankRange(std::size_t destination_index) const
+  {
+    return outgoing_bank_ranges_[destination_index];
+  }
+  /// \}
+
+  /// \name Per-angle-set storage setup
+  /// \{
+  /// Allocate or release saved flux at chunk construction. The chunk retains the pointer until
+  /// rebuilt.
+  void SetSaveAngularFlux(bool save);
+
+  /// Build device offsets and flags for the angle set's boundary nodes. Repeat after a boundary
+  /// rebuild.
+  void BuildBoundaryMaps(AngleSet& angle_set);
+  /// \}
+
+  /// \name Sweep views and saved angular flux
+  /// \{
   /// Get the face-node angular-flux stride.
   std::size_t GetStrideSize() const { return num_groups_and_angles_; }
 
-  /// Get the local cells ready for device sweep.
-  crb::MappedHostVector<std::uint32_t>& GetLocalCellIDs() { return local_cell_ids_; }
+  /// Get host offsets in the incoming bank in CBCD_FLUDSCommonData face order.
+  /// The communicator writes each offset before publishing the corresponding downwind cell.
+  /// The sweep worker copies offsets for ready cells into launch metadata.
+  std::uint64_t* GetIncomingPayloadOffsets() { return incoming_payload_offsets_.data(); }
 
-  /// Get the saved angular-flux device pointer.
+  /// Get the saved-angular-flux device pointer (nullptr if the angular flux is not saved).
   double* GetSavedAngularFluxDevicePointer() { return device_saved_psi_.get(); }
 
-  /// Copy saved angular flux from device to host.
-  void CopySavedPsiFromDevice();
-
-  /// Copy saved angular flux into the destination host vector.
-  void CopySavedPsiToDestinationPsi(CBCDSweepChunk& sweep_chunk, CBCD_AngleSet* angle_set);
-
-  /// Get pointer set to device angular flux data.
-  CBCD_FLUDSPointerSet& GetDevicePointerSet() { return pointer_set_; }
-
-  /// Copy incoming boundary psi from host to device.
-  void CopyIncomingBoundaryPsiToDevice(CBCDSweepChunk& sweep_chunk, CBCD_AngleSet* angle_set);
-
-  /// Copy incoming nonlocal psi from host to device.
-  void CopyIncomingNonlocalPsiToDevice(CBCD_AngleSet* angle_set,
-                                       const std::vector<std::uint32_t>& cell_local_ids);
-
-  /// Copy outgoing device psi from device to host.
-  void CopyOutgoingPsiBackToHost(CBCDSweepChunk& sweep_chunk,
-                                 CBCD_AngleSet* angle_set,
-                                 const std::vector<std::uint32_t>& cell_local_ids);
+  /**
+   * Copy saved flux synchronously to the groupset's host layout.
+   * Call on the owning worker after all kernels writing this angle set finish.
+   *
+   * Has no effect when saving is disabled.
+   */
+  void CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& problem,
+                                           const LBSGroupset& groupset,
+                                           AngleSet& angle_set);
 
   /**
-   * Return received nonlocal upwind face psi for a mapped face node.
+   * Get a non-owning device view. The fused kernel supplies per-cell nonlocal offsets.
    *
-   * \param cell_global_id Upwind cell global ID.
-   * \param face_id Upwind face ID.
-   * \param face_node_mapped Mapped upwind face node.
-   * \param as_ss_idx Angle-set subset index.
-   * \return Received face psi, or nullptr if the upstream face has not been received.
+   * Retain the FLUDS and its bank allocations through kernel completion.
    */
-  double* NLUpwindPsi(std::uint64_t cell_global_id,
-                      unsigned int face_id,
-                      unsigned int face_node_mapped,
-                      std::size_t as_ss_idx);
-
-  /// Return received nonlocal face-psi storage by upstream face.
-  std::unordered_map<CellFaceKey, std::vector<double>>& GetDeplocsOutgoingMessages()
-  {
-    return deplocs_outgoing_messages_;
-  }
-
-  /**
-   * Return writable nonlocal outgoing face psi for a face node.
-   *
-   * \param psi_nonlocal_outgoing Nonlocal outgoing face storage.
-   * \param face_node Face node.
-   * \param as_ss_idx Angle-set subset index.
-   * \return Writable face psi for the specified face node and angle subset.
-   */
-  double* NLOutgoingPsi(std::vector<double>* psi_nonlocal_outgoing,
-                        std::size_t face_node,
-                        std::size_t as_ss_idx);
-
-  void ClearLocalAndReceivePsi() override { deplocs_outgoing_messages_.clear(); }
-  void ClearSendPsi() override {}
-  void AllocateInternalLocalPsi() override {}
-  void AllocateOutgoingPsi() override {}
-
-  void AllocateDelayedLocalPsi() override {}
-  void AllocatePrelocIOutgoingPsi() override {}
-  void AllocateDelayedPrelocIOutgoingPsi() override {}
+  CBCD_FLUDSPointerSet GetDevicePointerSet() const;
+  /// \}
 
 private:
   const CBCD_FLUDSCommonData& common_data_;
-  const UnknownManager& psi_uk_man_;
-  const SpatialDiscretization& sdm_;
-  std::size_t num_angles_in_gs_quadrature_;
-  std::size_t num_quadrature_local_dofs_;
-  std::size_t num_local_spatial_dofs_;
-  std::size_t local_psi_data_size_;
-  /// Map from incoming boundary face node to indexing metadata.
-  std::vector<BoundaryNodeInfo> incoming_boundary_node_map_;
-  /// Map from cell to outgoing boundary node indexing metadata.
-  std::map<std::uint64_t, std::vector<BoundaryNodeInfo>> cell_to_outgoing_boundary_nodes_;
-  /// Map from cell to incoming nonlocal nodes indexing metadata.
-  std::map<std::uint64_t, std::vector<NonlocalNodeInfo>> cell_to_incoming_nonlocal_nodes_;
-  /// Map from cell to outgoing nonlocal node indexing metadata.
-  std::map<std::uint64_t, std::vector<NonlocalNodeInfo>> cell_to_outgoing_nonlocal_nodes_;
-  /// Mapped host vectors for boundary and non-local angular fluxes.
-  crb::MappedHostVector<double> incoming_boundary_psi_;
-  crb::MappedHostVector<double> outgoing_boundary_psi_;
-  crb::MappedHostVector<double> incoming_nonlocal_psi_;
-  crb::MappedHostVector<double> outgoing_nonlocal_psi_;
-  /// Associated angleset's stream.
-  crb::Stream stream_ = crb::Stream::get_null_stream();
-  /// Local cell IDs scheduled for device sweep.
-  crb::MappedHostVector<std::uint32_t> local_cell_ids_;
-  bool save_angular_flux_;
-  /// Device storage for local psi.
+  std::size_t num_saved_psi_values_;
+  /// Create this copy stream before lane streams because queue assignment can depend on creation
+  /// order.
+  crb::Stream stream_;
+  bool save_angular_flux_ = false;
   crb::DeviceMemory<double> local_psi_;
-  /// Device and host storage for saved psi.
+  std::shared_ptr<CBCD_NonLocalBank> nonlocal_incoming_psi_bank_;
+  std::shared_ptr<CBCD_NonLocalBank> nonlocal_outgoing_psi_bank_;
+  std::vector<std::size_t> outgoing_bank_ranges_;
+  std::vector<std::uint64_t> incoming_payload_offsets_;
   crb::DeviceMemory<double> device_saved_psi_;
   crb::HostVector<double> host_saved_psi_;
-  /// Pointer set to device angular flux data.
-  CBCD_FLUDSPointerSet pointer_set_;
-  /// Received nonlocal face psi by upstream face.
-  std::unordered_map<CellFaceKey, std::vector<double>> deplocs_outgoing_messages_;
-
-  /// Creates device pointer set to the local, boundary, and non-local angular flux buffers.
-  void CreatePointerSet();
-
-  std::vector<std::vector<double>> boundaryI_incoming_psi_;
+  crb::DeviceMemory<CBCD_BoundaryInput> incoming_boundary_map_;
+  crb::DeviceMemory<std::uint64_t> outgoing_boundary_map_;
+  /// Reflecting flags indexed by outgoing boundary node (empty when no boundary reflects).
+  crb::DeviceMemory<std::uint8_t> outgoing_boundary_reflecting_;
 };
 
 } // namespace opensn

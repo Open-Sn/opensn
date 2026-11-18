@@ -3,46 +3,51 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/cbc_fluds.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/spds/spds.h"
-#include "framework/math/spatial_discretization/spatial_discretization.h"
+#include "framework/math/quadratures/angular/angular_quadrature.h"
 #include "framework/mesh/mesh/mesh.h"
+#include "framework/utils/error.h"
 #include <algorithm>
 #include <limits>
 
 namespace opensn
 {
 
+namespace
+{
+
+void
+UpdateSpanVector(std::vector<std::vector<double>>& data, std::vector<std::span<double>>& views)
+{
+  views.resize(data.size());
+  for (std::size_t i = 0; i < data.size(); ++i)
+    views[i] = std::span<double>(data[i]);
+}
+
+} // namespace
+
 CBC_FLUDS::CBC_FLUDS(unsigned int num_groups,
                      std::size_t num_angles,
-                     const CBC_FLUDSCommonData& common_data,
-                     const UnknownManager& psi_uk_man,
-                     const SpatialDiscretization& sdm)
+                     const CBC_FLUDSCommonData& common_data)
   : FLUDS(num_groups, num_angles, common_data.GetSPDS()),
-    common_data_(common_data),
-    psi_uk_man_(psi_uk_man),
-    sdm_(sdm),
-    local_psi_data_(
-      (sdm_.GetNumLocalDOFs(psi_uk_man_) / psi_uk_man_.GetNumberOfUnknowns() / num_groups_) *
-      num_groups_and_angles_),
+    common_data_((common_data.CheckFinalized(), common_data)),
+    local_psi_data_(common_data.GetTotalLocalFaceSlotNodes() * num_groups_and_angles_),
     incoming_nonlocal_psi_offsets_(common_data.NumIncomingFaces() + 1, 0),
     incoming_psi_epoch_(common_data.NumIncomingFaces(), 0)
 {
   const auto& grid = *spds_.GetGrid();
-  const auto num_angles_in_gs_quadrature = psi_uk_man_.GetNumberOfUnknowns();
-  cell_psi_start_.resize(grid.GetLocalCellCount());
-  for (const auto& cell : grid.GetLocalCells())
+  for (const auto& cell_ptr : grid.GetLocalCells())
   {
-    cell_psi_start_[cell->local_id] =
-      (sdm_.MapDOFLocal(*cell, 0, psi_uk_man_, 0, 0) / num_angles_in_gs_quadrature / num_groups_) *
-      num_groups_and_angles_;
-
-    for (std::size_t f = 0; f < cell->faces.size(); ++f)
+    const auto& cell = *cell_ptr;
+    for (std::size_t f = 0; f < cell.faces.size(); ++f)
     {
-      const auto slot = common_data_.IncomingFaceSlot(cell->local_id, static_cast<unsigned int>(f));
+      const auto slot = common_data_.IncomingFaceSlot(cell.local_id, static_cast<unsigned int>(f));
       if (slot == CBC_FLUDSCommonData::INVALID_FACE_SLOT)
         continue;
 
       incoming_nonlocal_psi_offsets_[slot + 1] =
-        sdm_.GetCellMapping(*cell).GetNumFaceNodes(f) * num_groups_and_angles_;
+        common_data_.GetFaceNodalMapping(cell.local_id, static_cast<unsigned int>(f))
+          .face_node_mapping_.size() *
+        num_groups_and_angles_;
     }
   }
 
@@ -58,19 +63,51 @@ CBC_FLUDS::GetCommonData() const
 }
 
 double*
-CBC_FLUDS::UpwindPsi(const Cell& face_neighbor, unsigned int adj_cell_node, std::size_t as_ss_idx)
+CBC_FLUDS::UpwindPsi(std::uint32_t cell_local_id,
+                     unsigned int face_id,
+                     unsigned int face_node_mapped,
+                     std::size_t as_ss_idx) noexcept
 {
-  const auto index = cell_psi_start_[face_neighbor.local_id] +
-                     adj_cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  const auto slot_node_offset = common_data_.GetLocalFaceSlotNodeOffset(cell_local_id, face_id);
+  const auto index =
+    (slot_node_offset + face_node_mapped) * num_groups_and_angles_ + as_ss_idx * num_groups_;
   return &local_psi_data_[index];
 }
 
 double*
-CBC_FLUDS::OutgoingPsi(const Cell& cell, unsigned int cell_node, std::size_t as_ss_idx)
+CBC_FLUDS::DelayedUpwindPsi(std::uint32_t cell_local_id,
+                            unsigned int face_id,
+                            unsigned int face_node_mapped,
+                            std::size_t as_ss_idx)
 {
+  const auto& info = common_data_.GetDelayedLocalFace(cell_local_id, face_id);
   const auto index =
-    cell_psi_start_[cell.local_id] + cell_node * num_groups_and_angles_ + as_ss_idx * num_groups_;
+    (info.slot_address + face_node_mapped) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &delayed_local_psi_old_[index];
+}
+
+double*
+CBC_FLUDS::OutgoingPsi(std::uint32_t cell_local_id,
+                       unsigned int face_id,
+                       unsigned int face_node,
+                       std::size_t as_ss_idx) noexcept
+{
+  const auto slot_node_offset = common_data_.GetLocalFaceSlotNodeOffset(cell_local_id, face_id);
+  const auto index =
+    (slot_node_offset + face_node) * num_groups_and_angles_ + as_ss_idx * num_groups_;
   return &local_psi_data_[index];
+}
+
+double*
+CBC_FLUDS::DelayedLocalOutgoingPsi(std::uint32_t cell_local_id,
+                                   unsigned int face_id,
+                                   unsigned int face_node,
+                                   std::size_t as_ss_idx)
+{
+  const auto& info = common_data_.GetDelayedLocalFace(cell_local_id, face_id);
+  const auto index =
+    (info.slot_address + face_node) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &delayed_local_psi_[index];
 }
 
 double*
@@ -88,6 +125,17 @@ CBC_FLUDS::NLUpwindPsi(std::size_t incoming_face_slot,
     as_ss_idx * num_groups_;                    // Offset to start of data for angle_set_index
 
   return &incoming_nonlocal_psi_[slot_offset + dof_map];
+}
+
+double*
+CBC_FLUDS::DelayedNLUpwindPsi(const CBC_FLUDSCommonData::DelayedNonlocalFaceInfo& info,
+                              unsigned int face_node_mapped,
+                              std::size_t as_ss_idx)
+{
+  auto& psi = delayed_prelocI_outgoing_psi_old_[info.prelocI];
+  const auto index =
+    (info.slot_address + face_node_mapped) * num_groups_and_angles_ + as_ss_idx * num_groups_;
+  return &psi[index];
 }
 
 double*
@@ -111,6 +159,175 @@ CBC_FLUDS::ClearLocalAndReceivePsi()
     ++current_psi_epoch_;
 }
 
+void
+CBC_FLUDS::AllocateDelayedLocalPsi()
+{
+  const auto size = common_data_.GetNumDelayedLocalFaceNodes() * num_groups_and_angles_;
+  delayed_local_psi_.assign(size, 0.0);
+  delayed_local_psi_old_.assign(size, 0.0);
+  delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
+  delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
+}
+
+void
+CBC_FLUDS::AllocateDelayedPrelocIOutgoingPsi()
+{
+  const auto num_delayed_dependencies = spds_.GetDelayedLocationDependencies().size();
+  delayed_prelocI_outgoing_psi_.resize(num_delayed_dependencies);
+  delayed_prelocI_outgoing_psi_old_.resize(num_delayed_dependencies);
+
+  for (std::size_t prelocI = 0; prelocI < num_delayed_dependencies; ++prelocI)
+  {
+    const auto size = common_data_.GetDelayedPrelocIFaceNodeCount(prelocI) * num_groups_and_angles_;
+    delayed_prelocI_outgoing_psi_[prelocI].assign(size, 0.0);
+    delayed_prelocI_outgoing_psi_old_[prelocI].assign(size, 0.0);
+  }
+
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
+}
+
+void
+CBC_FLUDS::SetDelayedLocalPsiOldToNew()
+{
+  delayed_local_psi_ = delayed_local_psi_old_;
+  delayed_local_psi_view_ = std::span<double>(delayed_local_psi_);
+}
+
+void
+CBC_FLUDS::SetDelayedLocalPsiNewToOld()
+{
+  delayed_local_psi_old_ = delayed_local_psi_;
+  delayed_local_psi_old_view_ = std::span<double>(delayed_local_psi_old_);
+}
+
+void
+CBC_FLUDS::SetDelayedOutgoingPsiOldToNew()
+{
+  delayed_prelocI_outgoing_psi_ = delayed_prelocI_outgoing_psi_old_;
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_, delayed_prelocI_outgoing_psi_view_);
+}
+
+void
+CBC_FLUDS::SetDelayedOutgoingPsiNewToOld()
+{
+  delayed_prelocI_outgoing_psi_old_ = delayed_prelocI_outgoing_psi_;
+  UpdateSpanVector(delayed_prelocI_outgoing_psi_old_, delayed_prelocI_outgoing_psi_old_view_);
+}
+
+void
+CBC_FLUDS::CorrectNewDelayedAngularFlux(const DelayedFluxCorrection& correction)
+{
+  if (delayed_local_psi_.empty() and delayed_prelocI_outgoing_psi_.empty())
+    return;
+
+  const auto& grid = *spds_.GetGrid();
+  for (const auto& cell_ptr : grid.GetLocalCells())
+  {
+    const auto cell_local_id = static_cast<std::uint32_t>(cell_ptr->local_id);
+    for (unsigned int f = 0; f < cell_ptr->faces.size(); ++f)
+    {
+      // Corrections use downwind nodes, but delayed storage uses upwind face-node order.
+      double* delayed_psi = nullptr;
+      std::size_t slot_address = 0;
+      if (common_data_.IsDelayedLocalIncomingFace(cell_local_id, f))
+      {
+        delayed_psi = delayed_local_psi_.data();
+        slot_address = common_data_.GetDelayedLocalFace(cell_local_id, f).slot_address;
+      }
+      else if (common_data_.IsDelayedNonlocalIncomingFace(cell_local_id, f))
+      {
+        const auto& info = common_data_.GetDelayedNonlocalFaceByLocalFace(cell_local_id, f);
+        delayed_psi = delayed_prelocI_outgoing_psi_[info.prelocI].data();
+        slot_address = info.slot_address;
+      }
+      else
+        continue;
+
+      const auto& face_node_mapping =
+        common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_;
+      for (unsigned int fj = 0; fj < face_node_mapping.size(); ++fj)
+      {
+        const auto node_offset =
+          (slot_address + static_cast<std::size_t>(face_node_mapping[fj])) * num_groups_and_angles_;
+        for (unsigned int g = 0; g < num_groups_; ++g)
+        {
+          const double delta = correction(cell_local_id, f, fj, g);
+          if (delta == 0.0)
+            continue;
+          for (std::size_t n = 0; n < num_angles_; ++n)
+            delayed_psi[node_offset + n * num_groups_ + g] += delta;
+        }
+      }
+    }
+  }
+}
+
+void
+CBC_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
+                                       const std::vector<std::uint32_t>& angle_indices,
+                                       const bool subtract_old,
+                                       const DelayedCurrentTally& tally) const
+{
+  if (delayed_local_psi_.empty() and delayed_prelocI_outgoing_psi_.empty())
+    return;
+  OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
+                       "CBC_FLUDS: the number of directions does not match the FLUDS.");
+
+  const auto& grid = *spds_.GetGrid();
+  const auto& omegas = quadrature.GetOmegas();
+  const auto& weights = quadrature.GetWeights();
+  std::vector<double> inward_weights(num_angles_);
+  for (const auto& cell_ptr : grid.GetLocalCells())
+  {
+    const auto cell_local_id = static_cast<std::uint32_t>(cell_ptr->local_id);
+    for (unsigned int f = 0; f < cell_ptr->faces.size(); ++f)
+    {
+      const double* psi_new = nullptr;
+      const double* psi_old = nullptr;
+      std::size_t slot_address = 0;
+      if (common_data_.IsDelayedLocalIncomingFace(cell_local_id, f))
+      {
+        psi_new = delayed_local_psi_.data();
+        psi_old = delayed_local_psi_old_.data();
+        slot_address = common_data_.GetDelayedLocalFace(cell_local_id, f).slot_address;
+      }
+      else if (common_data_.IsDelayedNonlocalIncomingFace(cell_local_id, f))
+      {
+        const auto& info = common_data_.GetDelayedNonlocalFaceByLocalFace(cell_local_id, f);
+        psi_new = delayed_prelocI_outgoing_psi_[info.prelocI].data();
+        psi_old = delayed_prelocI_outgoing_psi_old_[info.prelocI].data();
+        slot_address = info.slot_address;
+      }
+      else
+        continue;
+
+      const auto& normal = cell_ptr->faces[f].normal;
+      for (std::size_t n = 0; n < num_angles_; ++n)
+        inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
+
+      const auto& face_node_mapping =
+        common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_;
+      for (unsigned int fj = 0; fj < face_node_mapping.size(); ++fj)
+      {
+        const auto node_offset =
+          (slot_address + static_cast<std::size_t>(face_node_mapping[fj])) * num_groups_and_angles_;
+        for (unsigned int g = 0; g < num_groups_; ++g)
+        {
+          double current = 0.0;
+          for (std::size_t n = 0; n < num_angles_; ++n)
+          {
+            const auto idx = node_offset + n * num_groups_ + g;
+            current +=
+              inward_weights[n] * (subtract_old ? psi_new[idx] - psi_old[idx] : psi_new[idx]);
+          }
+          tally(cell_local_id, f, fj, g, current);
+        }
+      }
+    }
+  }
+}
+
 CBC_FLUDS::IncomingNonlocalPsi
 CBC_FLUDS::PrepareIncomingNonlocalPsiBySlot(std::size_t incoming_face_slot, std::size_t data_size)
 {
@@ -120,6 +337,30 @@ CBC_FLUDS::PrepareIncomingNonlocalPsiBySlot(std::size_t incoming_face_slot, std:
 
   return {std::span<double>(incoming_nonlocal_psi_.data() + slot_begin, data_size),
           common_data_.IncomingFaceCell(incoming_face_slot)};
+}
+
+std::size_t
+CBC_FLUDS::GetIncomingNonlocalPsiSize(const std::size_t incoming_face_slot) const noexcept
+{
+  return incoming_nonlocal_psi_offsets_[incoming_face_slot + 1] -
+         incoming_nonlocal_psi_offsets_[incoming_face_slot];
+}
+
+std::size_t
+CBC_FLUDS::GetDelayedNonlocalPsiSize(std::size_t delayed_face_slot) const
+{
+  return common_data_.GetDelayedNonlocalFaceBySlot(delayed_face_slot).num_face_nodes *
+         num_groups_and_angles_;
+}
+
+std::span<double>
+CBC_FLUDS::PrepareIncomingDelayedNonlocalPsiBySlot(std::size_t delayed_face_slot,
+                                                   std::size_t data_size)
+{
+  const auto& info = common_data_.GetDelayedNonlocalFaceBySlot(delayed_face_slot);
+  auto& psi = delayed_prelocI_outgoing_psi_[info.prelocI];
+  const auto begin = info.slot_address * num_groups_and_angles_;
+  return {psi.data() + begin, data_size};
 }
 
 } // namespace opensn
