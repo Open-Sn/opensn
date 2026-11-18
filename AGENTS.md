@@ -92,6 +92,7 @@ Sanitizer build and representative regressions:
 cmake -DOPENSN_WITH_PYTHON_MODULE=ON --preset clang+debug+sanitizer
 cmake --build --preset clang+debug+sanitizer -j
 export LSAN_OPTIONS="suppressions=$PWD/tools/developer/lsan.supp"
+export ASAN_OPTIONS="exitcode=86"  # Distinct from exit codes that tests expect.
 test/run_tests -d test/python -j 4 -v 1 -w 3 --fail-on-nonzero-exit \
   --exe build-debug-sanitizer/python/opensn
 ```

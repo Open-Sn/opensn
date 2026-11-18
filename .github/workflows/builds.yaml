@@ -189,6 +189,8 @@ jobs:
         run: |
           module load python3/3.12.3 opensn/clang/17
           export LSAN_OPTIONS=suppressions=$PWD/tools/developer/lsan.supp
+          # A sanitizer error exits with 86. The default, 1, is an exit code that tests can expect.
+          export ASAN_OPTIONS=exitcode=86
           mkdir -p "$RUNNER_TEMP/logs"
           test/run_tests -d test/python -j 32 -v 1 -w 3 --fail-on-nonzero-exit \
             --exe build-debug-sanitizer/python/opensn \
