@@ -267,6 +267,7 @@ SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
+  sweep_chunk_.BeginSweep();
   if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
     ScheduleAlgoAsyncFIFO(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::FIRST_IN_FIRST_OUT)
@@ -277,6 +278,7 @@ SweepScheduler::Sweep()
     ScheduleAlgoAAOFused(sweep_chunk_);
   else if (scheduler_type_ == SchedulingAlgorithm::DEPTH_OF_GRAPH)
     ScheduleAlgoDOG(sweep_chunk_);
+  sweep_chunk_.EndSweep();
 
   // Every scheduler has left the scalar flux moments, outflows, and angular flux on the host.
   if (deterministic_sweeps_)

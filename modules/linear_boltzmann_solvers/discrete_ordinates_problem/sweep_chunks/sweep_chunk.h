@@ -96,6 +96,41 @@ public:
    */
   virtual void SetDestinationsFromAngularFlux(const AngleAggregation& angle_agg);
 
+  /**
+   * Prepares the chunk for a sweep.
+   * The sweep scheduler calls this before the first angle set of a sweep, after the destination
+   * flux moments of the groupset are zeroed. A chunk with compact groupset moments copies the
+   * groupset's source moments here.
+   */
+  virtual void BeginSweep();
+
+  /**
+   * Finishes a sweep of the chunk.
+   * The sweep scheduler calls this after the last angle set of a sweep. A chunk with compact
+   * groupset moments copies the groupset's flux moments to the destination here.
+   */
+  virtual void EndSweep();
+
+  /**
+   * Where a sweep reads the groupset's source moments and adds its flux moments.
+   * Moment m of group g of the groupset at node n is entry n * node_stride + m * moment_stride +
+   * group_offset + g of both arrays. Initialize it with braces, which zero any members left out.
+   */
+  struct GroupsetMoments
+  {
+    const double* source;
+    double* phi;
+    std::size_t node_stride;
+    std::size_t moment_stride;
+    std::size_t group_offset;
+
+    /// Index of moment m of the groupset's first group at node n.
+    std::size_t Index(std::size_t n, unsigned int m) const
+    {
+      return n * node_stride + m * moment_stride + group_offset;
+    }
+  };
+
   virtual ~SweepChunk() = default;
 
   /**
@@ -107,6 +142,19 @@ public:
   std::vector<MomentCallbackFunc> moment_callbacks;
 
 protected:
+  /**
+   * Makes the sweeps of this chunk use contiguous copies of the groupset's moments.
+   * When the groupset does not hold every group, a sweep reads the groupset's source moments from,
+   * and adds its flux moments to, contiguous copies of the groupset's part of the moments. The
+   * moments of a node then lie together, so a kernel reads them in fewer memory accesses. The
+   * copies exist only during a sweep. A chunk enables this only if every kernel it runs reads the
+   * moments through GetGroupsetMoments().
+   */
+  void EnableCompactGroupsetMoments(unsigned int num_problem_groups);
+
+  /// Where the current sweep reads the source moments and adds the flux moments.
+  GroupsetMoments GetGroupsetMoments();
+
   /**
    * Overwrite the scalar flux moments and outflows with fixed-order sums over an angular flux.
    *
@@ -150,6 +198,13 @@ protected:
   bool surface_source_active_ = false;
   bool include_rhs_time_term_ = true;
   const Cell* cell_;
+
+private:
+  /// Number of groups of the problem, which is the number of values of a moment of a node.
+  std::size_t num_problem_groups_ = 0;
+  bool compact_groupset_moments_ = false;
+  std::vector<double> compact_source_;
+  std::vector<double> compact_phi_;
 };
 
 /**

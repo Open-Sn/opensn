@@ -28,6 +28,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetMaxCellDOFCount(),
                problem.GetMinCellDOFCount()),
     problem_(problem),
+    cell_data_(problem.GetAAHCellSweepData()),
     sweep_impl_(&AAHSweepChunk::Sweep_Generic)
 {
   // Sweep_FixedN<N> specializes the entire mesh sweep at compile time and is strictly faster
@@ -67,6 +68,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     }
   }
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
+  EnableCompactGroupsetMoments(problem.GetNumGroups());
 }
 
 void
@@ -98,7 +100,9 @@ AAHSweepChunk::Sweep_Generic(AngleSet& angle_set)
                     include_rhs_time_term_,
                     problem_,
                     nullptr,
-                    group_block_size_};
+                    group_block_size_,
+                    &cell_data_,
+                    GetGroupsetMoments()};
 
   AAH_Sweep_Unified(data, angle_set);
 }

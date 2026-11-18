@@ -43,17 +43,17 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
   for (size_t spls_index = 0; spls_index < num_spls; ++spls_index)
   {
     const uint64_t cell_local_id = spls[spls_index];
-    auto& cell = data.grid->GetLocalCell(cell_local_id);
+    const auto& cell_data = data.cells->GetCell(cell_local_id);
+    const auto* faces = data.cells->GetFaces(cell_data);
     const auto& cell_transport_view = data.cell_transport_views[cell_local_id];
     auto& cell_outflow_view = data.cell_outflow_views[cell_local_id];
-    const auto& cell_mapping = data.discretization.GetCellMapping(cell);
-    const size_t cell_num_nodes = cell_mapping.GetNumNodes();
+    const size_t cell_num_nodes = cell_data.num_nodes;
     constexpr auto expected_nodes = static_cast<size_t>(NumNodes);
     OpenSnInvalidArgumentIf(cell_num_nodes != expected_nodes,
                             "AAH_Sweep_FixedN invoked for an incompatible cell topology.");
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
-    const size_t cell_num_faces = cell.faces.size();
+    const size_t cell_num_faces = cell_data.num_faces;
     face_mu_values.resize(cell_num_faces);
 
     const int ni_deploc_face_counter = deploc_face_counter;
@@ -61,10 +61,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
     const auto& sigma_t = cell_transport_view.GetXS().GetSigmaTotal();
 
-    const auto& unit_mats = data.unit_cell_matrices[cell_local_id];
-    const auto& G = unit_mats.intV_shapeI_gradshapeJ;
-    const auto& M = unit_mats.intV_shapeI_shapeJ;
-    const auto& M_surf = unit_mats.intS_shapeI_shapeJ;
+    const Vector3* G = data.cells->GetGradientMatrix(cell_data);
+    const double* M = data.cells->GetMassMatrix(cell_data);
 
     const size_t matrix_size = static_cast<size_t>(NumNodes) * static_cast<size_t>(NumNodes);
     auto Idx = [](int i, int j) -> size_t
@@ -76,7 +74,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     {
       PRAGMA_UNROLL
       for (int j = 0; j < NumNodes; ++j)
-        mass_matrix[Idx(i, j)] = M(i, j);
+        mass_matrix[Idx(i, j)] = M[Idx(i, j)];
     }
 
     std::array<double, matrix_size> Amat{};
@@ -84,7 +82,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
     {
       PRAGMA_UNROLL
       for (int i = 0; i < NumNodes; ++i)
-        moment_dof_map[m][i] = cell_transport_view.MapDOF(i, m, gs_gi);
+        moment_dof_map[m][i] = data.moments.Index(cell_data.first_node + i, m);
     }
 
     std::vector<double> tau_gsg;
@@ -117,11 +115,11 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
       {
         PRAGMA_UNROLL
         for (int j = 0; j < NumNodes; ++j)
-          Amat[Idx(i, j)] = omega.Dot(G(i, j));
+          Amat[Idx(i, j)] = omega.Dot(G[Idx(i, j)]);
       }
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(faces[f].normal);
 
       int in_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -129,8 +127,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces[f];
-        const bool is_local_face = cell_transport_view.IsFaceLocal(f);
+        const auto& cell_face = faces[f];
+        const bool is_local_face = cell_face.is_local;
         const bool is_boundary_face = not cell_face.has_neighbor;
 
         if (is_local_face)
@@ -138,13 +136,14 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         else if (not is_boundary_face)
           ++preloc_face_counter;
 
-        const auto& Ms_f = M_surf[f];
-        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
+        const double* face_mass = data.cells->GetFaceMassMatrix(cell_face);
+        const int* face_nodes = data.cells->GetFaceNodes(cell_face);
+        const size_t num_face_nodes = cell_face.num_nodes;
         const double mu_f = -face_mu_values[f];
 
         for (size_t fj = 0; fj < num_face_nodes; ++fj)
         {
-          const int j = cell_mapping.MapFaceNode(f, fj);
+          const int j = face_nodes[fj];
           const double* psi = nullptr;
 
           if (is_local_face)
@@ -162,8 +161,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
           for (size_t fi = 0; fi < num_face_nodes; ++fi)
           {
-            const int i = cell_mapping.MapFaceNode(f, fi);
-            const double mu_Nij = mu_f * Ms_f(i, j);
+            const int i = face_nodes[fi];
+            const double mu_Nij = mu_f * face_mass[fi * num_face_nodes + fj];
             Amat[Idx(i, j)] += mu_Nij;
 
             if (not psi)
@@ -182,16 +181,16 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
       const double* psi_old =
         (time_dependent and data.psi_old)
-          ? &(*data.psi_old)[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)]
+          ? &(*data.psi_old)[data.discretization.MapDOFLocal(
+              data.grid->GetLocalCell(cell_local_id), 0, groupset.psi_uk_man_, 0, 0)]
           : nullptr;
 
-      ComputeAngularSource(cell_transport_view,
+      ComputeAngularSource(data.moments,
+                           cell_data.first_node,
                            NumNodes,
                            data.num_moments,
-                           gs_gi,
                            gs_size,
                            m2d_row,
-                           data.source_moments,
                            nodal_source.data());
 
       for (unsigned int g0 = 0; g0 < gs_size; g0 += data.group_block_size)
@@ -300,7 +299,7 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         for (unsigned int m = 0; m < data.num_moments; ++m)
         {
           const double w = d2m_row[m];
-          double* __restrict phi = &data.destination_phi[moment_dof_map[m][i]];
+          double* __restrict phi = &data.moments.phi[moment_dof_map[m][i]];
           for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
             phi[gsg] += w * b[static_cast<std::size_t>(gsg) * NumNodes + i];
         }
@@ -308,9 +307,8 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
       if (data.save_angular_flux)
       {
-        double* cell_psi_data =
-          &data
-             .destination_psi[data.discretization.MapDOFLocal(cell, 0, groupset.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &data.destination_psi[data.discretization.MapDOFLocal(
+          data.grid->GetLocalCell(cell_local_id), 0, groupset.psi_uk_man_, 0, 0)];
         PRAGMA_UNROLL
         for (int i = 0; i < NumNodes; ++i)
         {
@@ -338,10 +336,11 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::OUTGOING)
           continue;
 
-        const auto& face = cell.faces[f];
-        const auto& IntF_shapeI = unit_mats.intS_shapeI[f];
-        const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
-        const bool is_local_face = cell_transport_view.IsFaceLocal(f);
+        const auto& face = faces[f];
+        const double* face_shape = data.cells->GetFaceShapeIntegrals(face);
+        const int* face_nodes = data.cells->GetFaceNodes(face);
+        const size_t num_face_nodes = face.num_nodes;
+        const bool is_local_face = face.is_local;
         const bool is_boundary = not face.has_neighbor;
         const bool is_reflecting =
           is_boundary && angle_set.GetBoundaries()[face.neighbor_id]->IsReflecting();
@@ -353,9 +352,9 @@ AAH_Sweep_FixedN(AAHSweepData& data, AngleSet& angle_set)
 
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
-          const int i = cell_mapping.MapFaceNode(f, fi);
+          const int i = face_nodes[fi];
 
-          const double flux_i = mu_wt_f * IntF_shapeI(i);
+          const double flux_i = mu_wt_f * face_shape[fi];
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             cell_outflow_view.Add(f, gs_gi + gsg, flux_i * b[gsg * NumNodes + i]);
 
@@ -404,7 +403,9 @@ AAHSweepChunk::Sweep_FixedN(AngleSet& angle_set)
                     include_rhs_time_term_,
                     problem_,
                     nullptr,
-                    group_block_size_};
+                    group_block_size_,
+                    &cell_data_,
+                    GetGroupsetMoments()};
 
   AAH_Sweep_FixedN<NumNodes, false>(data, angle_set);
 }

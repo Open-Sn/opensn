@@ -15,6 +15,7 @@ namespace opensn
 {
 
 class DiscreteOrdinatesProblem;
+class AAHCellSweepData;
 
 class AAHSweepChunk : public SweepChunk
 {
@@ -25,6 +26,8 @@ public:
 
 protected:
   DiscreteOrdinatesProblem& problem_;
+  /// Cell data of the kernels, owned by the problem.
+  const AAHCellSweepData& cell_data_;
   unsigned int group_block_size_;
 
 private:

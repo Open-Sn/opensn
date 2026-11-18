@@ -25,6 +25,7 @@ class ScopedRestore;
 
 class FieldFunctionGridBased;
 class AGSLinearSolver;
+class AAHCellSweepData;
 class LinearSolver;
 struct BalanceTable;
 struct WGSContext;
@@ -283,6 +284,13 @@ public:
   /// Adds the uncollided scalar flux to the converged collided scalar flux.
   void ComputeFluxFromUncollided();
 
+  /**
+   * Returns the local cell data that the CPU AAH sweep kernels read.
+   * It is built the first time it is requested. It depends only on the mesh and the spatial
+   * discretization, so it lives as long as the problem and every groupset shares it.
+   */
+  const AAHCellSweepData& GetAAHCellSweepData();
+
 protected:
   /**
    * @name Construction and setup
@@ -465,6 +473,9 @@ protected:
   std::vector<std::shared_ptr<WGSContext>> wgs_contexts_;
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
   /** @} */
+
+  /// Cell data of the CPU AAH sweep kernels, see GetAAHCellSweepData().
+  std::unique_ptr<AAHCellSweepData> aah_cell_sweep_data_;
 
   void InitializeFCS();
 
