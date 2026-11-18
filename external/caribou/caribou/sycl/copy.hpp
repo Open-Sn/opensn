@@ -8,7 +8,7 @@
 #include <cstddef>  // std::size_t
 
 #include "caribou/backend.hpp"
-#include "caribou/sycl/stream.hpp"  // caribou::impl::StreamNativeHandle, caribou::impl::null_stream
+#include "caribou/sycl/stream.hpp"  // caribou::impl::StreamNativeHandle, caribou::impl::get_null_stream_handle
 
 namespace caribou::impl {
 
@@ -19,6 +19,7 @@ void async_copy(T * dst, const T * src, std::size_t n, StreamNativeHandle stream
 
 template <typename T>
 void sync_copy(T * dst, const T * src, std::size_t n) {
+    StreamNativeHandle & null_stream = get_null_stream_handle();
     null_stream.memcpy(reinterpret_cast<void *>(dst), reinterpret_cast<const void *>(src), n * sizeof(T));
     null_stream.wait_and_throw();
 }

@@ -50,19 +50,14 @@ SweepDispatch(std::uint32_t n, Args&... args)
 
 template <SweepKind k>
 __CRB_GLOBAL_FUNC__ void
-SweepKernel(Arguments<k> args,
+SweepKernel(crb::Index index,
+            Arguments<k> args,
             const std::uint32_t* cells_to_sweep,
             unsigned int num_cells,
             double* saved_psi)
 {
-#if defined(__NVCC__) || defined(__HIPCC__)
-  unsigned int cell_idx = threadIdx.y + blockDim.y * blockIdx.y;
-  unsigned int angle_group_idx = threadIdx.x + blockDim.x * blockIdx.x;
-#elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
-  auto work_index = ::sycl::ext::oneapi::this_work_item::get_nd_item<3>();
-  unsigned int cell_idx = work_index.get_global_id(1);
-  unsigned int angle_group_idx = work_index.get_global_id(2);
-#endif
+  unsigned int cell_idx = index.get_global_id<1>();
+  unsigned int angle_group_idx = index.get_global_id<0>();
   if (cell_idx >= num_cells || angle_group_idx >= args.flud_data.stride_size)
     return;
   unsigned int angle_idx = angle_group_idx / args.groupset_size;

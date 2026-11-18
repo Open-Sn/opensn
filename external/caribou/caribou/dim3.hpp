@@ -45,14 +45,14 @@ struct Dim3 {
      * @brief Convert to a CUDA/HIP `dim3`.
      * @return A `::dim3` initialized as `{x, y, z}`.
      */
-    inline operator ::dim3(void) { return ::dim3(x, y, z); }
+    inline operator ::dim3(void) const { return ::dim3(x, y, z); }
 #elif defined(SYCL_LANGUAGE_VERSION) && defined(__INTEL_LLVM_COMPILER)
     /**
      * @brief Convert to a SYCL 3D range.
      * @details SYCL uses row-major indexing order for `sycl::range<3>`, so the dimensions are passed as `{z, y, x}`.
      * @return A `::sycl::range<3>` initialized as `{z, y, x}`.
      */
-    inline operator ::sycl::range<3>(void) { return ::sycl::range<3>(z, y, x); }
+    inline operator ::sycl::range<3>(void) const { return ::sycl::range<3>(z, y, x); }
 #endif
 };
 

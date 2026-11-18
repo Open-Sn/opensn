@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include <cstdint>  // std::uint32_t
 #include <utility>  // std::forward
 
 #include "caribou/backend.hpp"
@@ -29,8 +30,8 @@ class Stream : public impl::Stream {
         impl::create_stream(*this, flag == StreamCreationFlag::NonBlocking);
     }
 
-    /** @brief Get reference to the default/null stream.*/
-    static inline Stream get_null_stream() { return Stream(impl::null_stream); }
+    /** @brief Get reference to the default/null stream of the current device.*/
+    static inline Stream get_null_stream() { return Stream(impl::get_null_stream_handle()); }
 
 #if defined(__NVCC__) || defined(__HIPCC__)
     /**
@@ -43,6 +44,15 @@ class Stream : public impl::Stream {
 
     /** @brief Check if this stream is a default stream (synchronous copy and memory allocation).*/
     inline bool is_default(void) const { return this->is_default_; }
+
+    /**
+     * @brief Get the index of the GPU device on which this stream is created.
+     * @return Index of the device in ``[0, caribou::get_num_gpus())``.
+     * @note For CUDA/HIP, the null stream reports the device currently selected by the calling thread.
+     * @note For SYCL implementation, a queue may target a CPU or another non-GPU accelerator. In that case, a warning
+     * is printed and ``std::numeric_limits<std::uint32_t>::max()`` is returned.
+     */
+    inline std::uint32_t get_device(void) const { return impl::get_stream_device(*this); }
 
     /**
      * @brief Add a host callback to the stream.

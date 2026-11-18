@@ -12,4 +12,6 @@
 #include "caribou/device_memory.hpp"
 #include "caribou/dim3.hpp"
 #include "caribou/host_vector.hpp"
+#include "caribou/index.hpp"
+#include "caribou/kernel.hpp"
 #include "caribou/stream.hpp"
