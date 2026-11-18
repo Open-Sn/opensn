@@ -21,6 +21,8 @@ Program Listing for File spds.h
    #include "framework/graphs/feedback_arc_set.h"
    #include <cstdint>
    #include <memory>
+   #include <span>
+   #include <vector>
    
    namespace opensn
    {
@@ -38,6 +40,41 @@ Program Listing for File spds.h
    using SPDSFaceNeighborInfoVec = std::vector<std::vector<SPDSFaceNeighborInfo>>;
    
    SPDSFaceNeighborInfoVec BuildSPDSFaceNeighborInfo(const Mesh& grid);
+   
+   /**
+    * The orientation of every face of every local cell with respect to a sweep direction. Every
+    * direction of an unstructured mesh has its own orientations, so they are stored flat: the faces
+    * of cell c are entries offsets[c] to offsets[c + 1] - 1, in the order of the cell's faces.
+    */
+   class CellFaceOrientations
+   {
+   public:
+     CellFaceOrientations() = default;
+   
+     /// Sizes the storage for the faces of every local cell of the grid and sets them to value.
+     CellFaceOrientations(const Mesh& grid, FaceOrientation value);
+   
+     /// Returns the orientations of the faces of the cell with the given local id.
+     std::span<const FaceOrientation> operator[](std::size_t cell_local_id) const
+     {
+       return {orientations_.data() + offsets_[cell_local_id],
+               offsets_[cell_local_id + 1] - offsets_[cell_local_id]};
+     }
+   
+     /// Returns the orientations of the faces of the cell with the given local id.
+     std::span<FaceOrientation> operator[](std::size_t cell_local_id)
+     {
+       return {orientations_.data() + offsets_[cell_local_id],
+               offsets_[cell_local_id + 1] - offsets_[cell_local_id]};
+     }
+   
+     /// Returns the number of cells.
+     std::size_t size() const { return offsets_.empty() ? 0 : offsets_.size() - 1; }
+   
+   private:
+     std::vector<std::uint32_t> offsets_;
+     std::vector<FaceOrientation> orientations_;
+   };
    
    class SPDS
    {
@@ -96,10 +133,7 @@ Program Listing for File spds.h
      }
    
      /// Return the cell face orientations for this SPDS.
-     const std::vector<std::vector<FaceOrientation>>& GetCellFaceOrientations() const
-     {
-       return cell_face_orientations_;
-     }
+     const CellFaceOrientations& GetCellFaceOrientations() const { return cell_face_orientations_; }
    
      /// Maps location J to a predecessor location.
      int MapLocJToPrelocI(int locJ) const;
@@ -149,7 +183,7 @@ Program Listing for File spds.h
      /// Vector of edges representing the FAS used to break cycles in the local cell sweep graph.
      std::vector<std::pair<std::uint32_t, std::uint32_t>> local_sweep_fas_;
      /// Cell face orientations for the cells in the local cell graph.
-     std::vector<std::vector<FaceOrientation>> cell_face_orientations_;
+     CellFaceOrientations cell_face_orientations_;
    };
    
    } // namespace opensn

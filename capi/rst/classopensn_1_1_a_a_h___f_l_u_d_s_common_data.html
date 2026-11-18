@@ -87,15 +87,6 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_fluds_aah_fluds_common_data.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-fluds-aah-fluds-common-data-h"><span class="std std-ref">File aah_fluds_common_data.h</span></a></p></li>
 </ul>
-<section id="nested-relationships">
-<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
-<section id="nested-types">
-<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
-<ul class="simple">
-<li><p><a class="reference internal" href="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o.html#exhale-struct-structopensn-1-1-a-a-h-f-l-u-d-s-common-data-1-1-i-n-c-o-m-i-n-g-f-a-c-e-i-n-f-o"><span class="std std-ref">Struct AAH_FLUDSCommonData::INCOMING_FACE_INFO</span></a></p></li>
-</ul>
-</section>
-</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="base-type">
@@ -231,23 +222,48 @@
 <dd></dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData31so_cell_outb_face_slot_indices_E">
-<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1ab37bd1e14bde42a8fc928b7d6431c2cc"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">uint64_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_outb_face_slot_indices_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData31so_cell_outb_face_slot_indices_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the slot address in the local psi vector where the first face dof will store its data. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18outb_face_offsets_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a896a1f319cc1e94153e8d5478704e47b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outb_face_offsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18outb_face_offsets_E" title="Link to this definition"></a><br /></dt>
+<dd><p>The outgoing faces of the cell with sweep order index s are entries outb_face_offsets_[s] to outb_face_offsets_[s + 1] - 1 of the outgoing-face arrays, in the order of the cell’s faces. </p>
+<p>The same holds for the incoming faces with a local neighbor and inco_face_offsets_. Every direction has its own sweep ordering and so its own copy of these arrays, so they are stored flat rather than as a vector per cell. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_outb_face_face_category_E">
-<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a56e2967279f5e67ccd1ef0f8367d46b5"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_outb_face_face_category_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_outb_face_face_category_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][outgoing_face_count] which holds the face categorization for the face. </p>
-<p>i.e. the local psi vector that hold faces of the same category. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData16outb_face_slots_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a0690d63f53eaa68ca71f2b4057740da8"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outb_face_slots_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData16outb_face_slots_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Lock-box slot of each outgoing face, where its first face node stores its data. </p>
 </dd></dl>
 
 <dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_inco_face_face_category_E">
-<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a7363582a25615798b39fabce40d3b9e0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">so_cell_inco_face_face_category_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData32so_cell_inco_face_face_category_E" title="Link to this definition"></a><br /></dt>
-<dd><p>This is a vector [cell_sweep_order_index][incoming_face_count] which holds the face categorization for the face. </p>
-<p>i.e. the local psi vector that hold faces of the same category. </p>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData21outb_face_categories_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a2f0d53cafb37f52cb4b77c55c4963ef4"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">outb_face_categories_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData21outb_face_categories_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Face category of each outgoing face, that is, the local psi vector that holds faces of its size. </p>
+<p>A delayed face, whose downwind cell reads lagged data, stores -category - 1. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18inco_face_offsets_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a2275066f1096b0b98e0e07b71d8bb7da"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inco_face_offsets_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18inco_face_offsets_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Offsets of the incoming faces with a local neighbor, as outb_face_offsets_. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData21inco_face_categories_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a873933c6fea0de4e6cd3308bf62fc3e0"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inco_face_categories_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData21inco_face_categories_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Face category of each incoming face, encoded as outb_face_categories_. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData16inco_face_slots_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1a6803fd4abbe6229f76a53969d5ee7200"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">uint32_t</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inco_face_slots_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData16inco_face_slots_E" title="Link to this definition"></a><br /></dt>
+<dd><p>Lock-box slot where the upwind cell stores the data of each incoming face. </p>
+</dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData22inco_face_upwind_dofs_E">
+<span class="target" id="classopensn_1_1_a_a_h___f_l_u_d_s_common_data_1ad49db68a1831653db4f34ca567c6b072"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">*</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">inco_face_upwind_dofs_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData22inco_face_upwind_dofs_E" title="Link to this definition"></a><br /></dt>
+<dd><p>The grid nodal mapping of each incoming face, which maps its nodes to the nodes of the upwind face. </p>
+<p>The pointers address the face node mappings of the problem’s grid nodal mappings, which are built once with the problem and outlive the sweep data built from them. </p>
 </dd></dl>
 
 </div>
@@ -259,37 +275,6 @@
 </dl>
 
 </div>
-<dl class="cpp struct">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFOE">
-<span class="target" id="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">INCOMING_FACE_INFO</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFOE" title="Link to this definition"></a><br /></dt>
-<dd><div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO5SetupERKNSt4pairIiNSt6vectorIsEEEE">
-<span class="target" id="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o_1a89b4c395162202affcb4f35566deba22"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Setup</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">pair</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">int</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">input</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO5SetupERKNSt4pairIiNSt6vectorIsEEEE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFOD0Ev">
-<span class="target" id="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o_1aa207445713e793eb402439edf291cdb0"></span><span class="sig-name descname"><span class="n"><span class="pre">~INCOMING_FACE_INFO</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFOD0Ev" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-<div class="breathe-sectiondef docutils container">
-<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO12slot_addressE">
-<span class="target" id="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o_1a72e0a4e4f6e9c84cde1732ea463e0926"></span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">slot_address</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="m"><span class="pre">0</span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO12slot_addressE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-<dl class="cpp var">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO18upwind_dof_mappingE">
-<span class="target" id="structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o_1a751879668940d0d141eb61de64271523"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">short</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">upwind_dof_mapping</span></span></span><a class="headerlink" href="#_CPPv4N6opensn19AAH_FLUDSCommonData18INCOMING_FACE_INFO18upwind_dof_mappingE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
-
-</div>
-</dd></dl>
-
 </dd></dl>
 
 </section>

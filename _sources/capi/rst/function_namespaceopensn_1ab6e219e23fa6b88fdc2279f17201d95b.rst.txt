@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ab6e219e23fa6b88fdc2279f17201d95b:
+
+Function opensn::PrepareNonlocalOutgoingPsi
+===========================================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_cbc_sweep_kernels.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::PrepareNonlocalOutgoingPsi(CBCSweepWorkspace&, CBC_FLUDS&, const Cell&, std::uint32_t, const CellMapping&, const CellLBSView&, std::size_t, std::span<const FaceOrientation>)
+   :project: opensn

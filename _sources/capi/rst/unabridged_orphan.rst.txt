@@ -35,11 +35,6 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
-   structopensn_1_1_a_a_h___f_l_u_d_s_common_data_1_1_i_n_c_o_m_i_n_g___f_a_c_e___i_n_f_o.rst
-
-.. toctree::
-   :maxdepth: 1
-
    structopensn_1_1_a_a_h___message_details.rst
 
 .. toctree::
@@ -1131,6 +1126,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_cell_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_cell_face_orientations.rst
 
 .. toctree::
    :maxdepth: 1
