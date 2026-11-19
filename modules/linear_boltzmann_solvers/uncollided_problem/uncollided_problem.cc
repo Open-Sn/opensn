@@ -427,9 +427,10 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    size_t f = 0;
-    for (auto& face : cell.faces)
+
+    for (size_t f = 0; f < cell.faces.size(); ++f)
     {
+      const auto& face = cell.faces[f];
       // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
       Vector3 omega = ComputeOmega(source_point.location, face.centroid);
@@ -452,7 +453,7 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
         {
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
           const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
-          const auto adj_face_idx = face.GetNeighborAdjacentFaceIndex(grid_.get());
+          const auto adj_face_idx = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
           auto& adj_face_ori = cell_face_orientations_[adj_cell_local_id][adj_face_idx];
 
           switch (orientation)
@@ -469,8 +470,6 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
           }
         }
       }
-
-      ++f;
     } // for face
   }
 
@@ -1226,7 +1225,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
             auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
             const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
 
-            size_t f_ = face.GetNeighborAdjacentFaceIndex(grid_.get());
+            size_t f_ = grid_->GetNeighborAdjacentFaceIndex(c, f);
             const size_t neighbor_num_face_nodes = neighbor_mapping.GetNumFaceNodes(f_);
             double face_measure = 0.0;
             for (const auto& qp : fe_srf_data.GetQuadraturePointIndices())
@@ -1411,7 +1410,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         if (cell_face_orientations_[c][f] == FOINCOMING and cell.faces[f].has_neighbor)
         {
           const size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
-          const size_t neigh_face_ind = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
+          const size_t neigh_face_ind = grid_->GetNeighborAdjacentFaceIndex(c, f);
           cell_leakage[f] = leakages[neigh_id][neigh_face_ind];
         }
 
@@ -1442,7 +1441,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       // angle it subtends, not a volume-weighted share.
       if (is_source_cell)
       {
-        const double angle_fraction = SubtendedAngleFraction(cell, pt_loc);
+        const double angle_fraction = SubtendedAngleFraction(grid_, cell, c, pt_loc);
         source_angle_fraction += angle_fraction;
         for (size_t g = 0; g < num_groups_; ++g)
           source[g] += strength[g] * angle_fraction;
@@ -1749,13 +1748,13 @@ template <typename Function>
 bool
 ForEachVisibleSideTriangle(const Mesh& grid,
                            const CellFace& face,
+                           std::span<const std::uint64_t> vertex_ids,
                            const Vector3& source,
                            const Function& f)
 {
   // Relative tolerance on the distance from the source to a side plane.
   constexpr double plane_tolerance = 1.0e-12;
 
-  const auto& vertex_ids = face.vertex_ids;
   const size_t num_sides = vertex_ids.size();
   for (size_t side = 0; side < num_sides; ++side)
   {
@@ -1808,9 +1807,10 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
   // Planes of the side triangles of every face, for the distance at which a ray from the source
   // enters the cell. It is zero for the cell containing the source.
   std::vector<std::pair<Vector3, Vector3>> side_planes;
-  for (const auto& face : cell.faces)
+  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
   {
-    const auto& vertex_ids = face.vertex_ids;
+    const auto& face = cell.faces[face_idx];
+    const auto& vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, face_idx);
     for (size_t side = 0; side < vertex_ids.size(); ++side)
     {
       const Vector3& P = grid_->GlobalVertex(vertex_ids[side]);
@@ -1839,11 +1839,13 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
 
   for (size_t f = 0; f < cell.faces.size(); ++f)
   {
+    const auto& vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, f);
     const bool outgoing = cell_face_orientations_[cell_local_id][f] == FaceOrientation::OUTGOING;
     bool visible_through_non_outgoing_face = false;
     const auto visible = ForEachVisibleSideTriangle(
       *grid_,
       cell.faces[f],
+      vertex_ids,
       source,
       [&](const std::array<Vector3, 3>& triangle, const double h)
       {
@@ -1899,13 +1901,15 @@ UncollidedProblem::IsConvex(const Cell& cell, std::uint32_t cell_local_id) const
 {
   const auto& cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
   const double tol = cell_sizes_[cell_local_id] * 1.0e-8;
-  for (const auto& face : cell.faces)
+  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
   {
-    const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());
+    const auto& face = cell.faces[face_idx];
+    auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, face_idx);
+    const auto& v0 = grid_->GlobalVertex(face_vertex_ids.front());
     const auto& n = face.normal;
     for (const auto vid : cell_vertex_ids)
     {
-      if (std::find(face.vertex_ids.begin(), face.vertex_ids.end(), vid) != face.vertex_ids.end())
+      if (std::find(face_vertex_ids.begin(), face_vertex_ids.end(), vid) != face_vertex_ids.end())
         continue;
       if (n.Dot(grid_->GlobalVertex(vid) - v0) > tol)
         return false;
@@ -1915,16 +1919,20 @@ UncollidedProblem::IsConvex(const Cell& cell, std::uint32_t cell_local_id) const
 }
 
 double
-UncollidedProblem::SubtendedAngleFraction(const Cell& cell, const Vector3& point) const
+UncollidedProblem::SubtendedAngleFraction(std::shared_ptr<Mesh> mesh,
+                                          const Cell& cell,
+                                          std::uint32_t cell_local_id,
+                                          const Vector3& point) const
 {
   // Relative tolerance on the distance from the point to a face or side plane. A face whose plane
   // contains the point subtends no angle.
   constexpr double plane_tolerance = 1.0e-12;
 
   double angle = 0.0;
-  for (const auto& face : cell.faces)
+  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
   {
-    const auto& vertex_ids = face.vertex_ids;
+    const auto& face = cell.faces[face_idx];
+    const auto& vertex_ids = mesh->GetCellFaceConnectivity(cell_local_id, face_idx);
 
     // Van Oosterom-Strackee solid angle of each PWL side triangle, signed by the side of its plane
     // the point is on.
@@ -2039,7 +2047,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
             // Bulk region cell neighbor
             else
             {
-              size_t f_ = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
+              size_t f_ = grid_->GetNeighborAdjacentFaceIndex(cell_local_id, f);
 
               const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
               auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);

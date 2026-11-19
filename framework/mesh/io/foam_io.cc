@@ -818,6 +818,9 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
   std::vector<std::vector<std::uint64_t>> cell_connect;
   cell_connect.reserve(ncells);
 
+  std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
+  cell_face_connect.reserve(ncells);
+
   std::vector<FaceLocation> owner_face_location(n_faces);
 
   for (size_t c = 0; c < ncells; ++c)
@@ -825,27 +828,31 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     Cell cell(CellType::POLYHEDRON, CellType::POLYHEDRON);
     cell.block_id = block_map[c];
 
+    std::vector<std::vector<std::uint64_t>> cell_face_vertex_ids;
     for (auto code : cell_faces[c])
     {
       const int64_t f = (code >= 0) ? code : (-code - 1);
       const auto& f_v = face_verts[static_cast<size_t>(f)];
 
       CellFace lwf;
-      lwf.vertex_ids.reserve(f_v.size());
+
+      std::vector<std::uint64_t> lwf_vertex_ids;
+      lwf_vertex_ids.reserve(f_v.size());
 
       if (code >= 0)
       {
         for (int v : f_v)
-          lwf.vertex_ids.push_back(static_cast<uint64_t>(v));
+          lwf_vertex_ids.push_back(static_cast<uint64_t>(v));
       }
       else
       {
         for (auto it = f_v.rbegin(); it != f_v.rend(); ++it)
-          lwf.vertex_ids.push_back(static_cast<uint64_t>(*it));
+          lwf_vertex_ids.push_back(static_cast<uint64_t>(*it));
       }
 
       const auto local_face_id = cell.faces.size();
-      cell.faces.push_back(std::move(lwf));
+      cell.faces.emplace_back(lwf);
+      cell_face_vertex_ids.emplace_back(std::move(lwf_vertex_ids));
 
       // Keep the owner-oriented location for each global face.
       // Boundary patch assignment will use this directly.
@@ -854,19 +861,21 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     }
 
     std::vector<uint64_t> v_set;
-    for (const auto& f : cell.faces)
-      v_set.insert(v_set.end(), f.vertex_ids.begin(), f.vertex_ids.end());
+    for (const auto& f_vertex_ids : cell_face_vertex_ids)
+      v_set.insert(v_set.end(), f_vertex_ids.begin(), f_vertex_ids.end());
 
     std::sort(v_set.begin(), v_set.end());
     v_set.erase(std::unique(v_set.begin(), v_set.end()), v_set.end());
 
     cells.emplace_back(cell);
     cell_connect.emplace_back(v_set);
+    cell_face_connect.emplace_back(std::move(cell_face_vertex_ids));
   }
 
   mesh->SetDimension(3);
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(cells), cell_connect);
+  mesh->SetCellFaces(cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

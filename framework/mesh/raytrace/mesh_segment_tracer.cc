@@ -105,9 +105,9 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   // Face centroids, one point per face, computed from the vertices in a canonical order so that
   // both cells sharing the face get the same point.
   std::map<std::vector<std::uint64_t>, std::uint32_t> face_centroid;
-  const auto FaceCentroid = [&](const std::vector<std::uint64_t>& vertex_ids)
+  const auto FaceCentroid = [&](std::span<const std::uint64_t> vertex_ids)
   {
-    std::vector<std::uint64_t> key(vertex_ids);
+    std::vector<std::uint64_t> key(vertex_ids.begin(), vertex_ids.end());
     std::sort(key.begin(), key.end());
     const auto it = face_centroid.find(key);
     if (it != face_centroid.end())
@@ -153,22 +153,23 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
     cell_face_starts.clear();
     std::vector<std::uint32_t> cell_points(cell_vertices_.begin() + cell_vertex_offset_[c],
                                            cell_vertices_.end());
-    for (const auto& face : cell.faces)
+    for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
     {
-      const size_t n = face.vertex_ids.size();
+      auto face_vertex_ids = grid.GetCellFaceConnectivity(c, face_idx);
+      const size_t n = face_vertex_ids.size();
       OpenSnInvalidArgumentIf(n < 3, "MeshSegmentTracer: a face has fewer than three vertices.");
       cell_face_starts.push_back(static_cast<std::uint32_t>(cell_triangles.size()));
       if (n == 3)
-        cell_triangles.push_back({compact_vertex.at(face.vertex_ids[0]),
-                                  compact_vertex.at(face.vertex_ids[1]),
-                                  compact_vertex.at(face.vertex_ids[2])});
+        cell_triangles.push_back({compact_vertex.at(face_vertex_ids[0]),
+                                  compact_vertex.at(face_vertex_ids[1]),
+                                  compact_vertex.at(face_vertex_ids[2])});
       else
       {
-        const auto f = FaceCentroid(face.vertex_ids);
+        const auto f = FaceCentroid(face_vertex_ids);
         cell_points.push_back(f);
         for (size_t s = 0; s < n; ++s)
-          cell_triangles.push_back({compact_vertex.at(face.vertex_ids[s]),
-                                    compact_vertex.at(face.vertex_ids[(s + 1) % n]),
+          cell_triangles.push_back({compact_vertex.at(face_vertex_ids[s]),
+                                    compact_vertex.at(face_vertex_ids[(s + 1) % n]),
                                     f});
       }
     }

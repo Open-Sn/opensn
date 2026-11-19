@@ -67,7 +67,8 @@ double FaceOrthogonalLength(const Mesh& grid,
  * consistency terms on any cell shape. Equal to \f$V/A_f\f$ on a square or a cube. Slab
  * cells: the cell length.
  */
-double FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f);
+double
+FaceSideLength(const Mesh& grid, const Cell& cell, std::uint32_t cell_local_id, unsigned int f);
 
 /**
  * Largest generalized eigenvalue \f$\lambda\f$ of \f$N v = \lambda K v\f$ over the range of `K`,

@@ -167,7 +167,10 @@ protected:
    * result is exact for cells of any shape, including non-convex ones. It is 1 for a point
    * inside the cell, 1/2 on a planar face, and smaller on an edge or vertex.
    */
-  double SubtendedAngleFraction(const Cell& cell, const Vector3& point) const;
+  double SubtendedAngleFraction(std::shared_ptr<Mesh> mesh,
+                                const Cell& cell,
+                                std::uint32_t cell_local_id,
+                                const Vector3& point) const;
 
   /// True when every vertex of the cell lies on the inner side of the plane of every face.
   bool IsConvex(const Cell& cell, std::uint32_t cell_local_id) const;

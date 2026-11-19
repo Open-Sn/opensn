@@ -47,7 +47,7 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
   return nullptr;
 }
 
-void
+std::vector<std::vector<uint64_t>>
 MeshIO::AddGmshPrismOrPyramidFaces(const int element_type,
                                    const std::vector<uint64_t>& v,
                                    Cell& cell)
@@ -78,12 +78,8 @@ MeshIO::AddGmshPrismOrPyramidFaces(const int element_type,
   else
     OpenSnLogicalError("MeshIO::FromGmsh: Element type " + std::to_string(element_type) +
                        " is not a prism or pyramid.");
-  for (auto& vertex_ids : faces)
-  {
-    CellFace face;
-    face.vertex_ids = std::move(vertex_ids);
-    cell.faces.push_back(std::move(face));
-  }
+  cell.faces.resize(faces.size());
+  return faces;
 }
 
 } // namespace opensn

@@ -133,7 +133,7 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         const auto adj_cell_local_id = grid->MapCellGlobalID2LocalID(face.neighbor_id);
         const auto& adj_cell_mapping = sdm.GetLocalCellMapping(adj_cell_local_id);
         const auto& ac_nodes = adj_cell_mapping.GetNodeLocations();
-        const size_t acf = Mesh::MapCellFace(cell, adj_cell, f);
+        const size_t acf = grid->MapCellFace(cell_local_id, adj_cell_local_id, f);
         const double hp = HPerpendicular(*grid, adj_cell_local_id, acf);
 
         // Compute kappa
@@ -149,7 +149,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
+          const auto imap =
+            static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -161,8 +162,10 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
-            const auto jpmap = static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0));
+            const auto jmmap =
+              static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
+            const auto jpmap =
+              static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0));
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -181,7 +184,8 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         // 0.5*D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
+          const auto imap =
+            static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
@@ -193,8 +197,10 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                            f,
                                            acf,
                                            fj); // j-plus
-            const auto jmmap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
-            const auto jpmap = static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0));
+            const auto jmmap =
+              static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
+            const auto jpmap =
+              static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, jp, OneDofPerNode, 0, 0));
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -217,12 +223,15 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
                                          f,
                                          acf,
                                          fi); // i-plus
-          const auto immap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, im, OneDofPerNode, 0, 0));
-          const auto ipmap = static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, ip, OneDofPerNode, 0, 0));
+          const auto immap =
+            static_cast<PetscInt>(sdm.MapDOF(cell.global_id, im, OneDofPerNode, 0, 0));
+          const auto ipmap =
+            static_cast<PetscInt>(sdm.MapDOF(adj_cell.global_id, ip, OneDofPerNode, 0, 0));
 
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0));
+            const auto jmap =
+              static_cast<PetscInt>(sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0));
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -252,12 +261,14 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
         {
           const int i = cell_mapping.MapFaceNode(f, fi);
-          const auto imap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
+          const auto imap =
+            static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
 
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
             const int jm = cell_mapping.MapFaceNode(f, fj);
-            const auto jmmap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
+            const auto jmmap =
+              static_cast<PetscInt>(sdm.MapDOF(cell.global_id, jm, OneDofPerNode, 0, 0));
 
             double aij = 0.0;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())
@@ -277,11 +288,13 @@ math_SDM_Test02_Discontinuous(std::shared_ptr<Mesh> grid,
         // D* n dot (b_j^+ - b_j^-)*nabla b_i^-
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto imap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
+          const auto imap =
+            static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i, OneDofPerNode, 0, 0));
 
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto jmap = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0));
+            const auto jmap =
+              static_cast<PetscInt>(sdm.MapDOF(cell.global_id, j, OneDofPerNode, 0, 0));
 
             Vector3 vec_aij;
             for (size_t qp : fqp_data.GetQuadraturePointIndices())

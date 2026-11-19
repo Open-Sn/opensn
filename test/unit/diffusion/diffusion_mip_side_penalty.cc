@@ -108,9 +108,14 @@ TEST(DiffusionMIPSidePenalty, SideLengthIsWidthOnOrthogonalCells)
   for (const auto& node_sets : std::vector<std::vector<std::vector<double>>>{{x, y}, {x, y, z}})
   {
     auto grid = BuildOrthogonalMesh(node_sets);
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceSideLength(*grid, cell, f), cell.volume / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(
+          FaceSideLength(*grid, cell, cell_local_id, f), cell.volume / cell.faces[f].area, 1.0e-12);
+    }
   }
 }
 
@@ -125,8 +130,8 @@ TEST(DiffusionMIPSidePenalty, DegenerateSideSimplexThrows)
     const auto& cell = grid->GetLocalCells().front();
     Cell flat = cell;
     flat.centroid = flat.faces[0].centroid;
-    EXPECT_NO_THROW(FaceSideLength(*grid, cell, 0));
-    EXPECT_THROW(FaceSideLength(*grid, flat, 0), std::logic_error);
+    EXPECT_NO_THROW(FaceSideLength(*grid, cell, 0, 0));
+    EXPECT_THROW(FaceSideLength(*grid, flat, 0, 0), std::logic_error);
   }
 }
 
@@ -193,7 +198,7 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
     const auto& cell = grid->GetLocalCell(cell_local_id);
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
       min_ratio = std::min(min_ratio,
-                           2.0 * FaceSideLength(*grid, cell, f) /
+                           2.0 * FaceSideLength(*grid, cell, cell_local_id, f) /
                              FaceOrthogonalLength(*grid, cell, cell_local_id, f));
   }
   EXPECT_LT(min_ratio, 0.1);
@@ -228,7 +233,8 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
         EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h_face, 1.0e-10 * h_face);
         if (cell.faces.size() == 4)
         {
-          EXPECT_NEAR(FaceSideLength(*grid, cell, f), 0.5 * h_face, 1.0e-10 * h_face);
+          EXPECT_NEAR(
+            FaceSideLength(*grid, cell, cell_local_id, f), 0.5 * h_face, 1.0e-10 * h_face);
         }
       }
     }
