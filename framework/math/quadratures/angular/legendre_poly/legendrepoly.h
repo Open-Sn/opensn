@@ -36,8 +36,11 @@ double d2Legendredx2(unsigned int N, double x);
  * This code has a whitepaper associated with it
  *   <a href="SphericalHarmonics.pdf" target="_blank"><b>Spherical Harmonics</b></a>
  *
+ * The value is computed by the three-term recurrence in ell, in O(ell) operations.
+ *
  * \param ell int The ell order of the polynomial.
- * \param m int The m-th moment of the polynomial
+ * \param m int The m-th moment of the polynomial. Returns 0 for |m| > ell; throws
+ *          std::invalid_argument for -ell <= m < 0.
  * \param x double The evaluation point.
  */
 double AssocLegendre(unsigned int ell, int m, double x);
