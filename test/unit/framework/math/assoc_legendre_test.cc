@@ -4,7 +4,6 @@
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include "gtest/gtest.h"
 #include <algorithm>
-#include <chrono>
 #include <cmath>
 #include <limits>
 #include <stdexcept>
@@ -69,14 +68,40 @@ TEST(AssocLegendreTest, MatchesRecursiveDefinitionAtSmallOrder)
     }
 }
 
+TEST(AssocLegendreTest, MatchesClosedFormsAtLowOrder)
+{
+  // Independent of the recurrence: the closed forms for ell <= 3, with the Condon-Shortley phase.
+  // Every form is bounded by 15 on [-1, 1].
+  for (const double x : EvaluationPoints(40))
+  {
+    const double s = std::sqrt(1.0 - x * x);
+    const std::vector<std::pair<std::pair<unsigned int, int>, double>> forms = {
+      {{1, 0}, x},
+      {{1, 1}, -s},
+      {{2, 0}, 0.5 * (3.0 * x * x - 1.0)},
+      {{2, 1}, -3.0 * x * s},
+      {{2, 2}, 3.0 * (1.0 - x * x)},
+      {{3, 0}, 0.5 * (5.0 * x * x * x - 3.0 * x)},
+      {{3, 1}, -1.5 * (5.0 * x * x - 1.0) * s},
+      {{3, 2}, 15.0 * x * (1.0 - x * x)},
+      {{3, 3}, -15.0 * (1.0 - x * x) * s}};
+    for (const auto& [order, expected] : forms)
+      EXPECT_NEAR(AssocLegendre(order.first, order.second, x), expected, 1.0e-13)
+        << "ell = " << order.first << ", m = " << order.second << ", x = " << x;
+  }
+}
+
 TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
 {
   // Each value must follow from the two below it by the three-term recurrence in ell,
   //   (ell - m) P_ell^m = (2 ell - 1) x P_{ell-1}^m - (ell + m - 1) P_{ell-2}^m,
   // and the diagonal from P_ell^ell = -(2 ell - 1) sqrt(1 - x^2) P_{ell-1}^{ell-1}, within a few
-  // roundoffs of the terms. Large m overflows; where the value, the terms or their combination
-  // is not finite, the entry is not compared.
+  // roundoffs of the terms. Large m overflows. An entry is compared only where every term is
+  // finite and at most a quarter of the overflow limit: then the terms sum to at most half of it,
+  // so no rounding or contraction of the recurrence can overflow, and the value must be finite.
+  // Entries above that bound are not compared.
   constexpr double eps = std::numeric_limits<double>::epsilon();
+  constexpr double term_limit = std::numeric_limits<double>::max() / 4.0;
   const std::vector<double> points = {-0.999, -0.7, -0.3, 0.05, 0.4, 0.8, 0.9999};
   int compared = 0;
   for (const double x : points)
@@ -85,12 +110,14 @@ TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
       {
         double expected = 0.0;
         double tolerance = 0.0;
+        bool in_range = false;
         if (std::cmp_equal(ell, m))
         {
           const double t = (2.0 * ell - 1.0) * std::sqrt(1.0 - x * x) *
                            AssocLegendre(ell - 1, static_cast<int>(ell) - 1, x);
           expected = -t;
           tolerance = 8.0 * eps * std::abs(t);
+          in_range = std::abs(t) <= term_limit;
         }
         else
         {
@@ -100,6 +127,7 @@ TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
           // Scaled term by term, so that two terms near the overflow limit do not overflow it.
           const double scale = 8.0 * eps / (ell - m);
           tolerance = scale * std::abs(t1) + scale * std::abs(t2);
+          in_range = std::abs(t1) <= term_limit and std::abs(t2) <= term_limit;
         }
         const double value = AssocLegendre(ell, m, x);
         // Values for m <= 1 are below ell^2 in magnitude and never overflow.
@@ -107,8 +135,9 @@ TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
         {
           ASSERT_TRUE(std::isfinite(value)) << "ell = " << ell << ", m = " << m << ", x = " << x;
         }
-        if (not std::isfinite(expected) or not std::isfinite(tolerance) or not std::isfinite(value))
+        if (not in_range)
           continue;
+        ASSERT_TRUE(std::isfinite(value)) << "ell = " << ell << ", m = " << m << ", x = " << x;
         EXPECT_LE(std::abs(value - expected), tolerance)
           << "ell = " << ell << ", m = " << m << ", x = " << x;
         ++compared;
@@ -128,22 +157,27 @@ TEST(AssocLegendreTest, ZeroOrderAt255MatchesLegendre)
   }
 }
 
-TEST(AssocLegendreTest, Order255IsFast)
+TEST(AssocLegendreTest, FullRowAt255HasParity)
 {
-  // The full row at ell = 255 must take a small fraction of a second. The recursive definition
-  // needs of order 1e53 calls for it and does not return.
-  const auto start = std::chrono::steady_clock::now();
-  double sum = 0.0;
-  for (const double x : {-0.9, -0.2, 0.0, 0.3, 0.95})
+  // Evaluates the full row m = 0..255 at ell = 255, which the recursive definition (of order 1e53
+  // calls) never finishes, so the test timeout catches a return to it. Checks the parity
+  // P_ell^m(-x) = (-1)^(ell + m) P_ell^m(x): negating x flips the sign of every term of the
+  // recurrence exactly, so the two values agree bit for bit, and a value that overflows (or is
+  // 0 * inf = NaN at x = 0) does so on both sides.
+  for (const double x : {0.0, 0.2, 0.3, 0.9, 0.95})
     for (int m = 0; m <= 255; ++m)
     {
       const double value = AssocLegendre(255, m, x);
+      const double mirrored = AssocLegendre(255, m, -x);
+      if (m <= 1)
+      {
+        ASSERT_TRUE(std::isfinite(value)) << "m = " << m << ", x = " << x;
+      }
       if (std::isfinite(value))
-        sum += std::abs(value);
+        EXPECT_EQ(mirrored, m % 2 == 0 ? -value : value) << "m = " << m << ", x = " << x;
+      else
+        EXPECT_FALSE(std::isfinite(mirrored)) << "m = " << m << ", x = " << x;
     }
-  const std::chrono::duration<double> elapsed = std::chrono::steady_clock::now() - start;
-  EXPECT_GT(sum, 0.0);
-  EXPECT_LT(elapsed.count(), 5.0);
 }
 
 TEST(AssocLegendreTest, OrderOutsideRange)
