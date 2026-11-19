@@ -120,6 +120,9 @@ if(ENABLE_PETSC)
     endif()
   endif()
   if (NOT PETSC_FOUND OR NOT PETSC_CONFIG_OK)
+    # GCC 15 compiles C as C23 by default, which rejects the unprototyped function-pointer
+    # declarations in the Scotch release PETSc 3.23 downloads (fixed in Scotch 7.0.8). Build the C
+    # code as gnu17, the default dialect of GCC 8 through 14.
     ExternalProject_Add(petsc
       URL https://web.cels.anl.gov/projects/petsc/download/release-snapshots/petsc-3.23.0.tar.gz
       SOURCE_DIR ${CMAKE_BINARY_DIR}/petsc-src
@@ -129,7 +132,7 @@ if(ENABLE_PETSC)
                         --download-metis=yes --download-parmetis=yes --download-superlu_dist=yes
                         --download-ptscotch=yes --download-slepc=yes --with-cxx-dialect=C++11
                         --with-64-bit-indices=yes --CC=${MPI_C_COMPILER} --CXX=${MPI_CXX_COMPILER}
-                        --CFLAGS+=-O3 --CXXFLAGS+=-O3
+                        "--CFLAGS+=-O3 -std=gnu17" --CXXFLAGS+=-O3
       BUILD_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make -j${JOBS}
       INSTALL_COMMAND ${CMAKE_COMMAND} -E chdir <SOURCE_DIR> make install
       LOG_DOWNLOAD  1
