@@ -77,7 +77,7 @@ SortedTriple(std::uint32_t a, std::uint32_t b, std::uint32_t c)
 MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cells)
 {
   const auto& cells = grid.GetLocalCells();
-  const auto num_cells = static_cast<std::uint32_t>(cells.size());
+  const auto num_cells = static_cast<std::uint32_t>(grid.GetLocalCellCount());
   cell_convex_.assign(num_cells, false);
   cell_size_.assign(num_cells, 0.0);
   cell_interior_.assign(num_cells, Vector3());
@@ -88,14 +88,18 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
 
   // Compact mesh vertices.
   std::unordered_map<std::uint64_t, std::uint32_t> compact_vertex;
-  for (const auto& cell : cells)
-    for (const auto vid : cell.vertex_ids)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
+    for (const auto vid : cell_vertex_ids)
     {
       const auto [it, inserted] =
         compact_vertex.try_emplace(vid, static_cast<std::uint32_t>(points_.size()));
       if (inserted)
         points_.push_back(grid.GlobalVertex(vid));
     }
+  }
   const auto num_vertices = static_cast<std::uint32_t>(points_.size());
 
   // Face centroids, one point per face, computed from the vertices in a canonical order so that
@@ -127,12 +131,13 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   // index of the first triangle of each face.
   std::vector<std::array<std::uint32_t, 3>> cell_triangles;
   std::vector<std::uint32_t> cell_face_starts;
-  for (std::uint32_t c = 0; c < cells.size(); ++c)
+  for (std::uint32_t c = 0; c < grid.GetLocalCellCount(); ++c)
   {
-    const auto& cell = cells[c];
-    Vector3 lo = grid.GlobalVertex(cell.vertex_ids.front());
+    const auto& cell = grid.GetLocalCell(c);
+    auto cell_vertex_ids = grid.GetCellConnectivity(c);
+    Vector3 lo = grid.GlobalVertex(cell_vertex_ids.front());
     Vector3 hi = lo;
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto compact = compact_vertex.at(vid);
       cell_vertices_.push_back(compact);

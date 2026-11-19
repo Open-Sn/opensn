@@ -170,7 +170,7 @@ protected:
   double SubtendedAngleFraction(const Cell& cell, const Vector3& point) const;
 
   /// True when every vertex of the cell lies on the inner side of the plane of every face.
-  bool IsConvex(const Cell& cell) const;
+  bool IsConvex(const Cell& cell, std::uint32_t cell_local_id) const;
 
   void SweepBulkRegion(const SourcePoint& source_point);
 

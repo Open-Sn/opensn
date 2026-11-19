@@ -11,19 +11,22 @@ namespace opensn
 {
 
 PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
-  const Cell& poly_cell,
+  std::uint32_t cell_local_id,
   std::shared_ptr<Mesh> ref_grid,
   const TriangleQuadrature& volume_quadrature,
   const LineQuadrature& surface_quadrature)
-  : PieceWiseLinearBaseMapping(
-      ref_grid, poly_cell, poly_cell.vertex_ids.size(), MakeFaceNodeMapping(poly_cell)),
+  : PieceWiseLinearBaseMapping(ref_grid,
+                               cell_local_id,
+                               GetNumberOfNodes(ref_grid, cell_local_id),
+                               MakeFaceNodeMapping(ref_grid, cell_local_id)),
     volume_quadrature_(volume_quadrature),
-    surface_quadrature_(surface_quadrature),
-    num_of_subtris_(poly_cell.faces.size()),
-    beta_(1.0 / static_cast<double>(num_of_subtris_)),
-    // Get raw vertices
-    vc_(poly_cell.centroid)
+    surface_quadrature_(surface_quadrature)
 {
+  const auto& poly_cell = ref_grid->GetLocalCell(cell_local_id);
+  num_of_subtris_ = poly_cell.faces.size();
+  beta_ = 1.0 / static_cast<double>(num_of_subtris_);
+  vc_ = poly_cell.centroid;
+
   // Calculate legs and determinants
   for (std::size_t side = 0; side < num_of_subtris_; ++side)
   {
@@ -74,10 +77,11 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     sides_.push_back(triangle_data);
   }
 
+  auto poly_cell_vertex_ids = ref_grid->GetCellConnectivity(cell_local_id);
   // Compute node to side mapping
-  for (std::size_t v = 0; v < poly_cell.vertex_ids.size(); ++v)
+  for (std::size_t v = 0; v < poly_cell_vertex_ids.size(); ++v)
   {
-    const uint64_t vindex = poly_cell.vertex_ids[v];
+    const uint64_t vindex = poly_cell_vertex_ids[v];
     std::vector<int> side_mapping(num_of_subtris_);
     for (std::size_t side = 0; side < num_of_subtris_; ++side)
     {

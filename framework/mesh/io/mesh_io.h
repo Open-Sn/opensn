@@ -67,7 +67,8 @@ private:
    * reader and the extruder: for a prism the three quadrilateral sides, the top triangle, and the
    * bottom triangle; for a pyramid the quadrilateral base and then the four triangular sides.
    */
-  static void AddGmshPrismOrPyramidFaces(int element_type, Cell& cell);
+  static void
+  AddGmshPrismOrPyramidFaces(int element_type, const std::vector<uint64_t>& v, Cell& cell);
 };
 
 } // namespace opensn

@@ -1287,7 +1287,7 @@ DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
   double hp = 0.0;
 
   const auto num_faces = cell.faces.size();
-  const auto num_vertices = cell.vertex_ids.size();
+  const auto num_vertices = mesh->GetCellConnectivity(cell_local_id).size();
 
   const auto volume = cell.volume;
   const auto face_area = cell.faces.at(f).area;
@@ -1312,7 +1312,8 @@ DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
   // faces with a skinny side simplex get the penalty their trace inequality requires.
   if (options.h_perp_convention == "face_side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
-    return std::min(FaceOrthogonalLength(*grid_, cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
+    return std::min(FaceOrthogonalLength(*grid_, cell, cell_local_id, f),
+                    2.0 * FaceSideLength(*grid_, cell, f));
 
   if (cell.GetType() == CellType::SLAB)
   {
@@ -1382,11 +1383,12 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
 
     auto& cf = data[f];
     cf.beta = QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, face.normal);
-    cf.h = FaceOrthogonalLength(*grid_, cell, f);
+    cf.h = FaceOrthogonalLength(*grid_, cell, cell_local_id, f);
 
     // The unit cell matrices carry the coordinate weight (r in RZ); the face matrix must too.
     cf.c_grad = FaceTraceConstant(cell_mapping,
                                   cell,
+                                  cell_local_id,
                                   f,
                                   unit_cell_matrices_[cell_local_id].intV_gradshapeI_gradshapeJ,
                                   grid_->GetCoordinateSystem());

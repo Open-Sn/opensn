@@ -148,11 +148,13 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnOrthogonalCells)
     DiffusionMIPSolver solver(
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), cell.volume / cell.faces[f].area, 1.0e-12);
+        EXPECT_NEAR(
+          solver.HPerpendicular(cell_local_id, f), cell.volume / cell.faces[f].area, 1.0e-12);
     }
     EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   }
@@ -186,10 +188,14 @@ TEST(DiffusionMIPSidePenalty, PositiveDefiniteOnDistortedQuads)
   }
   // The cap is active somewhere: twice the side length is below the face length on some face.
   double min_ratio = 1.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
-      min_ratio =
-        std::min(min_ratio, 2.0 * FaceSideLength(*grid, cell, f) / FaceOrthogonalLength(*grid, cell, f));
+      min_ratio = std::min(min_ratio,
+                           2.0 * FaceSideLength(*grid, cell, f) /
+                             FaceOrthogonalLength(*grid, cell, cell_local_id, f));
+  }
   EXPECT_LT(min_ratio, 0.1);
 }
 
@@ -212,12 +218,13 @@ TEST(DiffusionMIPSidePenalty, FaceSideIsFaceLengthOnTetsAndCubes)
     DiffusionMIPSolver solver(
       "FaceSide", sdm, sdm.UNITARY_UNKNOWN_MANAGER, bcs, xs, unit_cell_matrices, false, false);
     solver.options.h_perp_convention = "face_side";
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
       {
-        const double h_face = FaceOrthogonalLength(*grid, cell, f);
+        const double h_face = FaceOrthogonalLength(*grid, cell, cell_local_id, f);
         EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h_face, 1.0e-10 * h_face);
         if (cell.faces.size() == 4)
         {

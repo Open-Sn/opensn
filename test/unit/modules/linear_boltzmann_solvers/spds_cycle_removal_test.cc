@@ -22,7 +22,7 @@ MakeSPDS(bool allow_cycles)
   Cell cell(CellType::SLAB, CellType::SLAB);
   cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
   cell.partition_id = mpi_comm.rank();
-  grid->SetCells({cell}, {});
+  // grid->SetCells({cell}, {});
   SPDSFaceNeighborInfoVec face_info(1);
   return std::make_shared<AAH_SPDS>(0, Vector3{1.0, 0.0, 0.0}, grid, face_info, allow_cycles);
 }

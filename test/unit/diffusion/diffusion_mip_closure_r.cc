@@ -162,7 +162,7 @@ TEST(DiffusionClosureR, TraceConstant)
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, f, K), 1.0, 1.0e-10);
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K), 1.0, 1.0e-10);
     }
   }
   {
@@ -178,7 +178,7 @@ TEST(DiffusionClosureR, TraceConstant)
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
       for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, f, K), 3.0, 1.0e-9);
+        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K), 3.0, 1.0e-9);
     }
   }
 }
@@ -200,9 +200,9 @@ TEST(DiffusionClosureR, TraceConstantRZ)
                         .intV_gradshapeI_gradshapeJ;
     for (unsigned int f = 0; f < cell.faces.size(); ++f)
     {
-      const double c_xy = FaceTraceConstant(mapping, cell, f, K);
+      const double c_xy = FaceTraceConstant(mapping, cell, cell_local_id, f, K);
       const double c_rz =
-        FaceTraceConstant(mapping, cell, f, K_rz, CoordinateSystemType::CYLINDRICAL);
+        FaceTraceConstant(mapping, cell, cell_local_id, f, K_rz, CoordinateSystemType::CYLINDRICAL);
       EXPECT_NEAR(c_rz, c_xy, 2.0e-3 * c_xy);
     }
   }

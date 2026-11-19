@@ -813,8 +813,10 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
     }
   }
 
-  auto& raw_cells = mesh->GetCells();
-  raw_cells.reserve(ncells);
+  std::vector<Cell> cells;
+  cells.reserve(ncells);
+  std::vector<std::vector<std::uint64_t>> cell_connect;
+  cell_connect.reserve(ncells);
 
   std::vector<FaceLocation> owner_face_location(n_faces);
 
@@ -857,13 +859,14 @@ MeshIO::FromOpenFOAM(const UnpartitionedMesh::Options& options)
 
     std::sort(v_set.begin(), v_set.end());
     v_set.erase(std::unique(v_set.begin(), v_set.end()), v_set.end());
-    cell.vertex_ids = std::move(v_set);
 
-    raw_cells.emplace_back(cell);
+    cells.emplace_back(cell);
+    cell_connect.emplace_back(v_set);
   }
 
   mesh->SetDimension(3);
   mesh->SetType(UNSTRUCTURED);
+  mesh->SetCells(std::move(cells), cell_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();

@@ -26,6 +26,7 @@
 #include <cmath>
 #include <exception>
 #include <algorithm>
+#include <ranges>
 #include <array>
 #include <limits>
 #include <thread>
@@ -204,11 +205,12 @@ UncollidedProblem::InitializeSpatialDiscretization()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const auto& v0 = grid_->GlobalVertex(cell.vertex_ids.front());
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+    const auto& v0 = grid_->GlobalVertex(cell_vertex_ids.front());
     double xmin = v0.x, xmax = v0.x;
     double ymin = v0.y, ymax = v0.y;
     double zmin = v0.z, zmax = v0.z;
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto& v = grid_->GlobalVertex(vid);
       xmin = std::min(xmin, v.x);
@@ -226,8 +228,10 @@ UncollidedProblem::InitializeSpatialDiscretization()
   // For each face (outward normal n), every off-face vertex v of a convex cell satisfies
   // dot(n, v - v0) <= 0. Standard hex/tet meshes are fully convex.
   const auto& local_cells = grid_->GetLocalCells();
-  all_cells_convex_ = std::all_of(
-    local_cells.begin(), local_cells.end(), [this](const auto& cell) { return IsConvex(cell); });
+  std::uint32_t idx = 0;
+  all_cells_convex_ = std::all_of(local_cells.begin(),
+                                  local_cells.end(),
+                                  [this, &idx](const auto& cell) { return IsConvex(cell, idx++); });
   if (not all_cells_convex_)
     log.Log() << "Non-convex cells detected; concavity checks enabled globally.";
 
@@ -614,9 +618,10 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
     global_ids[cell_local_id] = cell.global_id;
     cell_node_counts[cell_local_id] = sdm.GetCellNumNodes(cell_local_id);
-    for (const auto vertex_id : cell.vertex_ids)
+    for (const auto vertex_id : cell_vertex_ids)
     {
       const auto& vertex = grid_->GlobalVertex(vertex_id);
       nodes_x.push_back(vertex.x);
@@ -1089,7 +1094,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     std::vector<uint64_t> source_vertex_ids;
     for (const auto& subscriber : source_point.subscribers)
     {
-      const auto& vertex_ids = grid_->GetLocalCell(subscriber.cell_local_id).vertex_ids;
+      const auto& vertex_ids = grid_->GetCellConnectivity(subscriber.cell_local_id);
       source_vertex_ids.insert(source_vertex_ids.end(), vertex_ids.begin(), vertex_ids.end());
     }
     std::sort(source_vertex_ids.begin(), source_vertex_ids.end());
@@ -1099,7 +1104,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
                       source_point.subscribers.end(),
                       [c](const auto& subscriber) { return subscriber.cell_local_id == c; }))
         continue;
-      for (const auto vid : grid_->GetLocalCell(c).vertex_ids)
+      for (const auto vid : grid_->GetCellConnectivity(c))
         if (std::binary_search(source_vertex_ids.begin(), source_vertex_ids.end(), vid))
         {
           is_exact_neighbor[c] = true;
@@ -1130,6 +1135,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
   const auto TraceCell = [&](const size_t c, TracedCell& traced)
   {
     const Cell& cell = grid_->GetLocalCell(c);
+    const auto& cell_vertex_ids = grid_->GetCellConnectivity(c);
 
     // Cell mapping
     auto coord_sys = grid_->GetCoordinateSystem();
@@ -1217,6 +1223,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
 
             // Neighbor data
             const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
+            auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
             const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
 
             size_t f_ = face.GetNeighborAdjacentFaceIndex(grid_.get());
@@ -1237,7 +1244,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
               for (size_t fj = 0; fj < neighbor_num_face_nodes; ++fj)
               {
                 const int neighbor_node = neighbor_mapping.MapFaceNode(f_, fj);
-                if (neighbor.vertex_ids[neighbor_node] == cell.vertex_ids[i])
+                if (neighbor_vertex_ids[neighbor_node] == cell_vertex_ids[i])
                 {
                   j = neighbor_node;
                   break;
@@ -1785,16 +1792,15 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
 {
   const Cell& cell = grid_->GetLocalCell(cell_local_id);
   const Vector3& source = source_point.location;
-  const bool contains_source =
-    std::any_of(source_point.subscribers.begin(),
-                source_point.subscribers.end(),
-                [cell_local_id](const auto& subscriber)
-                { return subscriber.cell_local_id == cell_local_id; });
+  const bool contains_source = std::any_of(source_point.subscribers.begin(),
+                                           source_point.subscribers.end(),
+                                           [cell_local_id](const auto& subscriber)
+                                           { return subscriber.cell_local_id == cell_local_id; });
 
   // The entry distance below assumes that a ray from the source crosses the cell at most once.
   // That holds for a convex cell, and for the cell containing the source when every face is
   // visible from it, which the face loop checks.
-  if (not contains_source and not IsConvex(cell))
+  if (not contains_source and not IsConvex(cell, cell_local_id))
     return std::nullopt;
 
   const auto& sigma_t = cell_transport_views_[cell_local_id].GetXS().GetSigmaTotal();
@@ -1889,14 +1895,15 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
 }
 
 bool
-UncollidedProblem::IsConvex(const Cell& cell) const
+UncollidedProblem::IsConvex(const Cell& cell, std::uint32_t cell_local_id) const
 {
-  const double tol = cell_sizes_[grid_->MapCellGlobalID2LocalID(cell.global_id)] * 1.0e-8;
+  const auto& cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
+  const double tol = cell_sizes_[cell_local_id] * 1.0e-8;
   for (const auto& face : cell.faces)
   {
     const auto& v0 = grid_->GlobalVertex(face.vertex_ids.front());
     const auto& n = face.normal;
-    for (const auto vid : cell.vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       if (std::find(face.vertex_ids.begin(), face.vertex_ids.end(), vid) != face.vertex_ids.end())
         continue;
@@ -1971,6 +1978,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
     for (size_t cell_local_id : bulk_spls_)
     {
       const Cell& cell = grid_->GetLocalCell(cell_local_id);
+      auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
 
       // Cell data
       const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
@@ -2034,6 +2042,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
               size_t f_ = cell.faces[f].GetNeighborAdjacentFaceIndex(grid_.get());
 
               const Cell& neighbor = grid_->GetLocalCell(neighbor_id);
+              auto neighbor_vertex_ids = grid_->GetCellConnectivity(neighbor_id);
               const auto& neighbor_mapping = sdm.GetLocalCellMapping(neighbor_id);
               const size_t neighbor_num_face_nodes = neighbor_mapping.GetNumFaceNodes(f_);
 
@@ -2057,7 +2066,7 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
                   for (size_t fk = 0; fk < neighbor_num_face_nodes; ++fk)
                   {
                     const int kn = neighbor_mapping.MapFaceNode(f_, fk);
-                    if (neighbor.vertex_ids[kn] == cell.vertex_ids[j])
+                    if (neighbor_vertex_ids[kn] == cell_vertex_ids[j])
                     {
                       k = kn;
                       break;

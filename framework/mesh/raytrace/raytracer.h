@@ -66,7 +66,7 @@ private:
   }
 
   /// Performs raytracing within a 1D-slab.
-  void TraceSlab(const Cell& cell,
+  void TraceSlab(std::uint32_t cell_local_id,
                  Vector3& pos_i,
                  Vector3& omega_i,
                  bool& intersection_found,
@@ -74,7 +74,7 @@ private:
                  RayTracerOutputInformation& oi);
 
   /// Performs raytracing within a 2D Polygon.
-  void TracePolygon(const Cell& cell,
+  void TracePolygon(std::uint32_t cell_local_id,
                     Vector3& pos_i,
                     Vector3& omega_i,
                     bool& intersection_found,
@@ -82,7 +82,7 @@ private:
                     RayTracerOutputInformation& oi);
 
   /// Performs raytracing within a 3D Polyhedron.
-  void TracePolyhedron(const Cell& cell,
+  void TracePolyhedron(std::uint32_t cell_local_id,
                        Vector3& pos_i,
                        Vector3& omega_i,
                        bool& intersection_found,

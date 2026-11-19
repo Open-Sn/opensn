@@ -419,10 +419,11 @@ double
 HPerpendicular(const Mesh& mesh, std::uint32_t cell_local_id, unsigned int f)
 {
   const auto& cell = mesh.GetLocalCell(cell_local_id);
+  auto cell_vertex_ids = mesh.GetCellConnectivity(cell_local_id);
   double hp;
 
   const auto num_faces = cell.faces.size();
-  const auto num_vertices = cell.vertex_ids.size();
+  const auto num_vertices = cell_vertex_ids.size();
 
   const auto volume = cell.volume;
   const auto face_area = cell.faces.at(f).area;

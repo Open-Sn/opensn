@@ -37,8 +37,12 @@ QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
 }
 
 double
-FaceOrthogonalLength(const Mesh& grid, const Cell& cell, unsigned int f)
+FaceOrthogonalLength(const Mesh& grid,
+                     const Cell& cell,
+                     std::uint32_t cell_local_id,
+                     unsigned int f)
 {
+  auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
   const double volume = cell.volume;
   const double face_area = cell.faces.at(f).area;
   const size_t num_faces = cell.faces.size();
@@ -59,7 +63,7 @@ FaceOrthogonalLength(const Mesh& grid, const Cell& cell, unsigned int f)
     case CellType::POLYHEDRON:
       if (num_faces == 4)
         return 3.0 * volume / face_area;
-      if (num_faces == 6 and cell.vertex_ids.size() == 8)
+      if (num_faces == 6 and cell_vertex_ids.size() == 8)
         return volume / face_area;
       return 6.0 * volume / surface_area;
     default:
@@ -169,6 +173,7 @@ MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMatrix<do
 double
 FaceTraceConstant(const CellMapping& cell_mapping,
                   const Cell& cell,
+                  std::uint32_t cell_local_id,
                   unsigned int f,
                   const DenseMatrix<double>& stiffness,
                   CoordinateSystemType coord_sys)
@@ -184,7 +189,8 @@ FaceTraceConstant(const CellMapping& cell_mapping,
         N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
   const auto& grid = *cell_mapping.GetMesh();
-  return FaceOrthogonalLength(grid, cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
+  return FaceOrthogonalLength(grid, cell, cell_local_id, f) *
+         MaxEigenvalueOnStiffnessRange(N, stiffness);
 }
 
 double

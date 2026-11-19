@@ -19,13 +19,16 @@ class PieceWiseLinearBaseMapping : public CellMapping
 public:
   /// Constructor.
   PieceWiseLinearBaseMapping(std::shared_ptr<Mesh> grid,
-                             const Cell& cell,
+                             std::uint32_t cell_local_id,
                              size_t num_nodes,
                              std::vector<std::vector<int>> face_node_mappings);
 
 protected:
   static std::vector<Vector3> GetVertexLocations(const std::shared_ptr<Mesh>& grid,
-                                                 const Cell& cell);
+                                                 std::uint32_t cell_local_id);
+
+  static std::size_t GetNumberOfNodes(const std::shared_ptr<Mesh>& grid,
+                                      std::uint32_t cell_local_id);
 
   /**
    * This section just determines a mapping of face dofs to cell dofs. This is pretty simple since
@@ -35,7 +38,8 @@ protected:
    * This mapping is not used by any of the methods in  this class but is used by methods requiring
    * the surface integrals of the shape functions.
    */
-  static std::vector<std::vector<int>> MakeFaceNodeMapping(const Cell& cell);
+  static std::vector<std::vector<int>> MakeFaceNodeMapping(const std::shared_ptr<Mesh>& grid,
+                                                           std::uint32_t cell_local_id);
 };
 
 } // namespace opensn

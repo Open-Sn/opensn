@@ -101,9 +101,10 @@ public:
     offsets_.assign(num_bins_[0] * num_bins_[1] * num_bins_[2] + 1, 0);
     for (size_t c = 0; c < cells.size(); ++c)
     {
-      Vector3 lo = grid.GlobalVertex(cells[c].vertex_ids.front());
+      auto cell_vertex_ids = grid.GetCellConnectivity(c);
+      Vector3 lo = grid.GlobalVertex(cell_vertex_ids[0]);
       Vector3 hi = lo;
-      for (const auto vid : cells[c].vertex_ids)
+      for (const auto vid : cell_vertex_ids)
       {
         const auto& v = grid.GlobalVertex(vid);
         lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
@@ -330,7 +331,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
          ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
-      if (grid->CheckPointInsideCell(cell, point))
+      if (grid->CheckPointInsideCell(cell_local_id, point))
       {
         const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         Vector<double> shape_values;
@@ -421,7 +422,7 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
     for (const size_t cell_local_id : bins.Candidates(point))
     {
       const auto& cell = local_cells[cell_local_id];
-      if (not master_grid->CheckPointInsideCell(cell, point))
+      if (not master_grid->CheckPointInsideCell(cell_local_id, point))
         continue;
 
       ++local_num_point_hits[p];
@@ -564,9 +565,10 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
            ++cell_local_id)
       {
         const auto& cell = grid->GetLocalCell(cell_local_id);
+        auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
         const size_t num_nodes = sdm->GetCellNumNodes(cell_local_id);
 
-        if (num_nodes == cell.vertex_ids.size())
+        if (num_nodes == cell_vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
@@ -588,7 +590,7 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          for (std::size_t n = 0; n < cell.vertex_ids.size(); ++n)
+          for (std::size_t n = 0; n < cell_vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

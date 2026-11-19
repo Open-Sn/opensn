@@ -76,9 +76,10 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    Vector3 box_min = grid->GlobalVertex(cell.vertex_ids.front());
+    auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+    Vector3 box_min = grid->GlobalVertex(cell_vertex_ids[0]);
     Vector3 box_max = box_min;
-    for (const uint64_t vid : cell.vertex_ids)
+    for (const uint64_t vid : cell_vertex_ids)
     {
       const auto& vertex = grid->GlobalVertex(vid);
       for (unsigned int a = 0; a < 3; ++a)
@@ -121,7 +122,7 @@ FieldFunctionInterpolationLine::RebuildLineLocationData()
     for (int p = p_first; p <= p_last; ++p)
     {
       auto& point = tmp_points[p];
-      if (cell.global_id < local_owner_cell_gids[p] and grid->CheckPointInsideCell(cell, point))
+      if (cell.global_id < local_owner_cell_gids[p] and grid->CheckPointInsideCell(cell_local_id, point))
       {
         local_owner_cell_gids[p] = cell.global_id;
         local_owner_cell_lids[p] = cell_local_id;

@@ -26,7 +26,7 @@ class CellFace;
  * Uploads vertices and cells to an unstructured grid.
  */
 void UploadCellGeometryDiscontinuous(std::shared_ptr<Mesh> grid,
-                                     const Cell& cell,
+                                     std::uint32_t cell_local_id,
                                      int64_t& node_counter,
                                      vtkNew<vtkPoints>& points,
                                      vtkNew<vtkUnstructuredGrid>& ugrid);
@@ -34,7 +34,8 @@ void UploadCellGeometryDiscontinuous(std::shared_ptr<Mesh> grid,
 /**
  * Uploads vertices and cells to an unstructured grid.
  */
-void UploadCellGeometryContinuous(const Cell& cell,
+void UploadCellGeometryContinuous(std::shared_ptr<Mesh> grid,
+                                  std::uint32_t cell_local_id,
                                   const std::vector<uint64_t>& vertex_map,
                                   vtkNew<vtkUnstructuredGrid>& ugrid);
 /**

@@ -48,12 +48,14 @@ MeshIO::FromGmsh(const UnpartitionedMesh::Options& options)
 }
 
 void
-MeshIO::AddGmshPrismOrPyramidFaces(const int element_type, Cell& cell)
+MeshIO::AddGmshPrismOrPyramidFaces(const int element_type,
+                                   const std::vector<uint64_t>& v,
+                                   Cell& cell)
 {
   // Gmsh orders the nodes of both elements so that the first face (the triangle 0-1-2 of a prism,
   // the quadrilateral 0-1-2-3 of a pyramid) is counterclockwise seen from the opposite vertices,
   // as VTK does. The faces below are oriented outward for that ordering.
-  const auto& v = cell.vertex_ids;
+  // const auto& v = cell.vertex_ids;
   std::vector<std::vector<uint64_t>> faces;
   if (element_type == 6)
   {
