@@ -122,7 +122,12 @@
 <span class="k">class</span><span class="w"> </span><span class="nc">MeshGenerator</span>
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
-<span class="w">  </span><span class="c1">/// Final execution step.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Builds the mesh and partitions it over the ranks. Collective.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Every rank builds the mesh, and rank 0 partitions it. When the partitioning fails on rank 0,</span>
+<span class="cm">   * every rank throws std::runtime_error with its message.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">virtual</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Execute</span><span class="p">();</span>
 
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">MeshGenerator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>

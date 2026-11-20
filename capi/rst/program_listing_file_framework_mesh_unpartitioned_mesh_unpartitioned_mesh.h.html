@@ -190,13 +190,26 @@
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetVertices</span><span class="p">()</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertices_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Vector3</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">GetVertices</span><span class="p">()</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">return</span><span class="w"> </span><span class="n">vertices_</span><span class="p">;</span><span class="w"> </span><span class="p">}</span>
 
-<span class="w">  </span><span class="c1">/// Establishes neighbor connectivity for the light-weight mesh.</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Establishes neighbor connectivity for the light-weight mesh.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Two faces are connected when they have the same vertices. Throws std::logic_error when the</span>
+<span class="cm">   * mesh is folded, that is, when the two cells of an interior face lie on the same side of it and</span>
+<span class="cm">   * overlap, or when a face belongs to more than two cells.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="n">BuildMeshConnectivity</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Compute centroids for all cells.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeCentroids</span><span class="p">();</span>
 
-<span class="w">  </span><span class="c1">/// Check element quality</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Checks the quality of the cells.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Throws std::logic_error when a polygon or polyhedron is inverted, with its faces ordered</span>
+<span class="cm">   * inward, or has zero area or volume, or when an edge is shorter than 1e-12. Warns when the</span>
+<span class="cm">   * centroid of a cell lies outside the plane of a triangle of one of its faces, as it can in a</span>
+<span class="cm">   * non-convex cell.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">CheckQuality</span><span class="p">();</span>
 
 <span class="w">  </span><span class="c1">/// Makes or gets a boundary that uniquely identifies the given name.</span>

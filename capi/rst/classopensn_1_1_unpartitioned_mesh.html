@@ -246,6 +246,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh21BuildMeshConnectivityEv">
 <span class="target" id="classopensn_1_1_unpartitioned_mesh_1a62c2da3c413ce720697ebee9ea6c98f7"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildMeshConnectivity</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh21BuildMeshConnectivityEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Establishes neighbor connectivity for the light-weight mesh. </p>
+<p>Two faces are connected when they have the same vertices. Throws std::logic_error when the mesh is folded, that is, when the two cells of an interior face lie on the same side of it and overlap, or when a face belongs to more than two cells. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -257,7 +258,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn17UnpartitionedMesh12CheckQualityEv">
 <span class="target" id="classopensn_1_1_unpartitioned_mesh_1a7b1dcf2f75f5439afdde0bd7408396cf"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">CheckQuality</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn17UnpartitionedMesh12CheckQualityEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Check element quality. </p>
+<dd><p>Checks the quality of the cells. </p>
+<p>Throws std::logic_error when a polygon or polyhedron is inverted, with its faces ordered inward, or has zero area or volume, or when an edge is shorter than 1e-12. Warns when the centroid of a cell lies outside the plane of a triangle of one of its faces, as it can in a non-convex cell. </p>
 </dd></dl>
 
 <dl class="cpp function">

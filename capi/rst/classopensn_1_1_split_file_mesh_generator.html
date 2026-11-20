@@ -121,7 +121,8 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn22SplitFileMeshGenerator7ExecuteEv">
 <span class="target" id="classopensn_1_1_split_file_mesh_generator_1a093f25c28e0d8e7030828961ee538714"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn22SplitFileMeshGenerator7ExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Final execution step. </p>
+<dd><p>Writes the split mesh on rank 0, unless the generator only reads, and reads the part of every rank. </p>
+<p>Collective. When generating, partitioning, or writing the mesh fails on rank 0, every rank throws std::runtime_error with its message. </p>
 </dd></dl>
 
 </div>

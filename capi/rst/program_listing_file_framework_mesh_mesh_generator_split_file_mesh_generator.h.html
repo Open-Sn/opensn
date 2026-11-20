@@ -120,6 +120,11 @@
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">explicit</span><span class="w"> </span><span class="n">SplitFileMeshGenerator</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">InputParameters</span><span class="o">&amp;</span><span class="w"> </span><span class="n">params</span><span class="p">);</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Writes the split mesh on rank 0, unless the generator only reads, and reads the part of every</span>
+<span class="cm">   * rank. Collective. When generating, partitioning, or writing the mesh fails on rank 0, every</span>
+<span class="cm">   * rank throws std::runtime_error with its message.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">Mesh</span><span class="o">&gt;</span><span class="w"> </span><span class="n">Execute</span><span class="p">()</span><span class="w"> </span><span class="k">override</span><span class="p">;</span>
 
 <span class="k">protected</span><span class="o">:</span>

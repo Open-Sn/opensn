@@ -130,7 +130,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn24DistributedMeshGenerator7ExecuteEv">
 <span class="target" id="classopensn_1_1_distributed_mesh_generator_1afb00c5aeb2f20339d3385403e927c57f"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">override</span></span><a class="headerlink" href="#_CPPv4N6opensn24DistributedMeshGenerator7ExecuteEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Executes the mesh generation and distribution process. </p>
-<p>On location 0, the mesh is generated, partitioned, serialized, and distributed to other MPI ranks. Other ranks receive the serialized mesh data, deserialize it, and set up the local mesh. </p>
+<p>On location 0, the mesh is generated, partitioned, serialized, and distributed to other MPI ranks. Other ranks receive the serialized mesh data, deserialize it, and set up the local mesh. Collective. When generating or partitioning the mesh fails on location 0, every rank throws std::runtime_error with its message. </p>
 </dd></dl>
 
 </div>

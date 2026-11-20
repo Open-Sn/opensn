@@ -194,7 +194,7 @@ source, which shows where the response passes through the problem.</p>
 <section id="Geometry">
 <h2><span class="section-number">6.2.5.2. </span>Geometry<a class="headerlink" href="#Geometry" title="Link to this heading"></a></h2>
 <p>The geometry is that of the glovebox examples: a Cf-252 source encased in 0.1 cm of SS-316 at <span class="math notranslate nohighlight">\((27, 10)\)</span> cm, and two He-3 detectors in SS-316 sleeves, each embedded in a <span class="math notranslate nohighlight">\(10\text{cm}\times 10\text{cm}\)</span> block of high-density polyethylene (HDPE), at <span class="math notranslate nohighlight">\((7, 10)\)</span> cm (detector-1) and <span class="math notranslate nohighlight">\((47, 10)\)</span> cm (detector-2):</p>
-<p><img alt="9bcaba9de1f94b9fb0d3c10ce9003fd4" src="../../../../_images/glovebox_geom.png" /></p>
+<p><img alt="edb7911248b4443bbd7d42de6da8944a" src="../../../../_images/glovebox_geom.png" /></p>
 </section>
 <section id="Mesh">
 <h2><span class="section-number">6.2.5.3. </span>Mesh<a class="headerlink" href="#Mesh" title="Link to this heading"></a></h2>
@@ -212,7 +212,7 @@ source, which shows where the response passes through the problem.</p>
 </pre></div>
 </div>
 </div>
-<p><img alt="08ac5b6c891e44e19fd1426562f6a45d" src="../../../../_images/glovebox_mesh_slices.png" /></p>
+<p><img alt="1b3e4a9745d844649714ea5f79bfc36d" src="../../../../_images/glovebox_mesh_slices.png" /></p>
 <section id="Cross-Sections">
 <h3><span class="section-number">6.2.5.3.1. </span>Cross Sections<a class="headerlink" href="#Cross-Sections" title="Link to this heading"></a></h3>
 <p>In this problem we are running a multigroup problem for the absorption reaction rate in a He-3 glovebox. This begins with importing our multigroup cross sections. In this case we will be using the WIMS69 group structure for 5 materials:</p>
@@ -549,43 +549,43 @@ along <span class="math notranslate nohighlight">\(-x\)</span>, as <code class="
 </thead>
 <tbody>
 <tr class="row-even"><td><p>Forward QoI</p></td>
-<td><p>4.415711e-03</p></td>
-<td><p>4.412902e-03</p></td>
+<td><p>4.415772e-03</p></td>
+<td><p>4.412665e-03</p></td>
 </tr>
 <tr class="row-odd"><td><p>Adjoint QoI</p></td>
-<td><p>4.415711e-03</p></td>
-<td><p>4.412903e-03</p></td>
+<td><p>4.415773e-03</p></td>
+<td><p>4.412664e-03</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">x20_d</span></code>, total</p></td>
-<td><p><strong>4.415711e-03</strong></p></td>
-<td><p>-8.6e-12</p></td>
+<td><p><strong>4.415773e-03</strong></p></td>
+<td><p>5.9e-12</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">x20</span></code>, <span class="math notranslate nohighlight">\(+x\)</span> / <span class="math notranslate nohighlight">\(-x\)</span> parts</p></td>
-<td><p>1.507136e-05 / 4.430783e-03</p></td>
-<td><p>2.261069e-04 / 2.261069e-04</p></td>
+<td><p>1.507214e-05 / 4.430845e-03</p></td>
+<td><p>2.261031e-04 / 2.261031e-04</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">x40_u</span></code>, total</p></td>
-<td><p>-1.3e-11</p></td>
-<td><p><strong>4.412903e-03</strong></p></td>
+<td><p>-3.2e-12</p></td>
+<td><p><strong>4.412664e-03</strong></p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">x40</span></code>, <span class="math notranslate nohighlight">\(+x\)</span> / <span class="math notranslate nohighlight">\(-x\)</span> parts</p></td>
-<td><p>2.250146e-04 / 2.250146e-04</p></td>
-<td><p>4.428261e-03 / 1.535832e-05</p></td>
+<td><p>2.249744e-04 / 2.249744e-04</p></td>
+<td><p>4.428022e-03 / 1.535803e-05</p></td>
 </tr>
 <tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">x20</span></code> along <span class="math notranslate nohighlight">\(+x\)</span>, total</p></td>
-<td><p>-4.415711e-03</p></td>
-<td><p>8.6e-12</p></td>
+<td><p>-4.415773e-03</p></td>
+<td><p>-5.9e-12</p></td>
 </tr>
 <tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">x20_d</span></code> and <code class="docutils literal notranslate"><span class="pre">x40_u</span></code> together</p></td>
-<td><p>4.415711e-03</p></td>
-<td><p>4.412903e-03</p></td>
+<td><p>4.415773e-03</p></td>
+<td><p>4.412664e-03</p></td>
 </tr>
 </tbody>
 </table>
 <ul class="simple">
-<li><p><strong>Volumetric responses.</strong> The forward and adjoint responses agree to <span class="math notranslate nohighlight">\(2 \times 10^{-8}\)</span> relative for detector-1 and <span class="math notranslate nohighlight">\(2 \times 10^{-7}\)</span> for detector-2. They differ only by the iteration error of the two solves, which shrinks as <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> is tightened: with <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> = <span class="math notranslate nohighlight">\(10^{-9}\)</span> the detector-1 difference is <span class="math notranslate nohighlight">\(2 \times 10^{-6}\)</span>.</p></li>
+<li><p><strong>Volumetric responses.</strong> The forward and adjoint responses agree to <span class="math notranslate nohighlight">\(3 \times 10^{-7}\)</span> relative for detector-1 and <span class="math notranslate nohighlight">\(2 \times 10^{-7}\)</span> for detector-2. They differ only by the iteration error of the two solves, which shrinks as <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> is tightened: with <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> = <span class="math notranslate nohighlight">\(10^{-9}\)</span> the detector-1 difference is <span class="math notranslate nohighlight">\(2 \times 10^{-6}\)</span>.</p></li>
 <li><p><strong>Separating planes.</strong> The plane between the source and each detector, <code class="docutils literal notranslate"><span class="pre">x20_d</span></code> for detector-1 and <code class="docutils literal notranslate"><span class="pre">x40_u</span></code> for detector-2, reproduces the adjoint response to <span class="math notranslate nohighlight">\(3 \times 10^{-9}\)</span> relative. The surface identity is exact for the discretization, so the difference is the iteration error of the solves: it is <span class="math notranslate nohighlight">\(3 \times 10^{-8}\)</span> with <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> = <span class="math notranslate nohighlight">\(10^{-9}\)</span>.</p></li>
-<li><p><strong>Choosing the normal.</strong> Measured along <span class="math notranslate nohighlight">\(+x\)</span> with the bare name <code class="docutils literal notranslate"><span class="pre">x20</span></code>, detector-1’s response is <span class="math notranslate nohighlight">\(-4.415711 \times 10^{-3}\)</span>: the same value with the opposite sign, because <span class="math notranslate nohighlight">\(+x\)</span> points from detector-1 toward the source. Naming the source side, <code class="docutils literal notranslate"><span class="pre">x20_d</span></code>, measures toward the detector and gives the positive response.</p></li>
+<li><p><strong>Choosing the normal.</strong> Measured along <span class="math notranslate nohighlight">\(+x\)</span> with the bare name <code class="docutils literal notranslate"><span class="pre">x20</span></code>, detector-1’s response is <span class="math notranslate nohighlight">\(-4.415773 \times 10^{-3}\)</span>: the same value with the opposite sign, because <span class="math notranslate nohighlight">\(+x\)</span> points from detector-1 toward the source. Naming the source side, <code class="docutils literal notranslate"><span class="pre">x20_d</span></code>, measures toward the detector and gives the positive response.</p></li>
 <li><p><strong>Non-separating planes.</strong> The plane on the far side of the source from a detector carries no net response, less than <span class="math notranslate nohighlight">\(3 \times 10^{-9}\)</span> of the QoI. Its <span class="math notranslate nohighlight">\(+x\)</span> and <span class="math notranslate nohighlight">\(-x\)</span> parts are each about 5% of the QoI and cancel: a particle that crosses it away from the detector can only score after crossing back.</p></li>
 <li><p><strong>Outgoing and incoming parts.</strong> Across each separating plane, almost all of the response is carried toward the detector, <span class="math notranslate nohighlight">\(4.431 \times 10^{-3}\)</span> for detector-1, and a small part, <span class="math notranslate nohighlight">\(1.5 \times 10^{-5}\)</span>, is carried away from it by particles that cross back to the source side and later return to the detector. The total response is their difference.</p></li>
 <li><p><strong>Both planes.</strong> Together the two source-side planes enclose the source between the vacuum boundaries, so evaluating both in one call gives the response of either detector without knowing where it is.</p></li>

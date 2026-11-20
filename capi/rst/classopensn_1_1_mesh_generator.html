@@ -113,7 +113,9 @@
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn13MeshGenerator7ExecuteEv">
 <span class="target" id="classopensn_1_1_mesh_generator_1affb5a68440a49ecd8b9616e2fe5984d9"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Execute</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13MeshGenerator7ExecuteEv" title="Link to this definition"></a><br /></dt>
-<dd><p>Final execution step. </p>
+<dd><p>Builds the mesh and partitions it over the ranks. </p>
+<p>Collective.</p>
+<p>Every rank builds the mesh, and rank 0 partitions it. When the partitioning fails on rank 0, every rank throws std::runtime_error with its message. </p>
 </dd></dl>
 
 <dl class="cpp function">
