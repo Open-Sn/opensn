@@ -6,7 +6,7 @@
 #pragma once
 
 #include "caribou/backend.hpp"
-#include "caribou/sycl/stream.hpp"  // caribou::impl::get_null_stream_handle
+#include "caribou/sycl/stream.hpp"  // caribou::impl::get_null_stream_handle, caribou::impl::get_owner_stream_handle
 
 namespace caribou::impl {
 
@@ -28,9 +28,12 @@ void memset_device(T * ptr, std::size_t count) {
 
 template <typename T>
 void free_device(T * ptr) {
-    StreamNativeHandle & null_stream = get_null_stream_handle();
-    sycl::free(ptr, null_stream);
-    null_stream.wait_and_throw();
+    if (ptr == nullptr) {
+        return;
+    }
+    StreamNativeHandle & owner_stream = get_owner_stream_handle(ptr);
+    sycl::free(ptr, owner_stream);
+    owner_stream.wait_and_throw();
 }
 
 }  // namespace caribou::impl

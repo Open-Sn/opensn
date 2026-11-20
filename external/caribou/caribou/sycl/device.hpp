@@ -22,6 +22,8 @@ std::uint32_t get_num_gpus(void);
 
 std::string get_pci_bus_id(std::uint32_t device_id);
 
+std::string get_uuid(std::uint32_t device_id);
+
 std::uint32_t get_num_compute_units(std::uint32_t device_id);
 
 consteval std::uint32_t get_warp_size() { return 32; }

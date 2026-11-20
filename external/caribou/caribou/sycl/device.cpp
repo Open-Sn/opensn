@@ -58,6 +58,28 @@ std::string get_pci_bus_id(std::uint32_t device_id) {
     throw ::sycl::exception(::sycl::make_error_code(::sycl::errc::feature_not_supported), message.str());
 }
 
+std::string get_uuid(std::uint32_t device_id) {
+    check_device_id(device_id);
+    const ::sycl::device & gpu_device = get_gpu_devices()[device_id];
+#if defined(SYCL_EXT_INTEL_DEVICE_INFO) && (SYCL_EXT_INTEL_DEVICE_INFO >= 2)
+    if (gpu_device.has(::sycl::aspect::ext_intel_device_info_uuid)) {
+        constexpr char hex_digits[] = "0123456789abcdef";
+        const auto bytes = gpu_device.get_info<::sycl::ext::intel::info::device::uuid>();
+        std::string uuid;
+        uuid.reserve(2 * bytes.size());
+        for (const unsigned char byte : bytes) {
+            uuid += hex_digits[byte >> 4];
+            uuid += hex_digits[byte & 0xF];
+        }
+        return uuid;
+    }
+#endif
+    std::ostringstream message;
+    message << "UUID query is not supported by GPU device " << device_id << " (\""
+            << gpu_device.get_info<::sycl::info::device::name>() << "\").";
+    throw ::sycl::exception(::sycl::make_error_code(::sycl::errc::feature_not_supported), message.str());
+}
+
 std::uint32_t get_num_compute_units(std::uint32_t device_id) {
     check_device_id(device_id);
     return static_cast<std::uint32_t>(
