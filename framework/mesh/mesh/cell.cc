@@ -277,6 +277,8 @@ Cell::ComputeGeometricInfo(Mesh& grid, std::uint32_t cell_local_id)
   {
     cell_faces[f].ComputeGeometricInfo(grid, cell_local_id, f);
   }
+
+  ComputeVolume(grid, cell_local_id);
 }
 
 void

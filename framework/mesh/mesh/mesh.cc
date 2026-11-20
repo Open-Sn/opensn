@@ -140,17 +140,6 @@ Mesh::ComputeGeometricInfo()
     auto& cell = ghost_cells_[cell_local_id];
     cell.ComputeGeometricInfo(*this, local_cells_.size() + cell_local_id);
   }
-
-  for (std::uint32_t cell_local_id = 0; cell_local_id < local_cells_.size(); ++cell_local_id)
-  {
-    auto& cell = local_cells_[cell_local_id];
-    cell.ComputeVolume(*this, cell_local_id);
-  }
-  for (std::uint32_t cell_local_id = 0; cell_local_id < ghost_cells_.size(); ++cell_local_id)
-  {
-    auto& cell = ghost_cells_[cell_local_id];
-    cell.ComputeVolume(*this, local_cells_.size() + cell_local_id);
-  }
 }
 
 void
