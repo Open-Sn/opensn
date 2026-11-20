@@ -31,6 +31,9 @@ public:
 
   void Solve() override;
 
+  /// Frees the vectors that Solve() allocates.
+  void ReleaseWorkspace() override;
+
 private:
   bool verbose_;
   std::vector<double> saved_q_moments_local_;

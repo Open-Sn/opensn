@@ -148,6 +148,12 @@ AGSLinearSolver::Solve()
       solver->Setup();
       solver->Solve();
       ValidateFiniteScalarFlux(lbs_problem_, solver);
+      // Groupsets are solved one at a time, so only the groupset being solved needs its solver
+      // storage. With several groupsets, every solve of a groupset, including those of each power
+      // iteration and time step, allocates the storage in Setup() and frees it here. A single
+      // groupset keeps its storage, since no other groupset needs the memory.
+      if (is_multi_groupset)
+        solver->ReleaseWorkspace();
     }
 
     std::vector<IterationSummary> wgs_summaries;

@@ -24,10 +24,17 @@ PETScLinearSolver::PETScLinearSolver(IterativeMethod method,
 
 PETScLinearSolver::~PETScLinearSolver()
 {
+  PETScLinearSolver::ReleaseWorkspace();
+}
+
+void
+PETScLinearSolver::ReleaseWorkspace()
+{
   OpenSnPETScCall(KSPDestroy(&ksp_));
   OpenSnPETScCall(MatDestroy(&A_));
   OpenSnPETScCall(VecDestroy(&x_));
   OpenSnPETScCall(VecDestroy(&b_));
+  system_set_ = false;
 }
 
 void
@@ -125,6 +132,8 @@ PETScLinearSolver::PostSolveCallback()
 void
 PETScLinearSolver::Solve()
 {
+  // Rebuild the storage freed by ReleaseWorkspace(). Setup() does nothing when the system is set.
+  Setup();
   suppress_kspsolve_ = false;
   PreSolveCallback();
   SetInitialGuess();

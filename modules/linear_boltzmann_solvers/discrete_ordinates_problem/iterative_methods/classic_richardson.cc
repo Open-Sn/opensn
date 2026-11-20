@@ -41,6 +41,16 @@ ClassicRichardson::SyncLaggedStateToLatestIterate(WGSContext& gs_context)
 }
 
 void
+ClassicRichardson::ReleaseWorkspace()
+{
+  // Solve() sets each of these vectors before it uses them, so they need not be kept.
+  saved_q_moments_local_ = std::vector<double>();
+  psi_new_ = std::vector<double>();
+  psi_old_ = std::vector<double>();
+  phi_unaccelerated_ = std::vector<double>();
+}
+
+void
 ClassicRichardson::Solve()
 {
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());

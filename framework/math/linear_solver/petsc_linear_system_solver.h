@@ -46,6 +46,9 @@ public:
   /// Solve the system
   void Solve() override;
 
+  /// Destroys the KSP, the operator, and the solution and right-hand-side vectors.
+  void ReleaseWorkspace() override;
+
 protected:
   bool IsSystemSet() const { return system_set_; }
   virtual void PreSetupCallback();
