@@ -38,9 +38,14 @@ double d2Legendredx2(unsigned int N, double x);
  *
  * The value is computed by the three-term recurrence in ell, in O(ell) operations.
  *
+ * The value is not normalized. |P_m^m(x)| = (2m - 1)!! (1 - x^2)^(m/2) exceeds the largest double
+ * from m = 151 near x = 0, and at higher ell the recurrence overflows from smaller m (for |x| up
+ * to 0.7, from m = 129 at ell = 255 and m = 102 at ell = 1023). The result is then inf, or NaN
+ * where the recurrence forms 0 * inf (at x = 0) or inf - inf.
+ *
  * \param ell int The ell order of the polynomial.
- * \param m int The m-th moment of the polynomial. Returns 0 for |m| > ell; throws
- *          std::invalid_argument for -ell <= m < 0.
+ * \param m int The m-th moment of the polynomial. Returns 0 for m > ell; throws
+ *          std::invalid_argument for m < 0.
  * \param x double The evaluation point.
  */
 double AssocLegendre(unsigned int ell, int m, double x);

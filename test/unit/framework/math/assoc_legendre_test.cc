@@ -96,10 +96,11 @@ TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
   // Each value must follow from the two below it by the three-term recurrence in ell,
   //   (ell - m) P_ell^m = (2 ell - 1) x P_{ell-1}^m - (ell + m - 1) P_{ell-2}^m,
   // and the diagonal from P_ell^ell = -(2 ell - 1) sqrt(1 - x^2) P_{ell-1}^{ell-1}, within a few
-  // roundoffs of the terms. Large m overflows. An entry is compared only where every term is
-  // finite and at most a quarter of the overflow limit: then the terms sum to at most half of it,
-  // so no rounding or contraction of the recurrence can overflow, and the value must be finite.
-  // Entries above that bound are not compared.
+  // roundoffs of the terms. As in AssocLegendre, 1 - x^2 is formed as (1 - x)(1 + x), which keeps
+  // its relative accuracy near |x| = 1. Large m overflows. An entry is compared only where every
+  // term is finite and at most a quarter of the overflow limit: then the terms sum to at most half
+  // of it, so no rounding or contraction of the recurrence can overflow, and the value must be
+  // finite. Entries above that bound are not compared.
   constexpr double eps = std::numeric_limits<double>::epsilon();
   constexpr double term_limit = std::numeric_limits<double>::max() / 4.0;
   const std::vector<double> points = {-0.999, -0.7, -0.3, 0.05, 0.4, 0.8, 0.9999};
@@ -113,7 +114,7 @@ TEST(AssocLegendreTest, SatisfiesRecurrenceUpToOrder255)
         bool in_range = false;
         if (std::cmp_equal(ell, m))
         {
-          const double t = (2.0 * ell - 1.0) * std::sqrt(1.0 - x * x) *
+          const double t = (2.0 * ell - 1.0) * std::sqrt((1.0 - x) * (1.0 + x)) *
                            AssocLegendre(ell - 1, static_cast<int>(ell) - 1, x);
           expected = -t;
           tolerance = 8.0 * eps * std::abs(t);
@@ -180,11 +181,39 @@ TEST(AssocLegendreTest, FullRowAt255HasParity)
     }
 }
 
+TEST(AssocLegendreTest, IsAccurateNearTheEnds)
+{
+  // At x = +-(1 - 2^-30), 1 - x^2 = a = 2^-29 - 2^-60 is a double, and (1 - x)(1 + x) gives it
+  // exactly, where 1 - x * x rounds it to 2^-29 (a relative error of 5e-10). Even orders have the
+  // closed form P_2k^2k(x) = (4k - 1)!! a^k.
+  const double a = 0x1.0p-29 - 0x1.0p-60;
+  for (const double x : {1.0 - 0x1.0p-30, -1.0 + 0x1.0p-30})
+  {
+    const double p11 = -std::sqrt(a);
+    const double p22 = 3.0 * a;
+    const double p1010 = 654729075.0 * std::pow(a, 5);
+    EXPECT_NEAR(AssocLegendre(1, 1, x), p11, 1.0e-13 * std::abs(p11)) << "x = " << x;
+    EXPECT_NEAR(AssocLegendre(2, 2, x), p22, 1.0e-13 * p22) << "x = " << x;
+    EXPECT_NEAR(AssocLegendre(10, 10, x), p1010, 1.0e-13 * p1010) << "x = " << x;
+  }
+}
+
 TEST(AssocLegendreTest, OrderOutsideRange)
 {
   EXPECT_EQ(AssocLegendre(3, 4, 0.5), 0.0);
   EXPECT_EQ(AssocLegendre(0, 1, 0.5), 0.0);
-  EXPECT_EQ(AssocLegendre(3, -4, 0.5), 0.0);
-  EXPECT_THROW(AssocLegendre(3, -1, 0.5), std::invalid_argument);
-  EXPECT_THROW(AssocLegendre(3, -3, 0.5), std::invalid_argument);
+}
+
+TEST(AssocLegendreTest, NegativeOrderThrows)
+{
+  // Every m < 0 throws, also below -ell.
+  for (const unsigned int ell : {0U, 1U, 2U, 3U, 4U, 255U})
+  {
+    for (int m = -1; m >= -static_cast<int>(ell) - 3; --m)
+      EXPECT_THROW(AssocLegendre(ell, m, 0.5), std::invalid_argument)
+        << "ell = " << ell << ", m = " << m;
+    EXPECT_THROW(AssocLegendre(ell, std::numeric_limits<int>::min(), 0.5), std::invalid_argument)
+      << "ell = " << ell;
+  }
+  EXPECT_THROW(AssocLegendre(3, -4, 0.5), std::invalid_argument);
 }

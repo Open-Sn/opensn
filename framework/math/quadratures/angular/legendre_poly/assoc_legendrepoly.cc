@@ -3,9 +3,7 @@
 
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include <cmath>
-#include <cstdlib>
 #include <stdexcept>
-#include <utility>
 
 namespace opensn
 {
@@ -13,14 +11,15 @@ namespace opensn
 double
 AssocLegendre(unsigned int ell, int m, double x)
 {
-  if (std::cmp_greater(abs(m), ell))
-    return 0.0;
-
   if (m < 0)
     throw std::invalid_argument("AssocLegendre: m must be non-negative.");
 
   const auto um = static_cast<unsigned int>(m);
-  const double sqrt_one_minus_x2 = sqrt(1.0 - x * x);
+  if (um > ell)
+    return 0.0;
+
+  // (1 - x)(1 + x) keeps its relative accuracy as |x| approaches 1, where 1 - x * x does not
+  const double sqrt_one_minus_x2 = sqrt((1.0 - x) * (1.0 + x));
 
   // P_m^m from P_l^l = -(2l - 1) sqrt(1 - x^2) P_{l-1}^{l-1}, P_0^0 = 1
   double Pmm = 1.0;
