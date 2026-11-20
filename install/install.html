@@ -269,11 +269,13 @@ variable when one is provided. The module build performed by
 <p class="admonition-title">Note</p>
 <p>On Linux, <code class="docutils literal notranslate"><span class="pre">libopensn</span></code> is linked with <code class="docutils literal notranslate"><span class="pre">-z</span> <span class="pre">defs</span></code>, so the link fails if a
 symbol it uses is not provided by one of the libraries it links, as on
-macOS. With Clang sanitizers, link the shared sanitizer runtime with
-<code class="docutils literal notranslate"><span class="pre">-shared-libsan</span> <span class="pre">-frtlib-add-rpath</span></code>, as the <code class="docutils literal notranslate"><span class="pre">clang+debug+sanitizer</span></code>
-preset does, so that <code class="docutils literal notranslate"><span class="pre">libopensn</span></code> links it and executables find it at
-run time. When the sanitizer runtime is static, and linked only into
-executables, CMake skips this check.</p>
+macOS. When the sanitizer runtime is static, and linked only into
+executables, CMake skips this check. The <code class="docutils literal notranslate"><span class="pre">clang+debug+sanitizer</span></code> preset
+links the static runtime, because the shared runtime aborts when another
+library is preloaded ahead of it, as some toolchain environments do with
+<code class="docutils literal notranslate"><span class="pre">LD_PRELOAD</span></code>. To keep the check with Clang sanitizers, link the shared
+runtime with <code class="docutils literal notranslate"><span class="pre">-shared-libsan</span> <span class="pre">-frtlib-add-rpath</span></code> and preload nothing ahead
+of it.</p>
 </div>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
