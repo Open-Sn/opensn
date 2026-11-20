@@ -128,6 +128,13 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn12LinearSolver16ReleaseWorkspaceEv">
+<span class="target" id="classopensn_1_1_linear_solver_1a1135d966e5948579eb3c03d0e48a3ed1"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ReleaseWorkspace</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12LinearSolver16ReleaseWorkspaceEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Frees the storage that <a class="reference internal" href="#classopensn_1_1_linear_solver_1a6dd1defe7e750c80468984530c76e2cb"><span class="std std-ref">Setup()</span></a> and <a class="reference internal" href="#classopensn_1_1_linear_solver_1a4fa9c483b40087a25d8079bfc50deca1"><span class="std std-ref">Solve()</span></a> allocate. </p>
+<p>The settings are kept. The next <a class="reference internal" href="#classopensn_1_1_linear_solver_1a6dd1defe7e750c80468984530c76e2cb"><span class="std std-ref">Setup()</span></a> or <a class="reference internal" href="#classopensn_1_1_linear_solver_1a4fa9c483b40087a25d8079bfc50deca1"><span class="std std-ref">Solve()</span></a> allocates the storage again, so a later solve gives the same result. The default implementation frees nothing. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn12LinearSolver10GetContextEv">
 <span class="target" id="classopensn_1_1_linear_solver_1a2f1882f55a50a6766f0d9863db1448bb"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">shared_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="structopensn_1_1_linear_solver_context.html#_CPPv4N6opensn19LinearSolverContextE" title="opensn::LinearSolverContext"><span class="n"><span class="pre">LinearSolverContext</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetContext</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn12LinearSolver10GetContextEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
