@@ -36,6 +36,8 @@ AAHSweepChunkTD::AAHSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset&
   {
     use_fixed_n_ = true;
     fixed_num_nodes_ = min_num_cell_dofs_;
+    cell_data_ = &problem.GetAAHCellSweepData();
+    EnableCompactGroupsetMoments(problem.GetNumGroups());
   }
 
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
@@ -103,7 +105,9 @@ AAHSweepChunkTD::Sweep_Generic(AngleSet& angle_set)
                     include_rhs_time_term_,
                     problem_,
                     &psi_old_,
-                    group_block_size_};
+                    group_block_size_,
+                    nullptr,
+                    {}};
 
   AAH_Sweep_Generic<true>(data, angle_set);
 }
@@ -132,7 +136,9 @@ AAHSweepChunkTD::Sweep_FixedN(AngleSet& angle_set)
                     include_rhs_time_term_,
                     problem_,
                     &psi_old_,
-                    group_block_size_};
+                    group_block_size_,
+                    cell_data_,
+                    GetGroupsetMoments()};
 
   AAH_Sweep_FixedN<NumNodes, true>(data, angle_set);
 }

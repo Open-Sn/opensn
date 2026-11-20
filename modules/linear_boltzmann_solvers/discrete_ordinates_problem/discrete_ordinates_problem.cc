@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
+#include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_cell_sweep_data.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/csda_sweep_helper.h"
@@ -888,6 +889,19 @@ DiscreteOrdinatesProblem::RemoveUncollidedFlux()
     phi_new_local_[i] -= uncollided_flux_moments_local_[i];
   uncollided_flux_applied_ = false;
   return true;
+}
+
+const AAHCellSweepData&
+DiscreteOrdinatesProblem::GetAAHCellSweepData()
+{
+  if (not aah_cell_sweep_data_)
+    aah_cell_sweep_data_ = std::make_unique<AAHCellSweepData>(*grid_,
+                                                              *discretization_,
+                                                              unit_cell_matrices_,
+                                                              cell_transport_views_,
+                                                              num_moments_,
+                                                              num_groups_);
+  return *aah_cell_sweep_data_;
 }
 
 void
