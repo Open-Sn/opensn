@@ -33,6 +33,11 @@ protected:
 public:
   explicit SplitFileMeshGenerator(const InputParameters& params);
 
+  /**
+   * Writes the split mesh on rank 0, unless the generator only reads, and reads the part of every
+   * rank. Collective. When generating, partitioning, or writing the mesh fails on rank 0, every
+   * rank throws std::runtime_error with its message.
+   */
   std::shared_ptr<Mesh> Execute() override;
 
 protected:

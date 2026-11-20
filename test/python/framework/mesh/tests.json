@@ -97,5 +97,49 @@
         "abs_tol": 1.0e-6
       }
     ]
+  },
+  {
+    "file": "distributed_mesh_error.py",
+    "comment": "A mesh that rank 0 rejects while DistributedMeshGenerator builds it, and a KBA partition that rank 0 rejects in distributed orthogonal generation, raise the error on every rank, and the ranks stay in step for the next mesh.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Ranks that rejected the folded mesh =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cells of the valid mesh =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Ranks that rejected the empty KBA slab =",
+        "goldvalue": 2,
+        "abs_tol": 0.0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Cells of the valid distributed orthogonal mesh =",
+        "goldvalue": 4,
+        "abs_tol": 0.0
+      }
+    ]
+  },
+  {
+    "file": "split_mesh_write_error.py",
+    "comment": "A split-mesh part that cannot be written, because the process file-size limit is below its size, raises an error instead of ending the run as if the split mesh were complete.",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Split mesh write failure raised =",
+        "goldvalue": 1,
+        "abs_tol": 0.0
+      }
+    ]
   }
 ]

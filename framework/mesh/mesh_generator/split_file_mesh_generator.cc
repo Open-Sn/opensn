@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
+#include "framework/utils/collective_error.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include <filesystem>
@@ -30,25 +31,28 @@ SplitFileMeshGenerator::Execute()
   const auto num_mpi = mpi_comm.size();
   const auto num_partitions = num_mpi == 1 ? num_partitions_ : num_mpi;
 
-  if (mpi_comm.rank() == 0 and (not read_only_))
-  {
-    // Execute all input generators
-    // Note these could be empty
-    std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
-    for (const auto& mesh_generator_ptr : inputs_)
-      current_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
+  // Only rank 0 builds, partitions, and writes the mesh, while the other ranks wait for the files.
+  // A failure there is raised on every rank.
+  RunWithCollectiveErrors(
+    [&]
+    {
+      if (mpi_comm.rank() != 0 or read_only_)
+        return;
 
-    // Generate final umesh
-    current_umesh = GenerateUnpartitionedMesh(current_umesh);
+      // Execute all input generators
+      // Note these could be empty
+      std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
+      for (const auto& mesh_generator_ptr : inputs_)
+        current_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
 
-    log.Log() << "Writing split-mesh with " << num_partitions << " parts";
-    const auto cell_pids = PartitionMesh(*current_umesh, num_partitions);
-    WriteSplitMesh(cell_pids, *current_umesh, num_partitions);
-    log.Log() << "Split-mesh with " << num_partitions << " parts successfully created";
-  } // if home location
+      // Generate final umesh
+      current_umesh = GenerateUnpartitionedMesh(current_umesh);
 
-  // Other locations wait here for files to be written
-  mpi_comm.barrier();
+      log.Log() << "Writing split-mesh with " << num_partitions << " parts";
+      const auto cell_pids = PartitionMesh(*current_umesh, num_partitions);
+      WriteSplitMesh(cell_pids, *current_umesh, num_partitions);
+      log.Log() << "Split-mesh with " << num_partitions << " parts successfully created";
+    });
 
   std::shared_ptr<Mesh> grid_ptr;
   if (mpi_comm.size() == num_partitions)
@@ -210,7 +214,10 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
 
       serial_data.Clear();
     }
+    // The stream does not throw, so a failed write or close is visible only in its state.
     ofile.close();
+    if (not ofile)
+      throw std::runtime_error("Failed to write " + file_path.string() + ".");
 
     const auto fraction_complete = static_cast<double>(pid) / static_cast<double>(num_partitions);
     if (fraction_complete >= static_cast<double>(aux_counter + 1) * 0.1)

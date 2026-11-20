@@ -8,6 +8,7 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/utils.h"
 #include "framework/utils/error.h"
+#include "framework/utils/collective_error.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 
@@ -29,19 +30,29 @@ DistributedMeshGenerator::Execute()
   log.Log() << program_timer.GetTimeString() << " Distributing mesh with " << num_partitions
             << " parts";
 
+  // Only rank 0 builds and partitions the mesh. A failure there is raised on every rank, so that
+  // the other ranks do not wait for mesh data that will never be sent.
+  std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
+  std::vector<int> cell_pids;
+  RunWithCollectiveErrors(
+    [&]
+    {
+      if (rank != 0)
+        return;
+      for (const auto& mesh_generator_ptr : inputs_)
+        current_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
+      current_umesh = GenerateUnpartitionedMesh(current_umesh);
+
+      OpenSnInvalidArgumentIf(
+        not current_umesh,
+        "No mesh was generated. DistributedMeshGenerator does not build a mesh of its own; "
+        "supply a mesh-generating step via \"inputs\".");
+
+      cell_pids = PartitionMesh(*current_umesh, num_partitions);
+    });
+
   if (rank == 0)
   {
-    std::shared_ptr<UnpartitionedMesh> current_umesh = nullptr;
-    for (const auto& mesh_generator_ptr : inputs_)
-      current_umesh = mesh_generator_ptr->GenerateUnpartitionedMesh(current_umesh);
-    current_umesh = GenerateUnpartitionedMesh(current_umesh);
-
-    OpenSnInvalidArgumentIf(
-      not current_umesh,
-      "No mesh was generated. DistributedMeshGenerator does not build a mesh of its own; "
-      "supply a mesh-generating step via \"inputs\".");
-
-    const auto cell_pids = PartitionMesh(*current_umesh, num_partitions);
     auto serial_data = DistributeSerializedMeshData(cell_pids, *current_umesh, num_partitions);
     mesh_info = DeserializeMeshData(serial_data);
   }

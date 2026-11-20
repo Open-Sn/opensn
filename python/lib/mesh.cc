@@ -302,7 +302,22 @@ WrapMeshGenerator(py::module& mesh)
   mesh_generator.def(
     "Execute",
     &MeshGenerator::Execute,
-    "Final execution step."
+    R"(
+    Build the mesh and partition it over the ranks.
+
+    Collective: every rank must call it. Rank 0 partitions the mesh. A
+    :py:class:`pyopensn.mesh.DistributedMeshGenerator` or
+    :py:class:`pyopensn.mesh.SplitFileMeshGenerator` also builds the mesh on rank 0 only.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, when partitioning the mesh fails on rank 0, or when a
+        :py:class:`pyopensn.mesh.DistributedMeshGenerator` or
+        :py:class:`pyopensn.mesh.SplitFileMeshGenerator` fails to build or write the mesh on
+        rank 0, for example because the mesh is folded or has an inverted cell. Other generators
+        build the mesh on every rank, and a build error is raised on each rank where it occurs.
+    )"
   );
 
   // extruded mesh generator
@@ -607,11 +622,13 @@ WrapGraphPartitioner(py::module& mesh)
     brick-shaped cellsets. Each cell goes to the cellset that contains its
     centroid. A centroid that lies on a cut goes to the cellset above it.
 
-    Cuts must be finite and strictly increasing, and every slab between cuts
-    must contain cell centroids. An axis on which the mesh has no extent must
-    have one partition. A 2D mesh needs ``nz=1``, and a 1D mesh, which lies
-    along ``z``, needs ``nx=1`` and ``ny=1``. Mesh generation raises
-    ``ValueError`` when one of these rules is broken.
+    Each axis needs ``n - 1`` cuts that are finite and strictly increasing,
+    and the constructor raises ``ValueError`` otherwise. Every slab between
+    cuts must contain cell centroids. An axis on which the mesh has no extent
+    must have one partition. A 2D mesh needs ``nz=1``, and a 1D mesh, which
+    lies along ``z``, needs ``nx=1`` and ``ny=1``. These rules depend on the
+    mesh, so ``Execute`` of the mesh generator raises ``RuntimeError`` on every
+    rank when one of them is broken.
 
     With ``nx * ny * nz`` equal to the number of MPI ranks, the rank-level
     sweep graph is acyclic for every direction. With more cellsets than ranks,

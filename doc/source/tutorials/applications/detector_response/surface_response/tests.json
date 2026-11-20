@@ -11,25 +11,25 @@
       {
         "type": "KeyValuePair",
         "key": "Detector-1 forward QoI=",
-        "goldvalue": 0.004415711,
+        "goldvalue": 0.004415773,
         "rel_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Detector-1 adjoint QoI=",
-        "goldvalue": 0.004415711,
+        "goldvalue": 0.004415773,
         "rel_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Detector-1 x20_d surface QoI=",
-        "goldvalue": 0.004415711,
+        "goldvalue": 0.004415773,
         "rel_tol": 1e-05
       },
       {
         "type": "KeyValuePair",
         "key": "Detector-1 x20 along +x QoI=",
-        "goldvalue": -0.004415711,
+        "goldvalue": -0.004415773,
         "rel_tol": 1e-05
       },
       {

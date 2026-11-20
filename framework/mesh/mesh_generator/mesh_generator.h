@@ -35,7 +35,12 @@ class Mesh;
 class MeshGenerator
 {
 public:
-  /// Final execution step.
+  /**
+   * Builds the mesh and partitions it over the ranks. Collective.
+   *
+   * Every rank builds the mesh, and rank 0 partitions it. When the partitioning fails on rank 0,
+   * every rank throws std::runtime_error with its message.
+   */
   virtual std::shared_ptr<Mesh> Execute();
 
   explicit MeshGenerator(const InputParameters& params);

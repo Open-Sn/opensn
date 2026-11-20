@@ -7,6 +7,7 @@
 #include "framework/mpi/mpi_utils.h"
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
+#include "framework/utils/collective_error.h"
 #include "framework/logging/log.h"
 #include <algorithm>
 #include <array>
@@ -533,27 +534,33 @@ OrthogonalMeshGenerator::Execute()
   std::vector<size_t> partI_num_cells;
   std::vector<uint64_t> local_cell_payload;
 
-  if (mpi_comm.rank() == 0)
-  {
-    std::vector<std::vector<uint64_t>> cell_graph;
-    std::vector<Vector3> cell_centroids;
-    cell_graph.reserve(total_num_cells);
-    cell_centroids.reserve(total_num_cells);
-
-    for (uint64_t cell_gid = 0; cell_gid < total_num_cells; ++cell_gid)
+  // Only rank 0 partitions the mesh. A failure there is raised on every rank, so that the other
+  // ranks do not wait for it in the exchange of cell payloads.
+  RunWithCollectiveErrors(
+    [&]
     {
-      const auto [i, j, k] = CellIJK(info, cell_gid);
-      cell_graph.push_back(CellGraphNode(info, i, j, k));
-      cell_centroids.push_back(CellCentroid(node_sets_, info.dimension, i, j, k));
-    }
+      if (mpi_comm.rank() != 0)
+        return;
 
-    cell_pids = partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
-    GraphPartitioner::FillEmptyPartitions(cell_graph, cell_pids, num_partitions);
-  }
+      std::vector<std::vector<uint64_t>> cell_graph;
+      std::vector<Vector3> cell_centroids;
+      cell_graph.reserve(total_num_cells);
+      cell_centroids.reserve(total_num_cells);
 
-  if (mpi_comm.rank() == 0 and cell_pids.size() != total_num_cells)
-    throw std::logic_error("OrthogonalMeshGenerator distributed generation received an invalid "
-                           "partition vector.");
+      for (uint64_t cell_gid = 0; cell_gid < total_num_cells; ++cell_gid)
+      {
+        const auto [i, j, k] = CellIJK(info, cell_gid);
+        cell_graph.push_back(CellGraphNode(info, i, j, k));
+        cell_centroids.push_back(CellCentroid(node_sets_, info.dimension, i, j, k));
+      }
+
+      cell_pids = partitioner_->Partition(cell_graph, cell_centroids, num_partitions);
+      GraphPartitioner::FillEmptyPartitions(cell_graph, cell_pids, num_partitions);
+
+      if (cell_pids.size() != total_num_cells)
+        throw std::logic_error("OrthogonalMeshGenerator distributed generation received an "
+                               "invalid partition vector.");
+    });
 
   local_cell_payload = BuildLocalCellPayload(info, cell_pids, num_partitions, partI_num_cells);
   mpi_comm.broadcast(partI_num_cells, 0);

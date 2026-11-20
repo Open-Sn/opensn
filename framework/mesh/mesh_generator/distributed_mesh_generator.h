@@ -31,7 +31,8 @@ public:
    *
    * On location 0, the mesh is generated, partitioned, serialized, and distributed to
    * other MPI ranks. Other ranks receive the serialized mesh data, deserialize it,
-   * and set up the local mesh.
+   * and set up the local mesh. Collective. When generating or partitioning the mesh fails on
+   * location 0, every rank throws std::runtime_error with its message.
    */
   std::shared_ptr<Mesh> Execute() override;
 
