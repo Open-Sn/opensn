@@ -32,13 +32,22 @@ inline std::uint32_t get_num_gpus(void) {
 }
 
 inline std::string get_uuid(std::uint32_t device_id) {
-    ::CUDA_OR_HIP(DeviceProp, DeviceProp_t) properties{};
-    check_error(::GPU_API(GetDeviceProperties)(&properties, static_cast<int>(device_id)));
+#if defined(__NVCC__)
+    ::cudaDeviceProp properties{};
+    check_error(::cudaGetDeviceProperties(&properties, static_cast<int>(device_id)));
+    const ::cudaUUID_t id = properties.uuid;
+#else
+    // hipDeviceProp_t has a uuid member only from HIP 6.0, while hipDeviceGetUuid exists in earlier versions too.
+    ::hipDevice_t device;
+    check_error(::hipDeviceGet(&device, static_cast<int>(device_id)));
+    ::hipUUID id;
+    check_error(::hipDeviceGetUuid(&id, device));
+#endif
     constexpr char hex_digits[] = "0123456789abcdef";
     std::string uuid;
-    uuid.reserve(2 * sizeof(properties.uuid.bytes));
-    for (std::size_t i = 0; i < sizeof(properties.uuid.bytes); ++i) {
-        const auto byte = static_cast<unsigned char>(properties.uuid.bytes[i]);
+    uuid.reserve(2 * sizeof(id.bytes));
+    for (std::size_t i = 0; i < sizeof(id.bytes); ++i) {
+        const auto byte = static_cast<unsigned char>(id.bytes[i]);
         uuid += hex_digits[byte >> 4];
         uuid += hex_digits[byte & 0xF];
     }
