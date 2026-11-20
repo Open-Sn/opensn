@@ -1,0 +1,125 @@
+
+.. _program_listing_file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_cell_sweep_data.h:
+
+Program Listing for File aah_cell_sweep_data.h
+==============================================
+
+|exhale_lsh| :ref:`Return to documentation for file <file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_cell_sweep_data.h>` (``modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_cell_sweep_data.h``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+.. code-block:: cpp
+
+   // SPDX-FileCopyrightText: 2026 The OpenSn Authors <https://open-sn.github.io/opensn/>
+   // SPDX-License-Identifier: MIT
+   
+   #pragma once
+   
+   #include "framework/data_types/vector3.h"
+   #include <cstddef>
+   #include <cstdint>
+   #include <vector>
+   
+   namespace opensn
+   {
+   
+   class Mesh;
+   class SpatialDiscretization;
+   class CellLBSView;
+   struct UnitCellMatrices;
+   
+   /**
+    * Contiguous copies of the local cell data that the CPU AAH sweep kernels read.
+    *
+    * On an unstructured mesh every angle set holds one direction, so a sweep visits each cell once
+    * per direction and reads its data from memory each time. Reading it from a few contiguous arrays
+    * instead of the cell, its mapping, and its unit matrices, which are separate heap objects, takes
+    * fewer memory accesses. The data depends only on the mesh and the discretization, so the problem
+    * builds it once and every groupset shares it. The values are copies of the unit cell matrices,
+    * so the kernels compute exactly what they computed from the originals.
+    */
+   class AAHCellSweepData
+   {
+   public:
+     /// A face of a cell.
+     struct Face
+     {
+       /// Outward unit normal.
+       Vector3 normal;
+       /// Global id of the neighbor cell, or the boundary id of a boundary face.
+       std::uint64_t neighbor_id = 0;
+       /// Start of the face's surface mass matrix and shape integrals in the scalar array.
+       std::size_t scalar_offset = 0;
+       /// Start of the face's node mapping in the face-node array.
+       std::size_t node_offset = 0;
+       /// Number of nodes of the face.
+       std::uint32_t num_nodes = 0;
+       /// Whether the face has a neighbor cell, that is, is not on a boundary.
+       bool has_neighbor = false;
+       /// Whether the neighbor cell is on this rank.
+       bool is_local = false;
+     };
+   
+     /// A cell.
+     struct Cell
+     {
+       /// Index of the cell's first node in the scalar flux moments, the cell's phi address divided
+       /// by the number of moments and groups.
+       std::size_t first_node = 0;
+       /// Start of the cell's faces in the face array.
+       std::size_t face_offset = 0;
+       /// Start of the cell's gradient matrix in the vector array.
+       std::size_t vector_offset = 0;
+       /// Start of the cell's mass matrix in the scalar array.
+       std::size_t scalar_offset = 0;
+       std::uint32_t num_nodes = 0;
+       std::uint32_t num_faces = 0;
+     };
+   
+     /**
+      * Builds the data of every local cell.
+      * The flux moments of a node are num_moments times num_groups values, so a cell's first node is
+      * its phi address divided by that product.
+      */
+     AAHCellSweepData(const Mesh& grid,
+                      const SpatialDiscretization& discretization,
+                      const std::vector<UnitCellMatrices>& unit_cell_matrices,
+                      const std::vector<CellLBSView>& cell_transport_views,
+                      unsigned int num_moments,
+                      unsigned int num_groups);
+   
+     const Cell& GetCell(std::size_t cell_local_id) const { return cells_[cell_local_id]; }
+   
+     /// The cell's faces, in the order of the cell's faces.
+     const Face* GetFaces(const Cell& cell) const { return &faces_[cell.face_offset]; }
+   
+     /// Entry (i, j) of the cell's integral of shape function i times the gradient of shape
+     /// function j, at index i * num_nodes + j.
+     const Vector3* GetGradientMatrix(const Cell& cell) const { return &vectors_[cell.vector_offset]; }
+   
+     /// Entry (i, j) of the cell's mass matrix, at index i * num_nodes + j.
+     const double* GetMassMatrix(const Cell& cell) const { return &scalars_[cell.scalar_offset]; }
+   
+     /// The cell node of each face node.
+     const int* GetFaceNodes(const Face& face) const { return &face_nodes_[face.node_offset]; }
+   
+     /// Entry (fi, fj) of the face's surface mass matrix between the cell nodes of face nodes fi and
+     /// fj, at index fi * face.num_nodes + fj.
+     const double* GetFaceMassMatrix(const Face& face) const { return &scalars_[face.scalar_offset]; }
+   
+     /// The face's integral of the shape function of the cell node of each face node.
+     const double* GetFaceShapeIntegrals(const Face& face) const
+     {
+       return &scalars_[face.scalar_offset +
+                        static_cast<std::size_t>(face.num_nodes) * face.num_nodes];
+     }
+   
+   private:
+     std::vector<Cell> cells_;
+     std::vector<Face> faces_;
+     std::vector<Vector3> vectors_;
+     std::vector<double> scalars_;
+     std::vector<int> face_nodes_;
+   };
+   
+   } // namespace opensn

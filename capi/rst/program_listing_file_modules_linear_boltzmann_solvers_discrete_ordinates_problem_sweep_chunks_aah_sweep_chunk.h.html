@@ -102,6 +102,7 @@
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHCellSweepData</span><span class="p">;</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHSweepChunk</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepChunk</span>
 <span class="p">{</span>
@@ -112,6 +113,8 @@
 
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="n">DiscreteOrdinatesProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">problem_</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Cell data of the kernels, owned by the problem.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHCellSweepData</span><span class="o">&amp;</span><span class="w"> </span><span class="n">cell_data_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group_block_size_</span><span class="p">;</span>
 
 <span class="k">private</span><span class="o">:</span>

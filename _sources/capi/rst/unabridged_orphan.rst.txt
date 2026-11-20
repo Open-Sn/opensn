@@ -50,6 +50,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_a_a_h_cell_sweep_data_1_1_cell.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_a_a_h_cell_sweep_data_1_1_face.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_a_a_h_d___bank.rst
 
 .. toctree::
@@ -710,6 +720,11 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_sweep_chunk_1_1_groupset_moments.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_sweep_runtime.rst
 
 .. toctree::
@@ -886,6 +901,11 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_a_a_h___s_p_d_s.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_a_a_h_cell_sweep_data.rst
 
 .. toctree::
    :maxdepth: 1
@@ -2618,6 +2638,11 @@ Files
    :maxdepth: 1
 
    file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_communicators_aah_async_comm.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_cell_sweep_data.h.rst
 
 .. toctree::
    :maxdepth: 1

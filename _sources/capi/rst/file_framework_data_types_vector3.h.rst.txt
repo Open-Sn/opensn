@@ -86,6 +86,8 @@ Included By
 
 - :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_spds_spds.h`
 
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_cell_sweep_data.h`
+
 - :ref:`file_modules_linear_boltzmann_solvers_uncollided_problem_uncollided_problem.h`
 
 

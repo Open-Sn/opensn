@@ -87,6 +87,15 @@
 <ul class="simple">
 <li><p>Defined in <a class="reference internal" href="file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_sweep_chunk.h.html#file-modules-linear-boltzmann-solvers-discrete-ordinates-problem-sweep-chunks-sweep-chunk-h"><span class="std std-ref">File sweep_chunk.h</span></a></p></li>
 </ul>
+<section id="nested-relationships">
+<h2>Nested Relationships<a class="headerlink" href="#nested-relationships" title="Link to this heading"></a></h2>
+<section id="nested-types">
+<h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><a class="reference internal" href="structopensn_1_1_sweep_chunk_1_1_groupset_moments.html#exhale-struct-structopensn-1-1-sweep-chunk-1-1-groupset-moments"><span class="std std-ref">Struct SweepChunk::GroupsetMoments</span></a></p></li>
+</ul>
+</section>
+</section>
 <section id="inheritance-relationships">
 <h2>Inheritance Relationships<a class="headerlink" href="#inheritance-relationships" title="Link to this heading"></a></h2>
 <section id="derived-types">
@@ -198,6 +207,20 @@
 </dd></dl>
 
 <dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk10BeginSweepEv">
+<span class="target" id="classopensn_1_1_sweep_chunk_1a532cd6dc5a5a09543767a550d932726c"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BeginSweep</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk10BeginSweepEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Prepares the chunk for a sweep. </p>
+<p>The sweep scheduler calls this before the first angle set of a sweep, after the destination flux moments of the groupset are zeroed. A chunk with compact groupset moments copies the groupset’s source moments here. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk8EndSweepEv">
+<span class="target" id="classopensn_1_1_sweep_chunk_1af180a78ae99ed25d8ac502167994d212"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EndSweep</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk8EndSweepEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Finishes a sweep of the chunk. </p>
+<p>The sweep scheduler calls this after the last angle set of a sweep. A chunk with compact groupset moments copies the groupset’s flux moments to the destination here. </p>
+</dd></dl>
+
+<dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunkD0Ev">
 <span class="target" id="classopensn_1_1_sweep_chunk_1a8688d3682670c7a8981d384f74972399"></span><span class="k"><span class="pre">virtual</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">~SweepChunk</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">default</span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunkD0Ev" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
@@ -215,6 +238,19 @@
 </div>
 <div class="breathe-sectiondef docutils container">
 <p class="breathe-sectiondef-title rubric" id="breathe-section-title-protected-functions">Protected Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk28EnableCompactGroupsetMomentsEj">
+<span class="target" id="classopensn_1_1_sweep_chunk_1a3d4ae33ce4bb22058c8a6e33bf07bd16"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">EnableCompactGroupsetMoments</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">num_problem_groups</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk28EnableCompactGroupsetMomentsEj" title="Link to this definition"></a><br /></dt>
+<dd><p>Makes the sweeps of this chunk use contiguous copies of the groupset’s moments. </p>
+<p>When the groupset does not hold every group, a sweep reads the groupset’s source moments from, and adds its flux moments to, contiguous copies of the groupset’s part of the moments. The moments of a node then lie together, so a kernel reads them in fewer memory accesses. The copies exist only during a sweep. A chunk enables this only if every kernel it runs reads the moments through <a class="reference internal" href="#classopensn_1_1_sweep_chunk_1ab8ba20f277fa67635c3f98502ad3024a"><span class="std std-ref">GetGroupsetMoments()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk18GetGroupsetMomentsEv">
+<span class="target" id="classopensn_1_1_sweep_chunk_1ab8ba20f277fa67635c3f98502ad3024a"></span><a class="reference internal" href="#_CPPv4N6opensn10SweepChunk15GroupsetMomentsE" title="opensn::SweepChunk::GroupsetMoments"><span class="n"><span class="pre">GroupsetMoments</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetGroupsetMoments</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk18GetGroupsetMomentsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Where the current sweep reads the source moments and adds the flux moments. </p>
+</dd></dl>
+
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk34ComputeDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEE">
 <span class="target" id="classopensn_1_1_sweep_chunk_1a962e35c6e7cb6c2499b7c26fc206994b"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ComputeDestinationsFromAngularFlux</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_angle_aggregation.html#_CPPv4N6opensn16AngleAggregationE" title="opensn::AngleAggregation"><span class="n"><span class="pre">AngleAggregation</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">angle_agg</span></span>, <span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">psi</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk34ComputeDestinationsFromAngularFluxERK16AngleAggregationRKNSt6vectorIdEE" title="Link to this definition"></a><br /></dt>
@@ -345,6 +381,50 @@
 <dd></dd></dl>
 
 </div>
+<dl class="cpp struct">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMomentsE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments"></span><span class="k"><span class="pre">struct</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GroupsetMoments</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMomentsE" title="Link to this definition"></a><br /></dt>
+<dd><p>Where a sweep reads the groupset’s source moments and adds its flux moments. </p>
+<p>Moment m of group g of the groupset at node n is entry n * node_stride + m * moment_stride + group_offset + g of both arrays. Initialize it with braces, which zero any members left out. </p>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-functions">Public Functions</p>
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn10SweepChunk15GroupsetMoments5IndexENSt6size_tEj">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1a9b75fb121d70d0525b0da11a2e6ed876"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Index</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">n</span></span>, <span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn10SweepChunk15GroupsetMoments5IndexENSt6size_tEj" title="Link to this definition"></a><br /></dt>
+<dd><p>Index of moment m of the groupset’s first group at node n. </p>
+</dd></dl>
+
+</div>
+<div class="breathe-sectiondef docutils container">
+<p class="breathe-sectiondef-title rubric" id="breathe-section-title-public-members">Public Members</p>
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMoments6sourceE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1ad1255bb107361d920310b435d6d5e7a1"></span><span class="k"><span class="pre">const</span></span><span class="w"> </span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">source</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMoments6sourceE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMoments3phiE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1aa1e05d7d1bb13fe83572d176ce383d31"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="p"><span class="pre">*</span></span><span class="sig-name descname"><span class="n"><span class="pre">phi</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMoments3phiE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMoments11node_strideE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1a988d63185dd5ce29b39c2c05ad7ea427"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">node_stride</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMoments11node_strideE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMoments13moment_strideE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1a02bc2cc6887113044d45cb1ebbb3dc89"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">moment_stride</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMoments13moment_strideE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn10SweepChunk15GroupsetMoments12group_offsetE">
+<span class="target" id="structopensn_1_1_sweep_chunk_1_1_groupset_moments_1ac08d2b3977a5584d8692b564bd68912f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">group_offset</span></span></span><a class="headerlink" href="#_CPPv4N6opensn10SweepChunk15GroupsetMoments12group_offsetE" title="Link to this definition"></a><br /></dt>
+<dd></dd></dl>
+
+</div>
+</dd></dl>
+
 </dd></dl>
 
 </section>

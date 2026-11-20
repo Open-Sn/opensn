@@ -112,6 +112,7 @@
 
 <span class="k">class</span><span class="w"> </span><span class="nc">FieldFunctionGridBased</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">AGSLinearSolver</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHCellSweepData</span><span class="p">;</span>
 <span class="k">class</span><span class="w"> </span><span class="nc">LinearSolver</span><span class="p">;</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">BalanceTable</span><span class="p">;</span>
 <span class="k">struct</span><span class="w"> </span><span class="nc">WGSContext</span><span class="p">;</span>
@@ -370,6 +371,13 @@
 <span class="w">  </span><span class="c1">/// Adds the uncollided scalar flux to the converged collided scalar flux.</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">ComputeFluxFromUncollided</span><span class="p">();</span>
 
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Returns the local cell data that the CPU AAH sweep kernels read.</span>
+<span class="cm">   * It is built the first time it is requested. It depends only on the mesh and the spatial</span>
+<span class="cm">   * discretization, so it lives as long as the problem and every groupset shares it.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHCellSweepData</span><span class="o">&amp;</span><span class="w"> </span><span class="nf">GetAAHCellSweepData</span><span class="p">();</span>
+
 <span class="k">protected</span><span class="o">:</span>
 <span class="w">  </span><span class="cm">/**</span>
 <span class="cm">   * @name Construction and setup</span>
@@ -552,6 +560,9 @@
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">WGSContext</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_contexts_</span><span class="p">;</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
 <span class="w">  </span><span class="cm">/** @} */</span>
+
+<span class="w">  </span><span class="c1">/// Cell data of the CPU AAH sweep kernels, see GetAAHCellSweepData().</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">AAHCellSweepData</span><span class="o">&gt;</span><span class="w"> </span><span class="n">aah_cell_sweep_data_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">InitializeFCS</span><span class="p">();</span>
 

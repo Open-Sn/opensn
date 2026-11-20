@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_a_a_h_cell_sweep_data_1_1_cell:
+
+Struct AAHCellSweepData::Cell
+=============================
+
+- Defined in :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_chunks_aah_cell_sweep_data.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_a_a_h_cell_sweep_data`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::AAHCellSweepData::Cell
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

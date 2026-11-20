@@ -103,6 +103,7 @@
 <span class="p">{</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">DiscreteOrdinatesProblem</span><span class="p">;</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">AAHCellSweepData</span><span class="p">;</span>
 
 <span class="k">class</span><span class="w"> </span><span class="nc">AAHSweepChunkTD</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="k">public</span><span class="w"> </span><span class="n">SweepChunk</span>
 <span class="p">{</span>
@@ -125,6 +126,8 @@
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">group_block_size_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">use_fixed_n_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">fixed_num_nodes_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Cell data of the fixed-N kernel, owned by the problem, or nullptr for the generic kernel.</span>
+<span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="n">AAHCellSweepData</span><span class="o">*</span><span class="w"> </span><span class="n">cell_data_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
