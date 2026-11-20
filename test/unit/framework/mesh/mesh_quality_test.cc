@@ -35,7 +35,7 @@ TEST(MeshQualityTest, ValidNeighborsAreConnected)
     ASSERT_NO_THROW(mesh = ReadMesh(file_name));
     ASSERT_EQ(mesh->GetNumberOfCells(), 2);
     size_t num_connected_faces = 0;
-    for (const auto& cell : mesh->GetRawCells())
+    for (const auto& cell : mesh->GetCells())
       for (const auto& face : cell->faces)
         num_connected_faces += face.has_neighbor ? 1 : 0;
     EXPECT_EQ(num_connected_faces, 2);

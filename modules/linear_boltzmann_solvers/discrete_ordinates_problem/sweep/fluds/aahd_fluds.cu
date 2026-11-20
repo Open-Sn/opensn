@@ -306,7 +306,7 @@ AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
     auto cell_faces = grid.GetCellFaces(cell_local_id);
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
       if (face_orientations[cell_local_id][f] != FaceOrientation::INCOMING or
           not cell_faces[f].has_neighbor)

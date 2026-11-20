@@ -99,7 +99,7 @@ AAH_FLUDSCommonData::InitializeAlphaElements(const SPDS& spds,
   // A face is incoming or outgoing, so the cells' face count bounds both face arrays.
   std::size_t num_cell_faces = 0;
   for (const auto cell_local_id : spls)
-    num_cell_faces += grid->GetLocalCell(cell_local_id).faces.size();
+    num_cell_faces += grid->GetCellFaceCount(cell_local_id);
   ToFaceIndex(num_cell_faces, "number of cell faces");
   outb_face_offsets_.reserve(spls.size() + 1);
   outb_face_slots_.reserve(num_cell_faces);
@@ -195,7 +195,8 @@ AAH_FLUDSCommonData::SlotDynamics(
 
   // Incoming faces
   inco_face_offsets_.push_back(ToFaceIndex(inco_face_categories_.size(), "face offset"));
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  auto cell_faces = grid_ptr->GetCellFaces(cell_local_id);
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
     const CellFace& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
@@ -250,7 +251,7 @@ AAH_FLUDSCommonData::SlotDynamics(
 
   // Outgoing faces
   outb_face_offsets_.push_back(ToFaceIndex(outb_face_slots_.size(), "face offset"));
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
     const auto& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];

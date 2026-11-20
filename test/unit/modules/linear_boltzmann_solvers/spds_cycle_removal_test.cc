@@ -7,6 +7,7 @@
 #include "framework/runtime.h"
 #include "gtest/gtest.h"
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <vector>
 
@@ -22,8 +23,21 @@ MakeSPDS(bool allow_cycles)
   Cell cell(CellType::SLAB, CellType::SLAB);
   cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
   cell.partition_id = mpi_comm.rank();
-  // grid->SetCells({cell}, {});
-  SPDSFaceNeighborInfoVec face_info(1);
+
+  UnpartitionedMesh::LightWeightCell raw_cell(CellType::SLAB, CellType::SLAB);
+  raw_cell.vertex_ids = {0, 1};
+  UnpartitionedMesh::LightWeightFace face;
+  face.vertex_ids = {0};
+  raw_cell.faces.push_back(face);
+
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+  cells.insert({{cell.partition_id, cell.global_id}, raw_cell});
+
+  std::vector<Cell> local_cells;
+  local_cells.push_back(std::move(cell));
+  grid->SetCells(std::move(local_cells), {}, cells);
+
+  SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   return std::make_shared<AAH_SPDS>(0, Vector3{1.0, 0.0, 0.0}, grid, face_info, allow_cycles);
 }
 

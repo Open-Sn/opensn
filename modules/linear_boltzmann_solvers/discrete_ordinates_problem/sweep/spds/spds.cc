@@ -22,7 +22,7 @@ CellFaceOrientations::CellFaceOrientations(const Mesh& grid, const FaceOrientati
   std::size_t num_faces = 0;
   for (std::size_t c = 0; c < num_cells; ++c)
   {
-    num_faces += grid.GetLocalCell(c).faces.size();
+    num_faces += grid.GetCellFaceCount(c);
     if (num_faces > std::numeric_limits<std::uint32_t>::max())
       throw std::runtime_error("CellFaceOrientations: the local cells have more than 2^32 - 1 "
                                "faces.");
