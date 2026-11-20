@@ -8,7 +8,6 @@
 #include <cstdint>     // std::uint32_t
 #include <functional>  // std::invoke
 #include <utility>     // std::forward, std::move
-#include <vector>      // std::vector
 
 #include "caribou/backend.hpp"
 #include "caribou/sycl/device.hpp"  // caribou::impl::get_current_gpu_device
@@ -22,7 +21,15 @@ using StreamNativeHandle = ::sycl::queue;
 
 using Stream = ::sycl::queue;
 
+/** @brief Get the default queue of the current GPU, creating it on first use.*/
 StreamNativeHandle & get_null_stream_handle(void);
+
+/**
+ * @brief Get a default queue whose context owns the USM allocation @p ptr.
+ * @details An allocation must be freed through its own context, which differs between SYCL platforms. The current GPU
+ * may have changed since the allocation was made.
+ */
+StreamNativeHandle & get_owner_stream_handle(const void * ptr);
 
 inline StreamNativeHandle get_handle(Stream & stream) { return stream; }
 
@@ -32,8 +39,6 @@ inline StreamNativeHandle get_handle(Stream & stream) { return stream; }
 inline void create_stream(Stream & stream, bool is_nonblocking) {
     stream = Stream(get_current_gpu_device(), ::sycl::property::queue::in_order{});
 }
-
-std::vector<StreamNativeHandle> create_default_streams(void);
 
 inline void destroy_stream(StreamNativeHandle stream_handle) {}
 
