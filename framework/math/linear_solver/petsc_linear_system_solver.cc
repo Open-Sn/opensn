@@ -132,6 +132,8 @@ PETScLinearSolver::PostSolveCallback()
 void
 PETScLinearSolver::Solve()
 {
+  // Rebuild the storage freed by ReleaseWorkspace(). Setup() does nothing when the system is set.
+  Setup();
   suppress_kspsolve_ = false;
   PreSolveCallback();
   SetInitialGuess();
