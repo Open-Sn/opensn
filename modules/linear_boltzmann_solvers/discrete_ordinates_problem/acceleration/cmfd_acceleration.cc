@@ -998,11 +998,10 @@ CMFDAcceleration::InitializeLinearSystem()
   OpenSnPETScCall(VecSetType(rhs_, VECMPI));
   OpenSnPETScCall(VecSetSizes(rhs_, local_unknowns, global_unknowns));
 
-  // Accelerations of other problems can have the same name, so the coarse solver reads its options
-  // from a database of its own. The previous KSP, which read the previous database, is destroyed.
+  // Accelerations of other problems can have the same name, so the coarse solver keeps its options
+  // apart and puts them in the global database only while it uses them.
   petsc_options_db_ = std::make_unique<PETScOptionsDatabase>();
   OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
-  petsc_options_db_->Attach(ksp_);
   OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, GetName().c_str()));
   const bool petsc_options_policy = coarse_solver_policy_ == "petsc_options";
@@ -1014,6 +1013,7 @@ CMFDAcceleration::InitializeLinearSystem()
   OpenSnPETScCall(KSPSetTolerances(ksp_, l_rel_tol_, l_abs_tol_, PETSC_DEFAULT, max_iters_));
   if ((petsc_options_policy or petsc_options_ != "ssss") and not petsc_options_.empty())
     petsc_options_db_->Insert(petsc_options_);
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
 }
 
@@ -1269,6 +1269,7 @@ CMFDAcceleration::BuildFaceCurrentCache()
 void
 CMFDAcceleration::AssembleOperator()
 {
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
   const auto& xs_map = do_problem_.GetBlockID2XSMap();
 
   OpenSnPETScCall(MatZeroEntries(A_));
@@ -1499,6 +1500,7 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   OpenSnInvalidArgumentIf(coarse_source_phi.size() !=
                             coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse source scalar flux vector size mismatch.");
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
 
   AssembleRHS(rhs_, k_eff, coarse_source_phi);
 

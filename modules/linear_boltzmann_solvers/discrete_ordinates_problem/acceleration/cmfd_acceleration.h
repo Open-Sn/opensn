@@ -171,7 +171,7 @@ private:
   Mat A_ = nullptr;
   Vec rhs_ = nullptr;
   KSP ksp_ = nullptr;
-  /// Options of the coarse KSP and its preconditioner, which no other solver reads.
+  /// Options of the coarse solver, which are in the global database only while it uses them.
   std::unique_ptr<PETScOptionsDatabase> petsc_options_db_;
   mutable int last_ksp_iterations_ = 0;
   mutable bool last_ksp_converged_ = true;

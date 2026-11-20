@@ -426,12 +426,13 @@ problem ``name`` followed by ``_WGDSA``. For a problem with the default name,
 ``"-DiscreteOrdinatesProblem_WGDSAksp_type gmres"`` selects GMRES. The prefix
 is ``_TGDSA`` for TGDSA. In a groupset with charged-particle groups it is
 ``_WGDSA_g`` followed by the global group index, since each group has its own
-solver. Each solver keeps its options in a PETSc options database of its own,
-so the options of one groupset do not reach the solvers of the other groupsets,
-which have the same prefix, or of a later problem with the same name. The
-database starts with the options of ``PETSC_OPTIONS`` and the ``.petscrc``
-files, which therefore apply to every solver, and the groupset options take
-precedence over them.
+solver. Each solver puts its options in the PETSc options database only while
+it sets up or solves, so the options of one groupset do not reach the solvers
+of the other groupsets, which have the same prefix, or of a later problem with
+the same name. PETSc objects that the solver creates, such as the block solvers
+of ``pc_type bjacobi`` and direct solver packages, read the options too. The
+options of ``PETSC_OPTIONS`` and the ``.petscrc`` files apply to every solver,
+and the groupset options take precedence over them.
 
 ``wgdsa_boundary_closure`` sets the boundary condition of the diffusion
 correction on every boundary where the incoming angular flux is prescribed

@@ -6,8 +6,8 @@ PETSc options given to one solver reach only that solver.
 
 The WGDSA diffusion solvers of the groupsets of a problem share one options prefix, the problem
 name followed by _WGDSA, and the CMFD coarse solvers of accelerations with the same name share
-theirs. Each solver keeps the options it is given in a database of its own, so they cannot change
-another solver with the same prefix.
+theirs. Each solver puts the options it is given in the PETSc options database only while it uses
+them, so they cannot change another solver with the same prefix.
 
 1. WGDSA. A 1D slab with reflecting boundaries is an infinite medium. Its two groups do not
    scatter into each other, and each is a groupset solved by classic Richardson with WGDSA by

@@ -28,13 +28,6 @@ ToPetscInt(const int64_t value, const char* name)
 PETScOptionsDatabase::PETScOptionsDatabase()
 {
   OpenSnPETScCall(PetscOptionsCreate(&options_));
-  char* global_options = nullptr;
-  OpenSnPETScCall(PetscOptionsGetAll(nullptr, &global_options));
-  const PetscErrorCode insert_error = PetscOptionsInsertString(options_, global_options);
-  OpenSnPETScCall(PetscFree(global_options));
-  if (insert_error != PETSC_SUCCESS)
-    OpenSnPETScCall(PetscOptionsDestroy(&options_));
-  OpenSnPETScCall(insert_error);
 }
 
 PETScOptionsDatabase::~PETScOptionsDatabase()
@@ -46,19 +39,63 @@ void
 PETScOptionsDatabase::Insert(const std::string& options_string)
 {
   OpenSnPETScCall(PetscOptionsInsertString(options_, options_string.c_str()));
+
+  // Nothing queries this database, so every option in it is unused and listed.
+  PetscInt num_options = 0;
+  char** names = nullptr;
+  char** values = nullptr;
+  OpenSnPETScCall(PetscOptionsLeftGet(options_, &num_options, &names, &values));
+  std::vector<Option> parsed_options;
+  parsed_options.reserve(num_options);
+  for (PetscInt i = 0; i < num_options; ++i)
+    parsed_options.push_back(
+      {"-" + std::string(names[i]),
+       values[i] != nullptr ? std::optional<std::string>(values[i]) : std::nullopt});
+  OpenSnPETScCall(PetscOptionsLeftRestore(options_, &num_options, &names, &values));
+  parsed_options_ = std::move(parsed_options);
+}
+
+PETScOptionsDatabase::Scope::Scope(const PETScOptionsDatabase& database)
+{
+  saved_.reserve(database.parsed_options_.size());
+  try
+  {
+    for (const auto& option : database.parsed_options_)
+    {
+      const char* value = nullptr;
+      PetscBool set = PETSC_FALSE;
+      OpenSnPETScCall(PetscOptionsFindPair(nullptr, nullptr, option.name.c_str(), &value, &set));
+      saved_.push_back({option.name,
+                        set == PETSC_TRUE,
+                        value != nullptr ? std::optional<std::string>(value) : std::nullopt});
+      OpenSnPETScCall(PetscOptionsSetValue(
+        nullptr, option.name.c_str(), option.value ? option.value->c_str() : nullptr));
+    }
+  }
+  catch (...)
+  {
+    Restore();
+    throw;
+  }
+}
+
+PETScOptionsDatabase::Scope::~Scope()
+{
+  Restore();
 }
 
 void
-PETScOptionsDatabase::Attach(KSP ksp) const
+PETScOptionsDatabase::Scope::Restore()
 {
-  // Every PETSc object begins with its PetscObject header, so PETSc casts object handles to
-  // PetscObject.
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  OpenSnPETScCall(PetscObjectSetOptions(reinterpret_cast<PetscObject>(ksp), options_));
-  PC pc = nullptr;
-  OpenSnPETScCall(KSPGetPC(ksp, &pc));
-  // NOLINTNEXTLINE(cppcoreguidelines-pro-type-reinterpret-cast)
-  OpenSnPETScCall(PetscObjectSetOptions(reinterpret_cast<PetscObject>(pc), options_));
+  for (auto it = saved_.rbegin(); it != saved_.rend(); ++it)
+  {
+    if (it->was_set)
+      OpenSnPETScCall(
+        PetscOptionsSetValue(nullptr, it->name.c_str(), it->value ? it->value->c_str() : nullptr));
+    else
+      OpenSnPETScCall(PetscOptionsClearValue(nullptr, it->name.c_str()));
+  }
+  saved_.clear();
 }
 
 PETScSolverStatus

@@ -51,6 +51,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
@@ -440,6 +441,7 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 
@@ -639,6 +641,7 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   if (A_ == nullptr or rhs_ == nullptr or ksp_ == nullptr)
     throw std::logic_error(fname + ": Some or all PETSc elements are null. "
                                    "Check that Initialize has been called.");
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   if (options.verbose)
     log.Log() << program_timer.GetTimeString() << " Starting assembly";
 

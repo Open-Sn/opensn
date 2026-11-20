@@ -95,8 +95,8 @@ public:
    * sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very
    * specialized parameters for Hypre's BooomerAMG. Note: `PCSetFromOptions` and `KSPSetFromOptions`
    * are called at the end, with the options of PETSC_OPTIONS and the .petscrc files, then the
-   * BoomerAMG parameters, then `options.additional_options_string`. The options are kept in a
-   * database of this solver, so they do not reach other solvers.
+   * BoomerAMG parameters, then `options.additional_options_string`. The options are in the global
+   * database only while this solver uses them, so they do not reach other solvers.
    */
   void Initialize();
 
@@ -157,7 +157,7 @@ protected:
   Vec rhs_ = nullptr;
   Vec x_ = nullptr;
   KSP ksp_ = nullptr;
-  /// Options of this solver's KSP and preconditioner, which no other solver reads.
+  /// Options of this solver, which are in the global database only while the solver uses them.
   std::unique_ptr<PETScOptionsDatabase> petsc_options_;
 
   const bool requires_ghosts_;
