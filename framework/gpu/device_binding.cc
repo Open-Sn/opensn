@@ -69,8 +69,20 @@ void
 BindDevice([[maybe_unused]] MPI_Comm comm)
 {
 #ifdef __OPENSN_WITH_GPU__
+  // A rank whose GPU query or selection fails still takes part in every collective below, so that
+  // every rank reports the failure rather than waiting for the failed rank.
+  std::string error;
+
   // The GPUs this rank sees
-  const auto ids = GetVisibleGPUIDs();
+  std::vector<std::string> ids;
+  try
+  {
+    ids = GetVisibleGPUIDs();
+  }
+  catch (const std::exception& e)
+  {
+    error = e.what();
+  }
   std::string device_set;
   for (const auto& id : ids)
   {
@@ -119,27 +131,48 @@ BindDevice([[maybe_unused]] MPI_Comm comm)
     }
   }
 
-  const int device = SelectDeviceIndex(visible_gpus, node_rank);
-  if (device < 0)
-    return;
-  SetCurrentGPU(device);
-  bound_device = device;
-
-#if defined(PETSC_HAVE_CUDA) || defined(PETSC_HAVE_HIP)
-  // By default PETSc selects (global rank) % (number of GPUs) while it initializes. PETSc and
-  // OpenSn share the current device of the CUDA or HIP runtime, so they must select the same one.
-  if (GPUBackendIsCUDAOrHIP())
+  if (error.empty())
   {
+    try
+    {
+      const int device = SelectDeviceIndex(visible_gpus, node_rank);
+      if (device >= 0)
+      {
+        SetCurrentGPU(device);
+#if defined(PETSC_HAVE_CUDA) || defined(PETSC_HAVE_HIP)
+        // By default PETSc selects (global rank) % (number of GPUs) while it initializes. PETSc
+        // and OpenSn share the current device of the CUDA or HIP runtime, so they must select the
+        // same one.
+        if (GPUBackendIsCUDAOrHIP())
+        {
 #if defined(PETSC_HAVE_CUDA)
-    const std::string option = "-device_select_cuda";
+          const std::string option = "-device_select_cuda";
 #else
-    const std::string option = "-device_select_hip";
+          const std::string option = "-device_select_hip";
 #endif
-    if (PetscOptionsSetValue(nullptr, option.c_str(), std::to_string(device).c_str()) !=
-        PETSC_SUCCESS)
-      throw std::runtime_error("BindDevice: failed to set PETSc option " + option);
+          if (PetscOptionsSetValue(nullptr, option.c_str(), std::to_string(device).c_str()) !=
+              PETSC_SUCCESS)
+            throw std::runtime_error("failed to set PETSc option " + option);
+        }
+#endif
+        bound_device = device;
+      }
+    }
+    catch (const std::exception& e)
+    {
+      error = e.what();
+    }
   }
-#endif
+
+  // Every rank fails if any rank failed
+  const int failed = error.empty() ? 0 : 1;
+  int any_failed = 0;
+  MPI_Allreduce(&failed, &any_failed, 1, MPI_INT, MPI_MAX, comm);
+  if (failed != 0)
+    throw std::runtime_error("BindDevice: GPU selection failed on rank " + std::to_string(rank) +
+                             ": " + error);
+  if (any_failed != 0)
+    throw std::runtime_error("BindDevice: GPU selection failed on another rank");
 #endif
 }
 

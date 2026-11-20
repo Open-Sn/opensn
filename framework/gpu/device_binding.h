@@ -27,7 +27,9 @@ namespace opensn
  * change the device OpenSn uses.
  *
  * Call once per process, after MPI is initialized and before `PetscInitialize` or any GPU work.
- * Collective over `comm`. Does nothing without GPU support or on a rank that sees no GPU.
+ * Collective over `comm`. Does nothing without GPU support or on a rank that sees no GPU. If
+ * listing or selecting the GPUs fails on any rank, every rank throws `std::runtime_error` after the
+ * collective calls. The message of a rank that failed names the rank and the cause.
  */
 void BindDevice(MPI_Comm comm);
 
