@@ -302,18 +302,20 @@ AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
 
   // An incoming face node of the reading (downwind) cell maps to its delayed storage slot; each
   // slot holds every direction and group of the angle set, direction-major.
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto cell_faces = grid.GetCellFaces(cell_local_id);
     for (unsigned int f = 0; f < cell->faces.size(); ++f)
     {
-      if (face_orientations[cell->local_id][f] != FaceOrientation::INCOMING or
-          not cell->faces[f].has_neighbor)
+      if (face_orientations[cell_local_id][f] != FaceOrientation::INCOMING or
+          not cell_faces[f].has_neighbor)
         continue;
       const auto num_face_nodes =
-        common_data_.GetFaceNodalMapping(cell->local_id, f).face_node_mapping_.size();
+        common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_.size();
       for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        const auto it = node_tracker.find(FaceNode(cell->local_id, f, fnode));
+        const auto it = node_tracker.find(FaceNode(cell_local_id, f, fnode));
         if (it == node_tracker.end())
           continue;
         const AAHD_NodeIndex& node_index = it->second;
@@ -321,18 +323,14 @@ AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
           continue;
 
         if (node_index.IsLocal())
-          fn(static_cast<std::uint32_t>(cell->local_id),
-             f,
-             fnode,
-             -1,
-             node_index.GetIndex() * num_groups_and_angles_);
+          fn(cell_local_id, f, fnode, -1, node_index.GetIndex() * num_groups_and_angles_);
         else
         {
           const auto loc = static_cast<std::size_t>(std::upper_bound(nonlocal_offsets.begin(),
                                                                      nonlocal_offsets.end(),
                                                                      node_index.GetIndex()) -
                                                     nonlocal_offsets.begin() - 1);
-          fn(static_cast<std::uint32_t>(cell->local_id),
+          fn(cell_local_id,
              f,
              fnode,
              static_cast<int>(loc),
