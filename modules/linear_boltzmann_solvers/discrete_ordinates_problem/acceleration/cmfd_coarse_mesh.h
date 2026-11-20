@@ -89,10 +89,34 @@ private:
 
 public:
   static CMFDCoarseMesh BuildIdentity(const Mesh& grid);
+  /**
+   * Build connected aggregates of local fine cells that do not cross MPI rank boundaries.
+   *
+   * Collective.
+   *
+   * \param grid Transport mesh.
+   * \param target_fine_cells_per_coarse_cell Maximum number of fine cells per aggregate.
+   * \param allow_mixed_materials Whether an aggregate may cross material-block boundaries.
+   * \return The coarse mesh.
+   * \throw std::invalid_argument If target_fine_cells_per_coarse_cell is zero.
+   */
   static CMFDCoarseMesh BuildLocalAggregation(const Mesh& grid,
-                                              std::size_t target_fine_cells_per_coarse_cell);
+                                              std::size_t target_fine_cells_per_coarse_cell,
+                                              bool allow_mixed_materials = false);
+  /**
+   * Build connected aggregates of fine cells that may span MPI ranks.
+   *
+   * Collective.
+   *
+   * \param grid Transport mesh.
+   * \param target_fine_cells_per_coarse_cell Maximum number of fine cells per aggregate.
+   * \param allow_mixed_materials Whether an aggregate may cross material-block boundaries.
+   * \return The coarse mesh.
+   * \throw std::invalid_argument If target_fine_cells_per_coarse_cell is zero.
+   */
   static CMFDCoarseMesh BuildGlobalAggregation(const Mesh& grid,
-                                               std::size_t target_fine_cells_per_coarse_cell);
+                                               std::size_t target_fine_cells_per_coarse_cell,
+                                               bool allow_mixed_materials = false);
 };
 
 } // namespace opensn
