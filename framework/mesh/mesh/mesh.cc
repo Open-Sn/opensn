@@ -556,11 +556,13 @@ Mesh::GetLocalCell(uint64_t id)
 {
   if (id < local_cells_.size())
     return local_cells_[id];
-  else
+  else if (id - local_cells_.size() < ghost_cells_.size())
   {
     auto idx = id - local_cells_.size();
     return ghost_cells_[idx];
   }
+  else
+    throw std::out_of_range("Cell local ID out of range");
 }
 
 const Cell&
@@ -568,11 +570,13 @@ Mesh::GetLocalCell(uint64_t id) const
 {
   if (id < local_cells_.size())
     return local_cells_[id];
-  else
+  else if (id - local_cells_.size() < ghost_cells_.size())
   {
     auto idx = id - local_cells_.size();
     return ghost_cells_[idx];
   }
+  else
+    throw std::out_of_range("Cell local ID out of range");
 }
 
 std::vector<Cell>&
