@@ -11,6 +11,8 @@ import sys
 import time
 import uuid
 
+from .checks import ErrorCodeCheck
+
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*m")
 
 # Each test runs in a private working directory beside its input's directory, named
@@ -411,7 +413,9 @@ class TestSlot:
 
         if test.skip == "":
             error_code = self.process.returncode
-            if self.argv.fail_on_nonzero_exit and error_code != 0:
+            # An ErrorCode check gives the exit code its test expects, which can be nonzero.
+            expects_exit_code = any(isinstance(check, ErrorCodeCheck) for check in test.checks)
+            if self.argv.fail_on_nonzero_exit and error_code != 0 and not expects_exit_code:
                 passed = False
                 test.annotations.append(f"Exit code {error_code}")
                 test.check_results.append(

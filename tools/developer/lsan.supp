@@ -9,8 +9,3 @@ leak:libmpi.so.*
 leak:libpetsc.so.*
 leak:libpython3.*
 leak:cpython-*.so
-
-# pybind11 keeps Python binding metadata alive for the process lifetime.
-leak:pybind11::detail::generic_type::initialize
-leak:pybind11::cpp_function::initialize_generic
-leak:pybind11::cpp_function::strdup_guard

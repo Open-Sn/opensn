@@ -194,11 +194,13 @@ To compile the console application:
 
    On Linux, ``libopensn`` is linked with ``-z defs``, so the link fails if a
    symbol it uses is not provided by one of the libraries it links, as on
-   macOS. With Clang sanitizers, link the shared sanitizer runtime with
-   ``-shared-libsan -frtlib-add-rpath``, as the ``clang+debug+sanitizer``
-   preset does, so that ``libopensn`` links it and executables find it at
-   run time. When the sanitizer runtime is static, and linked only into
-   executables, CMake skips this check.
+   macOS. When the sanitizer runtime is static, and linked only into
+   executables, CMake skips this check. The ``clang+debug+sanitizer`` preset
+   links the static runtime, because the shared runtime aborts when another
+   library is preloaded ahead of it, as some toolchain environments do with
+   ``LD_PRELOAD``. To keep the check with Clang sanitizers, link the shared
+   runtime with ``-shared-libsan -frtlib-add-rpath`` and preload nothing ahead
+   of it.
 
 .. note::
 

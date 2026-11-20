@@ -135,12 +135,30 @@ Console::ExecuteFile(const std::string& input_filename) const
     py::exec("import sys; sys.stdout.flush(); sys.stderr.flush();");
     std::cout << std::flush;
     std::cerr << std::flush;
+    ReleaseInputObjects();
   }
   catch (const py::error_already_set& e)
   {
     opensn::log.LogAllError() << e.what();
     opensn::mpi_comm.abort(EXIT_FAILURE);
   }
+}
+
+void
+Console::ReleaseInputObjects()
+{
+  // An object the input creates can keep a Python callable in C++, such as the strength function of
+  // a source. The callable refers to the input's globals, which refer to the object. Python's
+  // collector cannot follow the reference held in C++, so this cycle is never collected and the
+  // interpreter never destroys these objects. Deleting the input's names breaks every such cycle.
+  // The names are deleted in the order the input created them, so every rank destroys its objects
+  // in the same order, and while OpenSn, PETSc, and MPI are still initialized.
+  auto globals = py::globals();
+  const py::list names(globals.attr("keys")());
+  for (const auto& name : names)
+    if (not name.cast<std::string>().starts_with("__"))
+      globals.attr("pop")(name);
+  py::module_::import("gc").attr("collect")();
 }
 
 } // namespace opensnpy
