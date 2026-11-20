@@ -843,29 +843,30 @@ DiscreteOrdinatesProblem::InitializeFCS()
       const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
+        const auto& phi_unc = uncollided_flux_moments_local_;
         for (size_t g = 0; g < num_groups_; ++g)
         {
           double rhs = 0.0;
           if (ell < transfer_matrices.size())
             for (const auto& [_, gp, sigma_sm] : transfer_matrices[ell].Row(g))
-              rhs += sigma_sm * uncollided_flux_moments_local_[lhs_uk_map + gp];
+              rhs += sigma_sm * phi_unc[transport_view.MapDOF(i, m, gp)];
 
           if (ell == 0 and xs.IsFissionable())
           {
             const auto& production = xs.GetProductionMatrix(adjoint)[g];
             for (size_t gp = 0; gp < num_groups_; ++gp)
-              rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
+              rhs += production[gp] * phi_unc[transport_view.MapDOF(i, m, gp)];
 
             if (include_delayed_production)
               for (size_t gp = 0; gp < num_groups_; ++gp)
                 rhs += (adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
                                 : ComputeDelayedFissionProduction(xs, g, gp)) *
-                       uncollided_flux_moments_local_[lhs_uk_map + gp];
+                       phi_unc[transport_view.MapDOF(i, m, gp)];
           }
 
-          first_collision_source_moments_local_[lhs_uk_map + g] += rhs;
-          ext_src_moments_local_[lhs_uk_map + g] += rhs;
+          const auto lhs_uk_map = transport_view.MapDOF(i, m, g);
+          first_collision_source_moments_local_[lhs_uk_map] += rhs;
+          ext_src_moments_local_[lhs_uk_map] += rhs;
         }
       }
     }
@@ -895,12 +896,8 @@ const AAHCellSweepData&
 DiscreteOrdinatesProblem::GetAAHCellSweepData()
 {
   if (not aah_cell_sweep_data_)
-    aah_cell_sweep_data_ = std::make_unique<AAHCellSweepData>(*grid_,
-                                                              *discretization_,
-                                                              unit_cell_matrices_,
-                                                              cell_transport_views_,
-                                                              num_moments_,
-                                                              num_groups_);
+    aah_cell_sweep_data_ = std::make_unique<AAHCellSweepData>(
+      *grid_, *discretization_, unit_cell_matrices_, cell_transport_views_);
   return *aah_cell_sweep_data_;
 }
 

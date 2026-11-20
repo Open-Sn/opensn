@@ -43,7 +43,7 @@ LBSSolverIO::WriteFluxMoments(
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
-  const auto& uk_man = lbs_problem.GetUnknownManager();
+  const auto& transport_views = lbs_problem.GetCellTransportViews();
 
   auto num_moments = lbs_problem.GetNumMoments();
   auto num_groups = lbs_problem.GetNumGroups();
@@ -101,13 +101,11 @@ LBSSolverIO::WriteFluxMoments(
   values.reserve(num_local_dofs);
   for (const auto& cell : grid->GetLocalCells())
   {
+    const auto& transport_view = transport_views[cell->local_id];
     for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)
-        {
-          const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, m, g);
-          values.push_back(src[dof_map]);
-        }
+          values.push_back(src[transport_view.MapDOF(i, m, g)]);
   }
 
   // Write flux values to h5 and close file
@@ -291,7 +289,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
 
       const auto& grid = lbs_problem.GetGrid();
       const auto& discretization = lbs_problem.GetSpatialDiscretization();
-      const auto& uk_man = lbs_problem.GetUnknownManager();
+      const auto& transport_views = lbs_problem.GetCellTransportViews();
       const auto num_moments = lbs_problem.GetNumMoments();
       const auto num_groups = lbs_problem.GetNumGroups();
 
@@ -319,15 +317,16 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
           values.begin(), values.end(), [](double value) { return not std::isfinite(value); }),
         "The flux-moment values in " + file_name + " contain a non-finite value.");
 
-      result.assign(discretization.GetNumLocalDOFs(uk_man), 0.0);
+      result.assign(lbs_problem.GetFluxMomentLayout().GetNumLocalDOFs(), 0.0);
       uint64_t v = 0;
       for (size_t c = 0; c < mesh.cell_ids.size(); ++c)
       {
         const auto& cell = grid->GetGlobalCell(mesh.cell_ids[c]);
+        const auto& transport_view = transport_views[cell.local_id];
         for (const auto node : mesh.node_maps[c])
           for (unsigned int m = 0; m < num_moments; ++m)
             for (unsigned int g = 0; g < num_groups; ++g)
-              result[discretization.MapDOFLocal(cell, node, uk_man, m, g)] = values[v++];
+              result[transport_view.MapDOF(node, m, g)] = values[v++];
       }
     });
 

@@ -110,7 +110,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
   const auto gsi = groupset.first_group;
@@ -134,7 +134,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, 0);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       double& delta_phi_mapped = delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -144,7 +144,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
         double R_g = 0.0;
         for (const auto& [row_g, gprime, sigma_sm] : S.Row(gsi + g))
           if (gprime >= gsi and gprime < gsi + gss and gprime != (gsi + g))
-            R_g += sigma_sm * phi_in_mapped[gprime];
+            R_g += sigma_sm * phi_in_mapped[gprime - gsi];
 
         delta_phi_mapped += R_g;
       }
@@ -161,7 +161,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -178,7 +178,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       const double delta_phi_mapped = delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];

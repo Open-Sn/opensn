@@ -1732,10 +1732,9 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
     const auto& transport_view = transport_views[cell->local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const auto phi_map = transport_view.MapDOF(i, 0, first_group_);
       for (unsigned int g = 0; g < num_groups_; ++g)
       {
-        const auto value = phi[phi_map + g];
+        const auto value = phi[transport_view.MapDOF(i, 0, first_group_ + g)];
         local_nonfinite = local_nonfinite or not std::isfinite(value);
         local_min_phi = std::min(local_min_phi, value);
       }

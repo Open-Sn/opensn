@@ -120,7 +120,7 @@ std::vector<double>
 ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi)
 {
   const auto& sdm = problem.GetSpatialDiscretization();
-  const auto& uk_man = problem.GetUnknownManager();
+  const auto& transport_views = problem.GetCellTransportViews();
   const auto& moment_map = problem.GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   std::vector<double> q(phi.size(), 0.0);
   for (const auto& cell : problem.GetGrid()->GetLocalCells())
@@ -133,12 +133,12 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
           double value = 0.0;
           for (unsigned int gp = 0; gp < 2; ++gp)
           {
-            const double phi_gp = phi[sdm.MapDOFLocal(*cell, i, uk_man, m, gp)];
+            const double phi_gp = phi[transport_views[cell->local_id].MapDOF(i, m, gp)];
             value += kTransfer[ell][g][gp] * phi_gp;
             if (ell == 0)
               value += kProduction[g][gp] * phi_gp;
           }
-          q[sdm.MapDOFLocal(*cell, i, uk_man, m, g)] = value;
+          q[transport_views[cell->local_id].MapDOF(i, m, g)] = value;
         }
       }
   return q;
@@ -305,7 +305,7 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
 {
   auto problem = MakeProblem();
   const auto& sdm = problem->GetSpatialDiscretization();
-  const auto& uk_man = problem->GetUnknownManager();
+  const auto& transport_views = problem->GetCellTransportViews();
   const auto& moment_map = problem->GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   const auto phi = MakeVector(problem->GetPhiNewLocal().size(), 1.0, 0.125, 11);
 
@@ -316,7 +316,7 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
       for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
         for (unsigned int g = 0; g < 2; ++g)
         {
-          const auto dof = sdm.MapDOFLocal(*cell, i, uk_man, m, g);
+          const auto dof = transport_views[cell->local_id].MapDOF(i, m, g);
           EXPECT_EQ(reversed[dof], moment_map[m].ell % 2 == 0 ? phi[dof] : -phi[dof]);
         }
 

@@ -48,22 +48,17 @@ LBSVecOps::SetPhiVectorScalarValues(LBSProblem& lbs_problem, PhiSTLOption phi_op
   auto& phi = (phi_opt == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal()
                                                  : lbs_problem.GetPhiOldLocal();
   const auto& grid = lbs_problem.GetGrid();
-  const auto& sdm = lbs_problem.GetSpatialDiscretization();
-  const auto& unknown_manager = lbs_problem.GetUnknownManager();
-
-  const auto first_grp = 0;
-  const long final_grp = static_cast<long>(lbs_problem.GetNumGroups() - 1);
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto num_groups = lbs_problem.GetNumGroups();
 
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
-    const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto num_nodes = static_cast<std::size_t>(transport_view.GetNumNodes());
 
-    for (size_t i = 0; i < num_nodes; ++i)
-    {
-      const auto dof_map = static_cast<long>(sdm.MapDOFLocal(*cell, i, unknown_manager, 0, 0));
-      std::fill(phi.begin() + dof_map + first_grp, phi.begin() + dof_map + final_grp + 1, value);
-    }
+    for (std::size_t i = 0; i < num_nodes; ++i)
+      for (unsigned int g = 0; g < num_groups; ++g)
+        phi[transport_view.MapDOF(i, 0, g)] = value;
   }
 }
 

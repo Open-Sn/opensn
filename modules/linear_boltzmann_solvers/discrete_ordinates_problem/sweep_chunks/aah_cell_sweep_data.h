@@ -51,8 +51,7 @@ public:
   /// A cell.
   struct Cell
   {
-    /// Index of the cell's first node in the scalar flux moments, the cell's phi address divided
-    /// by the number of moments and groups.
+    /// Local node index of the cell's node 0 in the flux-moment layout.
     std::size_t first_node = 0;
     /// Start of the cell's faces in the face array.
     std::size_t face_offset = 0;
@@ -64,17 +63,11 @@ public:
     std::uint32_t num_faces = 0;
   };
 
-  /**
-   * Builds the data of every local cell.
-   * The flux moments of a node are num_moments times num_groups values, so a cell's first node is
-   * its phi address divided by that product.
-   */
+  /// Builds the data of every local cell.
   AAHCellSweepData(const Mesh& grid,
                    const SpatialDiscretization& discretization,
                    const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                   const std::vector<CellLBSView>& cell_transport_views,
-                   unsigned int num_moments,
-                   unsigned int num_groups);
+                   const std::vector<CellLBSView>& cell_transport_views);
 
   const Cell& GetCell(std::size_t cell_local_id) const { return cells_[cell_local_id]; }
 

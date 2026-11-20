@@ -688,13 +688,14 @@ UncollidedProblem::Execute(const std::string& file_name, const unsigned int prog
       const auto& cell_mapping = sdm.GetCellMapping(*cell);
       const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
+      const auto& transport_view = cell_transport_views_[cell->local_id];
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
         const auto ir = sdm.MapDOFLocal(*cell, i);
 
-        for (size_t g = 0; g < num_groups_; ++g)
+        for (unsigned int g = 0; g < num_groups_; ++g)
         {
-          phi_new_local_[ir * num_groups_ + g] += destination_phi_[ir * num_groups_ + g];
+          phi_new_local_[transport_view.MapDOF(i, 0, g)] += destination_phi_[ir * num_groups_ + g];
         }
       }
     }
@@ -970,12 +971,10 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
           }
         }
 
+        const auto& transport_view = cell_transport_views_[cell.local_id];
         for (size_t i = 0; i < cell_num_nodes; ++i)
-        {
-          const auto ir = sdm.MapDOFLocal(cell, i);
-          for (size_t g = 0; g < num_groups_; ++g)
-            phi_new_local_[ir * num_groups_ + g] += cell_phi[g](i);
-        }
+          for (unsigned int g = 0; g < num_groups_; ++g)
+            phi_new_local_[transport_view.MapDOF(i, 0, g)] += cell_phi[g](i);
 
         for (size_t moment_index = 0; moment_index < num_moments; ++moment_index)
           for (size_t g = 0; g < num_groups_; ++g)
@@ -2320,7 +2319,10 @@ UncollidedProblem::WriteFluxMoments(hid_t file)
 {
   CALI_CXX_MARK_SCOPE("WriteFluxMoments");
 
-  OpenSnLogicalErrorIf(not H5WriteDataset1D<double>(file, "0,0", phi_new_local_),
+  // The "0,0" dataset is the scalar flux in [local node][group] order (this problem has one
+  // moment).
+  const auto scalar_flux = GetFluxMomentLayout().ToNodeMomentGroupOrder(phi_new_local_);
+  OpenSnLogicalErrorIf(not H5WriteDataset1D<double>(file, "0,0", scalar_flux),
                        GetName() + ": failed to write uncollided scalar flux.");
   for (size_t i = 0; i < moment_names_.size(); ++i)
     OpenSnLogicalErrorIf(

@@ -173,7 +173,7 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
 {
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
   // The problem's mode, not the cross sections' own, which a problem sharing them may have set.
   const bool adjoint = do_problem.GetOptions().adjoint;
@@ -215,7 +215,7 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const double* dphi = &phi_change[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      const double* dphi = &phi_change[transport_views[cell->local_id].MapDOF(i, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         add_transfer(
           transfer_matrices[0],
@@ -280,7 +280,7 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      double* phi_new_mapped = &phi_new[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      double* phi_new_mapped = &phi_new[transport_views[cell->local_id].MapDOF(i, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         phi_new_mapped[g] += correction[g][dphi_map];
     }
@@ -353,7 +353,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
 
   const auto gsi = groupset.first_group;
@@ -374,7 +374,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -397,7 +397,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -410,7 +410,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
@@ -472,7 +472,7 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -492,7 +492,7 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -516,7 +516,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
 
   const auto grid = do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
-  const auto& phi_uk_man = do_problem.GetUnknownManager();
+  const auto& transport_views = do_problem.GetCellTransportViews();
 
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
@@ -534,7 +534,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];

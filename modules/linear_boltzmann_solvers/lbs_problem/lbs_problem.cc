@@ -1318,8 +1318,15 @@ LBSProblem::InitializeParrays()
   local_node_count_ = discretization_->GetNumLocalNodes();
   global_node_count_ = discretization_->GetNumGlobalNodes();
 
+  std::vector<FluxMomentLayout::GroupRange> groupset_ranges;
+  groupset_ranges.reserve(groupsets_.size());
+  for (const auto& groupset : groupsets_)
+    groupset_ranges.push_back({groupset.first_group, groupset.GetNumGroups()});
+  flux_moment_layout_ =
+    FluxMomentLayout(local_node_count_, num_moments_, num_groups_, groupset_ranges);
+
   // Compute num of unknowns
-  size_t local_unknown_count = local_node_count_ * num_groups_ * num_moments_;
+  size_t local_unknown_count = flux_moment_layout_.GetNumLocalDOFs();
   log.LogAllVerbose1() << "LBS Number of phi unknowns: " << local_unknown_count;
 
   // Size local vectors
@@ -1337,7 +1344,7 @@ LBSProblem::InitializeParrays()
   }
 
   // Initialize cell transport metadata and outflow tallies.
-  size_t block_MG_counter = 0; // Counts the strides of moment and group
+  std::uint64_t node_counter = 0; // Local node index of each cell's first node
   min_cell_dof_count_ = std::numeric_limits<unsigned int>::max();
   max_cell_dof_count_ = 0;
   cell_transport_views_.clear();
@@ -1351,8 +1358,6 @@ LBSProblem::InitializeParrays()
     const auto& IntV_shapeI = unit_cell_matrices_[cell->local_id].intV_shapeI;
     for (size_t i = 0; i < num_nodes; ++i)
       cell_volume += IntV_shapeI(i);
-
-    size_t cell_phi_address = block_MG_counter;
 
     const size_t num_faces = cell->faces.size();
     std::vector<bool> face_local_flags(num_faces, true);
@@ -1377,19 +1382,29 @@ LBSProblem::InitializeParrays()
       ++f;
     }
 
+    // The flux-moment layout numbers nodes like the discretization's local node map.
+    for (size_t i = 0; i < num_nodes; ++i)
+      OpenSnLogicalErrorIf(discretization_->MapDOFLocal(*cell, i) != node_counter + i,
+                           GetName() + ": local cell " + std::to_string(cell->local_id) + " node " +
+                             std::to_string(i) +
+                             " is not numbered consecutively in local cell order.");
+
     max_cell_dof_count_ = std::max(max_cell_dof_count_, static_cast<unsigned int>(num_nodes));
     min_cell_dof_count_ = std::min(min_cell_dof_count_, static_cast<unsigned int>(num_nodes));
-    cell_transport_views_.emplace_back(cell_phi_address,
+    cell_transport_views_.emplace_back(flux_moment_layout_,
+                                       node_counter,
                                        num_nodes,
-                                       num_groups_,
-                                       num_moments_,
                                        *block_id_to_xs_map_[cell->block_id],
                                        cell_volume,
                                        face_local_flags,
                                        face_locality,
                                        neighbor_cell_ptrs);
-    block_MG_counter += num_nodes * num_groups_ * num_moments_;
+    node_counter += num_nodes;
   } // for local cell
+  OpenSnLogicalErrorIf(node_counter != local_node_count_,
+                       GetName() + ": the local cells have " + std::to_string(node_counter) +
+                         " nodes, but the discretization has " + std::to_string(local_node_count_) +
+                         " local nodes.");
   cell_outflow_views_.clear();
   outflow_bank_ = OutflowBank(*grid_, num_groups_, store_internal_outflows_);
   cell_outflow_views_ = outflow_bank_.GetCellOutflowViews();
@@ -1483,9 +1498,9 @@ LBSProblem::ReverseMomentDirections(std::vector<double>& phi) const
         {
           if (moment_map[m].ell % 2 == 0)
             continue;
-          const auto dof_map = transport_view.MapDOF(i, m, 0);
-          for (auto g = groupset.first_group; g <= groupset.last_group; ++g)
-            phi[dof_map + g] = -phi[dof_map + g];
+          const auto dof_map = transport_view.MapDOF(i, m, groupset.first_group);
+          for (unsigned int gsg = 0; gsg < groupset.GetNumGroups(); ++gsg)
+            phi[dof_map + gsg] = -phi[dof_map + gsg];
         }
     }
   }
@@ -1496,7 +1511,7 @@ LBSProblem::MakeSourceMomentsFromPhi(const std::vector<double>& phi)
 {
   CALI_CXX_MARK_SCOPE("Source/MomentsFromPhi");
 
-  auto num_local_dofs = discretization_->GetNumLocalDOFs(flux_moments_uk_man_);
+  auto num_local_dofs = flux_moment_layout_.GetNumLocalDOFs();
   OpenSnLogicalErrorIf(not active_set_source_function_,
                        GetName() + ": MakeSourceMomentsFromPhi requires a source function, "
                                    "but this problem type has none.");

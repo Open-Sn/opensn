@@ -143,6 +143,10 @@ DiscreteOrdinatesKEigenAcceleration::NodallyAveragedPWLDVector(const std::vector
   const auto& pwld_sdm = do_problem_.GetSpatialDiscretization();
   const auto& pwlc_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& uk_man = do_problem_.GetUnknownManager();
+  // The ghost communicator and the maps below index `input` through the flux-moment unknown
+  // manager. This acceleration requires a single groupset, which keeps that order.
+  OpenSnLogicalErrorIf(not do_problem_.GetFluxMomentLayout().IsNodeMomentGroupOrder(),
+                       GetName() + ": nodal averaging requires [node][moment][group] flux order.");
 
   const auto& vgc = ghost_info_.vector_ghost_communicator;
   const auto& dfem_dof_global2local_map = ghost_info_.ghost_global_id_2_local_map;
@@ -272,7 +276,7 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
   const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = do_problem_.GetUnknownManager();
+  const auto& transport_views = do_problem_.GetCellTransportViews();
   const auto gsi = front_gs_.first_group;
   const auto gss = front_gs_.GetNumGroups();
   const auto diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
@@ -294,7 +298,7 @@ DiscreteOrdinatesKEigenAcceleration::CopyOnlyPhi0(const std::vector<double>& phi
     {
       const auto diff_phi_map =
         static_cast<long>(diff_sdm.MapDOFLocal(*cell, i, diff_uk_man, 0, 0));
-      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi));
+      const auto lbs_phi_map = static_cast<long>(transport_views[cell->local_id].MapDOF(i, 0, gsi));
       const auto input_begin = phi_data->begin() + lbs_phi_map;
       const auto output_begin = phi_local.begin() + diff_phi_map;
       std::copy_n(input_begin, gss, output_begin);
@@ -312,7 +316,7 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
   const auto& lbs_sdm = do_problem_.GetSpatialDiscretization();
   const auto& diff_sdm = diffusion_solver_->GetSpatialDiscretization();
   const auto& diff_uk_man = diffusion_solver_->GetUnknownStructure();
-  const auto& phi_uk_man = do_problem_.GetUnknownManager();
+  const auto& transport_views = do_problem_.GetCellTransportViews();
   const auto gsi = front_gs_.first_group;
   const auto gss = front_gs_.GetNumGroups();
   const auto diff_num_local_dofs = pwlc_ptr_ ? diff_sdm.GetNumLocalAndGhostDOFs(diff_uk_man)
@@ -320,7 +324,7 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
 
   OpenSnLogicalErrorIf(input.size() != diff_num_local_dofs, "Input vector size mismatch");
 
-  const auto output_size = lbs_sdm.GetNumLocalDOFs(phi_uk_man);
+  const auto output_size = do_problem_.GetFluxMomentLayout().GetNumLocalDOFs();
   if (output.empty())
     output.resize(output_size, 0.0);
   OpenSnLogicalErrorIf(output.size() != output_size, "Output vector size mismatch");
@@ -334,7 +338,7 @@ DiscreteOrdinatesKEigenAcceleration::ProjectBackPhi0(const std::vector<double>& 
     {
       const auto diff_phi_map =
         static_cast<long>(diff_sdm.MapDOFLocal(*cell, i, diff_uk_man, 0, 0));
-      const auto lbs_phi_map = static_cast<long>(lbs_sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi));
+      const auto lbs_phi_map = static_cast<long>(transport_views[cell->local_id].MapDOF(i, 0, gsi));
       const auto input_begin = input.begin() + diff_phi_map;
       const auto output_begin = output.begin() + lbs_phi_map;
       std::copy_n(input_begin, gss, output_begin);

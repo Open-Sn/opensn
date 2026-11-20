@@ -147,18 +147,20 @@ SweepChunk::ComputeTimeDependentDestinationsFromAngularFlux(const AngleAggregati
 }
 
 void
-SweepChunk::EnableCompactGroupsetMoments(const unsigned int num_problem_groups)
+SweepChunk::EnableCompactGroupsetMoments(const FluxMomentLayout& layout)
 {
-  std::size_t num_nodes = 0;
-  for (const auto& transport_view : cell_transport_views_)
-    num_nodes += static_cast<std::size_t>(transport_view.GetNumNodes());
-  OpenSnLogicalErrorIf(num_problem_groups == 0 or
-                         destination_phi_.size() !=
-                           num_nodes * num_moments_ * static_cast<std::size_t>(num_problem_groups),
-                       "SweepChunk: the flux moments do not hold every group at every node.");
-  num_problem_groups_ = num_problem_groups;
-  // A groupset that holds every group already has its moments together.
-  compact_groupset_moments_ = groupset_.GetNumGroups() < num_problem_groups_;
+  OpenSnLogicalErrorIf(destination_phi_.size() != layout.GetNumLocalDOFs() or
+                         source_moments_.size() != layout.GetNumLocalDOFs() or
+                         layout.GetNumMoments() != num_moments_,
+                       "SweepChunk: the flux moments do not follow the flux-moment layout.");
+  const auto first_group = groupset_.first_group;
+  num_node_moments_ = static_cast<std::size_t>(layout.GetNumLocalNodes()) * num_moments_;
+  groupset_base_ = layout.GetNumLocalNodes() > 0 ? layout.MapDOF(0, 0, first_group) : 0;
+  moment_stride_ = layout.GetMomentStride(first_group);
+  // Moment k = node * num_moments + moment of the groupset starts at groupset_base_ + k *
+  // moment_stride_, and the layout keeps a groupset's groups consecutive there. When the stride is
+  // the group count, the groupset's moments of a node are already together.
+  compact_groupset_moments_ = moment_stride_ > groupset_.GetNumGroups();
 }
 
 void
@@ -167,15 +169,13 @@ SweepChunk::BeginSweep()
   if (not compact_groupset_moments_)
     return;
   const std::size_t gs_size = groupset_.GetNumGroups();
-  const std::size_t first_group = groupset_.first_group;
-  const std::size_t num_node_moments = destination_phi_.size() / num_problem_groups_;
-  compact_source_.resize(num_node_moments * gs_size);
-  for (std::size_t k = 0; k < num_node_moments; ++k)
-    std::copy_n(&source_moments_[k * num_problem_groups_ + first_group],
+  compact_source_.resize(num_node_moments_ * gs_size);
+  for (std::size_t k = 0; k < num_node_moments_; ++k)
+    std::copy_n(&source_moments_[groupset_base_ + k * moment_stride_],
                 gs_size,
                 &compact_source_[k * gs_size]);
   // The destination is zeroed before the sweep, so the copy starts from zero as well.
-  compact_phi_.assign(num_node_moments * gs_size, 0.0);
+  compact_phi_.assign(num_node_moments_ * gs_size, 0.0);
 }
 
 void
@@ -184,12 +184,9 @@ SweepChunk::EndSweep()
   if (not compact_groupset_moments_)
     return;
   const std::size_t gs_size = groupset_.GetNumGroups();
-  const std::size_t first_group = groupset_.first_group;
-  const std::size_t num_node_moments = destination_phi_.size() / num_problem_groups_;
-  for (std::size_t k = 0; k < num_node_moments; ++k)
-    std::copy_n(&compact_phi_[k * gs_size],
-                gs_size,
-                &destination_phi_[k * num_problem_groups_ + first_group]);
+  for (std::size_t k = 0; k < num_node_moments_; ++k)
+    std::copy_n(
+      &compact_phi_[k * gs_size], gs_size, &destination_phi_[groupset_base_ + k * moment_stride_]);
   std::vector<double>().swap(compact_source_);
   std::vector<double>().swap(compact_phi_);
 }
@@ -197,7 +194,7 @@ SweepChunk::EndSweep()
 SweepChunk::GroupsetMoments
 SweepChunk::GetGroupsetMoments()
 {
-  OpenSnLogicalErrorIf(num_problem_groups_ == 0,
+  OpenSnLogicalErrorIf(moment_stride_ == 0,
                        "SweepChunk: EnableCompactGroupsetMoments must be called before "
                        "GetGroupsetMoments.");
   if (compact_groupset_moments_)
@@ -207,12 +204,12 @@ SweepChunk::GetGroupsetMoments()
     const std::size_t gs_size = groupset_.GetNumGroups();
     return {compact_source_.data(), compact_phi_.data(), num_moments_ * gs_size, gs_size, 0};
   }
-  // Without compaction a moment of a node holds every group of the problem.
+  // Without compaction the moments are read where the flux-moment layout puts them.
   return {source_moments_.data(),
           destination_phi_.data(),
-          num_moments_ * num_problem_groups_,
-          num_problem_groups_,
-          groupset_.first_group};
+          num_moments_ * moment_stride_,
+          moment_stride_,
+          groupset_base_};
 }
 
 } // namespace opensn

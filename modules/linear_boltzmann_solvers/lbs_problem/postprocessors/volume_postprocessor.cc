@@ -476,7 +476,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
-  const auto& uk_man = lbs_problem_->GetUnknownManager();
+  const auto& transport_views = lbs_problem_->GetCellTransportViews();
   const auto& phi = lbs_problem_->GetPhiNewLocal();
   auto coord = sdm.GetSpatialWeightingFunction();
 
@@ -497,7 +497,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
       std::vector<double> nodal_value(num_nodes, 0.0);
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = transport_views[cell.local_id].MapDOF(i, 0, groups_[k]);
         nodal_value[i] = phi[imap];
       }
 
@@ -521,7 +521,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
-  const auto& uk_man = lbs_problem_->GetUnknownManager();
+  const auto& transport_views = lbs_problem_->GetCellTransportViews();
   const auto& phi = lbs_problem_->GetPhiNewLocal();
 
   const double init =
@@ -538,7 +538,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = transport_views[cell.local_id].MapDOF(i, 0, groups_[k]);
         const double value = coeffs[groups_[k]] * phi[imap];
         extremum[k] = is_max ? std::max(extremum[k], value) : std::min(extremum[k], value);
       }

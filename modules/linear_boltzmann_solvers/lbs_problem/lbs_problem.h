@@ -12,6 +12,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/volumetric_source/volumetric_source.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/linear_solver/linear_solver.h"
@@ -260,6 +261,13 @@ public:
 
   /// Obtains a reference to the unknown manager for flux-moments.
   const UnknownManager& GetUnknownManager() const;
+
+  /**
+   * Returns the index map of the local flux-moment vectors (phi, q, external-source moments, and
+   * temporaries of the same size). Index these vectors only through this map or
+   * CellLBSView::MapDOF, which uses it. Valid after the problem is built.
+   */
+  const FluxMomentLayout& GetFluxMomentLayout() const { return flux_moment_layout_; }
 
   /// Returns the local node count for the flux-moments data structures.
   size_t GetLocalNodeCount() const;
@@ -550,6 +558,8 @@ protected:
   bool store_internal_outflows_ = false;
 
   UnknownManager flux_moments_uk_man_;
+  /// Cell transport views point at this member, so it is reassigned in place, never replaced.
+  FluxMomentLayout flux_moment_layout_;
 
   unsigned int max_cell_dof_count_ = 0;
   unsigned int min_cell_dof_count_ = 0;

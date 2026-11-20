@@ -46,7 +46,10 @@ public:
   virtual double FixedSourceMoments() const;
 
   using PrecursorList = std::vector<MultiGroupXS::Precursor>;
-  /// Compute delayed particle precursor sources.
+  /**
+   * Compute delayed particle precursor sources. `phi` holds the moment-0 flux of every group at
+   * the current node, indexed by group.
+   */
   virtual double DelayedFission(const PrecursorList& precursors,
                                 const std::vector<double>& nu_delayed_sigma_f,
                                 const double* phi,
@@ -93,8 +96,11 @@ protected:
   /// Delayed emission spectrum of the current cell, weighted by the precursor yields.
   std::vector<double> delayed_spectrum_;
   unsigned int g_ = 0;
+  /// Fixed source of the current node and moment, indexed by group relative to gs_i_.
   const double* fixed_src_moments_ = nullptr;
   std::vector<double> default_zero_src_;
+  /// Flux of every group at the current node and moment, indexed by group.
+  std::vector<double> phi_node_moment_;
 };
 
 } // namespace opensn

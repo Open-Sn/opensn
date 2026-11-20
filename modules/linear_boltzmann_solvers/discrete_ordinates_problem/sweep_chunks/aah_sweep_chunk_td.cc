@@ -37,7 +37,7 @@ AAHSweepChunkTD::AAHSweepChunkTD(DiscreteOrdinatesProblem& problem, LBSGroupset&
     use_fixed_n_ = true;
     fixed_num_nodes_ = min_num_cell_dofs_;
     cell_data_ = &problem.GetAAHCellSweepData();
-    EnableCompactGroupsetMoments(problem.GetNumGroups());
+    EnableCompactGroupsetMoments(problem.GetFluxMomentLayout());
   }
 
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());

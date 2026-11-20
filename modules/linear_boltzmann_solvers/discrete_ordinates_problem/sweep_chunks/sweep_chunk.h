@@ -8,6 +8,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/outflow/cell_outflow_view.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include <algorithm>
 #include <functional>
@@ -144,13 +145,15 @@ public:
 protected:
   /**
    * Makes the sweeps of this chunk use contiguous copies of the groupset's moments.
-   * When the groupset does not hold every group, a sweep reads the groupset's source moments from,
-   * and adds its flux moments to, contiguous copies of the groupset's part of the moments. The
-   * moments of a node then lie together, so a kernel reads them in fewer memory accesses. The
-   * copies exist only during a sweep. A chunk enables this only if every kernel it runs reads the
-   * moments through GetGroupsetMoments().
+   * When `layout` does not store the groupset's moments of a node together, that is, when the
+   * moment stride of the groupset exceeds its group count, a sweep reads the groupset's source
+   * moments from, and adds its flux moments to, contiguous copies of the groupset's part of the
+   * moments. The moments of a node then lie together, so a kernel reads them in fewer memory
+   * accesses. The copies exist only during a sweep. A chunk enables this only if every kernel it
+   * runs reads the moments through GetGroupsetMoments(). `layout` is the layout of the source and
+   * destination moments.
    */
-  void EnableCompactGroupsetMoments(unsigned int num_problem_groups);
+  void EnableCompactGroupsetMoments(const FluxMomentLayout& layout);
 
   /// Where the current sweep reads the source moments and adds the flux moments.
   GroupsetMoments GetGroupsetMoments();
@@ -200,8 +203,12 @@ protected:
   const Cell* cell_;
 
 private:
-  /// Number of groups of the problem, which is the number of values of a moment of a node.
-  std::size_t num_problem_groups_ = 0;
+  /// Number of (node, moment) pairs of the moments; zero until EnableCompactGroupsetMoments.
+  std::size_t num_node_moments_ = 0;
+  /// Index of node 0, moment 0 of the groupset's first group in the moments.
+  std::size_t groupset_base_ = 0;
+  /// Distance between consecutive moments of one group, from the flux-moment layout.
+  std::size_t moment_stride_ = 0;
   bool compact_groupset_moments_ = false;
   std::vector<double> compact_source_;
   std::vector<double> compact_phi_;

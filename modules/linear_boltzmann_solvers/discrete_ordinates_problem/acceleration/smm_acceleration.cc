@@ -832,7 +832,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
 {
   const auto& grid = do_problem_.GetGrid();
   const auto& pwld = do_problem_.GetSpatialDiscretization();
-  const auto& uk_man = do_problem_.GetUnknownManager();
+  const auto& transport_views = do_problem_.GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_.GetUnitCellMatrices();
 
   const auto& diff_sd = diffusion_solver_->GetSpatialDiscretization();
@@ -867,7 +867,7 @@ SMMAcceleration::AssembleDiffusionRHS(const std::vector<double>& q0) const
         double val = 0.0;
         for (size_t j = 0; j < num_cell_nodes; ++j)
         {
-          const auto jmap = pwld.MapDOFLocal(*cell, j, uk_man, 0, g);
+          const auto jmap = transport_views[cell->local_id].MapDOF(j, 0, g);
           val += M(i, j) * q0[jmap];
         }
         rhs.SetValue(imap, val, VecOpType::ADD_VALUE);

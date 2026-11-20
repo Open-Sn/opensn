@@ -524,10 +524,9 @@ TransientSolver::StepPrecursors()
     const auto& nu_delayed_sigma_f = xs->GetNuDelayedSigmaF();
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const size_t uk_map = transport_view.MapDOF(i, 0, 0);
       double delayed_production = 0.0;
       for (unsigned int g = 0; g < do_problem_->GetNumGroups(); ++g)
-        delayed_production += nu_delayed_sigma_f[g] * phi_theta[uk_map + g];
+        delayed_production += nu_delayed_sigma_f[g] * phi_theta[transport_view.MapDOF(i, 0, g)];
 
       const size_t node_base = discretization.MapDOFLocal(*cell, i) * max_precursors;
       for (unsigned int j = 0; j < precursors.size(); ++j)

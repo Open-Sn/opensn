@@ -68,7 +68,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     }
   }
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
-  EnableCompactGroupsetMoments(problem.GetNumGroups());
+  EnableCompactGroupsetMoments(problem.GetFluxMomentLayout());
 }
 
 void

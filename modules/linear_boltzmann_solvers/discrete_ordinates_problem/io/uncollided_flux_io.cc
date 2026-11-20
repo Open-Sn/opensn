@@ -197,9 +197,9 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
             ".");
 
         const auto file_uk_map = (file_cell_offset + i) * num_groups;
-        const auto local_uk_map = transport_view.MapDOF(i, moment, 0);
-        for (size_t g = 0; g < num_groups; ++g)
-          data.local_flux_moments[local_uk_map + g] = uncollided_moment[file_uk_map + g];
+        for (unsigned int g = 0; g < num_groups; ++g)
+          data.local_flux_moments[transport_view.MapDOF(i, moment, g)] =
+            uncollided_moment[file_uk_map + g];
       }
 
       if (moment == 0)

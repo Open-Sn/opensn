@@ -119,7 +119,7 @@ WriteCellwiseDataset(hid_t file_id,
 {
   const auto& grid = problem.GetGrid();
   const auto& discretization = problem.GetSpatialDiscretization();
-  const auto& uk_man = problem.GetUnknownManager();
+  const auto& transport_views = problem.GetCellTransportViews();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
                                                   : problem.GetMaxPrecursorsPerMaterial();
   std::vector<double> values;
@@ -132,9 +132,9 @@ WriteCellwiseDataset(hid_t file_id,
         size_t dof = 0;
         if (field == CellwiseField::PHI)
         {
-          const auto m = static_cast<unsigned int>(c / problem.GetNumGroups());
-          const auto g = static_cast<unsigned int>(c % problem.GetNumGroups());
-          dof = discretization.MapDOFLocal(*cell, i, uk_man, m, g);
+          const auto m = c / problem.GetNumGroups();
+          const auto g = c % problem.GetNumGroups();
+          dof = transport_views[cell->local_id].MapDOF(i, m, g);
         }
         else
           dof = discretization.MapDOFLocal(*cell, i) * stride + c;
@@ -192,7 +192,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
 {
   const auto& grid = problem.GetGrid();
   const auto& discretization = problem.GetSpatialDiscretization();
-  const auto& uk_man = problem.GetUnknownManager();
+  const auto& transport_views = problem.GetCellTransportViews();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
                                                   : problem.GetMaxPrecursorsPerMaterial();
   std::vector<bool> found(grid->GetLocalCellCount(), false);
@@ -276,9 +276,9 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
             size_t dof = 0;
             if (field == CellwiseField::PHI)
             {
-              const auto m = static_cast<unsigned int>(component / problem.GetNumGroups());
-              const auto g = static_cast<unsigned int>(component % problem.GetNumGroups());
-              dof = discretization.MapDOFLocal(cell, file_to_local_node[i], uk_man, m, g);
+              const auto m = component / problem.GetNumGroups();
+              const auto g = component % problem.GetNumGroups();
+              dof = transport_views[cell.local_id].MapDOF(file_to_local_node[i], m, g);
             }
             else
               dof = discretization.MapDOFLocal(cell, file_to_local_node[i]) * stride + component;
@@ -441,11 +441,21 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
                                 std::to_string(opensn::mpi_comm.rank()) + ".");
     }
 
-    success &=
-      ReadSizedDoubleVector(file.Id(), "phi_old", phi_old_local_, expected_phi_size, GetName());
+    // Legacy files hold each rank's flux in [node][moment][group] order.
+    std::vector<double> legacy_phi;
+    const bool read_phi_old =
+      ReadSizedDoubleVector(file.Id(), "phi_old", legacy_phi, expected_phi_size, GetName());
+    success &= read_phi_old;
+    if (read_phi_old)
+      phi_old_local_ = flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi);
     if (H5Has(file.Id(), "phi_new"))
-      success &=
-        ReadSizedDoubleVector(file.Id(), "phi_new", phi_new_local_, expected_phi_size, GetName());
+    {
+      const bool read_phi_new =
+        ReadSizedDoubleVector(file.Id(), "phi_new", legacy_phi, expected_phi_size, GetName());
+      success &= read_phi_new;
+      if (read_phi_new)
+        phi_new_local_ = flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi);
+    }
     else
       phi_new_local_ = phi_old_local_;
 

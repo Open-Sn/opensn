@@ -212,10 +212,9 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
   if (not local_cells.empty())
   {
     const auto& cell = *local_cells.front();
-    const auto& sdm = restarted_problem->GetSpatialDiscretization();
-    const auto& uk_man = restarted_problem->GetUnknownManager();
-    const auto even_dof = sdm.MapDOFLocal(cell, 0, uk_man, 0, 0);
-    const auto odd_dof = sdm.MapDOFLocal(cell, 0, uk_man, 1, 0);
+    const auto& transport_view = restarted_problem->GetCellTransportViews()[cell.local_id];
+    const auto even_dof = transport_view.MapDOF(0, 0, 0);
+    const auto odd_dof = transport_view.MapDOF(0, 1, 0);
     auto& phi_new = restarted_problem->GetPhiNewLocal();
     auto& phi_old = restarted_problem->GetPhiOldLocal();
     phi_new[even_dof] = 2.5;

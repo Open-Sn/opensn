@@ -68,10 +68,10 @@ struct CellView
     const double* const* total_xs_data = reinterpret_cast<const double* const*>(cell_data);
     total_xs = *(total_xs_data++);
     cell_data = reinterpret_cast<const char*>(total_xs_data);
-    // phi address
-    const std::uint64_t* phi_address_data = reinterpret_cast<const std::uint64_t*>(cell_data);
-    phi_address = *(phi_address_data++);
-    cell_data = reinterpret_cast<const char*>(phi_address_data);
+    // first node times number of moments, in the flux-moment layout
+    const std::uint64_t* phi_offset_data = reinterpret_cast<const std::uint64_t*>(cell_data);
+    phi_node_moment_offset = *(phi_offset_data++);
+    cell_data = reinterpret_cast<const char*>(phi_offset_data);
     // save psi index
     const std::uint64_t* save_psi_index_data = reinterpret_cast<const std::uint64_t*>(cell_data);
     save_psi_index = *(save_psi_index_data++);
@@ -92,7 +92,11 @@ struct CellView
   std::uint32_t num_nodes;
   std::uint32_t num_faces;
   const double* total_xs;
-  std::uint64_t phi_address;
+  /**
+   * Local node index of the cell's node 0 times the number of moments. Times the groupset's
+   * moment stride, it is the flux-moment offset of the cell's first node.
+   */
+  std::uint64_t phi_node_moment_offset;
   std::uint64_t save_psi_index;
   const double* GM_data;
   const std::uint64_t* offset_face_data;

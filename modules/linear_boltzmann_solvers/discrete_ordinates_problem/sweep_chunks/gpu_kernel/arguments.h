@@ -52,7 +52,8 @@ struct Arguments
     : boundary(problem.GetBoundaryCarrier()->GetDevicePtr(groupset.id)),
       directions(angle_set.GetDeviceAngleIndices()),
       angleset_size(angle_set.GetNumAngles()),
-      num_groups(problem.GetNumGroups()),
+      phi_groupset_base(problem.GetFluxMomentLayout().MapDOF(0, 0, groupset.first_group)),
+      phi_moment_stride(problem.GetFluxMomentLayout().GetMomentStride(groupset.first_group)),
       groupset_start(groupset.first_group),
       groupset_size(groupset.GetNumGroups()),
       is_surface_source_active(is_active)
@@ -89,7 +90,10 @@ struct Arguments
   const std::uint64_t* __restrict__ boundary_offset = nullptr;
   std::uint32_t angleset_size = 0;
   // Group set
-  std::uint32_t num_groups = 0;
+  /// Flux-moment index of node 0, moment 0, and the groupset's first group.
+  std::uint64_t phi_groupset_base = 0;
+  /// Flux-moment index distance between consecutive moments of the groupset.
+  std::uint64_t phi_moment_stride = 0;
   std::uint32_t groupset_start = 0;
   std::uint32_t groupset_size = 0;
   // FLUDS

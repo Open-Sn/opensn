@@ -139,17 +139,17 @@ std::vector<double>
 LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsigned int m) const
 {
   const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
   for (const auto& cell : grid_->GetLocalCells())
   {
     const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& transport_view = cell_transport_views_[cell->local_id];
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imapA = sdm.MapDOFLocal(*cell, i, phi_uk_man, m, g);
+      const auto imapA = transport_view.MapDOF(i, m, g);
       const auto imapB = sdm.MapDOFLocal(*cell, i);
       data_vector_local[imapB] = phi_new_local_[imapA];
     }
@@ -187,13 +187,13 @@ std::vector<double>
 LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 {
   const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
   for (const auto& cell : grid_->GetLocalCells())
   {
     const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& transport_view = cell_transport_views_[cell->local_id];
     const auto& xs = block_id_to_xs_map_.at(cell->block_id);
     const auto* coeffs = xs->GetByName(xs_name);
 
@@ -207,11 +207,10 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto imapA = sdm.MapDOFLocal(*cell, i);
-      const auto imapB = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, 0);
 
       double nodal_value = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)
-        nodal_value += coeffs->at(g) * phi_new_local_[imapB + g];
+        nodal_value += coeffs->at(g) * phi_new_local_[transport_view.MapDOF(i, 0, g)];
 
       data_vector_local[imapA] = nodal_value;
     }
@@ -224,7 +223,6 @@ std::vector<double>
 LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
 {
   const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
   std::vector<double> data_vector_power_local(local_node_count_, 0.0);
   local_total_power = 0.0;
 
@@ -232,6 +230,7 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
   {
     const auto& cell_mapping = sdm.GetCellMapping(*cell);
     const size_t num_nodes = cell_mapping.GetNumNodes();
+    const auto& transport_view = cell_transport_views_[cell->local_id];
 
     const auto& Vi = unit_cell_matrices_[cell->local_id].intV_shapeI;
     const auto& xs = block_id_to_xs_map_.at(cell->block_id);
@@ -242,14 +241,13 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto imapA = sdm.MapDOFLocal(*cell, i);
-      const auto imapB = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, 0);
 
       double nodal_power = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)
       {
         const double sigma_fg = xs->GetSigmaFission()[g];
         const double kappa_g = options_.power_default_kappa;
-        nodal_power += kappa_g * sigma_fg * phi_new_local_[imapB + g];
+        nodal_power += kappa_g * sigma_fg * phi_new_local_[transport_view.MapDOF(i, 0, g)];
       }
 
       data_vector_power_local[imapA] = nodal_power;

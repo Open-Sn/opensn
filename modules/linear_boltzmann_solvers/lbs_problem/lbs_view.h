@@ -3,6 +3,7 @@
 
 #pragma once
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
@@ -17,19 +18,21 @@ class Cell;
 class CellLBSView
 {
 public:
-  CellLBSView(size_t phi_address,
+  /**
+   * `layout` is the problem's flux-moment map and must outlive the view. `first_node` is the local
+   * node index of the cell's node 0.
+   */
+  CellLBSView(const FluxMomentLayout& layout,
+              std::uint64_t first_node,
               int num_nodes,
-              unsigned int num_groups,
-              unsigned int num_moments,
               const MultiGroupXS& xs_mapping,
               double volume,
               const std::vector<bool>& face_local_flags,
               const std::vector<int>& face_locality,
               const std::vector<const Cell*>& neighbor_cell_ptrs)
-    : phi_address_(phi_address),
+    : layout_(&layout),
+      first_node_(first_node),
       num_nodes_(num_nodes),
-      num_groups_(num_groups),
-      num_grps_moms_(num_groups * num_moments),
       xs_(&xs_mapping),
       volume_(volume),
       face_local_flags_(face_local_flags),
@@ -38,10 +41,15 @@ public:
   {
   }
 
-  size_t MapDOF(uint64_t node, uint64_t moment, unsigned int grp) const
+  /// Index into the flux-moment vectors of cell node `node`, moment `moment`, and group `grp`.
+  size_t MapDOF(uint64_t node, uint64_t moment, uint64_t grp) const
   {
-    return phi_address_ + node * num_grps_moms_ + num_groups_ * moment + grp;
+    assert(node < static_cast<uint64_t>(num_nodes_) && "CellLBSView::MapDOF node out of range.");
+    return layout_->MapDOF(first_node_ + node, moment, grp);
   }
+
+  /// Local node index of the cell's node 0 in the flux-moment layout.
+  std::uint64_t GetFirstNode() const { return first_node_; }
 
   const MultiGroupXS& GetXS() const { return *xs_; }
 
@@ -70,10 +78,9 @@ public:
   void ReassignXS(const MultiGroupXS& xs) { xs_ = &xs; }
 
 private:
-  size_t phi_address_;
+  const FluxMomentLayout* layout_;
+  std::uint64_t first_node_;
   int num_nodes_;
-  unsigned int num_groups_;
-  unsigned int num_grps_moms_;
   const MultiGroupXS* xs_;
   double volume_;
   const std::vector<bool> face_local_flags_;
