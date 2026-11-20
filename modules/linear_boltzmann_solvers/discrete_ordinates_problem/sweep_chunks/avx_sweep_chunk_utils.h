@@ -233,6 +233,118 @@ SimdBatchSolve(const double* Am, const double* Mm, const double* sigma_t, double
 }
 
 /**
+ * Add one direction's node-major angular flux to the cell's flux moments.
+ *
+ * Require first_group <= end_group <= groups, disjoint mapped destination blocks of
+ * groups values and disjoint phi and rhs storage. Preserve direction accumulation
+ * order for bitwise reproducibility.
+ *
+ * \tparam N Number of cell nodes.
+ * \param groups Number of groups stored per node.
+ * \param first_group First group in this block, relative to the groupset.
+ * \param end_group Exclusive end of this group block.
+ * \param num_moments Number of flux moments.
+ * \param moment_dof_map Moment-major map of N node offsets per moment into phi.
+ * \param weights Discrete-to-moment coefficients for this direction, one per moment.
+ * \param rhs Node-major angular values, with groups contiguous values per node.
+ * \param phi Writable flux moments, valid throughout this call.
+ */
+template <int N>
+inline void
+AccumulateNodeMajorMoments(unsigned int groups,
+                           unsigned int first_group,
+                           unsigned int end_group,
+                           unsigned int num_moments,
+                           const std::size_t* moment_dof_map,
+                           const double* weights,
+                           const double* __restrict rhs,
+                           double* __restrict phi)
+{
+  PRAGMA_UNROLL
+  for (int i = 0; i < N; ++i)
+  {
+    const auto* source = rhs + static_cast<std::size_t>(i) * groups;
+    for (unsigned int m = 0; m < num_moments; ++m)
+    {
+      const double weight = weights[m];
+      auto* destination = phi + moment_dof_map[static_cast<std::size_t>(m) * N + i];
+      for (unsigned int g = first_group; g < end_group; ++g)
+        destination[g] += weight * source[g];
+    }
+  }
+}
+
+/**
+ * Solve one SIMD block of node-major cell systems by Gaussian elimination.
+ * Input arrays must remain valid and disjoint from b. The systems must permit elimination
+ * without pivoting.
+ *
+ * \tparam N Number of cell nodes, matching both square input matrices.
+ * \param Am Streaming and surface operator, row-major with N squared entries.
+ * \param Mm Cell mass matrix, row-major with N squared entries.
+ * \param sigma_t Simd::size total cross sections for contiguous energy groups.
+ * \param b Node-major right-hand sides, overwritten by solutions for Simd::size groups per node.
+ * \param node_stride Number of doubles between nodes, at least Simd::size.
+ */
+template <int N>
+inline void
+CBCSimdBatchSolve(const double* Am,
+                  const double* Mm,
+                  const double* sigma_t,
+                  double* __restrict b,
+                  std::size_t node_stride)
+{
+  Simd rhs[N];
+  PRAGMA_UNROLL
+  for (int row = 0; row < N; ++row)
+    rhs[row] = Simd(b + row * node_stride);
+
+  const Simd sigma(sigma_t);
+  Simd A[N * N];
+  PRAGMA_UNROLL
+  for (int i = 0; i < N; ++i)
+  {
+    PRAGMA_UNROLL
+    for (int j = 0; j < N; ++j)
+    {
+      const Simd Amij(Am[i * N + j]);
+      const Simd Mmij(Mm[i * N + j]);
+      A[i * N + j] = Simd::Fma(sigma, Mmij, Amij);
+    }
+  }
+
+  auto Entry = [&](int i, int j) -> Simd& { return A[i * N + j]; };
+  PRAGMA_UNROLL
+  for (int pivot = 0; pivot < N; ++pivot)
+  {
+    const Simd inv = Simd(1.0) / Entry(pivot, pivot);
+    PRAGMA_UNROLL
+    for (int row = pivot + 1; row < N; ++row)
+    {
+      const Simd factor = Entry(row, pivot) * inv;
+      rhs[row] = Simd::Fnma(factor, rhs[pivot], rhs[row]);
+      PRAGMA_UNROLL
+      for (int col = pivot + 1; col < N; ++col)
+        Entry(row, col) = Simd::Fnma(factor, Entry(pivot, col), Entry(row, col));
+    }
+  }
+
+  PRAGMA_UNROLL
+  for (int pivot = N - 1; pivot >= 0; --pivot)
+  {
+    Simd rhs_vec = rhs[pivot];
+    PRAGMA_UNROLL
+    for (int col = pivot + 1; col < N; ++col)
+      rhs_vec = Simd::Fnma(Entry(pivot, col), rhs[col], rhs_vec);
+    rhs[pivot] = rhs_vec * (Simd(1.0) / Entry(pivot, pivot));
+  }
+
+  PRAGMA_UNROLL
+  for (int row = 0; row < N; ++row)
+    rhs[row].StoreUnaligned(b + row * node_stride);
+}
+
+/**
  * Advances k over as many full Simd::size-group blocks of [k, block_len) as fit, solving each
  * via SimdBatchSolve<N> when N (this cell's node count) has a compile-time specialization
  * (2-8), else via SimdBatchSolveDynamic. b_block is the address of group-block-relative group

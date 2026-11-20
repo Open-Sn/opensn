@@ -83,12 +83,9 @@ What is the safest default sweep type?
 
 ``AAH`` is the general default and is the safer choice for most users.
 
-It supports the delayed-angular-flux machinery used to break intra-partition
-cyclic sweep dependencies.
+On CPUs, AAH and CBC both support cycle breaking.
 
-Both ``AAH`` and ``CBC`` support time-dependent (transient) mode. Choose ``CBC``
-only if the sweep graph is known to be acyclic or has been verified to meet
-``CBC``'s acyclicity requirements for your specific problem.
+See :doc:`discrete_ordinates_problems` for sweep scheduling and GPU support.
 
 Do I need to export field functions during every run?
 =====================================================

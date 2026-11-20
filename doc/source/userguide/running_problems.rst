@@ -46,12 +46,10 @@ to run in parallel.
    intended decomposition.
 
 The ``max_mpi_message_size`` problem option sets the largest MPI message, in
-bytes, that an AAH sweep sends, on the CPU and on the GPU. Larger angular-flux
-transfers are split into messages of at most this size. The default, 4194304
-bytes (4 MiB), sends most transfers whole. Small limits split large transfers
-into many messages, and each one adds posting, matching, and polling work. With
-a 32 KiB limit, GPU sweeps on a few nodes ran up to 2.8 times slower. Messages
-below the limit are not affected, so the default rarely needs changing.
+bytes, for AAH on CPUs and GPUs and for CBC on CPUs. Larger angular-flux
+transfers are split into messages of at most this size. The default is
+4,194,304 bytes (4 MiB). Smaller limits can increase MPI posting, matching,
+and polling work.
 
 The ``max_mpi_outstanding_sends`` problem option limits how many sweep messages
 each rank may have posted and not yet completed in a CPU AAH sweep. Messages

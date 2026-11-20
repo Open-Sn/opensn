@@ -488,6 +488,10 @@ AngleAggregation::GetDelayedAngularDOFLayoutFingerprint() const
     for (const auto location : delayed_dependencies)
       add(static_cast<std::uint64_t>(location));
 
+    const auto layout_id = fluds.GetDelayedPsiLayoutIdentifier();
+    if (layout_id != 0)
+      add(layout_id);
+
     add(fluds.DelayedLocalPsiOld().size());
     add(fluds.DelayedPrelocIOutgoingPsiOld().size());
     for (const auto& loc_vector : fluds.DelayedPrelocIOutgoingPsiOld())
