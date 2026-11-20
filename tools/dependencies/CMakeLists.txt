@@ -19,13 +19,14 @@ endif()
 message(STATUS "CMAKE_INSTALL_PREFIX is set to: ${CMAKE_INSTALL_PREFIX}")
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../cmake")
+include(OpenSnDependencyVersions)
 
 set(OPENSN_ENV_DIR "${CMAKE_INSTALL_PREFIX}/bin")
 set(ENV_SCRIPT "${OPENSN_ENV_DIR}/set_opensn_env.sh")
 
 find_package(MPI REQUIRED)
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-find_package(mpicpp-lite 2.7.1 QUIET)
+find_package(mpicpp-lite ${OPENSN_MIN_MPICPP_LITE_VERSION} QUIET)
 
 option(ENABLE_BOOST   "Install Boost"   ON)
 option(ENABLE_PETSC   "Install PETSc"   ON)
@@ -74,9 +75,9 @@ endif()
 
 # Boost install (header-only)
 if(ENABLE_BOOST)
-  find_package(Boost CONFIG QUIET)
+  find_package(Boost ${OPENSN_MIN_BOOST_VERSION} CONFIG QUIET)
   if (NOT Boost_FOUND)
-    find_package(Boost QUIET)
+    find_package(Boost ${OPENSN_MIN_BOOST_VERSION} QUIET)
   endif()
   if(Boost_FOUND)
     message(STATUS "Found Boost: ${Boost_DIR}")
@@ -105,7 +106,7 @@ endif()
 
 # PETSc
 if(ENABLE_PETSC)
-  find_package(PETSc 3.17 QUIET)
+  find_package(PETSc ${OPENSN_MIN_PETSC_VERSION} QUIET)
   if (PETSC_FOUND)
     check_symbol_exists(PETSC_USE_64BIT_INDICES "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_USE_64BIT_INDICES)
     check_symbol_exists(PETSC_HAVE_PTSCOTCH "${PETSC_INCLUDE_DIR}/petscconf.h" PETSC_HAVE_PTSCOTCH)
