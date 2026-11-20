@@ -158,6 +158,13 @@
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_OWNER_RANKS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 0.0
       }
     ]
   },
@@ -179,6 +186,13 @@
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_OWNER_RANKS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 0.0
       }
     ],
     "outfileprefix": "cmfd_homogenization_coefficients_mpi"
@@ -204,13 +218,20 @@
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_OWNER_RANKS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 0.0
       }
     ],
     "outfileprefix": "cmfd_homogenization_coefficients_energy_collapse"
   },
   {
     "file": "cmfd_homogenization_coefficients.py",
-    "comment": "Adjoint heterogeneous spatial homogenization and energy collapse use transposed transfer and production matrices",
+    "comment": "Adjoint heterogeneous spatial homogenization and energy collapse use transposed transfer and production matrices, and the diffusion coefficient uses the adjoint transport cross section from the P1 in-scatter sums",
     "num_procs": 1,
     "args": [
       "adjoint=True; collapse_energy=True"
@@ -229,6 +250,13 @@
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_OWNER_RANKS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 0.0
       }
     ],
     "outfileprefix": "cmfd_homogenization_coefficients_adjoint"
@@ -254,6 +282,13 @@
         "wordnum": 1,
         "gold": 1,
         "abs_tol": 0
+      },
+      {
+        "type": "FloatCompare",
+        "key": "CMFD_HOMOGENIZATION_OWNER_RANKS",
+        "wordnum": 1,
+        "gold": 1.0,
+        "abs_tol": 0.0
       }
     ],
     "outfileprefix": "cmfd_homogenization_coefficients_negative_self_scatter"

@@ -193,22 +193,22 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "coarse_mesh",
     "local_aggregation",
-    "CMFD coarse-mesh construction method. \"local_aggregation\" builds rank-local aggregates. "
-    "\"global_aggregation\" builds connected aggregates that may span MPI ranks. Both keep each "
-    "aggregate within one mesh block unless allow_mixed_material_aggregation is true. "
-    "\"identity\" creates one CMFD cell per transport cell and is intended mainly for debugging "
-    "and method comparisons.");
+    "CMFD coarse-mesh construction method. The \"local_aggregation\" method builds rank-local "
+    "aggregates. The \"global_aggregation\" method builds connected aggregates that may span MPI "
+    "ranks. Both keep each aggregate within one mesh block unless "
+    "allow_mixed_material_aggregation is true. The \"identity\" method creates one CMFD cell per "
+    "transport cell and is intended mainly for debugging and method comparisons.");
   params.AddOptionalParameter(
     "current_closure",
     "partial",
-    "CMFD face-current closure. Valid choices are partial and net. partial (the default) is the "
-    "partial-current CMFD (pCMFD) closure; it is typically stable unrelaxed on both optically "
-    "thin and thick coarse cells, whereas the net closure can oscillate or diverge on optically "
-    "thick coarse cells.");
+    "CMFD face-current closure. Valid choices are \"partial\" and \"net\". The partial closure "
+    "(the default) is the partial-current CMFD (pCMFD) closure. It is typically stable unrelaxed "
+    "on both optically thin and thick coarse cells, whereas the net closure can oscillate or "
+    "diverge on optically thick coarse cells.");
   params.AddOptionalParameter(
     "aggregation_size",
     32,
-    "Target number of fine cells per rank-local aggregated CMFD coarse cell. Larger values "
+    "Target number of fine cells per aggregated CMFD coarse cell. Larger values "
     "reduce CMFD cost but coarsen the spatial correction; smaller values increase coarse-solve "
     "cost but can improve robustness.");
   params.AddOptionalParameter(
@@ -216,7 +216,7 @@ CMFDAcceleration::GetInputParameters()
     false,
     "Allow local_aggregation or global_aggregation coarse cells to cross material-block "
     "boundaries. Coarse-cell coefficients are always flux-volume homogenized from the "
-    "constituent fine cells; this option only changes which fine cells may share a coarse "
+    "constituent fine cells. This option only changes which fine cells may share a coarse "
     "cell. The default false keeps aggregates within one material block.");
   params.AddOptionalParameter(
     "group_aggregation_size",
@@ -244,13 +244,11 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "inactive_iterations",
     0,
-    "[developer/debug] Number of initial power iterations before applying CMFD "
-    "corrections. During these iterations, update_wgs_max_its/update_wgs_abs_tol are NOT "
-    "applied -- the groupset WGS solvers keep whatever settings were configured on the "
-    "DiscreteOrdinatesProblem directly, size them for genuinely-converged transport updates if "
-    "that's the intent of using inactive iterations. CMFD switches the groupsets to "
-    "update_wgs_max_its/update_wgs_abs_tol starting with the first active iteration; the power "
-    "iteration solver restores the problem's settings when its Execute() returns.");
+    "[developer/debug] Number of initial power iterations before applying CMFD corrections. "
+    "These iterations keep the groupset WGS settings of the DiscreteOrdinatesProblem, not "
+    "update_wgs_max_its and update_wgs_abs_tol. CMFD applies those two settings from the first "
+    "active iteration, and the power iteration solver restores the problem's settings when its "
+    "Execute() returns.");
   params.AddOptionalParameter(
     "update_wgs_max_its",
     1,
@@ -273,11 +271,11 @@ CMFDAcceleration::GetInputParameters()
   params.AddOptionalParameter(
     "coarse_solver_policy",
     "auto",
-    "[developer/debug] CMFD coarse solver policy. auto chooses direct PETSc LU below "
-    "coarse_direct_solve_threshold global unknowns and iterative GMRES with hypre BoomerAMG "
-    "otherwise. "
-    "direct, iterative, and petsc_options force a specific path. CMFD corrections from "
-    "unconverged coarse linear solves are always skipped.");
+    "[developer/debug] CMFD coarse solver policy. The \"auto\" policy chooses direct PETSc LU "
+    "below coarse_direct_solve_threshold global unknowns and iterative GMRES with hypre "
+    "BoomerAMG otherwise. The \"direct\", \"iterative\", and \"petsc_options\" policies force a "
+    "specific path. CMFD corrections from unconverged coarse linear solves are always "
+    "skipped.");
   params.AddOptionalParameter("coarse_direct_solve_threshold",
                               20000,
                               "[developer/debug] Maximum global CMFD unknown count for using the "

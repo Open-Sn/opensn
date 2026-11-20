@@ -116,23 +116,19 @@ private:
   /// The fine cells of one material block within a coarse cell.
   struct CoarseCellMaterial
   {
-    /// Material block id of the region.
     unsigned int block_id = 0;
-    /// Physical volume of the region.
     double volume = 0.0;
     /// Per-transport-group weight of the region in the homogenization of its coarse group.
     std::vector<double> weights;
   };
 
   /// Homogenization data of one coarse cell. Transfer and production matrices are condensed on
-  /// demand from the material weights so that storage stays O(materials x groups).
+  /// demand from the material weights so that storage stays O(materials x groups). The removal
+  /// and diffusion vectors are indexed by coarse group.
   struct CoarseCellXS
   {
-    /// Material regions of the coarse cell.
     std::vector<CoarseCellMaterial> materials;
-    /// Removal coefficient per coarse group.
     std::vector<double> removal;
-    /// Diffusion coefficient per coarse group.
     std::vector<double> diffusion;
   };
 
@@ -188,7 +184,6 @@ private:
   const std::string coarse_mesh_type_;
   const std::string current_closure_;
   const int aggregation_size_;
-  /// Whether aggregated coarse cells may cross material-block boundaries.
   const bool allow_mixed_material_aggregation_;
   const unsigned int group_aggregation_size_;
   const double relaxation_;
@@ -213,7 +208,6 @@ private:
   unsigned int num_skipped_corrections_ = 0;
   unsigned int consecutive_skipped_corrections_ = 0;
   bool warned_persistent_skips_ = false;
-  /// Whether the volume-weight homogenization fallback was reported in this Execute().
   bool warned_homogenization_fallback_ = false;
   std::string last_correction_skip_reason_;
   double last_transport_current_balance_relative_l2_ = std::numeric_limits<double>::infinity();
@@ -233,7 +227,6 @@ private:
   std::map<int, std::size_t> homogenization_send_counts_;
   /// Per source rank, the (coarse local id, material index) of each received record.
   std::map<int, std::vector<std::pair<std::size_t, std::size_t>>> homogenization_receive_targets_;
-  /// Diffusion coefficient per (coarse cell, coarse group) for local and neighbor coarse cells.
   std::map<std::tuple<uint64_t, unsigned int>, double> diffusion_coefficient_cache_;
   std::map<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>, double> face_current_cache_;
 

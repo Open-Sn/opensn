@@ -54,14 +54,17 @@ def fuel_data(negative_self_scatter):
         "sigma_t": [0.4241317, 0.7377545],
         "scatter": [0.3944575, 0.001266390, 0.0007568932, 0.4021512],
         "nu_sigma_f": [0.02615716, 0.6285298],
-        # Out-scatter sums of the P1 transfer moments.
+        # Out-scatter sums of the P1 transfer moments, and the in-scatter sums that give the
+        # adjoint transport cross section.
         "sigma_1": [0.04489551 - 0.0001835131, -0.00003343627 + 0.008252911],
+        "sigma_1_adjoint": [0.04489551 - 0.00003343627, -0.0001835131 + 0.008252911],
     }
     if negative_self_scatter:
         shift = 0.4
         data["sigma_t"][0] -= shift
         data["scatter"][0] -= shift
         data["sigma_1"] = [0.0, 0.0]
+        data["sigma_1_adjoint"] = [0.0, 0.0]
     return data
 
 
@@ -90,7 +93,7 @@ def expected_coefficients(flux_integrals, collapse_energy, adjoint, data):
     if adjoint:
         scatter = [scatter[col * 2 + row] for row in range(2) for col in range(2)]
         production = [production[col * 2 + row] for row in range(2) for col in range(2)]
-    sigma_1 = data["sigma_1"]
+    sigma_1 = data["sigma_1_adjoint"] if adjoint else data["sigma_1"]
     diffusion = [1.0 / (3.0 * (sigma_t[g] - sigma_1[g])) for g in range(2)]
 
     density_weight = []
@@ -149,7 +152,11 @@ def expected_coefficients(flux_integrals, collapse_energy, adjoint, data):
 
 
 def coefficient_errors(cmfd, expected):
-    """Return local-owner errors; the test reduces them across ranks."""
+    """Return this rank's errors, or None if the rank does not own coarse cell 0.
+
+    The getters raise ValueError on a rank that does not own the cell. A single rank owns every
+    coarse cell, so there the error is a real failure and is raised.
+    """
     try:
         actual = {
             "removal": cmfd.GetHomogenizedRemovalXS(0),
@@ -158,7 +165,9 @@ def coefficient_errors(cmfd, expected):
             "diffusion": cmfd.GetHomogenizedDiffusionCoefficient(0),
         }
     except ValueError:
-        return {name: 0.0 for name in expected}
+        if size == 1:
+            raise
+        return None
     return {name: max_abs_difference(actual[name], values) for name, values in expected.items()}
 
 
@@ -248,9 +257,15 @@ if __name__ == "__main__":
     errors = coefficient_errors(
         cmfd, expected_coefficients(flux_integrals, collapse_energy, adjoint, data)
     )
-    max_error = MPIAllReduce(max(errors.values()), "max")
+    # Exactly one rank must own coarse cell 0 and compare its coefficients. Otherwise an error
+    # swallowed on every rank would pass without a comparison.
+    owner_ranks = MPIAllReduce(0 if errors is None else 1, "sum")
+    max_error = MPIAllReduce(0.0 if errors is None else max(errors.values()), "max")
     if rank == 0:
         print(f"CMFD_HOMOGENIZATION_MAX_ABS_ERROR {max_error:.16e}")
         print(f"CMFD_HOMOGENIZATION_COARSE_CELLS {cmfd.GetNumCoarseCells()}")
+        print(f"CMFD_HOMOGENIZATION_OWNER_RANKS {owner_ranks}")
+    if owner_ranks != 1:
+        raise RuntimeError(f"Coarse cell 0 has {owner_ranks} owning ranks instead of one.")
     if max_error > 1.0e-12:
         raise RuntimeError(f"CMFD homogenization coefficient errors: {errors}")

@@ -778,8 +778,10 @@ terms are
 
 The production matrix includes delayed production when precursor use is
 enabled. In adjoint mode the scattering, prompt-production, and delayed-
-production operators are transposed before homogenization; the diagonal
-transport coefficient is unchanged.
+production operators are transposed before homogenization. The removal
+coefficient is unchanged, and the diffusion coefficient uses the adjoint
+transport cross section, which subtracts the P1 in-scatter instead of the P1
+out-scatter.
 
 The signed weights preserve the fine-mesh rates of the transport iterate
 exactly, including where the scalar flux is negative, so no sign
