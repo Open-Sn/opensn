@@ -21,6 +21,9 @@ before outer power iteration is allowed to converge, against a fixed
 tolerance (``balance_residual_tolerance``). See the description of
 ``balance_residual_tolerance`` below.
 
+The :doc:`CMFD tutorials <../tutorials/numerical_methods/cmfd/index>` show the effect of each
+option on the C5G7 benchmark core.
+
 CMFD owns the WGS update controls through ``update_wgs_max_its`` and
 ``update_wgs_abs_tol``. The default is a one-iteration transport update before
 each CMFD correction. To make each transport update more tightly converged
@@ -184,7 +187,9 @@ These are the options most users should tune.
 
   Delayed production is included when ``use_precursors=True``. In adjoint mode,
   scattering and prompt and delayed production are transposed before
-  homogenization; the diagonal transport coefficient is unchanged.
+  homogenization. The removal coefficient is unchanged, and the diffusion
+  coefficient uses the adjoint transport cross section, which subtracts the
+  P1 in-scatter instead of the P1 out-scatter.
 
   Homogenization is recomputed before every active CMFD correction from the
   transport iterate of that power iteration. It does not modify the problem's
