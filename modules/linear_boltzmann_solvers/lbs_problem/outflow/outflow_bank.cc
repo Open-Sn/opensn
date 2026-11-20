@@ -24,7 +24,7 @@ OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
-    views_[cell_local_id] = CellOutflowView(cell.faces.size(), num_groups);
+    views_[cell_local_id] = CellOutflowView(grid.GetCellFaceCount(cell_local_id), num_groups);
   }
 
   std::vector<std::int64_t> cell_offsets(grid.GetLocalCellCount(), -1);
@@ -37,9 +37,10 @@ OutflowBank::OutflowBank(const Mesh& grid, unsigned int num_groups, bool include
     cell_view.InitializeFaceOffsets();
     std::size_t cell_num_stored_faces = 0;
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (face.has_neighbor and not include_internal_faces)
         continue;
 

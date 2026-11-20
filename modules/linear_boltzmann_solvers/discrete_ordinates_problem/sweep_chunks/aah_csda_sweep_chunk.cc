@@ -95,7 +95,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
     const auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto& cell_outflow_view = cell_outflow_views_[cell_local_id];
     const auto& cell_mapping = discretization_.GetLocalCellMapping(cell_local_id);
-    const size_t cell_num_faces = cell.faces.size();
+    const size_t cell_num_faces = grid_->GetCellFaceCount(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
@@ -139,8 +139,9 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
         for (size_t j = 0; j < cell_num_nodes; ++j)
           Amat(i, j) = omega.Dot(G(i, j));
 
+      auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       int in_face_counter = -1;
       for (size_t f = 0; f < cell_num_faces; ++f)
@@ -148,7 +149,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        auto& cell_face = cell.faces[f];
+        auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -215,7 +216,9 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
                                                &Amat,
                                                &M,
                                                &v,
+                                               grid_,
                                                &cell,
+                                               cell_local_id,
                                                &cell_mapping,
                                                &face_orientations,
                                                &face_mu_values,
@@ -232,7 +235,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
             [&nodal_source, gs_size, gsg](size_t j) { return nodal_source[j * gs_size + gsg]; },
             [&b](size_t gg, size_t j) { return b[gg](j); },
             [&b](size_t gg, size_t i, double value) { b[gg](i) = value; },
-            [&fluds, &angle_set, &cell, cell_local_id, direction_num, spls_index, as_ss_idx](
+            [&fluds, &angle_set, &cell_faces, cell_local_id, direction_num, spls_index, as_ss_idx](
               bool is_local,
               bool is_reflecting,
               size_t face_num,
@@ -245,7 +248,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
                 psiE = fluds.UpwindPsiE(spls_index, in_face_counter_slope, 0, 0, as_ss_idx);
               else if (is_reflecting)
                 psiE = angle_set.PsiBoundaryE(
-                  cell.faces[face_num].neighbor_id, direction_num, cell_local_id, face_num, 0, 0);
+                  cell_faces[face_num].neighbor_id, direction_num, cell_local_id, face_num, 0, 0);
               else
                 psiE = fluds.NLUpwindPsiE(preloc_face_counter_slope, 0, 0, as_ss_idx);
               return psiE ? psiE[gg] : 0.0;
@@ -295,8 +298,8 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
 
       if (SaveAngularFluxEnabled())
       {
-        double* psi_new =
-          &destination_psi_[discretization_.MapDOFLocal(cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
+        double* psi_new = &destination_psi_[discretization_.MapDOFLocal(
+          cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
@@ -314,7 +317,7 @@ AAHCSDASweepChunk::Sweep(AngleSet& angle_set)
           continue;
 
         ++out_face_counter;
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =

@@ -153,7 +153,7 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
     cell_face_starts.clear();
     std::vector<std::uint32_t> cell_points(cell_vertices_.begin() + cell_vertex_offset_[c],
                                            cell_vertices_.end());
-    for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
+    for (std::uint32_t face_idx = 0; face_idx < grid.GetCellFaceCount(c); ++face_idx)
     {
       auto face_vertex_ids = grid.GetCellFaceConnectivity(c, face_idx);
       const size_t n = face_vertex_ids.size();

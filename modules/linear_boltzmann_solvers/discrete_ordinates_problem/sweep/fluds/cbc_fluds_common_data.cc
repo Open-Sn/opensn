@@ -45,13 +45,14 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     assert(cell_local_id < face_offsets_.size());
     face_offsets_[cell_local_id] = num_local_faces;
-    num_local_faces += cell.faces.size();
+    num_local_faces += cell_faces.size();
 
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 
@@ -71,10 +72,11 @@ CBC_FLUDSCommonData::CBC_FLUDSCommonData(
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     const auto face_offset = face_offsets_[cell_local_id];
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const auto orientation = face_orientations[cell_local_id][f];
 
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
@@ -137,10 +139,11 @@ CBC_FLUDSCommonData::FinalizeBeta()
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     const auto face_offset = face_offsets_[cell_local_id];
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if ((not face.has_neighbor) or (face.IsNeighborLocal(&grid)))
         continue;
 

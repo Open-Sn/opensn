@@ -35,7 +35,9 @@ struct CSDALocalSolveContext
   const DenseMatrix<double>* Amat = nullptr;
   const DenseMatrix<double>* M = nullptr;
   const Vector<double>* v = nullptr;
+  std::shared_ptr<Mesh> mesh = nullptr;
   const Cell* cell = nullptr;
+  std::uint32_t cell_local_id = 0;
   const CellMapping* cell_mapping = nullptr;
   const std::span<const FaceOrientation>* face_orientations = nullptr;
   const std::vector<double>* face_mu_values = nullptr;
@@ -103,6 +105,8 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
   const auto& Amat = *ctx.Amat;
   const auto& M = *ctx.M;
   const auto& v = *ctx.v;
+  const auto& mesh = *ctx.mesh;
+  auto cell_local_id = ctx.cell_local_id;
   const auto& cell = *ctx.cell;
   const auto& cell_mapping = *ctx.cell_mapping;
   const auto& face_orientations = *ctx.face_orientations;
@@ -122,7 +126,7 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
   const double Sg = csda_active ? (*csda_data.stopping_power)[gs_gi + gsg] : 0.0;
   const double dEg = csda_active ? csda_data.delta_e->at(gs_gi + gsg) : 1.0;
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
-  const size_t cell_num_faces = cell.faces.size();
+  const size_t cell_num_faces = mesh.GetCellFaceCount(cell_local_id);
 
   for (size_t i = 0; i < cell_num_nodes; ++i)
   {
@@ -154,6 +158,7 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
   {
     int in_face_counter_slope = -1;
     int preloc_face_counter_slope = ni_preloc_face_counter;
+    auto cell_faces = mesh.GetCellFaces(cell_local_id);
     for (size_t f = 0; f < cell_num_faces; ++f)
     {
       const auto orientation = face_orientations[f];
@@ -162,7 +167,7 @@ SolveCSDALocalSystem(const CSDALocalSolveContext& ctx,
       if (not is_incoming and not is_outgoing)
         continue;
 
-      const auto& cell_face = cell.faces[f];
+      const auto& cell_face = cell_faces[f];
       const bool is_local_face = cell_transport_view.IsFaceLocal(f);
       const bool is_boundary_face = not cell_face.has_neighbor;
 

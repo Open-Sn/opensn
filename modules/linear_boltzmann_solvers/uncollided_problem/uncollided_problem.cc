@@ -266,8 +266,11 @@ UncollidedProblem::ComputeReflectionPlanes(std::vector<std::string>& errors) con
     bool planar = true;
     Vector3 normal;
     double offset = 0.0;
-    for (const auto& cell : grid_->GetLocalCells())
-      for (const auto& face : cell.faces)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
         if (not face.has_neighbor and face.neighbor_id == boundary_id)
         {
           if (not found_face)
@@ -280,6 +283,7 @@ UncollidedProblem::ComputeReflectionPlanes(std::vector<std::string>& errors) con
                    std::abs(normal.Dot(face.centroid) - offset) > tolerance)
             planar = false;
         }
+    }
 
     if (not found_face)
       errors.emplace_back("reflecting boundary \"" + name + "\" has no faces.");
@@ -330,12 +334,14 @@ UncollidedProblem::BuildSourcePoints()
     const auto& subscribers = source_points_.back().subscribers;
     if (subscribers.size() == 1)
     {
-      const Cell& source_cell = grid_->GetLocalCell(subscribers.front().cell_local_id);
+      const auto cell_local_id = subscribers.front().cell_local_id;
+      const Cell& source_cell = grid_->GetLocalCell(cell_local_id);
+      const auto source_cell_faces = grid_->GetCellFaces(cell_local_id);
       const Vector3& loc = source_points_.back().location;
 
       double min_face_dist = std::numeric_limits<double>::max();
       double centroid_clearance = std::numeric_limits<double>::max();
-      for (const auto& face : source_cell.faces)
+      for (const auto& face : source_cell_faces)
       {
         min_face_dist = std::min(min_face_dist, std::abs(face.normal.Dot(loc - face.centroid)));
         centroid_clearance = std::min(
@@ -418,19 +424,21 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
 
   const size_t num_local_cells = grid_->GetLocalCellCount();
   cell_face_orientations_.assign(num_local_cells, {});
-  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    cell_face_orientations_[cell_local_id].assign(cell.faces.size(), FOPARALLEL);
+    cell_face_orientations_[cell_local_id].assign(grid_->GetCellFaceCount(cell_local_id),
+                                                  FOPARALLEL);
   }
 
-  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       // Determine if the face is incident
       FaceOrientation orientation = FOPARALLEL;
       Vector3 omega = ComputeOmega(source_point.location, face.centroid);
@@ -474,13 +482,14 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
   }
 
   Graph local_cell_graph(num_local_cells);
-  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_local_cells; ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    for (size_t f = 0; f < cell.faces.size(); ++f)
-      if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING and cell.faces[f].has_neighbor)
+    auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
+      if (cell_face_orientations_[cell_local_id][f] == FOOUTGOING and cell_faces[f].has_neighbor)
         boost::add_edge(
-          cell_local_id, cell.faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
+          cell_local_id, cell_faces[f].GetNeighborLocalID(grid_.get()), 0.0, local_cell_graph);
   }
 
   std::vector<size_t> sweep_order;
@@ -522,11 +531,12 @@ UncollidedProblem::BuildSweepOrdering(const SourcePoint& source_point)
         continue;
 
       const auto& cell = grid_->GetLocalCell(cell_id);
-      const size_t cell_num_faces = cell.faces.size();
+      const auto cell_faces = grid_->GetCellFaces(cell_id);
+      const size_t cell_num_faces = cell_faces.size();
 
       for (size_t f = 0; f < cell_num_faces; ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         if (not face.has_neighbor or
             cell_face_orientations_[cell_id][f] != FaceOrientation::INCOMING)
           continue;
@@ -960,9 +970,10 @@ UncollidedProblem::ProjectReflectedImageSources(const unsigned int progress_inte
             }
           }
 
-          for (size_t f = 0; f < cell.faces.size(); ++f)
+          const auto cell_faces = grid_->GetCellFaces(cell_index);
+          for (size_t f = 0; f < cell_faces.size(); ++f)
           {
-            const auto& face = cell.faces[f];
+            const auto& face = cell_faces[f];
             if (face.has_neighbor or IsReflectingBoundary(face.neighbor_id))
               continue;
 
@@ -1140,7 +1151,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
     auto coord_sys = grid_->GetCoordinateSystem();
     auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
     const auto& cell_mapping = sdm.GetLocalCellMapping(c);
-    const size_t cell_num_faces = cell.faces.size();
+    const auto cell_faces = grid_->GetCellFaces(c);
+    const size_t cell_num_faces = cell_faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -1175,7 +1187,7 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       if (orientation == FOOUTGOING)
       {
         // Face data
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
 
         const Vector3& normal = face.normal;
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
@@ -1389,7 +1401,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       auto& traced = traced_cells[k - begin];
       const Cell& cell = grid_->GetLocalCell(c);
       bool cell_current_mismatched = false;
-      const size_t cell_num_faces = cell.faces.size();
+      const auto cell_faces = grid_->GetCellFaces(c);
+      const size_t cell_num_faces = cell_faces.size();
       const size_t cell_num_nodes = sdm.GetLocalCellMapping(c).GetNumNodes();
       const bool is_source_cell = traced.is_source_cell;
       if (is_exact_neighbor[c])
@@ -1407,9 +1420,9 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
       // Incoming leakage through each face, from the corrected leakage of the upstream cell.
       auto cell_leakage = std::move(traced.leakage);
       for (size_t f = 0; f < cell_num_faces; ++f)
-        if (cell_face_orientations_[c][f] == FOINCOMING and cell.faces[f].has_neighbor)
+        if (cell_face_orientations_[c][f] == FOINCOMING and cell_faces[f].has_neighbor)
         {
-          const size_t neigh_id = cell.faces[f].GetNeighborLocalID(grid_.get());
+          const size_t neigh_id = cell_faces[f].GetNeighborLocalID(grid_.get());
           const size_t neigh_face_ind = grid_->GetNeighborAdjacentFaceIndex(c, f);
           cell_leakage[f] = leakages[neigh_id][neigh_face_ind];
         }
@@ -1528,8 +1541,8 @@ UncollidedProblem::RaytraceNearSourceRegion(const SourcePoint& source_point)
         }
 
         for (size_t f = 0; f < cell_num_faces; ++f)
-          if (not cell.faces[f].has_neighbor and
-              not IsReflectingBoundary(cell.faces[f].neighbor_id) and
+          if (not cell_faces[f].has_neighbor and
+              not IsReflectingBoundary(cell_faces[f].neighbor_id) and
               cell_face_orientations_[c][f] == FOOUTGOING)
             out_flow_ += leakages[c][f][g];
       }
@@ -1806,10 +1819,11 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
 
   // Planes of the side triangles of every face, for the distance at which a ray from the source
   // enters the cell. It is zero for the cell containing the source.
+  const auto cell_faces = grid_->GetCellFaces(cell_local_id);
   std::vector<std::pair<Vector3, Vector3>> side_planes;
-  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
+  for (std::uint32_t face_idx = 0; face_idx < cell_faces.size(); ++face_idx)
   {
-    const auto& face = cell.faces[face_idx];
+    const auto& face = cell_faces[face_idx];
     const auto& vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, face_idx);
     for (size_t side = 0; side < vertex_ids.size(); ++side)
     {
@@ -1831,20 +1845,20 @@ UncollidedProblem::IntegrateCellExactly(std::uint32_t cell_local_id,
   // source to the entry point, the leakage integrand is S exp(-tau_in - sigma_t Delta) / (4 pi)
   // and the volume integrand is S exp(-tau_in) (1 - exp(-sigma_t Delta)) / (4 pi sigma_t).
   std::vector<double> volume(num_groups_, 0.0);
-  std::vector<std::vector<double>> leakage(cell.faces.size(), std::vector<double>(num_groups_));
+  std::vector<std::vector<double>> leakage(cell_faces.size(), std::vector<double>(num_groups_));
   std::vector<double> phi(num_groups_, 0.0);
   std::vector<std::pair<size_t, double>> scratch_segs;
   std::vector<double> scratch_bp;
   std::vector<double> scratch_mfp(num_groups_, 0.0);
 
-  for (size_t f = 0; f < cell.faces.size(); ++f)
+  for (size_t f = 0; f < cell_faces.size(); ++f)
   {
     const auto& vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, f);
     const bool outgoing = cell_face_orientations_[cell_local_id][f] == FaceOrientation::OUTGOING;
     bool visible_through_non_outgoing_face = false;
     const auto visible = ForEachVisibleSideTriangle(
       *grid_,
-      cell.faces[f],
+      cell_faces[f],
       vertex_ids,
       source,
       [&](const std::array<Vector3, 3>& triangle, const double h)
@@ -1901,9 +1915,10 @@ UncollidedProblem::IsConvex(const Cell& cell, std::uint32_t cell_local_id) const
 {
   const auto& cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
   const double tol = cell_sizes_[cell_local_id] * 1.0e-8;
-  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
+  const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+  for (std::uint32_t face_idx = 0; face_idx < cell_faces.size(); ++face_idx)
   {
-    const auto& face = cell.faces[face_idx];
+    const auto& face = cell_faces[face_idx];
     auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, face_idx);
     const auto& v0 = grid_->GlobalVertex(face_vertex_ids.front());
     const auto& n = face.normal;
@@ -1929,9 +1944,10 @@ UncollidedProblem::SubtendedAngleFraction(std::shared_ptr<Mesh> mesh,
   constexpr double plane_tolerance = 1.0e-12;
 
   double angle = 0.0;
-  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
+  const auto cell_faces = mesh->GetCellFaces(cell_local_id);
+  for (std::uint32_t face_idx = 0; face_idx < cell_faces.size(); ++face_idx)
   {
-    const auto& face = cell.faces[face_idx];
+    const auto& face = cell_faces[face_idx];
     const auto& vertex_ids = mesh->GetCellFaceConnectivity(cell_local_id, face_idx);
 
     // Van Oosterom-Strackee solid angle of each PWL side triangle, signed by the side of its plane
@@ -1989,8 +2005,9 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
       auto cell_vertex_ids = grid_->GetCellConnectivity(cell_local_id);
 
       // Cell data
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
-      const size_t cell_num_faces = cell.faces.size();
+      const size_t cell_num_faces = cell_faces.size();
       const size_t cell_num_nodes = cell_mapping.GetNumNodes();
 
       const auto& transport_view = cell_transport_views_[cell_local_id];
@@ -2033,10 +2050,10 @@ UncollidedProblem::SweepBulkRegion(const SourcePoint& source_point)
           // Incoming faces (source terms)
           if (cell_face_orientations_[cell_local_id][f] == FaceOrientation::INCOMING)
           {
-            if (not cell.faces[f].has_neighbor)
+            if (not cell_faces[f].has_neighbor)
               continue;
 
-            size_t neighbor_id = cell.faces[f].GetNeighborLocalID(grid_.get());
+            size_t neighbor_id = cell_faces[f].GetNeighborLocalID(grid_.get());
 
             // Near-source/bulk region interface
             if (cell_regions_[neighbor_id] == CellRegion::NEAR_SOURCE)
@@ -2167,7 +2184,8 @@ UncollidedProblem::ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const
   auto coord_sys = grid_->GetCoordinateSystem();
   auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
-  const size_t cell_num_faces = cell.faces.size();
+  const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+  const size_t cell_num_faces = cell_faces.size();
   const size_t cell_num_nodes = cell_mapping.GetNumNodes();
   const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -2208,7 +2226,7 @@ UncollidedProblem::ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const
           Vector3 omega = ComputeOmega(pt_loc, qp_xyz);
 
           IntS_omega_n_shapeI_shapeJ[f](i, j) +=
-            (*swf)(qp_xyz)*omega.Dot(cell.faces[f].normal) * fe_srf_data.ShapeValue(i, qp) *
+            (*swf)(qp_xyz)*omega.Dot(cell_faces[f].normal) * fe_srf_data.ShapeValue(i, qp) *
             fe_srf_data.ShapeValue(j, qp) * fe_srf_data.JxW(qp);
 
         } // for qp
@@ -2255,11 +2273,12 @@ UncollidedProblem::UpdateBalance(const SourcePoint& source_point)
   for (const size_t cell_local_id : bulk_spls_)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
     const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (face.has_neighbor or IsReflectingBoundary(face.neighbor_id) or
           cell_face_orientations_[cell_local_id][f] != FaceOrientation::OUTGOING)
         continue;

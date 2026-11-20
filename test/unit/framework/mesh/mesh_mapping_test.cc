@@ -42,15 +42,16 @@ TestMapping(const std::shared_ptr<Mesh> fine_grid, const std::shared_ptr<Mesh> c
   {
     const auto& fine_cell = fine_grid->GetLocalCell(flid);
     const auto& fine_mapping = mesh_mapping.GetFineMapping(flid);
-    for (std::size_t fine_face_i = 0; fine_face_i < fine_cell.faces.size(); ++fine_face_i)
+    for (std::size_t fine_face_i = 0; fine_face_i < fine_grid->GetCellFaceCount(flid);
+         ++fine_face_i)
     {
-      const auto& fine_face = fine_cell.faces[fine_face_i];
+      const auto& fine_face = fine_grid->GetCellFace(flid, fine_face_i);
       bool found_mapping = false;
       for (std::size_t clid = 0; clid < coarse_grid->GetLocalCellCount(); ++clid)
       {
         const auto& coarse_cell = coarse_grid->GetLocalCell(clid);
         const auto& coarse_mapping = mesh_mapping.GetCoarseMapping(clid);
-        for (std::size_t coarse_face_i = 0; coarse_face_i < coarse_cell.faces.size();
+        for (std::size_t coarse_face_i = 0; coarse_face_i < coarse_grid->GetCellFaceCount(clid);
              ++coarse_face_i)
         {
           const auto in_fine_mapping = (fine_mapping.coarse_cell_local_id == clid) &&
@@ -93,9 +94,11 @@ TestSelfMapping(const std::string& polygon_file_name, const std::size_t num_face
   ASSERT_EQ(fine_grid_ptr->GetLocalCellCount(), std::size_t(1));
   ASSERT_EQ(coarse_grid_ptr->GetLocalCellCount(), std::size_t(1));
   const auto& fine_cell = fine_grid_ptr->GetLocalCell(0);
+  auto fine_cell_faces = fine_grid_ptr->GetCellFaces(0);
   const auto& coarse_cell = coarse_grid_ptr->GetLocalCell(0);
-  ASSERT_EQ(fine_cell.faces.size(), num_faces);
-  ASSERT_EQ(coarse_cell.faces.size(), num_faces);
+  auto coarse_cell_faces = coarse_grid_ptr->GetCellFaces(0);
+  ASSERT_EQ(fine_cell_faces.size(), num_faces);
+  ASSERT_EQ(coarse_cell_faces.size(), num_faces);
 
   MeshMapping mesh_mapping;
   ASSERT_NO_THROW(mesh_mapping.Build(fine_grid_ptr, coarse_grid_ptr));
@@ -106,7 +109,7 @@ TestSelfMapping(const std::string& polygon_file_name, const std::size_t num_face
   ASSERT_EQ(coarse_mapping.fine_cell_local_ids.size(), std::size_t(1));
   EXPECT_EQ(coarse_mapping.fine_cell_local_ids[0], 0);
 
-  for (std::size_t face_i = 0; face_i < fine_cell.faces.size(); ++face_i)
+  for (std::size_t face_i = 0; face_i < fine_cell_faces.size(); ++face_i)
   {
     EXPECT_EQ(fine_mapping.coarse_faces[face_i], face_i);
     ASSERT_EQ(coarse_mapping.fine_faces[face_i].size(), std::size_t(1));

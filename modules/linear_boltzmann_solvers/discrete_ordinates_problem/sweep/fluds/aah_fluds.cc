@@ -526,10 +526,11 @@ AAH_FLUDS::ForEachDelayedIncomingFace(const Fn& fn) const
   {
     const auto cell_local_id = static_cast<std::uint32_t>(spls[so_index]);
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto cell_faces = grid.GetCellFaces(cell_local_id);
     int local_face_counter = -1;
-    for (unsigned int f = 0; f < cell.faces.size(); ++f)
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       if (face_orientations[cell_local_id][f] != FaceOrientation::INCOMING or not face.has_neighbor)
         continue;
 
@@ -630,7 +631,7 @@ AAH_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
                                           : delayed_prelocI_outgoing_psi_old_[prelocI].data();
 
       // -w_n Omega_n . n, the factor of the upwind flux in the face term of the sweep
-      const auto& normal = grid.GetLocalCell(cell_local_id).faces[f].normal;
+      const auto& normal = grid.GetCellFace(cell_local_id, f).normal;
       for (std::size_t n = 0; n < num_angles_; ++n)
         inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
 

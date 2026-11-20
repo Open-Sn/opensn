@@ -341,7 +341,8 @@ SMMAcceleration::ComputeBoundaryFactors()
 
       // Loop over faces
       int f = 0;
-      for (const auto& face : cell.faces)
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
       {
         const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         for (size_t fi = 0; fi < num_face_nodes; ++fi)
@@ -390,7 +391,8 @@ SMMAcceleration::AssembleDiffusionBCs() const
 
     // Loop over faces
     int f = 0;
-    for (const auto& face : cell.faces)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
     {
       if (not face.has_neighbor)
       {
@@ -506,7 +508,8 @@ SMMAcceleration::ComputeClosures(const std::vector<std::vector<double>>& psi)
 
       // Loop over cell faces
       int f = 0;
-      for (const auto& face : cell.faces)
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
       {
         if (not face.has_neighbor)
         {
@@ -578,7 +581,7 @@ SMMAcceleration::ComputeSourceCorrection() const
     const auto& cell_mapping = pwld.GetLocalCellMapping(cell_local_id);
     const auto nodes = cell_mapping.GetNodeLocations();
     const auto num_cell_nodes = cell_mapping.GetNumNodes();
-    const auto num_cell_faces = cell.faces.size();
+    const auto num_cell_faces = grid->GetCellFaceCount(cell_local_id);
 
     const auto& fe_values = unit_cell_matrices[cell_local_id];
     const auto& K = K_tensor_matrices_[cell_local_id];
@@ -625,9 +628,10 @@ SMMAcceleration::ComputeSourceCorrection() const
     } // for groupset group gsg
 
     // Surface terms
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
     for (size_t f = 0; f < num_cell_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       const auto& normal = face.normal;
       const auto& face_G = fe_values.intS_shapeI_gradshapeJ[f];
       const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);

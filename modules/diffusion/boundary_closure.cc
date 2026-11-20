@@ -44,10 +44,11 @@ FaceOrthogonalLength(const Mesh& grid,
 {
   auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
   const double volume = cell.volume;
-  const double face_area = cell.faces.at(f).area;
-  const size_t num_faces = cell.faces.size();
+  const auto& face = grid.GetCellFace(cell_local_id, f);
+  const double face_area = face.area;
+  const size_t num_faces = grid.GetCellFaceCount(cell_local_id);
   double surface_area = 0.0;
-  for (const auto& face : cell.faces)
+  for (const auto& face : grid.GetCellFaces(cell_local_id))
     surface_area += face.area;
 
   switch (cell.GetType())
@@ -74,7 +75,7 @@ FaceOrthogonalLength(const Mesh& grid,
 double
 FaceSideLength(const Mesh& grid, const Cell& cell, std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& face = cell.faces.at(f);
+  const auto& face = grid.GetCellFace(cell_local_id, f);
   const Vector3& xc = cell.centroid;
   switch (cell.GetType())
   {
@@ -173,7 +174,8 @@ MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMatrix<do
 }
 
 double
-FaceTraceConstant(const CellMapping& cell_mapping,
+FaceTraceConstant(const Mesh& grid,
+                  const CellMapping& cell_mapping,
                   const Cell& cell,
                   std::uint32_t cell_local_id,
                   unsigned int f,
@@ -182,7 +184,7 @@ FaceTraceConstant(const CellMapping& cell_mapping,
 {
   const auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto num_nodes = cell_mapping.GetNumNodes();
-  const auto& normal = cell.faces.at(f).normal;
+  const auto& normal = grid.GetCellFace(cell_local_id, f).normal;
   const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
   DenseMatrix<double> N(num_nodes, num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)
@@ -190,7 +192,6 @@ FaceTraceConstant(const CellMapping& cell_mapping,
       for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
         N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
-  const auto& grid = *cell_mapping.GetMesh();
   return FaceOrthogonalLength(grid, cell, cell_local_id, f) *
          MaxEigenvalueOnStiffnessRange(N, stiffness);
 }

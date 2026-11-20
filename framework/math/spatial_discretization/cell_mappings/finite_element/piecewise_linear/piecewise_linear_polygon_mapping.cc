@@ -20,17 +20,18 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
                                GetNumberOfNodes(ref_grid, cell_local_id),
                                MakeFaceNodeMapping(ref_grid, cell_local_id)),
     volume_quadrature_(volume_quadrature),
-    surface_quadrature_(surface_quadrature)
+    surface_quadrature_(surface_quadrature),
+    num_of_subtris_(grid_->GetCellFaceCount(cell_local_id)),
+    beta_(1.0 / static_cast<double>(num_of_subtris_))
 {
   const auto& poly_cell = ref_grid->GetLocalCell(cell_local_id);
-  num_of_subtris_ = poly_cell.faces.size();
-  beta_ = 1.0 / static_cast<double>(num_of_subtris_);
   vc_ = poly_cell.centroid;
 
   // Calculate legs and determinants
+  const auto poly_cell_faces = ref_grid->GetCellFaces(cell_local_id);
   for (std::size_t side = 0; side < num_of_subtris_; ++side)
   {
-    const CellFace& face = poly_cell.faces[side];
+    const auto& face = poly_cell_faces[side];
     auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
 
     const auto& v0 = grid_->GlobalVertex(face_vertex_ids[0]);
@@ -88,7 +89,7 @@ PieceWiseLinearPolygonMapping::PieceWiseLinearPolygonMapping(
     {
       side_mapping[side] = -1;
 
-      const CellFace& face = poly_cell.faces[side];
+      const auto& face = poly_cell_faces[side];
       auto face_vertex_ids = grid_->GetCellFaceConnectivity(cell_local_id, side);
       if (face_vertex_ids[0] == vindex)
       {

@@ -123,7 +123,7 @@ private:
    * number of such faces.
    */
   std::pair<std::vector<ClosureFaceData>, unsigned int>
-  ComputeClosureFaceData(const Cell& cell) const;
+  ComputeClosureFaceData(std::uint32_t cell_local_id) const;
 
   /// Floor of the interior penalty on a face with unit normal `normal`: beta_f or 1/4.
   double PenaltyFloor(const Vector3& normal) const;

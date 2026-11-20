@@ -72,7 +72,8 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
     const auto& cell_mapping = discretization_.GetLocalCellMapping(cell_local_id);
     const auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto& cell_outflow_view = cell_outflow_views_[cell_local_id];
-    const auto cell_num_faces = cell.faces.size();
+    auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const auto cell_num_faces = grid_->GetCellFaceCount(cell_local_id);
     const auto cell_num_nodes = cell_mapping.GetNumNodes();
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
     std::vector<double> face_mu_values(cell_num_faces);
@@ -117,7 +118,7 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
           Amat(i, j) = omega.Dot(G(i, j)) + c_ang * M_r(i, j);
 
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       // Incoming surface terms
       int in_face_counter = -1;
@@ -126,7 +127,7 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        const auto& cell_face = cell.faces[f];
+        const auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
         // The center of a solid sphere has zero area and no incident flux.
@@ -175,7 +176,8 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
 
       for (size_t gsg = 0; gsg < gs_size && final_direction; ++gsg)
         for (size_t i = 0; i < cell_num_nodes; ++i)
-          b[gsg](i) = psi_edge_[discretization_.MapDOFLocal(cell_local_id, i, unknown_manager_, 0, 0) + gsg];
+          b[gsg](i) =
+            psi_edge_[discretization_.MapDOFLocal(cell_local_id, i, unknown_manager_, 0, 0) + gsg];
 
       if (not final_direction)
         ComputeAngularSource(cell_transport_view,
@@ -217,8 +219,8 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
 
       if (SaveAngularFluxEnabled())
       {
-        double* cell_psi_data =
-          &destination_psi_[discretization_.MapDOFLocal(cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &destination_psi_[discretization_.MapDOFLocal(
+          cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
           const size_t imap =
@@ -236,7 +238,7 @@ AAHSweepChunkSpherical::Sweep(AngleSet& angle_set)
           continue;
 
         out_face_counter++;
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =

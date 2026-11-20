@@ -163,7 +163,7 @@ public:
   CellType GetSubType() const { return cell_sub_type_; }
 
   /// Computes the geometric info on the cell.
-  void ComputeGeometricInfo(const Mesh& grid);
+  void ComputeGeometricInfo(Mesh& grid);
 
   void ComputeVolume(const Mesh& mesh);
 
@@ -179,8 +179,6 @@ public:
 
   Vector3 centroid;
   double volume = 0.;
-
-  std::vector<CellFace> faces;
 
 private:
   /// Primary type, i.e. SLAB, POLYGON, POLYHEDRON

@@ -1423,8 +1423,9 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
-    for (unsigned int f = 0; f < cell.faces.size(); ++f)
-      if (not cell.faces[f].has_neighbor)
+    const auto& cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
+      if (not cell_faces[f].has_neighbor)
       {
         boundary_inflow_slots_[{cell_local_id, f}] = num_slots;
         num_slots += cell_mapping.GetNumFaceNodes(f);
@@ -1449,9 +1450,10 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
     {
       const auto& cell = grid_->GetLocalCell(cell_local_id);
       const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
-      for (unsigned int f = 0; f < cell.faces.size(); ++f)
+      const auto& cell_faces = grid_->GetCellFaces(cell_local_id);
+      for (unsigned int f = 0; f < cell_faces.size(); ++f)
       {
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         if (face.has_neighbor)
           continue;
         const auto bid = face.neighbor_id;
@@ -1534,8 +1536,7 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell = grid_->GetLocalCell(cell_local_id);
-    for (int f = 0; f < cell.faces.size(); ++f)
+    for (int f = 0; f < grid_->GetCellFaceCount(cell_local_id); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
         cell_outflow_views_[cell_local_id].Zero(f, group);
   }

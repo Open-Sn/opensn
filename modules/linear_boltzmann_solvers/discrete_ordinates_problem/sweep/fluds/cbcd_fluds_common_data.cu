@@ -22,7 +22,8 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
-    for (std::uint32_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (std::uint32_t f = 0; f < cell_faces.size(); ++f)
       total_face_nodes += sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);
   }
   std::vector<std::size_t> cell_spatial_dof_offsets(num_local_cells);
@@ -44,11 +45,12 @@ CBCD_FLUDSCommonData::CopyFlattenedNodeIndexToDevice(const SpatialDiscretization
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
+    const auto cell_faces = grid.GetCellFaces(cell_local_id);
     cell_offsets_ptr[static_cast<std::size_t>(2) * cell_local_id] = current_index_offset;
     std::uint64_t num_cell_nodes = 0;
-    for (std::size_t f = 0; f < cell.faces.size(); ++f)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const CellFace& face = cell.faces[f];
+      const CellFace& face = cell_faces[f];
       const FaceOrientation& orientation = spds_.GetCellFaceOrientations()[cell_local_id][f];
       const FaceNodalMapping& face_nodal_mapping = grid_nodal_mappings_[cell_local_id][f];
       const std::size_t num_face_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumFaceNodes(f);

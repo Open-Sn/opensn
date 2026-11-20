@@ -71,9 +71,10 @@ CheckSegment(const Mesh& grid, const MeshSegmentTracer& tracer, const Vector3& a
   for (std::uint64_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid.GetLocalCell(cell_local_id);
-    for (std::uint32_t fi = 0; fi < cell.faces.size(); ++fi)
+    auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (std::uint32_t fi = 0; fi < cell_faces.size(); ++fi)
     {
-      const auto& face = cell.faces[fi];
+      const auto& face = cell_faces[fi];
       auto face_vertex_ids = grid.GetCellFaceConnectivity(cell_local_id, fi);
       const size_t num_sides = face_vertex_ids.size();
       for (size_t s = 0; s < num_sides; ++s)
@@ -353,9 +354,10 @@ TEST(MeshSegmentTracer, GrazingFaces)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    for (std::uint32_t fi = 0; fi < cell.faces.size(); ++fi)
+    auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (std::uint32_t fi = 0; fi < cell_faces.size(); ++fi)
     {
-      const auto& face = cell.faces[fi];
+      const auto& face = cell_faces[fi];
       if (not face.has_neighbor or face.neighbor_id < cell.global_id)
         continue;
       const auto& f = face.centroid;
@@ -422,9 +424,10 @@ TEST(MeshSegmentTracer, AllRaysToSource)
   // An interior face of the source cell, with a vertex and an edge of it.
   const CellFace* interior_face = nullptr;
   std::span<const std::uint64_t> interior_face_vertex_ids;
-  for (std::uint32_t face_idx = 0; face_idx < cell_of_source.faces.size(); ++face_idx)
+  auto cell_of_source_faces = grid->GetCellFaces(source_cell.front());
+  for (std::uint32_t face_idx = 0; face_idx < cell_of_source_faces.size(); ++face_idx)
   {
-    const auto& face = cell_of_source.faces[face_idx];
+    const auto& face = cell_of_source_faces[face_idx];
     if (face.has_neighbor)
     {
       interior_face = &face;
@@ -453,7 +456,8 @@ TEST(MeshSegmentTracer, AllRaysToSource)
       std::vector<Vector3> starts = {cell.centroid};
       for (const auto vid : cell_vertex_ids)
         starts.push_back(0.5 * (cell.centroid + grid->GlobalVertex(vid)));
-      for (const auto& face : cell.faces)
+      auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
         starts.push_back(cell.centroid + 0.999 * (face.centroid - cell.centroid));
       for (const auto& start : starts)
         for (const auto& source : sources)
@@ -713,9 +717,10 @@ TEST(MeshSegmentTracer, NearEdgesAndVerticesAtTolerance)
       lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
       hi = Vector3(std::max(hi.x, v.x), std::max(hi.y, v.y), std::max(hi.z, v.z));
     }
-    for (std::uint32_t fi = 0; fi < cell.faces.size(); ++fi)
+    auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (std::uint32_t fi = 0; fi < cell_faces.size(); ++fi)
     {
-      const auto face = cell.faces[fi];
+      const auto face = cell_faces[fi];
       auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, fi);
       const size_t n = face_vertex_ids.size();
       for (size_t s = 0; s < n; ++s)

@@ -197,7 +197,7 @@ AAH_FLUDSCommonData::SlotDynamics(
   inco_face_offsets_.push_back(ToFaceIndex(inco_face_categories_.size(), "face offset"));
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const CellFace& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     if (orientation != FaceOrientation::INCOMING or not face.IsNeighborLocal(grid_ptr.get()))
@@ -252,7 +252,7 @@ AAH_FLUDSCommonData::SlotDynamics(
   outb_face_offsets_.push_back(ToFaceIndex(outb_face_slots_.size(), "face offset"));
   for (auto f = 0; f < cell.faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     if (orientation != FaceOrientation::OUTGOING)
@@ -352,9 +352,10 @@ AAH_FLUDSCommonData::LocalIncidentMapping(std::uint32_t cell_local_id,
   const auto& cell = grid->GetLocalCell(cell_local_id);
 
   // Loop over faces but process only incident faces
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orienation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     // Incident face
@@ -373,7 +374,7 @@ AAH_FLUDSCommonData::LocalIncidentMapping(std::uint32_t cell_local_id,
         int adj_f_counter = -1;
 
         int out_f = -1;
-        for (auto af = 0; af < adj_cell.faces.size(); ++af)
+        for (auto af = 0; af < grid->GetCellFaceCount(adj_cell_local_id); ++af)
         {
           if (face_oris[af] == FaceOrientation::OUTGOING)
           {
@@ -652,9 +653,10 @@ AAH_FLUDSCommonData::NonLocalIncidentMapping(
   const auto& cell = grid->GetLocalCell(cell_local_id);
 
   // Loop over faces but process only incident faces
-  for (auto f = 0; f < cell.faces.size(); ++f)
+  const auto cell_faces = grid->GetCellFaces(cell_local_id);
+  for (auto f = 0; f < cell_faces.size(); ++f)
   {
-    const CellFace& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     const auto& orientation = spds.GetCellFaceOrientations()[cell_local_id][f];
 
     // Incident face

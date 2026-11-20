@@ -87,7 +87,8 @@ double MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMa
  * carry the spatial weight of `coord_sys` (r in RZ); `stiffness` must be computed with the same
  * weight (ComputeUnitCellIntegrals with `coord_sys`).
  */
-double FaceTraceConstant(const CellMapping& cell_mapping,
+double FaceTraceConstant(const Mesh& grid,
+                         const CellMapping& cell_mapping,
                          const Cell& cell,
                          std::uint32_t cell_local_id,
                          unsigned int f,

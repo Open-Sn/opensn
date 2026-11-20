@@ -83,6 +83,7 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     std::string name;
     std::vector<Cell> cells;
     std::vector<std::vector<std::uint64_t>> cell_connect;
+    std::vector<CellFace> mesh_faces;
     std::vector<std::vector<std::vector<std::uint64_t>>> cell_face_connect;
     std::vector<std::pair<uint64_t, uint64_t>> edges;
   };
@@ -167,12 +168,12 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
       for (size_t v = 0; v < num_verts; ++v)
       {
         CellFace face;
+        block_data.back().mesh_faces.emplace_back(face);
 
         std::vector<std::uint64_t> lwf_vertex_ids(2);
         lwf_vertex_ids[0] = cell_vertex_ids[v];
         lwf_vertex_ids[1] = (v < (num_verts - 1)) ? cell_vertex_ids[v + 1] : cell_vertex_ids[0];
 
-        cell.faces.emplace_back(face);
         cell_face_vertex_ids.push_back(std::move(lwf_vertex_ids));
       }
 
@@ -335,7 +336,8 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
   mesh->SetType(UNSTRUCTURED);
   mesh->SetCells(std::move(block_data[main_block_id].cells),
                  block_data[main_block_id].cell_connect);
-  mesh->SetCellFaces(block_data[main_block_id].cell_face_connect);
+  mesh->SetCellFaces(std::move(block_data[main_block_id].mesh_faces),
+                     block_data[main_block_id].cell_face_connect);
   mesh->ComputeCentroids();
   mesh->CheckQuality();
   mesh->BuildMeshConnectivity();
@@ -348,9 +350,10 @@ MeshIO::FromOBJ(const UnpartitionedMesh::Options& options)
     size_t cell_idx = 0;
     for (auto& cell : mesh->GetCells())
     {
-      for (size_t f = 0; f < cell.faces.size(); ++f)
+      const auto cell_faces = mesh->GetCellFaces(cell_idx);
+      for (size_t f = 0; f < cell_faces.size(); ++f)
       {
-        auto& face = cell.faces[f];
+        auto& face = cell_faces[f];
         if (not face.has_neighbor)
         {
           bndry_faces.push_back(&face);

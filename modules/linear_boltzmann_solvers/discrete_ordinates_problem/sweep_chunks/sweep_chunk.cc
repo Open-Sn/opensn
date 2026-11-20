@@ -76,12 +76,13 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid_->GetLocalCell(cell_local_id);
+    auto cell_faces = grid_->GetCellFaces(cell_local_id);
     const auto& transport_view = cell_transport_views_[cell_local_id];
     const auto& cell_mapping = discretization_.GetLocalCellMapping(cell_local_id);
     const auto& int_s_shape_i = unit_cell_matrices_[cell_local_id].intS_shapeI;
     auto& outflow_view = cell_outflow_views_[cell_local_id];
     const auto num_nodes = static_cast<size_t>(transport_view.GetNumNodes());
-    const auto num_faces = cell.faces.size();
+    const auto num_faces = cell_faces.size();
     const double* cell_psi =
       &psi[discretization_.MapDOFLocal(cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
@@ -118,7 +119,7 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
         {
           if (face_orientations[f] != FaceOrientation::OUTGOING)
             continue;
-          const double mu = omega.Dot(cell.faces[f].normal);
+          const double mu = omega.Dot(cell_faces[f].normal);
           const auto& int_f_shape_i = int_s_shape_i[f];
           for (size_t fi = 0; fi < cell_mapping.GetNumFaceNodes(f); ++fi)
           {

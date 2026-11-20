@@ -28,10 +28,10 @@ PieceWiseLinearBaseMapping::MakeFaceNodeMapping(const std::shared_ptr<Mesh>& gri
 {
   const auto& cell = grid->GetLocalCell(cell_local_id);
   auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
-  const size_t num_faces = cell.faces.size();
+  const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
   std::vector<std::vector<int>> mappings;
   mappings.reserve(num_faces);
-  for (std::uint32_t face_idx = 0; face_idx < cell.faces.size(); ++face_idx)
+  for (std::uint32_t face_idx = 0; face_idx < num_faces; ++face_idx)
   {
     auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, face_idx);
     std::vector<int> face_dof_mapping;

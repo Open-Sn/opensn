@@ -267,7 +267,8 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
   for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
-    for (unsigned int f = 0; f < cell.faces.size(); ++f)
+    auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
       solver.options.h_perp_convention = "cell";
       EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h / 6.0, 1.0e-12);

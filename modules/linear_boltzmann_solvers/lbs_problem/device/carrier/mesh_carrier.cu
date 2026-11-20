@@ -35,6 +35,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
   for (std::uint32_t cell_local_id = 0; cell_local_id < mesh.GetLocalCellCount(); ++cell_local_id)
   {
     const auto& cell = mesh.GetLocalCell(cell_local_id);
+    const auto cell_faces = mesh.GetCellFaces(cell_local_id);
     // number of faces and nodes
     alloc_size += 2 * sizeof(std::uint32_t);
     // pointer to total cross sections
@@ -48,7 +49,7 @@ MeshCarrier::ComputeSize(LBSProblem& lbs_problem)
     const DenseMatrix<double>& M = unit_matrices.intV_shapeI_shapeJ;
     alloc_size += M.size() * (4 * sizeof(double));
     // offset to the data of each face
-    std::size_t cell_num_faces = cell.faces.size();
+    std::size_t cell_num_faces = cell_faces.size();
     alloc_size += cell_num_faces * sizeof(std::uint64_t);
     // data of each face
     const std::vector<std::vector<int>>& face_node_mappings =
@@ -92,12 +93,12 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
   std::uint64_t* offset_cell_data = reinterpret_cast<std::uint64_t*>(data);
   data = reinterpret_cast<char*>(offset_cell_data + num_cells);
   std::uint64_t saved_psi_index = 0;
-  for (char* cell_data = data; std::uint32_t cell_local_id = 0;
-       cell_local_id < mesh.GetLocalCellCount();
-       ++cell_local_id)
+  char* cell_data = data;
+  for (std::uint32_t cell_local_id = 0; cell_local_id < num_cells; ++cell_local_id)
   {
     const auto& cell = mesh.GetLocalCell(cell_local_id);
-    std::size_t cell_num_faces = cell.faces.size();
+    const auto cell_faces = mesh.GetCellFaces(cell_local_id);
+    std::size_t cell_num_faces = mesh.GetCellFaceCount(cell_local_id);
     const CellMapping& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     std::size_t cell_num_nodes = cell_mapping.GetNumNodes();
     // check for cell num nodes compatibility with sweep kernel
@@ -159,7 +160,7 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     char* face_data = cell_data;
     for (std::size_t f = 0; f < cell_num_faces; ++f)
     {
-      const CellFace& face = cell.faces[f];
+      const CellFace& face = cell_faces[f];
       *(offset_face_data++) = face_data - cell_data;
       // number of face node
       std::uint64_t* num_face_nodes_data = reinterpret_cast<std::uint64_t*>(face_data);

@@ -389,7 +389,7 @@ AAHD_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
                               offset;
 
       // -w_n Omega_n . n, the factor of the upwind flux in the face term of the sweep
-      const auto& normal = grid.GetLocalCell(cell_local_id).faces[f].normal;
+      const auto& normal = grid.GetCellFace(cell_local_id, f).normal;
       for (std::size_t n = 0; n < num_angles_; ++n)
         inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
 

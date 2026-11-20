@@ -34,10 +34,13 @@ std::set<std::uint64_t>
 GetGlobalUniqueBoundaryIDs(const std::shared_ptr<Mesh>& grid, mpi::Communicator& mpi_comm)
 {
   std::set<std::uint64_t> local_unique_bids_set;
-  for (const auto& cell : grid->GetLocalCells())
-    for (const auto& face : cell.faces)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell_faces = grid->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
       if (not face.has_neighbor)
         local_unique_bids_set.insert(face.neighbor_id);
+  }
 
   const std::vector<std::uint64_t> local_unique_bids(local_unique_bids_set.begin(),
                                                      local_unique_bids_set.end());
@@ -233,8 +236,11 @@ DiscreteOrdinatesProblem::ComputeReflectingBoundaryNormal(uint64_t bid) const
   // A rank without faces of this boundary contributes +inf and 1, which do not affect the result.
   std::array<double, 7> local = {inf, inf, inf, inf, inf, inf, 1.0};
   std::optional<Vector3> first_normal;
-  for (const auto& cell : grid_->GetLocalCells())
-    for (const auto& face : cell.faces)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
+    {
       if (not face.has_neighbor and face.neighbor_id == bid)
       {
         if (not first_normal)
@@ -247,6 +253,8 @@ DiscreteOrdinatesProblem::ComputeReflectingBoundaryNormal(uint64_t bid) const
           local[3 + d] = std::min(local[3 + d], -face.normal[d]);
         }
       }
+    }
+  }
 
   std::array<double, 7> global{};
   mpi_comm.all_reduce(local.data(), 7, global.data(), mpi::op::min<double>());

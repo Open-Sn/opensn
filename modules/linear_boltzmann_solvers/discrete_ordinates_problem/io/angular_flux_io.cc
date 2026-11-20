@@ -543,8 +543,9 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
-      for (size_t f = 0; f < cell.faces.size(); ++f)
-        if (not cell.faces[f].has_neighbor and
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (size_t f = 0; f < cell_faces.size(); ++f)
+        if (not cell_faces[f].has_neighbor and
             FaceMatchesInteriorSurface(cell_mapping, f, axis, slice))
         {
           coincides_with_boundary = 1;
@@ -596,7 +597,8 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
   {
     const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (size_t f = 0; f < cell_faces.size(); ++f)
       for (size_t p = 0; p < planes.size(); ++p)
         if (FaceMatchesInteriorSurface(
               cell_mapping, f, axis_names[planes[p].first], planes[p].second))
@@ -792,10 +794,11 @@ DiscreteOrdinatesProblemIO::WriteSurfaceAngularFluxes(
     const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     const auto& node_locations = cell_mapping.GetNodeLocations();
     const auto& fe_values = unit_cell_matrices.at(cell_local_id);
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
 
-    for (size_t f = 0; f < cell.faces.size(); ++f)
+    for (size_t f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = cell_faces[f];
       bool is_surface = false;
       std::optional<uint64_t> boundary_id;
       std::string surface_name;

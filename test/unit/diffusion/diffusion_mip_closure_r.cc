@@ -157,12 +157,16 @@ TEST(DiffusionClosureR, TraceConstant)
   {
     auto grid = BuildBoxMesh(2.0, 2, 0.0);
     std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
-      for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K), 1.0, 1.0e-10);
+      for (unsigned int f = 0; f < grid->GetCellFaceCount(cell_local_id); ++f)
+        EXPECT_NEAR(FaceTraceConstant(
+                      *grid, sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K),
+                    1.0,
+                    1.0e-10);
     }
   }
   {
@@ -171,14 +175,18 @@ TEST(DiffusionClosureR, TraceConstant)
     auto grid = BuildMeshFromFile(mfile);
     std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
     size_t checked = 0;
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       if (checked++ == 50)
         break;
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
-      for (unsigned int f = 0; f < cell.faces.size(); ++f)
-        EXPECT_NEAR(FaceTraceConstant(sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K), 3.0, 1.0e-9);
+      for (unsigned int f = 0; f < grid->GetCellFaceCount(cell_local_id); ++f)
+        EXPECT_NEAR(FaceTraceConstant(
+                      *grid, sdm->GetLocalCellMapping(cell_local_id), cell, cell_local_id, f, K),
+                    3.0,
+                    1.0e-9);
     }
   }
 }
@@ -196,13 +204,14 @@ TEST(DiffusionClosureR, TraceConstantRZ)
     const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& mapping = sdm->GetLocalCellMapping(cell_local_id);
     const auto K = ComputeUnitCellIntegrals(*sdm, cell_local_id).intV_gradshapeI_gradshapeJ;
-    const auto K_rz = ComputeUnitCellIntegrals(*sdm, cell_local_id, CoordinateSystemType::CYLINDRICAL)
-                        .intV_gradshapeI_gradshapeJ;
-    for (unsigned int f = 0; f < cell.faces.size(); ++f)
+    const auto K_rz =
+      ComputeUnitCellIntegrals(*sdm, cell_local_id, CoordinateSystemType::CYLINDRICAL)
+        .intV_gradshapeI_gradshapeJ;
+    for (unsigned int f = 0; f < grid->GetCellFaceCount(cell_local_id); ++f)
     {
-      const double c_xy = FaceTraceConstant(mapping, cell, cell_local_id, f, K);
-      const double c_rz =
-        FaceTraceConstant(mapping, cell, cell_local_id, f, K_rz, CoordinateSystemType::CYLINDRICAL);
+      const double c_xy = FaceTraceConstant(*grid, mapping, cell, cell_local_id, f, K);
+      const double c_rz = FaceTraceConstant(
+        *grid, mapping, cell, cell_local_id, f, K_rz, CoordinateSystemType::CYLINDRICAL);
       EXPECT_NEAR(c_rz, c_xy, 2.0e-3 * c_xy);
     }
   }

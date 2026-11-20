@@ -121,14 +121,17 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
   const std::vector<Vector3> unit_normal_vectors = {
     Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)};
   int local_non_orthogonal = 0;
-  for (const auto& cell : grid_->GetLocalCells())
-    for (const auto& face : cell.faces)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
       if (not face.has_neighbor and
           std::none_of(unit_normal_vectors.begin(),
                        unit_normal_vectors.end(),
                        [&face](const Vector3& e)
                        { return std::fabs(face.normal.Dot(e)) > 0.999999; }))
         local_non_orthogonal = 1;
+  }
   int non_orthogonal = 0;
   mpi_comm.all_reduce(local_non_orthogonal, non_orthogonal, mpi::op::max<int>());
   if (non_orthogonal != 0)

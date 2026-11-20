@@ -93,10 +93,10 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
 
     // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
-    const size_t num_faces = cell.faces.size();
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell.faces[f];
+      const auto& face = grid->GetCellFace(cell_local_id, f);
       if (face.has_neighbor)
         continue;
 
