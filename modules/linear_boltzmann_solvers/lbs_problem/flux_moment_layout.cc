@@ -35,11 +35,20 @@ FluxMomentLayout::FluxMomentLayout(std::uint64_t num_local_nodes,
                        "FluxMomentLayout: the groupsets cover " + std::to_string(next_group) +
                          " of " + std::to_string(num_groups) + " groups.");
 
-  // [node][moment][group]: every group shares the stride of all groups.
+  // [groupset][node][moment][group in groupset]: each groupset is one block of
+  // nodes x moments x (its groups) entries, and a group's stride is the size of its groupset.
   group_base_.resize(num_groups);
-  group_stride_.assign(num_groups, num_groups);
-  for (unsigned int g = 0; g < num_groups; ++g)
-    group_base_[g] = g;
+  group_stride_.resize(num_groups);
+  std::size_t block_offset = 0;
+  for (const auto& range : groupsets)
+  {
+    for (unsigned int k = 0; k < range.num_groups; ++k)
+    {
+      group_base_[range.first_group + k] = block_offset + k;
+      group_stride_[range.first_group + k] = range.num_groups;
+    }
+    block_offset += static_cast<std::size_t>(num_local_nodes) * num_moments * range.num_groups;
+  }
 
   for (unsigned int g = 0; g < num_groups; ++g)
     node_moment_group_order_ =

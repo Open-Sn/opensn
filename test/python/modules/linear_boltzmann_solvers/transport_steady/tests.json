@@ -3204,5 +3204,60 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "phi_local_groupset_order.py",
+    "comment": "GetPhiNewLocal/GetPhiOldLocal return node, moment, group order with one groupset and with two unequal groupsets coupled by upscatter. An infinite-medium slab is compared with the analytic flux (Q_g + 9 sum Q)/1.4 per group; the views are read-only and the multi-groupset view is a snapshot.",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK0_PHI0_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK0_PHI1_MAX_ABS=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK0_READ_ONLY=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK0_SPLIT_VIEW_IS_SNAPSHOT=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK1_PHI0_MAX_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK1_PHI1_MAX_ABS=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK1_READ_ONLY=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_LOCAL_ORDER_RANK1_SPLIT_VIEW_IS_SNAPSHOT=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
   }
 ]

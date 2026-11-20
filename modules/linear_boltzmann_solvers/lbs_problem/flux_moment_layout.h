@@ -23,7 +23,10 @@ namespace opensn
  * are stored at consecutive indices. A pointer to the first group of a groupset therefore addresses
  * every group of that groupset. Groups of different groupsets have no defined relative position.
  *
- * The current storage order is [node][moment][group].
+ * The storage order is [groupset][node][moment][group in groupset]: each groupset owns one
+ * contiguous block of nodes x moments x (groups of the groupset) entries, and the blocks follow the
+ * groupset order. Local nodes are numbered cell by cell, so a block is also in [cell][node] order.
+ * With one groupset this is [node][moment][group].
  */
 class FluxMomentLayout
 {
@@ -77,8 +80,8 @@ public:
 
   /**
    * True when the layout is [node][moment][group] order, the order of the flux-moment unknown
-   * manager. Code that indexes these vectors through that unknown manager, such as PWLD ghost
-   * communication, requires it.
+   * manager. This holds for a single groupset. Code that indexes these vectors through that unknown
+   * manager, such as PWLD ghost communication, requires it.
    */
   bool IsNodeMomentGroupOrder() const { return node_moment_group_order_; }
 

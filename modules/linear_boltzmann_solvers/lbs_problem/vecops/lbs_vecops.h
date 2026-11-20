@@ -84,6 +84,10 @@ public:
                                                      PhiSTLOption which_phi);
 
 private:
+  /**
+   * Calls `func(idx, mapped_idx)` for groups [gsi, gsi + gss) at every local node and moment. The
+   * groups must belong to one groupset, whose groups are stored contiguously.
+   */
   template <typename Functor>
   static int64_t
   GroupsetScopedCopy(LBSProblem& lbs_problem, unsigned int gsi, unsigned int gss, Functor func);

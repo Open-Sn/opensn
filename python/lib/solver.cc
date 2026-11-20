@@ -78,6 +78,23 @@ BalanceTableToDict(const BalanceTable& table)
   return values;
 }
 
+/**
+ * Returns a read-only view of the local flux-moment vector `phi` in [node][moment][group] order.
+ * With one groupset that is the storage order and the view aliases `phi`; otherwise the view owns a
+ * reordered copy.
+ */
+py::memoryview
+FluxMomentsView(const LBSProblem& problem, const std::vector<double>& phi)
+{
+  const auto& layout = problem.GetFluxMomentLayout();
+  if (layout.IsNodeMomentGroupOrder())
+    return convert_vector(phi);
+  const auto ordered = layout.ToNodeMomentGroupOrder(phi);
+  py::array_t<double> array(static_cast<py::ssize_t>(ordered.size()), ordered.data());
+  array.attr("setflags")(py::arg("write") = false);
+  return {array};
+}
+
 } // namespace
 
 // Wrap problem
@@ -416,30 +433,50 @@ WrapLBS(py::module& slv)
     "GetPhiOldLocal",
     [](LBSProblem& self)
     {
-      return convert_vector(self.GetPhiOldLocal());
+      return FluxMomentsView(self, self.GetPhiOldLocal());
     },
     R"(
-    Get the previous scalar flux iterate (local vector).
+    Get the previous flux-moment iterate on this rank.
 
     Returns
     -------
     memoryview
-        Memory view of the local old scalar flux vector.
+        Read-only view of the local old flux moments: one ``float`` per local node, moment,
+        and group, in node-major, then moment, then group order. Local nodes are numbered cell
+        by cell in local cell order, so ``numpy.asarray(view).reshape(-1, num_groups)`` gives
+        one row per node and moment.
+
+    Notes
+    -----
+    For a problem with one groupset the view aliases the solver's storage without copying it.
+    With several groupsets the solver stores each groupset separately, so the view holds a
+    reordered copy taken when this method is called. In both cases, call this method again after
+    a solve instead of reusing an earlier view.
     )"
   );
   lbs_problem.def(
     "GetPhiNewLocal",
     [](LBSProblem& self)
     {
-      return convert_vector(self.GetPhiNewLocal());
+      return FluxMomentsView(self, self.GetPhiNewLocal());
     },
     R"(
-    Get the current scalar flux iterate (local vector).
+    Get the current flux-moment iterate on this rank.
 
     Returns
     -------
     memoryview
-        Memory view of the local new scalar flux vector.
+        Read-only view of the local new flux moments: one ``float`` per local node, moment,
+        and group, in node-major, then moment, then group order. Local nodes are numbered cell
+        by cell in local cell order, so ``numpy.asarray(view).reshape(-1, num_groups)`` gives
+        one row per node and moment.
+
+    Notes
+    -----
+    For a problem with one groupset the view aliases the solver's storage without copying it.
+    With several groupsets the solver stores each groupset separately, so the view holds a
+    reordered copy taken when this method is called. In both cases, call this method again after
+    a solve instead of reusing an earlier view.
     )"
   );
   lbs_problem.def(

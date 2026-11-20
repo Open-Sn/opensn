@@ -8,6 +8,39 @@
 namespace opensn
 {
 
+namespace
+{
+
+/**
+ * Calls `func(idx, mapped_idx)` for every local node, moment, and group in
+ * [first_group, first_group + num_groups), with `idx` counting entries in [node][moment][group]
+ * order. Unlike LBSVecOps::GroupsetScopedCopy, the groups may belong to several groupsets, so each
+ * group is mapped separately.
+ */
+template <typename Functor>
+void
+GroupRangeCopy(const LBSProblem& lbs_problem,
+               unsigned int first_group,
+               unsigned int num_groups,
+               Functor func)
+{
+  const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
+  const auto num_moments = lbs_problem.GetNumMoments();
+
+  int64_t idx = -1;
+  for (const auto& cell : lbs_problem.GetGrid()->GetLocalCells())
+  {
+    const auto& transport_view = cell_transport_views[cell->local_id];
+    const auto num_nodes = static_cast<std::size_t>(transport_view.GetNumNodes());
+    for (std::size_t i = 0; i < num_nodes; ++i)
+      for (unsigned int m = 0; m < num_moments; ++m)
+        for (unsigned int g = 0; g < num_groups; ++g)
+          func(++idx, transport_view.MapDOF(i, m, first_group + g));
+  }
+}
+
+} // namespace
+
 template <typename Functor>
 int64_t
 LBSVecOps::GroupsetScopedCopy(LBSProblem& lbs_problem,
@@ -148,10 +181,10 @@ LBSVecOps::SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
 {
   PetscScalar* petsc_dest = nullptr;
   OpenSnPETScCall(VecGetArray(dest, &petsc_dest));
-  GroupsetScopedCopy(lbs_problem,
-                     first_group_id,
-                     last_group_id - first_group_id + 1,
-                     [&](int64_t idx, size_t mapped_idx) { petsc_dest[idx] = src[mapped_idx]; });
+  GroupRangeCopy(lbs_problem,
+                 first_group_id,
+                 last_group_id - first_group_id + 1,
+                 [&](int64_t idx, size_t mapped_idx) { petsc_dest[idx] = src[mapped_idx]; });
   OpenSnPETScCall(VecRestoreArray(dest, &petsc_dest));
 }
 
@@ -166,11 +199,10 @@ LBSVecOps::SetPrimarySTLvectorFromGroupScopedPETScVec(LBSProblem& lbs_problem,
     (dest == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
   const PetscScalar* petsc_src = nullptr;
   OpenSnPETScCall(VecGetArrayRead(src, &petsc_src));
-  GroupsetScopedCopy(lbs_problem,
-                     first_group_id,
-                     last_group_id - first_group_id + 1,
-                     [&](int64_t idx, size_t mapped_idx)
-                     { dest_phi[mapped_idx] = petsc_src[idx]; });
+  GroupRangeCopy(lbs_problem,
+                 first_group_id,
+                 last_group_id - first_group_id + 1,
+                 [&](int64_t idx, size_t mapped_idx) { dest_phi[mapped_idx] = petsc_src[idx]; });
   OpenSnPETScCall(VecRestoreArrayRead(src, &petsc_src));
 }
 

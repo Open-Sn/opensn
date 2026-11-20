@@ -73,9 +73,25 @@ TEST(FluxMomentLayoutTest, MomentAndNodeStrides)
   }
 }
 
-TEST(FluxMomentLayoutTest, CurrentOrderIsNodeMomentGroup)
+TEST(FluxMomentLayoutTest, OrderIsGroupsetNodeMomentGroup)
 {
   const auto layout = MakeLayout();
+  EXPECT_FALSE(layout.IsNodeMomentGroupOrder());
+  std::size_t block_offset = 0;
+  for (const auto& range : kGroupsets)
+  {
+    for (std::uint64_t n = 0; n < kNodes; ++n)
+      for (unsigned int m = 0; m < kMoments; ++m)
+        for (unsigned int k = 0; k < range.num_groups; ++k)
+          EXPECT_EQ(layout.MapDOF(n, m, range.first_group + k),
+                    block_offset + (n * kMoments + m) * range.num_groups + k);
+    block_offset += kNodes * kMoments * range.num_groups;
+  }
+}
+
+TEST(FluxMomentLayoutTest, SingleGroupsetIsNodeMomentGroup)
+{
+  const FluxMomentLayout layout(kNodes, kMoments, kGroups, {{0, kGroups}});
   EXPECT_TRUE(layout.IsNodeMomentGroupOrder());
   for (std::uint64_t n = 0; n < kNodes; ++n)
     for (unsigned int m = 0; m < kMoments; ++m)
