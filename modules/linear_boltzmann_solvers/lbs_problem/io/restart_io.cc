@@ -287,7 +287,8 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
               dof = discretization.MapDOFLocal(cell_local_id, file_to_local_node[i], uk_man, m, g);
             }
             else
-              dof = discretization.MapDOFLocal(cell_local_id, file_to_local_node[i]) * stride + component;
+              dof = discretization.MapDOFLocal(cell_local_id, file_to_local_node[i]) * stride +
+                    component;
             destination.at(dof) = values.at(value_offset + i * stride + component);
           }
         found[cell_local_id] = true;

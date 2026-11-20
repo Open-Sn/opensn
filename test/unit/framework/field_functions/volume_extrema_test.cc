@@ -134,7 +134,8 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
     { return 1.0 + p.x / size.x + 2.0 * p.y / size.y + 3.0 * p.z / size.z; };
     const auto& unknowns = ff->GetUnknownManager();
     std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
@@ -145,7 +146,8 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
 
     auto jump = std::make_shared<FieldFunctionGridBased>("jump", sdm, Unknown(UnknownType::SCALAR));
     std::vector<double> jump_values(sdm->GetNumLocalDOFs(unknowns));
-    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
       const auto& cell = grid->GetLocalCell(cell_local_id);
       for (size_t i = 0; i < sdm->GetCellNumNodes(cell_local_id); ++i)

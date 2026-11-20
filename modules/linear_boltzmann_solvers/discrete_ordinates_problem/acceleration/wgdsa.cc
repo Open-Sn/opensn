@@ -231,11 +231,12 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
   if (HasDelayedAngularFlux(groupset))
   {
     lagged_source.assign(gss, std::vector<double>(num_dofs, 0.0));
-    TallyDelayedSource(do_problem,
-                       groupset,
-                       subtract_old_delayed_psi,
-                       [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
-                       { lagged_source[g][sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0)] += value; });
+    TallyDelayedSource(
+      do_problem,
+      groupset,
+      subtract_old_delayed_psi,
+      [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
+      { lagged_source[g][sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0)] += value; });
   }
 
   for (unsigned int g = 0; g < gss; ++g)
@@ -447,11 +448,12 @@ WGDSA::Apply(DiscreteOrdinatesProblem& do_problem,
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
     std::vector<double> lagged_source(delta_phi_local.size(), 0.0);
-    TallyDelayedSource(do_problem,
-                       groupset,
-                       subtract_old_delayed_psi,
-                       [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
-                       { lagged_source[sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, g)] += value; });
+    TallyDelayedSource(
+      do_problem,
+      groupset,
+      subtract_old_delayed_psi,
+      [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
+      { lagged_source[sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, g)] += value; });
     groupset.wgdsa_solver->AddToRHS(lagged_source);
   }
   groupset.wgdsa_solver->Solve(delta_phi_local);
