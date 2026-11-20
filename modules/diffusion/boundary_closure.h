@@ -51,7 +51,10 @@ double QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
  * (d the dimension), \f$V / A_f\f$ for quadrilaterals and 8-vertex hexahedra, \f$2 d V / S\f$ for
  * other polygons and polyhedra (S the total surface), the cell length for slabs.
  */
-double FaceOrthogonalLength(const Cell& cell, unsigned int f);
+double FaceOrthogonalLength(const Mesh& grid,
+                            const Cell& cell,
+                            std::uint32_t cell_local_id,
+                            unsigned int f);
 
 /**
  * Side length of face `f` of `cell` for the PWLD basis: twice the smallest height of the face's
@@ -64,7 +67,8 @@ double FaceOrthogonalLength(const Cell& cell, unsigned int f);
  * consistency terms on any cell shape. Equal to \f$V/A_f\f$ on a square or a cube. Slab
  * cells: the cell length.
  */
-double FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f);
+double
+FaceSideLength(const Mesh& grid, const Cell& cell, std::uint32_t cell_local_id, unsigned int f);
 
 /**
  * Largest generalized eigenvalue \f$\lambda\f$ of \f$N v = \lambda K v\f$ over the range of `K`,
@@ -83,8 +87,10 @@ double MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMa
  * carry the spatial weight of `coord_sys` (r in RZ); `stiffness` must be computed with the same
  * weight (ComputeUnitCellIntegrals with `coord_sys`).
  */
-double FaceTraceConstant(const CellMapping& cell_mapping,
+double FaceTraceConstant(const Mesh& grid,
+                         const CellMapping& cell_mapping,
                          const Cell& cell,
+                         std::uint32_t cell_local_id,
                          unsigned int f,
                          const DenseMatrix<double>& stiffness,
                          CoordinateSystemType coord_sys = CoordinateSystemType::CARTESIAN);

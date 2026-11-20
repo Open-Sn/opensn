@@ -208,14 +208,14 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
   ASSERT_GT(moment_map.size(), 1U);
   ASSERT_EQ(moment_map[0].ell, 0U);
   ASSERT_EQ(moment_map[1].ell, 1U);
-  const auto& local_cells = restarted_problem->GetGrid()->GetLocalCells();
+  const auto& local_cells = restarted_problem->GetMesh()->GetLocalCells();
   if (not local_cells.empty())
   {
-    const auto& cell = *local_cells.front();
+    const auto& cell = local_cells.front();
     const auto& sdm = restarted_problem->GetSpatialDiscretization();
     const auto& uk_man = restarted_problem->GetUnknownManager();
-    const auto even_dof = sdm.MapDOFLocal(cell, 0, uk_man, 0, 0);
-    const auto odd_dof = sdm.MapDOFLocal(cell, 0, uk_man, 1, 0);
+    const auto even_dof = sdm.MapDOFLocal(0, 0, uk_man, 0, 0);
+    const auto odd_dof = sdm.MapDOFLocal(0, 0, uk_man, 1, 0);
     auto& phi_new = restarted_problem->GetPhiNewLocal();
     auto& phi_old = restarted_problem->GetPhiOldLocal();
     phi_new[even_dof] = 2.5;

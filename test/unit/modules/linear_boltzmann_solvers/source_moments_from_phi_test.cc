@@ -123,8 +123,11 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
   const auto& uk_man = problem.GetUnknownManager();
   const auto& moment_map = problem.GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   std::vector<double> q(phi.size(), 0.0);
-  for (const auto& cell : problem.GetGrid()->GetLocalCells())
-    for (unsigned int i = 0; i < sdm.GetCellNumNodes(*cell); ++i)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < problem.GetMesh()->GetLocalCellCount();
+       ++cell_local_id)
+  {
+    const auto& cell = problem.GetMesh()->GetLocalCell(cell_local_id);
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < problem.GetNumMoments(); ++m)
       {
         const auto ell = moment_map[m].ell;
@@ -133,14 +136,15 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
           double value = 0.0;
           for (unsigned int gp = 0; gp < 2; ++gp)
           {
-            const double phi_gp = phi[sdm.MapDOFLocal(*cell, i, uk_man, m, gp)];
+            const double phi_gp = phi[sdm.MapDOFLocal(cell_local_id, i, uk_man, m, gp)];
             value += kTransfer[ell][g][gp] * phi_gp;
             if (ell == 0)
               value += kProduction[g][gp] * phi_gp;
           }
-          q[sdm.MapDOFLocal(*cell, i, uk_man, m, g)] = value;
+          q[sdm.MapDOFLocal(cell_local_id, i, uk_man, m, g)] = value;
         }
       }
+  }
   return q;
 }
 
@@ -311,14 +315,18 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
 
   auto reversed = phi;
   problem->ReverseMomentDirections(reversed);
-  for (const auto& cell : problem->GetGrid()->GetLocalCells())
-    for (unsigned int i = 0; i < sdm.GetCellNumNodes(*cell); ++i)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < problem->GetMesh()->GetLocalCellCount();
+       ++cell_local_id)
+  {
+    const auto& cell = problem->GetMesh()->GetLocalCell(cell_local_id);
+    for (unsigned int i = 0; i < sdm.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
         for (unsigned int g = 0; g < 2; ++g)
         {
-          const auto dof = sdm.MapDOFLocal(*cell, i, uk_man, m, g);
+          const auto dof = sdm.MapDOFLocal(cell_local_id, i, uk_man, m, g);
           EXPECT_EQ(reversed[dof], moment_map[m].ell % 2 == 0 ? phi[dof] : -phi[dof]);
         }
+  }
 
   problem->ReverseMomentDirections(reversed);
   EXPECT_EQ(reversed, phi);

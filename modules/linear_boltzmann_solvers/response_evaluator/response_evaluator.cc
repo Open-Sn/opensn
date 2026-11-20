@@ -302,8 +302,8 @@ ResponseEvaluator::SetMaterialSourceOptions(const InputParameters& params)
                           "Material source strengths must be finite.");
 
   std::uint64_t local_cell_count = 0;
-  for (const auto& cell : do_problem_->GetGrid()->GetLocalCells())
-    if (cell->block_id == blkid)
+  for (const auto& cell : do_problem_->GetMesh()->GetLocalCells())
+    if (cell.block_id == blkid)
       ++local_cell_count;
   std::uint64_t global_cell_count = 0;
   mpi_comm.all_reduce(local_cell_count, global_cell_count, mpi::op::sum<std::uint64_t>());
@@ -395,7 +395,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
                        "If boundary sources are set, adjoint angular fluxes "
                        "must be available for response evaluation.");
 
-  const auto& grid = do_problem_->GetGrid();
+  const auto& grid = do_problem_->GetMesh();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto& transport_views = do_problem_->GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem_->GetUnitCellMatrices();
@@ -409,16 +409,18 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
   // Material sources
   if (not material_sources_.empty())
   {
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = discretization.GetCellMapping(*cell);
-      const auto& transport_view = transport_views[cell->local_id];
-      const auto& fe_values = unit_cell_matrices[cell->local_id];
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+      const auto& transport_view = transport_views[cell_local_id];
+      const auto& fe_values = unit_cell_matrices[cell_local_id];
       const auto num_cell_nodes = cell_mapping.GetNumNodes();
 
-      if (material_sources_.count(cell->block_id) > 0)
+      if (material_sources_.count(cell.block_id) > 0)
       {
-        const auto& src = material_sources_.at(cell->block_id);
+        const auto& src = material_sources_.at(cell.block_id);
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
           const auto dof_map = transport_view.MapDOF(i, 0, 0);
@@ -444,13 +446,16 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       // inner products of forward and adjoint angular fluxes carry a factor W.
       const double weight_sum = quadrature->GetWeightSum();
 
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
-        const auto& cell_mapping = discretization.GetCellMapping(*cell);
-        const auto& fe_values = unit_cell_matrices[cell->local_id];
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+        const auto& fe_values = unit_cell_matrices[cell_local_id];
 
         size_t f = 0;
-        for (const auto& face : cell->faces)
+        auto cell_faces = grid->GetCellFaces(cell_local_id);
+        for (const auto& face : cell_faces)
         {
           if (not face.has_neighbor and boundary_sources_.count(face.neighbor_id) > 0)
           {
@@ -471,7 +476,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
                 {
                   const auto& wt = quadrature->GetWeight(n);
                   const auto weight = -mu * weight_sum * wt * intF_shapeI;
-                  const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, n, 0);
+                  const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, n, 0);
 
                   for (unsigned int gsg = 0; gsg < num_gs_groups; ++gsg)
                     local_response +=
@@ -494,8 +499,7 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       continue;
     for (const auto& subscriber : point_source->GetSubscribers())
     {
-      const auto& cell = grid->GetLocalCell(subscriber.cell_local_id);
-      const auto& transport_view = transport_views[cell.local_id];
+      const auto& transport_view = transport_views[subscriber.cell_local_id];
 
       const auto src = point_source->GetStrength(time, num_groups);
       const auto& vol_wt = subscriber.volume_weight;
@@ -519,15 +523,14 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       continue;
     for (const std::uint32_t local_id : volumetric_source->GetSubscribers())
     {
-      const auto& cell = grid->GetLocalCell(local_id);
-      const auto& transport_view = transport_views[cell.local_id];
-      const auto& mass = unit_cell_matrices[cell.local_id].intV_shapeI_shapeJ;
-      const auto& nodes = discretization.GetCellNodeLocations(cell);
+      const auto& transport_view = transport_views[local_id];
+      const auto& mass = unit_cell_matrices[local_id].intV_shapeI_shapeJ;
+      const auto& nodes = discretization.GetCellNodeLocations(local_id);
 
       const auto num_cell_nodes = transport_view.GetNumNodes();
       std::vector<std::vector<double>> node_values(num_cell_nodes);
       for (int j = 0; j < num_cell_nodes; ++j)
-        node_values[j] = volumetric_source->Evaluate(cell, nodes[j], num_groups, time);
+        node_values[j] = volumetric_source->Evaluate(local_id, nodes[j], num_groups, time);
 
       for (int i = 0; i < num_cell_nodes; ++i)
       {

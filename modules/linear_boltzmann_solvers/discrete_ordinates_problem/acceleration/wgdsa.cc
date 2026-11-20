@@ -56,7 +56,7 @@ TallyDelayedSource(const DiscreteOrdinatesProblem& do_problem,
                    const bool subtract_old,
                    const AddFn& add)
 {
-  const auto& grid = *do_problem.GetGrid();
+  const auto& grid = *do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
 
@@ -68,14 +68,13 @@ TallyDelayedSource(const DiscreteOrdinatesProblem& do_problem,
   {
     if (current == 0.0)
       return;
-    const auto& cell = *grid.GetLocalCells()[cell_local_id];
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto& face_mass = unit_cell_matrices[cell_local_id].intS_shapeI_shapeJ[face];
     const auto j = cell_mapping.MapFaceNode(face, face_node);
     for (size_t fi = 0; fi < cell_mapping.GetNumFaceNodes(face); ++fi)
     {
       const auto i = cell_mapping.MapFaceNode(face, fi);
-      add(cell, i, group_idx, face_mass(i, j) * current);
+      add(cell_local_id, i, group_idx, face_mass(i, j) * current);
     }
   };
 
@@ -171,7 +170,7 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
                    const bool subtract_old_delayed_psi,
                    std::vector<double>& phi_new)
 {
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
   const auto& block_id_to_xs_map = do_problem.GetBlockID2XSMap();
@@ -205,17 +204,18 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
   // Scattering residual of every groupset group. Each entry is replaced by its group's correction
   // once that group is solved.
   std::vector<std::vector<double>> correction(gss, std::vector<double>(num_dofs, 0.0));
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     const auto& transfer_matrices =
-      block_id_to_xs_map.at(cell->block_id)->GetTransferMatrices(adjoint);
+      block_id_to_xs_map.at(cell.block_id)->GetTransferMatrices(adjoint);
     if (transfer_matrices.empty())
       continue;
-    const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+    const size_t num_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumNodes();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const double* dphi = &phi_change[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const double* dphi = &phi_change[sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         add_transfer(
           transfer_matrices[0],
@@ -231,11 +231,12 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
   if (HasDelayedAngularFlux(groupset))
   {
     lagged_source.assign(gss, std::vector<double>(num_dofs, 0.0));
-    TallyDelayedSource(do_problem,
-                       groupset,
-                       subtract_old_delayed_psi,
-                       [&](const Cell& cell, size_t i, unsigned int g, double value)
-                       { lagged_source[g][sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, 0)] += value; });
+    TallyDelayedSource(
+      do_problem,
+      groupset,
+      subtract_old_delayed_psi,
+      [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
+      { lagged_source[g][sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0)] += value; });
   }
 
   for (unsigned int g = 0; g < gss; ++g)
@@ -243,9 +244,11 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
     auto& q = correction[g];
     if (g > 0)
     {
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
-        const auto& xs = *block_id_to_xs_map.at(cell->block_id);
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        const auto& xs = *block_id_to_xs_map.at(cell.block_id);
         const auto csda_data = MakeCSDAMaterialData(xs, energy);
         const bool slows_down =
           IsCSDAActive(csda_data, gsi + g) and IsCSDAActive(csda_data, gsi + g - 1);
@@ -253,10 +256,10 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
           slows_down ? (*csda_data.stopping_power)[gsi + g - 1] / (*csda_data.delta_e)[gsi + g - 1]
                      : 0.0;
         const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
-        const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+        const size_t num_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumNodes();
         for (size_t i = 0; i < num_nodes; ++i)
         {
-          const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
+          const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
           if (not transfer_matrices.empty())
             add_transfer(
               transfer_matrices[0],
@@ -274,13 +277,14 @@ ApplyEnergyOrdered(DiscreteOrdinatesProblem& do_problem,
     solvers[g]->Solve(q);
   }
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_nodes = sdm.GetCellMapping(*cell).GetNumNodes();
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const size_t num_nodes = sdm.GetLocalCellMapping(cell_local_id).GetNumNodes();
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      double* phi_new_mapped = &phi_new[sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi)];
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      double* phi_new_mapped = &phi_new[sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi)];
       for (unsigned int g = 0; g < gss; ++g)
         phi_new_mapped[g] += correction[g][dphi_map];
     }
@@ -350,7 +354,7 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               std::vector<double>& delta_phi_local)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
@@ -365,16 +369,17 @@ WGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   else
     std::fill(delta_phi_local.begin(), delta_phi_local.end(), 0.0);
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
-    const auto& sigma_s = block_id_to_xs_map.at(cell->block_id)->GetSigmaSGtoG();
+    const auto& sigma_s = block_id_to_xs_map.at(cell.block_id)->GetSigmaSGtoG();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       double* delta_phi_mapped = &delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -394,7 +399,7 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  std::vector<double>& ref_phi_new)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
@@ -402,15 +407,16 @@ WGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
   const auto gsi = groupset.first_group;
   const auto gss = groupset.GetNumGroups();
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       const double* delta_phi_mapped = &delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];
@@ -442,11 +448,12 @@ WGDSA::Apply(DiscreteOrdinatesProblem& do_problem,
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& dphi_uk_man = groupset.wgdsa_solver->GetUnknownStructure();
     std::vector<double> lagged_source(delta_phi_local.size(), 0.0);
-    TallyDelayedSource(do_problem,
-                       groupset,
-                       subtract_old_delayed_psi,
-                       [&](const Cell& cell, size_t i, unsigned int g, double value)
-                       { lagged_source[sdm.MapDOFLocal(cell, i, dphi_uk_man, 0, g)] += value; });
+    TallyDelayedSource(
+      do_problem,
+      groupset,
+      subtract_old_delayed_psi,
+      [&](std::uint32_t cell_local_id, size_t i, unsigned int g, double value)
+      { lagged_source[sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, g)] += value; });
     groupset.wgdsa_solver->AddToRHS(lagged_source);
   }
   groupset.wgdsa_solver->Solve(delta_phi_local);
@@ -470,7 +477,7 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
                        const std::vector<double>& phi_in)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
@@ -484,15 +491,16 @@ WGDSA::WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
 
   std::vector<double> output_phi_local(sdm.GetNumLocalDOFs(dphi_uk_man), 0.0);
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       double* output_mapped = &output_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -514,7 +522,7 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
                          std::vector<double>& output)
 {
 
-  const auto grid = do_problem.GetGrid();
+  const auto grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& phi_uk_man = do_problem.GetUnknownManager();
 
@@ -526,15 +534,16 @@ WGDSA::GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
   UnknownManager dphi_uk_man;
   dphi_uk_man.AddUnknown(UnknownType::VECTOR_N, gss);
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto dphi_map = sdm.MapDOFLocal(*cell, i, dphi_uk_man, 0, 0);
-      const auto phi_map = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, gsi);
+      const auto dphi_map = sdm.MapDOFLocal(cell_local_id, i, dphi_uk_man, 0, 0);
+      const auto phi_map = sdm.MapDOFLocal(cell_local_id, i, phi_uk_man, 0, gsi);
 
       const double* input_mapped = &input[dphi_map];
       double* output_mapped = &output[phi_map];

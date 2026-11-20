@@ -68,10 +68,8 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid, const std::string& h_perp_con
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {0.0}}));
 
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  for (const auto& cell : grid->GetLocalCells())
-  {
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
-  }
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   ScalarSpatialFunction mms_phi = MMS_phi;
   ScalarSpatialFunction mms_q = MMS_q;
@@ -106,16 +104,18 @@ SimTest_IP_MMS_L2error(std::shared_ptr<Mesh> grid, const std::string& h_perp_con
     const auto field_wg = ff->GetGhostedFieldVector();
 
     double local_error = 0.0;
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = sdm.GetCellMapping(*cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
       const size_t num_nodes = cell_mapping.GetNumNodes();
       const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
       std::vector<double> nodal_phi(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
       {
-        const auto jmap = sdm.MapDOFLocal(*cell, j);
+        const auto jmap = sdm.MapDOFLocal(cell_local_id, j);
         nodal_phi[j] = field_wg[jmap];
       }
 
@@ -253,8 +253,8 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
   std::map<unsigned int, Multigroup_D_and_sigR> matid_2_xs_map;
   matid_2_xs_map.insert(std::make_pair(0, Multigroup_D_and_sigR{{1.0}, {1.0}}));
   std::vector<UnitCellMatrices> unit_cell_matrices(grid->GetLocalCellCount());
-  for (const auto& cell : grid->GetLocalCells())
-    unit_cell_matrices[cell->local_id] = ComputeUnitCellIntegrals(sdm, *cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+    unit_cell_matrices[cell_local_id] = ComputeUnitCellIntegrals(sdm, cell_local_id);
 
   DiffusionMIPSolver solver("HPerp",
                             sdm,
@@ -264,18 +264,22 @@ TEST(DiffusionMIP, HPerpendicularConventionsOnCubes)
                             unit_cell_matrices,
                             false,
                             false);
-  for (const auto& cell : grid->GetLocalCells())
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
       solver.options.h_perp_convention = "cell";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h / 6.0, 1.0e-12);
+      EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h / 6.0, 1.0e-12);
       solver.options.h_perp_convention = "face_side";
-      EXPECT_NEAR(solver.HPerpendicular(*cell, f), h, 1.0e-12);
+      EXPECT_NEAR(solver.HPerpendicular(cell_local_id, f), h, 1.0e-12);
     }
+  }
   solver.options.h_perp_convention = "cell";
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 1.0);
   solver.options.h_perp_convention = "face_side";
   EXPECT_DOUBLE_EQ(solver.PolygonPenaltyScale(), 2.0);
   solver.options.h_perp_convention = "edge";
-  EXPECT_THROW(solver.HPerpendicular(*grid->GetLocalCells().front(), 0), std::invalid_argument);
+  EXPECT_THROW(solver.HPerpendicular(0, 0), std::invalid_argument);
 }

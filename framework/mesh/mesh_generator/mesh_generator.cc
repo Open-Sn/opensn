@@ -105,7 +105,7 @@ MeshGenerator::PartitionMesh(const UnpartitionedMesh& input_umesh, const int num
 {
   CaliperRegionScope cali_partitioning_scope("Partitioning", CaliperPartitioningScopeDepth());
 
-  const auto& raw_cells = input_umesh.GetRawCells();
+  const auto& raw_cells = input_umesh.GetCells();
   const auto num_raw_cells = raw_cells.size();
 
   if (num_raw_cells == 0)
@@ -154,20 +154,45 @@ MeshGenerator::SetupMesh(const std::shared_ptr<UnpartitionedMesh>& input_umesh,
   size_t cell_global_id = 0;
   const auto& vertex_subs = input_umesh->GetVertextCellSubscriptions();
 
-  for (auto& raw_cell : input_umesh->GetRawCells())
+  std::size_t n_local_cells = 0;
+  std::size_t n_ghost_cells = 0;
+  for (auto& raw_cell : input_umesh->GetCells())
+  {
+    if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
+    {
+      const auto partition_id = cell_pids[cell_global_id];
+      if (partition_id == opensn::mpi_comm.rank())
+        n_local_cells++;
+      else
+        n_ghost_cells++;
+    }
+  }
+
+  std::vector<Cell> local_cells;
+  local_cells.reserve(n_local_cells);
+  std::vector<Cell> ghost_cells;
+  ghost_cells.reserve(n_ghost_cells);
+  for (auto& raw_cell : input_umesh->GetCells())
   {
     if (CellHasLocalScope(mpi_comm.rank(), *raw_cell, cell_global_id, vertex_subs, cell_pids))
     {
       auto cell = SetupCell(*raw_cell, cell_global_id, cell_pids[cell_global_id]);
 
-      for (const auto vid : cell->vertex_ids)
-        grid_ptr->AddGlobalVertex(vid, input_umesh->GetVertices()[vid]);
+      for (const auto vid : raw_cell->vertex_ids)
+      {
+        const auto& pos = input_umesh->GetVertices()[vid];
+        grid_ptr->AddGlobalVertex(vid, pos);
+      }
 
-      grid_ptr->AddGlobalCell(std::move(cell));
+      if (cell.partition_id == opensn::mpi_comm.rank())
+        local_cells.emplace_back(std::move(cell));
+      else
+        ghost_cells.emplace_back(std::move(cell));
     }
     ++cell_global_id;
   } // for raw_cell
 
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), input_umesh->GetCells());
   grid_ptr->SetDimension(input_umesh->GetDimension());
   grid_ptr->SetCoordinateSystem(input_umesh->GetCoordinateSystem());
   grid_ptr->SetType(input_umesh->GetType());
@@ -208,28 +233,17 @@ MeshGenerator::CellHasLocalScope(const int location_id,
   return false;
 }
 
-std::unique_ptr<Cell>
+Cell
 MeshGenerator::SetupCell(const UnpartitionedMesh::LightWeightCell& raw_cell,
                          const uint64_t global_id,
                          const int partition_id)
 {
-  auto cell = std::make_unique<Cell>(raw_cell.type, raw_cell.sub_type);
-  cell->centroid = raw_cell.centroid;
-  cell->global_id = global_id;
-  cell->partition_id = partition_id;
-  cell->block_id = raw_cell.block_id;
+  Cell cell(raw_cell.type, raw_cell.sub_type);
+  cell.centroid = raw_cell.centroid;
+  cell.global_id = global_id;
+  cell.partition_id = partition_id;
+  cell.block_id = raw_cell.block_id;
 
-  cell->vertex_ids = raw_cell.vertex_ids;
-
-  size_t face_counter = 0;
-  for (const auto& raw_face : raw_cell.faces)
-  {
-    CellFace newFace;
-    newFace.has_neighbor = raw_face.has_neighbor;
-    newFace.neighbor_id = raw_face.neighbor;
-    newFace.vertex_ids = raw_face.vertex_ids;
-    cell->faces.push_back(newFace);
-  }
   return cell;
 }
 

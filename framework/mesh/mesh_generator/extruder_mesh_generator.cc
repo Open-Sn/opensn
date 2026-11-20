@@ -75,7 +75,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
     throw std::invalid_argument("Input mesh is not 2D. A 2D mesh is required for extrusion");
 
   const auto& template_vertices = input_umesh->GetVertices();
-  const auto& template_cells = input_umesh->GetRawCells();
+  const auto& template_cells = input_umesh->GetCells();
 
   const auto num_template_vertices = template_vertices.size();
   const auto num_template_cells = template_cells.size();
@@ -244,7 +244,7 @@ ExtruderMeshGenerator::GenerateUnpartitionedMesh(std::shared_ptr<UnpartitionedMe
 
           new_cell.faces.push_back(std::move(new_face));
         }
-        umesh->GetRawCells().push_back(new_cell_ptr);
+        umesh->GetCells().push_back(new_cell_ptr);
 
         ++tc_counter;
       } // for template cell

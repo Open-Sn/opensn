@@ -58,22 +58,26 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_faces = cell->faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
-    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
-    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
+    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(cell_local_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     // Floor of the interior penalty per face (beta_f with closure R, 1/4 otherwise); it does not
     // depend on the group.
     std::vector<double> penalty_floors(num_faces);
     for (size_t f = 0; f < num_faces; ++f)
-      penalty_floors[f] = PenaltyFloor(cell->faces[f].normal);
+    {
+      const auto& face = grid_->GetCellFace(cell_local_id, f);
+      penalty_floors[f] = PenaltyFloor(face.normal);
+    }
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
@@ -84,7 +88,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
@@ -92,7 +96,7 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(cell_local_id, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -127,35 +131,37 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         const auto& n_f = face.normal;
         const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
-        const double hm = HPerpendicular(*cell, f);
+        const double hm = HPerpendicular(cell_local_id, f);
 
         if (face.has_neighbor)
         {
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
-          const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
+          const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+          const auto& adj_cell_mapping = sdm_.GetLocalCellMapping(adj_cell_local_id);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Mesh::MapCellFace(*cell, adj_cell, f);
-          const double hp = HPerpendicular(adj_cell, acf);
+          const size_t acf = grid_->MapCellFace(cell_local_id, adj_cell_local_id, f);
+          const double hp = HPerpendicular(adj_cell_local_id, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell->GetType() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
-          if (cell->GetType() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa =
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
                    penalty_floors[f]);
-          if (cell->GetType() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa =
               fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
 
@@ -164,9 +170,10 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
           Vector<PetscInt> adj_idxs(num_face_nodes);
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
-            const auto jp =
-              MapFaceNodeDisc(*cell, adj_cell, cc_nodes, ac_nodes, f, acf, fj); // j-plus
-            adj_idxs(fj) = static_cast<PetscInt>(sdm_.MapDOF(adj_cell, jp, uk_man_, 0, g));
+            const auto jp = MapFaceNodeDisc(
+              cell_local_id, adj_cell_local_id, cc_nodes, ac_nodes, f, acf, fj); // j-plus
+            adj_idxs(fj) =
+              static_cast<PetscInt>(sdm_.MapDOF(adj_cell.global_id, jp, uk_man_, 0, g));
           }
 
           // Assembly penalty terms
@@ -249,11 +256,11 @@ DiffusionMIPSolver::AssembleAand_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell->GetType() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -445,15 +452,16 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
 
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_faces = cell->faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
@@ -462,14 +470,14 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       std::vector<double> qg(num_nodes, 0.0);
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(cell_local_id, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -495,14 +503,15 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
         const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
 
-        const double hm = HPerpendicular(*cell, f);
+        const double hm = HPerpendicular(cell_local_id, f);
 
         if (not face.has_neighbor and not suppress_bcs_)
         {
@@ -516,11 +525,11 @@ DiffusionMIPSolver::Assemble_b_wQpoints(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell->GetType() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -645,25 +654,29 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_faces = cell->faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];
 
     const auto& intV_gradshapeI_gradshapeJ = unit_cell_matrices.intV_gradshapeI_gradshapeJ;
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(*cell);
-    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
+    const auto [closure_faces, num_closure_faces] = ComputeClosureFaceData(cell_local_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     // Floor of the interior penalty per face (beta_f with closure R, 1/4 otherwise); it does not
     // depend on the group.
     std::vector<double> penalty_floors(num_faces);
     for (size_t f = 0; f < num_faces; ++f)
-      penalty_floors[f] = PenaltyFloor(cell->faces[f].normal);
+    {
+      const auto& face = grid_->GetCellFace(cell_local_id, f);
+      penalty_floors[f] = PenaltyFloor(face.normal);
+    }
 
     DenseMatrix<double> cell_A(num_nodes, num_nodes);
     Vector<double> cell_rhs(num_nodes);
@@ -674,14 +687,14 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       cell_A.Set(0.);
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
       const double sigr_g = xs.sigR[g];
 
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(cell_local_id, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -701,9 +714,10 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         const auto& n_f = face.normal;
         const auto num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
@@ -711,28 +725,29 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        const double hm = HPerpendicular(*cell, f);
+        const double hm = HPerpendicular(cell_local_id, f);
 
         if (face.has_neighbor)
         {
           const auto& adj_cell = grid_->GetGlobalCell(face.neighbor_id);
-          const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
+          const auto adj_cell_local_id = grid_->MapCellGlobalID2LocalID(face.neighbor_id);
+          const auto& adj_cell_mapping = sdm_.GetLocalCellMapping(adj_cell_local_id);
           const auto ac_nodes = adj_cell_mapping.GetNodeLocations();
-          const size_t acf = Mesh::MapCellFace(*cell, adj_cell, f);
-          const double hp = HPerpendicular(adj_cell, acf);
+          const size_t acf = grid_->MapCellFace(cell_local_id, adj_cell_local_id, f);
+          const double hp = HPerpendicular(adj_cell_local_id, acf);
 
           const auto& adj_xs = mat_id_2_xs_map_.at(adj_cell.block_id);
           const double adj_Dg = adj_xs.Dg[g];
 
           // Compute kappa
           double kappa = 1.0;
-          if (cell->GetType() == CellType::SLAB)
+          if (cell.GetType() == CellType::SLAB)
             kappa = fmax(options.penalty_factor * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
-          if (cell->GetType() == CellType::POLYGON)
+          if (cell.GetType() == CellType::POLYGON)
             kappa =
               fmax(options.penalty_factor * PolygonPenaltyScale() * (adj_Dg / hp + Dg / hm) * 0.5,
                    penalty_floors[f]);
-          if (cell->GetType() == CellType::POLYHEDRON)
+          if (cell.GetType() == CellType::POLYHEDRON)
             kappa =
               fmax(options.penalty_factor * 2.0 * (adj_Dg / hp + Dg / hm) * 0.5, penalty_floors[f]);
 
@@ -741,9 +756,10 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
           Vector<PetscInt> adj_idxs(num_face_nodes);
           for (size_t fj = 0; fj < num_face_nodes; ++fj)
           {
-            const auto jp =
-              MapFaceNodeDisc(*cell, adj_cell, cc_nodes, ac_nodes, f, acf, fj); // j-plus
-            adj_idxs(fj) = static_cast<PetscInt>(sdm_.MapDOF(adj_cell, jp, uk_man_, 0, g));
+            const auto jp = MapFaceNodeDisc(
+              cell_local_id, adj_cell_local_id, cc_nodes, ac_nodes, f, acf, fj); // j-plus
+            adj_idxs(fj) =
+              static_cast<PetscInt>(sdm_.MapDOF(adj_cell.global_id, jp, uk_man_, 0, g));
           }
 
           // Assembly penalty terms
@@ -815,11 +831,11 @@ DiffusionMIPSolver::AssembleAand_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell->GetType() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -977,17 +993,18 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
   const unsigned int num_groups = uk_man_.unknowns.front().num_components;
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_faces = cell->faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
@@ -996,13 +1013,13 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(cell_local_id, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -1015,9 +1032,10 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
@@ -1025,7 +1043,7 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        const double hm = HPerpendicular(*cell, f);
+        const double hm = HPerpendicular(cell_local_id, f);
 
         if (not face.has_neighbor and not suppress_bcs_)
         {
@@ -1039,11 +1057,11 @@ DiffusionMIPSolver::Assemble_b(const std::vector<double>& q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell->GetType() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1131,17 +1149,18 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
   OpenSnPETScCall(VecGetArrayRead(petsc_q_vector, &q_vector));
 
   OpenSnPETScCall(VecSet(rhs_, 0.0));
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const size_t num_faces = cell->faces.size();
-    const auto& cell_mapping = sdm_.GetCellMapping(*cell);
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const size_t num_faces = grid_->GetCellFaceCount(cell_local_id);
+    const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
     const auto num_nodes = cell_mapping.GetNumNodes();
     const auto cc_nodes = cell_mapping.GetNodeLocations();
-    const auto& unit_cell_matrices = unit_cell_matrices_[cell->local_id];
+    const auto& unit_cell_matrices = unit_cell_matrices_[cell_local_id];
 
     const auto& intV_shapeI_shapeJ = unit_cell_matrices.intV_shapeI_shapeJ;
 
-    const auto& xs = mat_id_2_xs_map_.at(cell->block_id);
+    const auto& xs = mat_id_2_xs_map_.at(cell.block_id);
 
     Vector<double> cell_rhs(num_nodes);
     Vector<PetscInt> cell_idxs(num_nodes);
@@ -1150,13 +1169,13 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
     {
       cell_rhs.Set(0.);
       for (size_t i = 0; i < num_nodes; ++i)
-        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(*cell, i, uk_man_, 0, g));
+        cell_idxs(i) = static_cast<PetscInt>(sdm_.MapDOF(cell.global_id, i, uk_man_, 0, g));
 
       // Get coefficient and nodal src
       const double Dg = xs.Dg[g];
 
       for (size_t j = 0; j < num_nodes; ++j)
-        qg[j] = q_vector[sdm_.MapDOFLocal(*cell, j, uk_man_, 0, g)];
+        qg[j] = q_vector[sdm_.MapDOFLocal(cell_local_id, j, uk_man_, 0, g)];
 
       // Assemble continuous terms
       for (size_t i = 0; i < num_nodes; ++i)
@@ -1169,9 +1188,10 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
       } // for i
 
       // Assemble face terms
+      const auto cell_faces = grid_->GetCellFaces(cell_local_id);
       for (size_t f = 0; f < num_faces; ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         const auto& n_f = face.normal;
         const size_t num_face_nodes = cell_mapping.GetNumFaceNodes(f);
 
@@ -1179,7 +1199,7 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
         const auto& intS_shapeI_gradshapeJ = unit_cell_matrices.intS_shapeI_gradshapeJ[f];
         const auto& intS_shapeI = unit_cell_matrices.intS_shapeI[f];
 
-        const double hm = HPerpendicular(*cell, f);
+        const double hm = HPerpendicular(cell_local_id, f);
 
         if (not face.has_neighbor and not suppress_bcs_)
         {
@@ -1193,11 +1213,11 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 
             // Compute kappa
             double kappa = 1.0;
-            if (cell->GetType() == CellType::SLAB)
+            if (cell.GetType() == CellType::SLAB)
               kappa = fmax(options.penalty_factor * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYGON)
+            if (cell.GetType() == CellType::POLYGON)
               kappa = fmax(options.penalty_factor * PolygonPenaltyScale() * Dg / hm, 0.25);
-            if (cell->GetType() == CellType::POLYHEDRON)
+            if (cell.GetType() == CellType::POLYHEDRON)
               kappa = fmax(options.penalty_factor * 2.0 * Dg / hm, 0.25);
 
             // Assembly penalty terms
@@ -1270,23 +1290,26 @@ DiffusionMIPSolver::Assemble_b(Vec petsc_q_vector)
 }
 
 double
-DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
+DiffusionMIPSolver::HPerpendicular(std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& cell_mapping = sdm_.GetCellMapping(cell);
+  const auto& mesh = sdm_.GetMesh();
+  const auto& cell = mesh->GetLocalCell(cell_local_id);
+  const auto cell_faces = mesh->GetCellFaces(cell_local_id);
+  const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
   double hp = 0.0;
 
-  const auto num_faces = cell.faces.size();
-  const auto num_vertices = cell.vertex_ids.size();
+  const auto num_faces = cell_faces.size();
+  const auto num_vertices = mesh->GetCellConnectivity(cell_local_id).size();
 
   const auto volume = cell.volume;
-  const auto face_area = cell.faces.at(f).area;
+  const auto face_area = cell_faces[f].area;
 
   /**Lambda to compute surface area.*/
-  auto ComputeSurfaceArea = [&cell, &num_faces]()
+  auto ComputeSurfaceArea = [&num_faces, cell_faces]()
   {
     double surface_area = 0.0;
     for (size_t fr = 0; fr < num_faces; ++fr)
-      surface_area += cell.faces[fr].area;
+      surface_area += cell_faces[fr].area;
 
     return surface_area;
   };
@@ -1301,7 +1324,8 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
   // faces with a skinny side simplex get the penalty their trace inequality requires.
   if (options.h_perp_convention == "face_side" and
       (cell.GetType() == CellType::POLYGON or cell.GetType() == CellType::POLYHEDRON))
-    return std::min(FaceOrthogonalLength(cell, f), 2.0 * FaceSideLength(*grid_, cell, f));
+    return std::min(FaceOrthogonalLength(*grid_, cell, cell_local_id, f),
+                    2.0 * FaceSideLength(*grid_, cell, cell_local_id, f));
 
   if (cell.GetType() == CellType::SLAB)
   {
@@ -1347,17 +1371,20 @@ DiffusionMIPSolver::HPerpendicular(const Cell& cell, unsigned int f)
 }
 
 std::pair<std::vector<DiffusionMIPSolver::ClosureFaceData>, unsigned int>
-DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
+DiffusionMIPSolver::ComputeClosureFaceData(std::uint32_t cell_local_id) const
 {
-  std::vector<ClosureFaceData> data(cell.faces.size());
+  const auto& cell = grid_->GetLocalCell(cell_local_id);
+  const auto num_faces = grid_->GetCellFaceCount(cell_local_id);
+  std::vector<ClosureFaceData> data(num_faces);
   unsigned int count = 0;
   if (suppress_bcs_)
     return {data, count};
 
-  const auto& cell_mapping = sdm_.GetCellMapping(cell);
-  for (size_t f = 0; f < cell.faces.size(); ++f)
+  const auto& cell_mapping = sdm_.GetLocalCellMapping(cell_local_id);
+  auto cell_faces = grid_->GetCellFaces(cell_local_id);
+  for (size_t f = 0; f < num_faces; ++f)
   {
-    const auto& face = cell.faces[f];
+    const auto& face = cell_faces[f];
     if (face.has_neighbor)
       continue;
     const auto bc_it = bcs_.find(face.neighbor_id);
@@ -1370,13 +1397,15 @@ DiffusionMIPSolver::ComputeClosureFaceData(const Cell& cell) const
 
     auto& cf = data[f];
     cf.beta = QuadratureHalfRangeMoment(closure_omegas_, closure_weights_, face.normal);
-    cf.h = FaceOrthogonalLength(cell, f);
+    cf.h = FaceOrthogonalLength(*grid_, cell, cell_local_id, f);
 
     // The unit cell matrices carry the coordinate weight (r in RZ); the face matrix must too.
-    cf.c_grad = FaceTraceConstant(cell_mapping,
+    cf.c_grad = FaceTraceConstant(*grid_,
+                                  cell_mapping,
                                   cell,
+                                  cell_local_id,
                                   f,
-                                  unit_cell_matrices_[cell.local_id].intV_gradshapeI_gradshapeJ,
+                                  unit_cell_matrices_[cell_local_id].intV_gradshapeI_gradshapeJ,
                                   grid_->GetCoordinateSystem());
   }
   return {data, count};
@@ -1397,8 +1426,8 @@ DiffusionMIPSolver::PolygonPenaltyScale() const
 }
 
 int
-DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
-                                    const Cell& adj_cell,
+DiffusionMIPSolver::MapFaceNodeDisc(std::uint32_t cur_cell_local_id,
+                                    std::uint32_t adj_cell_local_id,
                                     const std::vector<Vector3>& cc_node_locs,
                                     const std::vector<Vector3>& ac_node_locs,
                                     size_t ccf,
@@ -1406,8 +1435,8 @@ DiffusionMIPSolver::MapFaceNodeDisc(const Cell& cur_cell,
                                     size_t ccfi,
                                     double epsilon)
 {
-  const auto& cur_cell_mapping = sdm_.GetCellMapping(cur_cell);
-  const auto& adj_cell_mapping = sdm_.GetCellMapping(adj_cell);
+  const auto& cur_cell_mapping = sdm_.GetLocalCellMapping(cur_cell_local_id);
+  const auto& adj_cell_mapping = sdm_.GetLocalCellMapping(adj_cell_local_id);
 
   const int i = cur_cell_mapping.MapFaceNode(ccf, ccfi);
   const auto& node_i_loc = cc_node_locs[i];

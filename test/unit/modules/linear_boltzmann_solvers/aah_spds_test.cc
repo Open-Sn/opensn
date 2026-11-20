@@ -7,6 +7,7 @@
 #include "framework/runtime.h"
 #include "gtest/gtest.h"
 #include <cstdint>
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -16,12 +17,24 @@ using namespace opensn;
 TEST(AAHSPDSTest, ReportsGlobalCycle)
 {
   auto grid = Mesh::New();
-  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
-  cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank());
-  cell->partition_id = mpi_comm.rank();
-  grid->AddGlobalCell(cell);
+  auto cell = Cell(CellType::SLAB, CellType::SLAB);
+  cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
+  cell.partition_id = mpi_comm.rank();
 
-  SPDSFaceNeighborInfoVec face_info(1);
+  UnpartitionedMesh::LightWeightCell raw_cell(CellType::SLAB, CellType::SLAB);
+  raw_cell.vertex_ids = {0, 1};
+  UnpartitionedMesh::LightWeightFace face;
+  face.vertex_ids = {0};
+  raw_cell.faces.push_back(face);
+
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+  cells.insert({{cell.partition_id, cell.global_id}, raw_cell});
+
+  std::vector<Cell> local_cells;
+  local_cells.push_back(std::move(cell));
+  grid->SetCells(std::move(local_cells), {}, cells);
+
+  SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
 
   std::vector<AAH_SPDS::GlobalSweepEdge> edges;
@@ -49,12 +62,24 @@ TEST(AAHSPDSTest, ComputesDownstreamDepthOnIrregularGlobalGraph)
     GTEST_SKIP() << "This test requires at least four MPI ranks";
 
   auto grid = Mesh::New();
-  auto cell = std::make_shared<Cell>(CellType::SLAB, CellType::SLAB);
-  cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank());
-  cell->partition_id = mpi_comm.rank();
-  grid->AddGlobalCell(cell);
+  auto cell = Cell(CellType::SLAB, CellType::SLAB);
+  cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank());
+  cell.partition_id = mpi_comm.rank();
 
-  SPDSFaceNeighborInfoVec face_info(1);
+  UnpartitionedMesh::LightWeightCell raw_cell(CellType::SLAB, CellType::SLAB);
+  raw_cell.vertex_ids = {0, 1};
+  UnpartitionedMesh::LightWeightFace face;
+  face.vertex_ids = {0};
+  raw_cell.faces.push_back(face);
+
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> cells;
+  cells.insert({{cell.partition_id, cell.global_id}, raw_cell});
+
+  std::vector<Cell> local_cells;
+  local_cells.push_back(std::move(cell));
+  grid->SetCells(std::move(local_cells), {}, cells);
+
+  SPDSFaceNeighborInfoVec face_info(1, {SPDSFaceNeighborInfo()});
   AAH_SPDS spds(0, {1.0, 0.0, 0.0}, grid, face_info, false);
 
   // The short 0->3 branch distinguishes downstream depth from max_level - upstream_level:
@@ -75,22 +100,30 @@ TEST(CellFaceOrientationsTest, GivesEachCellItsOwnFaces)
 {
   EXPECT_EQ(CellFaceOrientations().size(), 0U);
 
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> map_cells;
+
   auto grid = Mesh::New();
+  std::vector<Cell> cells;
   const std::vector<std::size_t> face_counts = {3, 5};
   for (std::size_t i = 0; i < face_counts.size(); ++i)
   {
-    auto cell = std::make_shared<Cell>(CellType::POLYHEDRON, CellType::POLYHEDRON);
-    cell->global_id = static_cast<std::uint64_t>(mpi_comm.rank()) * face_counts.size() + i;
-    cell->partition_id = mpi_comm.rank();
-    cell->faces.resize(face_counts[i]);
-    grid->AddGlobalCell(cell);
+    UnpartitionedMesh::LightWeightCell lw_cell(CellType::POLYHEDRON, CellType::POLYHEDRON);
+    lw_cell.faces.resize(face_counts[i]);
+
+    Cell cell(CellType::POLYHEDRON, CellType::POLYHEDRON);
+    cell.global_id = static_cast<std::uint64_t>(mpi_comm.rank()) * face_counts.size() + i;
+    cell.partition_id = mpi_comm.rank();
+
+    map_cells.insert({{cell.partition_id, cell.global_id}, lw_cell});
+    cells.emplace_back(cell);
   }
+  grid->SetCells(std::move(cells), {}, map_cells);
 
   CellFaceOrientations orientations(*grid, FaceOrientation::PARALLEL);
   ASSERT_EQ(orientations.size(), face_counts.size());
   for (std::size_t c = 0; c < face_counts.size(); ++c)
   {
-    ASSERT_EQ(orientations[c].size(), grid->GetLocalCell(c).faces.size());
+    ASSERT_EQ(orientations[c].size(), grid->GetCellFaceCount(c));
     for (const auto orientation : orientations[c])
       EXPECT_EQ(orientation, FaceOrientation::PARALLEL);
   }

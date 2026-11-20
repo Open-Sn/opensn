@@ -254,8 +254,8 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
     else if (element_type == 7) // 5-node pyramid
       num_cell_nodes = 5;
 
-    auto& raw_boundary_cells = mesh->GetRawBoundaryCells();
-    auto& raw_cells = mesh->GetRawCells();
+    auto& raw_boundary_cells = mesh->GetBoundaryCells();
+    auto& raw_cells = mesh->GetCells();
 
     // Make the cell on either the volume or the boundary
     std::shared_ptr<UnpartitionedMesh::LightWeightCell> raw_cell;
@@ -381,14 +381,14 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   // remap boundary cells onto cell faces
   std::map<std::set<uint64_t>, unsigned int> bnd_cell_to_bnd_id_map;
-  for (auto& bnd_cell : mesh->GetRawBoundaryCells())
+  for (auto& bnd_cell : mesh->GetBoundaryCells())
   {
     std::set<uint64_t> key;
     for (auto& vid : bnd_cell->vertex_ids)
       key.insert(vid);
     bnd_cell_to_bnd_id_map[key] = bnd_cell->block_id;
   }
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   for (auto& cell_ptr : raw_cells)
     for (auto& face : cell_ptr->faces)
       if (not face.has_neighbor)
@@ -404,7 +404,7 @@ MeshIO::FromGmshV22(const UnpartitionedMesh::Options& options)
 
   log.Log() << "Done processing " << options.file_name << ".\n"
             << "Number of nodes read: " << mesh->GetVertices().size() << "\n"
-            << "Number of cells read: " << mesh->GetRawCells().size();
+            << "Number of cells read: " << mesh->GetCells().size();
 
   return mesh;
 }

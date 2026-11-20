@@ -41,7 +41,7 @@ LBSSolverIO::WriteFluxMoments(
 
   log.Log() << "Writing flux moments to " << file_base;
 
-  const auto& grid = lbs_problem.GetGrid();
+  const auto& grid = lbs_problem.GetMesh();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& uk_man = lbs_problem.GetUnknownManager();
 
@@ -72,12 +72,13 @@ LBSSolverIO::WriteFluxMoments(
   nodes_y.reserve(num_local_nodes);
   nodes_z.reserve(num_local_nodes);
   // Loop through mesh nodes and store data
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    cell_ids.push_back(cell->global_id);
-    num_cell_nodes.push_back(discretization.GetCellNumNodes(*cell));
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    cell_ids.push_back(cell.global_id);
+    num_cell_nodes.push_back(discretization.GetCellNumNodes(cell_local_id));
 
-    const auto& nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (const auto& node : nodes)
     {
       nodes_x.push_back(node.x);
@@ -99,13 +100,14 @@ LBSSolverIO::WriteFluxMoments(
   // Loop through dof and store flux values
   std::vector<double> values;
   values.reserve(num_local_dofs);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    for (uint64_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    for (uint64_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
       for (unsigned int m = 0; m < num_moments; ++m)
         for (unsigned int g = 0; g < num_groups; ++g)
         {
-          const auto dof_map = discretization.MapDOFLocal(*cell, i, uk_man, m, g);
+          const auto dof_map = discretization.MapDOFLocal(cell_local_id, i, uk_man, m, g);
           values.push_back(src[dof_map]);
         }
   }
@@ -156,7 +158,8 @@ LBSSolverIO::ReadFileMeshNodes(const hid_t file,
                          "Cell " + std::to_string(cell_global_id) + " appears more than once in " +
                            file_name + ".");
 
-    const auto& nodes = discretization.GetCellNodeLocations(grid.GetGlobalCell(cell_global_id));
+    const auto cell_local_id = grid.MapCellGlobalID2LocalID(cell_global_id);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(num_cell_nodes[c] != nodes.size(),
                          "Incompatible number of cell nodes encountered on cell " +
                            std::to_string(cell_global_id) + ".");
@@ -289,7 +292,7 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
             "vectors are restored to solver orientation together.");
       }
 
-      const auto& grid = lbs_problem.GetGrid();
+      const auto& grid = lbs_problem.GetMesh();
       const auto& discretization = lbs_problem.GetSpatialDiscretization();
       const auto& uk_man = lbs_problem.GetUnknownManager();
       const auto num_moments = lbs_problem.GetNumMoments();
@@ -323,11 +326,11 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
       uint64_t v = 0;
       for (size_t c = 0; c < mesh.cell_ids.size(); ++c)
       {
-        const auto& cell = grid->GetGlobalCell(mesh.cell_ids[c]);
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(mesh.cell_ids[c]);
         for (const auto node : mesh.node_maps[c])
           for (unsigned int m = 0; m < num_moments; ++m)
             for (unsigned int g = 0; g < num_groups; ++g)
-              result[discretization.MapDOFLocal(cell, node, uk_man, m, g)] = values[v++];
+              result[discretization.MapDOFLocal(cell_local_id, node, uk_man, m, g)] = values[v++];
       }
     });
 

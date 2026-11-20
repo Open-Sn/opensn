@@ -276,8 +276,8 @@ SolveInfiniteMediumDeposition(const unsigned int dimension)
                                : BuildBoxMesh(4.0, 4, 0.0);
   const auto block_of = [dimension](const Vector3& centroid)
   { return (dimension == 1 ? centroid.z : centroid.x) < 2.0 ? 1U : 2U; };
-  for (const auto& cell : grid->GetLocalCells())
-    cell->block_id = block_of(cell->centroid);
+  for (auto& cell : grid->GetLocalCells())
+    cell.block_id = block_of(cell.centroid);
   for (const auto ghost_id : grid->GetGhostGlobalIDs())
   {
     auto& cell = grid->GetGlobalCell(ghost_id);

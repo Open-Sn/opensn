@@ -101,9 +101,10 @@ public:
     offsets_.assign(num_bins_[0] * num_bins_[1] * num_bins_[2] + 1, 0);
     for (size_t c = 0; c < cells.size(); ++c)
     {
-      Vector3 lo = grid.GlobalVertex(cells[c]->vertex_ids.front());
+      auto cell_vertex_ids = grid.GetCellConnectivity(c);
+      Vector3 lo = grid.GlobalVertex(cell_vertex_ids[0]);
       Vector3 hi = lo;
-      for (const auto vid : cells[c]->vertex_ids)
+      for (const auto vid : cell_vertex_ids)
       {
         const auto& v = grid.GlobalVertex(vid);
         lo = Vector3(std::min(lo.x, v.x), std::min(lo.y, v.y), std::min(lo.z, v.z));
@@ -202,7 +203,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetMesh()->GetLocalBoundingBox())
 {
 }
 
@@ -214,7 +215,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetMesh()->GetLocalBoundingBox())
 {
   OpenSnInvalidArgumentIf(field_vector.size() != ghosted_field_vector_->GetLocalSize(),
                           "Constructor called with incompatible size field vector.");
@@ -230,7 +231,7 @@ FieldFunctionGridBased::FieldFunctionGridBased(
   : FieldFunction(std::move(name), std::move(unknown)),
     discretization_(discretization_ptr),
     ghosted_field_vector_(MakeFieldVector(*discretization_, GetUnknownManager())),
-    local_grid_bounding_box_(discretization_->GetGrid()->GetLocalBoundingBox())
+    local_grid_bounding_box_(discretization_->GetMesh()->GetLocalBoundingBox())
 {
   ghosted_field_vector_->Set(field_value);
 }
@@ -325,12 +326,14 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
   if (point.x >= xmin and point.x <= xmax and point.y >= ymin and point.y <= ymax and
       point.z >= zmin and point.z <= zmax)
   {
-    const auto& grid = discretization_->GetGrid();
-    for (const auto& cell : grid->GetLocalCells())
+    const auto& grid = discretization_->GetMesh();
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      if (grid->CheckPointInsideCell(*cell, point))
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      if (grid->CheckPointInsideCell(cell_local_id, point))
       {
-        const auto& cell_mapping = discretization_->GetCellMapping(*cell);
+        const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
         Vector<double> shape_values;
         cell_mapping.ShapeValues(point, shape_values);
 
@@ -341,7 +344,7 @@ FieldFunctionGridBased::GetPointValue(const Vector3& point) const
         {
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization_->MapDOFLocal(*cell, j, uk_man, 0, c);
+            const auto dof_map = discretization_->MapDOFLocal(cell_local_id, j, uk_man, 0, c);
             const double dof_value = field_vector[dof_map];
 
             local_point_value[c] += dof_value * shape_values(j);
@@ -381,11 +384,11 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
                           fname + ": Field-function list contains null.");
 
   const auto& master = *field_functions.front();
-  const auto master_grid = master.discretization_->GetGrid();
+  const auto master_grid = master.discretization_->GetMesh();
   for (const auto& field_function : field_functions)
   {
     OpenSnInvalidArgumentIf(not field_function, fname + ": Field-function list contains null.");
-    OpenSnInvalidArgumentIf(field_function->discretization_->GetGrid() != master_grid,
+    OpenSnInvalidArgumentIf(field_function->discretization_->GetMesh() != master_grid,
                             fname + ": Field functions use different meshes.");
   }
 
@@ -416,14 +419,14 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         point.z < xyz_min.z or point.z > xyz_max.z)
       continue;
 
-    for (const size_t c : bins.Candidates(point))
+    for (const size_t cell_local_id : bins.Candidates(point))
     {
-      const auto& cell = local_cells[c];
-      if (not master_grid->CheckPointInsideCell(*cell, point))
+      const auto& cell = local_cells[cell_local_id];
+      if (not master_grid->CheckPointInsideCell(cell_local_id, point))
         continue;
 
       ++local_num_point_hits[p];
-      const auto& master_mapping = master.discretization_->GetCellMapping(*cell);
+      const auto& master_mapping = master.discretization_->GetLocalCellMapping(cell_local_id);
       Vector<double> master_shape_values;
       master_mapping.ShapeValues(point, master_shape_values);
       for (size_t f = 0; f < field_functions.size(); ++f)
@@ -431,7 +434,7 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         const auto& field_function = *field_functions[f];
         const auto& discretization = *field_function.discretization_;
         const auto& unknown_manager = field_function.GetUnknownManager();
-        const auto& cell_mapping = discretization.GetCellMapping(*cell);
+        const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
         const auto& field_vector = *field_function.ghosted_field_vector_;
         Vector<double> alternate_shape_values;
         const Vector<double>* shape_values = &master_shape_values;
@@ -446,7 +449,8 @@ FieldFunctionGridBased::GetPointValues(const FFList& field_functions,
         for (size_t c = 0; c < field_num_components; ++c)
           for (size_t j = 0; j < num_nodes; ++j)
           {
-            const auto dof_map = discretization.MapDOFLocal(*cell, j, unknown_manager, 0, c);
+            const auto dof_map =
+              discretization.MapDOFLocal(cell_local_id, j, unknown_manager, 0, c);
             const size_t value_index = p * num_components + component_offsets[f] + c;
             local_values[value_index] += field_vector[dof_map] * (*shape_values)(j);
           }
@@ -489,8 +493,9 @@ double
 FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int component) const
 {
   const auto& field_vector = *ghosted_field_vector_;
-
-  const auto& cell_mapping = discretization_->GetCellMapping(cell);
+  const auto mesh = discretization_->GetMesh();
+  const auto cell_local_id = mesh->MapCellGlobalID2LocalID(cell.global_id);
+  const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
 
   Vector<double> shape_values;
   cell_mapping.ShapeValues(position, shape_values);
@@ -499,7 +504,8 @@ FieldFunctionGridBased::Evaluate(const Cell& cell, const Vector3& position, int 
   const size_t num_nodes = cell_mapping.GetNumNodes();
   for (size_t j = 0; j < num_nodes; ++j)
   {
-    const auto dof_map = discretization_->MapDOFLocal(cell, j, GetUnknownManager(), 0, component);
+    const auto dof_map =
+      discretization_->MapDOFLocal(cell_local_id, j, GetUnknownManager(), 0, component);
     value += field_vector[dof_map] * shape_values(j);
   }
 
@@ -524,12 +530,12 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
 
   for (const auto& ff_ptr : ff_list)
     if (ff_ptr != master_ff_ptr)
-      if (ff_ptr->discretization_->GetGrid() != master_ff_ptr->discretization_->GetGrid())
+      if (ff_ptr->discretization_->GetMesh() != master_ff_ptr->discretization_->GetMesh())
         throw std::logic_error(fname +
                                ": Cannot be used with field functions based on different grids.");
 
   // Get grid
-  const auto& grid = master_ff.discretization_->GetGrid();
+  const auto& grid = master_ff.discretization_->GetMesh();
 
   auto ugrid = PrepareVtkUnstructuredGrid(grid);
 
@@ -555,15 +561,18 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
       point_array->SetName(component_name.c_str());
 
       // Populate the array here
-      for (const auto& cell : grid->GetLocalCells())
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
       {
-        const size_t num_nodes = sdm->GetCellNumNodes(*cell);
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        auto cell_vertex_ids = grid->GetCellConnectivity(cell_local_id);
+        const size_t num_nodes = sdm->GetCellNumNodes(cell_local_id);
 
-        if (num_nodes == cell->vertex_ids.size())
+        if (num_nodes == cell_vertex_ids.size())
         {
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(*cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
 
@@ -575,13 +584,13 @@ FieldFunctionGridBased::ExportMultipleToPVTU(
           double node_average = 0.0;
           for (size_t n = 0; n < num_nodes; ++n)
           {
-            const auto nmap = sdm->MapDOFLocal(*cell, n, uk_man, 0, c);
+            const auto nmap = sdm->MapDOFLocal(cell_local_id, n, uk_man, 0, c);
 
             const double field_value = field_vector[nmap];
             node_average += field_value;
           } // for node
           node_average /= static_cast<double>(num_nodes);
-          for (std::size_t n = 0; n < cell->vertex_ids.size(); ++n)
+          for (std::size_t n = 0; n < cell_vertex_ids.size(); ++n)
           {
             point_array->InsertNextValue(node_average);
           } // for vertex

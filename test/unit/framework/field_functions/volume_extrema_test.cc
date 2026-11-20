@@ -19,12 +19,13 @@ TEST(FieldFunctionInterpolationVolume, TransformedExtrema)
   auto ff = std::make_shared<FieldFunctionGridBased>("linear", sdm, Unknown(UnknownType::SCALAR));
   const auto& unknowns = ff->GetUnknownManager();
   std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
-  for (auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    cell->block_id = 3;
-    const auto& nodes = sdm->GetCellNodeLocations(*cell);
+    auto& cell = grid->GetLocalCell(cell_local_id);
+    cell.block_id = 3;
+    const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < nodes.size(); ++i)
-      values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] = nodes[i].z;
+      values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] = nodes[i].z;
   }
   ff->UpdateFieldVector(values);
 
@@ -78,12 +79,13 @@ TEST(FieldFunctionGridBased, BatchedPointValues)
   const auto& unknowns = linear->GetUnknownManager();
   std::vector<double> linear_values(sdm->GetNumLocalDOFs(unknowns));
   std::vector<double> shifted_values(linear_values.size());
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& nodes = sdm->GetCellNodeLocations(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < nodes.size(); ++i)
     {
-      const auto dof = sdm->MapDOFLocal(*cell, i, unknowns, 0, 0);
+      const auto dof = sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0);
       linear_values[dof] = nodes[i].z;
       shifted_values[dof] = 2.0 * nodes[i].z + 3.0;
     }
@@ -132,20 +134,26 @@ TEST(FieldFunctionGridBased, BatchedPointValues3D)
     { return 1.0 + p.x / size.x + 2.0 * p.y / size.y + 3.0 * p.z / size.z; };
     const auto& unknowns = ff->GetUnknownManager();
     std::vector<double> values(sdm->GetNumLocalDOFs(unknowns));
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& nodes = sdm->GetCellNodeLocations(*cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& nodes = sdm->GetCellNodeLocations(cell_local_id);
       for (size_t i = 0; i < nodes.size(); ++i)
-        values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] = field(nodes[i]);
+        values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] = field(nodes[i]);
     }
     ff->UpdateFieldVector(values);
 
     auto jump = std::make_shared<FieldFunctionGridBased>("jump", sdm, Unknown(UnknownType::SCALAR));
     std::vector<double> jump_values(sdm->GetNumLocalDOFs(unknowns));
-    for (const auto& cell : grid->GetLocalCells())
-      for (size_t i = 0; i < sdm->GetCellNumNodes(*cell); ++i)
-        jump_values[sdm->MapDOFLocal(*cell, i, unknowns, 0, 0)] =
-          1.0 + static_cast<double>(cell->global_id);
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
+    {
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      for (size_t i = 0; i < sdm->GetCellNumNodes(cell_local_id); ++i)
+        jump_values[sdm->MapDOFLocal(cell_local_id, i, unknowns, 0, 0)] =
+          1.0 + static_cast<double>(cell.global_id);
+    }
     jump->UpdateFieldVector(jump_values);
 
     // A lattice that includes the domain boundary and, on the box mesh, the vertices, edges, and

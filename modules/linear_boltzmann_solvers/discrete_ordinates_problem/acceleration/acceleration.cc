@@ -97,7 +97,7 @@ ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
                                        const LBSGroupset& groupset,
                                        const std::vector<double>& delta_phi_local)
 {
-  const auto& grid = *do_problem.GetGrid();
+  const auto& grid = *do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& transport_views = do_problem.GetCellTransportViews();
   const auto first_group = groupset.first_group;
@@ -107,8 +107,7 @@ ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
                               unsigned int face_node,
                               unsigned int group_idx)
   {
-    const auto& cell = *grid.GetLocalCells()[cell_local_id];
-    const auto node = sdm.GetCellMapping(cell).MapFaceNode(face, face_node);
+    const auto node = sdm.GetLocalCellMapping(cell_local_id).MapFaceNode(face, face_node);
     return delta_phi_local[transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx)];
   };
 

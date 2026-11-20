@@ -121,14 +121,17 @@ DiscreteOrdinatesCurvilinearProblem::CheckConfigurationErrors(
   const std::vector<Vector3> unit_normal_vectors = {
     Vector3(1.0, 0.0, 0.0), Vector3(0.0, 1.0, 0.0), Vector3(0.0, 0.0, 1.0)};
   int local_non_orthogonal = 0;
-  for (const auto& cell : grid_->GetLocalCells())
-    for (const auto& face : cell->faces)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
       if (not face.has_neighbor and
           std::none_of(unit_normal_vectors.begin(),
                        unit_normal_vectors.end(),
                        [&face](const Vector3& e)
                        { return std::fabs(face.normal.Dot(e)) > 0.999999; }))
         local_non_orthogonal = 1;
+  }
   int non_orthogonal = 0;
   mpi_comm.all_reduce(local_non_orthogonal, non_orthogonal, mpi::op::max<int>());
   if (non_orthogonal != 0)
@@ -194,7 +197,9 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   // Define lambda for cell-wise comps
   auto ComputeCellUnitIntegrals = [&sdm, &swf](const Cell& cell)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(cell);
+    const auto mesh = sdm.GetMesh();
+    const auto cell_local_id = mesh->MapCellGlobalID2LocalID(cell.global_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     //    const size_t cell_num_faces = cell.faces.size();
     const size_t cell_num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
@@ -228,8 +233,11 @@ DiscreteOrdinatesCurvilinearProblem::ComputeSecondaryUnitIntegrals()
   const size_t num_local_cells = grid_->GetLocalCellCount();
   secondary_unit_cell_matrices_.resize(num_local_cells);
 
-  for (const auto& cell : grid_->GetLocalCells())
-    secondary_unit_cell_matrices_[cell->local_id] = ComputeCellUnitIntegrals(*cell);
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    secondary_unit_cell_matrices_[cell_local_id] = ComputeCellUnitIntegrals(cell);
+  }
 
   opensn::mpi_comm.barrier();
   log.Log() << "Secondary Cell matrices computed.";

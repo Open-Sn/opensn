@@ -77,7 +77,7 @@ SortedTriple(std::uint32_t a, std::uint32_t b, std::uint32_t c)
 MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cells)
 {
   const auto& cells = grid.GetLocalCells();
-  const auto num_cells = static_cast<std::uint32_t>(cells.size());
+  const auto num_cells = static_cast<std::uint32_t>(grid.GetLocalCellCount());
   cell_convex_.assign(num_cells, false);
   cell_size_.assign(num_cells, 0.0);
   cell_interior_.assign(num_cells, Vector3());
@@ -88,22 +88,26 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
 
   // Compact mesh vertices.
   std::unordered_map<std::uint64_t, std::uint32_t> compact_vertex;
-  for (const auto& cell : cells)
-    for (const auto vid : cell->vertex_ids)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
+    for (const auto vid : cell_vertex_ids)
     {
       const auto [it, inserted] =
         compact_vertex.try_emplace(vid, static_cast<std::uint32_t>(points_.size()));
       if (inserted)
         points_.push_back(grid.GlobalVertex(vid));
     }
+  }
   const auto num_vertices = static_cast<std::uint32_t>(points_.size());
 
   // Face centroids, one point per face, computed from the vertices in a canonical order so that
   // both cells sharing the face get the same point.
   std::map<std::vector<std::uint64_t>, std::uint32_t> face_centroid;
-  const auto FaceCentroid = [&](const std::vector<std::uint64_t>& vertex_ids)
+  const auto FaceCentroid = [&](std::span<const std::uint64_t> vertex_ids)
   {
-    std::vector<std::uint64_t> key(vertex_ids);
+    std::vector<std::uint64_t> key(vertex_ids.begin(), vertex_ids.end());
     std::sort(key.begin(), key.end());
     const auto it = face_centroid.find(key);
     if (it != face_centroid.end())
@@ -127,12 +131,13 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
   // index of the first triangle of each face.
   std::vector<std::array<std::uint32_t, 3>> cell_triangles;
   std::vector<std::uint32_t> cell_face_starts;
-  for (const auto& cell : cells)
+  for (std::uint32_t c = 0; c < grid.GetLocalCellCount(); ++c)
   {
-    const auto c = static_cast<std::uint32_t>(cell->local_id);
-    Vector3 lo = grid.GlobalVertex(cell->vertex_ids.front());
+    const auto& cell = grid.GetLocalCell(c);
+    auto cell_vertex_ids = grid.GetCellConnectivity(c);
+    Vector3 lo = grid.GlobalVertex(cell_vertex_ids.front());
     Vector3 hi = lo;
-    for (const auto vid : cell->vertex_ids)
+    for (const auto vid : cell_vertex_ids)
     {
       const auto compact = compact_vertex.at(vid);
       cell_vertices_.push_back(compact);
@@ -148,22 +153,23 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
     cell_face_starts.clear();
     std::vector<std::uint32_t> cell_points(cell_vertices_.begin() + cell_vertex_offset_[c],
                                            cell_vertices_.end());
-    for (const auto& face : cell->faces)
+    for (std::uint32_t face_idx = 0; face_idx < grid.GetCellFaceCount(c); ++face_idx)
     {
-      const size_t n = face.vertex_ids.size();
+      auto face_vertex_ids = grid.GetCellFaceConnectivity(c, face_idx);
+      const size_t n = face_vertex_ids.size();
       OpenSnInvalidArgumentIf(n < 3, "MeshSegmentTracer: a face has fewer than three vertices.");
       cell_face_starts.push_back(static_cast<std::uint32_t>(cell_triangles.size()));
       if (n == 3)
-        cell_triangles.push_back({compact_vertex.at(face.vertex_ids[0]),
-                                  compact_vertex.at(face.vertex_ids[1]),
-                                  compact_vertex.at(face.vertex_ids[2])});
+        cell_triangles.push_back({compact_vertex.at(face_vertex_ids[0]),
+                                  compact_vertex.at(face_vertex_ids[1]),
+                                  compact_vertex.at(face_vertex_ids[2])});
       else
       {
-        const auto f = FaceCentroid(face.vertex_ids);
+        const auto f = FaceCentroid(face_vertex_ids);
         cell_points.push_back(f);
         for (size_t s = 0; s < n; ++s)
-          cell_triangles.push_back({compact_vertex.at(face.vertex_ids[s]),
-                                    compact_vertex.at(face.vertex_ids[(s + 1) % n]),
+          cell_triangles.push_back({compact_vertex.at(face_vertex_ids[s]),
+                                    compact_vertex.at(face_vertex_ids[(s + 1) % n]),
                                     f});
       }
     }
@@ -322,7 +328,7 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
         }
       }
       OpenSnInvalidArgumentIf(not StarShapedAbout(center),
-                              "MeshSegmentTracer: cell " + std::to_string(cell->global_id) +
+                              "MeshSegmentTracer: cell " + std::to_string(cell.global_id) +
                                 " (centroid " + interior.PrintStr() +
                                 ") is not star-shaped about any point, so it cannot be traced "
                                 "through side tetrahedra.");
@@ -419,9 +425,9 @@ MeshSegmentTracer::MeshSegmentTracer(const Mesh& grid, const bool split_all_cell
                             (t1.a == t0.c and t1.b == t0.b and t1.c == t0.a);
       OpenSnInvalidArgumentIf(not opposite,
                               "MeshSegmentTracer: cells " +
-                                std::to_string(cells[piece_cell_[PieceOf(tris[0])]]->global_id) +
+                                std::to_string(cells[piece_cell_[PieceOf(tris[0])]].global_id) +
                                 " and " +
-                                std::to_string(cells[piece_cell_[PieceOf(tris[1])]]->global_id) +
+                                std::to_string(cells[piece_cell_[PieceOf(tris[1])]].global_id) +
                                 " lie on the same side of a face they share: the mesh is "
                                 "inverted or self-overlapping.");
       triangles_[tris[0]].across = PieceOf(tris[1]);

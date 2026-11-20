@@ -22,7 +22,7 @@ class PieceWiseLinearPolyhedronMapping : public PieceWiseLinearBaseMapping
 {
 public:
   /// Constructor for the Piecewise Linear Polyhedron cell finite element view.
-  PieceWiseLinearPolyhedronMapping(const Cell& polyh_cell,
+  PieceWiseLinearPolyhedronMapping(std::uint32_t cell_local_id,
                                    std::shared_ptr<Mesh> ref_grid,
                                    const TetrahedraQuadrature& volume_quadrature,
                                    const TriangleQuadrature& surface_quadrature);

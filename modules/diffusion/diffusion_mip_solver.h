@@ -90,15 +90,15 @@ public:
    * Nv = Number of vertices. If Nv <= 4 then the perimeter parameter
    * should be replaced by edge length.
    */
-  double HPerpendicular(const Cell& cell, unsigned int f);
+  double HPerpendicular(std::uint32_t cell_local_id, unsigned int f);
 
   /// Factor on the interior and boundary penalties of polygons: 2 for "face_side", 1 for "cell"
   /// (OpenSn's original polygon penalty).
   double PolygonPenaltyScale() const;
 
   /// Maps a face, in a discontinuous sense, using the spatial discretization.
-  int MapFaceNodeDisc(const Cell& cur_cell,
-                      const Cell& adj_cell,
+  int MapFaceNodeDisc(std::uint32_t cur_cell_local_id,
+                      std::uint32_t adj_cell_local_id,
                       const std::vector<Vector3>& cc_node_locs,
                       const std::vector<Vector3>& ac_node_locs,
                       size_t ccf,
@@ -123,7 +123,7 @@ private:
    * number of such faces.
    */
   std::pair<std::vector<ClosureFaceData>, unsigned int>
-  ComputeClosureFaceData(const Cell& cell) const;
+  ComputeClosureFaceData(std::uint32_t cell_local_id) const;
 
   /// Floor of the interior penalty on a face with unit normal `normal`: beta_f or 1/4.
   double PenaltyFloor(const Vector3& normal) const;

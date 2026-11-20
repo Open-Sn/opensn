@@ -392,14 +392,14 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
       if (vertices[p] == nullptr)
         throw std::logic_error(fname + ": Vertex pointer not assigned");
 
-    mesh->GetRawCells() = cells;
+    mesh->GetCells() = cells;
     mesh->GetVertices().reserve(total_point_count);
     for (auto& vertex_ptr : vertices)
       mesh->GetVertices().push_back(*vertex_ptr);
   } // If global-ids available
   else
   {
-    auto& raw_cells = mesh->GetRawCells();
+    auto& raw_cells = mesh->GetCells();
     // Push cells
     for (vtkIdType c = 0; c < total_cell_count; ++c)
     {
@@ -444,7 +444,7 @@ CopyUGridCellsAndPoints(std::shared_ptr<UnpartitionedMesh> mesh,
 void
 SetBlockIDsFromList(std::shared_ptr<UnpartitionedMesh> mesh, const std::vector<int>& block_ids)
 {
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   const size_t total_cell_count = raw_cells.size();
   for (size_t c = 0; c < total_cell_count; ++c)
     raw_cells[c]->block_id = block_ids[c];
@@ -455,7 +455,7 @@ SetBoundaryIDsFromBlocks(std::shared_ptr<UnpartitionedMesh> mesh,
                          std::vector<vtkUGridPtrAndName>& bndry_grid_blocks)
 {
   const double EPSILON = 1.0e-12;
-  auto& raw_cells = mesh->GetRawCells();
+  auto& raw_cells = mesh->GetCells();
   // Build boundary faces
   std::vector<UnpartitionedMesh::LightWeightFace*> bndry_faces;
   for (auto& cell_ptr : raw_cells)
@@ -853,19 +853,29 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
       throw std::logic_error("Could not open file '" + std::string(file_name) + "' for writing.");
 
     // Develop list of faces and nodes
+    struct ExportFaceInfo
+    {
+      CellFace face;
+      uint32_t cell_local_id;
+      uint32_t face_idx;
+    };
     std::set<uint64_t> nodes_set;
-    std::vector<CellFace> faces_to_export;
+    std::vector<ExportFaceInfo> faces_to_export;
     for (const auto& cell : grid->GetLocalCells())
     {
-      if (cell->GetType() == CellType::POLYHEDRON)
+      if (cell.GetType() == CellType::POLYHEDRON)
       {
-        for (auto& face : cell->faces)
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+        const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
+        for (size_t f = 0; f < num_faces; ++f)
         {
+          const auto& face = grid->GetCellFace(cell_local_id, f);
           if (not face.has_neighbor)
           {
-            faces_to_export.push_back(face);
-
-            for (auto vid : face.vertex_ids)
+            faces_to_export.push_back(
+              {face, static_cast<uint32_t>(cell_local_id), static_cast<uint32_t>(f)});
+            auto face_vertex_ids = grid->GetCellFaceConnectivity(cell_local_id, f);
+            for (auto vid : face_vertex_ids)
               nodes_set.insert(vid);
           } // if boundary
         } // for face
@@ -899,8 +909,9 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
     }
 
     // Write face normals
-    for (const auto& face : faces_to_export)
+    for (const auto& face_info : faces_to_export)
     {
+      const auto& face = face_info.face;
       // clang-format off
       of << "vn "
         << std::fixed << std::setprecision(4)
@@ -912,12 +923,14 @@ MeshIO::ToOBJ(const std::shared_ptr<Mesh>& grid, const char* file_name, bool per
 
     // Write faces
     int normal_counter = 0;
-    for (const auto& face : faces_to_export)
+    for (const auto& face_info : faces_to_export)
     {
       normal_counter++;
       of << "f";
 
-      for (auto v_g_index : face.vertex_ids)
+      auto face_vertex_ids =
+        grid->GetCellFaceConnectivity(face_info.cell_local_id, face_info.face_idx);
+      for (auto v_g_index : face_vertex_ids)
         of << " " << node_mapping[v_g_index] << "//" << normal_counter;
 
       of << "\n";
@@ -949,12 +962,12 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
   std::map<int, CellType> block_id_map;
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto blk_id = static_cast<int>(cell->block_id);
+    const auto blk_id = static_cast<int>(cell.block_id);
     if (block_id_map.count(blk_id) == 0)
-      block_id_map[blk_id] = cell->GetSubType();
+      block_id_map[blk_id] = cell.GetSubType();
     else
     {
-      if (cell->GetSubType() != block_id_map.at(blk_id))
+      if (cell.GetSubType() != block_id_map.at(blk_id))
         throw std::logic_error(fname + ": Block id " + std::to_string(blk_id) +
                                " appearing for more than one cell type.");
     }
@@ -992,17 +1005,18 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
     }
 
     // Load cells
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::size_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
     {
-      if (cell->GetSubType() == CellType::POLYGON or cell->GetSubType() == CellType::POLYHEDRON)
-        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell->GetSubType()) +
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      if (cell.GetSubType() == CellType::POLYGON or cell.GetSubType() == CellType::POLYHEDRON)
+        throw std::logic_error(fname + ": Cell-subtype \"" + CellTypeName(cell.GetSubType()) +
                                "\" encountered that is not supported by ExodusII.");
-      UploadCellGeometryContinuous(*cell, vertex_map, ugrid);
-      block_id_list->InsertNextValue(static_cast<int>(cell->block_id));
-      max_dimension = std::max(max_dimension, Mesh::GetCellDimension(*cell));
+      UploadCellGeometryContinuous(grid, cell_local_id, vertex_map, ugrid);
+      block_id_list->InsertNextValue(static_cast<int>(cell.block_id));
+      max_dimension = std::max(max_dimension, Mesh::GetCellDimension(cell));
 
       // Exodus node- and cell indices are 1-based therefore we add a 1 here.
-      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell->global_id) +
+      global_elem_id_list->InsertNextValue(static_cast<vtkIdType>(cell.global_id) +
                                            static_cast<vtkIdType>(1));
     } // for local cells
 
@@ -1038,26 +1052,27 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
     // matches that of Exodus but VTK assumes the incoming mesh to be conformant to VTK and
     // therefore, internally performs a mapping. Fortunately, the only relevant cell-types, for
     // which a special mapping is required, are the prisms and hexes.
-    const size_t num_faces = cell->faces.size();
+    const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell.global_id);
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     std::vector<int> face_mapping(num_faces, 0);
-    if (cell->GetSubType() == CellType::WEDGE)
+    if (cell.GetSubType() == CellType::WEDGE)
       face_mapping = {2, 3, 4, 0, 1};
-    else if (cell->GetSubType() == CellType::HEXAHEDRON)
+    else if (cell.GetSubType() == CellType::HEXAHEDRON)
       face_mapping = {2, 1, 3, 0, 4, 5};
     else
     {
-      for (size_t f = 0; f < cell->faces.size(); ++f)
+      for (size_t f = 0; f < num_faces; ++f)
         face_mapping[f] = static_cast<int>(f);
     }
 
     // Here we store face information as a triplet, i.e., a face pointer, the id of the cell owning
     // it, and the local face index (relative to the cell) of the face.
     int f = 0;
-    for (const auto& face : cell->faces)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (const auto& face : cell_faces)
     {
       if (not face.has_neighbor)
-        boundary_id_faces_map[face.neighbor_id].push_back(
-          {&face, cell->global_id, face_mapping[f]});
+        boundary_id_faces_map[face.neighbor_id].push_back({&face, cell.global_id, face_mapping[f]});
       ++f;
     }
   }
@@ -1083,8 +1098,13 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids)
+      {
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        const auto face_vertex_ids =
+          grid->GetCellFaceConnectivity(cell_local_id, face_info.source_face_id);
+        for (uint64_t vid : face_vertex_ids)
           vid_set.insert(vid);
+      }
 
       // Build vertex map
       std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
@@ -1139,8 +1159,13 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Build vertex set
       std::set<uint64_t> vid_set;
       for (const auto& face_info : face_list)
-        for (uint64_t vid : face_info.face_ptr->vertex_ids)
+      {
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        const auto face_vertex_ids =
+          grid->GetCellFaceConnectivity(cell_local_id, face_info.source_face_id);
+        for (uint64_t vid : face_vertex_ids)
           vid_set.insert(vid);
+      }
 
       // Build vertex map
       std::vector<uint64_t> vertex_map(grid->GetGlobalVertexCount(), 0);
@@ -1160,7 +1185,8 @@ MeshIO::ToExodusII(const std::shared_ptr<Mesh>& grid,
       // Load faces
       for (const auto& face_info : face_list)
       {
-        UploadFaceGeometry(*face_info.face_ptr, vertex_map, ugrid);
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(face_info.source_cell_id);
+        UploadFaceGeometry(grid, cell_local_id, face_info.source_face_id, vertex_map, ugrid);
         src_cell_global_ids->InsertNextValue(static_cast<vtkIdType>(face_info.source_cell_id));
         src_cell_face_id->InsertNextValue(face_info.source_face_id);
       }

@@ -49,15 +49,18 @@ ComputePointwisePhiChange(
   const std::vector<double>& phi_old =
     opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
 
-  auto grid_ptr = lbs_problem.GetGrid();
+  auto grid_ptr = lbs_problem.GetMesh();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   auto num_moments = lbs_problem.GetNumMoments();
 
   double pw_change = 0.0;
-  for (const auto& cell : grid_ptr->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_ptr->GetLocalCellCount();
+       ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    for (auto i = 0; i < cell->vertex_ids.size(); ++i)
+    const auto& cell = grid_ptr->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    auto cell_vertex_ids = grid_ptr->GetCellConnectivity(cell_local_id);
+    for (auto i = 0; i < cell_vertex_ids.size(); ++i)
     {
       for (auto id : groupset_ids)
       {
@@ -106,7 +109,7 @@ ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
   double pw_change = 0.0;
   if (not psi_new.empty())
   {
-    const auto& grid = *do_problem.GetGrid();
+    const auto& grid = *do_problem.GetMesh();
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& transport_views = do_problem.GetCellTransportViews();
     const auto& phi_new = do_problem.GetPhiNewLocal();
@@ -123,8 +126,7 @@ ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
                                unsigned int face_node,
                                unsigned int group_idx)
     {
-      const auto& cell = *grid.GetLocalCells()[cell_local_id];
-      const auto node = sdm.GetCellMapping(cell).MapFaceNode(face, face_node);
+      const auto node = sdm.GetLocalCellMapping(cell_local_id).MapFaceNode(face, face_node);
       const auto dof = transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx);
       return std::max(std::fabs(phi_new[dof]), std::fabs(phi_old[dof]));
     };

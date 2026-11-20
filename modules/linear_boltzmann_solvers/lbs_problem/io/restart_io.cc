@@ -75,7 +75,7 @@ ReadRestartMeshData(hid_t file_id, RestartMeshData& data)
 bool
 WriteRestartMeshData(hid_t file_id, const LBSProblem& problem)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   std::vector<uint64_t> cell_ids;
   std::vector<uint64_t> num_cell_nodes;
@@ -85,12 +85,13 @@ WriteRestartMeshData(hid_t file_id, const LBSProblem& problem)
   cell_ids.reserve(grid->GetLocalCellCount());
   num_cell_nodes.reserve(grid->GetLocalCellCount());
 
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    cell_ids.push_back(cell->global_id);
-    const auto num_nodes = discretization.GetCellNumNodes(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    cell_ids.push_back(cell.global_id);
+    const auto num_nodes = discretization.GetCellNumNodes(cell_local_id);
     num_cell_nodes.push_back(num_nodes);
-    const auto& nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& nodes = discretization.GetCellNodeLocations(cell_local_id);
     OpenSnLogicalErrorIf(nodes.size() != num_nodes,
                          problem.GetName() + ": inconsistent local cell-node metadata.");
     for (const auto& node : nodes)
@@ -117,7 +118,7 @@ WriteCellwiseDataset(hid_t file_id,
                      const std::vector<double>& source,
                      CellwiseField field)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
@@ -125,8 +126,10 @@ WriteCellwiseDataset(hid_t file_id,
   std::vector<double> values;
   values.reserve(source.size());
 
-  for (const auto& cell : grid->GetLocalCells())
-    for (size_t i = 0; i < discretization.GetCellNumNodes(*cell); ++i)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
+  {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    for (size_t i = 0; i < discretization.GetCellNumNodes(cell_local_id); ++i)
       for (size_t c = 0; c < stride; ++c)
       {
         size_t dof = 0;
@@ -134,14 +137,15 @@ WriteCellwiseDataset(hid_t file_id,
         {
           const auto m = static_cast<unsigned int>(c / problem.GetNumGroups());
           const auto g = static_cast<unsigned int>(c % problem.GetNumGroups());
-          dof = discretization.MapDOFLocal(*cell, i, uk_man, m, g);
+          dof = discretization.MapDOFLocal(cell_local_id, i, uk_man, m, g);
         }
         else
-          dof = discretization.MapDOFLocal(*cell, i) * stride + c;
+          dof = discretization.MapDOFLocal(cell_local_id, i) * stride + c;
         OpenSnLogicalErrorIf(dof >= source.size(),
                              problem.GetName() + ": restart source DOF is out of range.");
         values.push_back(source[dof]);
       }
+  }
 
   OpenSnLogicalErrorIf(values.size() != source.size(),
                        problem.GetName() + ": restart source has an incompatible size.");
@@ -151,19 +155,20 @@ WriteCellwiseDataset(hid_t file_id,
 bool
 SameLocalPartition(const LBSProblem& problem, const RestartMeshData& data)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   if (data.cell_ids.size() != grid->GetLocalCellCount())
     return false;
 
   size_t c = 0;
   size_t node_offset = 0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    if (data.cell_ids[c] != cell->global_id or
-        data.num_cell_nodes[c] != discretization.GetCellNumNodes(*cell))
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    if (data.cell_ids[c] != cell.global_id or
+        data.num_cell_nodes[c] != discretization.GetCellNumNodes(cell_local_id))
       return false;
-    const auto& local_nodes = discretization.GetCellNodeLocations(*cell);
+    const auto& local_nodes = discretization.GetCellNodeLocations(cell_local_id);
     for (size_t i = 0; i < local_nodes.size(); ++i)
     {
       const Vector3 file_node(data.nodes_x[node_offset + i],
@@ -190,7 +195,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
                     std::vector<double>& destination,
                     CellwiseField field)
 {
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const auto& uk_man = problem.GetUnknownManager();
   const auto stride = field == CellwiseField::PHI ? problem.GetNumMoments() * problem.GetNumGroups()
@@ -230,11 +235,12 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
       const auto num_nodes_in_cell = data.num_cell_nodes[c];
       if (grid->IsCellLocal(cell_id))
       {
-        const auto& cell = grid->GetGlobalCell(cell_id);
-        OpenSnInvalidArgumentIf(found.at(cell.local_id),
+        const auto cell_local_id = grid->MapCellGlobalID2LocalID(cell_id);
+        const auto& cell = grid->GetLocalCell(cell_local_id);
+        OpenSnInvalidArgumentIf(found.at(cell_local_id),
                                 problem.GetName() + ": restart contains duplicate cell " +
                                   std::to_string(cell_id) + ".");
-        const auto& local_nodes = discretization.GetCellNodeLocations(cell);
+        const auto& local_nodes = discretization.GetCellNodeLocations(cell_local_id);
         OpenSnInvalidArgumentIf(local_nodes.size() != num_nodes_in_cell,
                                 problem.GetName() + ": restart cell " + std::to_string(cell_id) +
                                   " has an incompatible node count.");
@@ -278,13 +284,14 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
             {
               const auto m = static_cast<unsigned int>(component / problem.GetNumGroups());
               const auto g = static_cast<unsigned int>(component % problem.GetNumGroups());
-              dof = discretization.MapDOFLocal(cell, file_to_local_node[i], uk_man, m, g);
+              dof = discretization.MapDOFLocal(cell_local_id, file_to_local_node[i], uk_man, m, g);
             }
             else
-              dof = discretization.MapDOFLocal(cell, file_to_local_node[i]) * stride + component;
+              dof = discretization.MapDOFLocal(cell_local_id, file_to_local_node[i]) * stride +
+                    component;
             destination.at(dof) = values.at(value_offset + i * stride + component);
           }
-        found[cell.local_id] = true;
+        found[cell_local_id] = true;
       }
       node_offset += num_nodes_in_cell;
       value_offset += num_nodes_in_cell * stride;
@@ -297,7 +304,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
     const auto local_id = std::distance(found.begin(), missing);
     const auto& cell = *std::next(grid->GetLocalCells().begin(), local_id);
     throw std::invalid_argument(problem.GetName() + ": restart data is missing global cell " +
-                                std::to_string(cell->global_id) + ".");
+                                std::to_string(cell.global_id) + ".");
   }
   return true;
 }
@@ -344,7 +351,7 @@ ReadPrecursorVector(hid_t file_id,
 
   // Precursors are stored per spatial node (index node * J + j). Files written before this layout
   // stored one value per cell and family; expand those to the nodes of each cell.
-  const auto& grid = problem.GetGrid();
+  const auto& grid = problem.GetMesh();
   const auto& discretization = problem.GetSpatialDiscretization();
   const size_t num_local_nodes = discretization.GetNumLocalNodes();
   const size_t num_local_cells = grid->GetLocalCellCount();
@@ -370,13 +377,14 @@ ReadPrecursorVector(hid_t file_id,
   const size_t copy_stride = std::min(old_stride, new_stride);
 
   std::vector<double> remapped(expected_size, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
     for (size_t i = 0; i < cell_mapping.GetNumNodes(); ++i)
     {
-      const auto node_id = discretization.MapDOFLocal(*cell, i);
-      const size_t old_base = (node_layout ? node_id : cell->local_id) * old_stride;
+      const auto node_id = discretization.MapDOFLocal(cell_local_id, i);
+      const size_t old_base = (node_layout ? node_id : cell_local_id) * old_stride;
       const size_t new_base = node_id * new_stride;
       for (size_t j = 0; j < copy_stride; ++j)
         remapped[new_base + j] = values[old_base + j];

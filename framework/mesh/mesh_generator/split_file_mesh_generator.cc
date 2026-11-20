@@ -91,7 +91,7 @@ SplitFileMeshGenerator::WriteSplitMesh(const std::vector<int>& cell_pids,
     throw std::runtime_error("Path " + dir_path.string() + " exists but is not a directory.");
 
   const auto& vertex_subs = umesh.GetVertextCellSubscriptions();
-  const auto& raw_cells = umesh.GetRawCells();
+  const auto& raw_cells = umesh.GetCells();
   const auto& raw_vertices = umesh.GetVertices();
 
   uint64_t aux_counter = 0;
@@ -373,13 +373,32 @@ SplitFileMeshGenerator::SetupLocalMesh(SplitMeshInfo& mesh_info)
   for (const auto& [vid, vertex] : vertices)
     grid_ptr->AddGlobalVertex(vid, vertex);
 
-  for (const auto& [pidgid, raw_cell] : cells)
+  std::size_t n_local_cells = 0;
+  std::size_t n_ghost_cells = 0;
+  for (auto& [pidgid, _] : cells)
   {
     const auto& [cell_pid, cell_global_id] = pidgid;
-    auto cell = SetupCell(raw_cell, cell_global_id, cell_pid);
-    grid_ptr->AddGlobalCell(std::move(cell));
+    if (cell_pid == opensn::mpi_comm.rank())
+      n_local_cells++;
+    else
+      n_ghost_cells++;
   }
 
+  std::vector<Cell> local_cells;
+  local_cells.reserve(n_local_cells);
+  std::vector<Cell> ghost_cells;
+  ghost_cells.reserve(n_ghost_cells);
+  for (auto& [pidgid, lw_cell] : cells)
+  {
+    const auto& [cell_pid, cell_global_id] = pidgid;
+    auto cell = SetupCell(lw_cell, cell_global_id, cell_pid);
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
+  }
+
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), mesh_info.cells);
   grid_ptr->SetDimension(mesh_info.dimension);
   grid_ptr->SetCoordinateSystem(mesh_info.coord_sys);
   grid_ptr->SetType(mesh_info.mesh_type);

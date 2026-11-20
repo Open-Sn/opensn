@@ -109,7 +109,7 @@ protected:
 
   void ProjectReflectedImageSources(unsigned int progress_interval);
 
-  std::vector<double> RaytraceLine(const Cell& cell,
+  std::vector<double> RaytraceLine(std::uint32_t cell_local_id,
                                    const Vector3& qp_xyz,
                                    const SourcePoint& source_point,
                                    double tolerance = 1.0e-12);
@@ -118,7 +118,7 @@ protected:
   /// scratch vectors. All four buffers must be sized to @p num_groups_ before the first call
   /// (they are reset internally each call, so no manual clearing is needed between calls).
   /// On return, @p scratch_mfp holds the optical depth from the source to @p qp_xyz per group.
-  void RaytraceLineInto(const Cell& cell,
+  void RaytraceLineInto(std::uint32_t cell_local_id,
                         const Vector3& qp_xyz,
                         const SourcePoint& source_point,
                         std::vector<double>& phi_out,
@@ -157,7 +157,7 @@ protected:
    * the source, when a face is not directly visible from it. Also returns std::nullopt when the
    * source is on the inner side of a face that is not outgoing.
    */
-  std::optional<ExactCellIntegrals> IntegrateCellExactly(const Cell& cell,
+  std::optional<ExactCellIntegrals> IntegrateCellExactly(std::uint32_t cell_local_id,
                                                          const SourcePoint& source_point);
 
   /**
@@ -167,14 +167,17 @@ protected:
    * result is exact for cells of any shape, including non-convex ones. It is 1 for a point
    * inside the cell, 1/2 on a planar face, and smaller on an edge or vertex.
    */
-  double SubtendedAngleFraction(const Cell& cell, const Vector3& point) const;
+  double SubtendedAngleFraction(std::shared_ptr<Mesh> mesh,
+                                const Cell& cell,
+                                std::uint32_t cell_local_id,
+                                const Vector3& point) const;
 
   /// True when every vertex of the cell lies on the inner side of the plane of every face.
-  bool IsConvex(const Cell& cell) const;
+  bool IsConvex(const Cell& cell, std::uint32_t cell_local_id) const;
 
   void SweepBulkRegion(const SourcePoint& source_point);
 
-  UncollidedMatrices ComputeUncollidedIntegrals(const Cell& cell, const Vector3& pt_loc);
+  UncollidedMatrices ComputeUncollidedIntegrals(std::uint32_t cell_local_id, const Vector3& pt_loc);
 
   void UpdateBalance(const SourcePoint& source_point);
 

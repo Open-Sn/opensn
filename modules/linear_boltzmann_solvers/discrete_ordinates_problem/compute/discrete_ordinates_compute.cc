@@ -34,7 +34,7 @@ ComputeSignedRelativeBalance(const double gain, const double balance)
 }
 
 double
-GetInflow(const Cell& cell,
+GetInflow(std::uint32_t cell_local_id,
           const CellMapping& cell_mapping,
           const std::vector<UnitCellMatrices>& unit_cell_matrices,
           const CellFace& face,
@@ -44,7 +44,7 @@ GetInflow(const Cell& cell,
           int gs_id,
           unsigned int g)
 {
-  const auto& fe_vals = unit_cell_matrices.at(cell.local_id);
+  const auto& fe_vals = unit_cell_matrices.at(cell_local_id);
   const auto& int_f_shape_i = fe_vals.intS_shapeI[f];
   const unsigned int num_face_nodes = cell_mapping.GetNumFaceNodes(f);
   const size_t num_angles = quadrature->GetNumAngles();
@@ -62,7 +62,7 @@ GetInflow(const Cell& cell,
     for (unsigned int fi = 0; fi < num_face_nodes; ++fi)
     {
       const unsigned int i = cell_mapping.MapFaceNode(f, fi);
-      const double* psi_ptr = boundary.PsiIncoming(cell.local_id, f, fi, n, gs_id, g);
+      const double* psi_ptr = boundary.PsiIncoming(cell_local_id, f, fi, n, gs_id, g);
       const double psi_inc = (psi_ptr != nullptr) ? *psi_ptr : 0.0;
       inflow += mu * weight * int_f_shape_i(i) * psi_inc;
     }
@@ -109,7 +109,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 {
   opensn::mpi_comm.barrier();
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& discretization = do_problem.GetSpatialDiscretization();
   auto& phi_new_local = do_problem.GetPhiNewLocal();
   const auto& groupsets = do_problem.GetGroupsets();
@@ -196,28 +196,29 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
     }
     return data;
   };
-
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization.GetCellMapping(*cell);
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    const auto& outflow_view = cell_outflow_views[cell->local_id];
-    const auto& fe_intgrl_values = unit_cell_matrices[cell->local_id];
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization.GetLocalCellMapping(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& outflow_view = cell_outflow_views[cell_local_id];
+    const auto& fe_intgrl_values = unit_cell_matrices[cell_local_id];
     const size_t num_nodes = transport_view.GetNumNodes();
     const auto& IntV_shapeI = fe_intgrl_values.intV_shapeI;
     const auto& IntS_shapeI = fe_intgrl_values.intS_shapeI;
-    const auto& xs_data = block_id_to_xs_map.at(cell->block_id);
+    const auto& xs_data = block_id_to_xs_map.at(cell.block_id);
     const bool compute_csda_energy_balance = options.csda_enabled;
     const CSDAMaterialData* csda_data =
-      compute_csda_energy_balance ? &GetCSDAMaterialData(cell->block_id) : nullptr;
+      compute_csda_energy_balance ? &GetCSDAMaterialData(cell.block_id) : nullptr;
 
     // Inflow: This is essentially an integration over all faces, all angles, and all groups. For
     // non-reflective boundaries, only the cosines that are negative are added to the inflow
     // integral. For reflective boundaries, it is expected that, upon convergence, inflow = outflow
     // (within numerical tolerances set by the user).
-    for (int f = 0; f < cell->faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell_faces[f];
 
       if (not face.has_neighbor) // Boundary face
       {
@@ -245,7 +246,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
               if (mu < 0.0)
               {
-                for (int fi = 0; fi < face.vertex_ids.size(); ++fi)
+                const auto num_face_verts = grid->GetCellFaceVertexCount(cell_local_id, f);
+                for (std::uint64_t fi = 0; fi < num_face_verts; ++fi)
                 {
                   const int i = cell_mapping.MapFaceNode(f, fi);
                   const auto& IntFi_shapeI = IntS_shapeI[f](i);
@@ -254,7 +256,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
                   {
                     const auto g = groupset.first_group + gsg;
                     const double psi =
-                      *bndry->PsiIncoming(cell->local_id, f, fi, n, groupset.id, gsg);
+                      *bndry->PsiIncoming(cell_local_id, f, fi, n, groupset.id, gsg);
                     local_in_flow -= mu * wt * psi * IntFi_shapeI;
                     if (compute_csda_energy_balance)
                       local_csda_energy_in_flow -= energy.centers[g] * mu * wt * psi * IntFi_shapeI;
@@ -268,8 +270,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
     } // for f
 
     // Outflow: Only physical boundary leakage contributes to the global particle balance.
-    for (size_t f = 0; f < cell->faces.size(); ++f)
-      if (not cell->faces[f].has_neighbor)
+    for (std::size_t f = 0; f < cell_faces.size(); ++f)
+      if (not cell_faces[f].has_neighbor)
         for (unsigned int g = 0; g < num_groups; ++g)
         {
           const double outflow = outflow_view.Get(f, g);
@@ -328,7 +330,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
         if (cell_volume > 0.0)
         {
-          const size_t cell_g_offset = cell->local_id * static_cast<size_t>(num_groups);
+          const size_t cell_g_offset = cell_local_id * static_cast<size_t>(num_groups);
           for (const auto& [g_begin, g_end] : csda_data->charged_ranges)
           {
             for (unsigned int g = g_begin; g < g_end; ++g)
@@ -380,7 +382,8 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
         const size_t groupset_angle_group_stride =
           groupset.psi_uk_man_.GetNumberOfUnknowns() * num_gs_groups;
         const size_t groupset_group_stride = num_gs_groups;
-        const size_t base = discretization.MapDOFLocal(*cell, 0, groupset.psi_uk_man_, 0, 0);
+        const size_t base =
+          discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0);
 
         for (size_t i = 0; i < num_nodes; ++i)
         {
@@ -631,7 +634,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 {
   OpenSnInvalidArgumentIf(groupset_id >= do_problem.GetNumGroupsets(), "Invalid groupset id.");
 
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto& sdm = do_problem.GetSpatialDiscretization();
   const auto& groupset = do_problem.GetGroupset(groupset_id);
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
@@ -643,15 +646,17 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
   const auto gsi = groupset.first_group;
 
   std::vector<double> local_leakage(num_gs_groups, 0.0);
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& transport_view = cell_transport_views[cell->local_id];
-    const auto& outflow_view = cell_outflow_views[cell->local_id];
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& transport_view = cell_transport_views[cell_local_id];
+    const auto& outflow_view = cell_outflow_views[cell_local_id];
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    const auto cell_faces = grid->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = cell_faces[f];
 
       if (not face.has_neighbor && face.neighbor_id == boundary_id)
       {
@@ -661,8 +666,15 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
         {
           auto g = gsi + gsg;
           local_leakage[gsg] += outflow_view.Get(f, g);
-          local_leakage[gsg] += GetInflow(
-            *cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, groupset.id, gsg);
+          local_leakage[gsg] += GetInflow(cell_local_id,
+                                          cell_mapping,
+                                          unit_cell_matrices,
+                                          face,
+                                          quad,
+                                          bndry,
+                                          f,
+                                          groupset.id,
+                                          gsg);
         }
       }
     }
@@ -686,7 +698,7 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem,
 std::map<uint64_t, std::vector<double>>
 ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>& boundary_ids)
 {
-  const auto& grid = do_problem.GetGrid();
+  const auto& grid = do_problem.GetMesh();
   const auto uniq = grid->GetUniqueBoundaryIDs();
   for (const auto& bid : boundary_ids)
     OpenSnInvalidArgumentIf(std::find(uniq.begin(), uniq.end(), bid) == uniq.end(),
@@ -710,15 +722,18 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
   {
     const auto& quad = groupset.quadrature;
 
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& transport_view = cell_transport_views[cell->local_id];
-      const auto& outflow_view = cell_outflow_views[cell->local_id];
-      const auto& cell_mapping = sdm.GetCellMapping(*cell);
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      const auto& transport_view = cell_transport_views[cell_local_id];
+      const auto& outflow_view = cell_outflow_views[cell_local_id];
+      const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
 
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      const auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (unsigned int f = 0; f < cell_faces.size(); ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
 
         if (not face.has_neighbor && requested_ids.count(face.neighbor_id))
         {
@@ -728,8 +743,15 @@ ComputeLeakage(DiscreteOrdinatesProblem& do_problem, const std::vector<uint64_t>
           {
             auto group_num = groupset.first_group + g;
             local_leakage[face.neighbor_id][group_num] += outflow_view.Get(f, group_num);
-            local_leakage[face.neighbor_id][group_num] += GetInflow(
-              *cell, cell_mapping, unit_cell_matrices, face, quad, bndry, f, groupset.id, g);
+            local_leakage[face.neighbor_id][group_num] += GetInflow(cell_local_id,
+                                                                    cell_mapping,
+                                                                    unit_cell_matrices,
+                                                                    face,
+                                                                    quad,
+                                                                    bndry,
+                                                                    f,
+                                                                    groupset.id,
+                                                                    g);
           }
         }
       }

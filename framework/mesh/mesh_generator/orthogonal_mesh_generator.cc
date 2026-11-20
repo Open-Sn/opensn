@@ -199,47 +199,46 @@ CellGraphNode(const OrthoCellInfo& info, const size_t i, const size_t j, const s
   return node;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+UnpartitionedMesh::LightWeightCell
 MakeLightWeightCell1D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t k)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::SLAB, CellType::SLAB);
+  UnpartitionedMesh::LightWeightCell cell(CellType::SLAB, CellType::SLAB);
 
-  cell->centroid = CellCentroid(node_sets, 1, 0, 0, k);
-  cell->vertex_ids = {VertexGlobalID(info, 0, 0, k), VertexGlobalID(info, 0, 0, k + 1)};
+  cell.centroid = CellCentroid(node_sets, 1, 0, 0, k);
+  cell.vertex_ids = {VertexGlobalID(info, 0, 0, k), VertexGlobalID(info, 0, 0, k + 1)};
 
   UnpartitionedMesh::LightWeightFace left_face;
-  left_face.vertex_ids = {cell->vertex_ids[0]};
+  left_face.vertex_ids = {cell.vertex_ids[0]};
   left_face.has_neighbor = k != 0;
   left_face.neighbor = k == 0 ? ZMIN : CellGlobalID(info, 0, 0, k - 1);
 
   UnpartitionedMesh::LightWeightFace right_face;
-  right_face.vertex_ids = {cell->vertex_ids[1]};
+  right_face.vertex_ids = {cell.vertex_ids[1]};
   right_face.has_neighbor = k + 1 != info.cell_counts[2];
   right_face.neighbor = right_face.has_neighbor ? CellGlobalID(info, 0, 0, k + 1) : ZMAX;
 
-  cell->faces.push_back(left_face);
-  cell->faces.push_back(right_face);
+  cell.faces.push_back(left_face);
+  cell.faces.push_back(right_face);
 
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+UnpartitionedMesh::LightWeightCell
 MakeLightWeightCell2D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t i,
                       const size_t j)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYGON,
-                                                                   CellType::QUADRILATERAL);
+  UnpartitionedMesh::LightWeightCell cell(CellType::POLYGON, CellType::QUADRILATERAL);
 
   const auto v00 = VertexGlobalID(info, i, j, 0);
   const auto v10 = VertexGlobalID(info, i + 1, j, 0);
   const auto v11 = VertexGlobalID(info, i + 1, j + 1, 0);
   const auto v01 = VertexGlobalID(info, i, j + 1, 0);
-  cell->centroid = CellCentroid(node_sets, 2, i, j, 0);
-  cell->vertex_ids = {v00, v10, v11, v01};
+  cell.centroid = CellCentroid(node_sets, 2, i, j, 0);
+  cell.vertex_ids = {v00, v10, v11, v01};
 
   const auto max_i = info.cell_counts[0] - 1;
   const auto max_j = info.cell_counts[1] - 1;
@@ -248,9 +247,9 @@ MakeLightWeightCell2D(const OrthoCellInfo& info,
   {
     UnpartitionedMesh::LightWeightFace face;
     if (f < 3)
-      face.vertex_ids = {cell->vertex_ids[f], cell->vertex_ids[f + 1]};
+      face.vertex_ids = {cell.vertex_ids[f], cell.vertex_ids[f + 1]};
     else
-      face.vertex_ids = {cell->vertex_ids[f], cell->vertex_ids[0]};
+      face.vertex_ids = {cell.vertex_ids[f], cell.vertex_ids[0]};
 
     if (f == 1)
     {
@@ -273,21 +272,20 @@ MakeLightWeightCell2D(const OrthoCellInfo& info,
       face.neighbor = face.has_neighbor ? CellGlobalID(info, i, j - 1, 0) : YMIN;
     }
 
-    cell->faces.push_back(face);
+    cell.faces.push_back(face);
   }
 
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+UnpartitionedMesh::LightWeightCell
 MakeLightWeightCell3D(const OrthoCellInfo& info,
                       const std::vector<std::vector<double>>& node_sets,
                       const size_t i,
                       const size_t j,
                       const size_t k)
 {
-  auto cell = std::make_shared<UnpartitionedMesh::LightWeightCell>(CellType::POLYHEDRON,
-                                                                   CellType::HEXAHEDRON);
+  UnpartitionedMesh::LightWeightCell cell(CellType::POLYHEDRON, CellType::HEXAHEDRON);
 
   const auto v000 = VertexGlobalID(info, i, j, k);
   const auto v100 = VertexGlobalID(info, i + 1, j, k);
@@ -298,8 +296,8 @@ MakeLightWeightCell3D(const OrthoCellInfo& info,
   const auto v111 = VertexGlobalID(info, i + 1, j + 1, k + 1);
   const auto v011 = VertexGlobalID(info, i, j + 1, k + 1);
 
-  cell->centroid = CellCentroid(node_sets, 3, i, j, k);
-  cell->vertex_ids = {v000, v100, v110, v010, v001, v101, v111, v011};
+  cell.centroid = CellCentroid(node_sets, 3, i, j, k);
+  cell.vertex_ids = {v000, v100, v110, v010, v001, v101, v111, v011};
 
   const auto max_i = info.cell_counts[0] - 1;
   const auto max_j = info.cell_counts[1] - 1;
@@ -312,7 +310,7 @@ MakeLightWeightCell3D(const OrthoCellInfo& info,
     face.vertex_ids = std::move(vertex_ids);
     face.has_neighbor = has_neighbor;
     face.neighbor = neighbor;
-    cell->faces.push_back(std::move(face));
+    cell.faces.push_back(std::move(face));
   };
 
   add_face(
@@ -328,7 +326,7 @@ MakeLightWeightCell3D(const OrthoCellInfo& info,
   return cell;
 }
 
-std::shared_ptr<UnpartitionedMesh::LightWeightCell>
+UnpartitionedMesh::LightWeightCell
 MakeLightWeightCell(const OrthoCellInfo& info,
                     const std::vector<std::vector<double>>& node_sets,
                     const uint64_t cell_global_id)
@@ -585,29 +583,30 @@ OrthogonalMeshGenerator::Execute()
   if (local_cell_payload.size() % 2 != 0)
     throw std::logic_error("OrthogonalMeshGenerator received an invalid local cell payload.");
 
-  std::vector<uint64_t> cells_needed;
-  std::unordered_map<uint64_t, int> local_cell_pids;
-  cells_needed.reserve(local_cell_payload.size() / 2);
-  local_cell_pids.reserve(local_cell_payload.size() / 2);
+  std::map<std::pair<int, uint64_t>, UnpartitionedMesh::LightWeightCell> local_lw_cells;
   for (size_t i = 0; i < local_cell_payload.size(); i += 2)
   {
     const uint64_t cell_gid = local_cell_payload[i];
     const int cell_pid = static_cast<int>(local_cell_payload[i + 1]);
-    cells_needed.push_back(cell_gid);
-    local_cell_pids.emplace(cell_gid, cell_pid);
+    auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_gid);
+    local_lw_cells.emplace(std::make_pair(cell_pid, cell_gid), std::move(raw_cell));
   }
 
   auto grid_ptr = Mesh::New();
   SetOrthogonalBoundaryMaps(grid_ptr, info.dimension);
 
+  std::size_t n_local_cells = 0;
+  std::size_t n_ghost_cells = 0;
   std::vector<uint64_t> vertices_needed;
-  for (const auto cell_gid : cells_needed)
+  for (const auto& [pidgid, lw_cell] : local_lw_cells)
   {
-    const auto raw_cell = MakeLightWeightCell(info, node_sets_, cell_gid);
-    for (const auto vid : raw_cell->vertex_ids)
+    const auto& [cell_pid, cell_global_id] = pidgid;
+    for (const auto vid : lw_cell.vertex_ids)
       vertices_needed.push_back(vid);
-
-    grid_ptr->AddGlobalCell(SetupCell(*raw_cell, cell_gid, local_cell_pids.at(cell_gid)));
+    if (cell_pid == opensn::mpi_comm.rank())
+      n_local_cells++;
+    else
+      n_ghost_cells++;
   }
 
   SortUnique(vertices_needed);
@@ -629,6 +628,21 @@ OrthogonalMeshGenerator::Execute()
     grid_ptr->AddGlobalVertex(vid, Vertex(node_sets_, info.dimension, i, j, k));
   }
 
+  std::vector<Cell> local_cells;
+  local_cells.reserve(n_local_cells);
+  std::vector<Cell> ghost_cells;
+  ghost_cells.reserve(n_ghost_cells);
+  for (const auto& [pidgid, lw_cell] : local_lw_cells)
+  {
+    const auto& [cell_pid, cell_global_id] = pidgid;
+    auto cell = SetupCell(lw_cell, cell_global_id, cell_pid);
+    if (cell_pid == opensn::mpi_comm.rank())
+      local_cells.push_back(std::move(cell));
+    else
+      ghost_cells.push_back(std::move(cell));
+  }
+
+  grid_ptr->SetCells(std::move(local_cells), std::move(ghost_cells), local_lw_cells);
   grid_ptr->SetDimension(info.dimension);
   grid_ptr->SetCoordinateSystem(coord_sys_);
   grid_ptr->SetType(ORTHOGONAL);
@@ -638,7 +652,6 @@ OrthogonalMeshGenerator::Execute()
   grid_ptr->ComputeGeometricInfo();
 
   ComputeAndPrintStats(grid_ptr);
-  mpi_comm.barrier();
 
   return grid_ptr;
 }

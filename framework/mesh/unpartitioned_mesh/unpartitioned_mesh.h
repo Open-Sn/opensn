@@ -4,13 +4,26 @@
 #pragma once
 
 #include "framework/mesh/mesh/cell.h"
-#include "framework/mesh/mesh/mesh.h"
+#include "framework/math/geometry.h"
 #include <map>
 #include <array>
 #include <set>
 
 namespace opensn
 {
+
+enum MeshType : int
+{
+  ORTHOGONAL,
+  UNSTRUCTURED
+};
+
+struct OrthoMeshAttributes
+{
+  size_t Nx = 0;
+  size_t Ny = 0;
+  size_t Nz = 0;
+};
 
 /// This object is intended for unpartitioned meshes that still require partitioning.
 class UnpartitionedMesh
@@ -85,19 +98,16 @@ public:
     return vertex_cell_subscriptions_;
   }
 
-  void AddCell(const std::shared_ptr<LightWeightCell>& cell) { raw_cells_.push_back(cell); }
-  size_t GetNumberOfCells() const { return raw_cells_.size(); }
+  void AddCell(const std::shared_ptr<LightWeightCell>& cell) { cells_.push_back(cell); }
+  size_t GetNumberOfCells() const { return cells_.size(); }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() { return raw_cells_; }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawCells() const { return raw_cells_; }
+  std::vector<std::shared_ptr<LightWeightCell>>& GetCells() { return cells_; }
+  const std::vector<std::shared_ptr<LightWeightCell>>& GetCells() const { return cells_; }
 
-  std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells()
+  std::vector<std::shared_ptr<LightWeightCell>>& GetBoundaryCells() { return boundary_cells_; }
+  const std::vector<std::shared_ptr<LightWeightCell>>& GetBoundaryCells() const
   {
-    return raw_boundary_cells_;
-  }
-  const std::vector<std::shared_ptr<LightWeightCell>>& GetRawBoundaryCells() const
-  {
-    return raw_boundary_cells_;
+    return boundary_cells_;
   }
 
   const std::vector<Vector3>& GetVertices() const { return vertices_; }
@@ -143,8 +153,8 @@ protected:
   std::map<std::string, uint64_t> boundary_name_map_;
 
   std::vector<Vector3> vertices_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_cells_;
-  std::vector<std::shared_ptr<LightWeightCell>> raw_boundary_cells_;
+  std::vector<std::shared_ptr<LightWeightCell>> cells_;
+  std::vector<std::shared_ptr<LightWeightCell>> boundary_cells_;
   std::vector<std::set<uint64_t>> vertex_cell_subscriptions_;
 };
 

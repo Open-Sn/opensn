@@ -66,13 +66,14 @@ math_SDM_Test01_Continuous(std::shared_ptr<Mesh> grid,
 
   // Assemble the system
   opensn::log.Log() << "Assembling system: ";
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const size_t num_nodes = cell_mapping.GetNumNodes();
 
-    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(*cell);
+    const auto [domain_nodes, bndry_nodes] = sdm.MakeCellInternalAndBndryNodeIDs(cell_local_id);
 
     DenseMatrix<double> Acell(num_nodes, num_nodes, 0.0);
     Vector<double> cell_rhs(num_nodes, 0.0);
@@ -111,7 +112,7 @@ math_SDM_Test01_Continuous(std::shared_ptr<Mesh> grid,
     // Develop node mapping
     std::vector<PetscInt> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = static_cast<PetscInt>(sdm.MapDOF(*cell, i));
+      imap[i] = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i));
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)

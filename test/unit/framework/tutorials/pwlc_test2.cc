@@ -61,9 +61,10 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
   InitMatrixSparsity(A, nodal_nnz_in_diag, nodal_nnz_off_diag);
 
   // Assemble the system
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
     const auto cell_node_xyzs = cell_mapping.GetNodeLocations();
 
@@ -92,14 +93,14 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
 
     // Flag nodes for being on dirichlet boundary
     std::vector<bool> node_boundary_flag(num_nodes, false);
-    const size_t num_faces = cell->faces.size();
+    const size_t num_faces = grid->GetCellFaceCount(cell_local_id);
     for (size_t f = 0; f < num_faces; ++f)
     {
-      const auto& face = cell->faces[f];
+      const auto& face = grid->GetCellFace(cell_local_id, f);
       if (face.has_neighbor)
         continue;
 
-      const size_t num_face_nodes = face.vertex_ids.size();
+      const size_t num_face_nodes = grid->GetCellFaceVertexCount(cell_local_id, f);
       for (size_t fi = 0; fi < num_face_nodes; ++fi)
       {
         const uint i = cell_mapping.MapFaceNode(f, fi);
@@ -110,7 +111,7 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
     // Develop node mapping
     std::vector<PetscInt> imap(num_nodes, 0); // node-mapping
     for (size_t i = 0; i < num_nodes; ++i)
-      imap[i] = static_cast<PetscInt>(sdm.MapDOF(*cell, i));
+      imap[i] = static_cast<PetscInt>(sdm.MapDOF(cell.global_id, i));
 
     // Assembly into system
     for (size_t i = 0; i < num_nodes; ++i)
@@ -174,9 +175,10 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
   const auto field_wg = ff->GetGhostedFieldVector();
 
   double local_error = 0.0;
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = sdm.GetCellMapping(*cell);
+    const auto& cell = grid->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = sdm.GetLocalCellMapping(cell_local_id);
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto fe_vol_data = cell_mapping.MakeVolumetricFiniteElementData();
 
@@ -184,7 +186,7 @@ SimTest04_PWLC(std::shared_ptr<Mesh> grid)
     std::vector<double> nodal_phi(num_nodes, 0.0);
     for (size_t j = 0; j < num_nodes; ++j)
     {
-      const auto jmap = sdm.MapDOFLocal(*cell, j);
+      const auto jmap = sdm.MapDOFLocal(cell_local_id, j);
       nodal_phi[j] = field_wg[jmap];
     } // for j
 

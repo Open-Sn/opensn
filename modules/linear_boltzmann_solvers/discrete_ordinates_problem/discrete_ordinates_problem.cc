@@ -571,13 +571,13 @@ DiscreteOrdinatesProblem::CheckNonStreamingDirections(std::vector<std::string>& 
     auto invalid_block = std::numeric_limits<unsigned int>::max();
     for (const auto& cell : grid_->GetLocalCells())
     {
-      const auto xs = block_id_to_xs_map_.find(cell->block_id);
+      const auto xs = block_id_to_xs_map_.find(cell.block_id);
       if (xs == block_id_to_xs_map_.end())
         continue;
       const auto& sigma_t = xs->second->GetSigmaTotal();
       for (auto g = groupset.first_group; g <= groupset.last_group and g < sigma_t.size(); ++g)
         if (sigma_t[g] <= 0.0)
-          invalid_block = std::min(invalid_block, cell->block_id);
+          invalid_block = std::min(invalid_block, cell.block_id);
     }
     unsigned int global_invalid_block = 0;
     mpi_comm.all_reduce(invalid_block, global_invalid_block, mpi::op::min<unsigned int>());
@@ -831,10 +831,12 @@ DiscreteOrdinatesProblem::InitializeFCS()
   for (size_t m = 0; m < num_moments_; ++m)
   {
     const auto ell = moment_to_harmonics[m].ell;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto num_nodes = discretization_->GetCellNumNodes(*cell);
-      const auto& transport_view = cell_transport_views_[cell->local_id];
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto num_nodes = discretization_->GetCellNumNodes(cell_local_id);
+      const auto& transport_view = cell_transport_views_[cell_local_id];
       const auto& xs = transport_view.GetXS();
       // In adjoint mode the first-collision source of the adjoint uncollided flux uses the
       // transposed transfer and production matrices, as the adjoint transport sweep does.
@@ -1135,9 +1137,10 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
   // and group to preserve it.
   double local_max_correction = 0.0;
   double local_max_phi = 0.0;
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& view = cell_transport_views_[cell->local_id];
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& view = cell_transport_views_[cell_local_id];
     for (const auto& groupset : groupsets_)
     {
       auto& psi = psi_new_local_[groupset.id];
@@ -1152,7 +1155,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
           double reconstructed = 0.0;
           for (size_t n = 0; n < quad.GetNumAngles(); ++n)
           {
-            const auto dof = discretization_->MapDOFLocal(*cell, i, groupset.psi_uk_man_, n, g);
+            const auto dof =
+              discretization_->MapDOFLocal(cell_local_id, i, groupset.psi_uk_man_, n, g);
             reconstructed += quad.GetWeight(n) * psi[dof];
           }
           local_max_correction = std::max(local_max_correction, std::abs(target - reconstructed));
@@ -1160,7 +1164,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
           const double scale = reconstructed != 0.0 ? target / reconstructed : 0.0;
           for (size_t n = 0; n < quad.GetNumAngles(); ++n)
           {
-            const auto dof = discretization_->MapDOFLocal(*cell, i, groupset.psi_uk_man_, n, g);
+            const auto dof =
+              discretization_->MapDOFLocal(cell_local_id, i, groupset.psi_uk_man_, n, g);
             auto& value = psi[dof];
             value = std::isfinite(scale) and scale > 0.0 ? value * scale : target / weight_sum;
           }
@@ -1378,9 +1383,11 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
 
     const auto num_gs_groups = groupset.GetNumGroups();
 
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& transport_view = cell_transport_views_[cell->local_id];
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& transport_view = cell_transport_views_[cell_local_id];
       for (int i = 0; i < transport_view.GetNumNodes(); ++i)
       {
         // Reorient angular flux
@@ -1389,8 +1396,8 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
           for (const auto& [idir, jdir] : reversed_angle_map)
           {
             const auto dof_map =
-              std::make_pair(discretization_->MapDOFLocal(*cell, i, uk_man, idir, 0),
-                             discretization_->MapDOFLocal(*cell, i, uk_man, jdir, 0));
+              std::make_pair(discretization_->MapDOFLocal(cell_local_id, i, uk_man, idir, 0),
+                             discretization_->MapDOFLocal(cell_local_id, i, uk_man, jdir, 0));
 
             for (size_t gsg = 0; gsg < num_gs_groups; ++gsg)
               std::swap(psi[dof_map.first + gsg], psi[dof_map.second + gsg]);
@@ -1412,13 +1419,15 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
     return;
 
   std::size_t num_slots = 0;
-  for (const auto& cell : grid_->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
   {
-    const auto& cell_mapping = discretization_->GetCellMapping(*cell);
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
-      if (not cell->faces[f].has_neighbor)
+    const auto& cell = grid_->GetLocalCell(cell_local_id);
+    const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
+    const auto& cell_faces = grid_->GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
+      if (not cell_faces[f].has_neighbor)
       {
-        boundary_inflow_slots_[{cell->local_id, f}] = num_slots;
+        boundary_inflow_slots_[{cell_local_id, f}] = num_slots;
         num_slots += cell_mapping.GetNumFaceNodes(f);
       }
   }
@@ -1436,12 +1445,15 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
     inflow.assign(num_slots * num_dirs * num_gs_groups, 0.0);
 
     std::map<uint64_t, std::vector<std::uint32_t>> reflected_maps;
-    for (const auto& cell : grid_->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount();
+         ++cell_local_id)
     {
-      const auto& cell_mapping = discretization_->GetCellMapping(*cell);
-      for (unsigned int f = 0; f < cell->faces.size(); ++f)
+      const auto& cell = grid_->GetLocalCell(cell_local_id);
+      const auto& cell_mapping = discretization_->GetLocalCellMapping(cell_local_id);
+      const auto& cell_faces = grid_->GetCellFaces(cell_local_id);
+      for (unsigned int f = 0; f < cell_faces.size(); ++f)
       {
-        const auto& face = cell->faces[f];
+        const auto& face = cell_faces[f];
         if (face.has_neighbor)
           continue;
         const auto bid = face.neighbor_id;
@@ -1463,7 +1475,7 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
           reflected = &it->second;
         }
 
-        const auto slot = boundary_inflow_slots_.at({cell->local_id, f});
+        const auto slot = boundary_inflow_slots_.at({cell_local_id, f});
         for (unsigned int fi = 0; fi < cell_mapping.GetNumFaceNodes(f); ++fi)
         {
           const auto i = cell_mapping.MapFaceNode(f, fi);
@@ -1476,14 +1488,14 @@ DiscreteOrdinatesProblem::RecordBoundaryInflow()
             {
               if (reflected != nullptr)
                 inflow[base + g] =
-                  psi[discretization_->MapDOFLocal(*cell, i, uk_man, (*reflected)[d], g)];
+                  psi[discretization_->MapDOFLocal(cell_local_id, i, uk_man, (*reflected)[d], g)];
               // With source moments the sweep does not apply the incoming flux of the other
               // boundaries, so the solve used zero.
               else if (options_.use_src_moments)
                 inflow[base + g] = 0.0;
               else
               {
-                const double* incoming = boundary.PsiIncoming(cell->local_id, f, fi, d, gs, g);
+                const double* incoming = boundary.PsiIncoming(cell_local_id, f, fi, d, gs, g);
                 inflow[base + g] = incoming != nullptr ? *incoming : 0.0;
               }
             }
@@ -1522,10 +1534,12 @@ void
 DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 {
 
-  for (const auto& cell : grid_->GetLocalCells())
-    for (int f = 0; f < cell->faces.size(); ++f)
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid_->GetLocalCellCount(); ++cell_local_id)
+  {
+    for (int f = 0; f < grid_->GetCellFaceCount(cell_local_id); ++f)
       for (auto group = groupset.first_group; group <= groupset.last_group; ++group)
-        cell_outflow_views_[cell->local_id].Zero(f, group);
+        cell_outflow_views_[cell_local_id].Zero(f, group);
+  }
 }
 
 #ifndef __OPENSN_WITH_GPU__

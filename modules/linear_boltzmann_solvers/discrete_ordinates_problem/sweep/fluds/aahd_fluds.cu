@@ -295,25 +295,27 @@ template <typename Fn>
 void
 AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
 {
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& face_orientations = spds_.GetCellFaceOrientations();
   const auto& node_tracker = common_data_.GetNodeTracker();
   const auto& nonlocal_offsets = common_data_.GetNonLocalDelayedIncomingNodeOffsets();
 
   // An incoming face node of the reading (downwind) cell maps to its delayed storage slot; each
   // slot holds every direction and group of the angle set, direction-major.
-  for (const auto& cell : grid.GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid.GetLocalCellCount(); ++cell_local_id)
   {
-    for (unsigned int f = 0; f < cell->faces.size(); ++f)
+    const auto& cell = grid.GetLocalCell(cell_local_id);
+    auto cell_faces = grid.GetCellFaces(cell_local_id);
+    for (unsigned int f = 0; f < cell_faces.size(); ++f)
     {
-      if (face_orientations[cell->local_id][f] != FaceOrientation::INCOMING or
-          not cell->faces[f].has_neighbor)
+      if (face_orientations[cell_local_id][f] != FaceOrientation::INCOMING or
+          not cell_faces[f].has_neighbor)
         continue;
       const auto num_face_nodes =
-        common_data_.GetFaceNodalMapping(cell->local_id, f).face_node_mapping_.size();
+        common_data_.GetFaceNodalMapping(cell_local_id, f).face_node_mapping_.size();
       for (unsigned int fnode = 0; fnode < num_face_nodes; ++fnode)
       {
-        const auto it = node_tracker.find(FaceNode(cell->local_id, f, fnode));
+        const auto it = node_tracker.find(FaceNode(cell_local_id, f, fnode));
         if (it == node_tracker.end())
           continue;
         const AAHD_NodeIndex& node_index = it->second;
@@ -321,18 +323,14 @@ AAHD_FLUDS::ForEachDelayedIncomingNode(const Fn& fn) const
           continue;
 
         if (node_index.IsLocal())
-          fn(static_cast<std::uint32_t>(cell->local_id),
-             f,
-             fnode,
-             -1,
-             node_index.GetIndex() * num_groups_and_angles_);
+          fn(cell_local_id, f, fnode, -1, node_index.GetIndex() * num_groups_and_angles_);
         else
         {
           const auto loc = static_cast<std::size_t>(std::upper_bound(nonlocal_offsets.begin(),
                                                                      nonlocal_offsets.end(),
                                                                      node_index.GetIndex()) -
                                                     nonlocal_offsets.begin() - 1);
-          fn(static_cast<std::uint32_t>(cell->local_id),
+          fn(cell_local_id,
              f,
              fnode,
              static_cast<int>(loc),
@@ -372,7 +370,7 @@ AAHD_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
 {
   OpenSnLogicalErrorIf(angle_indices.size() != num_angles_,
                        "AAHD_FLUDS: the number of directions does not match the FLUDS.");
-  const auto& grid = *spds_.GetGrid();
+  const auto& grid = *spds_.GetMesh();
   const auto& omegas = quadrature.GetOmegas();
   const auto& weights = quadrature.GetWeights();
 
@@ -389,7 +387,7 @@ AAHD_FLUDS::TallyDelayedIncomingCurrent(const AngularQuadrature& quadrature,
                               offset;
 
       // -w_n Omega_n . n, the factor of the upwind flux in the face term of the sweep
-      const auto& normal = grid.GetLocalCell(cell_local_id).faces[f].normal;
+      const auto& normal = grid.GetCellFace(cell_local_id, f).normal;
       for (std::size_t n = 0; n < num_angles_; ++n)
         inward_weights[n] = -weights[angle_indices[n]] * omegas[angle_indices[n]].Dot(normal);
 
@@ -487,20 +485,21 @@ AAHD_FLUDS::CopySaveAngularFluxToDestinationPsi(DiscreteOrdinatesProblem& proble
 
   // loop for each cell in the mesh
   auto* mesh_carrier = problem.GetMeshCarrier();
-  auto grid = problem.GetGrid();
+  auto grid = problem.GetMesh();
   auto& destination_psi = problem.GetPsiNewLocal()[groupset.id];
   const auto& discretization = problem.GetSpatialDiscretization();
   std::size_t groupset_angle_group_stride =
     groupset.psi_uk_man_.GetNumberOfUnknowns() * groupset.GetNumGroups();
-  for (const auto& cell : grid->GetLocalCells())
+  for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount(); ++cell_local_id)
   {
+    const auto& cell = grid->GetLocalCell(cell_local_id);
     // get pointer to the cell's angular fluxes
     double* dst_psi =
-      &destination_psi[discretization.MapDOFLocal(*cell, 0, groupset.psi_uk_man_, 0, 0)];
+      &destination_psi[discretization.MapDOFLocal(cell_local_id, 0, groupset.psi_uk_man_, 0, 0)];
     double* src_psi = save_angular_flux_.host_storage.data() +
-                      mesh_carrier->saved_psi_offset[cell->local_id] * num_groups_and_angles_;
+                      mesh_carrier->saved_psi_offset[cell_local_id] * num_groups_and_angles_;
     // get number of cell nodes
-    std::uint32_t cell_num_nodes = discretization.GetCellMapping(*cell).GetNumNodes();
+    std::uint32_t cell_num_nodes = discretization.GetLocalCellMapping(cell_local_id).GetNumNodes();
     // loop for each cell node
     for (std::uint32_t i = 0; i < cell_num_nodes; ++i)
     {

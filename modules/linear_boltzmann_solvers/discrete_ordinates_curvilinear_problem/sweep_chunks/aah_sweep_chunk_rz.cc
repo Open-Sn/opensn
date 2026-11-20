@@ -17,7 +17,7 @@ namespace opensn
 AAHSweepChunkRZ::AAHSweepChunkRZ(DiscreteOrdinatesProblem& problem, LBSGroupset& groupset)
   : SweepChunk(problem.GetPhiNewLocal(),
                problem.GetPsiNewLocal()[groupset.id],
-               problem.GetGrid(),
+               problem.GetMesh(),
                problem.GetSpatialDiscretization(),
                problem.GetUnitCellMatrices(),
                problem.GetCellTransportViews(),
@@ -90,10 +90,11 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
   {
     auto cell_local_id = spls[spls_index];
     const auto& cell = grid_->GetLocalCell(cell_local_id);
-    const auto& cell_mapping = discretization_.GetCellMapping(cell);
+    const auto cell_faces = grid_->GetCellFaces(cell_local_id);
+    const auto& cell_mapping = discretization_.GetLocalCellMapping(cell_local_id);
     const auto& cell_transport_view = cell_transport_views_[cell_local_id];
     auto& cell_outflow_view = cell_outflow_views_[cell_local_id];
-    auto cell_num_faces = cell.faces.size();
+    auto cell_num_faces = cell_faces.size();
     auto cell_num_nodes = cell_mapping.GetNumNodes();
 
     const auto& face_orientations = spds.GetCellFaceOrientations()[cell_local_id];
@@ -134,7 +135,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       {
         for (size_t j = 0; j < cell_num_nodes; ++j)
         {
-          const auto jr = discretization_.MapDOFLocal(cell, j, unknown_manager_, polar_level, 0);
+          const auto jr =
+            discretization_.MapDOFLocal(cell_local_id, j, unknown_manager_, polar_level, 0);
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             b[gsg](i) += fac_streaming_operator * Maux(i, j) * psi_sweep_[jr + gsg];
         }
@@ -146,7 +148,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
 
       // Update face orientations
       for (size_t f = 0; f < cell_num_faces; ++f)
-        face_mu_values[f] = omega.Dot(cell.faces[f].normal);
+        face_mu_values[f] = omega.Dot(cell_faces[f].normal);
 
       // Surface integrals
       int in_face_counter = -1;
@@ -155,7 +157,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
         if (face_orientations[f] != FaceOrientation::INCOMING)
           continue;
 
-        const auto& cell_face = cell.faces[f];
+        const auto& cell_face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not cell_face.has_neighbor;
 
@@ -266,8 +268,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       // Save angular flux during sweep
       if (SaveAngularFluxEnabled())
       {
-        double* cell_psi_data =
-          &destination_psi_[discretization_.MapDOFLocal(cell, 0, groupset_.psi_uk_man_, 0, 0)];
+        double* cell_psi_data = &destination_psi_[discretization_.MapDOFLocal(
+          cell_local_id, 0, groupset_.psi_uk_man_, 0, 0)];
 
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
@@ -287,7 +289,7 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
           continue;
 
         out_face_counter++;
-        const auto& face = cell.faces[f];
+        const auto& face = cell_faces[f];
         const bool is_local_face = cell_transport_view.IsFaceLocal(f);
         const bool is_boundary_face = not face.has_neighbor;
         const bool is_reflecting_boundary_face =
@@ -330,7 +332,8 @@ AAHSweepChunkRZ::Sweep(AngleSet& angle_set)
       const auto f1 = f0 - 1;
       for (size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = discretization_.MapDOFLocal(cell, i, unknown_manager_, polar_level, 0);
+        const auto ir =
+          discretization_.MapDOFLocal(cell_local_id, i, unknown_manager_, polar_level, 0);
         for (size_t gsg = 0; gsg < gs_size; ++gsg)
           psi_sweep_[ir + gsg] = f0 * b[gsg](i) - f1 * psi_sweep_[ir + gsg];
       }

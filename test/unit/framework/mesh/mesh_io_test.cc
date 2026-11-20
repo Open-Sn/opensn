@@ -104,15 +104,19 @@ TEST(MeshIOTest, ReadGmshPrismsAndPyramids)
       if (boundary_name == "outer")
         outer_id = id;
     ASSERT_NE(outer_id, std::numeric_limits<uint64_t>::max());
-    for (const auto& cell : grid->GetLocalCells())
+    for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+         ++cell_local_id)
     {
-      ++counts[cell->GetSubType()];
-      EXPECT_GT(cell->volume, 0.0);
-      volume += cell->volume;
-      for (const auto& face : cell->faces)
+      const auto& cell = grid->GetLocalCell(cell_local_id);
+      ++counts[cell.GetSubType()];
+      const double cell_vol = cell.volume;
+      EXPECT_GT(cell_vol, 0.0);
+      volume += cell_vol;
+      auto cell_faces = grid->GetCellFaces(cell_local_id);
+      for (const auto& face : cell_faces)
       {
-        EXPECT_GT((face.centroid - cell->centroid).Dot(face.normal), 0.0)
-          << "inward face on cell " << cell->global_id;
+        EXPECT_GT((face.centroid - cell.centroid).Dot(face.normal), 0.0)
+          << "inward face on cell " << cell.global_id;
         if (not face.has_neighbor)
         {
           EXPECT_EQ(face.neighbor_id, outer_id);
@@ -187,13 +191,17 @@ TEST(MeshIOTest, ReadGmshPhysicalNamesWithSharedTags)
       if (outer_id != 2)
         continue;
       size_t num_boundary_faces = 0;
-      for (const auto& cell : grid->GetLocalCells())
-        for (const auto& face : cell->faces)
+      for (std::uint32_t cell_local_id = 0; cell_local_id < grid->GetLocalCellCount();
+           ++cell_local_id)
+      {
+        auto cell_faces = grid->GetCellFaces(cell_local_id);
+        for (const auto& face : cell_faces)
           if (not face.has_neighbor)
           {
             EXPECT_EQ(face.neighbor_id, outer_id);
             ++num_boundary_faces;
           }
+      }
       EXPECT_GT(num_boundary_faces, 0);
     }
 }
@@ -246,9 +254,9 @@ TEST(MeshIOTest, ReadGmshUntaggedAndMultiTaggedEntities)
   std::map<unsigned int, size_t> cells_per_block[3];
   for (const auto& cell : grid->GetLocalCells())
   {
-    const auto& c = cell->centroid;
+    const auto& c = cell.centroid;
     const int volume = c.z > 1.0 ? 2 : (c.x < 1.0 ? 0 : 1);
-    ++cells_per_block[volume][cell->block_id];
+    ++cells_per_block[volume][cell.block_id];
   }
   const unsigned int expected[3] = {0, 2, 1};
   for (int v = 0; v < 3; ++v)

@@ -37,13 +37,18 @@ QuadratureHalfRangeMoment(const std::vector<Vector3>& omegas,
 }
 
 double
-FaceOrthogonalLength(const Cell& cell, unsigned int f)
+FaceOrthogonalLength(const Mesh& grid,
+                     const Cell& cell,
+                     std::uint32_t cell_local_id,
+                     unsigned int f)
 {
+  auto cell_vertex_ids = grid.GetCellConnectivity(cell_local_id);
   const double volume = cell.volume;
-  const double face_area = cell.faces.at(f).area;
-  const size_t num_faces = cell.faces.size();
+  const auto& face = grid.GetCellFace(cell_local_id, f);
+  const double face_area = face.area;
+  const size_t num_faces = grid.GetCellFaceCount(cell_local_id);
   double surface_area = 0.0;
-  for (const auto& face : cell.faces)
+  for (const auto& face : grid.GetCellFaces(cell_local_id))
     surface_area += face.area;
 
   switch (cell.GetType())
@@ -59,7 +64,7 @@ FaceOrthogonalLength(const Cell& cell, unsigned int f)
     case CellType::POLYHEDRON:
       if (num_faces == 4)
         return 3.0 * volume / face_area;
-      if (num_faces == 6 and cell.vertex_ids.size() == 8)
+      if (num_faces == 6 and cell_vertex_ids.size() == 8)
         return volume / face_area;
       return 6.0 * volume / surface_area;
     default:
@@ -68,9 +73,9 @@ FaceOrthogonalLength(const Cell& cell, unsigned int f)
 }
 
 double
-FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
+FaceSideLength(const Mesh& grid, const Cell& cell, std::uint32_t cell_local_id, unsigned int f)
 {
-  const auto& face = cell.faces.at(f);
+  const auto& face = grid.GetCellFace(cell_local_id, f);
   const Vector3& xc = cell.centroid;
   switch (cell.GetType())
   {
@@ -78,9 +83,10 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
       return cell.volume;
     case CellType::POLYGON:
     {
+      auto face_vertex_ids = grid.GetCellFaceConnectivity(cell_local_id, f);
       // Side triangle (v0, v1, xc): height over the edge = 2 |T| / |e|.
-      const Vector3& v0 = grid.GlobalVertex(face.vertex_ids.at(0));
-      const Vector3& v1 = grid.GlobalVertex(face.vertex_ids.at(1));
+      const Vector3& v0 = grid.GlobalVertex(face_vertex_ids[0]);
+      const Vector3& v1 = grid.GlobalVertex(face_vertex_ids[1]);
       const double edge = (v1 - v0).Norm();
       const double twice_area = std::fabs((v0 - xc).Cross(v1 - xc).z);
       OpenSnLogicalErrorIf(edge <= 0.0 or twice_area <= 0.0,
@@ -90,15 +96,16 @@ FaceSideLength(const Mesh& grid, const Cell& cell, unsigned int f)
     }
     case CellType::POLYHEDRON:
     {
+      auto face_vertex_ids = grid.GetCellFaceConnectivity(cell_local_id, f);
       // Side tets (v_k, v_k+1, face centroid, cell centroid): height over their face triangle
       // = 3 |S_k| / |T_k|.
       const Vector3& xf = face.centroid;
-      const size_t nv = face.vertex_ids.size();
+      const size_t nv = face_vertex_ids.size();
       double hmin = std::numeric_limits<double>::max();
       for (size_t k = 0; k < nv; ++k)
       {
-        const Vector3& a = grid.GlobalVertex(face.vertex_ids[k]);
-        const Vector3& b = grid.GlobalVertex(face.vertex_ids[(k + 1) % nv]);
+        const Vector3& a = grid.GlobalVertex(face_vertex_ids[k]);
+        const Vector3& b = grid.GlobalVertex(face_vertex_ids[(k + 1) % nv]);
         const Vector3 normal_x2 = (a - xf).Cross(b - xf);
         const double twice_tri = normal_x2.Norm();
         if (twice_tri <= 0.0)
@@ -167,15 +174,17 @@ MaxEigenvalueOnStiffnessRange(const DenseMatrix<double>& N, const DenseMatrix<do
 }
 
 double
-FaceTraceConstant(const CellMapping& cell_mapping,
+FaceTraceConstant(const Mesh& grid,
+                  const CellMapping& cell_mapping,
                   const Cell& cell,
+                  std::uint32_t cell_local_id,
                   unsigned int f,
                   const DenseMatrix<double>& stiffness,
                   CoordinateSystemType coord_sys)
 {
   const auto swf = SpatialWeightFunction::FromCoordinateType(coord_sys);
   const auto num_nodes = cell_mapping.GetNumNodes();
-  const auto& normal = cell.faces.at(f).normal;
+  const auto& normal = grid.GetCellFace(cell_local_id, f).normal;
   const auto fe_srf_data = cell_mapping.MakeSurfaceFiniteElementData(f);
   DenseMatrix<double> N(num_nodes, num_nodes, 0.0);
   for (size_t i = 0; i < num_nodes; ++i)
@@ -183,7 +192,8 @@ FaceTraceConstant(const CellMapping& cell_mapping,
       for (size_t qp : fe_srf_data.GetQuadraturePointIndices())
         N(i, j) += (*swf)(fe_srf_data.QPointXYZ(qp)) * normal.Dot(fe_srf_data.ShapeGrad(i, qp)) *
                    normal.Dot(fe_srf_data.ShapeGrad(j, qp)) * fe_srf_data.JxW(qp);
-  return FaceOrthogonalLength(cell, f) * MaxEigenvalueOnStiffnessRange(N, stiffness);
+  return FaceOrthogonalLength(grid, cell, cell_local_id, f) *
+         MaxEigenvalueOnStiffnessRange(N, stiffness);
 }
 
 double
