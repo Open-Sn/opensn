@@ -4,6 +4,7 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include <gtest/gtest.h>
 #include <optional>
+#include <sstream>
 #include <string>
 
 using namespace opensn;
@@ -31,6 +32,22 @@ Value(const std::string& name)
   if (value == nullptr)
     return std::nullopt;
   return std::string(value);
+}
+
+/// Returns whether the global database holds an option of exactly this name, without the fallback
+/// of PETSc lookups.
+bool
+IsInDatabase(const std::string& name)
+{
+  char* all_options = nullptr;
+  OpenSnPETScCall(PetscOptionsGetAll(nullptr, &all_options));
+  std::istringstream tokens(all_options);
+  OpenSnPETScCall(PetscFree(all_options));
+  std::string token;
+  while (tokens >> token)
+    if (token == name)
+      return true;
+  return false;
 }
 
 } // namespace
@@ -76,6 +93,25 @@ TEST(PETScOptionsDatabaseTest, ScopeSetsAndRestoresGlobalOptions)
     EXPECT_EQ(Value("-pod_a_ksp_type"), "cg");
   }
   OpenSnPETScCall(PetscOptionsClearValue(nullptr, "-pod_a_ksp_type"));
+}
+
+TEST(PETScOptionsDatabaseTest, NumberedOptionIsRestoredExactly)
+{
+  // PETSc finds -pod_d_1_ksp_type through -pod_d_ksp_type when the former is absent. The scope must
+  // not leave the former behind with the value of the latter.
+  OpenSnPETScCall(PetscOptionsSetValue(nullptr, "-pod_d_ksp_type", "cg"));
+  {
+    PETScOptionsDatabase database;
+    database.Insert("-pod_d_1_ksp_type bcgs");
+    {
+      const PETScOptionsDatabase::Scope scope(database);
+      EXPECT_TRUE(IsInDatabase("-pod_d_1_ksp_type"));
+      EXPECT_EQ(Value("-pod_d_1_ksp_type"), "bcgs");
+    }
+  }
+  EXPECT_FALSE(IsInDatabase("-pod_d_1_ksp_type"));
+  EXPECT_EQ(Value("-pod_d_1_ksp_type"), "cg");
+  OpenSnPETScCall(PetscOptionsClearValue(nullptr, "-pod_d_ksp_type"));
 }
 
 TEST(PETScOptionsDatabaseTest, NestedScopesRestoreInReverseOrder)

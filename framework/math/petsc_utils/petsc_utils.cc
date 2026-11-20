@@ -65,9 +65,16 @@ PETScOptionsDatabase::Scope::Scope(const PETScOptionsDatabase& database)
       const char* value = nullptr;
       PetscBool set = PETSC_FALSE;
       OpenSnPETScCall(PetscOptionsFindPair(nullptr, nullptr, option.name.c_str(), &value, &set));
-      saved_.push_back({option.name,
-                        set == PETSC_TRUE,
-                        value != nullptr ? std::optional<std::string>(value) : std::nullopt});
+      // FindPair falls back to the name without a _<number>_ part, and marks the option it finds
+      // as used. The option itself is present only if an option of exactly its name is now used.
+      PetscBool exact = PETSC_FALSE;
+      if (set == PETSC_TRUE)
+        OpenSnPETScCall(PetscOptionsUsed(nullptr, option.name.c_str() + 1, &exact));
+      const bool was_set = exact == PETSC_TRUE;
+      saved_.push_back(
+        {option.name,
+         was_set,
+         was_set and value != nullptr ? std::optional<std::string>(value) : std::nullopt});
       OpenSnPETScCall(PetscOptionsSetValue(
         nullptr, option.name.c_str(), option.value ? option.value->c_str() : nullptr));
     }
