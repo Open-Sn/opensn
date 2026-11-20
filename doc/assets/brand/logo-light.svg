@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 620 112"
+  role="img" aria-labelledby="title desc">
+  <title id="title">OpenSn angular sweep</title>
+  <desc id="desc">Three identical angular sectors extend from an orange particle,
+  with three concentric mesh divisions and fading intensity.</desc>
+  <!-- SPDX-License-Identifier: MIT. Original artwork designed for OpenSn. -->
+  <!-- Radius 160; half-angle atan(1/8); axes -50, -30, -10 degrees.
+       Mesh cuts at radii 40, 80, 120. All sectors share one geometry. -->
+  <defs>
+    <linearGradient id="navy" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="160" y2="0">
+      <stop offset="0" stop-color="#082a48"/>
+      <stop offset="1" stop-color="#9bb1c6"/>
+    </linearGradient>
+    <linearGradient id="teal" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="160" y2="0">
+      <stop offset="0" stop-color="#008c9f"/>
+      <stop offset="1" stop-color="#96d5df"/>
+    </linearGradient>
+    <mask id="mesh" maskUnits="userSpaceOnUse" x="-2" y="-25"
+      width="170" height="50" style="mask-type:luminance">
+      <rect x="-2" y="-25" width="170" height="50" fill="white"/>
+      <g fill="none" stroke="black" stroke-width="3">
+        <circle r="40"/><circle r="80"/><circle r="120"/>
+      </g>
+    </mask>
+    <g id="cone" mask="url(#mesh)">
+      <path d="M0 0 158.764460274 -19.845557534 A160 160 0 0 1 158.764460274 19.845557534Z"/>
+    </g>
+  </defs>
+  <g transform="translate(14 91) scale(.58)">
+    <use xlink:href="#cone" transform="rotate(-50)" fill="url(#navy)"/>
+    <use xlink:href="#cone" transform="rotate(-30)" fill="url(#teal)"/>
+    <use xlink:href="#cone" transform="rotate(-10)" fill="url(#navy)"/>
+    <circle r="12" fill="#ff8800"/>
+  </g>
+  <text x="127" y="82" font-family="DejaVu Sans, Arial, sans-serif" font-size="105" font-weight="700" letter-spacing="-3" fill="#082a48">OpenSn</text>
+</svg>
