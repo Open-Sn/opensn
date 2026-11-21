@@ -20,6 +20,11 @@ Checks:
     function over each region against sum_g ED_g times the region average of phi_g, with the ED_g
     of the file (agreement to roundoff).
   KHET_EDEP_ABSENT_MAX: the largest magnitude of that field function without the section (zero).
+  KHET_DETERMINISTIC_SWEEPS: 1 when both solves use the deterministic_sweeps option, else 0.
+
+On several ranks the default sweeps add the flux moments in message-arrival order, so two solves of
+the same problem can differ in the last bits. The two-rank entry passes deterministic_sweeps=True,
+which makes the comparison exact; on one rank the default sweeps are already reproducible.
 """
 
 import math
@@ -44,6 +49,11 @@ if "opensn_console" not in globals():
     from pyopensn.solver import DiscreteOrdinatesProblem, PowerIterationKEigenSolver
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
+
+# Set to True on the command line (deterministic_sweeps=True) for bitwise reproducible sweeps.
+DETERMINISTIC_SWEEPS = globals().get("deterministic_sweeps", False)
+if not isinstance(DETERMINISTIC_SWEEPS, bool):
+    raise TypeError("deterministic_sweeps must be True or False")
 
 NUM_GROUPS = 4
 
@@ -140,6 +150,7 @@ def solve(with_energy_deposition):
             "max_ags_iterations": 100,
             "verbose_inner_iterations": False,
             "verbose_outer_iterations": False,
+            "deterministic_sweeps": DETERMINISTIC_SWEEPS,
         },
     )
     solver = PowerIterationKEigenSolver(problem=problem, k_tol=1.0e-12, max_iters=1000,
@@ -195,3 +206,4 @@ if __name__ == "__main__":
         print(f"KHET_EDEP_FUEL_REL_ERR={fuel_err:.17e}")
         print(f"KHET_EDEP_REFL_REL_ERR={refl_err:.17e}")
         print(f"KHET_EDEP_ABSENT_MAX={absent_max:.17e}")
+        print(f"KHET_DETERMINISTIC_SWEEPS={int(DETERMINISTIC_SWEEPS)}")

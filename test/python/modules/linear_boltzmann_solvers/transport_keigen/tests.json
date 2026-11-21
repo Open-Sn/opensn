@@ -1529,12 +1529,16 @@
   },
   {
     "file": "keigenvalue_transport_1d_4g_energy_deposition_data_only.py",
-    "comment": "Same as keigenvalue_transport_1d_4g_energy_deposition_data_only on two ranks",
+    "comment": "Same as keigenvalue_transport_1d_4g_energy_deposition_data_only on two ranks with deterministic sweeps, so k and the flux moments agree bitwise",
     "outfileprefix": "keigenvalue_transport_1d_4g_energy_deposition_data_only_np2",
     "num_procs": 2,
+    "args": [
+      "deterministic_sweeps=True"
+    ],
     "checks": [
-      {"type": "KeyValuePair", "key": "KHET_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-14},
-      {"type": "KeyValuePair", "key": "KHET_PHI_MAX_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-14},
+      {"type": "KeyValuePair", "key": "KHET_DETERMINISTIC_SWEEPS=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_PHI_MAX_REL_DIFF=", "goldvalue": 0, "abs_tol": 0},
       {"type": "KeyValuePair", "key": "KHET_ITS_DIFF=", "goldvalue": 0, "abs_tol": 0},
       {"type": "KeyValuePair", "key": "KHET_EDEP_FUEL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
       {"type": "KeyValuePair", "key": "KHET_EDEP_REFL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
