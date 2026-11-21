@@ -23,6 +23,7 @@ The option case_set selects the domains.
     two partitions then depend on each other for half of the directions. A
     1 cm square of non-convex quadrilaterals (shestakov_quad_a0.05_n8.vtu) has
     cycles between the cells of one partition.
+The option sphere_sweep_type selects "AAH" (default) or "CBC" for the sphere only.
 
 The sweep lags an incoming angular flux by one sweep in two places: on one
 boundary of each pair of opposing reflecting boundaries (and on the reflecting
@@ -189,6 +190,8 @@ if __name__ == "__main__":
         for method in ("classic_richardson", "petsc_richardson", "petsc_gmres"):
             problem = problem_type(
                 mesh=grid,
+                sweep_type=(get_option("sphere_sweep_type", "AAH")
+                            if geometry == "sphere" else "AAH"),
                 num_groups=1,
                 groupsets=[
                     {
