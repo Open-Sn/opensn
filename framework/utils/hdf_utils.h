@@ -50,6 +50,13 @@ private:
   hid_t file_id_ = H5I_INVALID_HID;
 };
 
+/// Name of file `partition` of a set written one file per rank: `<file_base><partition>.h5`.
+inline std::string
+PartitionFileName(const std::string& file_base, const std::uint64_t partition)
+{
+  return file_base + std::to_string(partition) + ".h5";
+}
+
 template <typename T>
 hid_t get_datatype();
 

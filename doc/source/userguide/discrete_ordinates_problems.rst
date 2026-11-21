@@ -981,8 +981,15 @@ These are useful for:
 * response studies,
 * source-driven workflows that reuse previously computed fields.
 
-Flux-moment and angular-flux files are written one per rank (``<file_base><rank>.h5``)
-and must be read with the same rank count and mesh partition. Angular-flux files
+Flux-moment and angular-flux files are written one per rank (``<file_base><rank>.h5``),
+and each file records the number of files in its set (``num_partitions``). They can
+be read with any number of ranks and any partitioning of the same mesh: file k is
+read on rank k mod P, and each cell's values are sent to the rank that owns it, so
+every rank receives exactly its own cells and computes with them. Cells are matched
+by global ID and nodes by location. Files written before the number of files was
+recorded form a set of as many files as the reading run has ranks, so they must be
+read with the rank count that wrote them. ``ReadFluxMoments`` can also read a single
+file ``<file_base>.h5`` on any number of ranks. Angular-flux files
 also record each groupset's quadrature directions and weights, and a file whose
 quadrature differs from the problem's is rejected even when the number of
 directions matches. Problem-owned solution files also record whether the solution
@@ -994,9 +1001,9 @@ have enough provenance to be used as validated response or sensitivity inputs.
 Reading is collective: a file that is missing, malformed, nonfinite, or incompatible
 on any rank raises the error on every rank, and the destination is left unchanged.
 
-Surface angular-flux files are also written one per rank, but they are not tied to
-the rank count or partition that wrote them. Each file records the number of files
-in its set, and :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
+Surface angular-flux files are also written one per rank, record the number of
+files in their set, and are likewise not tied to the rank count or partition that
+wrote them. :py:meth:`ReadSurfaceAngularFluxes` reads one file per call: this
 rank's by default, or any file of the set with ``partition``. That call is not
 collective and does not check the data against the problem. To combine a whole
 set, on any number of ranks, and evaluate surface responses, pass the file prefix

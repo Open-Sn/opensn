@@ -48,7 +48,12 @@ public:
   static bool WriteRestartData(const DiscreteOrdinatesProblem& do_problem, hid_t file_id);
 
   /**
-   * Write an angular flux vector to a file.
+   * Write an angular flux vector to one file per rank, `<file_base><rank>.h5`.
+   *
+   * Each file holds the rank's local cells: their global ids, node counts, and node locations in
+   * the "mesh" group, and per groupset `groupset_<id>/values`, ordered by cell, node, direction,
+   * and group. The root attributes record the number of groupsets, the solution role and adjoint
+   * orientation, and `num_partitions` (uint64), the number of files in the set. Not collective.
    *
    * \param do_problem Discrete ordinates problem
    * \param file_base File name base
@@ -67,7 +72,7 @@ public:
     AdjointFluxOrientation orientation = AdjointFluxOrientation::UNSPECIFIED);
 
   /**
-   * Read an angular flux vector from a file.
+   * Read an angular flux vector from a set of files written by WriteAngularFluxes.
    *
    * \param do_problem Discrete ordinates problem
    * \param file_base File name base
@@ -76,10 +81,14 @@ public:
    * \param expected_orientation Required orientation of a file that records the adjoint role, or
    * unspecified to accept any. Files of other roles, and files without provenance, pass.
    *
-   * The file must have been written with the same rank count, partition, and quadrature; files
-   * that record their quadrature are checked against the problem's. Collective: a file that
-   * cannot be read or does not match the problem raises an error on every rank, and the
-   * destination is left unchanged.
+   * The files may have been written by any number of ranks with any partitioning of the same mesh;
+   * ReadCellwiseFileSet sends each cell's values to the rank that owns it, so every rank of this
+   * run receives exactly its own cells. Files without `num_partitions`, written by earlier
+   * versions, form a set of as many files as this run has ranks. The quadrature must match the
+   * problem's; files that record it are checked. Collective: a file that cannot be read or does not
+   * match the problem, files of the set that record different solution roles or adjoint
+   * orientations, or a local cell missing from the set, raises std::runtime_error on every rank,
+   * and the destination is left unchanged.
    */
   static void ReadAngularFluxes(
     DiscreteOrdinatesProblem& do_problem,

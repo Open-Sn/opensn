@@ -178,10 +178,9 @@ WrapPostprocessors(py::module& post)
         adjoint problem without an uncollided flux whose solver has finished. The file must have
         been written by an adjoint problem after its solver finished.
     flux_moments_single_file : bool, optional
-        Read flux moments from the single file ``<prefix>.h5`` instead of the per-rank file
-        ``<prefix><rank>.h5``. Default False. Serial runs only: in a multi-rank run, reading the
-        flux moments (``Execute`` or ``ApplyKEigenvalueScaling``) raises ``ValueError`` before
-        any file is opened.
+        Read flux moments from the single file ``<prefix>.h5`` instead of the file set
+        ``<prefix><k>.h5``. Default False. A single file can be read on any number of ranks; it
+        must not record a set of more than one file.
 
     Raises
     ------
