@@ -114,6 +114,26 @@ TEST(PETScOptionsDatabaseTest, NumberedOptionIsRestoredExactly)
   OpenSnPETScCall(PetscOptionsClearValue(nullptr, "-pod_d_ksp_type"));
 }
 
+TEST(PETScOptionsDatabaseTest, HelpIsApplied)
+{
+  // PETSc marks -help as used when it is inserted.
+  PETScOptionsDatabase database;
+  database.Insert("-help -pod_e_ksp_type cg");
+  {
+    const PETScOptionsDatabase::Scope scope(database);
+    EXPECT_TRUE(IsInDatabase("-help"));
+    EXPECT_EQ(Value("-pod_e_ksp_type"), "cg");
+    PetscBool help = PETSC_FALSE;
+    OpenSnPETScCall(PetscOptionsHasHelp(nullptr, &help));
+    EXPECT_TRUE(help);
+  }
+  EXPECT_FALSE(IsInDatabase("-help"));
+  EXPECT_FALSE(IsSet("-pod_e_ksp_type"));
+  PetscBool help = PETSC_TRUE;
+  OpenSnPETScCall(PetscOptionsHasHelp(nullptr, &help));
+  EXPECT_FALSE(help);
+}
+
 TEST(PETScOptionsDatabaseTest, NestedScopesRestoreInReverseOrder)
 {
   PETScOptionsDatabase outer;
