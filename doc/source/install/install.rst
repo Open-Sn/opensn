@@ -8,7 +8,7 @@ Before installing OpenSn, you must have the following packages installed on
 your system:
 
 1. A recent version of ``clang++``/``g++`` that supports C++20
-2. Python 3.9+ with pybind11 and ``pip``
+2. Python |min_python| or newer with pybind11 and ``pip``
 3. Git version control system
 4. CMake v3.29+
 5. MPI (OpenMPI, MPICH, and MVAPICH have been tested)
@@ -37,11 +37,11 @@ You can install these packages using your system package manager:
 The following additional packages will be installed by the OpenSn dependency 
 build (if not found on your system):
 
-1. PETSc 3.17.0+
-2. Boost 1.86+
-3. HDF5 1.14+
-4. VTK 9.3.0+
-5. Caliper 2.11+
+1. PETSc |min_petsc| or newer
+2. Boost |min_boost| or newer
+3. HDF5 |min_hdf5| or newer
+4. VTK |min_vtk| or newer
+5. Caliper |min_caliper| or newer
 
 OpenSn calls LAPACK through PETSc and links the BLAS/LAPACK libraries that
 PETSc was built with, which CMake reads from ``BLASLAPACK_LIB`` in PETSc's
