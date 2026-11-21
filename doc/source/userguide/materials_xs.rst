@@ -237,6 +237,8 @@ For most transport materials, the most important top-level sections are:
 * ``TRANSFER_MOMENTS_BEGIN`` ... ``TRANSFER_MOMENTS_END`` (optional)
 * ``INV_VELOCITY_BEGIN`` ... ``INV_VELOCITY_END`` or
   ``VELOCITY_BEGIN`` ... ``VELOCITY_END`` (optional)
+* ``ENERGY_DEPOSITION_BEGIN`` ... ``ENERGY_DEPOSITION_END`` (optional; see
+  :ref:`energy-deposition-native`)
 
 Important details:
 
@@ -301,6 +303,70 @@ spectrum, the entry for ``(g_to, g_from)`` is :math:`\chi^{g_\text{to}}
    GPRIME_G_VAL 1 0 0.125
    GPRIME_G_VAL 1 1 0.150
    PRODUCTION_MATRIX_END
+
+.. _energy-deposition-native:
+
+Energy Deposition in OpenSn Files
+---------------------------------
+
+A native file may carry the energy deposited per unit scalar flux in each group,
+in whatever unit the user keeps consistent across materials. The optional
+section lists one ``group value`` entry per group, as ``SIGMA_T`` does:
+
+.. code-block:: none
+
+   NUM_GROUPS 2
+   NUM_MOMENTS 1
+
+   SIGMA_T_BEGIN
+   0 1.0
+   1 0.1
+   SIGMA_T_END
+
+   SIGMA_A_BEGIN
+   0 0.5
+   1 0.08
+   SIGMA_A_END
+
+   TRANSFER_MOMENTS_BEGIN
+   M_GFROM_GTO_VAL 0 0 0 0.5
+   M_GFROM_GTO_VAL 0 0 1 0.3
+   M_GFROM_GTO_VAL 0 1 1 0.02
+   TRANSFER_MOMENTS_END
+
+   ENERGY_DEPOSITION_BEGIN
+   0 0.01
+   1 0.002
+   ENERGY_DEPOSITION_END
+
+The rules are:
+
+* ``NUM_GROUPS`` must come before the section, which may appear at most once.
+* Every value must be finite. The sign is not restricted.
+* Groups that are not listed read as zero. More entries than groups is an
+  error.
+* A file without the section is read as before: ``GetEnergyDeposition`` returns
+  an empty vector.
+
+The values are stored in the same data that
+:py:meth:`pyopensn.xs.MultiGroupXS.LoadFromCEPXS` fills, so the rest follows
+from existing behavior:
+
+* ``problem.CreateFieldFunction("edep", "energy_deposition")`` gives
+  :math:`\sum_g \mathrm{ED}_g\,\phi_g` in each cell, and the volume
+  postprocessor's cross-section multiplier does the same for a logical volume
+  (see :doc:`post_processors`). Without CSDA this field function is the
+  imported cross section weighted by the scalar flux.
+* ``Combine`` adds the values with the density weights, as for the other
+  one-dimensional cross sections: for densities 0.3 and 0.7 the combined entry
+  of each group is :math:`0.3\,\mathrm{ED}_a + 0.7\,\mathrm{ED}_b`. A
+  material that lacks the section counts as zero; the result has the section if
+  any input does.
+* ``Scale(f)`` multiplies the values by ``f``, from the original baseline like
+  the other data.
+
+The section changes no transport or eigenvalue result. It only supplies data
+for the ``energy_deposition`` field function.
 
 Delayed-Neutron Data and Solver Behavior
 ----------------------------------------
