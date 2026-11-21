@@ -116,7 +116,12 @@ TEST(PETScOptionsDatabaseTest, NumberedOptionIsRestoredExactly)
 
 TEST(PETScOptionsDatabaseTest, HelpIsApplied)
 {
-  // PETSc marks -help as used when it is inserted.
+  // PETSc marks -help as used when it is inserted. The global database may already hold -help,
+  // for example from PETSC_OPTIONS, so the scope must restore the state it found.
+  const bool help_in_database_before = IsInDatabase("-help");
+  PetscBool help_before = PETSC_FALSE;
+  OpenSnPETScCall(PetscOptionsHasHelp(nullptr, &help_before));
+
   PETScOptionsDatabase database;
   database.Insert("-help -pod_e_ksp_type cg");
   {
@@ -127,11 +132,11 @@ TEST(PETScOptionsDatabaseTest, HelpIsApplied)
     OpenSnPETScCall(PetscOptionsHasHelp(nullptr, &help));
     EXPECT_TRUE(help);
   }
-  EXPECT_FALSE(IsInDatabase("-help"));
+  EXPECT_EQ(IsInDatabase("-help"), help_in_database_before);
   EXPECT_FALSE(IsSet("-pod_e_ksp_type"));
-  PetscBool help = PETSC_TRUE;
+  PetscBool help = PETSC_FALSE;
   OpenSnPETScCall(PetscOptionsHasHelp(nullptr, &help));
-  EXPECT_FALSE(help);
+  EXPECT_EQ(help, help_before);
 }
 
 TEST(PETScOptionsDatabaseTest, NestedScopesRestoreInReverseOrder)
