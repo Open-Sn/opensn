@@ -6,6 +6,8 @@
 #include "framework/utils/error.h"
 #include <petscksp.h>
 #include <petscsnes.h>
+#include <optional>
+#include <string>
 #include <vector>
 
 namespace opensn
@@ -197,6 +199,69 @@ PETScSolverSetup CreateCommonKrylovSolverSetup(Mat matrix,
                                                double rel_tol = PETSC_DEFAULT,
                                                double abs_tol = PETSC_DEFAULT,
                                                int64_t maximum_iterations = 100);
+
+/**
+ * PETSc options that belong to one solver.
+ * Options inserted into the global database stay there and reach every later solver whose prefix
+ * they carry, such as the diffusion solvers of the other groupsets of a problem, which share one
+ * prefix, or the solvers of a later problem with the same name. The options held here are in the
+ * global database only while a Scope of this object exists, so the solver creates one around each
+ * of its PETSc calls that read options. Objects that PETSc creates inside those calls, such as the
+ * blocks of a block Jacobi preconditioner and direct solver packages, read the options too.
+ */
+class PETScOptionsDatabase
+{
+public:
+  /**
+   * Puts the options of a database into the global database and, when destroyed, restores the
+   * values that those options had in the global database before.
+   * The options therefore take precedence over those of PETSC_OPTIONS and the .petscrc files, which
+   * apply to every solver. Scopes must be destroyed in the reverse order of their creation.
+   */
+  class Scope
+  {
+  public:
+    explicit Scope(const PETScOptionsDatabase& database);
+    ~Scope();
+    Scope(const Scope&) = delete;
+    Scope& operator=(const Scope&) = delete;
+    Scope(Scope&&) = delete;
+    Scope& operator=(Scope&&) = delete;
+
+  private:
+    struct SavedOption
+    {
+      std::string name;
+      bool was_set = false;
+      std::optional<std::string> value;
+    };
+
+    void Restore();
+
+    std::vector<SavedOption> saved_;
+  };
+
+  PETScOptionsDatabase();
+  ~PETScOptionsDatabase();
+  PETScOptionsDatabase(const PETScOptionsDatabase&) = delete;
+  PETScOptionsDatabase& operator=(const PETScOptionsDatabase&) = delete;
+  PETScOptionsDatabase(PETScOptionsDatabase&&) = delete;
+  PETScOptionsDatabase& operator=(PETScOptionsDatabase&&) = delete;
+
+  /// Inserts options given in the form of a PETSc command line. Later values replace earlier ones.
+  void Insert(const std::string& options_string);
+
+private:
+  struct Option
+  {
+    std::string name;
+    std::optional<std::string> value;
+  };
+
+  PetscOptions options_ = nullptr;
+  /// The options of options_, with each name and value exactly as PETSc parsed them.
+  std::vector<Option> parsed_options_;
+};
 
 /// General monitor that print the residual norm relative to the right-hand side norm.
 PetscErrorCode KSPMonitorRelativeToRHS(KSP ksp, PetscInt n, PetscReal rnorm, void* context);

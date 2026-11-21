@@ -25,6 +25,94 @@ ToPetscInt(const int64_t value, const char* name)
 }
 } // namespace
 
+PETScOptionsDatabase::PETScOptionsDatabase()
+{
+  OpenSnPETScCall(PetscOptionsCreate(&options_));
+}
+
+PETScOptionsDatabase::~PETScOptionsDatabase()
+{
+  OpenSnPETScCall(PetscOptionsDestroy(&options_));
+}
+
+void
+PETScOptionsDatabase::Insert(const std::string& options_string)
+{
+  OpenSnPETScCall(PetscOptionsInsertString(options_, options_string.c_str()));
+
+  // Nothing queries this database, so every option in it is unused and listed, except -help, which
+  // PETSc marks as used when it is inserted.
+  PetscInt num_options = 0;
+  char** names = nullptr;
+  char** values = nullptr;
+  OpenSnPETScCall(PetscOptionsLeftGet(options_, &num_options, &names, &values));
+  std::vector<Option> parsed_options;
+  parsed_options.reserve(num_options + 1);
+  for (PetscInt i = 0; i < num_options; ++i)
+    parsed_options.push_back(
+      {"-" + std::string(names[i]),
+       values[i] != nullptr ? std::optional<std::string>(values[i]) : std::nullopt});
+  OpenSnPETScCall(PetscOptionsLeftRestore(options_, &num_options, &names, &values));
+
+  const char* help_value = nullptr;
+  PetscBool help_set = PETSC_FALSE;
+  OpenSnPETScCall(PetscOptionsFindPair(options_, nullptr, "-help", &help_value, &help_set));
+  if (help_set == PETSC_TRUE)
+    parsed_options.push_back(
+      {"-help", help_value != nullptr ? std::optional<std::string>(help_value) : std::nullopt});
+  parsed_options_ = std::move(parsed_options);
+}
+
+PETScOptionsDatabase::Scope::Scope(const PETScOptionsDatabase& database)
+{
+  saved_.reserve(database.parsed_options_.size());
+  try
+  {
+    for (const auto& option : database.parsed_options_)
+    {
+      const char* value = nullptr;
+      PetscBool set = PETSC_FALSE;
+      OpenSnPETScCall(PetscOptionsFindPair(nullptr, nullptr, option.name.c_str(), &value, &set));
+      // FindPair falls back to the name without a _<number>_ part, and marks the option it finds
+      // as used. The option itself is present only if an option of exactly its name is now used.
+      PetscBool exact = PETSC_FALSE;
+      if (set == PETSC_TRUE)
+        OpenSnPETScCall(PetscOptionsUsed(nullptr, option.name.c_str() + 1, &exact));
+      const bool was_set = exact == PETSC_TRUE;
+      saved_.push_back(
+        {option.name,
+         was_set,
+         was_set and value != nullptr ? std::optional<std::string>(value) : std::nullopt});
+      OpenSnPETScCall(PetscOptionsSetValue(
+        nullptr, option.name.c_str(), option.value ? option.value->c_str() : nullptr));
+    }
+  }
+  catch (...)
+  {
+    Restore();
+    throw;
+  }
+}
+
+PETScOptionsDatabase::Scope::~Scope()
+{
+  Restore();
+}
+
+void
+PETScOptionsDatabase::Scope::Restore()
+{
+  for (auto it = saved_.rbegin(); it != saved_.rend(); ++it)
+  {
+    if (it->was_set)
+      OpenSnPETScCall(
+        PetscOptionsSetValue(nullptr, it->name.c_str(), it->value ? it->value->c_str() : nullptr));
+    else
+      OpenSnPETScCall(PetscOptionsClearValue(nullptr, it->name.c_str()));
+  }
+  saved_.clear();
+}
+
 PETScSolverStatus
 KSPReasonToPETScSolverStatus(const KSPConvergedReason reason)
 {

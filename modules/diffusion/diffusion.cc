@@ -201,7 +201,9 @@ DiffusionSolver::Initialize()
 
   OpenSnPETScCall(VecDuplicate(rhs_, &x_));
 
-  // Create KSP
+  // Create KSP. Solvers of the groupsets of a problem share a name, so each keeps its options apart
+  // and puts them in the global database only while it uses them.
+  petsc_options_ = std::make_unique<PETScOptionsDatabase>();
   OpenSnPETScCall(KSPCreate(petsc_comm_, &ksp_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, name_.c_str()));
 
@@ -245,11 +247,12 @@ DiffusionSolver::Initialize()
       pc_options.emplace_back("pc_hypre_boomeramg_strong_threshold 0.8");
 
     for (const auto& option : pc_options)
-      OpenSnPETScCall(PetscOptionsInsertString(nullptr, ("-" + name_ + option).c_str()));
+      petsc_options_->Insert("-" + name_ + option);
   }
 
-  OpenSnPETScCall(PetscOptionsInsertString(nullptr, options.additional_options_string.c_str()));
+  petsc_options_->Insert(options.additional_options_string);
 
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   OpenSnPETScCall(PCSetFromOptions(pc));
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
 }
@@ -258,6 +261,7 @@ void
 DiffusionSolver::Solve(std::vector<double>& solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   OpenSnPETScCall(VecSet(x_, 0.0));
 
   // A direct (preonly) solve does not use an initial guess, and PETSc rejects a nonzero guess
@@ -319,6 +323,7 @@ void
 DiffusionSolver::Solve(Vec petsc_solution, bool use_initial_guess)
 {
   const std::string fname = "acceleration::DiffusionMIPSolver::Solve";
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_);
   OpenSnPETScCall(VecSet(x_, 0.0));
 
   // A direct (preonly) solve does not use an initial guess, and PETSc rejects a nonzero guess

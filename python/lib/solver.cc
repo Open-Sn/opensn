@@ -1275,7 +1275,7 @@ WrapLBS(py::module& slv)
               prefix, the problem name followed by ``_WGDSA``. With ``wgdsa_energy_coupling``, or
               with ``csda_enabled`` and charged-particle groups in the groupset, the groupset has
               one solver per group, whose prefix is the problem name followed by ``_WGDSA_g`` and
-              the global group index.
+              the global group index. The options reach only the solvers of this groupset.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
@@ -1313,7 +1313,8 @@ WrapLBS(py::module& slv)
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
               PETSc options string for the TGDSA solver. Options must carry the solver's
-              prefix, the problem name followed by ``_TGDSA``.
+              prefix, the problem name followed by ``_TGDSA``. The options reach only the
+              solver of this groupset.
           - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``tgdsa_direct_solve_threshold`` global unknowns, and
@@ -1942,7 +1943,8 @@ WrapLBS(py::module& slv)
               PETSc options string for the WGDSA solver. Options must carry the solver's
               prefix, the problem name followed by ``_WGDSA``. With ``wgdsa_energy_coupling``,
               the groupset has one solver per group, whose prefix is the problem name followed by
-              ``_WGDSA_g`` and the global group index.
+              ``_WGDSA_g`` and the global group index. The options reach only the solvers
+              of this groupset.
           - wgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               WGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``wgdsa_direct_solve_threshold`` global unknowns, and
@@ -1979,7 +1981,8 @@ WrapLBS(py::module& slv)
               Verbose TGDSA output.
           - tgdsa_petsc_options: str, default=''
               PETSc options string for the TGDSA solver. Options must carry the solver's
-              prefix, the problem name followed by ``_TGDSA``.
+              prefix, the problem name followed by ``_TGDSA``. The options reach only the
+              solver of this groupset.
           - tgdsa_solver_policy: {'auto', 'direct', 'iterative', 'petsc_options'}, default='auto'
               TGDSA diffusion solver policy. ``auto`` uses a direct PETSc LU solve on one MPI
               process at or below ``tgdsa_direct_solve_threshold`` global unknowns, and
@@ -3085,6 +3088,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     petsc_options: str, default=""
         Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
         for solver experiments, especially with ``coarse_solver_policy="petsc_options"``.
+        The options reach only the coarse solver of this acceleration.
     pi_max_its: int, default=50
         Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
         Increase only if the coarse k solve is not converging enough to give useful
