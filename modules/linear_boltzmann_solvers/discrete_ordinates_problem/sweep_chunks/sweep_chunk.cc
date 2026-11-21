@@ -32,6 +32,7 @@ SweepChunk::SetCell(Cell const* cell_ptr)
 void
 SweepChunk::ZeroDestinationPhi()
 {
+  FetchFluxBlocks();
   const auto gsi = groupset_.first_group;
   const auto gss = groupset_.GetNumGroups();
 
@@ -43,7 +44,7 @@ SweepChunk::ZeroDestinationPhi()
     {
       for (unsigned int m = 0; m < num_moments_; ++m)
       {
-        const auto mapping = transport_view.MapDOF(i, m, gsi);
+        const auto mapping = transport_view.MapBlockDOF(i, m, gsi);
         for (unsigned int g = 0; g < gss; ++g)
         {
           destination_phi_[mapping + g] = 0.0;
@@ -66,6 +67,7 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
 {
   OpenSnLogicalErrorIf(psi.empty(),
                        "Rebuilding sweep destinations requires stored angular fluxes.");
+  FetchFluxBlocks();
 
   const auto& quadrature = *groupset_.quadrature;
   const auto& d2m_op = quadrature.GetDiscreteToMomentOperator();
@@ -86,7 +88,7 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
 
     for (size_t i = 0; i < num_nodes; ++i)
       for (unsigned int m = 0; m < num_moments_; ++m)
-        std::fill_n(&destination_phi_[transport_view.MapDOF(i, m, gs_gi)], gs_size, 0.0);
+        std::fill_n(&destination_phi_[transport_view.MapBlockDOF(i, m, gs_gi)], gs_size, 0.0);
     for (size_t f = 0; f < num_faces; ++f)
       for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
         outflow_view.Zero(f, gs_gi + gsg);
@@ -105,7 +107,7 @@ SweepChunk::ComputeDestinationsFromAngularFlux(const AngleAggregation& angle_agg
           for (unsigned int m = 0; m < num_moments_; ++m)
           {
             const auto wn_d2m = d2m_row[m];
-            double* phi = &destination_phi_[transport_view.MapDOF(i, m, gs_gi)];
+            double* phi = &destination_phi_[transport_view.MapBlockDOF(i, m, gs_gi)];
             for (unsigned int gsg = 0; gsg < gs_size; ++gsg)
               phi[gsg] += wn_d2m * psi_i[gsg];
           }
@@ -149,17 +151,19 @@ SweepChunk::ComputeTimeDependentDestinationsFromAngularFlux(const AngleAggregati
 void
 SweepChunk::EnableCompactGroupsetMoments(const FluxMomentLayout& layout)
 {
-  OpenSnLogicalErrorIf(destination_phi_.size() != layout.GetNumLocalDOFs() or
-                         source_moments_.size() != layout.GetNumLocalDOFs() or
-                         layout.GetNumMoments() != num_moments_,
-                       "SweepChunk: the flux moments do not follow the flux-moment layout.");
   const auto first_group = groupset_.first_group;
+  OpenSnLogicalErrorIf(
+    layout.GetGroupBlock(first_group) != flux_block_ or layout.GetNumMoments() != num_moments_ or
+      destination_phi_owner_.GetBlockSize(flux_block_) != layout.GetBlockSize(flux_block_) or
+      source_moments_owner_.GetBlockSize(flux_block_) != layout.GetBlockSize(flux_block_),
+    "SweepChunk: the flux moments do not follow the flux-moment layout.");
   num_node_moments_ = static_cast<std::size_t>(layout.GetNumLocalNodes()) * num_moments_;
-  groupset_base_ = layout.GetNumLocalNodes() > 0 ? layout.MapDOF(0, 0, first_group) : 0;
+  groupset_base_ = layout.GetNumLocalNodes() > 0 ? layout.MapBlockDOF(0, 0, first_group) : 0;
   moment_stride_ = layout.GetMomentStride(first_group);
-  // Moment k = node * num_moments + moment of the groupset starts at groupset_base_ + k *
-  // moment_stride_, and the layout keeps a groupset's groups consecutive there. When the stride is
-  // the group count, the groupset's moments of a node are already together.
+  // In the groupset's block, moment k = node * num_moments + moment of the groupset starts at
+  // groupset_base_ + k * moment_stride_, and the layout keeps a groupset's groups consecutive
+  // there. When the stride is the group count, the groupset's moments of a node are already
+  // together.
   compact_groupset_moments_ = moment_stride_ > groupset_.GetNumGroups();
 }
 

@@ -104,13 +104,15 @@ NLKEigenDiffSolver::PostSolveCallback()
   auto& phi_lph_ip1 = nl_context_ptr->phi_lph_ip1;
 
   auto phi_lp1_temp = phi_lph_ip1 + delta_phi;
-  WGDSA::GSProjectBackPhi0(do_problem, front_gs, phi_lp1_temp, phi_new_local);
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem, front_gs, phi_new_local, phi_old_local);
+  WGDSA::GSProjectBackPhi0(
+    do_problem, front_gs, phi_lp1_temp, phi_new_local.Block(do_problem.GetFluxBlock(front_gs)));
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    do_problem, front_gs, phi_new_local.ConstBlocks(), phi_old_local.Blocks());
 
   // Compute final k_eff
   double k_eff = nl_context_ptr->kresid_func_context.k_eff;
 
-  const double production = ComputeFissionProduction(do_problem, phi_old_local);
+  const double production = ComputeFissionProduction(do_problem, phi_old_local.ConstBlocks());
   LBSVecOps::ScalePhiVector(do_problem, PhiSTLOption::PHI_OLD, k_eff / production);
 
   PetscInt number_of_func_evals = 0;

@@ -7,6 +7,7 @@
 #include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
 #include <cassert>
+#include <utility>
 
 namespace opensn
 {
@@ -38,14 +39,14 @@ ComputeDelayedFissionProduction(const MultiGroupXS& xs,
 }
 
 double
-ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionProduction(const LBSProblem& lbs_problem,
+                         const GroupsetBlockedSpan<const double>& phi)
 {
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() &&
-         "ComputeFissionProduction size mismatch.");
+  const auto phi_group_blocks = phi.GetGroupBlocks(lbs_problem.GetFluxMomentLayout());
   const bool include_delayed_production = UseDelayedNeutronProduction(lbs_problem);
   const bool adjoint = lbs_problem.GetOptions().adjoint;
 
@@ -89,7 +90,7 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
     for (int i = 0; i < num_nodes; ++i)
     {
       for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
-        phi_node[gp] = phi[transport_view.MapDOF(i, 0, gp)];
+        phi_node[gp] = phi_group_blocks[gp][transport_view.MapBlockDOF(i, 0, gp)];
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
@@ -117,13 +118,27 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 }
 
 double
-ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionProduction(const LBSProblem& lbs_problem, std::span<const double> phi)
+{
+  return ComputeFissionProduction(
+    lbs_problem, GroupsetBlockedSpan<const double>(phi, lbs_problem.GetFluxMomentLayout()));
+}
+
+double
+ComputeFissionRate(const LBSProblem& lbs_problem, std::span<const double> phi)
+{
+  return ComputeFissionRate(
+    lbs_problem, GroupsetBlockedSpan<const double>(phi, lbs_problem.GetFluxMomentLayout()));
+}
+
+double
+ComputeFissionRate(const LBSProblem& lbs_problem, const GroupsetBlockedSpan<const double>& phi)
 {
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionRate size mismatch.");
+  const auto phi_group_blocks = phi.GetGroupBlocks(lbs_problem.GetFluxMomentLayout());
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -151,7 +166,8 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
 
       // Loop over groups
       for (unsigned int g = first_grp; g <= last_grp; ++g)
-        local_fission_rate += sigma_f[g] * phi[transport_view.MapDOF(i, 0, g)] * IntV_ShapeI;
+        local_fission_rate +=
+          sigma_f[g] * phi_group_blocks[g][transport_view.MapBlockDOF(i, 0, g)] * IntV_ShapeI;
     } // for node
   } // for cell
 
@@ -181,7 +197,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& grid = lbs_problem.GetGrid();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
-  const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  const auto phi_new_local = std::as_const(lbs_problem).GetPhiNewLocal().Data();
 
   for (const auto& cell : grid->GetLocalCells())
   {

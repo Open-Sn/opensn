@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/groupset/lbs_groupset.h"
+#include <span>
 #include <vector>
 
 namespace opensn
@@ -18,21 +19,26 @@ public:
   /// Initializes the Within-Group DSA solver.
   static void Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset);
 
-  /// Assembles a delta-phi vector on the first moment.
+  /**
+   * Assembles a delta-phi vector on the first moment. `phi_in` is the groupset's block of a
+   * flux-moment vector, and DisassembleDeltaPhiVector adds to such a block. The same holds for
+   * the flux-moment arguments of the other functions.
+   */
   static void AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                      const LBSGroupset& groupset,
-                                     const std::vector<double>& phi_in,
+                                     std::span<const double> phi_in,
                                      std::vector<double>& delta_phi_local);
 
   /// Disassembles a delta-phi vector on the first moment.
   static void DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                         const LBSGroupset& groupset,
                                         const std::vector<double>& delta_phi_local,
-                                        std::vector<double>& ref_phi_new);
+                                        std::span<double> ref_phi_new);
 
   /**
    * Adds the WGDSA correction driven by `phi_change`, the change of the groupset flux moments over
-   * one transport sweep, to the scalar moments of `phi_new`. The two vectors may be the same.
+   * one transport sweep, to the scalar moments of `phi_new`. Both are the groupset's block of a
+   * flux-moment vector, and they may be the same memory.
    *
    * A reflecting boundary that lags its incoming angular flux by one sweep (the one with the
    * smaller boundary id of a pair of opposing reflecting boundaries, and the outer surface in 1D
@@ -53,9 +59,9 @@ public:
    */
   static void Apply(DiscreteOrdinatesProblem& do_problem,
                     const LBSGroupset& groupset,
-                    const std::vector<double>& phi_change,
+                    std::span<const double> phi_change,
                     bool subtract_old_delayed_psi,
-                    std::vector<double>& phi_new);
+                    std::span<double> phi_new);
 
   /// Cleans up memory consuming items.
   static void CleanUp(LBSGroupset& groupset);
@@ -66,13 +72,13 @@ public:
    */
   static std::vector<double> WGSCopyOnlyPhi0(DiscreteOrdinatesProblem& do_problem,
                                              const LBSGroupset& groupset,
-                                             const std::vector<double>& phi_in);
+                                             std::span<const double> phi_in);
 
   /// From the WGDSA DOFs, projects the scalar moments back into a primary STL vector.
   static void GSProjectBackPhi0(DiscreteOrdinatesProblem& do_problem,
                                 const LBSGroupset& groupset,
                                 const std::vector<double>& input,
-                                std::vector<double>& output);
+                                std::span<double> output);
 };
 
 } // namespace opensn

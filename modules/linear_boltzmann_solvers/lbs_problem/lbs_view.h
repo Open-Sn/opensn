@@ -48,6 +48,17 @@ public:
     return layout_->MapDOF(first_node_ + node, moment, grp);
   }
 
+  /**
+   * Index of cell node `node`, moment `moment`, and group `grp` within the block of the group's
+   * groupset. See FluxMomentLayout::MapBlockDOF.
+   */
+  size_t MapBlockDOF(uint64_t node, uint64_t moment, uint64_t grp) const
+  {
+    assert(node < static_cast<uint64_t>(num_nodes_) &&
+           "CellLBSView::MapBlockDOF node out of range.");
+    return layout_->MapBlockDOF(first_node_ + node, moment, grp);
+  }
+
   /// Local node index of the cell's node 0 in the flux-moment layout.
   std::uint64_t GetFirstNode() const { return first_node_; }
 

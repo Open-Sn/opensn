@@ -39,15 +39,22 @@ FluxMomentLayout::FluxMomentLayout(std::uint64_t num_local_nodes,
   // nodes x moments x (its groups) entries, and a group's stride is the size of its groupset.
   group_base_.resize(num_groups);
   group_stride_.resize(num_groups);
-  std::size_t block_offset = 0;
-  for (const auto& range : groupsets)
+  group_block_.resize(num_groups);
+  group_block_base_.resize(num_groups);
+  block_offset_.assign(1, 0);
+  for (std::size_t gs = 0; gs < groupsets.size(); ++gs)
   {
+    const auto& range = groupsets[gs];
+    const std::size_t block_offset = block_offset_.back();
     for (unsigned int k = 0; k < range.num_groups; ++k)
     {
       group_base_[range.first_group + k] = block_offset + k;
       group_stride_[range.first_group + k] = range.num_groups;
+      group_block_[range.first_group + k] = gs;
+      group_block_base_[range.first_group + k] = k;
     }
-    block_offset += static_cast<std::size_t>(num_local_nodes) * num_moments * range.num_groups;
+    block_offset_.push_back(block_offset + static_cast<std::size_t>(num_local_nodes) * num_moments *
+                                             range.num_groups);
   }
 
   for (unsigned int g = 0; g < num_groups; ++g)
@@ -55,8 +62,17 @@ FluxMomentLayout::FluxMomentLayout(std::uint64_t num_local_nodes,
       node_moment_group_order_ and group_base_[g] == g and group_stride_[g] == num_groups;
 }
 
+std::vector<std::size_t>
+FluxMomentLayout::GetBlockSizes() const
+{
+  std::vector<std::size_t> sizes(GetNumBlocks());
+  for (std::size_t b = 0; b < sizes.size(); ++b)
+    sizes[b] = GetBlockSize(b);
+  return sizes;
+}
+
 std::vector<double>
-FluxMomentLayout::ToNodeMomentGroupOrder(const std::vector<double>& values) const
+FluxMomentLayout::ToNodeMomentGroupOrder(std::span<const double> values) const
 {
   OpenSnInvalidArgumentIf(values.size() != num_local_dofs_,
                           "FluxMomentLayout::ToNodeMomentGroupOrder: got " +
@@ -72,7 +88,7 @@ FluxMomentLayout::ToNodeMomentGroupOrder(const std::vector<double>& values) cons
 }
 
 std::vector<double>
-FluxMomentLayout::FromNodeMomentGroupOrder(const std::vector<double>& values) const
+FluxMomentLayout::FromNodeMomentGroupOrder(std::span<const double> values) const
 {
   OpenSnInvalidArgumentIf(values.size() != num_local_dofs_,
                           "FluxMomentLayout::FromNodeMomentGroupOrder: got " +

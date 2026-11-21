@@ -65,7 +65,7 @@ CBC_Sweep_FixedN(SweepChunkT& sweep_chunk, AngleSet& angle_set)
     PRAGMA_UNROLL
     for (std::size_t i = 0; i < NumNodes; ++i)
       moment_dof_map[static_cast<std::size_t>(m) * NumNodes + i] =
-        cell_transport_view.MapDOF(i, m, gs_gi);
+        cell_transport_view.MapBlockDOF(i, m, gs_gi);
   }
 
   std::array<double, matrix_size> Amat{};

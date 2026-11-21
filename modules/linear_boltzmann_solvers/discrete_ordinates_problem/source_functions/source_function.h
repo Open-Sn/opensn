@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include <cstdint>
+#include <span>
 #include <memory>
 #include <utility>
 
@@ -31,16 +32,16 @@ public:
    * Sets the source moments for the groups in the current group set.
    *
    * \param groupset The groupset the under consideration.
-   * \param q A vector to contribute the source to.
-   * \param phi The primary STL vector to operate off.
+   * \param q Source moments by groupset block; the sources are added to the groupset's block.
+   * \param phi Flux moments by groupset block, read in every block that a selected term reads.
    * \param source_flags Flags for adding specific terms into the
    *        destination vector. Available flags are for applying
    *        the material source, across/within-group scattering,
    *        and across/within-groups fission.
    */
   virtual void operator()(const LBSGroupset& groupset,
-                          std::vector<double>& q,
-                          const std::vector<double>& phi,
+                          const GroupsetBlockedSpan<double>& q,
+                          const GroupsetBlockedSpan<const double>& phi,
                           SourceFlags source_flags);
 
   virtual double FixedSourceMoments() const;
@@ -56,8 +57,8 @@ public:
                                 std::size_t node_id) const;
 
   virtual void AddAdditionalSources(const LBSGroupset& groupset,
-                                    std::vector<double>& q,
-                                    const std::vector<double>& phi,
+                                    const GroupsetBlockedSpan<double>& q,
+                                    const GroupsetBlockedSpan<const double>& phi,
                                     SourceFlags source_flags)
   {
     AddPointSources(groupset, q, phi, source_flags);
@@ -66,14 +67,14 @@ public:
 
   /// Adds point sources to the source moments.
   void AddPointSources(const LBSGroupset& groupset,
-                       std::vector<double>& q,
-                       const std::vector<double>& phi,
+                       const GroupsetBlockedSpan<double>& q,
+                       const GroupsetBlockedSpan<const double>& phi,
                        SourceFlags source_flags);
 
   /// Adds volumetric sources to the source moments.
   void AddVolumetricSources(const LBSGroupset& groupset,
-                            std::vector<double>& q,
-                            const std::vector<double>& phi,
+                            const GroupsetBlockedSpan<double>& q,
+                            const GroupsetBlockedSpan<const double>& phi,
                             SourceFlags source_flags);
 
 protected:
@@ -101,6 +102,8 @@ protected:
   std::vector<double> default_zero_src_;
   /// Flux of every group at the current node and moment, indexed by group.
   std::vector<double> phi_node_moment_;
+  /// Block of phi that holds each group read by the current call, indexed by group.
+  std::vector<std::span<const double>> phi_group_blocks_;
 };
 
 } // namespace opensn

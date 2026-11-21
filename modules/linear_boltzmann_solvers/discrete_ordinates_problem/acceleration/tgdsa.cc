@@ -104,7 +104,7 @@ TGDSA::Init(DiscreteOrdinatesProblem& do_problem, LBSGroupset& groupset)
 void
 TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                               const LBSGroupset& groupset,
-                              const std::vector<double>& phi_in,
+                              std::span<const double> phi_in,
                               std::vector<double>& delta_phi_local)
 {
 
@@ -134,7 +134,7 @@ TGDSA::AssembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
-      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapBlockDOF(i, 0, gsi);
 
       double& delta_phi_mapped = delta_phi_local[dphi_map];
       const double* phi_in_mapped = &phi_in[phi_map];
@@ -156,7 +156,7 @@ void
 TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
                                  const LBSGroupset& groupset,
                                  const std::vector<double>& delta_phi_local,
-                                 std::vector<double>& ref_phi_new)
+                                 std::span<double> ref_phi_new)
 {
 
   const auto grid = do_problem.GetGrid();
@@ -178,7 +178,7 @@ TGDSA::DisassembleDeltaPhiVector(DiscreteOrdinatesProblem& do_problem,
     for (size_t i = 0; i < num_nodes; ++i)
     {
       const auto dphi_map = sdm.MapDOFLocal(*cell, i);
-      const auto phi_map = transport_views[cell->local_id].MapDOF(i, 0, gsi);
+      const auto phi_map = transport_views[cell->local_id].MapBlockDOF(i, 0, gsi);
 
       const double delta_phi_mapped = delta_phi_local[dphi_map];
       double* phi_new_mapped = &ref_phi_new[phi_map];

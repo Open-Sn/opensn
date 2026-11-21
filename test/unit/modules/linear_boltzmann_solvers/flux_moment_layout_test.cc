@@ -89,6 +89,40 @@ TEST(FluxMomentLayoutTest, OrderIsGroupsetNodeMomentGroup)
   }
 }
 
+TEST(FluxMomentLayoutTest, BlocksFollowTheGroupsets)
+{
+  const auto layout = MakeLayout();
+  ASSERT_EQ(layout.GetNumBlocks(), kGroupsets.size());
+  std::size_t block_offset = 0;
+  for (std::size_t b = 0; b < kGroupsets.size(); ++b)
+  {
+    const auto& range = kGroupsets[b];
+    EXPECT_EQ(layout.GetBlockOffset(b), block_offset);
+    EXPECT_EQ(layout.GetBlockSize(b), kNodes * kMoments * range.num_groups);
+    EXPECT_EQ(layout.GetBlockSizes()[b], layout.GetBlockSize(b));
+    for (unsigned int k = 0; k < range.num_groups; ++k)
+      EXPECT_EQ(layout.GetGroupBlock(range.first_group + k), b);
+    block_offset += layout.GetBlockSize(b);
+  }
+  EXPECT_EQ(block_offset, layout.GetNumLocalDOFs());
+}
+
+TEST(FluxMomentLayoutTest, BlockIndexIsRelativeToTheGroupsetBlock)
+{
+  const auto layout = MakeLayout();
+  for (const auto& range : kGroupsets)
+    for (std::uint64_t n = 0; n < kNodes; ++n)
+      for (unsigned int m = 0; m < kMoments; ++m)
+        for (unsigned int k = 0; k < range.num_groups; ++k)
+        {
+          const auto g = range.first_group + k;
+          const auto block_index = layout.MapBlockDOF(n, m, g);
+          EXPECT_EQ(block_index, (n * kMoments + m) * range.num_groups + k);
+          EXPECT_EQ(layout.GetBlockOffset(layout.GetGroupBlock(g)) + block_index,
+                    layout.MapDOF(n, m, g));
+        }
+}
+
 TEST(FluxMomentLayoutTest, SingleGroupsetIsNodeMomentGroup)
 {
   const FluxMomentLayout layout(kNodes, kMoments, kGroups, {{0, kGroups}});
@@ -127,8 +161,21 @@ TEST(FluxMomentLayoutTest, ZeroLocalNodes)
 {
   const FluxMomentLayout layout(0, kMoments, kGroups, kGroupsets);
   EXPECT_EQ(layout.GetNumLocalDOFs(), 0U);
+  ASSERT_EQ(layout.GetNumBlocks(), kGroupsets.size());
+  for (std::size_t b = 0; b < kGroupsets.size(); ++b)
+  {
+    EXPECT_EQ(layout.GetBlockOffset(b), 0U);
+    EXPECT_EQ(layout.GetBlockSize(b), 0U);
+  }
   EXPECT_TRUE(layout.ToNodeMomentGroupOrder({}).empty());
   EXPECT_TRUE(layout.FromNodeMomentGroupOrder({}).empty());
+}
+
+TEST(FluxMomentLayoutTest, DefaultHasNoBlocks)
+{
+  const FluxMomentLayout layout;
+  EXPECT_EQ(layout.GetNumBlocks(), 0U);
+  EXPECT_TRUE(layout.GetBlockSizes().empty());
 }
 
 TEST(FluxMomentLayoutTest, RejectsGroupsetsThatDoNotPartitionTheGroups)

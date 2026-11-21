@@ -13,6 +13,7 @@
 #include <limits>
 #include <map>
 #include <stdexcept>
+#include <utility>
 
 namespace opensn
 {
@@ -299,7 +300,8 @@ CrossSectionSensitivityPostprocessor::LoadFluxMoments(std::vector<double>& forwa
     OpenSnInvalidArgumentIf(do_problem_->IsAdjoint(),
                             "A forward flux-moment file is required when the problem's current "
                             "solution is adjoint.");
-    forward_phi = do_problem_->GetPhiNewLocal();
+    const auto phi_new = std::as_const(do_problem_->GetPhiNewLocal()).Data();
+    forward_phi.assign(phi_new.begin(), phi_new.end());
   }
   else
     LBSSolverIO::ReadFluxMoments(*do_problem_,
@@ -317,7 +319,8 @@ CrossSectionSensitivityPostprocessor::LoadFluxMoments(std::vector<double>& forwa
     OpenSnInvalidArgumentIf(not do_problem_->IsAdjointSolutionReoriented(),
                             "The current adjoint flux moments are still in solver orientation; "
                             "solve the adjoint problem first.");
-    adjoint_phi = do_problem_->GetPhiNewLocal();
+    const auto phi_new = std::as_const(do_problem_->GetPhiNewLocal()).Data();
+    adjoint_phi.assign(phi_new.begin(), phi_new.end());
   }
   else
     LBSSolverIO::ReadFluxMoments(*do_problem_,

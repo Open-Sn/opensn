@@ -22,7 +22,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
   // copy phi and src moments to device
   auto& aah_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
   int groupset_id = angle_agg_.GetGroupsetID();
-  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
+  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice(aah_sweep_chunk.GetFluxBlock());
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
 
   // reset dependency counters and pre-post receives for all anglesets
@@ -73,7 +73,7 @@ SweepScheduler::ScheduleAlgoAAO(SweepChunk& sweep_chunk)
 
   // copy boundary, phi and outflow data back to host
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, false);
-  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
+  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost(aah_sweep_chunk.GetFluxBlock());
 
   // reset all anglesets
   for (auto& angle_set : angle_agg_)
@@ -85,7 +85,7 @@ SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
 {
   auto& aah_sweep_chunk = dynamic_cast<AAHDSweepChunk&>(sweep_chunk);
   int groupset_id = angle_agg_.GetGroupsetID();
-  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
+  aah_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice(aah_sweep_chunk.GetFluxBlock());
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, true);
 
   // Every lane's stream is idle here. The delayed-psi uploads in PrepostReceives go on lane 0. A
@@ -166,7 +166,7 @@ SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
 
   // Copy boundary, phi and outflow data back to host
   aah_sweep_chunk.GetProblem().TransferDeviceBoundaryData(groupset_id, false);
-  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
+  aah_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost(aah_sweep_chunk.GetFluxBlock());
 
   // Reset all angle sets
   for (auto& angle_set : angle_agg_)
@@ -182,7 +182,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
 
   auto& cbcd_sweep_chunk = dynamic_cast<CBCDSweepChunk&>(sweep_chunk);
   // Copy phi and source moments to device
-  cbcd_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice();
+  cbcd_sweep_chunk.GetProblem().CopyPhiAndSrcToDevice(cbcd_sweep_chunk.GetFluxBlock());
 
   const auto& angle_sets = cbcd_sweep_chunk.GetAngleSets();
   const auto& fluds_list = cbcd_sweep_chunk.GetFLUDS();
@@ -342,7 +342,7 @@ SweepScheduler::ScheduleAlgoAsyncFIFO(SweepChunk& sweep_chunk)
     stream.synchronize();
 
   // Copy phi and outflow data back to host
-  cbcd_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost();
+  cbcd_sweep_chunk.GetProblem().CopyPhiAndOutflowBackToHost(cbcd_sweep_chunk.GetFluxBlock());
 
   // Receive delayed data
   opensn::mpi_comm.barrier();

@@ -28,8 +28,9 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   LBSGroupset& groupset = gs_context_ptr->groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_delta = gs_context_ptr->do_problem.GetPhiNewLocal();
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
+  // The groupset's block, fetched at use because a solver may redirect it.
+  const auto phi_delta = solver.GetPhiNewLocal().Block(solver.GetFluxBlock(groupset));
 
   // Apply TGDSA
   if (groupset.apply_tgdsa)

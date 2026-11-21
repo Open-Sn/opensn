@@ -95,7 +95,7 @@ AddTimeAbsorptionToDiffusionCoefficient(const double D, const double tau)
 void
 ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
                                        const LBSGroupset& groupset,
-                                       const std::vector<double>& delta_phi_local)
+                                       std::span<const double> delta_phi_local)
 {
   const auto& grid = *do_problem.GetGrid();
   const auto& sdm = do_problem.GetSpatialDiscretization();
@@ -109,7 +109,8 @@ ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
   {
     const auto& cell = *grid.GetLocalCells()[cell_local_id];
     const auto node = sdm.GetCellMapping(cell).MapFaceNode(face, face_node);
-    return delta_phi_local[transport_views[cell_local_id].MapDOF(node, 0, first_group + group_idx)];
+    return delta_phi_local[transport_views[cell_local_id].MapBlockDOF(
+      node, 0, first_group + group_idx)];
   };
 
   OpenSnLogicalErrorIf(

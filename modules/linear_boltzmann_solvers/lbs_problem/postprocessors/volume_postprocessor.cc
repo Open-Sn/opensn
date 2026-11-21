@@ -13,6 +13,7 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 namespace opensn
 {
@@ -477,7 +478,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& transport_views = lbs_problem_->GetCellTransportViews();
-  const auto& phi = lbs_problem_->GetPhiNewLocal();
+  const auto phi = std::as_const(lbs_problem_->GetPhiNewLocal()).Data();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   for (const auto cell_id : cell_local_ids)
@@ -522,7 +523,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
   const auto& transport_views = lbs_problem_->GetCellTransportViews();
-  const auto& phi = lbs_problem_->GetPhiNewLocal();
+  const auto phi = std::as_const(lbs_problem_->GetPhiNewLocal()).Data();
 
   const double init =
     is_max ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();

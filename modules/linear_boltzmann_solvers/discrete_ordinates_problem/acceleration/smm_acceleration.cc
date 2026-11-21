@@ -159,7 +159,8 @@ SMMAcceleration::Initialize()
 void
 SMMAcceleration::PreExecute()
 {
-  phi_ell_ = phi_old_local_;
+  const auto phi_old = std::as_const(phi_old_local_).Data();
+  phi_ell_.assign(phi_old.begin(), phi_old.end());
 }
 
 void
@@ -170,7 +171,7 @@ SMMAcceleration::PrePowerIteration()
 double
 SMMAcceleration::PostPowerIteration()
 {
-  CopyOnlyPhi0(phi_new_local_, phi0_);
+  CopyOnlyPhi0(std::as_const(phi_new_local_).Data(), phi0_);
   phi0_old_ = phi0_;
   phi0_m_ = phi0_;
 
@@ -181,7 +182,7 @@ SMMAcceleration::PostPowerIteration()
   // Start diffusion power iterations
   double lambda = solver_->GetEigenvalue();
   double lambda_old = solver_->GetEigenvalue();
-  double F0_old = ComputeFissionProduction(do_problem_, phi_new_local_);
+  double F0_old = ComputeFissionProduction(do_problem_, phi_new_local_.ConstBlocks());
   bool converged = false;
 
   for (int m = 0; m < pi_max_its_; ++m)
@@ -245,13 +246,18 @@ SMMAcceleration::PostPowerIteration()
       break;
   }
 
-  ProjectBackPhi0(phi0_, phi_new_local_);
+  ProjectBackPhi0(phi0_, phi_new_local_.Data());
 
-  const double production = ComputeFissionProduction(do_problem_, phi_new_local_);
+  const double production = ComputeFissionProduction(do_problem_, phi_new_local_.ConstBlocks());
   LBSVecOps::ScalePhiVector(do_problem_, PhiSTLOption::PHI_NEW, lambda / production);
 
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, front_gs_, phi_new_local_, phi_old_local_);
-  LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, front_gs_, phi_new_local_, phi_ell_);
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    do_problem_, front_gs_, phi_new_local_.ConstBlocks(), phi_old_local_.Blocks());
+  LBSVecOps::GSScopedCopyPrimarySTLvectors(
+    do_problem_,
+    front_gs_,
+    phi_new_local_.ConstBlocks(),
+    GroupsetBlockedSpan<double>(phi_ell_, do_problem_.GetFluxMomentLayout()));
 
   return lambda;
 }
@@ -796,8 +802,12 @@ SMMAcceleration::SetNodalDiffusionFissionSource(const std::vector<double>& phi0,
   out.resize(phi.size());
   std::fill(out.begin(), out.end(), 0.0);
 
+  const auto& layout = do_problem_.GetFluxMomentLayout();
   auto fn = do_problem_.GetActiveSetSourceFunction();
-  fn(front_gs_, out, phi, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+  fn(front_gs_,
+     GroupsetBlockedSpan<double>(out, layout),
+     GroupsetBlockedSpan<const double>(phi, layout),
+     APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
 }
 
 void
@@ -820,10 +830,11 @@ SMMAcceleration::SetNodalDiffusionScatterSource(const std::vector<double>& phi0,
   out.resize(phi.size());
   std::fill(out.begin(), out.end(), 0.0);
 
+  const auto& layout = do_problem_.GetFluxMomentLayout();
   auto fn = do_problem_.GetActiveSetSourceFunction();
   fn(front_gs_,
-     out,
-     phi,
+     GroupsetBlockedSpan<double>(out, layout),
+     GroupsetBlockedSpan<const double>(phi, layout),
      APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES | SUPPRESS_WG_SCATTER);
 }
 

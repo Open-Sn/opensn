@@ -179,7 +179,8 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
   auto solver = PowerIterationKEigenSolver::Create(pi_params);
   solver->Initialize();
   solver->Execute();
-  const auto physical_phi = problem->GetPhiNewLocal();
+  const auto physical_phi_values = problem->GetPhiNewLocal().Data();
+  const std::vector<double> physical_phi(physical_phi_values.begin(), physical_phi_values.end());
   ASSERT_TRUE(problem->IsAdjointSolutionReoriented());
   ASSERT_TRUE(problem->WriteRestartData());
 
@@ -193,9 +194,10 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
 
   EXPECT_FALSE(restarted_problem->IsAdjointSolutionReoriented());
   restarted_problem->ReorientAdjointSolution();
-  ASSERT_EQ(restarted_problem->GetPhiNewLocal().size(), physical_phi.size());
+  const auto restarted_phi = restarted_problem->GetPhiNewLocal().Data();
+  ASSERT_EQ(restarted_phi.size(), physical_phi.size());
   for (size_t i = 0; i < physical_phi.size(); ++i)
-    EXPECT_NEAR(restarted_problem->GetPhiNewLocal()[i], physical_phi[i], 1.0e-12);
+    EXPECT_NEAR(restarted_phi[i], physical_phi[i], 1.0e-12);
 
   restarted_problem->RestoreAdjointSolutionOrientation();
   EXPECT_FALSE(restarted_problem->IsAdjointSolutionReoriented());
@@ -215,8 +217,8 @@ TEST(PIKEigenRepeatedExecuteTest, PhysicalAdjointRestartIsNormalizedForSolver)
     const auto& transport_view = restarted_problem->GetCellTransportViews()[cell.local_id];
     const auto even_dof = transport_view.MapDOF(0, 0, 0);
     const auto odd_dof = transport_view.MapDOF(0, 1, 0);
-    auto& phi_new = restarted_problem->GetPhiNewLocal();
-    auto& phi_old = restarted_problem->GetPhiOldLocal();
+    const auto phi_new = restarted_problem->GetPhiNewLocal().Data();
+    const auto phi_old = restarted_problem->GetPhiOldLocal().Data();
     phi_new[even_dof] = 2.5;
     phi_new[odd_dof] = 3.25;
     phi_old[even_dof] = -1.5;

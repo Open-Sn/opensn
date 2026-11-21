@@ -130,8 +130,9 @@ TransientSolver::ComputeBalanceTable() const
   // phi^{n+theta} = theta phi^{n+1} + (1 - theta) phi^n and t^{n+theta} = t^n + theta dt. The
   // outflow tallies come from the sweep of the last solve, which is at t^{n+theta}.
   const double theta = last_theta_;
-  auto& phi_new = do_problem_->GetPhiNewLocal();
-  const std::vector<double> phi_final = phi_new;
+  auto& phi_new_vector = do_problem_->GetPhiNewLocal();
+  const auto phi_new = phi_new_vector.Data();
+  const std::vector<double> phi_final(phi_new.begin(), phi_new.end());
   const double time_final = do_problem_->GetTime();
   const double dt_final = do_problem_->GetTimeStep();
   const double theta_final = do_problem_->GetTheta();
@@ -148,13 +149,13 @@ TransientSolver::ComputeBalanceTable() const
   }
   catch (...)
   {
-    phi_new = phi_final;
+    phi_new_vector.Assign(phi_final);
     do_problem_->SetTimeStep(dt_final);
     do_problem_->SetTheta(theta_final);
     do_problem_->SetTime(time_final);
     throw;
   }
-  phi_new = phi_final;
+  phi_new_vector.Assign(phi_final);
   do_problem_->SetTimeStep(dt_final);
   do_problem_->SetTheta(theta_final);
   do_problem_->SetTime(time_final);
@@ -257,7 +258,7 @@ TransientSolver::InitializeSolver()
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
   auto& psi_new_local = do_problem_->GetPsiNewLocal();
-  OpenSnLogicalErrorIf(phi_new_local.empty(),
+  OpenSnLogicalErrorIf(phi_new_local.Empty(),
                        GetName() + ": Problem must be fully constructed before "
                                    "TransientSolver initialization.");
 
@@ -293,7 +294,8 @@ TransientSolver::InitializeSolver()
 
   // Sync with the current solution
   current_time_ = do_problem_->GetTime();
-  phi_prev_local_ = phi_new_local;
+  const auto phi_current = std::as_const(phi_new_local).Data();
+  phi_prev_local_.assign(phi_current.begin(), phi_current.end());
   precursor_prev_local_ = precursor_new_local;
 }
 
@@ -408,7 +410,8 @@ TransientSolver::AdvanceSolver()
   auto& phi_new_local = do_problem_->GetPhiNewLocal();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
   const bool has_fissionable_material = HasFissionableMaterial(*do_problem_);
-  phi_prev_local_ = phi_new_local;
+  const auto phi_start = std::as_const(phi_new_local).Data();
+  phi_prev_local_.assign(phi_start.begin(), phi_start.end());
   if (options.use_precursors)
     precursor_prev_local_ = precursor_new_local;
   else
@@ -437,7 +440,7 @@ TransientSolver::AdvanceSolver()
   catch (...)
   {
     // Leave the problem at the start of the step: a failed solve leaves a partial phi and psi.
-    phi_new_local = phi_prev_local_;
+    phi_new_local.Assign(phi_prev_local_);
     do_problem_->GetPsiNewLocal() = do_problem_->GetPsiOldLocal();
     do_problem_->SetTime(current_time_);
     throw;
@@ -474,12 +477,13 @@ TransientSolver::AdvanceSolver()
   // Compute t^{n+1}
   const double inv_theta = 1.0 / theta;
   const auto& phi_prev = phi_prev_local_;
-  for (size_t i = 0; i < phi_new_local.size(); ++i)
-    phi_new_local[i] = inv_theta * (phi_new_local[i] + (theta - 1.0) * phi_prev[i]);
+  const auto phi_new = phi_new_local.Data();
+  for (size_t i = 0; i < phi_new.size(); ++i)
+    phi_new[i] = inv_theta * (phi_new[i] + (theta - 1.0) * phi_prev[i]);
 
   if (verbose_ and has_fissionable_material and options.use_precursors)
   {
-    const double FP_new = ComputeFissionProduction(*do_problem_, phi_new_local);
+    const double FP_new = ComputeFissionProduction(*do_problem_, phi_new_local.ConstBlocks());
     log.Log() << GetName() << " FP = " << std::scientific << std::setprecision(6) << FP_new;
   }
 
@@ -507,7 +511,7 @@ TransientSolver::StepPrecursors()
   const double theta = do_problem_->GetTheta();
   const double eff_dt = theta * do_problem_->GetTimeStep();
   const double inv_theta = 1.0 / theta;
-  const auto& phi_theta = do_problem_->GetPhiNewLocal();
+  const auto phi_theta = std::as_const(do_problem_->GetPhiNewLocal()).Data();
   auto& precursor_new_local = do_problem_->GetPrecursorsNewLocal();
   const auto& discretization = do_problem_->GetSpatialDiscretization();
   const auto max_precursors = do_problem_->GetMaxPrecursorsPerMaterial();

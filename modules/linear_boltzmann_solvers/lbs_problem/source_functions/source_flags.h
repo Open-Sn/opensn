@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
 #include <functional>
 #include <vector>
 #include <cstddef>
@@ -77,9 +78,13 @@ operator|(SourceType f1, SourceType f2)
   return src;
 }
 
+/**
+ * Adds the sources selected by `source_flags` for the groups of `groupset` to their block of `q`.
+ * `q` and `phi` are flux-moment vectors given by groupset block; `phi` may be read in every block.
+ */
 using SetSourceFunction = std::function<void(const LBSGroupset& groupset,
-                                             std::vector<double>& q,
-                                             const std::vector<double>& phi,
+                                             const GroupsetBlockedSpan<double>& q,
+                                             const GroupsetBlockedSpan<const double>& phi,
                                              const SourceFlags source_flags)>;
 
 } // namespace opensn

@@ -4,6 +4,7 @@
 #pragma once
 
 #include "mpicpp-lite/mpicpp-lite.h"
+#include <span>
 #include <vector>
 #include <cstdint>
 #include <map>
@@ -42,7 +43,7 @@ public:
   void CommunicateGhostEntries(std::vector<double>& ghosted_vector) const;
 
   std::vector<double> MakeGhostedVector() const;
-  std::vector<double> MakeGhostedVector(const std::vector<double>& local_vector) const;
+  std::vector<double> MakeGhostedVector(std::span<const double> local_vector) const;
 
 protected:
   const uint64_t local_size_;

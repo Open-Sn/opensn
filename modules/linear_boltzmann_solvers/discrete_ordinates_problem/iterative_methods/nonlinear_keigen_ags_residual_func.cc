@@ -69,12 +69,13 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   {
     CALI_CXX_MARK_SCOPE("Source");
     active_set_source_function(groupset,
-                               lbs_problem->GetQMomentsLocal(),
-                               lbs_problem->GetPhiOldLocal(),
+                               lbs_problem->GetQMomentsLocal().Blocks(),
+                               lbs_problem->GetPhiOldLocal().ConstBlocks(),
                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   }
 
-  const double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
+  const double k_eff =
+    ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal().ConstBlocks());
   if (k_eff <= 0.0 or not std::isfinite(k_eff))
     return SNESSetFunctionDomainError(snes);
   lbs_problem->ScaleQMoments(1.0 / k_eff);
@@ -92,8 +93,10 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
         source_flags |= SUPPRESS_WG_SCATTER;
       {
         CALI_CXX_MARK_SCOPE("Source");
-        active_set_source_function(
-          groupset, lbs_problem->GetQMomentsLocal(), lbs_problem->GetPhiOldLocal(), source_flags);
+        active_set_source_function(groupset,
+                                   lbs_problem->GetQMomentsLocal().Blocks(),
+                                   lbs_problem->GetPhiOldLocal().ConstBlocks(),
+                                   source_flags);
       }
     }
 

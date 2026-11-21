@@ -16,6 +16,8 @@
 #include <memory>
 #include <stdexcept>
 #include <string>
+#include <span>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -28,7 +30,7 @@ namespace
 void
 ValidateFiniteScalarFlux(const LBSProblem& lbs_problem, const std::shared_ptr<LinearSolver>& solver)
 {
-  const auto& phi = lbs_problem.GetPhiNewLocal();
+  const auto phi = lbs_problem.GetPhiNewLocal().Data();
   const int local_nonfinite =
     std::all_of(phi.begin(), phi.end(), [](const double value) { return std::isfinite(value); })
       ? 0
@@ -100,7 +102,7 @@ OnePassIsExact(const LBSProblem& lbs_problem,
 
 /// L2 norm of a distributed vector over all ranks.
 double
-ComputeGlobalL2Norm(const std::vector<double>& values)
+ComputeGlobalL2Norm(std::span<const double> values)
 {
   double local_sum = 0.0;
   for (const double value : values)
@@ -121,11 +123,13 @@ AGSLinearSolver::Solve()
   const bool print_ags_stats = verbose_ and is_multi_groupset;
   last_solve_ = {};
 
-  phi_old_ = lbs_problem_.GetPhiOldLocal();
+  const auto phi_old = std::as_const(lbs_problem_).GetPhiOldLocal().Data();
+  phi_old_.assign(phi_old.begin(), phi_old.end());
 
   // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
   // to function and for keigen-value problems
-  const auto saved_qmoms = lbs_problem_.GetQMomentsLocal();
+  const auto q_moments = std::as_const(lbs_problem_).GetQMomentsLocal().Data();
+  const std::vector<double> saved_qmoms(q_moments.begin(), q_moments.end());
 
   // Without coupling to earlier groupsets, a second pass would only continue the groupset solves
   // that already converged, so the iteration stops after the first pass in which they all do.
@@ -191,8 +195,9 @@ AGSLinearSolver::Solve()
       AppendNumericField(iter_stats, "rho_est", rho, Fixed(4));
 
       // The L2 change is absolute, so its round-off level scales with the flux norm.
-      const double roundoff_change = ConvergenceRateEstimator::kRoundoffRelativeChange *
-                                     ComputeGlobalL2Norm(lbs_problem_.GetPhiNewLocal());
+      const double roundoff_change =
+        ConvergenceRateEstimator::kRoundoffRelativeChange *
+        ComputeGlobalL2Norm(std::as_const(lbs_problem_).GetPhiNewLocal().Data());
       if (rate_estimator.Converged(tolerance_, roundoff_change))
         converged = true;
     }
@@ -222,7 +227,10 @@ AGSLinearSolver::Solve()
     else if (converged)
       break;
     else
-      phi_old_ = lbs_problem_.GetPhiNewLocal();
+    {
+      const auto phi_new = std::as_const(lbs_problem_).GetPhiNewLocal().Data();
+      phi_old_.assign(phi_new.begin(), phi_new.end());
+    }
   }
   CALI_CXX_MARK_LOOP_END(ags_iteration);
 

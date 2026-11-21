@@ -31,6 +31,8 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <span>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -84,11 +86,11 @@ BalanceTableToDict(const BalanceTable& table)
  * reordered copy.
  */
 py::memoryview
-FluxMomentsView(const LBSProblem& problem, const std::vector<double>& phi)
+FluxMomentsView(const LBSProblem& problem, std::span<const double> phi)
 {
   const auto& layout = problem.GetFluxMomentLayout();
   if (layout.IsNodeMomentGroupOrder())
-    return convert_vector(phi);
+    return make_readonly_memoryview(phi.data(), phi.size());
   const auto ordered = layout.ToNodeMomentGroupOrder(phi);
   py::array_t<double> array(static_cast<py::ssize_t>(ordered.size()), ordered.data());
   array.attr("setflags")(py::arg("write") = false);
@@ -345,7 +347,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionRate",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr = nullptr;
+      const GroupsetBlockedVector* phi_ptr = nullptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();
@@ -358,7 +360,7 @@ WrapLBS(py::module& slv)
       {
         throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
       }
-      return ComputeFissionRate(self, *phi_ptr);
+      return ComputeFissionRate(self, phi_ptr->ConstBlocks());
     },
     R"(
     Computes the total fission rate.
@@ -388,7 +390,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionProduction",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr = nullptr;
+      const GroupsetBlockedVector* phi_ptr = nullptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();
@@ -401,7 +403,7 @@ WrapLBS(py::module& slv)
       {
         throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
       }
-      return ComputeFissionProduction(self, *phi_ptr);
+      return ComputeFissionProduction(self, phi_ptr->ConstBlocks());
     },
     R"(
     Computes the total fission production (nu*fission).
@@ -433,7 +435,7 @@ WrapLBS(py::module& slv)
     "GetPhiOldLocal",
     [](LBSProblem& self)
     {
-      return FluxMomentsView(self, self.GetPhiOldLocal());
+      return FluxMomentsView(self, std::as_const(self.GetPhiOldLocal()).Data());
     },
     R"(
     Get the previous flux-moment iterate on this rank.
@@ -458,7 +460,7 @@ WrapLBS(py::module& slv)
     "GetPhiNewLocal",
     [](LBSProblem& self)
     {
-      return FluxMomentsView(self, self.GetPhiNewLocal());
+      return FluxMomentsView(self, std::as_const(self.GetPhiNewLocal()).Data());
     },
     R"(
     Get the current flux-moment iterate on this rank.

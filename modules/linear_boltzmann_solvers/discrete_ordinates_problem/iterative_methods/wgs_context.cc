@@ -65,8 +65,10 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   do_problem.ZeroQMoments();
   {
     CALI_CXX_MARK_SCOPE("Source");
-    set_source_function(
-      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), lhs_src_scope_);
+    set_source_function(groupset,
+                        do_problem.GetQMomentsLocal().Blocks(),
+                        do_problem.GetPhiOldLocal().ConstBlocks(),
+                        lhs_src_scope_);
   }
 
   // Disable RHS time term in Krylov operator

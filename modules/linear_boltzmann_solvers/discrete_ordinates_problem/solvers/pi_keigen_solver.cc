@@ -20,6 +20,7 @@
 #include "caliper/cali.h"
 #include <cmath>
 #include <iomanip>
+#include <utility>
 
 namespace opensn
 {
@@ -31,9 +32,9 @@ namespace
  * the arbitrary eigenvector scale of power iteration does not enter.
  */
 double
-NormalizedFluxChange(const std::vector<double>& phi_old,
+NormalizedFluxChange(std::span<const double> phi_old,
                      const double production_old,
-                     const std::vector<double>& phi_new,
+                     std::span<const double> phi_new,
                      const double production_new)
 {
   double local_sums[2] = {0.0, 0.0};
@@ -145,7 +146,7 @@ PowerIterationKEigenSolver::InitializeSolver()
   if (reset_phi0_ and not restart_successful)
     LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
 
-  F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
+  F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_.ConstBlocks());
 }
 
 void
@@ -205,13 +206,14 @@ PowerIterationKEigenSolver::ExecuteSolver()
                          GetName() + ": invalid k_eff encountered: " + std::to_string(k_eff_));
 
     // The iterate at the start of this power iteration, for the convergence-rate estimate
-    phi_previous = phi_old_local_;
+    const auto phi_old = std::as_const(phi_old_local_).Data();
+    phi_previous.assign(phi_old.begin(), phi_old.end());
     const double production_previous = ComputeFissionProduction(*do_problem_, phi_previous);
 
     // Set the fission source
     {
       CALI_CXX_MARK_SCOPE("Source");
-      SetLBSFissionSource(phi_old_local_, false);
+      SetLBSFissionSource(std::as_const(phi_old_local_).Data(), false);
     }
     do_problem_->ScaleQMoments(1.0 / k_eff_);
 
@@ -235,7 +237,7 @@ PowerIterationKEigenSolver::ExecuteSolver()
     // Recompute k-eigenvalue
     else
     {
-      const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_);
+      const auto F_new = ComputeFissionProduction(*do_problem_, phi_new_local_.ConstBlocks());
       OpenSnLogicalErrorIf(
         F_prev_ == 0.0, GetName() + ": previous fission production is zero. Cannot update k_eff.");
       k_eff_ = F_new / F_prev_ * k_eff_;
@@ -261,8 +263,8 @@ PowerIterationKEigenSolver::ExecuteSolver()
     rate_estimator.Update(
       NormalizedFluxChange(phi_previous,
                            production_previous,
-                           phi_new_local_,
-                           ComputeFissionProduction(*do_problem_, phi_new_local_)));
+                           std::as_const(phi_new_local_).Data(),
+                           ComputeFissionProduction(*do_problem_, phi_new_local_.ConstBlocks())));
     const bool k_change_converged =
       rate_estimator.Passes(k_eff_change, std::max(k_tolerance_, 1.0e-12));
     converged = k_change_converged and previous_k_change_converged and
@@ -361,21 +363,23 @@ PowerIterationKEigenSolver::ComputeBalanceTable() const
 }
 
 void
-PowerIterationKEigenSolver::SetLBSFissionSource(const std::vector<double>& input,
-                                                const bool additive)
+PowerIterationKEigenSolver::SetLBSFissionSource(std::span<const double> input, const bool additive)
 {
   if (not additive)
     do_problem_->ZeroQMoments();
 
+  const GroupsetBlockedSpan<const double> phi(input, do_problem_->GetFluxMomentLayout());
   for (const auto& groupset : groupsets_)
   {
-    active_set_source_function_(
-      groupset, q_moments_local_, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    active_set_source_function_(groupset,
+                                q_moments_local_.Blocks(),
+                                phi,
+                                APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   }
 }
 
 void
-PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input,
+PowerIterationKEigenSolver::SetLBSScatterSource(std::span<const double> input,
                                                 const bool additive,
                                                 const bool suppress_wg_scat)
 {
@@ -386,9 +390,10 @@ PowerIterationKEigenSolver::SetLBSScatterSource(const std::vector<double>& input
   if (suppress_wg_scat)
     source_flags |= SUPPRESS_WG_SCATTER;
 
+  const GroupsetBlockedSpan<const double> phi(input, do_problem_->GetFluxMomentLayout());
   for (const auto& groupset : groupsets_)
   {
-    active_set_source_function_(groupset, q_moments_local_, input, source_flags);
+    active_set_source_function_(groupset, q_moments_local_.Blocks(), phi, source_flags);
   }
 }
 

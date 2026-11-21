@@ -13,6 +13,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/math/linear_solver/linear_solver.h"
@@ -25,6 +26,7 @@
 #include <chrono>
 #include <functional>
 #include <optional>
+#include <span>
 
 namespace opensn
 {
@@ -119,17 +121,22 @@ public:
   /// Returns true once Create() has built the problem.
   bool IsBuilt() const { return built_; }
 
-  /// Supported solution-vector operations.
+  /**
+   * Supported solution-vector operations. Those on phi and the source moments act on the whole
+   * owned vectors and throw std::logic_error while a block is redirected (see
+   * GroupsetBlockedVector). The SetFrom operations throw std::invalid_argument unless the input has
+   * one entry per local flux-moment unknown.
+   */
   void ZeroPhi();
   void CopyPhiNewToOld();
-  void SetPhiOldFrom(const std::vector<double>& phi_old);
-  void SetPhiNewFrom(const std::vector<double>& phi_new);
+  void SetPhiOldFrom(std::span<const double> phi_old);
+  void SetPhiNewFrom(std::span<const double> phi_new);
   void SetPrecursorsOldFrom(const std::vector<double>& precursors_old);
   void ScalePhiOld(double factor);
   void ScalePhiNew(double factor);
   void ZeroQMoments();
   void ScaleQMoments(double factor);
-  void SetQMomentsFrom(const std::vector<double>& q_moments);
+  void SetQMomentsFrom(std::span<const double> q_moments);
   void ScalePrecursors(double factor);
   void ZeroPrecursors();
   void ZeroExtSrcMoments();
@@ -269,6 +276,12 @@ public:
    */
   const FluxMomentLayout& GetFluxMomentLayout() const { return flux_moment_layout_; }
 
+  /// Block of `groupset` in the flux-moment vectors (see GroupsetBlockedVector).
+  std::size_t GetFluxBlock(const LBSGroupset& groupset) const
+  {
+    return flux_moment_layout_.GetGroupBlock(groupset.first_group);
+  }
+
   /// Returns the local node count for the flux-moments data structures.
   size_t GetLocalNodeCount() const;
 
@@ -282,12 +295,16 @@ public:
    * iterative methods, acceleration routines, and restart/flux I/O. User-facing
    * code should prefer the explicit operations above or read-only field-function/query
    * APIs.
+   *
+   * The scalar flux and source moments are GroupsetBlockedVector objects: one block per groupset in
+   * the flux-moment layout. Code that runs inside a groupset solve must fetch the groupset's block
+   * at use time, because a solver may redirect it for one operator application.
    */
   /// Read/write access to source moments vector.
-  std::vector<double>& GetQMomentsLocal();
+  GroupsetBlockedVector& GetQMomentsLocal();
 
   /// Read access to source moments vector.
-  const std::vector<double>& GetQMomentsLocal() const;
+  const GroupsetBlockedVector& GetQMomentsLocal() const;
 
   /// Read access to exterior src moments vector.
   const std::vector<double>& GetExtSrcMomentsLocal() const;
@@ -304,16 +321,16 @@ public:
   void RequireSourceMoments() const;
 
   /// Read/write access to last updated flux vector.
-  std::vector<double>& GetPhiOldLocal();
+  GroupsetBlockedVector& GetPhiOldLocal();
 
   /// Read access to last updated flux vector.
-  const std::vector<double>& GetPhiOldLocal() const;
+  const GroupsetBlockedVector& GetPhiOldLocal() const;
 
   /// Read/write access to newest updated flux vector.
-  std::vector<double>& GetPhiNewLocal();
+  GroupsetBlockedVector& GetPhiNewLocal();
 
   /// Read access to newest updated flux vector.
-  const std::vector<double>& GetPhiNewLocal() const;
+  const GroupsetBlockedVector& GetPhiNewLocal() const;
 
   /// Read/write access to newest updated precursors vector.
   std::vector<double>& GetPrecursorsNewLocal();
@@ -385,7 +402,7 @@ public:
   std::vector<double> MakeSourceMomentsFromPhi();
 
   /// Makes a source-moments vector from scattering and fission based on the given flux moments.
-  std::vector<double> MakeSourceMomentsFromPhi(const std::vector<double>& phi);
+  std::vector<double> MakeSourceMomentsFromPhi(std::span<const double> phi);
 
   /**
    * A method for post-processing an adjoint solution.
@@ -405,7 +422,7 @@ public:
    * each moment of degree ell by (-1)^ell. This converts adjoint flux moments between the solver
    * and the physical orientation, in either direction.
    */
-  void ReverseMomentDirections(std::vector<double>& phi) const;
+  void ReverseMomentDirections(std::span<double> phi) const;
 
   /**
    * Flag indicating if OpenSn is compiled with GPU-aware MPI.
@@ -566,8 +583,10 @@ protected:
   uint64_t local_node_count_ = 0;
   std::uint64_t global_node_count_ = 0;
 
-  std::vector<double> q_moments_local_, ext_src_moments_local_;
-  std::vector<double> phi_new_local_, phi_old_local_;
+  GroupsetBlockedVector q_moments_local_;
+  /// External source moments in the flux-moment layout; never redirected, so a plain vector.
+  std::vector<double> ext_src_moments_local_;
+  GroupsetBlockedVector phi_new_local_, phi_old_local_;
   std::vector<double> precursor_new_local_, precursor_old_local_;
 
   SetSourceFunction active_set_source_function_;

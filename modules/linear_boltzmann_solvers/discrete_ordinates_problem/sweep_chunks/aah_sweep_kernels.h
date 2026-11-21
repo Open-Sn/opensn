@@ -27,7 +27,8 @@ struct AAHSweepData
   const std::vector<UnitCellMatrices>& unit_cell_matrices;
   const std::vector<CellLBSView>& cell_transport_views;
   std::vector<CellOutflowView>& cell_outflow_views;
-  const std::vector<double>& source_moments;
+  /// Groupset block of the source moments.
+  std::span<const double> source_moments;
   const LBSGroupset& groupset;
   const BlockID2XSMap& xs;
   const unsigned int num_moments;
@@ -36,7 +37,8 @@ struct AAHSweepData
   const bool save_angular_flux;
   const size_t groupset_angle_group_stride;
   const size_t groupset_group_stride;
-  std::vector<double>& destination_phi;
+  /// Groupset block of the scalar flux moments.
+  std::span<double> destination_phi;
   std::vector<double>& destination_psi;
   bool surface_source_active;
   bool include_rhs_time_term;
@@ -270,7 +272,7 @@ AAH_Sweep_Generic(AAHSweepData& data, AngleSet& angle_set)
         const auto wn_d2m = d2m_row[m];
         for (size_t i = 0; i < cell_num_nodes; ++i)
         {
-          const size_t ir = cell_transport_view.MapDOF(i, m, gs_gi);
+          const size_t ir = cell_transport_view.MapBlockDOF(i, m, gs_gi);
           for (size_t gsg = 0; gsg < gs_size; ++gsg)
             data.destination_phi[ir + gsg] += wn_d2m * b[gsg](i);
         }

@@ -465,13 +465,13 @@ LBSProblem::GetGlobalNodeCount() const
   return global_node_count_;
 }
 
-std::vector<double>&
+GroupsetBlockedVector&
 LBSProblem::GetQMomentsLocal()
 {
   return q_moments_local_;
 }
 
-const std::vector<double>&
+const GroupsetBlockedVector&
 LBSProblem::GetQMomentsLocal() const
 {
   return q_moments_local_;
@@ -486,11 +486,11 @@ LBSProblem::GetExtSrcMomentsLocal() const
 void
 LBSProblem::SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments)
 {
-  if (not phi_old_local_.empty())
-    OpenSnLogicalErrorIf(ext_src_moments.size() != phi_old_local_.size(),
+  if (not phi_old_local_.Empty())
+    OpenSnLogicalErrorIf(ext_src_moments.size() != phi_old_local_.Size(),
                          "SetExtSrcMomentsFrom size mismatch. Provided size=" +
                            std::to_string(ext_src_moments.size()) +
-                           ", expected local DOFs=" + std::to_string(phi_old_local_.size()) + ".");
+                           ", expected local DOFs=" + std::to_string(phi_old_local_.Size()) + ".");
 
   if (ext_src_moments_local_.empty())
   {
@@ -509,7 +509,7 @@ LBSProblem::RequireSourceMoments() const
   if (not options_.use_src_moments)
     return;
   // A rank without cells has no moments either; reduce so that every rank reports the error.
-  const int local_missing = ext_src_moments_local_.size() != phi_old_local_.size() ? 1 : 0;
+  const int local_missing = ext_src_moments_local_.size() != phi_old_local_.Size() ? 1 : 0;
   int missing = 0;
   mpi_comm.all_reduce(local_missing, missing, mpi::op::max<int>());
   if (missing != 0)
@@ -519,25 +519,25 @@ LBSProblem::RequireSourceMoments() const
                   "ReadFluxMomentsAndMakeSourceMoments) before solving.");
 }
 
-std::vector<double>&
+GroupsetBlockedVector&
 LBSProblem::GetPhiOldLocal()
 {
   return phi_old_local_;
 }
 
-const std::vector<double>&
+const GroupsetBlockedVector&
 LBSProblem::GetPhiOldLocal() const
 {
   return phi_old_local_;
 }
 
-std::vector<double>&
+GroupsetBlockedVector&
 LBSProblem::GetPhiNewLocal()
 {
   return phi_new_local_;
 }
 
-const std::vector<double>&
+const GroupsetBlockedVector&
 LBSProblem::GetPhiNewLocal() const
 {
   return phi_new_local_;
@@ -1330,9 +1330,10 @@ LBSProblem::InitializeParrays()
   log.LogAllVerbose1() << "LBS Number of phi unknowns: " << local_unknown_count;
 
   // Size local vectors
-  q_moments_local_.assign(local_unknown_count, 0.0);
-  phi_old_local_.assign(local_unknown_count, 0.0);
-  phi_new_local_.assign(local_unknown_count, 0.0);
+  const auto block_sizes = flux_moment_layout_.GetBlockSizes();
+  q_moments_local_.Resize(block_sizes);
+  phi_old_local_.Resize(block_sizes);
+  phi_new_local_.Resize(block_sizes);
 
   // Setup precursor vector
   if (options_.use_precursors)
@@ -1476,16 +1477,16 @@ std::vector<double>
 LBSProblem::MakeSourceMomentsFromPhi()
 {
   if (not IsAdjointSolutionReoriented())
-    return MakeSourceMomentsFromPhi(phi_new_local_);
-  auto phi = phi_new_local_;
+    return MakeSourceMomentsFromPhi(phi_new_local_.Data());
+  std::vector<double> phi(phi_new_local_.Data().begin(), phi_new_local_.Data().end());
   ReverseMomentDirections(phi);
   return MakeSourceMomentsFromPhi(phi);
 }
 
 void
-LBSProblem::ReverseMomentDirections(std::vector<double>& phi) const
+LBSProblem::ReverseMomentDirections(std::span<double> phi) const
 {
-  OpenSnLogicalErrorIf(phi.size() != phi_new_local_.size(),
+  OpenSnLogicalErrorIf(phi.size() != flux_moment_layout_.GetNumLocalDOFs(),
                        GetName() + ": ReverseMomentDirections size mismatch.");
   for (const auto& groupset : groupsets_)
   {
@@ -1507,7 +1508,7 @@ LBSProblem::ReverseMomentDirections(std::vector<double>& phi) const
 }
 
 std::vector<double>
-LBSProblem::MakeSourceMomentsFromPhi(const std::vector<double>& phi)
+LBSProblem::MakeSourceMomentsFromPhi(std::span<const double> phi)
 {
   CALI_CXX_MARK_SCOPE("Source/MomentsFromPhi");
 
@@ -1521,11 +1522,13 @@ LBSProblem::MakeSourceMomentsFromPhi(const std::vector<double>& phi)
       ", expected local DOFs=" + std::to_string(num_local_dofs) + ".");
 
   std::vector<double> source_moments(num_local_dofs, 0.0);
+  const GroupsetBlockedSpan<double> q_blocks(source_moments, flux_moment_layout_);
+  const GroupsetBlockedSpan<const double> phi_blocks(phi, flux_moment_layout_);
   for (auto& groupset : groupsets_)
   {
     active_set_source_function_(groupset,
-                                source_moments,
-                                phi,
+                                q_blocks,
+                                phi_blocks,
                                 APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES |
                                   APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES |
                                   APPLY_PREVIOUS_PRECURSOR_SOURCES);
@@ -1542,22 +1545,20 @@ LBSProblem::~LBSProblem()
 void
 LBSProblem::ZeroPhi()
 {
-  std::fill(phi_old_local_.begin(), phi_old_local_.end(), 0.0);
-  std::fill(phi_new_local_.begin(), phi_new_local_.end(), 0.0);
+  phi_old_local_.Fill(0.0);
+  phi_new_local_.Fill(0.0);
 }
 
 void
 LBSProblem::CopyPhiNewToOld()
 {
-  assert(phi_old_local_.size() == phi_new_local_.size() && "Phi vectors size mismatch.");
-  phi_old_local_ = phi_new_local_;
+  phi_old_local_.Assign(phi_new_local_.Data());
 }
 
 void
-LBSProblem::SetPhiOldFrom(const std::vector<double>& phi_old)
+LBSProblem::SetPhiOldFrom(std::span<const double> phi_old)
 {
-  assert(phi_old.size() == phi_old_local_.size() && "SetPhiOldFrom size mismatch.");
-  phi_old_local_ = phi_old;
+  phi_old_local_.Assign(phi_old);
 }
 
 void
@@ -1569,45 +1570,39 @@ LBSProblem::SetPrecursorsOldFrom(const std::vector<double>& precursors_old)
 }
 
 void
-LBSProblem::SetPhiNewFrom(const std::vector<double>& phi_new)
+LBSProblem::SetPhiNewFrom(std::span<const double> phi_new)
 {
-  assert(phi_new.size() == phi_new_local_.size() && "SetPhiNewFrom size mismatch.");
-  phi_new_local_ = phi_new;
+  phi_new_local_.Assign(phi_new);
 }
 
 void
 LBSProblem::ScalePhiOld(double factor)
 {
-  for (auto& value : phi_old_local_)
-    value *= factor;
+  phi_old_local_.Scale(factor);
 }
 
 void
 LBSProblem::ScalePhiNew(double factor)
 {
-  for (auto& value : phi_new_local_)
-    value *= factor;
+  phi_new_local_.Scale(factor);
 }
 
 void
 LBSProblem::ZeroQMoments()
 {
-  assert(q_moments_local_.size() == phi_old_local_.size() && "Q moments/Phi size mismatch.");
-  std::fill(q_moments_local_.begin(), q_moments_local_.end(), 0.0);
+  q_moments_local_.Fill(0.0);
 }
 
 void
 LBSProblem::ScaleQMoments(double factor)
 {
-  for (auto& value : q_moments_local_)
-    value *= factor;
+  q_moments_local_.Scale(factor);
 }
 
 void
-LBSProblem::SetQMomentsFrom(const std::vector<double>& q_moments)
+LBSProblem::SetQMomentsFrom(std::span<const double> q_moments)
 {
-  assert(q_moments.size() == q_moments_local_.size() && "SetQMomentsFrom size mismatch.");
-  q_moments_local_ = q_moments;
+  q_moments_local_.Assign(q_moments);
 }
 
 void

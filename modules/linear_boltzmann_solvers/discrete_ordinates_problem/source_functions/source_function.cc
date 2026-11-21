@@ -17,8 +17,8 @@ SourceFunction::SourceFunction(const LBSProblem& lbs_problem) : lbs_problem_(lbs
 
 void
 SourceFunction::operator()(const LBSGroupset& groupset,
-                           std::vector<double>& q,
-                           const std::vector<double>& phi,
+                           const GroupsetBlockedSpan<double>& q,
+                           const GroupsetBlockedSpan<const double>& phi,
                            const SourceFlags source_flags)
 {
   if (source_flags.Empty())
@@ -47,6 +47,14 @@ SourceFunction::operator()(const LBSGroupset& groupset,
   const bool reads_phi = reads_ags_phi or apply_wgs_scatter_src_ or apply_wgs_fission_src_;
   const auto read_first = reads_ags_phi ? first_grp_ : gs_i_;
   const auto read_last = reads_ags_phi ? last_grp_ : gs_f_;
+
+  // The blocks are fetched now, not held, because a solver may redirect them between calls.
+  const auto& layout = lbs_problem_.GetFluxMomentLayout();
+  const auto q_block = q.Block(layout.GetGroupBlock(gs_i_));
+  phi_group_blocks_.assign(lbs_problem_.GetNumGroups(), {});
+  if (reads_phi)
+    for (auto gp = read_first; gp <= read_last; ++gp)
+      phi_group_blocks_[gp] = phi.Block(layout.GetGroupBlock(gp));
 
   const auto& cell_transport_views = lbs_problem_.GetCellTransportViews();
 
@@ -96,9 +104,10 @@ SourceFunction::operator()(const LBSGroupset& groupset,
         const auto ell = m_to_ell_em_map[m].ell;
         // Groups of the groupset are contiguous at this node and moment.
         const auto uk_map = transport_view.MapDOF(i, m, gs_i_);
+        const auto q_map = transport_view.MapBlockDOF(i, m, gs_i_);
         if (reads_phi)
           for (auto gp = read_first; gp <= read_last; ++gp)
-            phi_node_moment_[gp] = phi[transport_view.MapDOF(i, m, gp)];
+            phi_node_moment_[gp] = phi_group_blocks_[gp][transport_view.MapBlockDOF(i, m, gp)];
         const double* phi_im = phi_node_moment_.data();
 
         // Declare moment src
@@ -157,7 +166,7 @@ SourceFunction::operator()(const LBSGroupset& groupset,
           }
 
           // Add to destination vector
-          q[uk_map + (g - gs_i_)] += rhs;
+          q_block[q_map + (g - gs_i_)] += rhs;
 
         } // for g
       } // for m
@@ -202,8 +211,8 @@ SourceFunction::DelayedFission(const PrecursorList& precursors,
 
 void
 SourceFunction::AddPointSources(const LBSGroupset& groupset,
-                                std::vector<double>& q,
-                                const std::vector<double>& /*unused*/,
+                                const GroupsetBlockedSpan<double>& q,
+                                const GroupsetBlockedSpan<const double>& /*unused*/,
                                 const SourceFlags source_flags)
 {
   const bool apply_fixed_src = (source_flags & APPLY_FIXED_SOURCES);
@@ -213,6 +222,7 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
   const auto gs_i = groupset.first_group;
   const auto gs_f = groupset.last_group;
   const double source_time = lbs_problem_.GetTime();
+  const auto q_block = q.Block(lbs_problem_.GetFluxMomentLayout().GetGroupBlock(gs_i));
 
   // Apply point sources
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)
@@ -232,9 +242,9 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
         for (int i = 0; i < transport_view.GetNumNodes(); ++i)
         {
-          const auto uk_map = transport_view.MapDOF(i, 0, gs_i);
+          const auto uk_map = transport_view.MapBlockDOF(i, 0, gs_i);
           for (auto g = gs_i; g <= gs_f; ++g)
-            q[uk_map + (g - gs_i)] += strength[g] * node_weights(i) * volume_weight;
+            q_block[uk_map + (g - gs_i)] += strength[g] * node_weights(i) * volume_weight;
         } // for node i
       } // for subscriber
     } // for point source
@@ -243,8 +253,8 @@ SourceFunction::AddPointSources(const LBSGroupset& groupset,
 
 void
 SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
-                                     std::vector<double>& q,
-                                     const std::vector<double>& phi,
+                                     const GroupsetBlockedSpan<double>& q,
+                                     const GroupsetBlockedSpan<const double>& phi,
                                      const SourceFlags source_flags)
 {
   const bool apply_fixed_src = source_flags & APPLY_FIXED_SOURCES;
@@ -257,6 +267,7 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
   const auto gs_i = groupset.first_group;
   const auto gs_f = groupset.last_group;
   const double source_time = lbs_problem_.GetTime();
+  const auto q_block = q.Block(lbs_problem_.GetFluxMomentLayout().GetGroupBlock(gs_i));
 
   // Go through each volumetric source, and its subscribing cells
   if (not lbs_problem_.GetOptions().use_src_moments and apply_fixed_src)
@@ -280,9 +291,9 @@ SourceFunction::AddVolumetricSources(const LBSGroupset& groupset,
           const auto src = volumetric_source->Evaluate(cell, nodes[i], num_groups, source_time);
 
           // Contribute to the source moments
-          const auto dof_map = transport_view.MapDOF(i, 0, gs_i);
+          const auto dof_map = transport_view.MapBlockDOF(i, 0, gs_i);
           for (auto g = gs_i; g <= gs_f; ++g)
-            q[dof_map + (g - gs_i)] += src[g];
+            q_block[dof_map + (g - gs_i)] += src[g];
         } // for node i
       } // for subscriber
     } // for volumetric source

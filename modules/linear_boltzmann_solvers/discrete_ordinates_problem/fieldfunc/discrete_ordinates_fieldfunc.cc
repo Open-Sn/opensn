@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <sstream>
 
 namespace opensn
@@ -21,7 +22,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
                         const Cell& cell,
                         const CellLBSView& transport_view,
                         const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                        const std::vector<double>& phi_new_local,
+                        std::span<const double> phi_new_local,
                         const unsigned int num_groups)
 {
   const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -187,6 +188,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
       not is_csda_charge_deposition and not is_csda_charge_deposition_term and
       not is_csda_charge_deposition_term_cellavg)
     return std::nullopt;
+  const auto phi_new_local = phi_new_local_.Data();
 
   OpenSnInvalidArgumentIf(not options_.csda_enabled,
                           GetName() + ": Field function \"" + xs_name +
@@ -279,7 +281,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
           const auto imap = transport_view.MapDOF(i, 0, g);
           const double slowing_down_density =
             stopping_power[g] *
-            (phi_new_local_[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
+            (phi_new_local[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
           nodal_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
         data_vector_local[sdm.MapDOFLocal(*cell, i)] = nodal_value;
@@ -288,7 +290,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     }
 
     const auto phi_cell_avg = ComputeCellAveragePhi0g(
-      sdm, *cell, transport_view, unit_cell_matrices, phi_new_local_, num_groups_);
+      sdm, *cell, transport_view, unit_cell_matrices, phi_new_local, num_groups_);
 
     // The CSDA terminal correction below is fundamentally a cell-averaged quantity: it is
     // built entirely from cell-averaged flux and psi_E moments, so it is constant across a cell.

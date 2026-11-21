@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "framework/logging/log.h"
 #include <petscsnes.h>
+#include <utility>
 
 namespace opensn
 {
@@ -27,8 +28,12 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& front_gs = groupsets.front();
 
   auto& q_moments_local = do_problem.GetQMomentsLocal();
-  auto& phi_old_local = do_problem.GetPhiOldLocal();
-  auto phi_temp = phi_old_local;
+  const auto phi_old_local = std::as_const(do_problem.GetPhiOldLocal()).Data();
+  std::vector<double> phi_temp(phi_old_local.begin(), phi_old_local.end());
+  const auto& layout = do_problem.GetFluxMomentLayout();
+  const auto front_block = do_problem.GetFluxBlock(front_gs);
+  // The front groupset's block of phi_temp.
+  const auto phi_temp_block = GroupsetBlockedSpan<double>(phi_temp, layout).Block(front_block);
 
   const auto& phi_l = nl_context_ptr->phi_l;
   const auto& phi_lph_i = nl_context_ptr->phi_lph_i;
@@ -37,55 +42,70 @@ NLKEigenAccResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   const auto& Sf = nl_context_ptr->Sf;
 
   // Lambdas
-  auto SetLBSFissionSource = [&active_set_source_function, &front_gs](
-                               const std::vector<double>& input, std::vector<double>& output)
+  auto SetLBSFissionSource = [&active_set_source_function, &front_gs, &layout](
+                               const std::vector<double>& input, GroupsetBlockedVector& output)
   {
-    Set(output, 0.0);
-    active_set_source_function(
-      front_gs, output, input, APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    output.Fill(0.0);
+    active_set_source_function(front_gs,
+                               output.Blocks(),
+                               GroupsetBlockedSpan<const double>(input, layout),
+                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
   };
 
   auto SetLBSScatterSource =
-    [&active_set_source_function,
-     &front_gs](const std::vector<double>& input, std::vector<double>& output, bool suppress_wgs)
+    [&active_set_source_function, &front_gs, &layout](
+      const std::vector<double>& input, GroupsetBlockedVector& output, bool suppress_wgs)
   {
-    Set(output, 0.0);
+    output.Fill(0.0);
     SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
     if (suppress_wgs)
       source_flags |= SUPPRESS_WG_SCATTER;
-    active_set_source_function(front_gs, output, input, source_flags);
+    active_set_source_function(
+      front_gs, output.Blocks(), GroupsetBlockedSpan<const double>(input, layout), source_flags);
   };
 
-  auto SetPhi0FissionSource =
-    [&front_gs, &do_problem, &phi_temp, &SetLBSFissionSource, &q_moments_local](
-      const std::vector<double>& input)
+  auto SetPhi0FissionSource = [&front_gs,
+                               &do_problem,
+                               &phi_temp,
+                               &phi_temp_block,
+                               front_block,
+                               &SetLBSFissionSource,
+                               &q_moments_local](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp_block);
 
     SetLBSFissionSource(phi_temp, q_moments_local);
 
-    auto output = WGDSA::WGSCopyOnlyPhi0(do_problem, front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(
+      do_problem, front_gs, std::as_const(q_moments_local).Block(front_block));
     return output;
   };
 
   auto SetPhi0ScatterSource =
-    [&front_gs, &do_problem, &phi_temp, &SetLBSScatterSource, &q_moments_local](
-      const std::vector<double>& input, bool suppress_wgs)
+    [&front_gs,
+     &do_problem,
+     &phi_temp,
+     &phi_temp_block,
+     front_block,
+     &SetLBSScatterSource,
+     &q_moments_local](const std::vector<double>& input, bool suppress_wgs)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp_block);
 
     SetLBSScatterSource(phi_temp, q_moments_local, suppress_wgs);
 
-    auto output = WGDSA::WGSCopyOnlyPhi0(do_problem, front_gs, q_moments_local);
+    auto output = WGDSA::WGSCopyOnlyPhi0(
+      do_problem, front_gs, std::as_const(q_moments_local).Block(front_block));
     return output;
   };
 
-  auto Phi0FissionProdL2Norm = [&front_gs, &do_problem, &phi_temp](const std::vector<double>& input)
+  auto Phi0FissionProdL2Norm =
+    [&front_gs, &do_problem, &phi_temp, &phi_temp_block](const std::vector<double>& input)
   {
     Set(phi_temp, 0.0);
-    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp);
+    WGDSA::GSProjectBackPhi0(do_problem, front_gs, input, phi_temp_block);
 
     return ComputeFissionProduction(do_problem, phi_temp);
   };

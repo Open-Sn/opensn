@@ -4,6 +4,7 @@
 #pragma once
 
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
 #include "framework/mesh/mesh/mesh.h"
 #include <petscksp.h>
 #include <cstdint>
@@ -59,11 +60,11 @@ public:
                                                          Vec src,
                                                          PhiSTLOption dest);
 
-  /// Copies one groupset scope from source STL vector to destination STL vector.
+  /// Copies the block of one groupset from a source to a destination flux-moment vector.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
                                             const LBSGroupset& groupset,
-                                            const std::vector<double>& src,
-                                            std::vector<double>& dest);
+                                            const GroupsetBlockedSpan<const double>& src,
+                                            const GroupsetBlockedSpan<double>& dest);
 
   /// Copies one groupset scope between primary STL vectors selected by phi options.
   static void GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
@@ -85,8 +86,9 @@ public:
 
 private:
   /**
-   * Calls `func(idx, mapped_idx)` for groups [gsi, gsi + gss) at every local node and moment. The
-   * groups must belong to one groupset, whose groups are stored contiguously.
+   * Calls `func(idx, mapped_idx)` for groups [gsi, gsi + gss) at every local node and moment, with
+   * `mapped_idx` relative to the groupset's block. The groups must belong to one groupset, whose
+   * groups are stored contiguously.
    */
   template <typename Functor>
   static int64_t

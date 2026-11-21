@@ -14,6 +14,7 @@
 #include <petscksp.h>
 #include "caliper/cali.h"
 #include <memory>
+#include <utility>
 
 namespace opensn
 {
@@ -182,7 +183,8 @@ WGSLinearSolver::SetRHS()
   auto& do_problem = gs_context_ptr->do_problem;
 
   // SetSource for RHS
-  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
+  const auto q_moments = std::as_const(do_problem.GetQMomentsLocal()).Data();
+  saved_q_moments_local_.assign(q_moments.begin(), q_moments.end());
 
   const bool single_richardson =
     groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
@@ -193,8 +195,10 @@ WGSLinearSolver::SetRHS()
     const auto scope = gs_context_ptr->GetRHSSourceScope() | ZERO_INCOMING_DELAYED_PSI;
     {
       CALI_CXX_MARK_SCOPE("Source");
-      gs_context_ptr->set_source_function(
-        groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+      gs_context_ptr->set_source_function(groupset,
+                                          do_problem.GetQMomentsLocal().Blocks(),
+                                          do_problem.GetPhiOldLocal().ConstBlocks(),
+                                          scope);
     }
 
     // Enable RHS time (tau*psi^n)
@@ -227,8 +231,10 @@ WGSLinearSolver::SetRHS()
     const auto scope = gs_context_ptr->GetRHSSourceScope() | gs_context_ptr->GetLHSSourceScope();
     {
       CALI_CXX_MARK_SCOPE("Source");
-      gs_context_ptr->set_source_function(
-        groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+      gs_context_ptr->set_source_function(groupset,
+                                          do_problem.GetQMomentsLocal().Blocks(),
+                                          do_problem.GetPhiOldLocal().ConstBlocks(),
+                                          scope);
     }
 
     // Apply transport operator

@@ -114,7 +114,7 @@ bool
 WriteCellwiseDataset(hid_t file_id,
                      const std::string& dataset_name,
                      const LBSProblem& problem,
-                     const std::vector<double>& source,
+                     std::span<const double> source,
                      CellwiseField field)
 {
   const auto& grid = problem.GetGrid();
@@ -187,7 +187,7 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
                     bool same_partition,
                     const std::string& dataset_name,
                     LBSProblem& problem,
-                    std::vector<double>& destination,
+                    std::span<double> destination,
                     CellwiseField field)
 {
   const auto& grid = problem.GetGrid();
@@ -282,7 +282,10 @@ ReadCellwiseDataset(const std::filesystem::path& current_rank_path,
             }
             else
               dof = discretization.MapDOFLocal(cell, file_to_local_node[i]) * stride + component;
-            destination.at(dof) = values.at(value_offset + i * stride + component);
+            OpenSnLogicalErrorIf(dof >= destination.size(),
+                                 "Restart dataset `" + dataset_name +
+                                   "` maps a value outside the local vector.");
+            destination[dof] = values.at(value_offset + i * stride + component);
           }
         found[cell.local_id] = true;
       }
@@ -420,7 +423,7 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
     OpenSnInvalidArgumentIf(file.Id() < 0,
                             GetName() + ": failed to open restart file `" + fname.string() + "`.");
 
-    const size_t expected_phi_size = phi_old_local_.size();
+    const size_t expected_phi_size = phi_old_local_.Size();
     const size_t expected_precursor_size = precursor_new_local_.size();
     if (H5Aexists(file.Id(), "mpi_size") > 0)
     {
@@ -447,17 +450,17 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
       ReadSizedDoubleVector(file.Id(), "phi_old", legacy_phi, expected_phi_size, GetName());
     success &= read_phi_old;
     if (read_phi_old)
-      phi_old_local_ = flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi);
+      phi_old_local_.Assign(flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi));
     if (H5Has(file.Id(), "phi_new"))
     {
       const bool read_phi_new =
         ReadSizedDoubleVector(file.Id(), "phi_new", legacy_phi, expected_phi_size, GetName());
       success &= read_phi_new;
       if (read_phi_new)
-        phi_new_local_ = flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi);
+        phi_new_local_.Assign(flux_moment_layout_.FromNodeMomentGroupOrder(legacy_phi));
     }
     else
-      phi_new_local_ = phi_old_local_;
+      phi_new_local_.Assign(phi_old_local_.Data());
 
     if (H5Has(file.Id(), "precursors_new"))
       success &= ReadPrecursorVector(file.Id(),
@@ -528,18 +531,23 @@ LBSProblem::ReadRestartData(const RestartDataHook& extra_reader,
       same_partition = false;
     opensn::mpi_comm.all_reduce(same_partition, mpi::op::logical_and<bool>());
 
-    success &= ReadCellwiseDataset(
-      fname, writer_mpi_size, same_partition, "phi_old", *this, phi_old_local_, CellwiseField::PHI);
+    success &= ReadCellwiseDataset(fname,
+                                   writer_mpi_size,
+                                   same_partition,
+                                   "phi_old",
+                                   *this,
+                                   phi_old_local_.Data(),
+                                   CellwiseField::PHI);
     if (H5Has(header_file.Id(), "phi_new"))
       success &= ReadCellwiseDataset(fname,
                                      writer_mpi_size,
                                      same_partition,
                                      "phi_new",
                                      *this,
-                                     phi_new_local_,
+                                     phi_new_local_.Data(),
                                      CellwiseField::PHI);
     else
-      phi_new_local_ = phi_old_local_;
+      phi_new_local_.Assign(phi_old_local_.Data());
 
     if (H5Has(header_file.Id(), "precursors_new"))
       success &= ReadCellwiseDataset(fname,
@@ -615,9 +623,9 @@ LBSProblem::WriteRestartData(const RestartDataHook& extra_writer)
     success &= H5CreateAttribute<bool>(file.Id(), "adjoint", GetOptions().adjoint);
     success &= WriteRestartMeshData(file.Id(), *this);
     success &=
-      WriteCellwiseDataset(file.Id(), "phi_old", *this, GetPhiOldLocal(), CellwiseField::PHI);
+      WriteCellwiseDataset(file.Id(), "phi_old", *this, phi_old_local_.Data(), CellwiseField::PHI);
     success &=
-      WriteCellwiseDataset(file.Id(), "phi_new", *this, GetPhiNewLocal(), CellwiseField::PHI);
+      WriteCellwiseDataset(file.Id(), "phi_new", *this, phi_new_local_.Data(), CellwiseField::PHI);
 
     const auto& precursors_new_local = GetPrecursorsNewLocal();
     if (not precursors_new_local.empty())

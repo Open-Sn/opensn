@@ -12,6 +12,7 @@
 #include <memory>
 #include <string>
 #include <tuple>
+#include <span>
 #include <vector>
 
 namespace opensn
@@ -117,8 +118,8 @@ private:
                                const CMFDCoarseCell& coarse_cell,
                                unsigned int row_coarse_group,
                                unsigned int col_coarse_group) const;
-  FluxUpdateDiagnostics AnalyzeFluxUpdate(const std::vector<double>& phi, double k_eff) const;
-  double ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
+  FluxUpdateDiagnostics AnalyzeFluxUpdate(std::span<const double> phi, double k_eff) const;
+  double ApplyFluxCorrectionWithDamping(std::span<const double> transport_phi_new,
                                         const std::vector<double>& coarse_phi,
                                         double old_fission_production,
                                         double transport_k_eff,

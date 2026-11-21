@@ -125,10 +125,22 @@ SCDSAAcceleration::Initialize()
   log.Log() << "Done Assembling A and b";
 }
 
+namespace
+{
+
+/// Replaces the contents of `destination` with `source`.
+void
+AssignFrom(std::vector<double>& destination, std::span<const double> source)
+{
+  destination.assign(source.begin(), source.end());
+}
+
+} // namespace
+
 void
 SCDSAAcceleration::PreExecute()
 {
-  phi_temp_ = phi_old_local_;
+  AssignFrom(phi_temp_, std::as_const(phi_old_local_).Data());
 
   // If using multiple sweeps, the algorithm requires a delta-phi between two
   // successive iterations. This is not possible to obtain with the standard solve
@@ -140,12 +152,12 @@ SCDSAAcceleration::PreExecute()
 void
 SCDSAAcceleration::PrePowerIteration()
 {
-  Sf_ell_ = q_moments_local_;
+  AssignFrom(Sf_ell_, std::as_const(q_moments_local_).Data());
   CopyOnlyPhi0(Sf_ell_, Sf0_ell_);
 
   // Init old flux storage. If using a single sweep, set it to the existing flux
   if (!extra_sweep_)
-    phi_ell_ = phi_old_local_;
+    AssignFrom(phi_ell_, std::as_const(phi_old_local_).Data());
 }
 
 double
@@ -164,30 +176,30 @@ SCDSAAcceleration::PostPowerIteration()
   if (extra_sweep_)
   {
     // Set the old flux to the flux before the last sweep
-    phi_ell_ = phi_new_local_;
+    AssignFrom(phi_ell_, std::as_const(phi_new_local_).Data());
 
     // Do an extra sweep
-    q_moments_local_ = Sf_ell_;
-    solver_->SetLBSScatterSource(phi_old_local_, true);
+    q_moments_local_.Assign(Sf_ell_);
+    solver_->SetLBSScatterSource(std::as_const(phi_old_local_).Data(), true);
     front_wgs_context_->ApplyInverseTransportOperator(SourceFlags());
   }
 
   // Store the intermediate flux. The transport flux stays discontinuous: the low-order solution is
   // only ever added to it as a correction, so that a continuous (pwlc) diffusion discretization
   // does not change the transport fixed point.
-  phi_star_ = phi_new_local_;
-  const auto CorrectedFlux = [this](const std::vector<double>& epsilon, std::vector<double>& output)
+  AssignFrom(phi_star_, std::as_const(phi_new_local_).Data());
+  const auto CorrectedFlux = [this](const std::vector<double>& epsilon)
   {
     std::vector<double> correction(phi_star_.size(), 0.0);
     ProjectBackPhi0(epsilon, correction);
-    output = phi_star_ + correction;
+    return phi_star_ + correction;
   };
 
   // Power Iteration Acceleration
   solver_->SetLBSScatterSource(phi_star_ - phi_ell_, false);
-  CopyOnlyPhi0(q_moments_local_, Ss0_res_);
+  CopyOnlyPhi0(std::as_const(q_moments_local_).Data(), Ss0_res_);
 
-  double production_k = ComputeFissionProduction(do_problem_, phi_new_local_);
+  double production_k = ComputeFissionProduction(do_problem_, phi_new_local_.ConstBlocks());
 
   for (const auto& vec : {&epsilon_k_, &epsilon_kp1_})
   {
@@ -200,11 +212,11 @@ SCDSAAcceleration::PostPowerIteration()
 
   for (int k = 0; k < pi_max_its_; ++k)
   {
-    CorrectedFlux(epsilon_k_, phi_temp_);
+    phi_temp_ = CorrectedFlux(epsilon_k_);
     solver_->SetLBSFissionSource(phi_temp_, false);
     do_problem_.ScaleQMoments(1.0 / lambda_k);
 
-    CopyOnlyPhi0(q_moments_local_, Sf0_aux_);
+    CopyOnlyPhi0(std::as_const(q_moments_local_).Data(), Sf0_aux_);
 
     // Inner iterations seem extremely wasteful. Set this to 1 iteration here for further
     // investigation.
@@ -212,7 +224,7 @@ SCDSAAcceleration::PostPowerIteration()
     {
       SetLBSScatterSourcePhi0(epsilon_k_, false, true);
 
-      CopyOnlyPhi0(q_moments_local_, Ss0_);
+      CopyOnlyPhi0(std::as_const(q_moments_local_).Data(), Ss0_);
 
       // Solve the diffusion system
       diffusion_solver_->Assemble_b(Ss0_ + Sf0_aux_ + Ss0_res_ - Sf0_ell_);
@@ -221,9 +233,10 @@ SCDSAAcceleration::PostPowerIteration()
       epsilon_k_ = epsilon_kp1_;
     }
 
-    CorrectedFlux(epsilon_kp1_, phi_old_local_);
+    phi_old_local_.Assign(CorrectedFlux(epsilon_kp1_));
 
-    const double production_kp1 = ComputeFissionProduction(do_problem_, phi_old_local_);
+    const double production_kp1 =
+      ComputeFissionProduction(do_problem_, phi_old_local_.ConstBlocks());
 
     lambda_kp1 = production_kp1 / (production_k / lambda_k);
 
@@ -249,7 +262,7 @@ SCDSAAcceleration::PostPowerIteration()
     production_k = production_kp1;
   } // acceleration loop
 
-  CorrectedFlux(epsilon_kp1_, phi_new_local_);
+  phi_new_local_.Assign(CorrectedFlux(epsilon_kp1_));
   LBSVecOps::GSScopedCopyPrimarySTLvectors(
     do_problem_, front_gs_, PhiSTLOption::PHI_NEW, PhiSTLOption::PHI_OLD);
 

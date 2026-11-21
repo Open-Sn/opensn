@@ -297,7 +297,7 @@ CBC_Sweep_Generic(SweepChunkT& sweep_chunk, AngleSet& angle_set)
       const auto wn_d2m = d2m_row[m];
       for (std::size_t i = 0; i < cell_num_nodes; ++i)
       {
-        const auto ir = cell_transport_view.MapDOF(i, m, gs_gi);
+        const auto ir = cell_transport_view.MapBlockDOF(i, m, gs_gi);
         for (std::size_t gsg = 0; gsg < gs_size; ++gsg)
           sweep_chunk.destination_phi_[ir + gsg] += wn_d2m * b[gsg](i);
       }

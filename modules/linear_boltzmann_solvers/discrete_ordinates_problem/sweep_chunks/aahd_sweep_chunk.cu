@@ -29,6 +29,7 @@ AAHDSweepChunk::AAHDSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& g
                problem.GetCellTransportViews(),
                problem.GetCellOutflowViews(),
                problem.GetQMomentsLocal(),
+               problem.GetFluxMomentLayout().GetGroupBlock(groupset.first_group),
                groupset,
                problem.GetBlockID2XSMap(),
                problem.GetNumMoments(),

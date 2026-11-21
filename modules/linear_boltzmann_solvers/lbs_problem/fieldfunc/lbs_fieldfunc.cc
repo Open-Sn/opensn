@@ -140,6 +140,7 @@ LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsig
 {
   const auto& sdm = *discretization_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
+  const auto phi_new_local = phi_new_local_.Data();
 
   for (const auto& cell : grid_->GetLocalCells())
   {
@@ -151,7 +152,7 @@ LBSProblem::ComputeScalarFluxFieldFunctionData(const unsigned int g, const unsig
     {
       const auto imapA = transport_view.MapDOF(i, m, g);
       const auto imapB = sdm.MapDOFLocal(*cell, i);
-      data_vector_local[imapB] = phi_new_local_[imapA];
+      data_vector_local[imapB] = phi_new_local[imapA];
     }
   }
 
@@ -188,6 +189,7 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 {
   const auto& sdm = *discretization_;
   std::vector<double> data_vector_local(local_node_count_, 0.0);
+  const auto phi_new_local = phi_new_local_.Data();
 
   for (const auto& cell : grid_->GetLocalCells())
   {
@@ -210,7 +212,7 @@ LBSProblem::ComputeXSFieldFunctionData(const std::string& xs_name) const
 
       double nodal_value = 0.0;
       for (unsigned int g = 0; g < num_groups_; ++g)
-        nodal_value += coeffs->at(g) * phi_new_local_[transport_view.MapDOF(i, 0, g)];
+        nodal_value += coeffs->at(g) * phi_new_local[transport_view.MapDOF(i, 0, g)];
 
       data_vector_local[imapA] = nodal_value;
     }
@@ -225,6 +227,7 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
   const auto& sdm = *discretization_;
   std::vector<double> data_vector_power_local(local_node_count_, 0.0);
   local_total_power = 0.0;
+  const auto phi_new_local = phi_new_local_.Data();
 
   for (const auto& cell : grid_->GetLocalCells())
   {
@@ -247,7 +250,7 @@ LBSProblem::ComputePowerFieldFunctionData(double& local_total_power) const
       {
         const double sigma_fg = xs->GetSigmaFission()[g];
         const double kappa_g = options_.power_default_kappa;
-        nodal_power += kappa_g * sigma_fg * phi_new_local_[transport_view.MapDOF(i, 0, g)];
+        nodal_power += kappa_g * sigma_fg * phi_new_local[transport_view.MapDOF(i, 0, g)];
       }
 
       data_vector_power_local[imapA] = nodal_power;

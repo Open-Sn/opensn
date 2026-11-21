@@ -30,15 +30,16 @@ ApplyDSAPreconditioner(WGSContext& gs_context, Vec phi_input, Vec pc_output)
   LBSGroupset& groupset = gs_context.groupset;
 
   // Copy PETSc vector to STL
-  auto& phi_new_local = do_problem.GetPhiNewLocal();
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
     do_problem, groupset, phi_input, PhiSTLOption::PHI_NEW);
+  // The groupset's block, fetched at use because a solver may redirect it.
+  const auto phi_new_local = do_problem.GetPhiNewLocal().Block(do_problem.GetFluxBlock(groupset));
 
   const bool correct_delayed_psi =
     groupset.angle_agg and groupset.angle_agg->GetNumDelayedAngularDOFs().second > 0;
   std::vector<double> delta_phi;
   if (correct_delayed_psi)
-    delta_phi = phi_new_local;
+    delta_phi.assign(phi_new_local.begin(), phi_new_local.end());
 
   // Apply WGDSA
   if (groupset.apply_wgdsa)

@@ -52,7 +52,8 @@ struct Arguments
     : boundary(problem.GetBoundaryCarrier()->GetDevicePtr(groupset.id)),
       directions(angle_set.GetDeviceAngleIndices()),
       angleset_size(angle_set.GetNumAngles()),
-      phi_groupset_base(problem.GetFluxMomentLayout().MapDOF(0, 0, groupset.first_group)),
+      phi_groupset_base(problem.GetFluxMomentLayout().GetBlockOffset(
+        problem.GetFluxMomentLayout().GetGroupBlock(groupset.first_group))),
       phi_moment_stride(problem.GetFluxMomentLayout().GetMomentStride(groupset.first_group)),
       groupset_start(groupset.first_group),
       groupset_size(groupset.GetNumGroups()),

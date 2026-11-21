@@ -25,8 +25,9 @@ LBSSolverIO::WriteFluxMoments(
   FluxSolutionRole role,
   AdjointFluxOrientation orientation)
 {
-  std::vector<double>& src =
-    opt_src.has_value() ? opt_src.value().get() : lbs_problem.GetPhiNewLocal();
+  const std::span<const double> src = opt_src.has_value()
+                                        ? std::span<const double>(opt_src.value().get())
+                                        : std::as_const(lbs_problem).GetPhiNewLocal().Data();
 
   if (role == FluxSolutionRole::UNSPECIFIED and not opt_src.has_value())
     role = lbs_problem.IsAdjoint() ? FluxSolutionRole::ADJOINT : FluxSolutionRole::FORWARD;
@@ -213,9 +214,6 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
   const auto file_name =
     file_base + (single_file ? "" : std::to_string(opensn::mpi_comm.rank())) + ".h5";
 
-  std::vector<double>& dest =
-    opt_dest.has_value() ? opt_dest.value().get() : lbs_problem.GetPhiOldLocal();
-
   log.Log() << "Reading flux moments from " << file_base;
 
   // Each rank validates its own file; a failure on any rank is raised on every rank. The result is
@@ -331,8 +329,12 @@ LBSSolverIO::ReadFluxMoments(LBSProblem& lbs_problem,
     });
 
   if (not opt_dest.has_value())
+  {
     lbs_problem.RestoreAdjointSolutionOrientation();
-  dest = std::move(result);
+    lbs_problem.GetPhiOldLocal().Assign(result);
+  }
+  else
+    opt_dest.value().get() = std::move(result);
   return recorded_orientation;
 }
 

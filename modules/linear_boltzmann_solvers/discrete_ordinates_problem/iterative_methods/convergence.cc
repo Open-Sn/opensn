@@ -12,6 +12,8 @@
 #include <algorithm>
 #include <cmath>
 #include <numeric>
+#include <span>
+#include <utility>
 
 namespace opensn
 {
@@ -45,9 +47,10 @@ ComputePointwisePhiChange(
     std::iota(groupset_ids.begin(), groupset_ids.end(), 0);
   }
 
-  const auto& phi_new = lbs_problem.GetPhiNewLocal();
-  const std::vector<double>& phi_old =
-    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
+  const auto phi_new = std::as_const(lbs_problem).GetPhiNewLocal().Data();
+  const std::span<const double> phi_old = opt_phi_old.has_value()
+                                            ? std::span<const double>(opt_phi_old.value().get())
+                                            : std::as_const(lbs_problem).GetPhiOldLocal().Data();
 
   auto grid_ptr = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
@@ -109,8 +112,8 @@ ComputePointwisePsiChange(DiscreteOrdinatesProblem& do_problem,
     const auto& grid = *do_problem.GetGrid();
     const auto& sdm = do_problem.GetSpatialDiscretization();
     const auto& transport_views = do_problem.GetCellTransportViews();
-    const auto& phi_new = do_problem.GetPhiNewLocal();
-    const auto& phi_old = do_problem.GetPhiOldLocal();
+    const auto phi_new = std::as_const(do_problem).GetPhiNewLocal().Data();
+    const auto phi_old = std::as_const(do_problem).GetPhiOldLocal().Data();
     const auto first_group = groupset.first_group;
 
     // A lagged angular flux that is negligible next to the scalar flux where it is read, such as a
@@ -157,9 +160,10 @@ ComputeL2PhiChange(LBSProblem& lbs_problem,
                    std::optional<const std::reference_wrapper<std::vector<double>>> opt_phi_old)
 {
   double norm = 0.0;
-  const auto& phi_new = lbs_problem.GetPhiNewLocal();
-  const std::vector<double>& phi_old =
-    opt_phi_old.has_value() ? opt_phi_old.value().get() : lbs_problem.GetPhiOldLocal();
+  const auto phi_new = std::as_const(lbs_problem).GetPhiNewLocal().Data();
+  const std::span<const double> phi_old = opt_phi_old.has_value()
+                                            ? std::span<const double>(opt_phi_old.value().get())
+                                            : std::as_const(lbs_problem).GetPhiOldLocal().Data();
 
   for (auto i = 0; i < phi_new.size(); ++i)
   {

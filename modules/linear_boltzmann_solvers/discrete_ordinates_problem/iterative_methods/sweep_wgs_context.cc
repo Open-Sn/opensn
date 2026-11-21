@@ -73,8 +73,10 @@ SweepWGSContext::RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term,
     scope |= ZERO_INCOMING_DELAYED_PSI;
   {
     CALI_CXX_MARK_SCOPE("Source");
-    set_source_function(
-      groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+    set_source_function(groupset,
+                        do_problem.GetQMomentsLocal().Blocks(),
+                        do_problem.GetPhiOldLocal().ConstBlocks(),
+                        scope);
   }
 
   sweep_chunk->IncludeRHSTimeTerm(include_rhs_time_term);

@@ -10,8 +10,11 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
 #include <algorithm>
 #include <functional>
+#include <span>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -24,14 +27,20 @@ public:
   /// Convenient typdef for the moment call back function. See moment_callbacks.
   using MomentCallbackFunc = std::function<void(SweepChunk* sweeper, AngleSet* angle_set)>;
 
-  SweepChunk(std::vector<double>& destination_phi,
+  /**
+   * `destination_phi` and `source_moments` are the problem's flux-moment vectors, and
+   * `flux_block` is the groupset's block in them. The chunk reads and writes only that block, and
+   * fetches it with FetchFluxBlocks at the start of each sweep, because a solver may redirect it.
+   */
+  SweepChunk(GroupsetBlockedVector& destination_phi,
              std::vector<double>& destination_psi,
              const std::shared_ptr<Mesh>& grid,
              const SpatialDiscretization& discretization,
              const std::vector<UnitCellMatrices>& unit_cell_matrices,
              const std::vector<CellLBSView>& cell_transport_views,
              std::vector<CellOutflowView>& cell_outflow_views,
-             const std::vector<double>& source_moments,
+             const GroupsetBlockedVector& source_moments,
+             std::size_t flux_block,
              const LBSGroupset& groupset,
              const BlockID2XSMap& xs,
              unsigned int num_moments,
@@ -42,7 +51,7 @@ public:
       unit_cell_matrices_(unit_cell_matrices),
       cell_transport_views_(cell_transport_views),
       cell_outflow_views_(cell_outflow_views),
-      source_moments_(source_moments),
+      source_moments_owner_(source_moments),
       groupset_(groupset),
       xs_(xs),
       num_moments_(num_moments),
@@ -51,14 +60,29 @@ public:
       groupset_angle_group_stride_(groupset_.psi_uk_man_.GetNumberOfUnknowns() *
                                    groupset_.GetNumGroups()),
       groupset_group_stride_(groupset_.GetNumGroups()),
-      destination_phi_(destination_phi),
+      destination_phi_owner_(destination_phi),
+      flux_block_(flux_block),
       destination_psi_(destination_psi),
       cell_(nullptr)
   {
   }
 
+  /**
+   * Fetches the current groupset blocks of the scalar flux and source moments, which the kernels
+   * index with CellLBSView::MapBlockDOF. Call it on the main thread before a sweep, and not while
+   * kernels run.
+   */
+  void FetchFluxBlocks()
+  {
+    destination_phi_ = destination_phi_owner_.Block(flux_block_);
+    source_moments_ = std::as_const(source_moments_owner_).Block(flux_block_);
+  }
+
   /// Sweep chunks should override this.
   virtual void Sweep(AngleSet& angle_set);
+
+  /// Block of the groupset in the flux-moment vectors.
+  std::size_t GetFluxBlock() const { return flux_block_; }
 
   /// Sets the currently active angleset.
   virtual void SetAngleSet(AngleSet& angle_set);
@@ -150,12 +174,15 @@ protected:
    * moments from, and adds its flux moments to, contiguous copies of the groupset's part of the
    * moments. The moments of a node then lie together, so a kernel reads them in fewer memory
    * accesses. The copies exist only during a sweep. A chunk enables this only if every kernel it
-   * runs reads the moments through GetGroupsetMoments(). `layout` is the layout of the source and
-   * destination moments.
+   * runs reads the moments through GetGroupsetMoments(). `layout` is the layout of the
+   * flux-moment vectors whose groupset block the chunk sweeps.
    */
   void EnableCompactGroupsetMoments(const FluxMomentLayout& layout);
 
-  /// Where the current sweep reads the source moments and adds the flux moments.
+  /**
+   * Where the current sweep reads the source moments and adds the flux moments, within the
+   * groupset blocks fetched by FetchFluxBlocks. Call it during a sweep.
+   */
   GroupsetMoments GetGroupsetMoments();
 
   /**
@@ -186,7 +213,9 @@ protected:
   const std::vector<UnitCellMatrices>& unit_cell_matrices_;
   const std::vector<CellLBSView>& cell_transport_views_;
   std::vector<CellOutflowView>& cell_outflow_views_;
-  const std::vector<double>& source_moments_;
+  const GroupsetBlockedVector& source_moments_owner_;
+  /// Groupset block of the source moments, set by FetchFluxBlocks.
+  std::span<const double> source_moments_;
   const LBSGroupset& groupset_;
   const BlockID2XSMap& xs_;
   const unsigned int num_moments_;
@@ -194,7 +223,10 @@ protected:
   const unsigned int min_num_cell_dofs_;
   const size_t groupset_angle_group_stride_;
   const size_t groupset_group_stride_;
-  std::vector<double>& destination_phi_;
+  GroupsetBlockedVector& destination_phi_owner_;
+  const std::size_t flux_block_;
+  /// Groupset block of the scalar flux moments, set by FetchFluxBlocks.
+  std::span<double> destination_phi_;
   std::vector<double>& destination_psi_;
   /// Angular flux at time n + theta, used by ComputeTimeDependentDestinationsFromAngularFlux.
   std::vector<double> psi_theta_;
@@ -205,7 +237,7 @@ protected:
 private:
   /// Number of (node, moment) pairs of the moments; zero until EnableCompactGroupsetMoments.
   std::size_t num_node_moments_ = 0;
-  /// Index of node 0, moment 0 of the groupset's first group in the moments.
+  /// Index of node 0, moment 0 of the groupset's first group in the groupset's block.
   std::size_t groupset_base_ = 0;
   /// Distance between consecutive moments of one group, from the flux-moment layout.
   std::size_t moment_stride_ = 0;
@@ -217,6 +249,7 @@ private:
 /**
  * Evaluate the angular source of one direction at the nodes of a cell for every group of a
  * groupset: nodal_source[i * gs_size + g] = sum over m of m2d_row[m] * q(i, m, gs_gi + g).
+ * `source_moments` is the groupset's block of the source moments.
  *
  * The source moments of a node are contiguous in memory, ordered by moment and then by group, so
  * this reads them in memory order. The moments are summed in increasing order. A sweep kernel
@@ -230,7 +263,7 @@ ComputeAngularSource(const CellLBSView& cell_transport_view,
                      unsigned int gs_gi,
                      std::size_t gs_size,
                      const double* m2d_row,
-                     const std::vector<double>& source_moments,
+                     std::span<const double> source_moments,
                      double* nodal_source)
 {
   std::fill_n(nodal_source, num_nodes * gs_size, 0.0);
@@ -240,7 +273,7 @@ ComputeAngularSource(const CellLBSView& cell_transport_view,
     for (unsigned int m = 0; m < num_moments; ++m)
     {
       const double w = m2d_row[m];
-      const double* __restrict q = &source_moments[cell_transport_view.MapDOF(i, m, gs_gi)];
+      const double* __restrict q = &source_moments[cell_transport_view.MapBlockDOF(i, m, gs_gi)];
       for (std::size_t g = 0; g < gs_size; ++g)
         s_i[g] += w * q[g];
     }
