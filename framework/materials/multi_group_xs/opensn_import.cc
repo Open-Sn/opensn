@@ -27,6 +27,7 @@ MultiGroupXS::LoadFromOpenSn(const std::string& filename)
   mgxs.sigma_a_ = xsf.sigma_a_;
   mgxs.chi_ = xsf.chi_;
   mgxs.transfer_matrices_ = xsf.transfer_matrices_;
+  mgxs.energy_deposition_ = xsf.energy_deposition_;
 
   // Determine if the material is fissionable. Cross-section data merely being present in
   // the data file is not sufficient. Some files may include a uniformly-zero SIGMA_F block

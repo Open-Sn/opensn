@@ -42,6 +42,7 @@ public:
   std::vector<double> beta_;
   std::vector<double> chi_prompt_;
   std::vector<double> nu_sigma_f_;
+  std::vector<double> energy_deposition_;
   std::vector<double> chi_;
   std::vector<double> decay_constants_;
   std::vector<double> fractional_yields_;

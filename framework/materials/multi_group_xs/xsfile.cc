@@ -225,6 +225,19 @@ XSFile::Read()
       } // if nu_sigma_f
 
       //
+      // Read energy deposition data
+      //
+
+      if (fw == "ENERGY_DEPOSITION_BEGIN")
+      {
+        require_num_groups();
+        mark_unique_section("ENERGY_DEPOSITION");
+        Read1DData("ENERGY_DEPOSITION", energy_deposition_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsFiniteVector(energy_deposition_),
+                             "Energy deposition values must be finite.");
+      } // if energy_deposition
+
+      //
       // Read neutrons per fission data
       //
 
@@ -486,7 +499,8 @@ XSFile::Read()
         fw == "NU_DELAYED_BEGIN" or fw == "BETA_BEGIN" or fw == "CHI_BEGIN" or
         fw == "CHI_PROMPT_BEGIN" or fw == "CHI_DELAYED_BEGIN" or
         fw == "PRECURSOR_DECAY_CONSTANTS_BEGIN" or fw == "PRECURSOR_FRACTIONAL_YIELDS_BEGIN" or
-        fw == "TRANSFER_MOMENTS_BEGIN" or fw == "PRODUCTION_MATRIX_BEGIN";
+        fw == "TRANSFER_MOMENTS_BEGIN" or fw == "PRODUCTION_MATRIX_BEGIN" or
+        fw == "ENERGY_DEPOSITION_BEGIN";
       OpenSnLogicalErrorIf(not recognized and not fw.empty() and fw.front() != '#',
                            "Unknown top-level token \"" + fw + "\" encountered.");
     } // try
