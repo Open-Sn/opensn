@@ -16,6 +16,7 @@
 #include <iomanip>
 #include <limits>
 #include <string>
+#include <utility>
 #include <memory>
 #include <vector>
 #include <stdexcept>
@@ -70,6 +71,79 @@ MakeTempXSFile(const std::vector<double>& bounds = {1.0, 0.1, 0.01}, const std::
   out.close();
 
   return path.string();
+}
+
+/// Writes a three-group OpenSn cross-section file with two scattering moments. The header text is
+/// written before NUM_GROUPS and the extra text after the SIGMA_A block, both verbatim.
+std::string
+MakeTempThreeGroupXSFile(const std::string& extra, const std::string& header = "")
+{
+  const auto path = MakeTempPath("opensn_xsfile_3g_test", ".xs");
+
+  std::ofstream out(path);
+  out << header;
+  out << "NUM_GROUPS 3\n";
+  out << "NUM_MOMENTS 2\n";
+  out << "SIGMA_T_BEGIN\n0 1.0\n1 2.0\n2 3.0\nSIGMA_T_END\n";
+  out << "SIGMA_A_BEGIN\n0 0.5\n1 0.25\n2 0.125\nSIGMA_A_END\n";
+  out << extra;
+  out.close();
+
+  return path.string();
+}
+
+/// Fission data for MakeTempThreeGroupXSFile: fission in the first two groups, born in the first.
+std::string
+ThreeGroupFission()
+{
+  return "SIGMA_F_BEGIN\n0 0.25\n1 0.5\n2 0.125\nSIGMA_F_END\n"
+         "NU_BEGIN\n0 2.5\n1 2.5\n2 2.5\nNU_END\n"
+         "CHI_BEGIN\n0 1.0\n1 0.0\n2 0.0\nCHI_END\n";
+}
+
+/// Returns an ENERGY_DEPOSITION block with one "g value" line per entry.
+std::string
+EnergyDepositionBlock(const std::vector<std::pair<unsigned int, std::string>>& entries)
+{
+  std::string block = "ENERGY_DEPOSITION_BEGIN\n";
+  for (const auto& [g, value] : entries)
+    block += std::to_string(g) + " " + value + "\n";
+  return block + "ENERGY_DEPOSITION_END\n";
+}
+
+/// Reads the file with XSFile, removes it, and returns the reader.
+std::unique_ptr<XSFile>
+ReadAndRemove(const std::string& fname)
+{
+  auto xs = std::make_unique<XSFile>(fname);
+  try
+  {
+    xs->Read();
+  }
+  catch (...)
+  {
+    std::filesystem::remove(fname);
+    throw;
+  }
+  std::filesystem::remove(fname);
+  return xs;
+}
+
+/// Loads the file as a MultiGroupXS and removes it.
+MultiGroupXS
+LoadAndRemove(const std::string& fname)
+{
+  try
+  {
+    auto xs = MultiGroupXS::LoadFromOpenSn(fname);
+    std::filesystem::remove(fname);
+    return xs;
+  }
+  catch (...)
+  {
+    std::filesystem::remove(fname);
+    throw;
+  }
 }
 
 } // namespace
@@ -477,4 +551,156 @@ TEST(CEPXS, ScaleAndCombine)
     first->Scale(1.0);
     CheckScaled(*first, 1.0);
   }
+}
+
+TEST(XSFileTest, ReadEnergyDeposition)
+{
+  // The values must be stored as parsed, in their own groups, whatever the line order, the number
+  // of moments, and the other sections of the file.
+  const std::vector<std::string> text = {"0.1", "-2.5e-3", "0.12345678901234567"};
+  const auto xs = LoadAndRemove(MakeTempThreeGroupXSFile(
+    EnergyDepositionBlock({{2, text[2]}, {0, text[0]}, {1, text[1]}}) + "# trailing comment\n"));
+
+  const auto& ed = xs.GetEnergyDeposition();
+  ASSERT_EQ(ed.size(), 3U);
+  for (unsigned int g = 0; g < 3; ++g)
+    EXPECT_EQ(ed[g], std::stod(text[g])) << "group " << g;
+  EXPECT_EQ(xs.GetSigmaAbsorption(), (std::vector<double>{0.5, 0.25, 0.125}));
+  EXPECT_EQ(xs.GetSigmaTotal(), (std::vector<double>{1.0, 2.0, 3.0}));
+  EXPECT_EQ(xs.GetScatteringOrder(), 1U);
+}
+
+TEST(XSFileTest, EnergyDepositionBeforeOtherSections)
+{
+  // The section may come right after NUM_GROUPS, and omitted groups read as zero.
+  const auto path = MakeTempPath("opensn_xsfile_ed_first_test", ".xs");
+  {
+    std::ofstream out(path);
+    out << "NUM_GROUPS 2\n"
+           "ENERGY_DEPOSITION_BEGIN\n1 0.75\nENERGY_DEPOSITION_END\n"
+           "SIGMA_T_BEGIN\n0 1.0\n1 2.0\nSIGMA_T_END\n"
+           "SIGMA_A_BEGIN\n0 0.5\n1 1.5\nSIGMA_A_END\n";
+  }
+  const auto xs = LoadAndRemove(path.string());
+  EXPECT_EQ(xs.GetEnergyDeposition(), (std::vector<double>{0.0, 0.75}));
+  EXPECT_EQ(xs.GetSigmaTotal(), (std::vector<double>{1.0, 2.0}));
+  EXPECT_EQ(xs.GetSigmaAbsorption(), (std::vector<double>{0.5, 1.5}));
+}
+
+TEST(XSFileTest, EnergyDepositionKeepsEverySignAndZero)
+{
+  // Any finite value is accepted, of either sign, and a uniformly zero section is kept.
+  const auto mixed = LoadAndRemove(
+    MakeTempThreeGroupXSFile(EnergyDepositionBlock({{0, "-1.5"}, {1, "0.0"}, {2, "2.0"}})));
+  EXPECT_EQ(mixed.GetEnergyDeposition(), (std::vector<double>{-1.5, 0.0, 2.0}));
+
+  const auto zero = LoadAndRemove(
+    MakeTempThreeGroupXSFile(EnergyDepositionBlock({{0, "0.0"}, {1, "0.0"}, {2, "0.0"}})));
+  EXPECT_EQ(zero.GetEnergyDeposition(), (std::vector<double>{0.0, 0.0, 0.0}));
+  const auto* by_name = zero.GetByName("energy_deposition");
+  ASSERT_NE(by_name, nullptr);
+  EXPECT_EQ(*by_name, (std::vector<double>{0.0, 0.0, 0.0}));
+}
+
+TEST(XSFileTest, EnergyDepositionRefusals)
+{
+  const auto ExpectRefused = [](const std::string& extra, const std::string& header = "")
+  {
+    const auto fname = MakeTempThreeGroupXSFile(extra, header);
+    EXPECT_THROW(ReadAndRemove(fname), std::logic_error) << extra;
+    EXPECT_FALSE(std::filesystem::exists(fname));
+  };
+  const auto block = EnergyDepositionBlock({{0, "0.1"}, {1, "0.2"}, {2, "0.3"}});
+
+  // Non-finite and unparsable values.
+  for (const std::string bad : {"nan", "inf", "-inf", "1e400", "-1e400", "abc"})
+    ExpectRefused(EnergyDepositionBlock({{0, "0.1"}, {1, bad}, {2, "0.3"}}));
+
+  // A duplicate section.
+  ExpectRefused(block + block);
+  ExpectRefused(block + EnergyDepositionBlock({{0, "0.4"}}));
+
+  // More entries than groups: a group index out of range, or a group given twice.
+  ExpectRefused(EnergyDepositionBlock({{0, "0.1"}, {1, "0.2"}, {2, "0.3"}, {3, "0.4"}}));
+  ExpectRefused(EnergyDepositionBlock({{0, "0.1"}, {1, "0.2"}, {2, "0.3"}, {1, "0.4"}}));
+
+  // A line without a value, and a section that does not end.
+  ExpectRefused("ENERGY_DEPOSITION_BEGIN\n0 0.1\n1\n2 0.3\nENERGY_DEPOSITION_END\n");
+  ExpectRefused("ENERGY_DEPOSITION_BEGIN\n0 0.1\n1 0.2\n2 0.3\n");
+
+  // The section before NUM_GROUPS, with entries and without.
+  ExpectRefused("", block);
+  ExpectRefused("", "ENERGY_DEPOSITION_BEGIN\nENERGY_DEPOSITION_END\n");
+  {
+    const auto fname = MakeTempThreeGroupXSFile("", block);
+    try
+    {
+      ReadAndRemove(fname);
+      ADD_FAILURE() << "a section before NUM_GROUPS was accepted";
+    }
+    catch (const std::logic_error& err)
+    {
+      EXPECT_NE(std::string(err.what()).find("NUM_GROUPS must be specified"), std::string::npos)
+        << err.what();
+    }
+  }
+}
+
+TEST(MultiGroupXSTest, LoadEnergyDepositionFromOpenSn)
+{
+  // A file without the section has no energy deposition; one with it gives the values read, for a
+  // material without fission and for a fissionable one.
+  const auto none = LoadAndRemove(MakeTempThreeGroupXSFile(""));
+  EXPECT_TRUE(none.GetEnergyDeposition().empty());
+  EXPECT_EQ(none.GetByName("energy_deposition"), nullptr);
+
+  const std::vector<std::string> text = {"0.1", "-2.5e-3", "0.12345678901234567"};
+  const auto block = EnergyDepositionBlock({{0, text[0]}, {1, text[1]}, {2, text[2]}});
+  const std::vector<double> expected = {std::stod(text[0]), std::stod(text[1]), std::stod(text[2])};
+  for (const bool fissionable : {false, true})
+  {
+    SCOPED_TRACE(fissionable);
+    const auto xs =
+      LoadAndRemove(MakeTempThreeGroupXSFile(fissionable ? ThreeGroupFission() + block : block));
+    ASSERT_EQ(xs.IsFissionable(), fissionable);
+    EXPECT_EQ(xs.GetEnergyDeposition(), expected);
+    const auto* by_name = xs.GetByName("energy_deposition");
+    ASSERT_NE(by_name, nullptr);
+    EXPECT_EQ(*by_name, expected);
+    EXPECT_EQ(xs.GetSigmaAbsorption(), (std::vector<double>{0.5, 0.25, 0.125}));
+  }
+}
+
+TEST(MultiGroupXSTest, CombineAndScaleEnergyDeposition)
+{
+  // Combine weights each input's energy deposition by its density, and Scale multiplies it.
+  const auto a = std::make_shared<MultiGroupXS>(LoadAndRemove(MakeTempThreeGroupXSFile(
+    EnergyDepositionBlock({{0, "0.1"}, {1, "-2.5e-3"}, {2, "0.12345678901234567"}}))));
+  const auto b = std::make_shared<MultiGroupXS>(LoadAndRemove(MakeTempThreeGroupXSFile(
+    ThreeGroupFission() + EnergyDepositionBlock({{0, "0.3"}, {1, "0.7"}, {2, "1.1"}}))));
+  ASSERT_EQ(a->GetEnergyDeposition().size(), 3U);
+  ASSERT_EQ(b->GetEnergyDeposition().size(), 3U);
+  ASSERT_FALSE(a->IsFissionable());
+  ASSERT_TRUE(b->IsFissionable());
+
+  auto combined = MultiGroupXS::Combine({{a, 0.3}, {b, 0.7}});
+  std::vector<double> expected(3);
+  for (unsigned int g = 0; g < 3; ++g)
+    expected[g] = 0.3 * a->GetEnergyDeposition()[g] + 0.7 * b->GetEnergyDeposition()[g];
+  EXPECT_EQ(combined.GetEnergyDeposition(), expected);
+  ASSERT_NE(combined.GetByName("energy_deposition"), nullptr);
+  EXPECT_EQ(*combined.GetByName("energy_deposition"), expected);
+
+  combined.Scale(2.0);
+  std::vector<double> doubled(3);
+  for (unsigned int g = 0; g < 3; ++g)
+    doubled[g] = 2.0 * expected[g];
+  EXPECT_EQ(combined.GetEnergyDeposition(), doubled);
+  combined.Scale(1.0);
+  EXPECT_EQ(combined.GetEnergyDeposition(), expected);
+
+  auto scaled = *a;
+  scaled.Scale(2.0);
+  for (unsigned int g = 0; g < 3; ++g)
+    EXPECT_EQ(scaled.GetEnergyDeposition()[g], 2.0 * a->GetEnergyDeposition()[g]);
 }
