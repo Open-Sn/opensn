@@ -1,0 +1,29 @@
+.. _exhale_class_classopensn_1_1_p_e_t_sc_options_database:
+
+Class PETScOptionsDatabase
+==========================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Nested Relationships
+--------------------
+
+
+Nested Types
+************
+
+- :ref:`exhale_struct_structopensn_1_1_p_e_t_sc_options_database_1_1_option`
+- :ref:`exhale_class_classopensn_1_1_p_e_t_sc_options_database_1_1_scope`
+- :ref:`exhale_struct_structopensn_1_1_p_e_t_sc_options_database_1_1_scope_1_1_saved_option`
+
+
+Class Documentation
+-------------------
+
+
+.. doxygenclass:: opensn::PETScOptionsDatabase
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

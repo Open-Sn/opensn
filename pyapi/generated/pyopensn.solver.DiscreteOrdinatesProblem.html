@@ -1059,7 +1059,7 @@ right-hand side (the name is historical).</p>
 prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA</span></code>. With <code class="docutils literal notranslate"><span class="pre">wgdsa_energy_coupling</span></code>, or
 with <code class="docutils literal notranslate"><span class="pre">csda_enabled</span></code> and charged-particle groups in the groupset, the groupset has
 one solver per group, whose prefix is the problem name followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA_g</span></code> and
-the global group index.</p>
+the global group index. The options reach only the solvers of this groupset.</p>
 </dd>
 </dl>
 </li>
@@ -1121,7 +1121,8 @@ right-hand side (the name is historical).</p>
 </li>
 <li><dl class="simple">
 <dt>tgdsa_petsc_options: str, default=’’</dt><dd><p>PETSc options string for the TGDSA solver. Options must carry the solver’s
-prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_TGDSA</span></code>.</p>
+prefix, the problem name followed by <code class="docutils literal notranslate"><span class="pre">_TGDSA</span></code>. The options reach only the
+solver of this groupset.</p>
 </dd>
 </dl>
 </li>

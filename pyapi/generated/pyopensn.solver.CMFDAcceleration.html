@@ -229,7 +229,8 @@ iterative solves, or provide stronger <code class="docutils literal notranslate"
 <li><p><strong>verbose</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Developer/debug. If true, prints CMFD diagnostic and timing metrics. These are
 useful for regression tests and performance studies but can be noisy in production.</p></li>
 <li><p><strong>petsc_options</strong> (<em>str</em><em>, </em><em>default=&quot;&quot;</em>) – Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
-for solver experiments, especially with <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code>.</p></li>
+for solver experiments, especially with <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code>.
+The options reach only the coarse solver of this acceleration.</p></li>
 <li><p><strong>pi_max_its</strong> (<em>int</em><em>, </em><em>default=50</em>) – Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
 Increase only if the coarse k solve is not converging enough to give useful
 corrections.</p></li>

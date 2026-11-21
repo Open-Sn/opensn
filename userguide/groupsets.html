@@ -531,13 +531,19 @@ after <code class="docutils literal notranslate"><span class="pre">wgdsa_l_max_i
 process, <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> requires a PETSc build with a parallel LU package.
 <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> lets <code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> define the KSP/PC setup. The
 default threshold is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns.</p>
-<p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> is inserted into the PETSc options database with every
-policy. The WGDSA solver reads only the options that carry its prefix, the
+<p><code class="docutils literal notranslate"><span class="pre">wgdsa_petsc_options</span></code> is given to the groupset’s WGDSA solver with every
+policy. The solver reads only the options that carry its prefix, the
 problem <code class="docutils literal notranslate"><span class="pre">name</span></code> followed by <code class="docutils literal notranslate"><span class="pre">_WGDSA</span></code>. For a problem with the default name,
 <code class="docutils literal notranslate"><span class="pre">&quot;-DiscreteOrdinatesProblem_WGDSAksp_type</span> <span class="pre">gmres&quot;</span></code> selects GMRES. The prefix
 is <code class="docutils literal notranslate"><span class="pre">_TGDSA</span></code> for TGDSA. In a groupset with charged-particle groups it is
 <code class="docutils literal notranslate"><span class="pre">_WGDSA_g</span></code> followed by the global group index, since each group has its own
-solver.</p>
+solver. Each solver puts its options in the PETSc options database only while
+it sets up or solves, so the options of one groupset do not reach the solvers
+of the other groupsets, which have the same prefix, or of a later problem with
+the same name. PETSc objects that the solver creates, such as the block solvers
+of <code class="docutils literal notranslate"><span class="pre">pc_type</span> <span class="pre">bjacobi</span></code> and direct solver packages, read the options too. The
+options of <code class="docutils literal notranslate"><span class="pre">PETSC_OPTIONS</span></code> and the <code class="docutils literal notranslate"><span class="pre">.petscrc</span></code> files apply to every solver,
+and the groupset options take precedence over them.</p>
 <p><code class="docutils literal notranslate"><span class="pre">wgdsa_boundary_closure</span></code> sets the boundary condition of the diffusion
 correction on every boundary where the incoming angular flux is prescribed
 (<code class="docutils literal notranslate"><span class="pre">&quot;vacuum&quot;</span></code>, <code class="docutils literal notranslate"><span class="pre">&quot;isotropic&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;arbitrary&quot;</span></code>): the incoming flux is the

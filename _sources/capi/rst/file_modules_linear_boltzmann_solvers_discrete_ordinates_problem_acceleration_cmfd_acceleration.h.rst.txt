@@ -30,6 +30,8 @@ Includes
 --------
 
 
+- ``framework/math/petsc_utils/petsc_utils.h`` (:ref:`file_framework_math_petsc_utils_petsc_utils.h`)
+
 - ``limits``
 
 - ``map`` (:ref:`file_framework_math_spatial_discretization_cell_mappings_cell_mapping.h`)

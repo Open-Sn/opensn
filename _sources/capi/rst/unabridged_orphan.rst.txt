@@ -535,6 +535,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_p_e_t_sc_options_database_1_1_option.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_p_e_t_sc_options_database_1_1_scope_1_1_saved_option.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_p_e_t_sc_solver_setup.rst
 
 .. toctree::
@@ -1626,6 +1636,16 @@ Classes and Structs
    :maxdepth: 1
 
    classopensn_1_1_p_e_t_sc_non_linear_solver_options.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_p_e_t_sc_options_database.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   classopensn_1_1_p_e_t_sc_options_database_1_1_scope.rst
 
 .. toctree::
    :maxdepth: 1

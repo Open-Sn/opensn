@@ -92,7 +92,9 @@
 
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/acceleration.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/unknown_manager/unknown_manager.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/math/petsc_utils/petsc_utils.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;petscksp.h&quot;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;memory&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
 <span class="p">{</span>
@@ -179,8 +181,9 @@
 <span class="cm">   * Initializes the diffusion solver. This involves creating the sparse matrix with the appropriate</span>
 <span class="cm">   * sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very</span>
 <span class="cm">   * specialized parameters for Hypre&#39;s BooomerAMG. Note: `PCSetFromOptions` and `KSPSetFromOptions`</span>
-<span class="cm">   * are called at the end. Therefore, any number of additional PETSc options can be passed via the</span>
-<span class="cm">   * commandline.</span>
+<span class="cm">   * are called at the end, with the options of PETSC_OPTIONS and the .petscrc files, then the</span>
+<span class="cm">   * BoomerAMG parameters, then `options.additional_options_string`. The options are in the global</span>
+<span class="cm">   * database only while this solver uses them, so they do not reach other solvers.</span>
 <span class="cm">   */</span>
 <span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Initialize</span><span class="p">();</span>
 
@@ -241,6 +244,8 @@
 <span class="w">  </span><span class="n">Vec</span><span class="w"> </span><span class="n">rhs_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">Vec</span><span class="w"> </span><span class="n">x_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
 <span class="w">  </span><span class="n">KSP</span><span class="w"> </span><span class="n">ksp_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Options of this solver, which are in the global database only while the solver uses them.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">unique_ptr</span><span class="o">&lt;</span><span class="n">PETScOptionsDatabase</span><span class="o">&gt;</span><span class="w"> </span><span class="n">petsc_options_</span><span class="p">;</span>
 
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">requires_ghosts_</span><span class="p">;</span>
 <span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="n">suppress_bcs_</span><span class="p">;</span>

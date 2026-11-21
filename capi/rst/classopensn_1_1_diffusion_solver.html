@@ -169,7 +169,7 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver10InitializeEv">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a29998f4fb375d643d32ba61163228d04"></span><span class="kt"><span class="pre">void</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">Initialize</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver10InitializeEv" title="Link to this definition"></a><br /></dt>
 <dd><p>Initializes the diffusion solver. </p>
-<p>This involves creating the sparse matrix with the appropriate sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very specialized parameters for Hypre’s BooomerAMG. Note: <code class="docutils literal notranslate"><span class="pre">PCSetFromOptions</span></code> and <code class="docutils literal notranslate"><span class="pre">KSPSetFromOptions</span></code> are called at the end. Therefore, any number of additional PETSc options can be passed via the commandline. </p>
+<p>This involves creating the sparse matrix with the appropriate sparsity pattern. Creating the RHS vector. Creating the KSP solver. Setting the very specialized parameters for Hypre’s BooomerAMG. Note: <code class="docutils literal notranslate"><span class="pre">PCSetFromOptions</span></code> and <code class="docutils literal notranslate"><span class="pre">KSPSetFromOptions</span></code> are called at the end, with the options of PETSC_OPTIONS and the .petscrc files, then the BoomerAMG parameters, then <code class="docutils literal notranslate"><span class="pre">options.additional_options_string</span></code>. The options are in the global database only while this solver uses them, so they do not reach other solvers. </p>
 </dd></dl>
 
 <dl class="cpp function">
@@ -317,6 +317,12 @@
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver4ksp_E">
 <span class="target" id="classopensn_1_1_diffusion_solver_1a110ccf17aecfe2ba352544313a5570b6"></span><span class="n"><span class="pre">KSP</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">ksp_</span></span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">nullptr</span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver4ksp_E" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp var">
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver14petsc_options_E">
+<span class="target" id="classopensn_1_1_diffusion_solver_1ac0ada9fe73ef47c3d06520244ef5faa9"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">unique_ptr</span></span><span class="p"><span class="pre">&lt;</span></span><a class="reference internal" href="classopensn_1_1_p_e_t_sc_options_database.html#_CPPv4N6opensn20PETScOptionsDatabaseE" title="opensn::PETScOptionsDatabase"><span class="n"><span class="pre">PETScOptionsDatabase</span></span></a><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">petsc_options_</span></span></span><a class="headerlink" href="#_CPPv4N6opensn15DiffusionSolver14petsc_options_E" title="Link to this definition"></a><br /></dt>
+<dd><p><a class="reference internal" href="structopensn_1_1_diffusion_solver_1_1_options.html#structopensn_1_1_diffusion_solver_1_1_options"><span class="std std-ref">Options</span></a> of this solver, which are in the global database only while the solver uses them. </p>
+</dd></dl>
 
 <dl class="cpp var">
 <dt class="sig sig-object cpp" id="_CPPv4N6opensn15DiffusionSolver16requires_ghosts_E">

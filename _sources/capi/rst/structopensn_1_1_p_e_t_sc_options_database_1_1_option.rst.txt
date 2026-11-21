@@ -1,0 +1,23 @@
+.. _exhale_struct_structopensn_1_1_p_e_t_sc_options_database_1_1_option:
+
+Struct PETScOptionsDatabase::Option
+===================================
+
+- Defined in :ref:`file_framework_math_petsc_utils_petsc_utils.h`
+
+
+Nested Relationships
+--------------------
+
+This struct is a nested type of :ref:`exhale_class_classopensn_1_1_p_e_t_sc_options_database`.
+
+
+Struct Documentation
+--------------------
+
+
+.. doxygenstruct:: opensn::PETScOptionsDatabase::Option
+   :project: opensn
+   :members:
+   :protected-members:
+   :undoc-members:

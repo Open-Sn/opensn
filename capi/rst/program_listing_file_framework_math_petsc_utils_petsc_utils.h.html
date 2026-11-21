@@ -93,6 +93,8 @@
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/utils/error.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscksp.h&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;petscsnes.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;optional&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
 
 <span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
@@ -284,6 +286,69 @@
 <span class="w">                                               </span><span class="kt">double</span><span class="w"> </span><span class="n">rel_tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PETSC_DEFAULT</span><span class="p">,</span>
 <span class="w">                                               </span><span class="kt">double</span><span class="w"> </span><span class="n">abs_tol</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">PETSC_DEFAULT</span><span class="p">,</span>
 <span class="w">                                               </span><span class="kt">int64_t</span><span class="w"> </span><span class="n">maximum_iterations</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">100</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * PETSc options that belong to one solver.</span>
+<span class="cm"> * Options inserted into the global database stay there and reach every later solver whose prefix</span>
+<span class="cm"> * they carry, such as the diffusion solvers of the other groupsets of a problem, which share one</span>
+<span class="cm"> * prefix, or the solvers of a later problem with the same name. The options held here are in the</span>
+<span class="cm"> * global database only while a Scope of this object exists, so the solver creates one around each</span>
+<span class="cm"> * of its PETSc calls that read options. Objects that PETSc creates inside those calls, such as the</span>
+<span class="cm"> * blocks of a block Jacobi preconditioner and direct solver packages, read the options too.</span>
+<span class="cm"> */</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">PETScOptionsDatabase</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Puts the options of a database into the global database and, when destroyed, restores the</span>
+<span class="cm">   * values that those options had in the global database before.</span>
+<span class="cm">   * The options therefore take precedence over those of PETSC_OPTIONS and the .petscrc files, which</span>
+<span class="cm">   * apply to every solver. Scopes must be destroyed in the reverse order of their creation.</span>
+<span class="cm">   */</span>
+<span class="w">  </span><span class="k">class</span><span class="w"> </span><span class="nc">Scope</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">  </span><span class="k">public</span><span class="o">:</span>
+<span class="w">    </span><span class="k">explicit</span><span class="w"> </span><span class="n">Scope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;</span><span class="w"> </span><span class="n">database</span><span class="p">);</span>
+<span class="w">    </span><span class="o">~</span><span class="n">Scope</span><span class="p">();</span>
+<span class="w">    </span><span class="n">Scope</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Scope</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Scope</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Scope</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Scope</span><span class="p">(</span><span class="n">Scope</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">    </span><span class="n">Scope</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">Scope</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="w">  </span><span class="k">private</span><span class="o">:</span>
+<span class="w">    </span><span class="k">struct</span><span class="w"> </span><span class="nc">SavedOption</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">      </span><span class="kt">bool</span><span class="w"> </span><span class="n">was_set</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">;</span>
+<span class="w">      </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">    </span><span class="p">};</span>
+
+<span class="w">    </span><span class="kt">void</span><span class="w"> </span><span class="nf">Restore</span><span class="p">();</span>
+
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">SavedOption</span><span class="o">&gt;</span><span class="w"> </span><span class="n">saved_</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">PETScOptionsDatabase</span><span class="p">();</span>
+<span class="w">  </span><span class="o">~</span><span class="n">PETScOptionsDatabase</span><span class="p">();</span>
+<span class="w">  </span><span class="n">PETScOptionsDatabase</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="n">PETScOptionsDatabase</span><span class="p">(</span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+<span class="w">  </span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;</span><span class="w"> </span><span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="n">PETScOptionsDatabase</span><span class="o">&amp;&amp;</span><span class="p">)</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">delete</span><span class="p">;</span>
+
+<span class="w">  </span><span class="c1">/// Inserts options given in the form of a PETSc command line. Later values replace earlier ones.</span>
+<span class="w">  </span><span class="kt">void</span><span class="w"> </span><span class="nf">Insert</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&amp;</span><span class="w"> </span><span class="n">options_string</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+<span class="w">  </span><span class="k">struct</span><span class="w"> </span><span class="nc">Option</span>
+<span class="w">  </span><span class="p">{</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="w"> </span><span class="n">name</span><span class="p">;</span>
+<span class="w">    </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">value</span><span class="p">;</span>
+<span class="w">  </span><span class="p">};</span>
+
+<span class="w">  </span><span class="n">PetscOptions</span><span class="w"> </span><span class="n">options_</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">nullptr</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// The options of options_, with each name and value exactly as PETSc parsed them.</span>
+<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">Option</span><span class="o">&gt;</span><span class="w"> </span><span class="n">parsed_options_</span><span class="p">;</span>
+<span class="p">};</span>
 
 <span class="c1">/// General monitor that print the residual norm relative to the right-hand side norm.</span>
 <span class="n">PetscErrorCode</span><span class="w"> </span><span class="nf">KSPMonitorRelativeToRHS</span><span class="p">(</span><span class="n">KSP</span><span class="w"> </span><span class="n">ksp</span><span class="p">,</span><span class="w"> </span><span class="n">PetscInt</span><span class="w"> </span><span class="n">n</span><span class="p">,</span><span class="w"> </span><span class="n">PetscReal</span><span class="w"> </span><span class="n">rnorm</span><span class="p">,</span><span class="w"> </span><span class="kt">void</span><span class="o">*</span><span class="w"> </span><span class="n">context</span><span class="p">);</span>
