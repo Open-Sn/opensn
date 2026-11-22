@@ -9,11 +9,15 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/logging/log.h"
 #include "framework/utils/caliper_scopes.h"
+#include "framework/utils/error.h"
 #include "framework/utils/timer.h"
 #include "framework/runtime.h"
 #include <petscksp.h>
 #include "caliper/cali.h"
+#include <algorithm>
 #include <memory>
+#include <span>
+#include <string>
 #include <utility>
 
 namespace opensn
@@ -62,8 +66,9 @@ void
 WGSLinearSolver::ReleaseWorkspace()
 {
   OpenSnPETScCall(VecDestroy(&rhs_preconditioned_work_));
-  saved_q_moments_local_ = std::vector<double>();
+  std::dynamic_pointer_cast<WGSContext>(context_ptr_)->ReleaseSourceScratch();
   PETScLinearSolver::ReleaseWorkspace();
+  x_aliases_phi_old_ = false;
 }
 
 void
@@ -72,6 +77,13 @@ WGSLinearSolver::Solve()
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_wgs("WGS", CaliperWGSScopeDepth());
   CaliperRegionScope cali_method(WGSMethodName(method_), CaliperWGSMethodScopeDepth());
+  // A solution vector that views phi_old is stale once phi_old is reallocated.
+  if (x_aliases_phi_old_)
+  {
+    const auto& do_problem = std::dynamic_pointer_cast<WGSContext>(context_ptr_)->do_problem;
+    if (do_problem.GetPhiOldLocal().GetGeneration() != x_alias_generation_)
+      ReleaseWorkspace();
+  }
   PETScLinearSolver::Solve();
 }
 
@@ -103,9 +115,33 @@ WGSLinearSolver::SetSystem()
   if (IsSystemSet())
     return;
 
-  x_ = CreateVector(num_local_dofs_, num_global_dofs_);
-
-  OpenSnPETScCall(VecSet(x_, 0.0));
+  // Without delayed angular unknowns, the solution vector is exactly the groupset's phi_old block,
+  // so x_ views that block and the initial guess and the solution need no copies. The count of
+  // delayed unknowns is global, so every rank takes the same branch.
+  auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
+  auto& groupset = gs_context_ptr->groupset;
+  auto& phi_old = gs_context_ptr->do_problem.GetPhiOldLocal();
+  x_aliases_phi_old_ =
+    not groupset.angle_agg or groupset.angle_agg->GetNumDelayedAngularDOFs().second == 0;
+  if (x_aliases_phi_old_)
+  {
+    const auto owned = phi_old.OwnedBlock(gs_context_ptr->do_problem.GetFluxBlock(groupset));
+    OpenSnLogicalErrorIf(
+      std::cmp_not_equal(owned.size(), num_local_dofs_),
+      "WGSLinearSolver: the flux block of groups [" + std::to_string(groupset.first_group) + "-" +
+        std::to_string(groupset.last_group) + "] has " + std::to_string(owned.size()) +
+        " entries on rank " + std::to_string(opensn::mpi_comm.rank()) + ", but the system has " +
+        std::to_string(num_local_dofs_) + ".");
+    OpenSnPETScCall(VecCreateMPIWithArray(
+      opensn::mpi_comm, 1, num_local_dofs_, num_global_dofs_, owned.data(), &x_));
+    OpenSnPETScCall(VecSetOption(x_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
+    x_alias_generation_ = phi_old.GetGeneration();
+  }
+  else
+  {
+    x_ = CreateVector(num_local_dofs_, num_global_dofs_);
+    OpenSnPETScCall(VecSet(x_, 0.0));
+  }
   OpenSnPETScCall(VecDuplicate(x_, &b_));
   OpenSnPETScCall(VecDuplicate(x_, &rhs_preconditioned_work_));
 
@@ -163,7 +199,8 @@ WGSLinearSolver::SetInitialGuess()
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
 
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
+  if (not x_aliases_phi_old_)
+    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
   OpenSnPETScCall(VecNorm(x_, NORM_2, &init_guess_norm));
@@ -182,17 +219,27 @@ WGSLinearSolver::SetRHS()
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
 
-  // SetSource for RHS
-  const auto q_moments = std::as_const(do_problem.GetQMomentsLocal()).Data();
-  saved_q_moments_local_.assign(q_moments.begin(), q_moments.end());
-
+  // If we have a single richardson iteration then the user probably wants only a single sweep.
+  // Therefore, we are going to combine the scattering source (normally included in the
+  // lhs_src_scope) into the sweep for the RHS, sweep into the solution, and just suppress the
+  // kspsolve part.
   const bool single_richardson =
     groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
     tolerance_options.maximum_iterations == 1;
+  const auto scope = single_richardson
+                       ? gs_context_ptr->GetRHSSourceScope() | gs_context_ptr->GetLHSSourceScope()
+                       : gs_context_ptr->GetRHSSourceScope() | ZERO_INCOMING_DELAYED_PSI;
+  Vec rhs = single_richardson ? x_ : b_;
 
-  if (not single_richardson)
+  auto& phi_new = do_problem.GetPhiNewLocal();
+  const auto block = do_problem.GetFluxBlock(groupset);
+  const auto block_size = phi_new.GetBlockSize(block);
+  PetscScalar* rhs_array = nullptr;
+  OpenSnPETScCall(VecGetArray(rhs, &rhs_array));
   {
-    const auto scope = gs_context_ptr->GetRHSSourceScope() | ZERO_INCOMING_DELAYED_PSI;
+    // Sources go to scratch, so q is left unchanged, and the sweep writes the flux part of the
+    // right-hand side directly.
+    const auto q_override = gs_context_ptr->RedirectSourceMoments(false);
     {
       CALI_CXX_MARK_SCOPE("Source");
       gs_context_ptr->set_source_function(groupset,
@@ -203,58 +250,34 @@ WGSLinearSolver::SetRHS()
 
     // Enable RHS time (tau*psi^n)
     auto sweep_ctx = std::dynamic_pointer_cast<SweepWGSContext>(gs_context_ptr);
-    if (sweep_ctx && sweep_ctx->sweep_chunk->IsTimeDependent())
+    if (not single_richardson and sweep_ctx and sweep_ctx->sweep_chunk->IsTimeDependent())
       sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(true);
 
     // Apply transport operator
+    const GroupsetBlockedVector::ScopedBlockOverride phi_new_override(
+      phi_new, block, std::span<double>(rhs_array, block_size));
     gs_context_ptr->ApplyInverseTransportOperator(scope);
 
-    // Assemble PETSc vector
-    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, b_, PhiSTLOption::PHI_NEW);
-
-    // Compute RHS norm
-    OpenSnPETScCall(VecNorm(b_, NORM_2, &gs_context_ptr->rhs_norm));
-
-    // Compute precondition RHS norm
-    PC pc = nullptr;
-    OpenSnPETScCall(KSPGetPC(ksp_, &pc));
-    OpenSnPETScCall(PCApply(pc, b_, rhs_preconditioned_work_));
-    OpenSnPETScCall(
-      VecNorm(rhs_preconditioned_work_, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
-  }
-  // If we have a single richardson iteration then the user probably wants
-  // only a single sweep. Therefore, we are going to combine the scattering
-  // source (normally included in the lhs_src_scope) into the sweep for the
-  // RHS, and just suppress the kspsolve part.
-  else
-  {
-    const auto scope = gs_context_ptr->GetRHSSourceScope() | gs_context_ptr->GetLHSSourceScope();
+    if (groupset.angle_agg)
     {
-      CALI_CXX_MARK_SCOPE("Source");
-      gs_context_ptr->set_source_function(groupset,
-                                          do_problem.GetQMomentsLocal().Blocks(),
-                                          do_problem.GetPhiOldLocal().ConstBlocks(),
-                                          scope);
+      auto index = static_cast<int64_t>(block_size) - 1;
+      groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, rhs_array);
     }
-
-    // Apply transport operator
-    gs_context_ptr->ApplyInverseTransportOperator(scope);
-
-    // Assemble PETSc vector
-    LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
-
-    // Compute RHS norm
-    OpenSnPETScCall(VecNorm(x_, NORM_2, &gs_context_ptr->rhs_norm));
-
-    // Compute precondition RHS norm
-    PC pc = nullptr;
-    OpenSnPETScCall(KSPGetPC(ksp_, &pc));
-    OpenSnPETScCall(PCApply(pc, x_, rhs_preconditioned_work_));
-    OpenSnPETScCall(
-      VecNorm(rhs_preconditioned_work_, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
-
-    SetKSPSolveSuppressionFlag(true);
   }
+  OpenSnPETScCall(VecRestoreArray(rhs, &rhs_array));
+
+  // Compute RHS norm
+  OpenSnPETScCall(VecNorm(rhs, NORM_2, &gs_context_ptr->rhs_norm));
+
+  // Compute precondition RHS norm
+  PC pc = nullptr;
+  OpenSnPETScCall(KSPGetPC(ksp_, &pc));
+  OpenSnPETScCall(PCApply(pc, rhs, rhs_preconditioned_work_));
+  OpenSnPETScCall(
+    VecNorm(rhs_preconditioned_work_, NORM_2, &gs_context_ptr->rhs_preconditioned_norm));
+
+  if (single_richardson)
+    SetKSPSolveSuppressionFlag(true);
 }
 
 void
@@ -285,12 +308,24 @@ WGSLinearSolver::PostSolveCallback()
     }
   }
 
-  // Copy x to local solution
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
-
-  // Restore saved q_moms
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
+  // Copy x to the local solution. The flux part of x is the groupset's block in order. A view of
+  // phi_old already holds it, and a context that rebuilds phi_new after the solve overwrites it.
+  const auto block = do_problem.GetFluxBlock(groupset);
+  const auto block_size = do_problem.GetPhiOldLocal().GetBlockSize(block);
+  const PetscScalar* x = nullptr;
+  OpenSnPETScCall(VecGetArrayRead(x_, &x));
+  if (not x_aliases_phi_old_)
+    std::copy_n(x, block_size, do_problem.GetPhiOldLocal().Block(block).begin());
+  if (not gs_context_ptr->RebuildsFluxAfterSolve())
+    std::copy_n(x, block_size, do_problem.GetPhiNewLocal().Block(block).begin());
+  if (groupset.angle_agg)
+  {
+    auto index = static_cast<int64_t>(block_size) - 1;
+    groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, x);
+    index = static_cast<int64_t>(block_size) - 1;
+    groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, x);
+  }
+  OpenSnPETScCall(VecRestoreArrayRead(x_, &x));
 
   // Context specific callback
   gs_context_ptr->PostSolveCallback();

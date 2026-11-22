@@ -126,10 +126,8 @@ AGSLinearSolver::Solve()
   const auto phi_old = std::as_const(lbs_problem_).GetPhiOldLocal().Data();
   phi_old_.assign(phi_old.begin(), phi_old.end());
 
-  // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
-  // to function and for keigen-value problems
-  const auto q_moments = std::as_const(lbs_problem_).GetQMomentsLocal().Data();
-  const std::vector<double> saved_qmoms(q_moments.begin(), q_moments.end());
+  // The groupset solves build their sources in scratch, so q keeps the sources set before this
+  // solve, which every iteration and the caller rely on.
 
   // Without coupling to earlier groupsets, a second pass would only continue the groupset solves
   // that already converged, so the iteration stops after the first pass in which they all do.
@@ -213,9 +211,6 @@ AGSLinearSolver::Solve()
 
     if (print_ags_stats)
       log.Log() << no_wrap << iter_stats.str();
-
-    // Restore qmoms
-    lbs_problem_.SetQMomentsFrom(saved_qmoms);
 
     // A within-group solve that stops at its iteration limit is an inexact inner solve; the
     // across-groupset iteration continues and its own convergence test decides.

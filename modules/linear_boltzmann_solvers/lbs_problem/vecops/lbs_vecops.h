@@ -39,13 +39,6 @@ public:
                                                 PhiSTLOption src,
                                                 int64_t offset = 0);
 
-  /// Disassembles a groupset-scoped PETSc vector back into a primary STL vector.
-  static void SetPrimarySTLvectorFromGSPETScVec(LBSProblem& lbs_problem,
-                                                const LBSGroupset& groupset,
-                                                Vec src,
-                                                PhiSTLOption dest,
-                                                int64_t offset = 0);
-
   /// Assembles a vector for a given group span from a source vector.
   static void SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
                                                          unsigned int first_group_id,

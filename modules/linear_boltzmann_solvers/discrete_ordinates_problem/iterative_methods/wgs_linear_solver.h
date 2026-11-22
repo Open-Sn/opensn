@@ -5,9 +5,8 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "framework/math/linear_solver/petsc_linear_system_solver.h"
+#include <cstdint>
 #include <memory>
-#include <vector>
-#include <functional>
 
 namespace opensn
 {
@@ -26,7 +25,7 @@ public:
 
   void Solve() override;
 
-  /// Destroys the KSP, the operator, the vectors, and the saved source moments.
+  /// Destroys the KSP, the operator, the vectors, and the source scratch of the context.
   void ReleaseWorkspace() override;
 
 protected:
@@ -41,8 +40,14 @@ protected:
   void SetInitialGuess() override;
   void PostSolveCallback() override;
 
-  std::vector<double> saved_q_moments_local_;
   Vec rhs_preconditioned_work_;
+  /**
+   * True when x_ is a view of the groupset's owned phi_old block, which is possible when the
+   * groupset has no delayed angular unknowns. The view is valid for the generation of phi_old in
+   * x_alias_generation_.
+   */
+  bool x_aliases_phi_old_ = false;
+  std::uint64_t x_alias_generation_ = 0;
 };
 
 } // namespace opensn

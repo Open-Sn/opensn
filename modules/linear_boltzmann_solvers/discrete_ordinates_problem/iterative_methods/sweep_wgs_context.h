@@ -35,6 +35,12 @@ struct SweepWGSContext : public WGSContext
 
   void ApplyInverseTransportOperator(SourceFlags scope) override;
 
+  /**
+   * True for the methods whose PostSolveCallback sweeps with the converged phi to recover the
+   * angular flux, which also recomputes phi_new.
+   */
+  bool RebuildsFluxAfterSolve() const override;
+
   void PostSolveCallback() override;
   void RebuildAngularFluxFromConvergedPhi(bool include_rhs_time_term,
                                           bool zero_incoming_delayed_psi = false);

@@ -312,6 +312,9 @@ public:
   /// Replaces exterior source moments vector.
   void SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments);
 
+  /// Replaces exterior source moments vector, taking the storage of `ext_src_moments`.
+  void SetExtSrcMomentsFrom(std::vector<double>&& ext_src_moments);
+
   /**
    * With `use_source_moments=true`, throws std::invalid_argument unless source moments matching the
    * flux-moment layout have been provided (e.g. with ReadSourceMoments). Called before a solve that
@@ -611,6 +614,8 @@ private:
   void InitializeSources();
   /// Initializes parallel arrays.
   void InitializeParrays();
+  /// Throws unless `size` matches the local flux-moment DOFs, once they are allocated.
+  void CheckExtSrcMomentsSize(std::size_t size) const;
   std::string MakeScalarFluxFieldFunctionName(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeScalarFluxFieldFunctionData(unsigned int g, unsigned int m) const;
   std::vector<double> ComputeXSFieldFunctionData(const std::string& xs_name) const;

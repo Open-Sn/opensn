@@ -36,8 +36,9 @@ public:
 
 private:
   bool verbose_;
-  std::vector<double> saved_q_moments_local_;
   std::vector<double> psi_new_, psi_old_;
+  /// The groupset's block of phi_new - phi_old, which drives the DSA correction.
+  std::vector<double> phi_change_;
   /// The groupset's block of the scalar flux before acceleration, then the DSA correction.
   std::vector<double> phi_unaccelerated_;
 

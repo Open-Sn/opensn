@@ -3,13 +3,13 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/sweep_wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "framework/utils/error.h"
 #include "framework/logging/log.h"
 #include "caliper/cali.h"
 #include <exception>
+#include <utility>
 
 namespace opensn
 {
@@ -57,35 +57,57 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   WGSContext* gs_context_ptr = nullptr;
   OpenSnPETScCall(MatShellGetContext(matrix, static_cast<void*>(&gs_context_ptr)));
 
-  // Copy krylov action_vector into local
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-    do_problem, groupset, action_vector, PhiSTLOption::PHI_OLD);
+  auto& phi_old = do_problem.GetPhiOldLocal();
+  auto& phi_new = do_problem.GetPhiNewLocal();
+  const auto block = do_problem.GetFluxBlock(groupset);
+  const auto block_size = phi_old.GetBlockSize(block);
+  // Index of the last flux entry; the delayed angular unknowns follow it.
+  const auto last_flux_index = static_cast<int64_t>(block_size) - 1;
 
-  // Setting the source using updated phi_old
-  do_problem.ZeroQMoments();
+  const PetscScalar* v = nullptr;
+  PetscScalar* av = nullptr;
+  OpenSnPETScCall(VecGetArrayRead(action_vector, &v));
+  OpenSnPETScCall(VecGetArray(action, &av));
   {
-    CALI_CXX_MARK_SCOPE("Source");
-    set_source_function(groupset,
-                        do_problem.GetQMomentsLocal().Blocks(),
-                        do_problem.GetPhiOldLocal().ConstBlocks(),
-                        lhs_src_scope_);
-  }
+    // The flux part of the Krylov vector is the groupset's phi_old, and the sweep writes the flux
+    // part of the action directly. Sources go to scratch so that q is left unchanged.
+    const GroupsetBlockedVector::ScopedBlockOverride phi_old_override(
+      phi_old, block, std::span<const double>(v, block_size));
+    const GroupsetBlockedVector::ScopedBlockOverride phi_new_override(
+      phi_new, block, std::span<double>(av, block_size));
+    const auto q_override = gs_context_ptr->RedirectSourceMoments(true);
 
-  // Disable RHS time term in Krylov operator
-  if (auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr))
-  {
-    if (sweep_ctx->sweep_chunk->IsTimeDependent())
+    if (groupset.angle_agg)
+    {
+      auto index = last_flux_index;
+      groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, v);
+    }
+
+    // Setting the source using updated phi_old
+    {
+      CALI_CXX_MARK_SCOPE("Source");
+      set_source_function(groupset,
+                          do_problem.GetQMomentsLocal().Blocks(),
+                          do_problem.GetPhiOldLocal().ConstBlocks(),
+                          lhs_src_scope_);
+    }
+
+    // Disable RHS time term in Krylov operator
+    if (auto* sweep_ctx = dynamic_cast<SweepWGSContext*>(gs_context_ptr);
+        sweep_ctx and sweep_ctx->sweep_chunk->IsTimeDependent())
       sweep_ctx->sweep_chunk->IncludeRHSTimeTerm(false);
+
+    // Apply transport operator
+    gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope_);
+
+    if (groupset.angle_agg)
+    {
+      auto index = last_flux_index;
+      groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, av);
+    }
   }
-
-  // Apply transport operator
-  gs_context_ptr->ApplyInverseTransportOperator(lhs_src_scope_);
-
-  // Copy local into operating vector
-  // We copy the STL data to the operating vector
-  // petsc_phi_delta first because it's already sized.
-  // pc_output is not necessarily initialized yet.
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, action, PhiSTLOption::PHI_NEW);
+  OpenSnPETScCall(VecRestoreArray(action, &av));
+  OpenSnPETScCall(VecRestoreArrayRead(action_vector, &v));
 
   // Computing action
   // A  = [I - DLinvMS]
@@ -94,6 +116,19 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   OpenSnPETScCall(VecAYPX(action, -1.0, action_vector));
 
   return 0;
+}
+
+GroupsetBlockedVector::ScopedBlockOverride
+WGSContext::RedirectSourceMoments(bool zero)
+{
+  auto& q_moments = do_problem.GetQMomentsLocal();
+  const auto block = do_problem.GetFluxBlock(groupset);
+  const auto owned = std::as_const(q_moments).Block(block);
+  if (zero)
+    source_scratch_.assign(owned.size(), 0.0);
+  else
+    source_scratch_.assign(owned.begin(), owned.end());
+  return {q_moments, block, std::span<double>(source_scratch_)};
 }
 
 ScopedRestore

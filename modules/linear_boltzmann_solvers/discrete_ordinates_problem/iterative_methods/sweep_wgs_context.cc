@@ -161,21 +161,29 @@ SweepWGSContext::ApplyInverseTransportOperator(SourceFlags scope)
   ++sweep_stats_.num_sweeps;
 }
 
+bool
+SweepWGSContext::RebuildsFluxAfterSolve() const
+{
+  // Krylov methods need the final sweep to recover the actual solution. CSDA problems also need it
+  // with classic Richardson to refresh angular, energy-slope, and outflow data from the final
+  // scalar iterate.
+  return (groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON and
+          do_problem.GetOptions().csda_enabled) or
+         groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
+         groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_FGMRES or
+         groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB or
+         (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
+          groupset.max_iterations > 1);
+}
+
 void
 SweepWGSContext::PostSolveCallback()
 {
-
-  // Perform final sweep with converged phi and delayed psi dofs. This step is necessary for
-  // Krylov methods to recover the actual solution. CSDA problems also need it with classic
-  // Richardson to refresh angular, energy-slope, and outflow data from the final scalar iterate.
-  if ((groupset.iterative_method == LinearSystemSolver::IterativeMethod::CLASSIC_RICHARDSON and
-       do_problem.GetOptions().csda_enabled) or
-      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_GMRES or
-      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_FGMRES or
-      groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_BICGSTAB or
-      (groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
-       groupset.max_iterations > 1))
+  // Perform final sweep with converged phi and delayed psi dofs. Its sources go to scratch, so the
+  // solve leaves q unchanged.
+  if (RebuildsFluxAfterSolve())
   {
+    const auto q_override = RedirectSourceMoments(false);
     RebuildAngularFluxFromConvergedPhi(sweep_chunk->IsTimeDependent());
   }
 }

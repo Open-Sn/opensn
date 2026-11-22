@@ -560,9 +560,10 @@ WrapLBS(py::module& slv)
     "ReadSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
-      auto ext_src_moments = self.GetExtSrcMomentsLocal();
+      // ReadFluxMoments replaces the whole vector, so it starts empty.
+      std::vector<double> ext_src_moments;
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, ext_src_moments);
-      self.SetExtSrcMomentsFrom(ext_src_moments);
+      self.SetExtSrcMomentsFrom(std::move(ext_src_moments));
     },
     R"(
     Read source moments from file.

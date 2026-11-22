@@ -484,23 +484,29 @@ LBSProblem::GetExtSrcMomentsLocal() const
 }
 
 void
-LBSProblem::SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments)
+LBSProblem::CheckExtSrcMomentsSize(std::size_t size) const
 {
   if (not phi_old_local_.Empty())
-    OpenSnLogicalErrorIf(ext_src_moments.size() != phi_old_local_.Size(),
-                         "SetExtSrcMomentsFrom size mismatch. Provided size=" +
-                           std::to_string(ext_src_moments.size()) +
-                           ", expected local DOFs=" + std::to_string(phi_old_local_.Size()) + ".");
-
-  if (ext_src_moments_local_.empty())
-  {
-    ext_src_moments_local_ = ext_src_moments;
-    return;
-  }
-
-  assert(ext_src_moments.size() == ext_src_moments_local_.size() &&
+    OpenSnLogicalErrorIf(
+      size != phi_old_local_.Size(),
+      "SetExtSrcMomentsFrom size mismatch. Provided size=" + std::to_string(size) +
+        ", expected local DOFs=" + std::to_string(phi_old_local_.Size()) + ".");
+  assert((ext_src_moments_local_.empty() or size == ext_src_moments_local_.size()) &&
          "SetExtSrcMomentsFrom size mismatch.");
+}
+
+void
+LBSProblem::SetExtSrcMomentsFrom(const std::vector<double>& ext_src_moments)
+{
+  CheckExtSrcMomentsSize(ext_src_moments.size());
   ext_src_moments_local_ = ext_src_moments;
+}
+
+void
+LBSProblem::SetExtSrcMomentsFrom(std::vector<double>&& ext_src_moments)
+{
+  CheckExtSrcMomentsSize(ext_src_moments.size());
+  ext_src_moments_local_ = std::move(ext_src_moments);
 }
 
 void

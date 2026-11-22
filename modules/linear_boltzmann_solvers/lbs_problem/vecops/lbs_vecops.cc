@@ -152,30 +152,6 @@ LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
 }
 
 void
-LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-  LBSProblem& lbs_problem, const LBSGroupset& groupset, Vec src, PhiSTLOption dest, int64_t offset)
-{
-  auto& dest_vector =
-    (dest == PhiSTLOption::PHI_NEW) ? lbs_problem.GetPhiNewLocal() : lbs_problem.GetPhiOldLocal();
-  const auto dest_phi = dest_vector.Block(lbs_problem.GetFluxBlock(groupset));
-  const PetscScalar* petsc_src = nullptr;
-  OpenSnPETScCall(VecGetArrayRead(src, &petsc_src));
-  int64_t index = offset + GroupsetScopedCopy(lbs_problem,
-                                              groupset.first_group,
-                                              groupset.GetNumGroups(),
-                                              [&](int64_t idx, size_t mapped_idx)
-                                              { dest_phi[mapped_idx] = petsc_src[offset + idx]; });
-  if (groupset.angle_agg)
-  {
-    if (dest == PhiSTLOption::PHI_NEW)
-      groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, petsc_src);
-    else if (dest == PhiSTLOption::PHI_OLD)
-      groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, petsc_src);
-  }
-  OpenSnPETScCall(VecRestoreArrayRead(src, &petsc_src));
-}
-
-void
 LBSVecOps::SetGroupScopedPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
                                                       unsigned int first_group_id,
                                                       unsigned int last_group_id,
