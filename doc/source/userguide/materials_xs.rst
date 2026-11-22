@@ -355,8 +355,10 @@ from existing behavior:
 * ``problem.CreateFieldFunction("edep", "energy_deposition")`` gives
   :math:`\sum_g \mathrm{ED}_g\,\phi_g` in each cell when CSDA is not
   enabled. With ``csda_enabled=True``, ``energy_deposition`` is an alias of
-  ``csda_energy_deposition`` (see :doc:`csda`), and the imported values are
-  read by the field function ``cepxs_energy_deposition``. The volume
+  ``csda_energy_deposition`` (see :doc:`csda`). The imported values are read by
+  the field function ``cepxs_energy_deposition``, which weights them by the
+  scalar flux and adds the CSDA stopping-power and terminal cutoff
+  contributions. The volume
   postprocessor's cross-section multiplier reads the imported vector by name
   and gives the per-group integrals over a logical volume, whose sum is the
   integral (see :doc:`post_processors`).
@@ -368,9 +370,10 @@ from existing behavior:
 * ``Scale(f)`` multiplies the values by ``f``, from the original baseline like
   the other data.
 
-The section changes no transport or eigenvalue result. It only supplies data
-for the ``energy_deposition`` and ``cepxs_energy_deposition`` field
-functions.
+The section changes no transport or eigenvalue result. The data are read by
+the ``energy_deposition`` field function (without CSDA), by the
+``cepxs_energy_deposition`` field function, and by the volume postprocessor's
+cross-section multiplier.
 
 Delayed-Neutron Data and Solver Behavior
 ----------------------------------------
