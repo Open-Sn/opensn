@@ -353,11 +353,13 @@ The values are stored in the same data that
 from existing behavior:
 
 * ``problem.CreateFieldFunction("edep", "energy_deposition")`` gives
-  :math:`\sum_g \mathrm{ED}_g\,\phi_g` in each cell, and the volume
-  postprocessor's cross-section multiplier gives the per-group integrals over
-  a logical volume, whose sum is the integral (see :doc:`post_processors`).
-  Without CSDA this field function is the imported cross section weighted by
-  the scalar flux.
+  :math:`\sum_g \mathrm{ED}_g\,\phi_g` in each cell when CSDA is not
+  enabled. With ``csda_enabled=True``, ``energy_deposition`` is an alias of
+  ``csda_energy_deposition`` (see :doc:`csda`), and the imported values are
+  read by the field function ``cepxs_energy_deposition``. The volume
+  postprocessor's cross-section multiplier reads the imported vector by name
+  and gives the per-group integrals over a logical volume, whose sum is the
+  integral (see :doc:`post_processors`).
 * ``Combine`` adds the values with the density weights, as for the other
   one-dimensional cross sections: for densities 0.3 and 0.7 the combined entry
   of each group is :math:`0.3\,\mathrm{ED}_a + 0.7\,\mathrm{ED}_b`. A
@@ -367,7 +369,8 @@ from existing behavior:
   the other data.
 
 The section changes no transport or eigenvalue result. It only supplies data
-for the ``energy_deposition`` field function.
+for the ``energy_deposition`` and ``cepxs_energy_deposition`` field
+functions.
 
 Delayed-Neutron Data and Solver Behavior
 ----------------------------------------
