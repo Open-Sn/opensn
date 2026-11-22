@@ -355,8 +355,9 @@ from existing behavior:
 * ``problem.CreateFieldFunction("edep", "energy_deposition")`` gives
   :math:`\sum_g \mathrm{ED}_g\,\phi_g` in each cell, and the volume
   postprocessor's cross-section multiplier gives the per-group integrals over
-  a logical volume, whose sum is the integral (see :doc:`post_processors`). Without CSDA this field function is the
-  imported cross section weighted by the scalar flux.
+  a logical volume, whose sum is the integral (see :doc:`post_processors`).
+  Without CSDA this field function is the imported cross section weighted by
+  the scalar flux.
 * ``Combine`` adds the values with the density weights, as for the other
   one-dimensional cross sections: for densities 0.3 and 0.7 the combined entry
   of each group is :math:`0.3\,\mathrm{ED}_a + 0.7\,\mathrm{ED}_b`. A
