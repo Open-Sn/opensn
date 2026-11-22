@@ -628,6 +628,25 @@ TEST(XSFileTest, EnergyDepositionRefusals)
   ExpectRefused("ENERGY_DEPOSITION_BEGIN\n0 0.1\n1\n2 0.3\nENERGY_DEPOSITION_END\n");
   ExpectRefused("ENERGY_DEPOSITION_BEGIN\n0 0.1\n1 0.2\n2 0.3\n");
 
+  // An index that is not a whole unsigned integer.
+  for (const std::string bad : {"1.5", "-1"})
+  {
+    const auto fname = MakeTempThreeGroupXSFile("ENERGY_DEPOSITION_BEGIN\n0 0.1\n" + bad +
+                                                " 0.2\n2 0.3\nENERGY_DEPOSITION_END\n");
+    try
+    {
+      ReadAndRemove(fname);
+      ADD_FAILURE() << "index " << bad << " was accepted";
+    }
+    catch (const std::logic_error& err)
+    {
+      EXPECT_NE(std::string(err.what()).find("Unknown entry token \"" + bad + "\""),
+                std::string::npos)
+        << err.what();
+    }
+    EXPECT_FALSE(std::filesystem::exists(fname));
+  }
+
   // The section before NUM_GROUPS, with entries and without.
   ExpectRefused("", block);
   ExpectRefused("", "ENERGY_DEPOSITION_BEGIN\nENERGY_DEPOSITION_END\n");

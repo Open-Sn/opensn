@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/caliper_scopes.h"
 
+#include <cctype>
 #include <cmath>
 #include <unordered_set>
 
@@ -659,7 +660,12 @@ XSFile::Read1DData(const std::string& keyword,
         double value = 0.0;
         try
         {
-          i = static_cast<std::size_t>(std::stoul(first_token));
+          // The index must be the whole token: no sign, no fraction.
+          OpenSnLogicalErrorIf(not std::isdigit(static_cast<unsigned char>(first_token.front())),
+                               "Index does not start with a digit.");
+          std::size_t pos = 0;
+          i = static_cast<std::size_t>(std::stoul(first_token, &pos));
+          OpenSnLogicalErrorIf(pos != first_token.size(), "Index is not an integer.");
           OpenSnLogicalErrorIf(not(static_cast<bool>(line_stream >> value)),
                                "Failed parsing indexed 1D data line.");
         }
