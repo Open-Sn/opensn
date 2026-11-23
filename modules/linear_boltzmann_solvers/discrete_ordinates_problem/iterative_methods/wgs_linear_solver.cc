@@ -68,7 +68,7 @@ WGSLinearSolver::ReleaseWorkspace()
   OpenSnPETScCall(VecDestroy(&rhs_preconditioned_work_));
   std::dynamic_pointer_cast<WGSContext>(context_ptr_)->ReleaseSourceScratch();
   PETScLinearSolver::ReleaseWorkspace();
-  x_aliases_phi_old_ = false;
+  aliases_flux_ = false;
 }
 
 void
@@ -77,11 +77,12 @@ WGSLinearSolver::Solve()
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_wgs("WGS", CaliperWGSScopeDepth());
   CaliperRegionScope cali_method(WGSMethodName(method_), CaliperWGSMethodScopeDepth());
-  // A solution vector that views phi_old is stale once phi_old is reallocated.
-  if (x_aliases_phi_old_)
+  // Vectors that view phi_old and phi_new are stale once either is reallocated.
+  if (aliases_flux_)
   {
     const auto& do_problem = std::dynamic_pointer_cast<WGSContext>(context_ptr_)->do_problem;
-    if (do_problem.GetPhiOldLocal().GetGeneration() != x_alias_generation_)
+    if (do_problem.GetPhiOldLocal().GetGeneration() != phi_old_generation_ or
+        do_problem.GetPhiNewLocal().GetGeneration() != phi_new_generation_)
       ReleaseWorkspace();
   }
   PETScLinearSolver::Solve();
@@ -115,35 +116,69 @@ WGSLinearSolver::SetSystem()
   if (IsSystemSet())
     return;
 
-  // Without delayed angular unknowns, the solution vector is exactly the groupset's phi_old block,
-  // so x_ views that block and the initial guess and the solution need no copies. The count of
-  // delayed unknowns is global, so every rank takes the same branch.
+  // The solution and right-hand-side vectors are the groupset's flux block followed by its local
+  // delayed angular unknowns. Without delayed unknowns, x_ and b_ view the groupset's owned blocks
+  // of phi_old and phi_new. The last block can also hold the delayed unknowns in the tail after it,
+  // which the problem reserves when it builds the solvers. The owned phi_new block is free while
+  // the right-hand side is needed: the Krylov operator redirects phi_new to its output, and
+  // phi_new is next written after the solve. The count of delayed unknowns is global and the block
+  // order is the same on every rank, so every rank takes the same branch.
   auto gs_context_ptr = std::dynamic_pointer_cast<WGSContext>(context_ptr_);
   auto& groupset = gs_context_ptr->groupset;
-  auto& phi_old = gs_context_ptr->do_problem.GetPhiOldLocal();
-  x_aliases_phi_old_ =
-    not groupset.angle_agg or groupset.angle_agg->GetNumDelayedAngularDOFs().second == 0;
-  if (x_aliases_phi_old_)
+  auto& do_problem = gs_context_ptr->do_problem;
+  auto& phi_old = do_problem.GetPhiOldLocal();
+  auto& phi_new = do_problem.GetPhiNewLocal();
+  const auto block = do_problem.GetFluxBlock(groupset);
+  const auto num_delayed_psi = groupset.angle_agg ? groupset.angle_agg->GetNumDelayedAngularDOFs()
+                                                  : std::pair<std::size_t, std::size_t>{0, 0};
+  aliases_flux_ = num_delayed_psi.second == 0 or block + 1 == phi_old.GetNumBlocks();
+  const auto groupset_name = "WGSLinearSolver: groups [" + std::to_string(groupset.first_group) +
+                             "-" + std::to_string(groupset.last_group) + "]";
+  if (aliases_flux_)
   {
-    const auto owned = phi_old.OwnedBlock(gs_context_ptr->do_problem.GetFluxBlock(groupset));
-    OpenSnLogicalErrorIf(
-      std::cmp_not_equal(owned.size(), num_local_dofs_),
-      "WGSLinearSolver: the flux block of groups [" + std::to_string(groupset.first_group) + "-" +
-        std::to_string(groupset.last_group) + "] has " + std::to_string(owned.size()) +
-        " entries on rank " + std::to_string(opensn::mpi_comm.rank()) + ", but the system has " +
-        std::to_string(num_local_dofs_) + ".");
+    const auto tail_size = num_delayed_psi.first;
+    // The solver must not reallocate the flux storage, which others may be viewing.
+    OpenSnLogicalErrorIf(tail_size > phi_old.GetTailCapacity() or
+                           tail_size > phi_new.GetTailCapacity(),
+                         groupset_name + " need " + std::to_string(tail_size) +
+                           " tail entries for delayed angular unknowns on rank " +
+                           std::to_string(opensn::mpi_comm.rank()) + ", but phi_old has " +
+                           std::to_string(phi_old.GetTailCapacity()) + " and phi_new has " +
+                           std::to_string(phi_new.GetTailCapacity()) + ".");
+    const auto x_storage = phi_old.OwnedBlockWithTail(block, tail_size);
+    const auto b_storage = phi_new.OwnedBlockWithTail(block, tail_size);
+    OpenSnLogicalErrorIf(std::cmp_not_equal(x_storage.size(), num_local_dofs_),
+                         groupset_name + " have " + std::to_string(x_storage.size()) +
+                           " flux and delayed unknowns on rank " +
+                           std::to_string(opensn::mpi_comm.rank()) + ", but the system has " +
+                           std::to_string(num_local_dofs_) + ".");
     OpenSnPETScCall(VecCreateMPIWithArray(
-      opensn::mpi_comm, 1, num_local_dofs_, num_global_dofs_, owned.data(), &x_));
+      opensn::mpi_comm, 1, num_local_dofs_, num_global_dofs_, x_storage.data(), &x_));
+    OpenSnPETScCall(VecCreateMPIWithArray(
+      opensn::mpi_comm, 1, num_local_dofs_, num_global_dofs_, b_storage.data(), &b_));
     OpenSnPETScCall(VecSetOption(x_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
-    x_alias_generation_ = phi_old.GetGeneration();
+    OpenSnPETScCall(VecSetOption(b_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
+    phi_old_generation_ = phi_old.GetGeneration();
+    phi_new_generation_ = phi_new.GetGeneration();
   }
   else
   {
     x_ = CreateVector(num_local_dofs_, num_global_dofs_);
     OpenSnPETScCall(VecSet(x_, 0.0));
+    OpenSnPETScCall(VecDuplicate(x_, &b_));
   }
-  OpenSnPETScCall(VecDuplicate(x_, &b_));
-  OpenSnPETScCall(VecDuplicate(x_, &rhs_preconditioned_work_));
+
+  // The work vector is used only after the sources of the right-hand side are built, so it can use
+  // the source scratch. Request its full size first, so that later redirects keep its address.
+  const auto work_storage =
+    gs_context_ptr->GetSourceScratch(static_cast<std::size_t>(num_local_dofs_));
+  OpenSnPETScCall(VecCreateMPIWithArray(opensn::mpi_comm,
+                                        1,
+                                        num_local_dofs_,
+                                        num_global_dofs_,
+                                        work_storage.data(),
+                                        &rhs_preconditioned_work_));
+  OpenSnPETScCall(VecSetOption(rhs_preconditioned_work_, VEC_IGNORE_NEGATIVE_INDICES, PETSC_TRUE));
 
   // Create the matrix-shell
   OpenSnPETScCall(MatCreateShell(opensn::mpi_comm,
@@ -199,7 +234,23 @@ WGSLinearSolver::SetInitialGuess()
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
 
-  if (not x_aliases_phi_old_)
+  if (aliases_flux_)
+  {
+    // The flux part of x_ is phi_old; append the delayed unknowns. Getting and restoring the array
+    // also tells PETSc that x_ may have changed, since phi_old is written outside PETSc, so that
+    // VecNorm does not return a norm it cached before.
+    PetscScalar* x = nullptr;
+    OpenSnPETScCall(VecGetArray(x_, &x));
+    if (groupset.angle_agg)
+    {
+      const auto block_size =
+        do_problem.GetPhiOldLocal().GetBlockSize(do_problem.GetFluxBlock(groupset));
+      auto index = static_cast<int64_t>(block_size) - 1;
+      groupset.angle_agg->AppendOldDelayedAngularDOFsToArray(index, x);
+    }
+    OpenSnPETScCall(VecRestoreArray(x_, &x));
+  }
+  else
     LBSVecOps::SetGSPETScVecFromPrimarySTLvector(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
   double init_guess_norm = 0.0;
@@ -310,11 +361,12 @@ WGSLinearSolver::PostSolveCallback()
 
   // Copy x to the local solution. The flux part of x is the groupset's block in order. A view of
   // phi_old already holds it, and a context that rebuilds phi_new after the solve overwrites it.
+  // When b_ views phi_new, this copy overwrites the right-hand side, which is no longer needed.
   const auto block = do_problem.GetFluxBlock(groupset);
   const auto block_size = do_problem.GetPhiOldLocal().GetBlockSize(block);
   const PetscScalar* x = nullptr;
   OpenSnPETScCall(VecGetArrayRead(x_, &x));
-  if (not x_aliases_phi_old_)
+  if (not aliases_flux_)
     std::copy_n(x, block_size, do_problem.GetPhiOldLocal().Block(block).begin());
   if (not gs_context_ptr->RebuildsFluxAfterSolve())
     std::copy_n(x, block_size, do_problem.GetPhiNewLocal().Block(block).begin());

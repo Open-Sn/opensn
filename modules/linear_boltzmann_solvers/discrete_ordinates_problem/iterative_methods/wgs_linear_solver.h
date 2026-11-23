@@ -23,6 +23,10 @@ public:
 
   ~WGSLinearSolver() override;
 
+  /**
+   * Builds the system if needed and solves it. Rebuilds the system first when x_ and b_ view flux
+   * storage that has been reallocated since they were built.
+   */
   void Solve() override;
 
   /// Destroys the KSP, the operator, the vectors, and the source scratch of the context.
@@ -40,14 +44,18 @@ protected:
   void SetInitialGuess() override;
   void PostSolveCallback() override;
 
+  /// Work vector for the preconditioned right-hand side; a view of the context's source scratch.
   Vec rhs_preconditioned_work_;
   /**
-   * True when x_ is a view of the groupset's owned phi_old block, which is possible when the
-   * groupset has no delayed angular unknowns. The view is valid for the generation of phi_old in
-   * x_alias_generation_.
+   * True when x_ and b_ view the groupset's owned blocks of phi_old and phi_new, extended into the
+   * vectors' tails by the local delayed angular unknowns. That is possible when the groupset has no
+   * delayed angular unknowns on any rank, or when its block is the last one. Otherwise x_ and b_
+   * own their storage. The views are valid for the generations in phi_old_generation_ and
+   * phi_new_generation_.
    */
-  bool x_aliases_phi_old_ = false;
-  std::uint64_t x_alias_generation_ = 0;
+  bool aliases_flux_ = false;
+  std::uint64_t phi_old_generation_ = 0;
+  std::uint64_t phi_new_generation_ = 0;
 };
 
 } // namespace opensn

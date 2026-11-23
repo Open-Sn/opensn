@@ -453,7 +453,9 @@ WrapLBS(py::module& slv)
     For a problem with one groupset the view aliases the solver's storage without copying it.
     With several groupsets the solver stores each groupset separately, so the view holds a
     reordered copy taken when this method is called. In both cases, call this method again after
-    a solve instead of reusing an earlier view.
+    a solve, or after a call that reconfigures the problem (such as changing boundary options,
+    the mode, adjoint mode, or cross sections), instead of reusing an earlier view: such a call
+    can move the storage, which leaves an earlier aliasing view invalid.
     )"
   );
   lbs_problem.def(
@@ -478,7 +480,9 @@ WrapLBS(py::module& slv)
     For a problem with one groupset the view aliases the solver's storage without copying it.
     With several groupsets the solver stores each groupset separately, so the view holds a
     reordered copy taken when this method is called. In both cases, call this method again after
-    a solve instead of reusing an earlier view.
+    a solve, or after a call that reconfigures the problem (such as changing boundary options,
+    the mode, adjoint mode, or cross sections), instead of reusing an earlier view: such a call
+    can move the storage, which leaves an earlier aliasing view invalid.
     )"
   );
   lbs_problem.def(

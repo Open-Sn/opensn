@@ -89,12 +89,23 @@ struct WGSContext : public LinearSystemContext
   /**
    * Redirects the groupset's block of the source moments to a scratch block of this context until
    * the returned guard is destroyed, so that sources built under the guard leave the problem's
-   * source moments unchanged. The scratch starts as a copy of the owned block, or as zero with
-   * `zero`. Install the guard outside threaded regions.
+   * source moments unchanged. The scratch block is the start of the scratch buffer of
+   * GetSourceScratch. It starts as a copy of the owned block, or as zero with `zero`. The buffer
+   * grows if it is shorter than the block, but never shrinks. Install the guard outside threaded
+   * regions.
    */
   [[nodiscard]] GroupsetBlockedVector::ScopedBlockOverride RedirectSourceMoments(bool zero);
 
-  /// Frees the scratch block of RedirectSourceMoments. Call only when no guard is active.
+  /**
+   * The first `size` entries of the scratch buffer of RedirectSourceMoments, which a caller may use
+   * as work space while no guard is active. The buffer grows to `size` entries if it is shorter,
+   * which moves it, and keeps its address otherwise. A caller that keeps the address must therefore
+   * request its full size first, before any redirect, and must not rely on the contents surviving
+   * a redirect. The address stays valid until ReleaseSourceScratch.
+   */
+  std::span<double> GetSourceScratch(std::size_t size);
+
+  /// Frees the scratch buffer. Call only when no guard is active and no caller holds its address.
   void ReleaseSourceScratch() { source_scratch_ = std::vector<double>(); }
 
   /// Sources treated implicitly (in the operator) by the within-group solve.

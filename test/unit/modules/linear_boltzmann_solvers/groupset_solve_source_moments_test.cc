@@ -56,8 +56,10 @@ MakeScatteringXS()
   return xs;
 }
 
-/// A 2D P1 problem with groupsets (0) and (1, 2) solved by `method`. A reflecting boundary gives
-/// the groupset solves delayed angular unknowns.
+/// A 2D P1 problem with groupsets (0) and (1, 2) solved by `method`. With `reflecting`, the
+/// opposing reflecting boundaries xmin and xmax give the groupset solves delayed angular unknowns;
+/// a single reflecting boundary would not. The first groupset's solver then owns its vectors, and
+/// the second's, whose block is last, views the flux storage and its tail.
 std::shared_ptr<DiscreteOrdinatesProblem>
 MakeProblem(const std::string& method, int max_iterations, bool reflecting)
 {
@@ -94,11 +96,14 @@ MakeProblem(const std::string& method, int max_iterations, bool reflecting)
   params.AddParameter(xs_map);
   if (reflecting)
   {
-    ParameterBlock boundary("0");
-    boundary.AddParameter("name", std::string("xmin"));
-    boundary.AddParameter("type", std::string("reflecting"));
     ParameterBlock boundaries("boundary_conditions");
-    boundaries.AddParameter(boundary);
+    for (const std::string name : {"xmin", "xmax"})
+    {
+      ParameterBlock boundary(std::to_string(boundaries.GetNumParameters()));
+      boundary.AddParameter("name", name);
+      boundary.AddParameter("type", std::string("reflecting"));
+      boundaries.AddParameter(boundary);
+    }
     boundaries.ChangeToArray();
     params.AddParameter(boundaries);
   }

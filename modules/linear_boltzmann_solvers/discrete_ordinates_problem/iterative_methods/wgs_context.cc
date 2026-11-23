@@ -8,6 +8,7 @@
 #include "framework/utils/error.h"
 #include "framework/logging/log.h"
 #include "caliper/cali.h"
+#include <algorithm>
 #include <exception>
 #include <utility>
 
@@ -124,11 +125,21 @@ WGSContext::RedirectSourceMoments(bool zero)
   auto& q_moments = do_problem.GetQMomentsLocal();
   const auto block = do_problem.GetFluxBlock(groupset);
   const auto owned = std::as_const(q_moments).Block(block);
+  const auto scratch = GetSourceScratch(owned.size());
   if (zero)
-    source_scratch_.assign(owned.size(), 0.0);
+    std::fill(scratch.begin(), scratch.end(), 0.0);
   else
-    source_scratch_.assign(owned.begin(), owned.end());
-  return {q_moments, block, std::span<double>(source_scratch_)};
+    std::copy(owned.begin(), owned.end(), scratch.begin());
+  return {q_moments, block, scratch};
+}
+
+std::span<double>
+WGSContext::GetSourceScratch(std::size_t size)
+{
+  // Allocate the exact size rather than through resize, whose growth policy may reserve more.
+  if (source_scratch_.size() < size)
+    source_scratch_ = std::vector<double>(size, 0.0);
+  return {source_scratch_.data(), size};
 }
 
 ScopedRestore

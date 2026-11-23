@@ -6,6 +6,7 @@
 #include "framework/utils/error.h"
 #include <algorithm>
 #include <string>
+#include <utility>
 
 namespace opensn
 {
@@ -27,11 +28,46 @@ GroupsetBlockedVector::Resize(const std::vector<std::size_t>& block_sizes)
     block_offset.push_back(block_offset.back() + size);
 
   const double* old_address = data_.data();
-  data_.assign(block_offset.back(), 0.0);
+  data_.assign(block_offset.back() + GetTailCapacity(), 0.0);
   if (block_offset != block_offset_ or data_.data() != old_address)
     ++generation_;
   block_offset_ = std::move(block_offset);
   redirect_.assign(block_sizes.size(), Redirect{});
+}
+
+void
+GroupsetBlockedVector::ReserveTail(std::size_t num_entries)
+{
+  if (IsRedirected())
+    ThrowRedirected("ReserveTail");
+  if (num_entries <= GetTailCapacity())
+    return;
+  const double* old_address = data_.data();
+  // Reallocate explicitly rather than through resize, whose growth policy may reserve more.
+  std::vector<double> data(Size() + num_entries, 0.0);
+  std::copy_n(data_.begin(), Size(), data.begin());
+  data_ = std::move(data);
+  if (data_.data() != old_address)
+    ++generation_;
+}
+
+std::span<double>
+GroupsetBlockedVector::OwnedBlockWithTail(std::size_t block, std::size_t tail_size)
+{
+  OpenSnInvalidArgumentIf(block >= GetNumBlocks(),
+                          "GroupsetBlockedVector::OwnedBlockWithTail: block " +
+                            std::to_string(block) + " does not exist; the vector has " +
+                            std::to_string(GetNumBlocks()) + " blocks.");
+  OpenSnInvalidArgumentIf(tail_size > 0 and block + 1 != GetNumBlocks(),
+                          "GroupsetBlockedVector::OwnedBlockWithTail: only the last block can "
+                          "extend into the tail, but block " +
+                            std::to_string(block) + " of " + std::to_string(GetNumBlocks()) +
+                            " was given a tail of " + std::to_string(tail_size) + " entries.");
+  OpenSnInvalidArgumentIf(tail_size > GetTailCapacity(),
+                          "GroupsetBlockedVector::OwnedBlockWithTail: requested " +
+                            std::to_string(tail_size) + " tail entries, but the tail has " +
+                            std::to_string(GetTailCapacity()) + ".");
+  return {data_.data() + block_offset_[block], GetBlockSize(block) + tail_size};
 }
 
 void

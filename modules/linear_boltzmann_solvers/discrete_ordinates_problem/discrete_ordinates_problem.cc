@@ -942,6 +942,21 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   max_groupset_size_ = solver_scheme.max_groupset_size;
   max_level_size_ = solver_scheme.max_level_size;
   max_angleset_size_ = solver_scheme.max_angleset_size;
+
+  // The within-groupset solver of the groupset whose flux block is last views phi_old and phi_new
+  // as its solution and right-hand-side vectors. Those vectors also hold the groupset's delayed
+  // angular unknowns, which the tail after the last block provides. The sweep schedulers built
+  // above allocate the delayed storage that the count reads. The count is collective on first use
+  // and every rank calls it.
+  const auto last_block = flux_moment_layout_.GetNumBlocks() - 1;
+  for (const auto& groupset : groupsets_)
+  {
+    if (GetFluxBlock(groupset) != last_block or not groupset.angle_agg)
+      continue;
+    const auto num_delayed_psi = groupset.angle_agg->GetNumDelayedAngularDOFs().first;
+    phi_old_local_.ReserveTail(num_delayed_psi);
+    phi_new_local_.ReserveTail(num_delayed_psi);
+  }
 }
 
 void

@@ -31,9 +31,14 @@ class GroupsetBlockedSpan;
  * Whole-vector access (Data, Fill, Scale, Assign) requires that no block is redirected and throws
  * std::logic_error otherwise, so it cannot silently read or write stale owned storage.
  *
- * Fill, Scale and Assign keep the buffer address. Only Resize can reallocate the buffer, and it
- * then increments GetGeneration, so holders of pointers into the owned storage can detect that they
- * are stale.
+ * The buffer can also hold a tail: spare entries directly after the last block, which a solver
+ * can use to extend the last block's storage with unknowns that are not flux moments (see
+ * ReserveTail and OwnedBlockWithTail). The tail is not part of the vector: Size, Empty, Data, Fill,
+ * Scale and Assign cover the blocks only.
+ *
+ * Fill, Scale and Assign keep the buffer address. Only Resize and ReserveTail can reallocate the
+ * buffer, and they then increment GetGeneration, so holders of pointers into the owned storage can
+ * detect that they are stale.
  *
  * Installing and releasing overrides is not thread safe: do it outside threaded regions.
  */
@@ -55,10 +60,22 @@ public:
   ~GroupsetBlockedVector() = default;
 
   /**
-   * Sets the block entry counts and every entry to zero. The generation changes when the block
-   * sizes or the buffer address change. Throws std::logic_error while a block is redirected.
+   * Sets the block entry counts and every entry, including the tail, to zero. Keeps the tail
+   * capacity. The generation changes when the block sizes or the buffer address change. Throws
+   * std::logic_error while a block is redirected.
    */
   void Resize(const std::vector<std::size_t>& block_sizes);
+
+  /**
+   * Ensures that at least `num_entries` owned entries follow the last block. When the capacity
+   * grows, the buffer is reallocated with the block contents kept and the whole tail zero, and the
+   * generation changes; otherwise nothing changes. Throws std::logic_error while a block is
+   * redirected.
+   */
+  void ReserveTail(std::size_t num_entries);
+
+  /// Number of owned entries after the last block.
+  std::size_t GetTailCapacity() const { return data_.size() - block_offset_.back(); }
 
   std::size_t GetNumBlocks() const { return block_offset_.size() - 1; }
 
@@ -75,12 +92,13 @@ public:
     return block_offset_[block + 1] - block_offset_[block];
   }
 
-  /// Total entry count of all blocks.
-  std::size_t Size() const { return data_.size(); }
+  /// Total entry count of all blocks, without the tail.
+  std::size_t Size() const { return block_offset_.back(); }
 
-  bool Empty() const { return data_.empty(); }
+  bool Empty() const { return Size() == 0; }
 
-  /// Changes whenever Resize changes the block sizes or reallocates the buffer.
+  /// Changes whenever Resize changes the block sizes or Resize or ReserveTail reallocates the
+  /// buffer.
   std::uint64_t GetGeneration() const { return generation_; }
 
   /// True while any block is redirected.
@@ -121,20 +139,28 @@ public:
     return {data_.data() + block_offset_[block], GetBlockSize(block)};
   }
 
-  /// The whole owned buffer. Throws std::logic_error while a block is redirected.
+  /**
+   * Owned storage of block `block` followed by the first `tail_size` entries of the tail, whether
+   * or not the block is redirected. Valid until the generation changes. Throws
+   * std::invalid_argument unless `tail_size` is 0, or `block` is the last block and `tail_size` is
+   * at most GetTailCapacity().
+   */
+  std::span<double> OwnedBlockWithTail(std::size_t block, std::size_t tail_size);
+
+  /// The whole owned vector, without the tail. Throws std::logic_error while a block is redirected.
   std::span<double> Data()
   {
     if (IsRedirected())
       ThrowRedirected("Data");
-    return data_;
+    return {data_.data(), Size()};
   }
 
-  /// The whole owned buffer, for reading. Throws std::logic_error while a block is redirected.
+  /// The whole owned vector, for reading. Throws std::logic_error while a block is redirected.
   std::span<const double> Data() const
   {
     if (IsRedirected())
       ThrowRedirected("Data");
-    return data_;
+    return {data_.data(), Size()};
   }
 
   /**
@@ -173,8 +199,9 @@ private:
   [[noreturn]] static void ThrowReadOnlyBlock(std::size_t block);
   [[noreturn]] static void ThrowRedirected(const char* operation);
 
+  /// The blocks, in order, followed by the tail.
   std::vector<double> data_;
-  /// Offset of each block, followed by the total entry count.
+  /// Offset of each block, followed by the total entry count of the blocks.
   std::vector<std::size_t> block_offset_{0};
   std::vector<Redirect> redirect_;
   std::size_t num_redirected_ = 0;
