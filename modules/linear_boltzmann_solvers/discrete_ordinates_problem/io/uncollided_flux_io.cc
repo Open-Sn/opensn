@@ -9,8 +9,9 @@
 #include "framework/utils/hdf_utils.h"
 #include <algorithm>
 #include <cmath>
+#include <limits>
 #include <set>
-#include <tuple>
+#include <utility>
 #include <unordered_map>
 
 namespace opensn
@@ -91,52 +92,196 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
                           problem_name +
                             ": reflecting boundaries do not match the uncollided flux file.");
 
-  std::vector<uint64_t> file_cell_ids;
-  std::vector<uint64_t> file_cell_node_counts;
-  std::vector<double> file_nodes_x;
-  std::vector<double> file_nodes_y;
-  std::vector<double> file_nodes_z;
-  std::vector<double> file_cell_sigma_t;
-  OpenSnInvalidArgumentIf(not H5ReadDataset1D<uint64_t>(file.Id(), "cell ids", file_cell_ids),
+  // The file holds the cells of the whole mesh, while this rank needs only its own. The cell ids
+  // and node counts are scanned in chunks to find where the local cells are in the file. Then
+  // only their parts of the coordinates, total cross sections, and moments are read, so the
+  // memory of the read follows the local mesh, not the global one.
+  std::uint64_t file_cell_count = 0;
+  std::uint64_t file_node_counts_size = 0;
+  OpenSnInvalidArgumentIf(not H5GetDataset1DSize(file.Id(), "cell ids", file_cell_count),
                           problem_name + ": failed to read cell ids from \"" + file_name + "\".");
   OpenSnInvalidArgumentIf(
-    not H5ReadDataset1D<uint64_t>(file.Id(), "cell node counts", file_cell_node_counts),
+    not H5GetDataset1DSize(file.Id(), "cell node counts", file_node_counts_size),
     problem_name + ": failed to read cell node counts from \"" + file_name + "\".");
-  OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file.Id(), "nodes x", file_nodes_x) or
-                            not H5ReadDataset1D<double>(file.Id(), "nodes y", file_nodes_y) or
-                            not H5ReadDataset1D<double>(file.Id(), "nodes z", file_nodes_z),
-                          problem_name + ": failed to read mesh coordinates from \"" + file_name +
-                            "\".");
-  OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file.Id(), "cell sigma_t", file_cell_sigma_t),
+  OpenSnInvalidArgumentIf(file_cell_count != file_node_counts_size,
+                          problem_name + ": inconsistent cell metadata in \"" + file_name + "\".");
+  // With one entry for every cell of the mesh, a cell listed twice leaves another cell out, and
+  // the rank that owns that cell rejects the file.
+  OpenSnInvalidArgumentIf(file_cell_count != data.global_cell_count,
+                          problem_name + ": \"" + file_name + "\" lists " +
+                            std::to_string(file_cell_count) + " cells, but its mesh has " +
+                            std::to_string(data.global_cell_count) + ".");
+
+  // Position in the file of each local cell, by local id.
+  struct FileCell
+  {
+    std::uint64_t ordinal = std::numeric_limits<std::uint64_t>::max();
+    std::uint64_t node_offset = 0;
+    std::uint64_t num_nodes = 0;
+  };
+  const auto num_local_cells = grid->GetLocalCellCount();
+  std::vector<FileCell> file_cells(num_local_cells);
+  std::unordered_map<uint64_t, size_t> global_to_local;
+  global_to_local.reserve(num_local_cells);
+  for (const auto& cell : grid->GetLocalCells())
+    global_to_local.emplace(cell->global_id, cell->local_id);
+
+  constexpr std::uint64_t scan_chunk = std::uint64_t{1} << 20;
+  std::uint64_t file_node_count = 0;
+  std::vector<uint64_t> chunk_ids;
+  std::vector<uint64_t> chunk_node_counts;
+  const std::string cell_ids_error =
+    problem_name + ": failed to read cell ids from \"" + file_name + "\".";
+  const std::string node_counts_error =
+    problem_name + ": failed to read cell node counts from \"" + file_name + "\".";
+  const std::string invalid_node_counts_error =
+    problem_name + ": invalid cell node counts in \"" + file_name + "\".";
+  for (std::uint64_t first = 0; first < file_cell_count; first += scan_chunk)
+  {
+    const std::vector<std::pair<std::uint64_t, std::uint64_t>> chunk = {
+      {first, std::min(scan_chunk, file_cell_count - first)}};
+    OpenSnInvalidArgumentIf(
+      not H5ReadDataset1DRanges<uint64_t>(file.Id(), "cell ids", chunk, chunk_ids), cell_ids_error);
+    OpenSnInvalidArgumentIf(
+      not H5ReadDataset1DRanges<uint64_t>(file.Id(), "cell node counts", chunk, chunk_node_counts),
+      node_counts_error);
+    for (size_t c = 0; c < chunk_ids.size(); ++c)
+    {
+      const auto node_count = chunk_node_counts[c];
+      const auto local = global_to_local.find(chunk_ids[c]);
+      if (local != global_to_local.end())
+      {
+        auto& file_cell = file_cells[local->second];
+        if (file_cell.ordinal != std::numeric_limits<std::uint64_t>::max())
+        {
+          std::string duplicate_cell_error = problem_name;
+          duplicate_cell_error.append(": duplicate cell id ")
+            .append(std::to_string(chunk_ids[c]))
+            .append(" in \"")
+            .append(file_name)
+            .append("\".");
+          OpenSnInvalidArgument(duplicate_cell_error);
+        }
+        file_cell = {first + c, file_node_count, node_count};
+      }
+      OpenSnInvalidArgumentIf(node_count > std::numeric_limits<std::uint64_t>::max() / num_groups -
+                                             file_node_count,
+                              invalid_node_counts_error);
+      file_node_count += node_count;
+    }
+  }
+
+  std::uint64_t coordinates_size = 0;
+  for (const auto* coordinate : {"nodes x", "nodes y", "nodes z"})
+    OpenSnInvalidArgumentIf(not H5GetDataset1DSize(file.Id(), coordinate, coordinates_size) or
+                              coordinates_size != file_node_count,
+                            problem_name + ": coordinate data size does not match the file cells.");
+  std::uint64_t sigma_t_size = 0;
+  OpenSnInvalidArgumentIf(not H5GetDataset1DSize(file.Id(), "cell sigma_t", sigma_t_size),
                           problem_name + ": failed to read total cross sections from \"" +
                             file_name + "\".");
-  OpenSnInvalidArgumentIf(file_cell_ids.size() != file_cell_node_counts.size(),
-                          problem_name + ": inconsistent cell metadata in \"" + file_name + "\".");
-
-  std::unordered_map<uint64_t, std::tuple<size_t, size_t, size_t>> cell_id_to_file_layout;
-  cell_id_to_file_layout.reserve(file_cell_ids.size());
-  size_t file_node_offset = 0;
-  for (size_t c = 0; c < file_cell_ids.size(); ++c)
-  {
-    const auto cell_id = file_cell_ids[c];
-    const auto node_count = file_cell_node_counts[c];
-    std::string duplicate_cell_error = problem_name + ": duplicate cell id ";
-    duplicate_cell_error.append(std::to_string(cell_id))
-      .append(" in \"")
-      .append(file_name)
-      .append("\".");
-    OpenSnInvalidArgumentIf(
-      not cell_id_to_file_layout.emplace(cell_id, std::make_tuple(file_node_offset, node_count, c))
-            .second,
-      duplicate_cell_error);
-    file_node_offset += node_count;
-  }
-  OpenSnInvalidArgumentIf(file_nodes_x.size() != file_node_offset or
-                            file_nodes_y.size() != file_node_offset or
-                            file_nodes_z.size() != file_node_offset,
-                          problem_name + ": coordinate data size does not match the file cells.");
-  OpenSnInvalidArgumentIf(file_cell_sigma_t.size() != file_cell_ids.size() * num_groups,
+  OpenSnInvalidArgumentIf(sigma_t_size % num_groups != 0 or
+                            sigma_t_size / num_groups != file_cell_count,
                           problem_name + ": total cross-section data size is invalid.");
+
+  // The local cells in file order, merged into runs of cells that follow each other in the file.
+  // A run is one contiguous range of every dataset. Each local cell gets the position of its
+  // data in the buffers that hold the runs one after the other.
+  std::vector<size_t> local_in_file_order;
+  local_in_file_order.reserve(num_local_cells);
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    if (file_cells[cell->local_id].ordinal == std::numeric_limits<std::uint64_t>::max())
+    {
+      std::string missing_cell_error = problem_name;
+      missing_cell_error.append(": local cell ")
+        .append(std::to_string(cell->global_id))
+        .append(" was not found in \"")
+        .append(file_name)
+        .append("\".");
+      OpenSnInvalidArgument(missing_cell_error);
+    }
+    local_in_file_order.push_back(cell->local_id);
+  }
+  std::sort(local_in_file_order.begin(),
+            local_in_file_order.end(),
+            [&file_cells](const size_t a, const size_t b)
+            { return file_cells[a].ordinal < file_cells[b].ordinal; });
+
+  std::vector<std::pair<std::uint64_t, std::uint64_t>> node_ranges;
+  std::vector<std::pair<std::uint64_t, std::uint64_t>> cell_group_ranges;
+  std::vector<std::pair<std::uint64_t, std::uint64_t>> node_group_ranges;
+  std::vector<size_t> buffer_node_offset(num_local_cells, 0);
+  std::vector<size_t> buffer_cell_index(num_local_cells, 0);
+  size_t num_buffer_nodes = 0;
+  for (size_t k = 0; k < local_in_file_order.size(); ++k)
+  {
+    const auto local_id = local_in_file_order[k];
+    const auto& file_cell = file_cells[local_id];
+    buffer_node_offset[local_id] = num_buffer_nodes;
+    buffer_cell_index[local_id] = k;
+    num_buffer_nodes += file_cell.num_nodes;
+    const bool continues_run =
+      k > 0 and file_cells[local_in_file_order[k - 1]].ordinal + 1 == file_cell.ordinal;
+    if (continues_run)
+    {
+      node_ranges.back().second += file_cell.num_nodes;
+      cell_group_ranges.back().second += num_groups;
+    }
+    else
+    {
+      node_ranges.emplace_back(file_cell.node_offset, file_cell.num_nodes);
+      cell_group_ranges.emplace_back(file_cell.ordinal * num_groups, num_groups);
+    }
+  }
+  node_group_ranges.reserve(node_ranges.size());
+  for (const auto& [first, count] : node_ranges)
+    node_group_ranges.emplace_back(first * num_groups, count * num_groups);
+
+  std::vector<double> local_nodes_x;
+  std::vector<double> local_nodes_y;
+  std::vector<double> local_nodes_z;
+  std::vector<double> local_sigma_t;
+  OpenSnInvalidArgumentIf(
+    not H5ReadDataset1DRanges<double>(file.Id(), "nodes x", node_ranges, local_nodes_x) or
+      not H5ReadDataset1DRanges<double>(file.Id(), "nodes y", node_ranges, local_nodes_y) or
+      not H5ReadDataset1DRanges<double>(file.Id(), "nodes z", node_ranges, local_nodes_z),
+    problem_name + ": failed to read mesh coordinates from \"" + file_name + "\".");
+  OpenSnInvalidArgumentIf(
+    not H5ReadDataset1DRanges<double>(file.Id(), "cell sigma_t", cell_group_ranges, local_sigma_t),
+    problem_name + ": failed to read total cross sections from \"" + file_name + "\".");
+
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const auto num_nodes = discretization.GetCellNumNodes(*cell);
+    OpenSnInvalidArgumentIf(file_cells[cell->local_id].num_nodes != num_nodes,
+                            problem_name + ": node count mismatch for cell " +
+                              std::to_string(cell->global_id) + ".");
+    const auto node_offset = buffer_node_offset[cell->local_id];
+    for (size_t i = 0; i < num_nodes; ++i)
+    {
+      const auto& vertex = grid->GlobalVertex(cell->vertex_ids[i]);
+      constexpr double coordinate_tolerance = 1.0e-12;
+      OpenSnInvalidArgumentIf(
+        std::abs(local_nodes_x[node_offset + i] - vertex.x) > coordinate_tolerance or
+          std::abs(local_nodes_y[node_offset + i] - vertex.y) > coordinate_tolerance or
+          std::abs(local_nodes_z[node_offset + i] - vertex.z) > coordinate_tolerance,
+        problem_name + ": mesh coordinate mismatch for cell " + std::to_string(cell->global_id) +
+          ".");
+    }
+
+    const auto& sigma_t = transport_views[cell->local_id].GetXS().GetSigmaTotal();
+    const auto sigma_t_offset = buffer_cell_index[cell->local_id] * num_groups;
+    for (size_t g = 0; g < num_groups; ++g)
+    {
+      const auto file_sigma_t = local_sigma_t[sigma_t_offset + g];
+      const auto scale = std::max({1.0, std::abs(file_sigma_t), std::abs(sigma_t[g])});
+      OpenSnInvalidArgumentIf(std::abs(file_sigma_t - sigma_t[g]) > 1.0e-12 * scale,
+                              problem_name + ": total cross-section mismatch for cell " +
+                                std::to_string(cell->global_id) + ", group " + std::to_string(g) +
+                                ".");
+    }
+  }
 
   OpenSnLogicalErrorIf(do_problem.GetGroupsets().empty(),
                        problem_name + ": no groupsets were configured.");
@@ -153,65 +298,37 @@ DiscreteOrdinatesProblemIO::ReadUncollidedFlux(const DiscreteOrdinatesProblem& d
     const auto ell = moment_to_harmonics[moment].ell;
     const auto em = moment_to_harmonics[moment].m;
     const std::string dataset_name = std::to_string(ell) + "," + std::to_string(em);
+    std::uint64_t moment_size = 0;
     std::string read_error = problem_name + ": failed to read moment \"";
     read_error.append(dataset_name).append("\" from \"").append(file_name).append("\".");
-    OpenSnInvalidArgumentIf(not H5ReadDataset1D<double>(file.Id(), dataset_name, uncollided_moment),
+    OpenSnInvalidArgumentIf(not H5GetDataset1DSize(file.Id(), dataset_name, moment_size),
                             read_error);
     std::string size_error = problem_name + ": dataset \"";
     size_error.append(dataset_name)
       .append("\" in \"")
       .append(file_name)
       .append("\" has size ")
-      .append(std::to_string(uncollided_moment.size()))
+      .append(std::to_string(moment_size))
       .append(" but expected ")
-      .append(std::to_string(file_node_offset * num_groups))
+      .append(std::to_string(file_node_count * num_groups))
       .append(".");
-    OpenSnInvalidArgumentIf(uncollided_moment.size() != file_node_offset * num_groups, size_error);
+    OpenSnInvalidArgumentIf(moment_size != file_node_count * num_groups, size_error);
+    OpenSnInvalidArgumentIf(not H5ReadDataset1DRanges<double>(
+                              file.Id(), dataset_name, node_group_ranges, uncollided_moment),
+                            read_error);
 
     for (const auto& cell : grid->GetLocalCells())
     {
-      const auto file_cell_it = cell_id_to_file_layout.find(cell->global_id);
-      std::string missing_cell_error = problem_name + ": local cell ";
-      missing_cell_error.append(std::to_string(cell->global_id))
-        .append(" was not found in \"")
-        .append(file_name)
-        .append("\".");
-      OpenSnInvalidArgumentIf(file_cell_it == cell_id_to_file_layout.end(), missing_cell_error);
-
       const auto num_nodes = discretization.GetCellNumNodes(*cell);
-      const auto [file_cell_offset, file_num_nodes, file_cell_ordinal] = file_cell_it->second;
-      OpenSnInvalidArgumentIf(file_num_nodes != num_nodes,
-                              problem_name + ": node count mismatch for cell " +
-                                std::to_string(cell->global_id) + ".");
       const auto& transport_view = transport_views[cell->local_id];
-      const auto& sigma_t = transport_view.GetXS().GetSigmaTotal();
+      const auto node_offset = buffer_node_offset[cell->local_id];
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto& vertex = grid->GlobalVertex(cell->vertex_ids[i]);
-        constexpr double coordinate_tolerance = 1.0e-12;
-        OpenSnInvalidArgumentIf(
-          std::abs(file_nodes_x[file_cell_offset + i] - vertex.x) > coordinate_tolerance or
-            std::abs(file_nodes_y[file_cell_offset + i] - vertex.y) > coordinate_tolerance or
-            std::abs(file_nodes_z[file_cell_offset + i] - vertex.z) > coordinate_tolerance,
-          problem_name + ": mesh coordinate mismatch for cell " + std::to_string(cell->global_id) +
-            ".");
-
-        const auto file_uk_map = (file_cell_offset + i) * num_groups;
+        const auto buffer_uk_map = (node_offset + i) * num_groups;
         const auto local_uk_map = transport_view.MapDOF(i, moment, 0);
         for (size_t g = 0; g < num_groups; ++g)
-          data.local_flux_moments[local_uk_map + g] = uncollided_moment[file_uk_map + g];
+          data.local_flux_moments[local_uk_map + g] = uncollided_moment[buffer_uk_map + g];
       }
-
-      if (moment == 0)
-        for (size_t g = 0; g < num_groups; ++g)
-        {
-          const auto file_sigma_t = file_cell_sigma_t[file_cell_ordinal * num_groups + g];
-          const auto scale = std::max({1.0, std::abs(file_sigma_t), std::abs(sigma_t[g])});
-          OpenSnInvalidArgumentIf(std::abs(file_sigma_t - sigma_t[g]) > 1.0e-12 * scale,
-                                  problem_name + ": total cross-section mismatch for cell " +
-                                    std::to_string(cell->global_id) + ", group " +
-                                    std::to_string(g) + ".");
-        }
     }
   }
 
