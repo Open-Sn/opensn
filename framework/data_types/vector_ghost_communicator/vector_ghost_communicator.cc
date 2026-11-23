@@ -193,14 +193,14 @@ VectorGhostCommunicator::MakeGhostedVector() const
 }
 
 std::vector<double>
-VectorGhostCommunicator::MakeGhostedVector(const std::vector<double>& local_vector) const
+VectorGhostCommunicator::MakeGhostedVector(std::span<const double> local_vector) const
 {
   OpenSnInvalidArgumentIf(local_vector.size() != local_size_,
                           std::string(__FUNCTION__) + ": Incompatible unghosted vector." +
                             "unghosted_vector.size() != local_size_");
 
   // Add ghost indices to the back of the unghosted vector
-  std::vector<double> vec = local_vector;
+  std::vector<double> vec(local_vector.begin(), local_vector.end());
   for (size_t i = 0; i < ghost_ids_.size(); ++i)
     vec.emplace_back(0.0);
   return vec;

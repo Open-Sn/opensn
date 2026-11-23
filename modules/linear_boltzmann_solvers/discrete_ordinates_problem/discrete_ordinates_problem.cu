@@ -10,26 +10,26 @@ namespace opensn
 {
 
 void
-DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
+DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice(std::size_t flux_block)
 {
   if (!use_gpus_)
     return;
   CaliperRegionScope cali_gpu_transfer_scope("GPUTransfer", CaliperGPUTransferScopeDepth());
   auto* src = GetSourceMomentsPinner();
-  src->CopyToDevice();
+  src->CopyBlockToDevice(flux_block);
   DeviceVectorMirror<double>* phi = GetPhiPinner();
-  phi->CopyToDevice();
+  phi->CopyBlockToDevice(flux_block);
   outflow_carrier_->CopyToDevice();
 }
 
 void
-DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
+DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost(std::size_t flux_block)
 {
   if (!use_gpus_)
     return;
   CaliperRegionScope cali_gpu_transfer_scope("GPUTransfer", CaliperGPUTransferScopeDepth());
   auto* phi = GetPhiPinner();
-  phi->CopyFromDevice();
+  phi->CopyBlockFromDevice(flux_block);
   outflow_carrier_->CopyFromDevice();
 }
 

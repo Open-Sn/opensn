@@ -7,6 +7,7 @@
 #include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
 #include <cassert>
+#include <utility>
 
 namespace opensn
 {
@@ -38,14 +39,14 @@ ComputeDelayedFissionProduction(const MultiGroupXS& xs,
 }
 
 double
-ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionProduction(const LBSProblem& lbs_problem,
+                         const GroupsetBlockedSpan<const double>& phi)
 {
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() &&
-         "ComputeFissionProduction size mismatch.");
+  const auto phi_group_blocks = phi.GetGroupBlocks(lbs_problem.GetFluxMomentLayout());
   const bool include_delayed_production = UseDelayedNeutronProduction(lbs_problem);
   const bool adjoint = lbs_problem.GetOptions().adjoint;
 
@@ -54,6 +55,8 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
   // Delayed production of a cell summed over the destination group, per unit flux in group g'
   std::vector<double> delayed_production(last_grp + 1, 0.0);
+  // Moment-0 flux of every group at the current node
+  std::vector<double> phi_node(last_grp + 1, 0.0);
 
   // Loop over local cells
   double local_production = 0.0;
@@ -86,7 +89,8 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
     const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto uk_map = transport_view.MapDOF(i, 0, 0);
+      for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
+        phi_node[gp] = phi_group_blocks[gp][transport_view.MapBlockDOF(i, 0, gp)];
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
@@ -94,12 +98,12 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
       {
         const auto& prod = F[g];
         for (unsigned int gp = 0; gp <= last_grp; ++gp)
-          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
+          local_production += prod[gp] * phi_node[gp] * IntV_ShapeI;
       }
 
       if (include_delayed_production)
         for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
-          local_production += delayed_production[gp] * phi[uk_map + gp] * IntV_ShapeI;
+          local_production += delayed_production[gp] * phi_node[gp] * IntV_ShapeI;
     } // for node
   } // for cell
 
@@ -114,13 +118,27 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 }
 
 double
-ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+ComputeFissionProduction(const LBSProblem& lbs_problem, std::span<const double> phi)
+{
+  return ComputeFissionProduction(
+    lbs_problem, GroupsetBlockedSpan<const double>(phi, lbs_problem.GetFluxMomentLayout()));
+}
+
+double
+ComputeFissionRate(const LBSProblem& lbs_problem, std::span<const double> phi)
+{
+  return ComputeFissionRate(
+    lbs_problem, GroupsetBlockedSpan<const double>(phi, lbs_problem.GetFluxMomentLayout()));
+}
+
+double
+ComputeFissionRate(const LBSProblem& lbs_problem, const GroupsetBlockedSpan<const double>& phi)
 {
 
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
-  assert(phi.size() == lbs_problem.GetPhiNewLocal().size() && "ComputeFissionRate size mismatch.");
+  const auto phi_group_blocks = phi.GetGroupBlocks(lbs_problem.GetFluxMomentLayout());
 
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
@@ -144,12 +162,12 @@ ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi
     const int num_nodes = transport_view.GetNumNodes();
     for (auto i = 0; i < num_nodes; ++i)
     {
-      const auto uk_map = transport_view.MapDOF(i, 0, 0);
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
       // Loop over groups
       for (unsigned int g = first_grp; g <= last_grp; ++g)
-        local_fission_rate += sigma_f[g] * phi[uk_map + g] * IntV_ShapeI;
+        local_fission_rate +=
+          sigma_f[g] * phi_group_blocks[g][transport_view.MapBlockDOF(i, 0, g)] * IntV_ShapeI;
     } // for node
   } // for cell
 
@@ -179,7 +197,7 @@ ComputePrecursors(LBSProblem& lbs_problem)
   const auto& grid = lbs_problem.GetGrid();
   const auto& discretization = lbs_problem.GetSpatialDiscretization();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
-  const auto& phi_new_local = lbs_problem.GetPhiNewLocal();
+  const auto phi_new_local = std::as_const(lbs_problem).GetPhiNewLocal().Data();
 
   for (const auto& cell : grid->GetLocalCells())
   {
@@ -192,10 +210,9 @@ ComputePrecursors(LBSProblem& lbs_problem)
 
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const auto uk_map = transport_view.MapDOF(i, 0, 0);
       double delayed_production = 0.0;
       for (unsigned int g = 0; g < lbs_problem.GetNumGroups(); ++g)
-        delayed_production += nu_delayed_sigma_f[g] * phi_new_local[uk_map + g];
+        delayed_production += nu_delayed_sigma_f[g] * phi_new_local[transport_view.MapDOF(i, 0, g)];
 
       const size_t node_base = discretization.MapDOFLocal(*cell, i) * J;
       for (unsigned int j = 0; j < precursors.size(); ++j)

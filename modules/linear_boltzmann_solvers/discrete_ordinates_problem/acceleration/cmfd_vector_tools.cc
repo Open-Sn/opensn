@@ -108,7 +108,7 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
                        const unsigned int first_group,
                        const unsigned int num_groups,
                        const CMFDCoarseMesh& coarse_mesh,
-                       const std::vector<double>& phi)
+                       std::span<const double> phi)
 {
   return CMFDRestrictScalarFlux(do_problem, first_group, num_groups, 1, coarse_mesh, phi);
 }
@@ -119,12 +119,12 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
                        const unsigned int num_groups,
                        const unsigned int group_aggregation_size,
                        const CMFDCoarseMesh& coarse_mesh,
-                       const std::vector<double>& phi)
+                       std::span<const double> phi)
 {
   const auto& transport_views = do_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = do_problem.GetUnitCellMatrices();
 
-  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetPhiNewLocal().size(),
+  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetFluxMomentLayout().GetNumLocalDOFs(),
                           "Input scalar flux vector size does not match the transport problem.");
 
   OpenSnInvalidArgumentIf(group_aggregation_size == 0,
@@ -149,12 +149,11 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
       const auto node_volume = cell_matrices.intV_shapeI(i);
-      const auto phi_map = transport_view.MapDOF(i, 0, first_group);
       for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
         for (unsigned int gsg = CoarseGroupBegin(cg, group_aggregation_size);
              gsg < CoarseGroupEnd(cg, num_groups, group_aggregation_size);
              ++gsg)
-          group_integrals[cg] += phi[phi_map + gsg] * node_volume;
+          group_integrals[cg] += phi[transport_view.MapDOF(i, 0, first_group + gsg)] * node_volume;
     }
 
     auto& keys = pid_keys[membership.coarse_cell_partition_id];
@@ -208,7 +207,7 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                               const CMFDCoarseMesh& coarse_mesh,
                               const std::vector<double>& coarse_phi_old,
                               const std::vector<double>& coarse_phi_new,
-                              std::vector<double>& phi)
+                              std::span<double> phi)
 {
   const auto& transport_views = do_problem.GetCellTransportViews();
 
@@ -219,7 +218,7 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                           "Old coarse scalar flux vector size mismatch.");
   OpenSnInvalidArgumentIf(coarse_phi_new.size() != coarse_mesh.NumLocalCells() * num_coarse_groups,
                           "New coarse scalar flux vector size mismatch.");
-  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetPhiNewLocal().size(),
+  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetFluxMomentLayout().GetNumLocalDOFs(),
                           "Output scalar flux vector size does not match the transport problem.");
 
   std::map<int, std::set<uint64_t>> pid_request_sets;
@@ -290,13 +289,12 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
     const auto& transport_view = transport_views[fine_cell.local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const auto phi_map = transport_view.MapDOF(i, 0, first_group);
       for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
       {
         for (unsigned int gsg = CoarseGroupBegin(cg, group_aggregation_size);
              gsg < CoarseGroupEnd(cg, num_groups, group_aggregation_size);
              ++gsg)
-          phi[phi_map + gsg] *= ratios[cg];
+          phi[transport_view.MapDOF(i, 0, first_group + gsg)] *= ratios[cg];
       }
     }
   }

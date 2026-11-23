@@ -138,7 +138,8 @@ NLKEigenvalueAGSSolver::PostSolveCallback()
     *lbs_problem, groupset_ids, x_, PhiSTLOption::PHI_OLD);
 
   // Compute final k_eff
-  double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiNewLocal());
+  double k_eff =
+    ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiNewLocal().ConstBlocks());
   OpenSnLogicalErrorIf(k_eff <= 0.0 or not std::isfinite(k_eff),
                        "NLKE produced a non-positive or non-finite final k-effective.");
   nl_context_ptr->kresid_func_context.k_eff = k_eff;

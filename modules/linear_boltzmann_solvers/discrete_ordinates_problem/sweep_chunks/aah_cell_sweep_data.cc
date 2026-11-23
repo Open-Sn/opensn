@@ -6,8 +6,6 @@
 #include "framework/math/spatial_discretization/spatial_discretization.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
-#include <stdexcept>
-#include <string>
 
 namespace opensn
 {
@@ -15,14 +13,9 @@ namespace opensn
 AAHCellSweepData::AAHCellSweepData(const Mesh& grid,
                                    const SpatialDiscretization& discretization,
                                    const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                                   const std::vector<CellLBSView>& cell_transport_views,
-                                   const unsigned int num_moments,
-                                   const unsigned int num_groups)
+                                   const std::vector<CellLBSView>& cell_transport_views)
 {
   const auto num_cells = grid.GetLocalCellCount();
-  const std::size_t node_stride = static_cast<std::size_t>(num_moments) * num_groups;
-  if (node_stride == 0)
-    throw std::invalid_argument("AAHCellSweepData: the problem has no moments or groups.");
 
   // Size the arrays first, so that they are allocated once.
   std::size_t num_faces = 0, num_vectors = 0, num_scalars = 0, num_face_nodes = 0;
@@ -55,13 +48,8 @@ AAHCellSweepData::AAHCellSweepData(const Mesh& grid,
     const auto& transport_view = cell_transport_views[c];
     const std::size_t n = mapping.GetNumNodes();
 
-    const std::size_t phi_address = transport_view.MapDOF(0, 0, 0);
-    if (phi_address % node_stride != 0)
-      throw std::logic_error("AAHCellSweepData: the phi address of cell " + std::to_string(c) +
-                             " is not at a node boundary.");
-
     Cell entry;
-    entry.first_node = phi_address / node_stride;
+    entry.first_node = transport_view.GetFirstNode();
     entry.face_offset = faces_.size();
     entry.vector_offset = vectors_.size();
     entry.scalar_offset = scalars_.size();

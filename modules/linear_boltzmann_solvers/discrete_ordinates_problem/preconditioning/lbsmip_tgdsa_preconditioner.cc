@@ -4,10 +4,12 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/preconditioning/lbs_shell_operations.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/tgdsa.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/diffusion/diffusion_mip_solver.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "caliper/cali.h"
+#include <cstdint>
+#include <span>
 #include <vector>
 
 namespace opensn
@@ -27,9 +29,19 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
   DiscreteOrdinatesProblem& solver = gs_context_ptr->do_problem;
   LBSGroupset& groupset = gs_context_ptr->groupset;
 
-  // Copy PETSc vector to STL
-  auto& phi_delta = gs_context_ptr->do_problem.GetPhiNewLocal();
-  LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(solver, groupset, phi_input, PhiSTLOption::PHI_NEW);
+  // TGDSA corrects the flux part of the output in place.
+  const auto block_size = solver.GetPhiNewLocal().GetBlockSize(solver.GetFluxBlock(groupset));
+  const auto last_flux_index = static_cast<int64_t>(block_size) - 1;
+  if (phi_input != pc_output)
+    OpenSnPETScCall(VecCopy(phi_input, pc_output));
+  PetscScalar* output = nullptr;
+  OpenSnPETScCall(VecGetArray(pc_output, &output));
+  const std::span<double> phi_delta(output, block_size);
+  if (groupset.angle_agg)
+  {
+    auto index = last_flux_index;
+    groupset.angle_agg->SetNewDelayedAngularDOFsFromArray(index, output);
+  }
 
   // Apply TGDSA
   if (groupset.apply_tgdsa)
@@ -44,8 +56,12 @@ MIP_TGDSA_PreConditionerMult(PC pc, Vec phi_input, Vec pc_output)
     TGDSA::DisassembleDeltaPhiVector(solver, groupset, delta_phi_local, phi_delta);
   }
 
-  // Copy STL vector to PETSc Vec
-  LBSVecOps::SetGSPETScVecFromPrimarySTLvector(solver, groupset, pc_output, PhiSTLOption::PHI_NEW);
+  if (groupset.angle_agg)
+  {
+    auto index = last_flux_index;
+    groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, output);
+  }
+  OpenSnPETScCall(VecRestoreArray(pc_output, &output));
 
   return PETSC_SUCCESS;
 }

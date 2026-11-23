@@ -20,7 +20,7 @@ public:
     : LinearSystemSolver(IterativeMethod::CLASSIC_RICHARDSON, nullptr),
       lbs_problem_(lbs_problem),
       wgs_solvers_(std::move(wgs_solvers)),
-      phi_old_(lbs_problem.GetPhiOldLocal().size()),
+      phi_old_(lbs_problem.GetPhiOldLocal().Size()),
       max_iterations_(100),
       tolerance_(1.0e-6),
       verbose_(true)

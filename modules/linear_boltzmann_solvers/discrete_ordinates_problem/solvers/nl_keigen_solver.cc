@@ -124,7 +124,8 @@ NonLinearKEigenSolver::ExecuteSolver()
                          initial_k_eff);
   }
 
-  const double production = ComputeFissionProduction(*do_problem_, do_problem_->GetPhiOldLocal());
+  const double production =
+    ComputeFissionProduction(*do_problem_, do_problem_->GetPhiOldLocal().ConstBlocks());
   OpenSnLogicalErrorIf(production <= 0.0 or not std::isfinite(production),
                        GetName() +
                          ": Initial guess has non-positive or non-finite fission production.");

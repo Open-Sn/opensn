@@ -499,13 +499,17 @@ CMFDAcceleration::PrePowerIteration()
   const double t0 = NowSeconds();
   // Fail fast if the pre-sweep flux is already degenerate, before paying for the sweep. This is
   // also the reference for an unaccelerated power update: WGS overwrites phi_old_local_.
-  old_fission_production_ = ComputeFissionProduction(do_problem_, phi_old_local_);
+  old_fission_production_ = ComputeFissionProduction(do_problem_, phi_old_local_.ConstBlocks());
   OpenSnLogicalErrorIf(old_fission_production_ == 0.0,
                        "CMFDAcceleration cannot update k with zero old production.");
-  coarse_phi_old_fine_ =
-    CMFDRestrictScalarFlux(do_problem_, first_group_, num_groups_, coarse_mesh_, phi_old_local_);
-  coarse_phi_old_ = CMFDRestrictScalarFlux(
-    do_problem_, first_group_, num_groups_, group_aggregation_size_, coarse_mesh_, phi_old_local_);
+  coarse_phi_old_fine_ = CMFDRestrictScalarFlux(
+    do_problem_, first_group_, num_groups_, coarse_mesh_, std::as_const(phi_old_local_).Data());
+  coarse_phi_old_ = CMFDRestrictScalarFlux(do_problem_,
+                                           first_group_,
+                                           num_groups_,
+                                           group_aggregation_size_,
+                                           coarse_mesh_,
+                                           std::as_const(phi_old_local_).Data());
   last_restrict_old_time_ = NowSeconds() - t0;
   transport_start_time_ = NowSeconds();
 }
@@ -518,20 +522,25 @@ CMFDAcceleration::PostPowerIteration()
     transport_start_time_ > 0.0 ? post_start_time - transport_start_time_ : 0.0;
 
   double t0 = NowSeconds();
-  coarse_phi_new_fine_ =
-    CMFDRestrictScalarFlux(do_problem_, first_group_, num_groups_, coarse_mesh_, phi_new_local_);
-  coarse_phi_new_ = CMFDRestrictScalarFlux(
-    do_problem_, first_group_, num_groups_, group_aggregation_size_, coarse_mesh_, phi_new_local_);
+  coarse_phi_new_fine_ = CMFDRestrictScalarFlux(
+    do_problem_, first_group_, num_groups_, coarse_mesh_, std::as_const(phi_new_local_).Data());
+  coarse_phi_new_ = CMFDRestrictScalarFlux(do_problem_,
+                                           first_group_,
+                                           num_groups_,
+                                           group_aggregation_size_,
+                                           coarse_mesh_,
+                                           std::as_const(phi_new_local_).Data());
   const double restrict_new_time = NowSeconds() - t0;
 
   t0 = NowSeconds();
-  const double F_transport_new = ComputeFissionProduction(do_problem_, phi_new_local_);
+  const double F_transport_new =
+    ComputeFissionProduction(do_problem_, phi_new_local_.ConstBlocks());
   const double raw_transport_k_eff =
     F_transport_new / old_fission_production_ * solver_->GetEigenvalue();
   // Active CMFD corrections use the post-WGS production for their normalization. Keep this
   // separate from the pre-sweep production used by inactive and rejected transport updates.
   const double cmfd_reference_fission_production =
-    ComputeFissionProduction(do_problem_, phi_old_local_);
+    ComputeFissionProduction(do_problem_, phi_old_local_.ConstBlocks());
   OpenSnLogicalErrorIf(cmfd_reference_fission_production == 0.0,
                        "CMFDAcceleration cannot update k with zero CMFD reference production.");
   const double transport_k_eff =
@@ -550,7 +559,7 @@ CMFDAcceleration::PostPowerIteration()
   {
     for (const auto& groupset : groupsets_)
       LBSVecOps::GSScopedCopyPrimarySTLvectors(
-        do_problem_, groupset, phi_new_local_, phi_old_local_);
+        do_problem_, groupset, phi_new_local_.ConstBlocks(), phi_old_local_.Blocks());
     last_update_allows_convergence_ = false;
     last_balance_residual_known_ = false;
     last_correction_skipped_ = false;
@@ -646,7 +655,8 @@ CMFDAcceleration::PostPowerIteration()
   {
     skipped_correction = true;
     correction_skip_reason = "coarse_linear_solve_not_converged";
-    correction_diagnostics = AnalyzeFluxUpdate(phi_new_local_, transport_k_eff);
+    correction_diagnostics =
+      AnalyzeFluxUpdate(std::as_const(phi_new_local_).Data(), transport_k_eff);
     const bool can_switch_to_direct = coarse_solver_policy_ == "auto" and
                                       not using_direct_coarse_solver_ and
                                       GlobalUnknownCount() <= coarse_direct_solve_threshold_;
@@ -666,7 +676,7 @@ CMFDAcceleration::PostPowerIteration()
     }
   }
   else
-    k_eff = ApplyFluxCorrectionWithDamping(phi_new_local_,
+    k_eff = ApplyFluxCorrectionWithDamping(std::as_const(phi_new_local_).Data(),
                                            coarse_phi,
                                            cmfd_reference_fission_production,
                                            transport_k_eff,
@@ -701,7 +711,8 @@ CMFDAcceleration::PostPowerIteration()
   last_update_allows_convergence_ =
     EvaluateBalanceConvergence(transport_current_balance_residual, skipped_correction);
   for (const auto& groupset : groupsets_)
-    LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, groupset, phi_new_local_, phi_old_local_);
+    LBSVecOps::GSScopedCopyPrimarySTLvectors(
+      do_problem_, groupset, phi_new_local_.ConstBlocks(), phi_old_local_.Blocks());
   const double update_time = NowSeconds() - t0;
   const double post_time = NowSeconds() - post_start_time;
 
@@ -1721,7 +1732,7 @@ CMFDAcceleration::ComputeCoarseFissionProduction(const std::vector<double>& coar
 }
 
 CMFDAcceleration::FluxUpdateDiagnostics
-CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double k_eff) const
+CMFDAcceleration::AnalyzeFluxUpdate(std::span<const double> phi, const double k_eff) const
 {
   const auto& transport_views = do_problem_.GetCellTransportViews();
   const auto& grid = *do_problem_.GetGrid();
@@ -1732,10 +1743,9 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
     const auto& transport_view = transport_views[cell->local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
     {
-      const auto phi_map = transport_view.MapDOF(i, 0, first_group_);
       for (unsigned int g = 0; g < num_groups_; ++g)
       {
-        const auto value = phi[phi_map + g];
+        const auto value = phi[transport_view.MapDOF(i, 0, first_group_ + g)];
         local_nonfinite = local_nonfinite or not std::isfinite(value);
         local_min_phi = std::min(local_min_phi, value);
       }
@@ -1755,7 +1765,7 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
 }
 
 double
-CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
+CMFDAcceleration::ApplyFluxCorrectionWithDamping(std::span<const double> transport_phi_new,
                                                  const std::vector<double>& coarse_phi,
                                                  const double old_fission_production,
                                                  const double transport_k_eff,
@@ -1807,7 +1817,7 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
       continue;
     }
 
-    auto candidate_phi_new = transport_phi_new;
+    std::vector<double> candidate_phi_new(transport_phi_new.begin(), transport_phi_new.end());
     CMFDProlongateScalarFluxRatio(do_problem_,
                                   first_group_,
                                   num_groups_,
@@ -1823,7 +1833,7 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
     diagnostics = AnalyzeFluxUpdate(candidate_phi_new, candidate_k_eff);
     if (not diagnostics.has_invalid_k and not diagnostics.has_nonfinite_flux)
     {
-      phi_new_local_ = std::move(candidate_phi_new);
+      phi_new_local_.Assign(candidate_phi_new);
       applied_damping = damping;
       ++attempts;
       return candidate_k_eff;
@@ -1835,7 +1845,7 @@ CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& tran
   }
 
   diagnostics = transport_diagnostics;
-  phi_new_local_ = transport_phi_new;
+  phi_new_local_.Assign(transport_phi_new);
   skipped_correction = true;
   skip_reason = rejection_reason;
   if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)

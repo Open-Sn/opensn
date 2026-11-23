@@ -92,14 +92,15 @@ ComputeGMS(double* sweep_matrix,
   // get sigmaT
   double sigma_t = cell.total_xs[args.groupset_start + group_idx];
   // compute source term
-  const double* src_moment = args.src_moment + cell.phi_address + args.groupset_start + group_idx;
+  const double* src_moment = args.src_moment + args.phi_groupset_base +
+                             cell.phi_node_moment_offset * args.phi_moment_stride + group_idx;
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
   {
     double src_per_moment = 0.0;
     for (std::uint32_t m = 0; m < num_moments; ++m)
     {
       src_per_moment += direction.m2d[m] * (*src_moment);
-      src_moment += args.num_groups;
+      src_moment += args.phi_moment_stride;
     }
     s[i] = src_per_moment;
   }
@@ -318,13 +319,14 @@ ComputePhi(const double* psi,
            const std::uint32_t& num_moments,
            const Arguments<k>& args)
 {
-  double* phi = args.phi + cell.phi_address + args.groupset_start + group_idx;
+  double* phi = args.phi + args.phi_groupset_base +
+                cell.phi_node_moment_offset * args.phi_moment_stride + group_idx;
   _Pragma("unroll") for (std::uint32_t i = 0; i < ndofs; ++i)
   {
     for (std::uint32_t m = 0; m < num_moments; ++m)
     {
       crb::atomic_add(phi, direction.d2m[m] * psi[i]);
-      phi += args.num_groups;
+      phi += args.phi_moment_stride;
     }
   }
 }

@@ -253,8 +253,10 @@ public:
   BoundaryCarrier* GetBoundaryCarrier() { return boundary_carrier_.get(); }
   const BoundaryCarrier* GetBoundaryCarrier() const { return boundary_carrier_.get(); }
 
-  void CopyPhiAndSrcToDevice();
-  void CopyPhiAndOutflowBackToHost();
+  /// Copies the source moments and scalar flux of block `flux_block` to the device.
+  void CopyPhiAndSrcToDevice(std::size_t flux_block);
+  /// Copies the scalar flux of block `flux_block`, and the outflows, back to the host.
+  void CopyPhiAndOutflowBackToHost(std::size_t flux_block);
   /**
    * Transfer data in boundary to device or vice-versa.
    * \param groupset_id Groupset ID.

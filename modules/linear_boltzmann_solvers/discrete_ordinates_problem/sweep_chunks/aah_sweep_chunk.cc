@@ -22,6 +22,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
                problem.GetCellTransportViews(),
                problem.GetCellOutflowViews(),
                problem.GetQMomentsLocal(),
+               problem.GetFluxMomentLayout().GetGroupBlock(groupset.first_group),
                groupset,
                problem.GetBlockID2XSMap(),
                problem.GetNumMoments(),
@@ -68,7 +69,7 @@ AAHSweepChunk::AAHSweepChunk(DiscreteOrdinatesProblem& problem, LBSGroupset& gro
     }
   }
   group_block_size_ = ComputeGroupBlockSize(groupset_.GetNumGroups());
-  EnableCompactGroupsetMoments(problem.GetNumGroups());
+  EnableCompactGroupsetMoments(problem.GetFluxMomentLayout());
 }
 
 void

@@ -27,6 +27,13 @@ using namespace opensn;
 namespace
 {
 
+/// Copy of a flux-moment vector, for comparisons.
+std::vector<double>
+ToVector(const GroupsetBlockedVector& values)
+{
+  return {values.Data().begin(), values.Data().end()};
+}
+
 // Two groups with P1 scattering, up- and downscattering, and fission into both groups. All values
 // are dyadic, so the source moments made from dyadic flux moments are exact in double precision.
 // kTransfer[ell][g][gp] is the transfer from group gp to group g, kProduction[g][gp] = chi[g] *
@@ -120,7 +127,7 @@ std::vector<double>
 ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi)
 {
   const auto& sdm = problem.GetSpatialDiscretization();
-  const auto& uk_man = problem.GetUnknownManager();
+  const auto& transport_views = problem.GetCellTransportViews();
   const auto& moment_map = problem.GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
   std::vector<double> q(phi.size(), 0.0);
   for (const auto& cell : problem.GetGrid()->GetLocalCells())
@@ -133,12 +140,12 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
           double value = 0.0;
           for (unsigned int gp = 0; gp < 2; ++gp)
           {
-            const double phi_gp = phi[sdm.MapDOFLocal(*cell, i, uk_man, m, gp)];
+            const double phi_gp = phi[transport_views[cell->local_id].MapDOF(i, m, gp)];
             value += kTransfer[ell][g][gp] * phi_gp;
             if (ell == 0)
               value += kProduction[g][gp] * phi_gp;
           }
-          q[sdm.MapDOFLocal(*cell, i, uk_man, m, g)] = value;
+          q[transport_views[cell->local_id].MapDOF(i, m, g)] = value;
         }
       }
   return q;
@@ -152,7 +159,7 @@ ReferenceSourceMoments(const LBSProblem& problem, const std::vector<double>& phi
 TEST(MakeSourceMomentsFromPhiTest, NoArgumentFormUsesPhiNew)
 {
   auto problem = MakeProblem();
-  const auto num_local_dofs = problem->GetPhiNewLocal().size();
+  const auto num_local_dofs = problem->GetPhiNewLocal().Size();
   ASSERT_EQ(num_local_dofs,
             problem->GetSpatialDiscretization().GetNumLocalDOFs(problem->GetUnknownManager()));
   ASSERT_EQ(problem->GetNumMoments(), 3U);
@@ -174,7 +181,7 @@ TEST(MakeSourceMomentsFromPhiTest, NoArgumentFormUsesPhiNew)
 TEST(MakeSourceMomentsFromPhiTest, OverloadLeavesProblemStateUnchanged)
 {
   auto problem = MakeProblem();
-  const auto num_local_dofs = problem->GetPhiNewLocal().size();
+  const auto num_local_dofs = problem->GetPhiNewLocal().Size();
 
   const auto phi_new = MakeVector(num_local_dofs, 1.0, 0.125, 11);
   const auto phi_old = MakeVector(num_local_dofs, 4.0, -0.25, 5);
@@ -187,8 +194,8 @@ TEST(MakeSourceMomentsFromPhiTest, OverloadLeavesProblemStateUnchanged)
   const auto source_moments = problem->MakeSourceMomentsFromPhi(phi);
   EXPECT_EQ(source_moments, ReferenceSourceMoments(*problem, phi));
   EXPECT_NE(source_moments, ReferenceSourceMoments(*problem, phi_new));
-  EXPECT_EQ(problem->GetPhiNewLocal(), phi_new);
-  EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
+  EXPECT_EQ(ToVector(problem->GetPhiNewLocal()), phi_new);
+  EXPECT_EQ(ToVector(problem->GetPhiOldLocal()), phi_old);
   EXPECT_EQ(problem->GetExtSrcMomentsLocal(), ext_src);
 }
 
@@ -198,7 +205,7 @@ TEST(MakeSourceMomentsFromPhiTest, OverloadLeavesProblemStateUnchanged)
 TEST(MakeSourceMomentsFromPhiTest, WrongSizeThrows)
 {
   auto problem = MakeProblem();
-  const auto num_local_dofs = problem->GetPhiNewLocal().size();
+  const auto num_local_dofs = problem->GetPhiNewLocal().Size();
   ASSERT_GT(num_local_dofs, 0U);
 
   const auto phi_new = MakeVector(num_local_dofs, 1.0, 0.125, 11);
@@ -212,8 +219,8 @@ TEST(MakeSourceMomentsFromPhiTest, WrongSizeThrows)
   too_short.assign(num_local_dofs - 1, 0.5);
   ASSERT_THROW(problem->MakeSourceMomentsFromPhi(too_long), std::invalid_argument);
   EXPECT_THROW(problem->MakeSourceMomentsFromPhi(too_short), std::invalid_argument);
-  EXPECT_EQ(problem->GetPhiNewLocal(), phi_new);
-  EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
+  EXPECT_EQ(ToVector(problem->GetPhiNewLocal()), phi_new);
+  EXPECT_EQ(ToVector(problem->GetPhiOldLocal()), phi_old);
 }
 
 // An UncollidedProblem has no source function, so making the source moments throws a
@@ -269,7 +276,7 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
   auto problem = UncollidedProblem::Create(params);
   ASSERT_EQ(problem->GetName(), problem_name);
 
-  const auto num_local_dofs = problem->GetPhiNewLocal().size();
+  const auto num_local_dofs = problem->GetPhiNewLocal().Size();
   const auto phi_new = MakeVector(num_local_dofs, 1.0, 0.125, 11);
   const auto phi_old = MakeVector(num_local_dofs, 4.0, -0.25, 5);
   const auto ext_src = MakeVector(num_local_dofs, -1.0, -0.5, 3);
@@ -294,8 +301,8 @@ TEST(MakeSourceMomentsFromPhiTest, UncollidedProblemThrowsWithoutStateChange)
       }
     },
     std::logic_error);
-  EXPECT_EQ(problem->GetPhiNewLocal(), phi_new);
-  EXPECT_EQ(problem->GetPhiOldLocal(), phi_old);
+  EXPECT_EQ(ToVector(problem->GetPhiNewLocal()), phi_new);
+  EXPECT_EQ(ToVector(problem->GetPhiOldLocal()), phi_old);
   EXPECT_EQ(problem->GetExtSrcMomentsLocal(), ext_src);
 }
 
@@ -305,9 +312,9 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
 {
   auto problem = MakeProblem();
   const auto& sdm = problem->GetSpatialDiscretization();
-  const auto& uk_man = problem->GetUnknownManager();
+  const auto& transport_views = problem->GetCellTransportViews();
   const auto& moment_map = problem->GetGroupset(0).quadrature->GetMomentToHarmonicsIndexMap();
-  const auto phi = MakeVector(problem->GetPhiNewLocal().size(), 1.0, 0.125, 11);
+  const auto phi = MakeVector(problem->GetPhiNewLocal().Size(), 1.0, 0.125, 11);
 
   auto reversed = phi;
   problem->ReverseMomentDirections(reversed);
@@ -316,7 +323,7 @@ TEST(MakeSourceMomentsFromPhiTest, ReverseMomentDirectionsNegatesOddMoments)
       for (unsigned int m = 0; m < problem->GetNumMoments(); ++m)
         for (unsigned int g = 0; g < 2; ++g)
         {
-          const auto dof = sdm.MapDOFLocal(*cell, i, uk_man, m, g);
+          const auto dof = transport_views[cell->local_id].MapDOF(i, m, g);
           EXPECT_EQ(reversed[dof], moment_map[m].ell % 2 == 0 ? phi[dof] : -phi[dof]);
         }
 
@@ -334,15 +341,15 @@ TEST(MakeSourceMomentsFromPhiTest, NoArgumentFormUsesSolverOrientedAdjointFlux)
 {
   auto problem = MakeProblem();
   problem->SetAdjoint(true);
-  const auto solver_phi = MakeVector(problem->GetPhiNewLocal().size(), 1.0, 0.125, 11);
+  const auto solver_phi = MakeVector(problem->GetPhiNewLocal().Size(), 1.0, 0.125, 11);
   problem->SetPhiNewFrom(solver_phi);
   problem->ReorientAdjointSolution();
   ASSERT_TRUE(problem->IsAdjointSolutionReoriented());
-  const auto physical_phi = problem->GetPhiNewLocal();
+  const auto physical_phi = ToVector(problem->GetPhiNewLocal());
   ASSERT_NE(physical_phi, solver_phi);
 
   const auto source_moments = problem->MakeSourceMomentsFromPhi();
   EXPECT_EQ(source_moments, problem->MakeSourceMomentsFromPhi(solver_phi));
   EXPECT_NE(source_moments, problem->MakeSourceMomentsFromPhi(physical_phi));
-  EXPECT_EQ(problem->GetPhiNewLocal(), physical_phi);
+  EXPECT_EQ(ToVector(problem->GetPhiNewLocal()), physical_phi);
 }

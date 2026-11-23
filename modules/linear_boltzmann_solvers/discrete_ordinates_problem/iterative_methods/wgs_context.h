@@ -6,6 +6,8 @@
 #include "framework/math/linear_solver/linear_solver_context.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/source_functions/source_flags.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
+#include <span>
 #include <vector>
 #include <functional>
 #include <memory>
@@ -78,6 +80,34 @@ struct WGSContext : public LinearSystemContext
 
   virtual void PostSolveCallback() {};
 
+  /**
+   * Whether PostSolveCallback recomputes the groupset's scalar flux, so that a solver need not
+   * copy its solution into phi_new.
+   */
+  virtual bool RebuildsFluxAfterSolve() const { return false; }
+
+  /**
+   * Redirects the groupset's block of the source moments to a scratch block of this context until
+   * the returned guard is destroyed, so that sources built under the guard leave the problem's
+   * source moments unchanged. The scratch block is the start of the scratch buffer of
+   * GetSourceScratch. It starts as a copy of the owned block, or as zero with `zero`. The buffer
+   * grows if it is shorter than the block, but never shrinks. Install the guard outside threaded
+   * regions.
+   */
+  [[nodiscard]] GroupsetBlockedVector::ScopedBlockOverride RedirectSourceMoments(bool zero);
+
+  /**
+   * The first `size` entries of the scratch buffer of RedirectSourceMoments, which a caller may use
+   * as work space while no guard is active. The buffer grows to `size` entries if it is shorter,
+   * which moves it, and keeps its address otherwise. A caller that keeps the address must therefore
+   * request its full size first, before any redirect, and must not rely on the contents surviving
+   * a redirect. The address stays valid until ReleaseSourceScratch.
+   */
+  std::span<double> GetSourceScratch(std::size_t size);
+
+  /// Frees the scratch buffer. Call only when no guard is active and no caller holds its address.
+  void ReleaseSourceScratch() { source_scratch_ = std::vector<double>(); }
+
   /// Sources treated implicitly (in the operator) by the within-group solve.
   SourceFlags GetLHSSourceScope() const { return lhs_src_scope_; }
   /// Sources treated explicitly (on the right-hand side) by the within-group solve.
@@ -100,6 +130,7 @@ struct WGSContext : public LinearSystemContext
 private:
   SourceFlags lhs_src_scope_;
   SourceFlags rhs_src_scope_;
+  std::vector<double> source_scratch_;
 };
 
 } // namespace opensn

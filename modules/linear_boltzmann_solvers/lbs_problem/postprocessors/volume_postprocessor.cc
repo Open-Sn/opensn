@@ -13,6 +13,7 @@
 #include <limits>
 #include <memory>
 #include <stdexcept>
+#include <utility>
 
 namespace opensn
 {
@@ -476,8 +477,8 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
-  const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto& phi = lbs_problem_->GetPhiNewLocal();
+  const auto& transport_views = lbs_problem_->GetCellTransportViews();
+  const auto phi = std::as_const(lbs_problem_->GetPhiNewLocal()).Data();
   auto coord = sdm.GetSpatialWeightingFunction();
 
   for (const auto cell_id : cell_local_ids)
@@ -497,7 +498,7 @@ VolumePostprocessor::AccumulateLocalIntegral(const std::vector<uint32_t>& cell_l
       std::vector<double> nodal_value(num_nodes, 0.0);
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = transport_views[cell.local_id].MapDOF(i, 0, groups_[k]);
         nodal_value[i] = phi[imap];
       }
 
@@ -521,8 +522,8 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
 {
   const auto& sdm = lbs_problem_->GetSpatialDiscretization();
   const auto& grid = sdm.GetGrid();
-  const auto& uk_man = lbs_problem_->GetUnknownManager();
-  const auto& phi = lbs_problem_->GetPhiNewLocal();
+  const auto& transport_views = lbs_problem_->GetCellTransportViews();
+  const auto phi = std::as_const(lbs_problem_->GetPhiNewLocal()).Data();
 
   const double init =
     is_max ? -std::numeric_limits<double>::infinity() : std::numeric_limits<double>::infinity();
@@ -538,7 +539,7 @@ VolumePostprocessor::ComputeLocalExtremum(const std::vector<uint32_t>& cell_loca
     {
       for (std::size_t i = 0; i < num_nodes; ++i)
       {
-        const auto imap = sdm.MapDOFLocal(cell, i, uk_man, 0, groups_[k]);
+        const auto imap = transport_views[cell.local_id].MapDOF(i, 0, groups_[k]);
         const double value = coeffs[groups_[k]] * phi[imap];
         extremum[k] = is_max ? std::max(extremum[k], value) : std::min(extremum[k], value);
       }

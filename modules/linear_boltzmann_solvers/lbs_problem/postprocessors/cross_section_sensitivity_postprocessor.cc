@@ -13,6 +13,7 @@
 #include <limits>
 #include <map>
 #include <stdexcept>
+#include <utility>
 
 namespace opensn
 {
@@ -299,7 +300,8 @@ CrossSectionSensitivityPostprocessor::LoadFluxMoments(std::vector<double>& forwa
     OpenSnInvalidArgumentIf(do_problem_->IsAdjoint(),
                             "A forward flux-moment file is required when the problem's current "
                             "solution is adjoint.");
-    forward_phi = do_problem_->GetPhiNewLocal();
+    const auto phi_new = std::as_const(do_problem_->GetPhiNewLocal()).Data();
+    forward_phi.assign(phi_new.begin(), phi_new.end());
   }
   else
     LBSSolverIO::ReadFluxMoments(*do_problem_,
@@ -317,7 +319,8 @@ CrossSectionSensitivityPostprocessor::LoadFluxMoments(std::vector<double>& forwa
     OpenSnInvalidArgumentIf(not do_problem_->IsAdjointSolutionReoriented(),
                             "The current adjoint flux moments are still in solver orientation; "
                             "solve the adjoint problem first.");
-    adjoint_phi = do_problem_->GetPhiNewLocal();
+    const auto phi_new = std::as_const(do_problem_->GetPhiNewLocal()).Data();
+    adjoint_phi.assign(phi_new.begin(), phi_new.end());
   }
   else
     LBSSolverIO::ReadFluxMoments(*do_problem_,
@@ -523,13 +526,13 @@ CrossSectionSensitivityPostprocessor::ComputeScatterSensitivity(
       for (int i = 0; i < num_nodes; ++i)
       {
         const double adjoint_moment =
-          (2.0 * ell + 1.0) * adjoint_phi[transport_view.MapDOF(i, m, 0) + to_group];
+          (2.0 * ell + 1.0) * adjoint_phi[transport_view.MapDOF(i, m, to_group)];
 
         for (int j = 0; j < num_nodes; ++j)
         {
-          const auto dof_j = transport_view.MapDOF(j, m, 0);
+          const auto dof_j = transport_view.MapDOF(j, m, from_group);
           local[column] += relative_coefficient * adjoint_moment *
-                           fe_values.intV_shapeI_shapeJ(i, j) * forward_phi[dof_j + from_group];
+                           fe_values.intV_shapeI_shapeJ(i, j) * forward_phi[dof_j];
         }
       }
     }
@@ -616,17 +619,16 @@ CrossSectionSensitivityPostprocessor::ComputeProductionSensitivity(
     const auto num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto dof_i = transport_view.MapDOF(i, 0, 0);
-
       double adjoint_fission_importance = 0.0;
       for (unsigned int g = 0; g < num_groups; ++g)
-        adjoint_fission_importance += production[g * num_groups + group] * adjoint_phi[dof_i + g];
+        adjoint_fission_importance +=
+          production[g * num_groups + group] * adjoint_phi[transport_view.MapDOF(i, 0, g)];
 
       for (int j = 0; j < num_nodes; ++j)
       {
-        const auto dof_j = transport_view.MapDOF(j, 0, 0);
+        const auto dof_j = transport_view.MapDOF(j, 0, group);
         local += coefficient * adjoint_fission_importance * fe_values.intV_shapeI_shapeJ(i, j) *
-                 forward_phi[dof_j + group];
+                 forward_phi[dof_j];
       }
     }
   }
@@ -673,21 +675,20 @@ CrossSectionSensitivityPostprocessor::ComputeFissionDenominator(
     std::vector<double> forward_fission_source(static_cast<size_t>(num_nodes) * num_groups, 0.0);
     for (int j = 0; j < num_nodes; ++j)
     {
-      const auto dof_j = transport_view.MapDOF(j, 0, 0);
       for (unsigned int g = 0; g < num_groups; ++g)
         for (unsigned int gp = 0; gp < num_groups; ++gp)
           forward_fission_source[j * num_groups + g] +=
-            production[g * num_groups + gp] * forward_phi[dof_j + gp];
+            production[g * num_groups + gp] * forward_phi[transport_view.MapDOF(j, 0, gp)];
     }
 
     for (int i = 0; i < num_nodes; ++i)
     {
-      const auto dof_i = transport_view.MapDOF(i, 0, 0);
       for (int j = 0; j < num_nodes; ++j)
       {
         const double M_ij = fe_values.intV_shapeI_shapeJ(i, j);
         for (unsigned int g = 0; g < num_groups; ++g)
-          local += adjoint_phi[dof_i + g] * M_ij * forward_fission_source[j * num_groups + g];
+          local += adjoint_phi[transport_view.MapDOF(i, 0, g)] * M_ij *
+                   forward_fission_source[j * num_groups + g];
       }
     }
   }

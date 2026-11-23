@@ -31,6 +31,8 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <span>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -76,6 +78,23 @@ BalanceTableToDict(const BalanceTable& table)
   if (table.uncollided_outflow_rate.has_value())
     values["uncollided_outflow_rate"] = table.uncollided_outflow_rate.value();
   return values;
+}
+
+/**
+ * Returns a read-only view of the local flux-moment vector `phi` in [node][moment][group] order.
+ * With one groupset that is the storage order and the view aliases `phi`; otherwise the view owns a
+ * reordered copy.
+ */
+py::memoryview
+FluxMomentsView(const LBSProblem& problem, std::span<const double> phi)
+{
+  const auto& layout = problem.GetFluxMomentLayout();
+  if (layout.IsNodeMomentGroupOrder())
+    return make_readonly_memoryview(phi.data(), phi.size());
+  const auto ordered = layout.ToNodeMomentGroupOrder(phi);
+  py::array_t<double> array(static_cast<py::ssize_t>(ordered.size()), ordered.data());
+  array.attr("setflags")(py::arg("write") = false);
+  return {array};
 }
 
 } // namespace
@@ -328,7 +347,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionRate",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr = nullptr;
+      const GroupsetBlockedVector* phi_ptr = nullptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();
@@ -341,7 +360,7 @@ WrapLBS(py::module& slv)
       {
         throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
       }
-      return ComputeFissionRate(self, *phi_ptr);
+      return ComputeFissionRate(self, phi_ptr->ConstBlocks());
     },
     R"(
     Computes the total fission rate.
@@ -371,7 +390,7 @@ WrapLBS(py::module& slv)
     "ComputeFissionProduction",
     [](LBSProblem& self, const std::string& scalar_flux_iterate)
     {
-      const std::vector<double>* phi_ptr = nullptr;
+      const GroupsetBlockedVector* phi_ptr = nullptr;
       if (scalar_flux_iterate == "old")
       {
         phi_ptr = &self.GetPhiOldLocal();
@@ -384,7 +403,7 @@ WrapLBS(py::module& slv)
       {
         throw std::invalid_argument("Unknown scalar_flux_iterate value: \"" + scalar_flux_iterate + "\".");
       }
-      return ComputeFissionProduction(self, *phi_ptr);
+      return ComputeFissionProduction(self, phi_ptr->ConstBlocks());
     },
     R"(
     Computes the total fission production (nu*fission).
@@ -416,30 +435,54 @@ WrapLBS(py::module& slv)
     "GetPhiOldLocal",
     [](LBSProblem& self)
     {
-      return convert_vector(self.GetPhiOldLocal());
+      return FluxMomentsView(self, std::as_const(self.GetPhiOldLocal()).Data());
     },
     R"(
-    Get the previous scalar flux iterate (local vector).
+    Get the previous flux-moment iterate on this rank.
 
     Returns
     -------
     memoryview
-        Memory view of the local old scalar flux vector.
+        Read-only view of the local old flux moments: one ``float`` per local node, moment,
+        and group, in node-major, then moment, then group order. Local nodes are numbered cell
+        by cell in local cell order, so ``numpy.asarray(view).reshape(-1, num_groups)`` gives
+        one row per node and moment.
+
+    Notes
+    -----
+    For a problem with one groupset the view aliases the solver's storage without copying it.
+    With several groupsets the solver stores each groupset separately, so the view holds a
+    reordered copy taken when this method is called. In both cases, call this method again after
+    a solve, or after a call that reconfigures the problem (such as changing boundary options,
+    the mode, adjoint mode, or cross sections), instead of reusing an earlier view: such a call
+    can move the storage, which leaves an earlier aliasing view invalid.
     )"
   );
   lbs_problem.def(
     "GetPhiNewLocal",
     [](LBSProblem& self)
     {
-      return convert_vector(self.GetPhiNewLocal());
+      return FluxMomentsView(self, std::as_const(self.GetPhiNewLocal()).Data());
     },
     R"(
-    Get the current scalar flux iterate (local vector).
+    Get the current flux-moment iterate on this rank.
 
     Returns
     -------
     memoryview
-        Memory view of the local new scalar flux vector.
+        Read-only view of the local new flux moments: one ``float`` per local node, moment,
+        and group, in node-major, then moment, then group order. Local nodes are numbered cell
+        by cell in local cell order, so ``numpy.asarray(view).reshape(-1, num_groups)`` gives
+        one row per node and moment.
+
+    Notes
+    -----
+    For a problem with one groupset the view aliases the solver's storage without copying it.
+    With several groupsets the solver stores each groupset separately, so the view holds a
+    reordered copy taken when this method is called. In both cases, call this method again after
+    a solve, or after a call that reconfigures the problem (such as changing boundary options,
+    the mode, adjoint mode, or cross sections), instead of reusing an earlier view: such a call
+    can move the storage, which leaves an earlier aliasing view invalid.
     )"
   );
   lbs_problem.def(
@@ -521,9 +564,10 @@ WrapLBS(py::module& slv)
     "ReadSourceMoments",
     [](LBSProblem& self, const std::string& file_base, bool single_file_flag)
     {
-      auto ext_src_moments = self.GetExtSrcMomentsLocal();
+      // ReadFluxMoments replaces the whole vector, so it starts empty.
+      std::vector<double> ext_src_moments;
       LBSSolverIO::ReadFluxMoments(self, file_base, single_file_flag, ext_src_moments);
-      self.SetExtSrcMomentsFrom(ext_src_moments);
+      self.SetExtSrcMomentsFrom(std::move(ext_src_moments));
     },
     R"(
     Read source moments from file.

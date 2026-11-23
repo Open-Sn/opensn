@@ -4,6 +4,7 @@
 #pragma once
 
 #include <cstddef>
+#include <span>
 #include <utility>
 #include <vector>
 
@@ -24,12 +25,12 @@ std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_pr
                                            unsigned int num_groups,
                                            unsigned int group_aggregation_size,
                                            const CMFDCoarseMesh& coarse_mesh,
-                                           const std::vector<double>& phi);
+                                           std::span<const double> phi);
 std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
                                            unsigned int first_group,
                                            unsigned int num_groups,
                                            const CMFDCoarseMesh& coarse_mesh,
-                                           const std::vector<double>& phi);
+                                           std::span<const double> phi);
 
 /**
  * Count the coarse values whose prolongation ratio would not preserve the sign of the fine flux.
@@ -56,6 +57,6 @@ void CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                                    const CMFDCoarseMesh& coarse_mesh,
                                    const std::vector<double>& coarse_phi_old,
                                    const std::vector<double>& coarse_phi_new,
-                                   std::vector<double>& phi);
+                                   std::span<double> phi);
 
 } // namespace opensn

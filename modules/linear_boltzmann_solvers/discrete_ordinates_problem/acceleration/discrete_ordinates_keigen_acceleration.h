@@ -4,6 +4,8 @@
 #pragma once
 
 #include "framework/parameters/input_parameters.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
+#include <span>
 #include <string>
 #include <vector>
 
@@ -105,14 +107,19 @@ protected:
    * Takes an input vector that is the local version of a PWLD discrete space and then
    * makes it continuous by applying nodal averages.
    */
-  void NodallyAveragedPWLDVector(const std::vector<double>& input,
-                                 std::vector<double>& output) const;
+  void NodallyAveragedPWLDVector(std::span<const double> input, std::vector<double>& output) const;
 
-  /// Copies only the scalar moments from an lbs primary flux moments vector.
-  void CopyOnlyPhi0(const std::vector<double>& phi_in, std::vector<double>& phi_local);
+  /// Copies only the scalar moments from a whole lbs primary flux moments vector.
+  void CopyOnlyPhi0(std::span<const double> phi_in, std::vector<double>& phi_local);
 
-  /// Copies back only the scalar moments to a lbs primary flux vector.
+  /**
+   * Copies back only the scalar moments to a lbs primary flux vector, sized to the flux-moment
+   * layout first if it is empty.
+   */
   void ProjectBackPhi0(const std::vector<double>& input, std::vector<double>& output) const;
+
+  /// Copies back only the scalar moments to a whole lbs primary flux vector.
+  void ProjectBackPhi0(const std::vector<double>& input, std::span<double> output) const;
 
   /// Appends an error if an AAH groupset does one sweep per iteration (unstable for this method).
   void RequireMultipleAAHSweeps(std::vector<std::string>& errors) const;
@@ -141,11 +148,11 @@ protected:
   /// Front groupset from the LBSProblem
   LBSGroupset& front_gs_;
   /// Source moments vector from the LBSProblem
-  std::vector<double>& q_moments_local_;
+  GroupsetBlockedVector& q_moments_local_;
   /// Last updated flux vector from the LBSProblem
-  std::vector<double>& phi_old_local_;
+  GroupsetBlockedVector& phi_old_local_;
   /// Newest updated flux vector from the LBSProblem
-  std::vector<double>& phi_new_local_;
+  GroupsetBlockedVector& phi_new_local_;
 
   /// Associated PI solver, filled during Initialize()
   PowerIterationKEigenSolver* solver_;

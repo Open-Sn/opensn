@@ -67,7 +67,7 @@ TEST(AdjointPrecursorsTest, ComputedOnlyFromForwardFlux)
   for (const bool adjoint : {false, true})
   {
     auto problem = MakeDelayedProblem(adjoint);
-    problem->SetPhiNewFrom(std::vector<double>(problem->GetPhiNewLocal().size(), 1.0));
+    problem->SetPhiNewFrom(std::vector<double>(problem->GetPhiNewLocal().Size(), 1.0));
     auto& precursors = problem->GetPrecursorsNewLocal();
     ASSERT_FALSE(precursors.empty());
     precursors.assign(precursors.size(), -1.0);

@@ -421,10 +421,9 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
         const auto& src = material_sources_.at(cell->block_id);
         for (size_t i = 0; i < num_cell_nodes; ++i)
         {
-          const auto dof_map = transport_view.MapDOF(i, 0, 0);
           const auto& V_i = fe_values.intV_shapeI(i);
           for (unsigned int g = 0; g < num_groups; ++g)
-            local_response += src[g] * phi_dagger[dof_map + g] * V_i;
+            local_response += src[g] * phi_dagger[transport_view.MapDOF(i, 0, g)] * V_i;
         }
       }
     } // for cell
@@ -503,10 +502,10 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
       const auto num_cell_nodes = transport_view.GetNumNodes();
       for (int i = 0; i < num_cell_nodes; ++i)
       {
-        const auto dof_map = transport_view.MapDOF(i, 0, 0);
         const auto& shape_val = subscriber.shape_values(i);
         for (unsigned int g = 0; g < num_groups; ++g)
-          local_response += vol_wt * shape_val * src[g] * phi_dagger[dof_map + g];
+          local_response +=
+            vol_wt * shape_val * src[g] * phi_dagger[transport_view.MapDOF(i, 0, g)];
       } // for node i
     } // for subscriber
   }
@@ -531,10 +530,10 @@ ResponseEvaluator::EvaluateResponse(const std::string& data_name) const
 
       for (int i = 0; i < num_cell_nodes; ++i)
       {
-        const auto dof_map = transport_view.MapDOF(i, 0, 0);
         for (int j = 0; j < num_cell_nodes; ++j)
           for (unsigned int g = 0; g < num_groups; ++g)
-            local_response += phi_dagger[dof_map + g] * mass(i, j) * node_values[j][g];
+            local_response +=
+              phi_dagger[transport_view.MapDOF(i, 0, g)] * mass(i, j) * node_values[j][g];
       }
     }
   }

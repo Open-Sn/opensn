@@ -117,12 +117,11 @@ MeshCarrier::Assemble(LBSProblem& lbs_problem, TotalXSCarrier& xs, OutflowCarrie
     double** total_xs_data = reinterpret_cast<double**>(cell_data);
     *(total_xs_data++) = xs.GetXSGPUData(static_cast<int>(cell->block_id));
     cell_data = reinterpret_cast<char*>(total_xs_data);
-    // phi address
-    std::uint64_t* phi_address_data = reinterpret_cast<std::uint64_t*>(cell_data);
+    // first node times number of moments, in the flux-moment layout
+    std::uint64_t* phi_offset_data = reinterpret_cast<std::uint64_t*>(cell_data);
     const CellLBSView& cell_transport_view = cell_transport_views[cell->local_id];
-    auto phi_address = cell_transport_view.MapDOF(0, 0, 0);
-    *(phi_address_data++) = phi_address;
-    cell_data = reinterpret_cast<char*>(phi_address_data);
+    *(phi_offset_data++) = cell_transport_view.GetFirstNode() * lbs_problem.GetNumMoments();
+    cell_data = reinterpret_cast<char*>(phi_offset_data);
     // offset for saved angular flux
     std::uint64_t* saved_psi_index_data = reinterpret_cast<std::uint64_t*>(cell_data);
     *(saved_psi_index_data++) = saved_psi_index;

@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep_chunks/aah_cell_sweep_data.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/flux_moment_layout.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/lbs_view.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/spatial_discretization/finite_element/piecewise_linear/piecewise_linear_discontinuous.h"
@@ -12,7 +13,6 @@
 #include <gtest/gtest.h>
 #include <cstddef>
 #include <memory>
-#include <stdexcept>
 #include <vector>
 
 using namespace opensn;
@@ -25,19 +25,21 @@ constexpr unsigned int num_groups = 3;
 
 /**
  * A box mesh with its discretization, unit cell matrices, and transport views.
- * Each cell's moments follow the previous cell's, as LBSProblem lays them out.
+ * Each cell's nodes follow the previous cell's, as LBSProblem numbers them.
  */
 struct Fixture
 {
   std::shared_ptr<Mesh> grid = BuildBoxMesh(2.0, 2, 0.0);
   std::shared_ptr<SpatialDiscretization> sdm = PieceWiseLinearDiscontinuous::New(grid);
   MultiGroupXS xs;
+  FluxMomentLayout layout;
   std::vector<UnitCellMatrices> matrices;
   std::vector<CellLBSView> views;
   std::vector<std::size_t> first_nodes;
 
-  explicit Fixture(std::size_t phi_address_shift = 0)
+  Fixture()
   {
+    layout = FluxMomentLayout(sdm->GetNumLocalNodes(), num_moments, num_groups, {{0, num_groups}});
     std::size_t node = 0;
     for (const auto& cell : grid->GetLocalCells())
     {
@@ -49,15 +51,8 @@ struct Fixture
       for (std::size_t f = 0; f < cell->faces.size(); ++f)
         local[f] = cell->faces[f].has_neighbor and cell->faces[f].IsNeighborLocal(grid.get());
       first_nodes.push_back(node);
-      views.emplace_back(node * num_moments * num_groups + phi_address_shift,
-                         static_cast<int>(mapping.GetNumNodes()),
-                         num_groups,
-                         num_moments,
-                         xs,
-                         1.0,
-                         local,
-                         locality,
-                         neighbors);
+      views.emplace_back(
+        layout, node, static_cast<int>(mapping.GetNumNodes()), xs, 1.0, local, locality, neighbors);
       node += mapping.GetNumNodes();
     }
   }
@@ -70,8 +65,7 @@ struct Fixture
 TEST(AAHCellSweepDataTest, CopiesTheCellAndFaceDataExactly)
 {
   Fixture fixture;
-  const AAHCellSweepData data(
-    *fixture.grid, *fixture.sdm, fixture.matrices, fixture.views, num_moments, num_groups);
+  const AAHCellSweepData data(*fixture.grid, *fixture.sdm, fixture.matrices, fixture.views);
 
   for (const auto& cell : fixture.grid->GetLocalCells())
   {
@@ -125,16 +119,4 @@ TEST(AAHCellSweepDataTest, CopiesTheCellAndFaceDataExactly)
       }
     }
   }
-}
-
-// A phi address that is not at a node boundary does not identify a node, so the data is rejected.
-TEST(AAHCellSweepDataTest, RejectsAPhiAddressBetweenNodes)
-{
-  Fixture fixture(1);
-  if (fixture.grid->GetLocalCellCount() == 0)
-    GTEST_SKIP() << "This rank has no cells.";
-  EXPECT_THROW(
-    AAHCellSweepData(
-      *fixture.grid, *fixture.sdm, fixture.matrices, fixture.views, num_moments, num_groups),
-    std::logic_error);
 }

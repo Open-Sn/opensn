@@ -267,6 +267,9 @@ SweepScheduler::ScheduleAlgoAAOFused(SweepChunk& sweep_chunk)
 void
 SweepScheduler::Sweep()
 {
+  // Fetch the flux blocks on this thread before any kernel runs, and before BeginSweep reads
+  // them; a solver may have redirected them.
+  sweep_chunk_.FetchFluxBlocks();
   sweep_chunk_.BeginSweep();
   if (scheduler_type_ == SchedulingAlgorithm::ASYNC_FIFO)
     ScheduleAlgoAsyncFIFO(sweep_chunk_);

@@ -843,29 +843,30 @@ DiscreteOrdinatesProblem::InitializeFCS()
       const auto& transfer_matrices = xs.GetTransferMatrices(adjoint);
       for (size_t i = 0; i < num_nodes; ++i)
       {
-        const auto lhs_uk_map = transport_view.MapDOF(i, m, 0);
+        const auto& phi_unc = uncollided_flux_moments_local_;
         for (size_t g = 0; g < num_groups_; ++g)
         {
           double rhs = 0.0;
           if (ell < transfer_matrices.size())
             for (const auto& [_, gp, sigma_sm] : transfer_matrices[ell].Row(g))
-              rhs += sigma_sm * uncollided_flux_moments_local_[lhs_uk_map + gp];
+              rhs += sigma_sm * phi_unc[transport_view.MapDOF(i, m, gp)];
 
           if (ell == 0 and xs.IsFissionable())
           {
             const auto& production = xs.GetProductionMatrix(adjoint)[g];
             for (size_t gp = 0; gp < num_groups_; ++gp)
-              rhs += production[gp] * uncollided_flux_moments_local_[lhs_uk_map + gp];
+              rhs += production[gp] * phi_unc[transport_view.MapDOF(i, m, gp)];
 
             if (include_delayed_production)
               for (size_t gp = 0; gp < num_groups_; ++gp)
                 rhs += (adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
                                 : ComputeDelayedFissionProduction(xs, g, gp)) *
-                       uncollided_flux_moments_local_[lhs_uk_map + gp];
+                       phi_unc[transport_view.MapDOF(i, m, gp)];
           }
 
-          first_collision_source_moments_local_[lhs_uk_map + g] += rhs;
-          ext_src_moments_local_[lhs_uk_map + g] += rhs;
+          const auto lhs_uk_map = transport_view.MapDOF(i, m, g);
+          first_collision_source_moments_local_[lhs_uk_map] += rhs;
+          ext_src_moments_local_[lhs_uk_map] += rhs;
         }
       }
     }
@@ -883,10 +884,11 @@ DiscreteOrdinatesProblem::RemoveUncollidedFlux()
   if (not uncollided_flux_applied_)
     return false;
 
-  OpenSnLogicalErrorIf(phi_new_local_.size() != uncollided_flux_moments_local_.size(),
+  const auto phi_new = phi_new_local_.Data();
+  OpenSnLogicalErrorIf(phi_new.size() != uncollided_flux_moments_local_.size(),
                        GetName() + ": uncollided flux-moment size mismatch.");
-  for (size_t i = 0; i < phi_new_local_.size(); ++i)
-    phi_new_local_[i] -= uncollided_flux_moments_local_[i];
+  for (size_t i = 0; i < phi_new.size(); ++i)
+    phi_new[i] -= uncollided_flux_moments_local_[i];
   uncollided_flux_applied_ = false;
   return true;
 }
@@ -895,12 +897,8 @@ const AAHCellSweepData&
 DiscreteOrdinatesProblem::GetAAHCellSweepData()
 {
   if (not aah_cell_sweep_data_)
-    aah_cell_sweep_data_ = std::make_unique<AAHCellSweepData>(*grid_,
-                                                              *discretization_,
-                                                              unit_cell_matrices_,
-                                                              cell_transport_views_,
-                                                              num_moments_,
-                                                              num_groups_);
+    aah_cell_sweep_data_ = std::make_unique<AAHCellSweepData>(
+      *grid_, *discretization_, unit_cell_matrices_, cell_transport_views_);
   return *aah_cell_sweep_data_;
 }
 
@@ -910,10 +908,11 @@ DiscreteOrdinatesProblem::ComputeFluxFromUncollided()
   if (uncollided_flux_applied_)
     return;
 
-  OpenSnLogicalErrorIf(phi_new_local_.size() != uncollided_flux_moments_local_.size(),
+  const auto phi_new = phi_new_local_.Data();
+  OpenSnLogicalErrorIf(phi_new.size() != uncollided_flux_moments_local_.size(),
                        GetName() + ": uncollided flux-moment size mismatch.");
-  for (size_t i = 0; i < phi_new_local_.size(); ++i)
-    phi_new_local_[i] += uncollided_flux_moments_local_[i];
+  for (size_t i = 0; i < phi_new.size(); ++i)
+    phi_new[i] += uncollided_flux_moments_local_[i];
   uncollided_flux_applied_ = true;
 }
 
@@ -943,6 +942,21 @@ DiscreteOrdinatesProblem::InitializeSolverSchemes()
   max_groupset_size_ = solver_scheme.max_groupset_size;
   max_level_size_ = solver_scheme.max_level_size;
   max_angleset_size_ = solver_scheme.max_angleset_size;
+
+  // The within-groupset solver of the groupset whose flux block is last views phi_old and phi_new
+  // as its solution and right-hand-side vectors. Those vectors also hold the groupset's delayed
+  // angular unknowns, which the tail after the last block provides. The sweep schedulers built
+  // above allocate the delayed storage that the count reads. The count is collective on first use
+  // and every rank calls it.
+  const auto last_block = flux_moment_layout_.GetNumBlocks() - 1;
+  for (const auto& groupset : groupsets_)
+  {
+    if (GetFluxBlock(groupset) != last_block or not groupset.angle_agg)
+      continue;
+    const auto num_delayed_psi = groupset.angle_agg->GetNumDelayedAngularDOFs().first;
+    phi_old_local_.ReserveTail(num_delayed_psi);
+    phi_new_local_.ReserveTail(num_delayed_psi);
+  }
 }
 
 void
@@ -1007,8 +1021,10 @@ void
 DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstruction_keff)
 {
   // Cache converged steady-state flux moments
-  const auto phi_new_ref = GetPhiNewLocal();
-  const auto phi_old_ref = GetPhiOldLocal();
+  const auto CopyOf = [](std::span<const double> values)
+  { return std::vector<double>(values.begin(), values.end()); };
+  const auto phi_new_ref = CopyOf(phi_new_local_.Data());
+  const auto phi_old_ref = CopyOf(phi_old_local_.Data());
 
   // Rebuilding the solver schemes resets the lagged angular fluxes. Keep the converged ones.
   std::vector<std::vector<double>> saved_delayed_psi_old(groupsets_.size());
@@ -1039,8 +1055,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
   if (have_stored_psi)
   {
     psi_new_local_ = saved_psi_new;
-    GetPhiNewLocal() = phi_new_ref;
-    GetPhiOldLocal() = phi_old_ref;
+    phi_new_local_.Assign(phi_new_ref);
+    phi_old_local_.Assign(phi_old_ref);
     return;
   }
 
@@ -1051,7 +1067,7 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
   // transient time term uses this psi, so converge it tightly.
   constexpr int max_reconstruction_passes = 500;
   constexpr double lagged_psi_rel_tol = 1.0e-12;
-  const auto q_moments_ref = GetQMomentsLocal();
+  const auto q_moments_ref = CopyOf(q_moments_local_.Data());
   bool lagged_psi_converged = false;
   for (int pass = 0; pass < max_reconstruction_passes; ++pass)
   {
@@ -1074,15 +1090,16 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
 
       // Hold phi at the steady-state value. The source function accumulates, so start from zero.
       ZeroQMoments();
-      GetPhiOldLocal() = phi_new_ref;
+      phi_old_local_.Assign(phi_new_ref);
       // Add the 1/k-scaled fission source here if necessary and exclude fission below.
       const bool scale_fission = reconstruction_keff != 1.0;
       if (scale_fission)
       {
-        active_set_source_function_(wgs_context->groupset,
-                                    GetQMomentsLocal(),
-                                    phi_new_ref,
-                                    APPLY_WGS_FISSION_SOURCES | APPLY_AGS_FISSION_SOURCES);
+        active_set_source_function_(
+          wgs_context->groupset,
+          q_moments_local_.Blocks(),
+          GroupsetBlockedSpan<const double>(phi_new_ref, flux_moment_layout_),
+          APPLY_WGS_FISSION_SOURCES | APPLY_AGS_FISSION_SOURCES);
         ScaleQMoments(1.0 / reconstruction_keff);
       }
       try
@@ -1103,9 +1120,9 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
       }
       catch (...)
       {
-        GetQMomentsLocal() = q_moments_ref;
-        GetPhiNewLocal() = phi_new_ref;
-        GetPhiOldLocal() = phi_old_ref;
+        q_moments_local_.Assign(q_moments_ref);
+        phi_new_local_.Assign(phi_new_ref);
+        phi_old_local_.Assign(phi_old_ref);
         throw;
       }
 
@@ -1143,7 +1160,7 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
                       << ": Lagged angular-flux reconstruction reached iteration limit ("
                       << max_reconstruction_passes << ") without converging " << lagged_psi_rel_tol
                       << ".";
-  GetQMomentsLocal() = q_moments_ref;
+  q_moments_local_.Assign(q_moments_ref);
 
   // If the operator changed, the rebuilt psi need not reproduce the saved phi. Rescale per node
   // and group to preserve it.
@@ -1196,8 +1213,8 @@ DiscreteOrdinatesProblem::ReconstructAngularFluxFromSteadyState(double reconstru
                          "the angular distribution and higher moments are approximate.";
 
   // Restore the cached steady-state flux moments.
-  GetPhiNewLocal() = phi_new_ref;
-  GetPhiOldLocal() = phi_old_ref;
+  phi_new_local_.Assign(phi_new_ref);
+  phi_old_local_.Assign(phi_old_ref);
 }
 
 void
@@ -1368,8 +1385,8 @@ DiscreteOrdinatesProblem::TransformAdjointSolutionOrientation()
 
   // Flux moments integrate the angular flux against the spherical harmonics. Evaluating them at
   // opposite directions uses Y_{ell,m}(-Omega) = (-1)^ell Y_{ell,m}(Omega).
-  ReverseMomentDirections(phi_new_local_);
-  ReverseMomentDirections(phi_old_local_);
+  ReverseMomentDirections(phi_new_local_.Data());
+  ReverseMomentDirections(phi_old_local_.Data());
 
   for (const auto& groupset : groupsets_)
   {
@@ -1544,12 +1561,12 @@ DiscreteOrdinatesProblem::ZeroOutflowBalanceVars(LBSGroupset& groupset)
 
 #ifndef __OPENSN_WITH_GPU__
 void
-DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice()
+DiscreteOrdinatesProblem::CopyPhiAndSrcToDevice(std::size_t /*flux_block*/)
 {
 }
 
 void
-DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost()
+DiscreteOrdinatesProblem::CopyPhiAndOutflowBackToHost(std::size_t /*flux_block*/)
 {
 }
 #endif

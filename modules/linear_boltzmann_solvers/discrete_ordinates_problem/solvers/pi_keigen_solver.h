@@ -6,6 +6,7 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/solvers/discrete_ordinates_solver.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
+#include <span>
 
 namespace opensn
 {
@@ -28,13 +29,12 @@ public:
 
   BalanceTable ComputeBalanceTable() const;
 
-  /// Combines function calls to set fission source.
-  void SetLBSFissionSource(const std::vector<double>& input, bool additive);
+  /// Combines function calls to set fission source from a whole flux-moment vector.
+  void SetLBSFissionSource(std::span<const double> input, bool additive);
 
-  /// Combines function calls to set scattering source source.
-  void SetLBSScatterSource(const std::vector<double>& input,
-                           bool additive,
-                           bool suppress_wg_scat = false);
+  /// Combines function calls to set scattering source source from a whole flux-moment vector.
+  void
+  SetLBSScatterSource(std::span<const double> input, bool additive, bool suppress_wg_scat = false);
 
 protected:
   void CheckRequirements(std::vector<std::string>& errors) const override;
@@ -51,9 +51,9 @@ protected:
   unsigned int num_power_iterations_ = 0;
   bool converged_ = false;
 
-  std::vector<double>& q_moments_local_;
-  std::vector<double>& phi_old_local_;
-  std::vector<double>& phi_new_local_;
+  GroupsetBlockedVector& q_moments_local_;
+  GroupsetBlockedVector& phi_old_local_;
+  GroupsetBlockedVector& phi_new_local_;
 
   const std::vector<LBSGroupset>& groupsets_;
   SetSourceFunction active_set_source_function_;

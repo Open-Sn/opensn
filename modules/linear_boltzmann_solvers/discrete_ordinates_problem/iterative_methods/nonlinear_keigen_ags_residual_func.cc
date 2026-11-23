@@ -5,14 +5,18 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/nonlinear_keigen_ags_context.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/wgs_context.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/compute/lbs_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/preconditioning/lbs_shell_operations.h"
+#include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/utils/caliper_scopes.h"
 
 #include "caliper/cali.h"
 #include <petscsnes.h>
 #include <cmath>
+#include <cstdint>
+#include <memory>
+#include <span>
+#include <vector>
 
 namespace opensn
 {
@@ -51,67 +55,97 @@ NLKEigenResidualFunction(SNES snes, Vec phi, Vec r, void* ctx)
   auto active_set_source_function = lbs_problem->GetActiveSetSourceFunction();
 
   const auto& groupset_ids = nl_context_ptr->groupset_ids;
+  auto& phi_old = lbs_problem->GetPhiOldLocal();
+  auto& phi_new = lbs_problem->GetPhiNewLocal();
 
-  // Disassemble scalar fluxes. Delayed angular fluxes are groupset-scoped and are restored
-  // immediately before each groupset sweep below.
-  int64_t offset = 0;
-  for (const auto groupset_id : groupset_ids)
+  const PetscScalar* phi_array = nullptr;
+  PetscScalar* r_array = nullptr;
+  OpenSnPETScCall(VecGetArrayRead(phi, &phi_array));
+  OpenSnPETScCall(VecGetArray(r, &r_array));
+  double k_eff = 0.0;
   {
-    const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
-    LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-      *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
-    offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
-  }
-
-  // Compute 1/k F phi
-  lbs_problem->ZeroQMoments();
-  for (const auto& groupset : lbs_problem->GetGroupsets())
-  {
-    CALI_CXX_MARK_SCOPE("Source");
-    active_set_source_function(groupset,
-                               lbs_problem->GetQMomentsLocal(),
-                               lbs_problem->GetPhiOldLocal(),
-                               APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
-  }
-
-  const double k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal());
-  if (k_eff <= 0.0 or not std::isfinite(k_eff))
-    return SNESSetFunctionDomainError(snes);
-  lbs_problem->ScaleQMoments(1.0 / k_eff);
-
-  {
-    CALI_CXX_MARK_SCOPE("LinearSolve");
-
-    // Now add MS phi
-    for (const auto& groupset : lbs_problem->GetGroupsets())
-    {
-      auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-      const bool supress_wgs = wgs_context.GetLHSSourceScope() & SUPPRESS_WG_SCATTER;
-      SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
-      if (supress_wgs)
-        source_flags |= SUPPRESS_WG_SCATTER;
-      {
-        CALI_CXX_MARK_SCOPE("Source");
-        active_set_source_function(
-          groupset, lbs_problem->GetQMomentsLocal(), lbs_problem->GetPhiOldLocal(), source_flags);
-      }
-    }
-
-    // Sweep all the groupsets
-    // After this phi_new = DLinv(MSD phi + 1/k FD phi)
-    offset = 0;
+    // The flux part of each groupset's segment of phi is its phi_old, and its delayed angular
+    // fluxes are the old ones of its sweep. Nothing below changes them, so they are set once.
+    std::vector<std::unique_ptr<GroupsetBlockedVector::ScopedBlockOverride>> phi_old_overrides;
+    phi_old_overrides.reserve(groupset_ids.size());
+    int64_t offset = 0;
     for (const auto groupset_id : groupset_ids)
     {
       const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
-      auto& wgs_context = do_problem->GetWGSContext(groupset.id);
-      LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
-        *lbs_problem, groupset, phi, PhiSTLOption::PHI_OLD, offset);
-      wgs_context.ApplyInverseTransportOperator(SourceFlags());
-      LBSVecOps::SetGSPETScVecFromPrimarySTLvector(
-        *lbs_problem, groupset, r, PhiSTLOption::PHI_NEW, offset);
+      const auto block = lbs_problem->GetFluxBlock(groupset);
+      const auto block_size = phi_old.GetBlockSize(block);
+      phi_old_overrides.push_back(std::make_unique<GroupsetBlockedVector::ScopedBlockOverride>(
+        phi_old, block, std::span<const double>(phi_array + offset, block_size)));
+      if (groupset.angle_agg)
+      {
+        auto index = offset + static_cast<int64_t>(block_size) - 1;
+        groupset.angle_agg->SetOldDelayedAngularDOFsFromArray(index, phi_array);
+      }
       offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
     }
+
+    // Compute 1/k F phi
+    lbs_problem->ZeroQMoments();
+    for (const auto& groupset : lbs_problem->GetGroupsets())
+    {
+      CALI_CXX_MARK_SCOPE("Source");
+      active_set_source_function(groupset,
+                                 lbs_problem->GetQMomentsLocal().Blocks(),
+                                 lbs_problem->GetPhiOldLocal().ConstBlocks(),
+                                 APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
+    }
+
+    k_eff = ComputeFissionProduction(*lbs_problem, lbs_problem->GetPhiOldLocal().ConstBlocks());
+    if (k_eff > 0.0 and std::isfinite(k_eff))
+    {
+      lbs_problem->ScaleQMoments(1.0 / k_eff);
+
+      CALI_CXX_MARK_SCOPE("LinearSolve");
+
+      // Now add MS phi
+      for (const auto& groupset : lbs_problem->GetGroupsets())
+      {
+        auto& wgs_context = do_problem->GetWGSContext(groupset.id);
+        const bool supress_wgs = wgs_context.GetLHSSourceScope() & SUPPRESS_WG_SCATTER;
+        SourceFlags source_flags = APPLY_AGS_SCATTER_SOURCES | APPLY_WGS_SCATTER_SOURCES;
+        if (supress_wgs)
+          source_flags |= SUPPRESS_WG_SCATTER;
+        {
+          CALI_CXX_MARK_SCOPE("Source");
+          active_set_source_function(groupset,
+                                     lbs_problem->GetQMomentsLocal().Blocks(),
+                                     lbs_problem->GetPhiOldLocal().ConstBlocks(),
+                                     source_flags);
+        }
+      }
+
+      // Sweep all the groupsets, each directly into its segment of r.
+      // After this r = DLinv(MSD phi + 1/k FD phi)
+      offset = 0;
+      for (const auto groupset_id : groupset_ids)
+      {
+        const auto& groupset = lbs_problem->GetGroupsets().at(groupset_id);
+        auto& wgs_context = do_problem->GetWGSContext(groupset.id);
+        const auto block = lbs_problem->GetFluxBlock(groupset);
+        const auto block_size = phi_new.GetBlockSize(block);
+        {
+          const GroupsetBlockedVector::ScopedBlockOverride phi_new_override(
+            phi_new, block, std::span<double>(r_array + offset, block_size));
+          wgs_context.ApplyInverseTransportOperator(SourceFlags());
+        }
+        if (groupset.angle_agg)
+        {
+          auto index = offset + static_cast<int64_t>(block_size) - 1;
+          groupset.angle_agg->AppendNewDelayedAngularDOFsToArray(index, r_array);
+        }
+        offset += GetLocalGroupsetVectorSize(*lbs_problem, groupset);
+      }
+    }
   }
+  OpenSnPETScCall(VecRestoreArray(r, &r_array));
+  OpenSnPETScCall(VecRestoreArrayRead(phi, &phi_array));
+  if (k_eff <= 0.0 or not std::isfinite(k_eff))
+    return SNESSetFunctionDomainError(snes);
 
   ierr = VecAXPY(r, -1.0, phi);
   if (ierr != PETSC_SUCCESS)

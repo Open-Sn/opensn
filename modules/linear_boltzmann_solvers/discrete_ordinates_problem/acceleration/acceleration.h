@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <array>
+#include <span>
 #include <string>
 
 namespace opensn
@@ -141,11 +142,11 @@ class LBSGroupset;
  * update that corrects phi but not these fluxes leaves their error to re-enter on the next sweep,
  * which can make source iteration with DSA diverge.
  *
- * `delta_phi_local` has the layout of the local flux-moment vector.
+ * `delta_phi_local` is the groupset's block of a flux-moment vector.
  */
 void ApplyDSACorrectionToDelayedAngularFlux(DiscreteOrdinatesProblem& do_problem,
                                             const LBSGroupset& groupset,
-                                            const std::vector<double>& delta_phi_local);
+                                            std::span<const double> delta_phi_local);
 
 /**
  * Returns D / (1 + 3 D tau), the diffusion coefficient with time absorption tau added to

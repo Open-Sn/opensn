@@ -4,7 +4,6 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/compute/discrete_ordinates_compute.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/csda_utils.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/discrete_ordinates_problem.h"
-#include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include "framework/logging/log.h"
 #include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
@@ -111,10 +110,9 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
 
   const auto& grid = do_problem.GetGrid();
   const auto& discretization = do_problem.GetSpatialDiscretization();
-  auto& phi_new_local = do_problem.GetPhiNewLocal();
+  const auto& phi_new_vector = std::as_const(do_problem.GetPhiNewLocal());
+  const auto phi_new_local = phi_new_vector.Data();
   const auto& groupsets = do_problem.GetGroupsets();
-  auto& q_moments_local = do_problem.GetQMomentsLocal();
-  const auto saved_q_moments_local = q_moments_local;
   auto active_set_source_fn = do_problem.GetActiveSetSourceFunction();
   const auto& cell_transport_views = do_problem.GetCellTransportViews();
   const auto& cell_outflow_views = do_problem.GetCellOutflowViews();
@@ -134,23 +132,17 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
   const auto& first_collision_source = do_problem.GetFirstCollisionSourceMoments();
 
   // Get material source
-  // This is done using the SetSource routine because it allows a lot of flexibility.
-  auto mat_src = phi_new_local;
-  mat_src.assign(mat_src.size(), 0.0);
+  // This is done using the SetSource routine because it allows a lot of flexibility. Each call
+  // adds only to its groupset's block, so the sources are built directly in mat_src and the
+  // problem's source moments are left untouched.
+  std::vector<double> mat_src(phi_new_local.size(), 0.0);
+  const GroupsetBlockedSpan<double> mat_src_blocks(mat_src, do_problem.GetFluxMomentLayout());
   for (const auto& groupset : groupsets)
-  {
-    do_problem.ZeroQMoments();
     active_set_source_fn(groupset,
-                         q_moments_local,
-                         phi_new_local,
+                         mat_src_blocks,
+                         phi_new_vector.ConstBlocks(),
                          APPLY_FIXED_SOURCES | APPLY_AGS_FISSION_SOURCES |
                            APPLY_WGS_FISSION_SOURCES | APPLY_PREVIOUS_PRECURSOR_SOURCES);
-    LBSVecOps::GSScopedCopyPrimarySTLvectors( // NOLINT(readability-suspicious-call-argument)
-      do_problem,
-      groupset,
-      q_moments_local,
-      mat_src);
-  }
 
   // Adjoint absorption per cross-section object, built on first use.
   const bool adjoint = do_problem.IsAdjoint();
@@ -518,12 +510,7 @@ ComputeBalanceTable(DiscreteOrdinatesProblem& do_problem,
   {
     global_initial = global_balance_table.at(5);
     global_final = global_balance_table.at(6);
-  }
 
-  do_problem.SetQMomentsFrom(saved_q_moments_local);
-
-  if (time_dependent)
-  {
     // Rates are evaluated at the problem's current state and time. TransientSolver passes the
     // theta-centered state, for which the theta scheme balances exactly. Sources and boundaries
     // that switch on or off inside the step are evaluated at that single time, not averaged.

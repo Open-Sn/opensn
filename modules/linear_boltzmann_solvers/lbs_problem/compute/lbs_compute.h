@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include "modules/linear_boltzmann_solvers/lbs_problem/groupset_blocked_vector.h"
+#include <span>
 #include <vector>
 
 namespace opensn
@@ -24,14 +26,24 @@ double ComputeDelayedFissionProduction(const MultiGroupXS& xs,
                                        unsigned int from_group);
 
 /**
- * Compute the total fission production in the problem.
+ * Compute the total fission production in the problem from the flux moments `phi`, given by
+ * groupset block. Collective.
  */
-double ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi);
+double ComputeFissionProduction(const LBSProblem& lbs_problem,
+                                const GroupsetBlockedSpan<const double>& phi);
+
+/// ComputeFissionProduction of a whole flux-moment vector `phi` in the problem's layout.
+double ComputeFissionProduction(const LBSProblem& lbs_problem, std::span<const double> phi);
 
 /**
- * Computes the total fission rate in the problem.
+ * Computes the total fission rate in the problem from the flux moments `phi`, given by groupset
+ * block. Collective.
  */
-double ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi);
+double ComputeFissionRate(const LBSProblem& lbs_problem,
+                          const GroupsetBlockedSpan<const double>& phi);
+
+/// ComputeFissionRate of a whole flux-moment vector `phi` in the problem's layout.
+double ComputeFissionRate(const LBSProblem& lbs_problem, std::span<const double> phi);
 
 /// Compute the steady state delayed neutron precursor concentrations (zero in adjoint mode).
 void ComputePrecursors(LBSProblem& lbs_problem);

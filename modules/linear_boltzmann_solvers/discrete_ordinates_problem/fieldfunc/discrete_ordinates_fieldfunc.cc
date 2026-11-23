@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <optional>
+#include <span>
 #include <sstream>
 
 namespace opensn
@@ -19,9 +20,9 @@ namespace
 std::vector<double>
 ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
                         const Cell& cell,
-                        const UnknownManager& phi_uk_man,
+                        const CellLBSView& transport_view,
                         const std::vector<UnitCellMatrices>& unit_cell_matrices,
-                        const std::vector<double>& phi_new_local,
+                        std::span<const double> phi_new_local,
                         const unsigned int num_groups)
 {
   const auto& cell_mapping = sdm.GetCellMapping(cell);
@@ -41,7 +42,7 @@ ComputeCellAveragePhi0g(const SpatialDiscretization& sdm,
     double phi_integral = 0.0;
     for (size_t i = 0; i < num_nodes; ++i)
     {
-      const auto imap = sdm.MapDOFLocal(cell, i, phi_uk_man, 0, g);
+      const auto imap = transport_view.MapDOF(i, 0, g);
       phi_integral += intV_shapeI(i) * phi_new_local[imap];
     }
     phi_avg[g] = phi_integral / cell_volume;
@@ -187,13 +188,13 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
       not is_csda_charge_deposition and not is_csda_charge_deposition_term and
       not is_csda_charge_deposition_term_cellavg)
     return std::nullopt;
+  const auto phi_new_local = phi_new_local_.Data();
 
   OpenSnInvalidArgumentIf(not options_.csda_enabled,
                           GetName() + ": Field function \"" + xs_name +
                             "\" requires `options.csda_enabled=true`.");
 
   const auto& sdm = *discretization_;
-  const auto& phi_uk_man = flux_moments_uk_man_;
   const auto& unit_cell_matrices = GetUnitCellMatrices();
   std::vector<double> data_vector_local(local_node_count_, 0.0);
 
@@ -263,6 +264,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     const size_t num_nodes = cell_mapping.GetNumNodes();
     const auto& data = GetMaterialData(cell->block_id);
     const auto& stopping_power = data.xs->GetStoppingPower();
+    const auto& transport_view = cell_transport_views_[cell->local_id];
 
     const size_t cell_g_offset = cell->local_id * static_cast<size_t>(num_groups_);
 
@@ -276,10 +278,10 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
         for (const auto& charged_range : data.charged_ranges)
         {
           const unsigned int g = charged_range.second - 1;
-          const auto imap = sdm.MapDOFLocal(*cell, i, phi_uk_man, 0, g);
+          const auto imap = transport_view.MapDOF(i, 0, g);
           const double slowing_down_density =
             stopping_power[g] *
-            (phi_new_local_[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
+            (phi_new_local[imap] / data.delta_e[g] - phi_e_new_local_[cell_g_offset + g]);
           nodal_value += CSDAChargeSign(problem_particle_types, g) * slowing_down_density;
         }
         data_vector_local[sdm.MapDOFLocal(*cell, i)] = nodal_value;
@@ -288,7 +290,7 @@ DiscreteOrdinatesProblem::ComputeDerivedFieldFunctionData(const std::string& xs_
     }
 
     const auto phi_cell_avg = ComputeCellAveragePhi0g(
-      sdm, *cell, phi_uk_man, unit_cell_matrices, phi_new_local_, num_groups_);
+      sdm, *cell, transport_view, unit_cell_matrices, phi_new_local, num_groups_);
 
     // The CSDA terminal correction below is fundamentally a cell-averaged quantity: it is
     // built entirely from cell-averaged flux and psi_E moments, so it is constant across a cell.

@@ -18,6 +18,7 @@
 #include "framework/runtime.h"
 #include "caliper/cali.h"
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace opensn
@@ -44,10 +45,11 @@ void
 ClassicRichardson::ReleaseWorkspace()
 {
   // Solve() sets each of these vectors before it uses them, so they need not be kept.
-  saved_q_moments_local_ = std::vector<double>();
   psi_new_ = std::vector<double>();
   psi_old_ = std::vector<double>();
+  phi_change_ = std::vector<double>();
   phi_unaccelerated_ = std::vector<double>();
+  std::dynamic_pointer_cast<WGSContext>(context_ptr_)->ReleaseSourceScratch();
 }
 
 void
@@ -65,8 +67,18 @@ ClassicRichardson::Solve()
   auto& do_problem = gs_context_ptr->do_problem;
   gs_context_ptr->last_solve = {};
   const auto scope = gs_context_ptr->GetLHSSourceScope() | gs_context_ptr->GetRHSSourceScope();
-  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
   psi_old_ = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
+  const auto block = do_problem.GetFluxBlock(groupset);
+  // Change of the groupset's flux over one sweep, which drives the DSA correction.
+  const auto ComputePhiChange = [this, &do_problem, block]() -> const std::vector<double>&
+  {
+    const auto phi_new = std::as_const(do_problem.GetPhiNewLocal()).Block(block);
+    const auto phi_old = std::as_const(do_problem.GetPhiOldLocal()).Block(block);
+    phi_change_.resize(phi_new.size());
+    for (size_t i = 0; i < phi_change_.size(); ++i)
+      phi_change_[i] = phi_new[i] - phi_old[i];
+    return phi_change_;
+  };
 
   ConvergenceRateEstimator rate_estimator;
   double last_pw_phi_change = 0.0;
@@ -78,31 +90,36 @@ ClassicRichardson::Solve()
     CALI_CXX_MARK_LOOP_ITERATION(wgs_iteration, k);
 
     num_iterations = k + 1;
-    do_problem.SetQMomentsFrom(saved_q_moments_local_);
     {
-      CALI_CXX_MARK_SCOPE("Source");
-      gs_context_ptr->set_source_function(
-        groupset, do_problem.GetQMomentsLocal(), do_problem.GetPhiOldLocal(), scope);
+      // Sources go to scratch, which starts from the owned q, so q is left unchanged.
+      const auto q_override = gs_context_ptr->RedirectSourceMoments(false);
+      {
+        CALI_CXX_MARK_SCOPE("Source");
+        gs_context_ptr->set_source_function(groupset,
+                                            do_problem.GetQMomentsLocal().Blocks(),
+                                            do_problem.GetPhiOldLocal().ConstBlocks(),
+                                            scope);
+      }
+      gs_context_ptr->ApplyInverseTransportOperator(scope);
     }
-    gs_context_ptr->ApplyInverseTransportOperator(scope);
 
     // Scalar flux before acceleration, to form the DSA correction applied to the lagged angular
     // fluxes.
     const bool correct_delayed_psi =
       (groupset.apply_wgdsa or groupset.apply_tgdsa) and not psi_old_.empty();
     if (correct_delayed_psi)
-      phi_unaccelerated_ = do_problem.GetPhiNewLocal();
+    {
+      const auto phi_new = std::as_const(do_problem.GetPhiNewLocal()).Block(block);
+      phi_unaccelerated_.assign(phi_new.begin(), phi_new.end());
+    }
 
     // Apply WGDSA
     if (groupset.apply_wgdsa)
     {
       CALI_CXX_MARK_SCOPE("Acceleration/WGDSA");
 
-      WGDSA::Apply(do_problem,
-                   groupset,
-                   do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(),
-                   true,
-                   do_problem.GetPhiNewLocal());
+      WGDSA::Apply(
+        do_problem, groupset, ComputePhiChange(), true, do_problem.GetPhiNewLocal().Block(block));
     }
 
     // Apply TGDSA
@@ -111,17 +128,16 @@ ClassicRichardson::Solve()
       CALI_CXX_MARK_SCOPE("Acceleration/TGDSA");
 
       std::vector<double> delta_phi;
-      TGDSA::AssembleDeltaPhiVector(
-        do_problem, groupset, do_problem.GetPhiNewLocal() - do_problem.GetPhiOldLocal(), delta_phi);
+      TGDSA::AssembleDeltaPhiVector(do_problem, groupset, ComputePhiChange(), delta_phi);
       groupset.tgdsa_solver->Assemble_b(delta_phi);
       groupset.tgdsa_solver->Solve(delta_phi);
       TGDSA::DisassembleDeltaPhiVector(
-        do_problem, groupset, delta_phi, do_problem.GetPhiNewLocal());
+        do_problem, groupset, delta_phi, do_problem.GetPhiNewLocal().Block(block));
     }
 
     if (correct_delayed_psi)
     {
-      const auto& phi_new = do_problem.GetPhiNewLocal();
+      const auto phi_new = std::as_const(do_problem.GetPhiNewLocal()).Block(block);
       for (size_t i = 0; i < phi_new.size(); ++i)
         phi_unaccelerated_[i] = phi_new[i] - phi_unaccelerated_[i];
       ApplyDSACorrectionToDelayedAngularFlux(do_problem, groupset, phi_unaccelerated_);
@@ -179,8 +195,6 @@ ClassicRichardson::Solve()
               << FormatIterationSummary("WGS groups [" + std::to_string(groupset.first_group) +
                                           "-" + std::to_string(groupset.last_group) + "]",
                                         gs_context_ptr->last_solve);
-
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
 
   gs_context_ptr->PostSolveCallback();
 }

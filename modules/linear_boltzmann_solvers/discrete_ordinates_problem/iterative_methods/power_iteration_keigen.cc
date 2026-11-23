@@ -49,7 +49,7 @@ PowerIterationKEigen(LBSProblem& lbs_problem,
   k_eff = 1.0;
   double k_eff_prev = 1.0;
   double k_eff_change = 1.0;
-  double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local);
+  double F_prev = ComputeFissionProduction(lbs_problem, phi_old_local.ConstBlocks());
 
   // Start power iterations
   const bool print_ags_iters =
@@ -67,8 +67,8 @@ PowerIterationKEigen(LBSProblem& lbs_problem,
     {
       CALI_CXX_MARK_SCOPE("Source");
       active_set_source_function(groupset,
-                                 lbs_problem.GetQMomentsLocal(),
-                                 phi_old_local,
+                                 lbs_problem.GetQMomentsLocal().Blocks(),
+                                 phi_old_local.ConstBlocks(),
                                  APPLY_AGS_FISSION_SOURCES | APPLY_WGS_FISSION_SOURCES);
     }
 
@@ -78,7 +78,7 @@ PowerIterationKEigen(LBSProblem& lbs_problem,
     ags_solver->Solve();
 
     // Recompute k-eigenvalue
-    double F_new = ComputeFissionProduction(lbs_problem, phi_new_local);
+    double F_new = ComputeFissionProduction(lbs_problem, phi_new_local.ConstBlocks());
     k_eff = F_new / F_prev * k_eff;
     double reactivity = (k_eff - 1.0) / k_eff;
 

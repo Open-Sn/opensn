@@ -130,8 +130,9 @@ operations such as:
   :py:meth:`GetTimeStep`
 * fission diagnostics with :py:meth:`ComputeFissionRate` and
   :py:meth:`ComputeFissionProduction`
-* direct access to local scalar-flux vectors with :py:meth:`GetPhiOldLocal` and
-  :py:meth:`GetPhiNewLocal`
+* read-only views of the local flux moments, in node, moment, group order, with
+  :py:meth:`GetPhiOldLocal` and :py:meth:`GetPhiNewLocal` (a copy when the problem has
+  several groupsets)
 * flux/source I/O helpers
 * source and material reassignment with :py:meth:`SetPointSources`,
   :py:meth:`SetVolumetricSources`, and :py:meth:`SetXSMap`
