@@ -65,7 +65,9 @@ ClassicRichardson::Solve()
   auto& do_problem = gs_context_ptr->do_problem;
   gs_context_ptr->last_solve = {};
   const auto scope = gs_context_ptr->GetLHSSourceScope() | gs_context_ptr->GetRHSSourceScope();
-  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
+  // The solve changes only the groupset part of the source moments, which it restores at the end.
+  LBSVecOps::GetGSScopedValues(
+    do_problem, groupset, do_problem.GetQMomentsLocal(), saved_q_moments_local_);
   psi_old_ = groupset.angle_agg->GetOldDelayedAngularDOFsAsSTLVector();
 
   ConvergenceRateEstimator rate_estimator;
@@ -78,7 +80,8 @@ ClassicRichardson::Solve()
     CALI_CXX_MARK_LOOP_ITERATION(wgs_iteration, k);
 
     num_iterations = k + 1;
-    do_problem.SetQMomentsFrom(saved_q_moments_local_);
+    LBSVecOps::SetGSScopedValues(
+      do_problem, groupset, saved_q_moments_local_, do_problem.GetQMomentsLocal());
     {
       CALI_CXX_MARK_SCOPE("Source");
       gs_context_ptr->set_source_function(
@@ -180,9 +183,13 @@ ClassicRichardson::Solve()
                                           "-" + std::to_string(groupset.last_group) + "]",
                                         gs_context_ptr->last_solve);
 
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
-
+  // Restore the source moments for the final sweep of the context, which adds its sources to them,
+  // and again after it, so the solve leaves them as it found them.
+  LBSVecOps::SetGSScopedValues(
+    do_problem, groupset, saved_q_moments_local_, do_problem.GetQMomentsLocal());
   gs_context_ptr->PostSolveCallback();
+  LBSVecOps::SetGSScopedValues(
+    do_problem, groupset, saved_q_moments_local_, do_problem.GetQMomentsLocal());
 }
 
 } // namespace opensn

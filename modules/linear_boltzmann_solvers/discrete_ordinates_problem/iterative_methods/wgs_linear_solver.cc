@@ -181,8 +181,9 @@ WGSLinearSolver::SetRHS()
   auto& groupset = gs_context_ptr->groupset;
   auto& do_problem = gs_context_ptr->do_problem;
 
-  // SetSource for RHS
-  saved_q_moments_local_ = do_problem.GetQMomentsLocal();
+  // The solve changes only the groupset part of the source moments, which it restores at the end.
+  LBSVecOps::GetGSScopedValues(
+    do_problem, groupset, do_problem.GetQMomentsLocal(), saved_q_moments_local_);
 
   const bool single_richardson =
     groupset.iterative_method == LinearSystemSolver::IterativeMethod::PETSC_RICHARDSON and
@@ -283,11 +284,13 @@ WGSLinearSolver::PostSolveCallback()
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_NEW);
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(do_problem, groupset, x_, PhiSTLOption::PHI_OLD);
 
-  // Restore saved q_moms
-  do_problem.SetQMomentsFrom(saved_q_moments_local_);
-
-  // Context specific callback
+  // Restore the source moments for the final sweep of the context, which adds its sources to them,
+  // and again after it, so the solve leaves them as it found them.
+  LBSVecOps::SetGSScopedValues(
+    do_problem, groupset, saved_q_moments_local_, do_problem.GetQMomentsLocal());
   gs_context_ptr->PostSolveCallback();
+  LBSVecOps::SetGSScopedValues(
+    do_problem, groupset, saved_q_moments_local_, do_problem.GetQMomentsLocal());
 }
 
 } // namespace opensn
