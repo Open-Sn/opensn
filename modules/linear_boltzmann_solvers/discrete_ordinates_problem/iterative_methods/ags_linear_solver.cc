@@ -121,11 +121,13 @@ AGSLinearSolver::Solve()
   const bool print_ags_stats = verbose_ and is_multi_groupset;
   last_solve_ = {};
 
-  phi_old_ = lbs_problem_.GetPhiOldLocal();
-
-  // Save qmoms to be restored after each iteration. This is necessary for multiple ags iterations
-  // to function and for keigen-value problems
-  const auto saved_qmoms = lbs_problem_.GetQMomentsLocal();
+  // The change between passes needs the scalar flux of the previous pass. It is kept only when it
+  // is reported: with several groupsets, or when more than one pass is allowed. The source moments
+  // need no copy, because each groupset solve leaves them as it found them.
+  const bool measures_change = is_multi_groupset or max_iterations_ > 1;
+  std::vector<double> phi_old;
+  if (measures_change)
+    phi_old = lbs_problem_.GetPhiOldLocal();
 
   // Without coupling to earlier groupsets, a second pass would only continue the groupset solves
   // that already converged, so the iteration stops after the first pass in which they all do.
@@ -169,9 +171,9 @@ AGSLinearSolver::Solve()
     std::stringstream iter_stats;
     iter_stats << program_timer.GetTimeString() << " AGS iteration = " << iter;
 
-    if (lbs_problem_.GetOptions().ags_pointwise_convergence)
+    if (measures_change and lbs_problem_.GetOptions().ags_pointwise_convergence)
     {
-      double pw_change = ComputePointwisePhiChange(lbs_problem_, phi_old_);
+      double pw_change = ComputePointwisePhiChange(lbs_problem_, phi_old);
       last_error = pw_change;
       const double rho = rate_estimator.Update(pw_change);
 
@@ -181,9 +183,9 @@ AGSLinearSolver::Solve()
       if (rate_estimator.Converged(tolerance_))
         converged = true;
     }
-    else
+    else if (measures_change)
     {
-      double norm = ComputeL2PhiChange(lbs_problem_, phi_old_);
+      double norm = ComputeL2PhiChange(lbs_problem_, phi_old);
       last_error = norm;
       const double rho = rate_estimator.Update(norm);
 
@@ -209,9 +211,6 @@ AGSLinearSolver::Solve()
     if (print_ags_stats)
       log.Log() << no_wrap << iter_stats.str();
 
-    // Restore qmoms
-    lbs_problem_.SetQMomentsFrom(saved_qmoms);
-
     // A within-group solve that stops at its iteration limit is an inexact inner solve; the
     // across-groupset iteration continues and its own convergence test decides.
     if (wgs_status == IterationStatus::FAILED)
@@ -221,8 +220,8 @@ AGSLinearSolver::Solve()
     }
     else if (converged)
       break;
-    else
-      phi_old_ = lbs_problem_.GetPhiNewLocal();
+    else if (measures_change)
+      phi_old = lbs_problem_.GetPhiNewLocal();
   }
   CALI_CXX_MARK_LOOP_END(ags_iteration);
 

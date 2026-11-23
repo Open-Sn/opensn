@@ -20,7 +20,6 @@ public:
     : LinearSystemSolver(IterativeMethod::CLASSIC_RICHARDSON, nullptr),
       lbs_problem_(lbs_problem),
       wgs_solvers_(std::move(wgs_solvers)),
-      phi_old_(lbs_problem.GetPhiOldLocal().size()),
       max_iterations_(100),
       tolerance_(1.0e-6),
       verbose_(true)
@@ -48,7 +47,6 @@ public:
 private:
   LBSProblem& lbs_problem_; // NOLINT(clang-diagnostic-unused-private-field)
   std::vector<std::shared_ptr<LinearSolver>> wgs_solvers_;
-  std::vector<double> phi_old_;
   unsigned int max_iterations_;
   double tolerance_;
   bool verbose_;

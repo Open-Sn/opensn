@@ -216,6 +216,44 @@ LBSVecOps::GSScopedCopyPrimarySTLvectors(LBSProblem& lbs_problem,
 }
 
 void
+LBSVecOps::GetGSScopedValues(LBSProblem& lbs_problem,
+                             const LBSGroupset& groupset,
+                             const std::vector<double>& src,
+                             std::vector<double>& packed)
+{
+  packed.resize(lbs_problem.GetLocalNodeCount() * lbs_problem.GetNumMoments() *
+                groupset.GetNumGroups());
+  GroupsetScopedCopy(lbs_problem,
+                     groupset.first_group,
+                     groupset.GetNumGroups(),
+                     [&](int64_t idx, size_t mapped_idx) { packed[idx] = src[mapped_idx]; });
+}
+
+void
+LBSVecOps::SetGSScopedValues(LBSProblem& lbs_problem,
+                             const LBSGroupset& groupset,
+                             const std::vector<double>& packed,
+                             std::vector<double>& dest)
+{
+  GroupsetScopedCopy(lbs_problem,
+                     groupset.first_group,
+                     groupset.GetNumGroups(),
+                     [&](int64_t idx, size_t mapped_idx) { dest[mapped_idx] = packed[idx]; });
+}
+
+void
+LBSVecOps::SetGSScopedValues(LBSProblem& lbs_problem,
+                             const LBSGroupset& groupset,
+                             double value,
+                             std::vector<double>& dest)
+{
+  GroupsetScopedCopy(lbs_problem,
+                     groupset.first_group,
+                     groupset.GetNumGroups(),
+                     [&](int64_t, size_t mapped_idx) { dest[mapped_idx] = value; });
+}
+
+void
 LBSVecOps::SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
                                                   const std::vector<unsigned int>& groupset_ids,
                                                   Vec x,

@@ -61,8 +61,9 @@ WGSContext::MatrixAction(Mat& matrix, Vec& action_vector, Vec& action)
   LBSVecOps::SetPrimarySTLvectorFromGSPETScVec(
     do_problem, groupset, action_vector, PhiSTLOption::PHI_OLD);
 
-  // Setting the source using updated phi_old
-  do_problem.ZeroQMoments();
+  // Setting the source using updated phi_old. The sweep reads only the groupset part of the source
+  // moments, and the groupset solvers save and restore only that part.
+  LBSVecOps::SetGSScopedValues(do_problem, groupset, 0.0, do_problem.GetQMomentsLocal());
   {
     CALI_CXX_MARK_SCOPE("Source");
     set_source_function(
