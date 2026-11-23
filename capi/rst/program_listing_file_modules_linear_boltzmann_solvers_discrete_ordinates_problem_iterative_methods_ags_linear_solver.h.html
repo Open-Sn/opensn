@@ -107,7 +107,6 @@
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">LinearSystemSolver</span><span class="p">(</span><span class="n">IterativeMethod</span><span class="o">::</span><span class="n">CLASSIC_RICHARDSON</span><span class="p">,</span><span class="w"> </span><span class="k">nullptr</span><span class="p">),</span>
 <span class="w">      </span><span class="n">lbs_problem_</span><span class="p">(</span><span class="n">lbs_problem</span><span class="p">),</span>
 <span class="w">      </span><span class="n">wgs_solvers_</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">move</span><span class="p">(</span><span class="n">wgs_solvers</span><span class="p">)),</span>
-<span class="w">      </span><span class="n">phi_old_</span><span class="p">(</span><span class="n">lbs_problem</span><span class="p">.</span><span class="n">GetPhiOldLocal</span><span class="p">().</span><span class="n">size</span><span class="p">()),</span>
 <span class="w">      </span><span class="n">max_iterations_</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span>
 <span class="w">      </span><span class="n">tolerance_</span><span class="p">(</span><span class="mf">1.0e-6</span><span class="p">),</span>
 <span class="w">      </span><span class="n">verbose_</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span>
@@ -135,7 +134,6 @@
 <span class="k">private</span><span class="o">:</span>
 <span class="w">  </span><span class="n">LBSProblem</span><span class="o">&amp;</span><span class="w"> </span><span class="n">lbs_problem_</span><span class="p">;</span><span class="w"> </span><span class="c1">// NOLINT(clang-diagnostic-unused-private-field)</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">shared_ptr</span><span class="o">&lt;</span><span class="n">LinearSolver</span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">wgs_solvers_</span><span class="p">;</span>
-<span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;</span><span class="w"> </span><span class="n">phi_old_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">max_iterations_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">tolerance_</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">bool</span><span class="w"> </span><span class="n">verbose_</span><span class="p">;</span>

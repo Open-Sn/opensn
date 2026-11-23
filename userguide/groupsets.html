@@ -404,7 +404,11 @@ memory.</p>
 each groupset’s inner solver frees its Krylov vectors and its other storage
 after each solve and allocates them again at its next solve, so only the
 groupset being solved holds this storage. A problem with a single groupset
-keeps it from one solve to the next.</p>
+keeps it from one solve to the next. The inner solver saves and restores only
+its groupset’s part of the source moments, so this storage is the size of the
+groupset, not of the whole problem. The across-groupset solver keeps a copy of
+the previous scalar flux of all groups only when it measures the change between
+passes: with more than one groupset, or when more than one pass is allowed.</p>
 </section>
 </section>
 <section id="allowing-cycles">

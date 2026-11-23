@@ -83,6 +83,24 @@ Program Listing for File lbs_vecops.h
                                                PhiSTLOption src,
                                                PhiSTLOption dest);
    
+     /// Copies the groupset part of a primary STL vector into a packed vector of that size.
+     static void GetGSScopedValues(LBSProblem& lbs_problem,
+                                   const LBSGroupset& groupset,
+                                   const std::vector<double>& src,
+                                   std::vector<double>& packed);
+   
+     /// Copies a packed vector made by GetGSScopedValues into the groupset part of a primary vector.
+     static void SetGSScopedValues(LBSProblem& lbs_problem,
+                                   const LBSGroupset& groupset,
+                                   const std::vector<double>& packed,
+                                   std::vector<double>& dest);
+   
+     /// Sets the groupset part of a primary STL vector to a value.
+     static void SetGSScopedValues(LBSProblem& lbs_problem,
+                                   const LBSGroupset& groupset,
+                                   double value,
+                                   std::vector<double>& dest);
+   
      /// Assembles a PETSc vector from multiple groupsets.
      static void SetMultiGSPETScVecFromPrimarySTLvector(LBSProblem& lbs_problem,
                                                         const std::vector<unsigned int>& groupset_ids,
