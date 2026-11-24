@@ -6,10 +6,13 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/sweep/fluds/fluds_common_data.h"
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 #include <cstddef>
 #include <cstdint>
+#include <functional>
 #include <memory>
 #include <optional>
+#include <queue>
 
 namespace opensn
 {
@@ -127,13 +130,31 @@ protected:
   std::vector<const short*> inco_face_upwind_dofs_;
 
 private:
+  /// The slots of one face category, which hold outgoing faces until their downwind cell reads
+  /// them.
+  struct LockBox
+  {
+    /// Global cell ID and face index in each slot. A slot without a cell ID is free.
+    std::vector<std::pair<std::optional<uint64_t>, short>> slots;
+    /// The free slots, smallest index first. A new face takes the smallest free slot.
+    std::priority_queue<std::uint32_t, std::vector<std::uint32_t>, std::greater<>> free_slots;
+  };
+
   void InitializeAlphaElements(const SPDS& spds, const GridFaceHistogram& grid_face_histogram);
 
+  /**
+   * Assigns slots to the outgoing faces of a cell and frees the slots of its local incoming faces.
+   * Cells are visited in sweep order. `local_so_cell_mapping` gives the sweep order index of each
+   * visited cell. `fas_edges` holds each edge of the local feedback arc set as one key, with the
+   * upwind local cell ID in the high 32 bits and the downwind local cell ID in the low 32 bits.
+   */
   void SlotDynamics(const Cell& cell,
                     const SPDS& spds,
                     const GridFaceHistogram& grid_face_histogram,
-                    std::vector<std::vector<std::pair<std::optional<uint64_t>, short>>>& lock_boxes,
-                    std::vector<std::pair<std::optional<uint64_t>, short>>& delayed_lock_box);
+                    const std::vector<uint64_t>& local_so_cell_mapping,
+                    const std::unordered_set<std::uint64_t>& fas_edges,
+                    std::vector<LockBox>& lock_boxes,
+                    LockBox& delayed_lock_box);
 
   /**
    * Given a sweep ordering index, the outgoing face counter, the outgoing face dof, this function
