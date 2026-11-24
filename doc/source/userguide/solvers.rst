@@ -783,6 +783,10 @@ The constructor takes:
   relative change of ``k_eff`` between power iterations divided by
   :math:`1-\rho`, with :math:`\rho` the estimated convergence rate; values
   below ``1.0e-12`` are treated as ``1.0e-12``
+* ``fission_source_tol``: tolerance on the estimated error of the fission-source
+  shape (default ``1.0e-6``, ``0`` disables the test): the root-mean-square
+  relative change of the cell fission sources, normalized by the total fission
+  production, divided by :math:`1-\rho`
 * ``reset_phi0``: whether to reset scalar fluxes to 1.0 before solving
 
 The problem must be in steady-state mode and have no external sources: no
@@ -828,13 +832,15 @@ At a high level, the solver:
 3. solves the transport problem with the problem's AGS/groupset iteration
 4. updates ``k_eff``
 5. repeats until the relative eigenvalue change is below
-   :math:`(1-\rho)\,` ``k_tol`` in two consecutive iterations, or ``max_iters``
-   is reached. The convergence rate :math:`\rho` is estimated from the change of
-   the production-normalized flux between iterations. A single small change
-   also occurs where an accelerated eigenvalue sequence overshoots and turns
-   around, so one is not taken as convergence. With an acceleration method, the
-   method must also allow convergence (for CMFD, see
-   ``balance_residual_tolerance``)
+   :math:`(1-\rho)\,` ``k_tol`` in two consecutive iterations and the
+   fission-source change is below :math:`(1-\rho)\,` ``fission_source_tol``, or
+   ``max_iters`` is reached. The convergence rate :math:`\rho` is estimated from
+   the change of the production-normalized flux between iterations. A single
+   small change also occurs where an accelerated eigenvalue sequence overshoots
+   and turns around, so one is not taken as convergence. The eigenvalue can
+   settle while the flux shape still changes, which the fission-source test
+   detects. With an acceleration method, the method must also allow convergence
+   (for CMFD, see ``balance_residual_tolerance``)
 6. in adjoint mode, reorients the solution: each direction's angular flux is
    swapped with that of its opposite direction and each flux moment of degree
    :math:`\ell` is multiplied by :math:`(-1)^\ell` (see :doc:`../theory/adjoint`). This happens after the final restart dump, so

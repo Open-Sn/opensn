@@ -398,7 +398,7 @@
   },
   {
     "file": "cmfd_convergence_diagnostics.py",
-    "comment": "CMFD balance check, coarse eigenvalue iterations, coarse solvers, skipped corrections and the adjoint problem. The errors are against a CMFD solve converged in the same run to k_tol=1e-11 and balance_residual_tolerance=1e-10. The script asserts that the loose balance tolerance leaves pin fission rates more than ten times less accurate and that the five-iteration GMRES update skips its first correction.",
+    "comment": "CMFD balance check, coarse eigenvalue iterations, coarse solvers, skipped corrections and the adjoint problem. The errors are against a CMFD solve converged in the same run to k_tol=1e-11 and balance_residual_tolerance=1e-10. The script asserts that the loose balance tolerance, with the fission-source test off, leaves pin fission rates more than ten times less accurate than the default balance tolerance and than the defaults and that the five-iteration GMRES update skips its first correction.",
     "num_procs": 4,
     "checks": [
       {
@@ -426,6 +426,18 @@
       {
         "type": "KeyValuePair",
         "key": "balance_1e-6_(default) converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "defaults k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "defaults converged=",
         "goldvalue": 1,
         "abs_tol": 0
       },

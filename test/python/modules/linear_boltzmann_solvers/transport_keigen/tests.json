@@ -1687,11 +1687,14 @@
   },
   {
     "file": "keigen_pi_stopping_criterion.py",
-    "comment": "Unaccelerated power iteration on a slowly converging 1D two-group core must meet k_tol (1e-6 and 1e-8) against a Newton-Krylov reference; checked as error / k_tol",
+    "comment": "Unaccelerated power iteration on a slowly converging 1D two-group core must meet k_tol (1e-6 and 1e-8) against a Newton-Krylov reference, checked as error / k_tol. With k_tol = 1e-3, the fission-source test alone must bound the RMS error of the normalized fuel-cell fission sources by fission_source_tol (1e-5 and 1e-7), while the eigenvalue test alone leaves an error far above that",
     "num_procs": 2,
     "checks": [
       {"type": "KeyValuePair", "key": "PI_KERR_REL_1E6", "goldvalue": 0, "abs_tol": 2.0},
-      {"type": "KeyValuePair", "key": "PI_KERR_REL_1E8", "goldvalue": 0, "abs_tol": 2.0}
+      {"type": "KeyValuePair", "key": "PI_KERR_REL_1E8", "goldvalue": 0, "abs_tol": 2.0},
+      {"type": "KeyValuePair", "key": "PI_FS_ERR_REL_1E5", "goldvalue": 0, "abs_tol": 2.0},
+      {"type": "KeyValuePair", "key": "PI_FS_ERR_REL_1E7", "goldvalue": 0, "abs_tol": 2.0},
+      {"type": "KeyValuePair", "key": "PI_FS_ERR_K_ONLY", "goldvalue": 0.3, "abs_tol": 0.25}
     ]
   },
   {

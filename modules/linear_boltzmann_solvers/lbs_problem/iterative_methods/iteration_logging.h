@@ -8,6 +8,7 @@
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <optional>
 #include <sstream>
 #include <string>
 #include <vector>
@@ -190,12 +191,15 @@ FormatKEigenOuterIteration(const std::string& phase_name,
                            const double reactivity_pcm,
                            const IterationSummary& ags_summary,
                            const std::vector<IterationSummary>& wgs_summaries,
-                           const IterationStatus outer_status)
+                           const IterationStatus outer_status,
+                           const std::optional<double> fission_source_change = std::nullopt)
 {
   std::ostringstream out;
   out << phase_name << " iteration = " << iteration;
   AppendNumericField(out, "k_eff", k_eff, Fixed(7));
   AppendNumericField(out, "k_eff_change", k_eff_change, Scientific(5));
+  if (fission_source_change)
+    AppendNumericField(out, "fission_source_change", *fission_source_change, Scientific(5));
   AppendNumericField(out, "rho_pcm", reactivity_pcm, Fixed(2));
   if (outer_status != IterationStatus::NONE)
     out << ", status = " << IterationStatusName(outer_status);
