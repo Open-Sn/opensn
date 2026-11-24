@@ -1,5 +1,25 @@
 [
   {
+    "file": "volume_postprocessor_custom_xs.py",
+    "comment": "VolumePostprocessor: a custom cross section carried only by the selected material is accepted (prompt over total production in (0.98, 1)), and the same cross section over a domain with a material that lacks it is rejected on every rank",
+    "num_procs": 2,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "PP_PROMPT_OVER_TOTAL_IN_RANGE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PP_UNSELECTED_MISSING_REJECTED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
     "file": "reed_balance.py",
     "comment": "1D Reed problem",
     "num_procs": 1,
