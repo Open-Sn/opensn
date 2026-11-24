@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a6fa392037da404c11c1357f558463655:
+
+Function opensn::SelectDeviceIndex
+==================================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SelectDeviceIndex(const std::vector<std::vector<std::string>>&, int)
+   :project: opensn

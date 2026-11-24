@@ -1,0 +1,189 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Program Listing for File device_binding.h &mdash; OpenSn 1.0.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/collapsible-lists/css/tree_view.css?v=a885cde7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pyopensn.css?v=59501074" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=292eb321"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
+      <script src="../../_static/collapsible-lists/js/CollapsibleLists.compressed.js?v=73120307"></script>
+      <script src="../../_static/collapsible-lists/js/apply-collapsible-lists.js?v=660e4f45"></script>
+      <script crossorigin="anonymous" integrity="sha256-Ae2Vz/4ePdIu6ZyI/5ZGsYnb+m0JlOmKPjt6XZ9JJkA=" src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.3.4/require.min.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            OpenSn
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../install/index.html">Quick Install Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../userguide/index.html">OpenSn User Guide (Draft)</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../theory/index.html">Theory Manual</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tutorials/index.html">Tutorials</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">C++ API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pyapi/index.html">Python API</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../devguide/index.html">Developer’s Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../appendices/index.html">Appendices</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../gallery/index.html">Gallery</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">OpenSn</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Program Listing for File device_binding.h</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="program-listing-for-file-device-binding-h">
+<span id="program-listing-file-framework-gpu-device-binding-h"></span><h1>Program Listing for File device_binding.h<a class="headerlink" href="#program-listing-for-file-device-binding-h" title="Link to this heading"></a></h1>
+<p>↰ <a class="reference internal" href="file_framework_gpu_device_binding.h.html#file-framework-gpu-device-binding-h"><span class="std std-ref">Return to documentation for file</span></a> (<code class="docutils literal notranslate"><span class="pre">framework/gpu/device_binding.h</span></code>)</p>
+<div class="highlight-cpp notranslate"><div class="highlight"><pre><span></span><span class="c1">// SPDX-FileCopyrightText: 2026 The OpenSn Authors &lt;https://open-sn.github.io/opensn/&gt;</span>
+<span class="c1">// SPDX-License-Identifier: MIT</span>
+
+<span class="cp">#pragma once</span>
+
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;mpi.h&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;string&gt;</span>
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
+
+<span class="k">namespace</span><span class="w"> </span><span class="nn">opensn</span>
+<span class="p">{</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Selects the GPU that this MPI rank uses.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Ranks on a node that see the same set of GPUs, in any order, share them round-robin in node-local</span>
+<span class="cm"> * rank order.</span>
+<span class="cm"> * A scheduler or launcher that gives each rank its own GPUs, by restricting the GPUs a rank can see</span>
+<span class="cm"> * (for example with `CUDA_VISIBLE_DEVICES`, `ROCR_VISIBLE_DEVICES` or `ONEAPI_DEVICE_SELECTOR`),</span>
+<span class="cm"> * puts each rank in a set of its own, so the rank uses the first GPU it was given.</span>
+<span class="cm"> *</span>
+<span class="cm"> * With CUDA or HIP, PETSc and OpenSn share the runtime&#39;s current device, and PETSc selects its</span>
+<span class="cm"> * device while it initializes. When PETSc has a CUDA or HIP backend, this therefore sets its</span>
+<span class="cm"> * `-device_select_cuda` or `-device_select_hip` option, whichever matches that backend, to the</span>
+<span class="cm"> * selected device. Selecting a different PETSc device, for example through `PETSC_OPTIONS`, makes</span>
+<span class="cm"> * PETSc and OpenSn use different GPUs. With SYCL, PETSc keeps its own selection, which does not</span>
+<span class="cm"> * change the device OpenSn uses.</span>
+<span class="cm"> *</span>
+<span class="cm"> * Call once per process, after MPI is initialized and before `PetscInitialize` or any GPU work.</span>
+<span class="cm"> * Collective over `comm`. Does nothing without GPU support or on a rank that sees no GPU. If</span>
+<span class="cm"> * listing or selecting the GPUs fails on any rank, every rank throws `std::runtime_error` after the</span>
+<span class="cm"> * collective calls. The message of a rank that failed names the rank and the cause.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">BindDevice</span><span class="p">(</span><span class="n">MPI_Comm</span><span class="w"> </span><span class="n">comm</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Makes the GPU that BindDevice selected the current device of the calling thread. The current</span>
+<span class="cm"> * device is per thread, so every thread other than the one that called BindDevice calls this</span>
+<span class="cm"> * before doing GPU work. Does nothing if BindDevice selected no GPU.</span>
+<span class="cm"> */</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">UseBoundDevice</span><span class="p">();</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Returns the index, in the device order of node-local rank `node_rank`, of the GPU that the rank</span>
+<span class="cm"> * uses, or -1 when it sees none. `visible_gpus[i]` lists the identifiers, as GetVisibleGPUIDs()</span>
+<span class="cm"> * returns them, of the GPUs that node-local rank i sees, in its device order. Ranks that see the</span>
+<span class="cm"> * same set of GPUs, in any order, share them round-robin in node-local rank order, taking them in</span>
+<span class="cm"> * the order the first of those ranks lists them. An identifier listed more than once counts as one</span>
+<span class="cm"> * GPU, and a rank uses its first device with the identifier it selects.</span>
+<span class="cm"> */</span>
+<span class="kt">int</span><span class="w"> </span><span class="nf">SelectDeviceIndex</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;&gt;&amp;</span><span class="w"> </span><span class="n">visible_gpus</span><span class="p">,</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">node_rank</span><span class="p">);</span>
+
+<span class="cm">/**</span>
+<span class="cm"> * Returns an identifier of each GPU this process can see, in device order. The identifier combines</span>
+<span class="cm"> * the GPU&#39;s PCI bus ID and UUID, so it differs between the GPUs on a node and between the MIG</span>
+<span class="cm"> * instances of one GPU, and is the same in every process that sees the GPU. SYCL lists a GPU once</span>
+<span class="cm"> * for each of its backends that reaches it, so the same identifier can appear more than once.</span>
+<span class="cm"> * When a SYCL device does not support these queries, the identifiers are the device indices.</span>
+<span class="cm"> * Returns an empty list without GPU support.</span>
+<span class="cm"> */</span>
+<span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="o">&gt;</span><span class="w"> </span><span class="n">GetVisibleGPUIDs</span><span class="p">();</span>
+
+<span class="c1">/// Makes `device`, an index into GetVisibleGPUIDs(), the current GPU of the calling thread.</span>
+<span class="kt">void</span><span class="w"> </span><span class="nf">SetCurrentGPU</span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="n">device</span><span class="p">);</span>
+
+<span class="c1">/// Returns whether OpenSn&#39;s GPU backend is CUDA or HIP, whose current device PETSc also sets.</span>
+<span class="kt">bool</span><span class="w"> </span><span class="nf">GPUBackendIsCUDAOrHIP</span><span class="p">();</span>
+
+<span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2023-present, OpenSn team.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

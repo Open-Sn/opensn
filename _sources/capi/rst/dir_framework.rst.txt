@@ -12,6 +12,7 @@ Subdirectories
 
 - :ref:`dir_framework_data_types`
 - :ref:`dir_framework_field_functions`
+- :ref:`dir_framework_gpu`
 - :ref:`dir_framework_graphs`
 - :ref:`dir_framework_logging`
 - :ref:`dir_framework_materials`

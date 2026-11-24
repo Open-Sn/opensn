@@ -1,0 +1,72 @@
+
+.. _file_framework_gpu_device_binding.h:
+
+File device_binding.h
+=====================
+
+|exhale_lsh| :ref:`Parent directory <dir_framework_gpu>` (``framework/gpu``)
+
+.. |exhale_lsh| unicode:: U+021B0 .. UPWARDS ARROW WITH TIP LEFTWARDS
+
+
+.. contents:: Contents
+   :local:
+   :backlinks: none
+
+Definition (``framework/gpu/device_binding.h``)
+-----------------------------------------------
+
+
+.. toctree::
+   :maxdepth: 1
+
+   program_listing_file_framework_gpu_device_binding.h.rst
+
+
+
+
+
+Includes
+--------
+
+
+- ``mpi.h``
+
+- ``string`` (:ref:`file_framework_logging_stringstream_color.h`)
+
+- ``vector`` (:ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_acceleration_cmfd_vector_tools.h`)
+
+
+
+Included By
+-----------
+
+
+- :ref:`file_modules_linear_boltzmann_solvers_discrete_ordinates_problem_sweep_sweep_parallel_for.h`
+
+
+
+
+Namespaces
+----------
+
+
+- :ref:`namespace_opensn`
+
+
+Functions
+---------
+
+
+- :ref:`exhale_function_namespaceopensn_1a556977d415bfd9ce00414f43ab64d02e`
+
+- :ref:`exhale_function_namespaceopensn_1ae6f531b0240aed535d650ee67aa00930`
+
+- :ref:`exhale_function_namespaceopensn_1a62a8ccc3ecab51c36820560c6b38a58d`
+
+- :ref:`exhale_function_namespaceopensn_1a6fa392037da404c11c1357f558463655`
+
+- :ref:`exhale_function_namespaceopensn_1afdd1f524f0f2bc6ac91a3ff2a23be0c7`
+
+- :ref:`exhale_function_namespaceopensn_1a03a1ebd7a0c096b043a3c4c38334a381`
+

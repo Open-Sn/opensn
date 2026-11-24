@@ -943,6 +943,8 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1a177b73b5df38403f1ebd18ff52244206`
 
+- :ref:`exhale_function_namespaceopensn_1a556977d415bfd9ce00414f43ab64d02e`
+
 - :ref:`exhale_function_namespaceopensn_1a327d93dfb09c6e4b27ff28cd3b8f1e77`
 
 - :ref:`exhale_function_namespaceopensn_1a1f18b38c31316e2b4ed40c6b9ec89b08`
@@ -1187,6 +1189,10 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ad602f7fa66a81755aa650856acefe62d`
 
+- :ref:`exhale_function_namespaceopensn_1ae6f531b0240aed535d650ee67aa00930`
+
+- :ref:`exhale_function_namespaceopensn_1a62a8ccc3ecab51c36820560c6b38a58d`
+
 - :ref:`exhale_function_namespaceopensn_1ab29c1808c043128c5ef2680ea73cdb5a`
 
 - :ref:`exhale_function_namespaceopensn_1a8ba64c6ef9a444d84fe569d5120fea86`
@@ -1317,17 +1323,17 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1af0816584bd9b03fe6f0e916b2596fedd`
 
-- :ref:`exhale_function_namespaceopensn_1a8bb8f334777c882e76f015a2ad58d724`
-
 - :ref:`exhale_function_namespaceopensn_1acf4b378e3097666d393186de01d8ca8a`
 
-- :ref:`exhale_function_namespaceopensn_1a247b90c3d1b82fb25cb4b619bee575e7`
+- :ref:`exhale_function_namespaceopensn_1a8bb8f334777c882e76f015a2ad58d724`
 
 - :ref:`exhale_function_namespaceopensn_1a6bd2666bac9065dd9be419de32751538`
 
-- :ref:`exhale_function_namespaceopensn_1a6b00057bd80fc6c712a5109f2a4d60c0`
+- :ref:`exhale_function_namespaceopensn_1a247b90c3d1b82fb25cb4b619bee575e7`
 
 - :ref:`exhale_function_namespaceopensn_1a82d9ea81b6e836be4901504d07e88ee0`
+
+- :ref:`exhale_function_namespaceopensn_1a6b00057bd80fc6c712a5109f2a4d60c0`
 
 - :ref:`exhale_function_namespaceopensn_1a448e15b32bb0aa765c436a901a52ac8c`
 
@@ -1399,9 +1405,13 @@ Functions
 
 - :ref:`exhale_function_namespaceopensn_1ae5947626e5577e8e57ab77ebec7c232c`
 
+- :ref:`exhale_function_namespaceopensn_1a6fa392037da404c11c1357f558463655`
+
 - :ref:`exhale_function_namespaceopensn_1a29b56d0fb78a6d7899dfcc7f7209bb61`
 
 - :ref:`exhale_function_namespaceopensn_1a8fa43a9fc19c5746a332686cd872ab64`
+
+- :ref:`exhale_function_namespaceopensn_1afdd1f524f0f2bc6ac91a3ff2a23be0c7`
 
 - :ref:`exhale_function_namespaceopensn_1ac0b88a92d183270aed1e53f31cdaff1c`
 
@@ -1468,6 +1478,8 @@ Functions
 - :ref:`exhale_function_namespaceopensn_1a4e053d3f1e0ca26faa917f2bae7f283b`
 
 - :ref:`exhale_function_namespaceopensn_1a23fb50509efc9f941b72f74464bf39fd`
+
+- :ref:`exhale_function_namespaceopensn_1a03a1ebd7a0c096b043a3c4c38334a381`
 
 - :ref:`exhale_function_namespaceopensn_1acdc60bdae34371a1bf7b164246808ab2`
 

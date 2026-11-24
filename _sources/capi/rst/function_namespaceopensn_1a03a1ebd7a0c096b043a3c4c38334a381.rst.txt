@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a03a1ebd7a0c096b043a3c4c38334a381:
+
+Function opensn::UseBoundDevice
+===============================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::UseBoundDevice()
+   :project: opensn

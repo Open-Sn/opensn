@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a556977d415bfd9ce00414f43ab64d02e:
+
+Function opensn::BindDevice
+===========================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::BindDevice(MPI_Comm)
+   :project: opensn

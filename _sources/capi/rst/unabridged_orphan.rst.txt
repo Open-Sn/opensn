@@ -2278,6 +2278,11 @@ Directories
 .. toctree::
    :maxdepth: 1
 
+   dir_framework_gpu.rst
+
+.. toctree::
+   :maxdepth: 1
+
    dir_framework_graphs.rst
 
 .. toctree::
@@ -2978,6 +2983,11 @@ Files
    :maxdepth: 1
 
    file_framework_data_types_dense_matrix.h.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   file_framework_gpu_device_binding.h.rst
 
 .. toctree::
    :maxdepth: 1

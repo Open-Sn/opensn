@@ -15,6 +15,7 @@ Program Listing for File sweep_parallel_for.h
    
    #pragma once
    
+   #include "framework/gpu/device_binding.h"
    #include <exception>
    #include <thread>
    #include <vector>
@@ -38,6 +39,7 @@ Program Listing for File sweep_parallel_for.h
            {
              try
              {
+               UseBoundDevice();
                for (size_t i = thread_id; i < count; i += num_threads)
                  function(i);
              }

@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1ae6f531b0240aed535d650ee67aa00930:
+
+Function opensn::GetVisibleGPUIDs
+=================================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GetVisibleGPUIDs()
+   :project: opensn

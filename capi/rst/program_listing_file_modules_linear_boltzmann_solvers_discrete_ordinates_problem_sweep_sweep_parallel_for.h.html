@@ -90,6 +90,7 @@
 
 <span class="cp">#pragma once</span>
 
+<span class="cp">#include</span><span class="w"> </span><span class="cpf">&quot;framework/gpu/device_binding.h&quot;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;exception&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;thread&gt;</span>
 <span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;vector&gt;</span>
@@ -113,6 +114,7 @@
 <span class="w">        </span><span class="p">{</span>
 <span class="w">          </span><span class="k">try</span>
 <span class="w">          </span><span class="p">{</span>
+<span class="w">            </span><span class="n">UseBoundDevice</span><span class="p">();</span>
 <span class="w">            </span><span class="k">for</span><span class="w"> </span><span class="p">(</span><span class="kt">size_t</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">thread_id</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="n">count</span><span class="p">;</span><span class="w"> </span><span class="n">i</span><span class="w"> </span><span class="o">+=</span><span class="w"> </span><span class="n">num_threads</span><span class="p">)</span>
 <span class="w">              </span><span class="n">function</span><span class="p">(</span><span class="n">i</span><span class="p">);</span>
 <span class="w">          </span><span class="p">}</span>

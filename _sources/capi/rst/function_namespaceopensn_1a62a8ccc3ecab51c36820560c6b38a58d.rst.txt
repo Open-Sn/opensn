@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1a62a8ccc3ecab51c36820560c6b38a58d:
+
+Function opensn::GPUBackendIsCUDAOrHIP
+======================================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::GPUBackendIsCUDAOrHIP()
+   :project: opensn

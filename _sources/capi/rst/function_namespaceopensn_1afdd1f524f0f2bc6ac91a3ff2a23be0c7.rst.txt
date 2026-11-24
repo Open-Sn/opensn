@@ -1,0 +1,14 @@
+.. _exhale_function_namespaceopensn_1afdd1f524f0f2bc6ac91a3ff2a23be0c7:
+
+Function opensn::SetCurrentGPU
+==============================
+
+- Defined in :ref:`file_framework_gpu_device_binding.h`
+
+
+Function Documentation
+----------------------
+
+
+.. doxygenfunction:: opensn::SetCurrentGPU(int)
+   :project: opensn
