@@ -3,8 +3,7 @@
 
 #include "framework/math/quadratures/angular/legendre_poly/legendrepoly.h"
 #include <cmath>
-#include <cstdlib>
-#include <utility>
+#include <stdexcept>
 
 namespace opensn
 {
@@ -12,41 +11,33 @@ namespace opensn
 double
 AssocLegendre(unsigned int ell, int m, double x)
 {
-  if (std::cmp_greater(abs(m), ell))
+  if (m < 0)
+    throw std::invalid_argument("AssocLegendre: m must be non-negative.");
+
+  const auto um = static_cast<unsigned int>(m);
+  if (um > ell)
     return 0.0;
 
-  // ell=0, m=0
-  if (ell == 0)
-    return 1.0;
+  // (1 - x)(1 + x) keeps its relative accuracy as |x| approaches 1, where 1 - x * x does not
+  const double sqrt_one_minus_x2 = sqrt((1.0 - x) * (1.0 + x));
 
-  // ell=1, m=0,
-  double Pn = x;
+  // P_m^m from P_l^l = -(2l - 1) sqrt(1 - x^2) P_{l-1}^{l-1}, P_0^0 = 1
+  double Pmm = 1.0;
+  for (unsigned int l = 1; l <= um; ++l)
+    Pmm = -(2.0 * l - 1.0) * sqrt_one_minus_x2 * Pmm;
 
-  // ell=1, m=1
-  double Pnpos = -sqrt(1.0 - x * x);
-
-  if (ell == 1)
+  // Upward in l from P_{m-1}^m = 0 and P_m^m:
+  // (l - m) P_l^m = (2l - 1) x P_{l-1}^m - (l + m - 1) P_{l-2}^m
+  double Plm2 = 0.0;
+  double Plm1 = Pmm;
+  for (unsigned int l = um + 1; l <= ell; ++l)
   {
-    if (m == 0)
-      return Pn;
-    if (m == 1)
-      return Pnpos;
+    const double Pl = ((2.0 * l - 1.0) * x * Plm1 - (l + um - 1) * Plm2) / (l - um);
+    Plm2 = Plm1;
+    Plm1 = Pl;
   }
 
-  double Pmlp1 = 0.0;
-  if (std::cmp_equal(ell, m))
-  {
-    Pmlp1 =
-      -(2.0 * ell - 1.0) * sqrt(1.0 - x * x) * AssocLegendre(ell - 1, static_cast<int>(ell) - 1, x);
-  }
-  else
-  {
-    Pmlp1 = (2.0 * ell - 1.0) * x * AssocLegendre(ell - 1, m, x);
-    Pmlp1 = Pmlp1 - (ell + m - 1) * AssocLegendre(ell - 2, m, x);
-    Pmlp1 = Pmlp1 / (ell - m);
-  }
-
-  return Pmlp1;
+  return Plm1;
 }
 
 } // namespace opensn
