@@ -672,6 +672,14 @@ LBSProblem::GetOptionsBlock()
                               "Type of convergence check for AGS iterations: `\"pointwise\"`, the "
                               "largest change of any flux moment relative to the local flux, or "
                               "`\"l2\"`, the absolute L2 norm of the change of all flux moments.");
+  params.AddOptionalParameter(
+    "ags_groupset_order",
+    "ascending",
+    "Order in which the across-groupset iteration solves the groupsets: `\"ascending\"`, groupset "
+    "0 first, from high to low energy, `\"descending\"`, the last groupset first, from low to high "
+    "energy, or `\"auto\"`, ascending in forward mode and descending in adjoint mode. One pass is "
+    "exact when no groupset receives a source from one solved after it. Scattering that only "
+    "lowers the energy gives that in ascending order forward and in descending order adjoint.");
   params.AddOptionalParameter("power_default_kappa",
                               3.20435e-11,
                               "Default `kappa` value (Energy released per fission) to use for "
@@ -696,6 +704,8 @@ LBSProblem::GetOptionsBlock()
                               "underscore after \"prefix\" is added automatically.");
   params.ConstrainParameterRange("ags_convergence_check",
                                  AllowableRangeList::New({"l2", "pointwise"}));
+  params.ConstrainParameterRange("ags_groupset_order",
+                                 AllowableRangeList::New({"ascending", "descending", "auto"}));
   params.ConstrainParameterRange("field_function_prefix_option",
                                  AllowableRangeList::New({"prefix", "solver_name"}));
   params.AddOptionalParameter(
@@ -798,6 +808,14 @@ LBSProblem::ParseOptions(const InputParameters& input)
     {"ags_convergence_check",
      [this](const ParameterBlock& spec)
      { options_.ags_pointwise_convergence = (spec.GetValue<std::string>() == "pointwise"); }},
+    {"ags_groupset_order",
+     [this](const ParameterBlock& spec)
+     {
+       const auto order = spec.GetValue<std::string>();
+       options_.ags_groupset_order = order == "descending" ? AGSGroupsetOrder::DESCENDING
+                                     : order == "auto"     ? AGSGroupsetOrder::AUTO
+                                                           : AGSGroupsetOrder::ASCENDING;
+     }},
     {"verbose_outer_iterations",
      [this](const ParameterBlock& spec)
      { options_.verbose_outer_iterations = spec.GetValue<bool>(); }},

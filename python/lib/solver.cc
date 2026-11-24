@@ -1467,6 +1467,14 @@ WrapLBS(py::module& slv)
             :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'pointwise', 'l2'}, default='pointwise'
+          - ags_groupset_order: {'ascending', 'descending', 'auto'}, default='ascending'
+            Order in which the AGS iteration solves the groupsets. ``'ascending'`` solves
+            groupset 0 first, from high to low energy, ``'descending'`` the last groupset first,
+            and ``'auto'`` ascends in forward mode and descends in adjoint mode. The iteration
+            stops after one pass when no groupset receives a source from one solved after it,
+            which downscatter-only cross sections give in ascending order forward and in
+            descending order adjoint. Otherwise the AGS log says why it iterates and what change
+            gives one pass. Use ``'auto'`` for adjoint problems with several groupsets.
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''
@@ -2123,6 +2131,14 @@ WrapLBS(py::module& slv)
             :class:`pyopensn.solver.PowerIterationKEigenSolver`.
           - ags_tolerance: float, default=1.0e-6
           - ags_convergence_check: {'pointwise', 'l2'}, default='pointwise'
+          - ags_groupset_order: {'ascending', 'descending', 'auto'}, default='ascending'
+            Order in which the AGS iteration solves the groupsets. ``'ascending'`` solves
+            groupset 0 first, from high to low energy, ``'descending'`` the last groupset first,
+            and ``'auto'`` ascends in forward mode and descends in adjoint mode. The iteration
+            stops after one pass when no groupset receives a source from one solved after it,
+            which downscatter-only cross sections give in ascending order forward and in
+            descending order adjoint. Otherwise the AGS log says why it iterates and what change
+            gives one pass. Use ``'auto'`` for adjoint problems with several groupsets.
           - power_default_kappa: float, default=3.20435e-11
           - field_function_prefix_option: {'prefix', 'solver_name'}, default='prefix'
           - field_function_prefix: str, default=''

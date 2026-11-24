@@ -3084,7 +3084,7 @@
   },
   {
     "file": "ags_single_pass_groupsets.py",
-    "comment": "AGS iteration stops after one pass when no groupset feeds an earlier one, iterates when one does, is invariant to the source scale, and its default check is relative. The reference conserves particles, and the one-pass test ignores cross-section groups beyond the simulated ones.",
+    "comment": "AGS iteration stops after one pass when no groupset feeds an earlier one in the solve order, which ags_groupset_order sets (auto solves adjoint groupsets from low to high energy), iterates when one does, is invariant to the source scale, and its default check is relative. When it iterates, the log names the blocking transfer and the reverse order or the groups that must share a groupset, and that grouping converges in one pass. The reference conserves particles, and the one-pass test ignores cross-section groups beyond the simulated ones.",
     "num_procs": 1,
     "checks": [
       {
@@ -3146,6 +3146,72 @@
         "key": "AGS_TRUNCATED_MAX_REL_DIFF=",
         "goldvalue": 0.0,
         "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_ADJOINT_DUALITY_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_ADJOINT_AUTO_ONE_PASS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_ADJOINT_AUTO_MAX_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_ADJOINT_ASCENDING_ONE_PASS_CONVERGED=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_FORWARD_AUTO_ONE_PASS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_FORWARD_DESCENDING_ONE_PASS_CONVERGED=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SUGGESTED_SPLIT_ONE_PASS_CONVERGED=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SUGGESTED_LOW_END_ONE_PASS_CONVERGED=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "AGS_SUGGESTED_HIGH_END_ONE_PASS_CONVERGED=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "AGS iterates: group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass."
+      },
+      {
+        "type": "StrCompare",
+        "key": "AGS iterates: group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = \"auto\" for a single pass."
+      },
+      {
+        "type": "StrCompare",
+        "key": "AGS iterates: group 0 scatters into group 63 in an earlier groupset. Set ags_groupset_order = \"auto\" for a single pass."
       }
     ]
   },

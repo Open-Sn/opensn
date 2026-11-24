@@ -24,6 +24,14 @@ enum class LBSBoundaryType
   ARBITRARY = 4   ///< Complex different for each angle and face node
 };
 
+/// Order in which the across-groupset iteration solves the groupsets.
+enum class AGSGroupsetOrder
+{
+  ASCENDING = 0,  ///< Groupset 0 first, from high to low energy.
+  DESCENDING = 1, ///< The last groupset first, from low to high energy.
+  AUTO = 2        ///< Ascending in forward mode and descending in adjoint mode.
+};
+
 enum class PhiSTLOption
 {
   PHI_OLD = 1,
@@ -78,6 +86,7 @@ struct LBSOptions
   /// solver then applies its own default.
   std::optional<unsigned int> max_ags_iterations;
   double ags_tolerance = 1.0e-6;
+  AGSGroupsetOrder ags_groupset_order = AGSGroupsetOrder::ASCENDING;
 
   double power_default_kappa = 3.20435e-11; // 200MeV to Joule
 

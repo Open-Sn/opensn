@@ -40,6 +40,25 @@ its leakage, which a source-normalization error would break by an order of magni
 library gives its cross sections to six digits, so absorption plus scattering differs from the
 total cross section by up to 1e-3 in a group, and the relative balance closes only to about 1e-5.
 
+The order of the groupset solves decides which coupling one pass resolves. In adjoint mode the
+transfer matrices are transposed: the importance of a fast group depends on the slower groups it
+scatters into, so in split A the first groupset receives a source from the second, while the
+second, which holds all of the upscattering, receives none from the first. With
+ags_groupset_order = "auto" the adjoint groupsets are solved in descending order, the second
+first, and one pass converges to the one-groupset adjoint reference. In ascending order one pass
+does not converge. In forward mode "auto" keeps the ascending order, and "descending" makes split A
+iterate. The adjoint reference, with a unit adjoint source in group 100, is anchored by duality:
+the slab integral of its group 0 importance must equal the slab integral of the group 100 flux of
+the forward reference, whose unit source is in group 0.
+
+When one pass is not exact, the AGS log names the first transfer from a groupset solved later into
+one solved earlier and how to remove all of them. For the adjoint in ascending order and the
+forward problem in descending order, the reverse order is exact, and the log suggests
+ags_groupset_order = "auto". For split B it asks for groups 69-166 in one groupset: the library
+scatters up into group 69 and from no group above 166. The grouping (0-68, 69-166, 167) then
+converges in one pass, and moving either end of that range inward, to (0-69, 70-167) or
+(0-68, 69-165, 166-167), does not.
+
 Finally, the same library is used for a 63-group problem in two groupsets (0-30, 31-62). The
 cross sections then have more groups than the problem, and only the transfers between simulated
 groups may decide whether one pass is exact. No group below 69 receives upscatter, so groups 0-62
@@ -71,9 +90,10 @@ SOURCE_SCALE = 2.0**-40
 
 
 def solve(splits, scale=1.0, l_abs_tol=1.0e-12, options=None, num_groups=NUM_GROUPS,
-          balance=False):
+          balance=False, source_group=0):
     """Return the group fluxes integrated over the slab, whether the solve converged, and, with
-    balance=True, the particle balance relative to the source (otherwise None)."""
+    balance=True, the particle balance relative to the source (otherwise None). The source, or the
+    adjoint source with options {"adjoint": True}, is uniform in source_group."""
     nodes = [30.0 * i / 60 for i in range(61)]
     grid = OrthogonalMeshGenerator(node_sets=[nodes]).Execute()
     grid.SetUniformBlockID(0)
@@ -84,7 +104,8 @@ def solve(splits, scale=1.0, l_abs_tol=1.0e-12, options=None, num_groups=NUM_GRO
                   "inner_linear_method": "petsc_gmres", "l_abs_tol": l_abs_tol,
                   "l_max_its": 500, "gmres_restart_interval": 100} for split in splits]
     source = VolumetricSource(block_ids=[0],
-                              group_strength=[scale] + [0.0] * (num_groups - 1))
+                              group_strength=[scale if g == source_group else 0.0
+                                              for g in range(num_groups)])
     problem = DiscreteOrdinatesProblem(mesh=grid, num_groups=num_groups, groupsets=groupsets,
                                        xs_map=[{"block_ids": [0], "xs": xs}],
                                        volumetric_sources=[source], options=options or {})
@@ -125,6 +146,24 @@ if __name__ == "__main__":
     truncated, truncated_converged, _ = solve([(0, 30), (31, 62)], num_groups=63,
                                               options={"max_ags_iterations": 1})
 
+    response_group = 100
+    adjoint_reference, _, _ = solve([(0, NUM_GROUPS - 1)], options={"adjoint": True},
+                                    source_group=response_group)
+    adjoint_auto, adjoint_auto_converged, _ = solve(
+        split_a, source_group=response_group,
+        options={"adjoint": True, "max_ags_iterations": 1, "ags_groupset_order": "auto"})
+    _, adjoint_ascending_converged, _ = solve(
+        split_a, source_group=response_group,
+        options={"adjoint": True, "max_ags_iterations": 1, "ags_groupset_order": "ascending"})
+    _, forward_auto_converged, _ = solve(
+        split_a, options={"max_ags_iterations": 1, "ags_groupset_order": "auto"})
+    _, forward_descending_converged, _ = solve(
+        split_a, options={"max_ags_iterations": 1, "ags_groupset_order": "descending"})
+    one_pass = {"max_ags_iterations": 1}
+    _, suggested_converged, _ = solve([(0, 68), (69, 166), (167, 167)], options=one_pass)
+    _, low_end_converged, _ = solve([(0, 69), (70, NUM_GROUPS - 1)], options=one_pass)
+    _, high_end_converged, _ = solve([(0, 68), (69, 165), (166, NUM_GROUPS - 1)], options=one_pass)
+
     if rank == 0:
         print(f"AGS_SPLIT_A_ONE_PASS_CONVERGED={int(a_converged)}")
         print(f"AGS_SPLIT_A_MAX_REL_DIFF={max_relative_difference(a_one_pass, reference):.6e}")
@@ -140,3 +179,14 @@ if __name__ == "__main__":
         print(f"AGS_TRUNCATED_ONE_PASS_CONVERGED={int(truncated_converged)}")
         print(f"AGS_TRUNCATED_MAX_REL_DIFF="
               f"{max_relative_difference(truncated, reference[:63]):.6e}")
+        duality = abs(adjoint_reference[0] - reference[response_group]) / reference[response_group]
+        print(f"AGS_ADJOINT_DUALITY_REL_DIFF={duality:.6e}")
+        print(f"AGS_ADJOINT_AUTO_ONE_PASS_CONVERGED={int(adjoint_auto_converged)}")
+        print(f"AGS_ADJOINT_AUTO_MAX_REL_DIFF="
+              f"{max_relative_difference(adjoint_auto, adjoint_reference):.6e}")
+        print(f"AGS_ADJOINT_ASCENDING_ONE_PASS_CONVERGED={int(adjoint_ascending_converged)}")
+        print(f"AGS_FORWARD_AUTO_ONE_PASS_CONVERGED={int(forward_auto_converged)}")
+        print(f"AGS_FORWARD_DESCENDING_ONE_PASS_CONVERGED={int(forward_descending_converged)}")
+        print(f"AGS_SUGGESTED_SPLIT_ONE_PASS_CONVERGED={int(suggested_converged)}")
+        print(f"AGS_SUGGESTED_LOW_END_ONE_PASS_CONVERGED={int(low_end_converged)}")
+        print(f"AGS_SUGGESTED_HIGH_END_ONE_PASS_CONVERGED={int(high_end_converged)}")
