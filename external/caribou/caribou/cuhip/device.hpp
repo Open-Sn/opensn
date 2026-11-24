@@ -5,6 +5,7 @@
  */
 #pragma once
 
+#include <cstddef>  // std::size_t
 #include <cstdint>  // std::uint32_t
 #include <string>   // std::string
 
@@ -18,9 +19,39 @@ namespace caribou::impl {
 // ------
 
 inline std::uint32_t get_num_gpus(void) {
-    int count;
-    check_error(::GPU_API(GetDeviceCount)(&count));
+    int count = 0;
+    const ::GPU_API(Error_t) status = ::GPU_API(GetDeviceCount)(&count);
+    if (status == ::CUDA_OR_HIP(ErrorNoDevice, ErrorNoDevice) ||
+        status == ::CUDA_OR_HIP(ErrorInsufficientDriver, ErrorInsufficientDriver)) {
+        // No usable GPU: clear the error so that later runtime calls are unaffected.
+        static_cast<void>(::GPU_API(GetLastError)());
+        return 0;
+    }
+    check_error(status);
     return static_cast<std::uint32_t>(count);
+}
+
+inline std::string get_uuid(std::uint32_t device_id) {
+#if defined(__NVCC__)
+    ::cudaDeviceProp properties{};
+    check_error(::cudaGetDeviceProperties(&properties, static_cast<int>(device_id)));
+    const ::cudaUUID_t id = properties.uuid;
+#else
+    // hipDeviceProp_t has a uuid member only from HIP 6.0, while hipDeviceGetUuid exists in earlier versions too.
+    ::hipDevice_t device;
+    check_error(::hipDeviceGet(&device, static_cast<int>(device_id)));
+    ::hipUUID id;
+    check_error(::hipDeviceGetUuid(&id, device));
+#endif
+    constexpr char hex_digits[] = "0123456789abcdef";
+    std::string uuid;
+    uuid.reserve(2 * sizeof(id.bytes));
+    for (std::size_t i = 0; i < sizeof(id.bytes); ++i) {
+        const auto byte = static_cast<unsigned char>(id.bytes[i]);
+        uuid += hex_digits[byte >> 4];
+        uuid += hex_digits[byte & 0xF];
+    }
+    return uuid;
 }
 
 inline std::uint32_t get_current_device(void) {

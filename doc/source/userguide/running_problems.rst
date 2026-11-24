@@ -104,8 +104,38 @@ Practical guidance:
   possible.
 * If a GPU run fails immediately, check the build configuration, and whether the
   problem is steady-state or transient.
-* The batch system or manual GPU binding determines which GPU is associated
-  with each MPI rank.
+
+Each MPI rank selects its GPU at startup:
+
+* Ranks on a node that see the same GPUs, in any order, share them in turn by
+  node-local rank. With four GPUs, node-local ranks 0-3 use GPUs 0-3, rank 4
+  uses GPU 0, and so on.
+* A batch system or launcher that assigns GPUs to ranks does so by restricting
+  the GPUs each rank sees, for example with ``CUDA_VISIBLE_DEVICES``,
+  ``ROCR_VISIBLE_DEVICES``, ``HIP_VISIBLE_DEVICES``, or
+  ``ONEAPI_DEVICE_SELECTOR`` (Slurm's ``--gpu-bind``, for instance). A rank
+  given one GPU uses it; ranks given the same GPUs share them in turn.
+* With CUDA or HIP, OpenSn passes the selected GPU to PETSc as
+  ``-device_select_cuda`` or ``-device_select_hip``, so PETSc uses the same GPU.
+  Do not select a different PETSc device, for example through
+  ``PETSC_OPTIONS``.
+* With SYCL, OpenSn recognizes a GPU by its PCI address and UUID. A SYCL
+  runtime that reaches one GPU through two backends, for example Level Zero and
+  OpenCL, lists it twice, and OpenSn counts it once. If the device does not
+  report its PCI address or UUID, OpenSn compares device indices instead, which
+  is correct when every rank sees all GPUs of its node or only its own. A
+  PETSc built with SYCL keeps its own GPU selection.
+* An MPI library built with GPU support can create a context on the first GPU
+  each rank sees while MPI initializes, before OpenSn selects a GPU. When
+  ranks share GPUs, every rank then also holds memory on the node's first GPU.
+  MPICH, for example, does so to register its host buffers. Restricting the
+  GPUs each rank sees avoids this, and so does setting
+  ``MPIR_CVAR_ENABLE_GPU_REGISTER=0`` for MPICH.
+* A SYCL runtime can create a context on every GPU it can see when it starts.
+  DPC++ with its CUDA backend does so even when ``ONEAPI_DEVICE_SELECTOR``
+  limits the GPUs it lists, so every rank then holds memory on every GPU of
+  its node. Restricting the GPUs each rank sees with ``CUDA_VISIBLE_DEVICES``
+  avoids this.
 
 .. note::
 

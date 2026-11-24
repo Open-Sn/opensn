@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include "framework/gpu/device_binding.h"
 #include <exception>
 #include <thread>
 #include <vector>
@@ -26,6 +27,7 @@ ParallelFor(size_t count, size_t num_threads, Function function)
         {
           try
           {
+            UseBoundDevice();
             for (size_t i = thread_id; i < count; i += num_threads)
               function(i);
           }
