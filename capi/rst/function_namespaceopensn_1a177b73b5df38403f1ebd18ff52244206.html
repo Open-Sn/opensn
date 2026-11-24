@@ -398,11 +398,13 @@
 <span class="target" id="namespaceopensn_1a177b73b5df38403f1ebd18ff52244206"></span><span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="sig-prename descclassname"><span class="n"><span class="pre">opensn</span></span><span class="p"><span class="pre">::</span></span></span><span class="sig-name descname"><span class="n"><span class="pre">AssocLegendre</span></span></span><span class="sig-paren">(</span><span class="kt"><span class="pre">unsigned</span></span><span class="w"> </span><span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">ell</span></span>, <span class="kt"><span class="pre">int</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">m</span></span>, <span class="kt"><span class="pre">double</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">x</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn13AssocLegendreEjid" title="Link to this definition"></a><br /></dt>
 <dd><p>Provides the function evaluation of the associated Legendre polynomial at value x. </p>
 <p>This code has a whitepaper associated with it <a class="reference external" href="SphericalHarmonics.pdf"></a></p>
+<p>The value is computed by the three-term recurrence in ell, in O(ell) operations.</p>
+<p>The value is not normalized. |P_m^m(x)| = (2m - 1)!! (1 - x^2)^(m/2) exceeds the largest double from m = 151 near x = 0, and at higher ell the recurrence overflows from smaller m (for |x| up to 0.7, from m = 129 at ell = 255 and m = 102 at ell = 1023). The result is then inf, or NaN where the recurrence forms 0 * inf (at x = 0) or inf - inf.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ell</strong> – int The ell order of the polynomial. </p></li>
-<li><p><strong>m</strong> – int The m-th moment of the polynomial </p></li>
+<li><p><strong>m</strong> – int The m-th moment of the polynomial. Returns 0 for m &gt; ell; throws std::invalid_argument for m &lt; 0. </p></li>
 <li><p><strong>x</strong> – double The evaluation point. </p></li>
 </ul>
 </dd>
