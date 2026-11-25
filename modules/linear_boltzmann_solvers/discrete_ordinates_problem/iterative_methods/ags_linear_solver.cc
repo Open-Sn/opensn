@@ -214,10 +214,15 @@ AGSLinearSolver::Solve()
     is_multi_groupset ? CheckAGSIterates(lbs_problem_, ordered_solvers) : std::nullopt;
   const bool one_pass_exact = is_multi_groupset and not inexact_reason;
   // A power iteration or time step solves many times with the same reason, so it is logged when
-  // it changes.
-  if (print_ags_stats and inexact_reason and *inexact_reason != logged_inexact_reason_)
+  // it changes. Only a logged reason is remembered, so a later verbose solve still reports a
+  // reason that a quiet solve found.
+  if (not inexact_reason)
+    logged_inexact_reason_.clear();
+  else if (print_ags_stats and *inexact_reason != logged_inexact_reason_)
+  {
     log.Log() << no_wrap << program_timer.GetTimeString() << " AGS iterates: " << *inexact_reason;
-  logged_inexact_reason_ = inexact_reason.value_or("");
+    logged_inexact_reason_ = *inexact_reason;
+  }
 
   ConvergenceRateEstimator rate_estimator;
   double last_error = 0.0;

@@ -552,7 +552,7 @@ Common cases:
    * - Forward, upscatter confined to one groupset
      - ``"ascending"`` or ``"auto"``
      - one
-   * - Forward, upscatter across a groupset boundary
+   * - Forward, upscatter and downscatter across the same groupset boundary
      - any
      - iterates to ``ags_tolerance``
    * - Adjoint, downscatter only in the forward cross sections
