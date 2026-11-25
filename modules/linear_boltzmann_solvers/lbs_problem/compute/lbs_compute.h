@@ -29,6 +29,23 @@ double ComputeDelayedFissionProduction(const MultiGroupXS& xs,
 double ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi);
 
 /**
+ * Fission production of each fissionable local cell divided by the global fission production, in
+ * local cell order. The sources of all ranks sum to one. Collective. Throws if the global
+ * production is not positive and finite.
+ */
+std::vector<double> ComputeNormalizedCellFissionSources(const LBSProblem& lbs_problem,
+                                                        const std::vector<double>& phi);
+
+/**
+ * Root-mean-square over all fissionable cells of the relative change from previous to current,
+ * two results of ComputeNormalizedCellFissionSources for the same problem. A cell whose previous
+ * source is not positive adds nothing to the sum but counts as a cell, as in OpenMOC. Returns zero
+ * when no rank has a fissionable cell. Collective.
+ */
+double ComputeFissionSourceRMSChange(const std::vector<double>& previous,
+                                     const std::vector<double>& current);
+
+/**
  * Computes the total fission rate in the problem.
  */
 double ComputeFissionRate(const LBSProblem& lbs_problem, const std::vector<double>& phi);

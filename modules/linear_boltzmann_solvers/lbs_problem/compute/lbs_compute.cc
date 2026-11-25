@@ -6,7 +6,11 @@
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/spatial_weight_function.h"
 #include "framework/runtime.h"
+#include "framework/utils/error.h"
 #include <cassert>
+#include <cmath>
+#include <cstdint>
+#include <unordered_map>
 
 namespace opensn
 {
@@ -37,10 +41,18 @@ ComputeDelayedFissionProduction(const MultiGroupXS& xs,
   return delayed_production;
 }
 
-double
-ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+namespace
 {
 
+/**
+ * Global fission production. When cell_sources is given, it receives the unscaled local production
+ * of each fissionable local cell, in local cell order.
+ */
+double
+ComputeFissionProductionImpl(const LBSProblem& lbs_problem,
+                             const std::vector<double>& phi,
+                             std::vector<double>* cell_sources)
+{
   const auto& grid = lbs_problem.GetGrid();
   const auto& cell_transport_views = lbs_problem.GetCellTransportViews();
   const auto& unit_cell_matrices = lbs_problem.GetUnitCellMatrices();
@@ -52,8 +64,10 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
   const auto first_grp = 0;
   const auto last_grp = lbs_problem.GetNumGroups() - 1;
 
-  // Delayed production of a cell summed over the destination group, per unit flux in group g'
-  std::vector<double> delayed_production(last_grp + 1, 0.0);
+  // Production per unit flux in source group g', summed over destination groups g. It depends
+  // only on the XS, so it is formed once per XS in this call rather than at every node. It is
+  // not kept across calls, so XS scaling and changed problem options apply to the next call.
+  std::unordered_map<const MultiGroupXS*, std::vector<double>> production_by_xs;
 
   // Loop over local cells
   double local_production = 0.0;
@@ -64,43 +78,46 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
 
     // Obtain xs
     const auto& xs = transport_view.GetXS();
-    const auto& F = xs.GetProductionMatrix(adjoint);
-
     if (not xs.IsFissionable())
       continue;
 
-    // When delayed-neutron data is included, the production matrix is prompt-only and delayed
-    // production is added separately. If the production matrix changes to include delayed
-    // production, adjust this sum to prevent double counting. In adjoint mode F is transposed, and
-    // so is the delayed production.
-    if (include_delayed_production)
-      for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
-      {
-        delayed_production[gp] = 0.0;
-        for (unsigned int g = first_grp; g <= last_grp; ++g)
-          delayed_production[gp] += adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
-                                            : ComputeDelayedFissionProduction(xs, g, gp);
-      }
+    const auto [entry, inserted] = production_by_xs.try_emplace(&xs, last_grp + 1, 0.0);
+    auto& production = entry->second;
+    if (inserted)
+    {
+      const auto& F = xs.GetProductionMatrix(adjoint);
+      for (unsigned int g = first_grp; g <= last_grp; ++g)
+        for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
+          production[gp] += F[g][gp];
+
+      // When delayed-neutron data is included, the production matrix is prompt-only and delayed
+      // production is added separately. If the production matrix changes to include delayed
+      // production, adjust this sum to prevent double counting. In adjoint mode F is transposed,
+      // and so is the delayed production.
+      if (include_delayed_production)
+        for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
+          for (unsigned int g = first_grp; g <= last_grp; ++g)
+            production[gp] += adjoint ? ComputeDelayedFissionProduction(xs, gp, g)
+                                      : ComputeDelayedFissionProduction(xs, g, gp);
+    }
 
     // Loop over nodes
+    double cell_production = 0.0;
     const int num_nodes = transport_view.GetNumNodes();
     for (int i = 0; i < num_nodes; ++i)
     {
       const auto uk_map = transport_view.MapDOF(i, 0, 0);
       const double IntV_ShapeI = cell_matrices.intV_shapeI(i);
 
-      // Loop over groups
-      for (unsigned int g = first_grp; g <= last_grp; ++g)
+      for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
       {
-        const auto& prod = F[g];
-        for (unsigned int gp = 0; gp <= last_grp; ++gp)
-          local_production += prod[gp] * phi[uk_map + gp] * IntV_ShapeI;
+        const double value = production[gp] * phi[uk_map + gp] * IntV_ShapeI;
+        local_production += value;
+        cell_production += value;
       }
-
-      if (include_delayed_production)
-        for (unsigned int gp = first_grp; gp <= last_grp; ++gp)
-          local_production += delayed_production[gp] * phi[uk_map + gp] * IntV_ShapeI;
     } // for node
+    if (cell_sources)
+      cell_sources->push_back(cell_production);
   } // for cell
 
   // Report a physical rate: curvilinear unit integrals omit the angular extent (2*pi in RZ).
@@ -111,6 +128,55 @@ ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double
   mpi_comm.all_reduce(local_production, global_production, mpi::op::sum<double>());
 
   return global_production;
+}
+
+} // namespace
+
+double
+ComputeFissionProduction(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+{
+  return ComputeFissionProductionImpl(lbs_problem, phi, nullptr);
+}
+
+std::vector<double>
+ComputeNormalizedCellFissionSources(const LBSProblem& lbs_problem, const std::vector<double>& phi)
+{
+  OpenSnLogicalErrorIf(phi.size() != lbs_problem.GetPhiNewLocal().size(),
+                       "Fission-source flux vector size does not match the problem.");
+  std::vector<double> sources;
+  const double production = ComputeFissionProductionImpl(lbs_problem, phi, &sources);
+  OpenSnLogicalErrorIf(not std::isfinite(production) or production <= 0.0,
+                       "Normalized cell fission sources require a positive, finite global fission "
+                       "production.");
+  // The global production includes the curvilinear angular extent, and the cell sources do not.
+  const double scale =
+    IntegralMeasureScale(lbs_problem.GetGrid()->GetCoordinateSystem()) / production;
+  for (auto& value : sources)
+    value *= scale;
+  return sources;
+}
+
+double
+ComputeFissionSourceRMSChange(const std::vector<double>& previous,
+                              const std::vector<double>& current)
+{
+  OpenSnLogicalErrorIf(previous.size() != current.size(),
+                       "Fission-source vectors of successive iterations differ in size.");
+  double local_squared = 0.0;
+  for (std::size_t i = 0; i < previous.size(); ++i)
+    if (previous[i] > 0.0)
+    {
+      const double relative_change = (current[i] - previous[i]) / previous[i];
+      local_squared += relative_change * relative_change;
+    }
+  double global_squared = 0.0;
+  mpi_comm.all_reduce(local_squared, global_squared, mpi::op::sum<double>());
+  const auto local_count = static_cast<std::uint64_t>(previous.size());
+  std::uint64_t global_count = 0;
+  mpi_comm.all_reduce(local_count, global_count, mpi::op::sum<std::uint64_t>());
+  if (global_count == 0)
+    return 0.0;
+  return std::sqrt(global_squared / static_cast<double>(global_count));
 }
 
 double

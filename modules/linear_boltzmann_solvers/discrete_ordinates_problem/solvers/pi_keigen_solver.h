@@ -25,6 +25,13 @@ public:
   unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
   /// Return true if the last Execute() met its convergence criteria before max_iters.
   bool IsConverged() const { return converged_; }
+  /// Return the fission-source tolerance. Zero means the fission-source test is disabled.
+  double GetFissionSourceTolerance() const { return fission_source_tolerance_; }
+  /**
+   * Return the root-mean-square relative change of the normalized cell fission sources in the
+   * last power iteration. Zero when the fission-source test is disabled.
+   */
+  double GetFissionSourceChange() const { return fission_source_change_; }
 
   BalanceTable ComputeBalanceTable() const;
 
@@ -46,6 +53,8 @@ protected:
   unsigned int max_iters_;
   double k_eff_;
   double k_tolerance_;
+  double fission_source_tolerance_;
+  double fission_source_change_ = 0.0;
   double F_prev_;
   bool reset_phi0_;
   unsigned int num_power_iterations_ = 0;

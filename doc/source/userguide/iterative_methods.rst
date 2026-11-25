@@ -129,6 +129,7 @@ For :py:class:`pyopensn.solver.PowerIterationKEigenSolver`:
 
 - ``max_iters``
 - ``k_tol``
+- ``fission_source_tol``
 - ``reset_phi0``
 
 For :py:class:`pyopensn.solver.NonLinearKEigenSolver`:
@@ -819,6 +820,7 @@ Relevant parameters:
 
 - ``max_iters``
 - ``k_tol``
+- ``fission_source_tol``
 - ``reset_phi0``
 
 What it does:
@@ -828,8 +830,9 @@ What it does:
   one across-groupset pass unless the problem sets ``max_ags_iterations``
 - updates ``k_eff``
 - repeats until the relative eigenvalue change is below
-  :math:`(1-\rho)\,` ``k_tol`` in two consecutive power iterations, or
-  ``max_iters`` is reached
+  :math:`(1-\rho)\,` ``k_tol`` in two consecutive power iterations and the
+  fission-source change is below :math:`(1-\rho)\,` ``fission_source_tol``,
+  or ``max_iters`` is reached
 
 ``k_tol`` is the tolerance on the estimated relative error of the eigenvalue.
 A power iteration converging at rate :math:`\rho` changes :math:`k` by only
@@ -843,6 +846,20 @@ accelerated eigenvalue sequence can overshoot and show one small change where it
 turns around. ``1.0e-8`` to
 ``1.0e-10`` is a reasonable production range, with ``1.0e-10`` being common
 when a fairly tight ``k_eff`` is desired.
+
+``fission_source_tol`` is the tolerance on the estimated error of the
+fission-source shape. The fission production of each fissionable cell is
+divided by the total production, and the fission-source change is the
+root-mean-square of the relative changes of these cell sources between power
+iterations. A cell whose previous source is not positive adds nothing to the
+sum but counts as a cell. The change must be below :math:`(1-\rho)\,`
+``fission_source_tol``, with the same :math:`\rho` as for ``k_tol``. The
+eigenvalue is insensitive to small errors of the flux shape, so it can settle
+while the shape, and the pin powers, still change. This happens with
+accelerated iterations whose eigenvalue comes from a converged low-order
+problem, and in large, loosely coupled cores. The default, ``1.0e-6``, bounds
+the estimated root-mean-square error of the cell fission sources. ``0``
+disables the test, which leaves only the eigenvalue test.
 
 With more than one groupset, each power iteration makes one across-groupset
 pass unless the problem options set ``max_ags_iterations``, in which case it

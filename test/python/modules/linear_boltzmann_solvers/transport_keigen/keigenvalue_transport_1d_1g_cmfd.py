@@ -103,9 +103,13 @@ if __name__ == "__main__":
 
     def run_cmfd():
         phys = make_problem()
+        # The partial closure has a slow mode on this problem. Its fission source changes by
+        # about 4e-9 per update and shrinks by only 0.999 per update after 2000 updates, while k
+        # stops changing and is still 2e-9 from the unaccelerated result. The fission-source
+        # test therefore does not stop it. The net closure converges in about 190 updates.
         cmfd_kwargs = dict(
             problem=phys,
-            current_closure=get_option("cmfd_current_closure", "partial"),
+            current_closure=get_option("cmfd_current_closure", "net"),
             coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
             aggregation_size=get_option("cmfd_aggregation_size", 2),
             group_aggregation_size=get_option("cmfd_group_aggregation_size", 1),

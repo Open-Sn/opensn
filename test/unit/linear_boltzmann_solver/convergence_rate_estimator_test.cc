@@ -3,6 +3,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/iterative_methods/convergence.h"
 #include <gtest/gtest.h>
+#include <array>
 #include <cmath>
 
 using namespace opensn;
@@ -115,6 +116,51 @@ TEST(ConvergenceRateEstimator, CallerRoundoffLevelReplacesRelativeLevel)
   EXPECT_FALSE(estimator.Converged(1.0e-20));
   EXPECT_TRUE(estimator.Converged(1.0e-20, roundoff));
   EXPECT_FALSE(estimator.Passes(2.0 * roundoff, 1.0e-20, roundoff));
+}
+
+TEST(ConvergenceRateEstimator, OscillatoryLinearMapIsNeverAcceptedEarly)
+{
+  // Iterates x_n = t + a rho^n (v + (-1)^n w) of a linear map whose error modes v + w and
+  // v - w have eigenvalues +rho and -rho. Both modes sum to zero, so the iterates stay
+  // positive with a constant sum, like production-normalized fluxes. The relative error
+  // |x_n - t| / |t| is known exactly. The step norms oscillate, so the estimate of the rate
+  // from successive changes is not the true rate. Converged() may then accept late but must
+  // never accept an iterate whose true error is above the tolerance.
+  const double rho = 0.9;
+  const double amplitude = 0.01;
+  const double tolerance = 1.0e-6;
+  const std::array<double, 3> target{1.0, 1.0, 1.0};
+  const std::array<double, 3> v{1.0, -1.0, 0.0};
+  const std::array<double, 3> w{0.1, 0.0, -0.1};
+  auto iterate = [&](int n)
+  {
+    std::array<double, 3> x{};
+    const double sign = n % 2 == 0 ? 1.0 : -1.0;
+    for (std::size_t i = 0; i < x.size(); ++i)
+      x[i] = target[i] + amplitude * std::pow(rho, n) * (v[i] + sign * w[i]);
+    return x;
+  };
+  auto norm = [](const std::array<double, 3>& x)
+  { return std::sqrt(x[0] * x[0] + x[1] * x[1] + x[2] * x[2]); };
+  auto difference = [](const std::array<double, 3>& a, const std::array<double, 3>& b)
+  { return std::array<double, 3>{a[0] - b[0], a[1] - b[1], a[2] - b[2]}; };
+
+  ConvergenceRateEstimator estimator;
+  auto previous = iterate(0);
+  bool converged = false;
+  for (int n = 1; n <= 400 and not converged; ++n)
+  {
+    const auto current = iterate(n);
+    estimator.Update(norm(difference(current, previous)) / norm(current));
+    converged = estimator.Converged(tolerance);
+    if (converged)
+    {
+      SCOPED_TRACE(::testing::Message() << "accepted at iterate " << n);
+      EXPECT_LT(norm(difference(current, target)) / norm(target), tolerance);
+    }
+    previous = current;
+  }
+  EXPECT_TRUE(converged);
 }
 
 } // namespace

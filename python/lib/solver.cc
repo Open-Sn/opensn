@@ -2749,6 +2749,14 @@ WrapPIteration(py::module& slv)
         in two consecutive iterations, where ``rho`` is the convergence rate estimated from the
         change of the production-normalized flux. Values below ``1.0e-12`` are treated as
         ``1.0e-12``.
+    fission_source_tol: float, default = 1.0e-6
+        Tolerance on the estimated error of the fission-source shape. Each fissionable cell's
+        fission production is divided by the total production, and the root-mean-square relative
+        change of these cell sources between power iterations must be below
+        ``fission_source_tol * (1 - rho)``, with ``rho`` as for ``k_tol``. A cell whose previous
+        source is not positive adds nothing to the sum but counts as a cell. This test is applied
+        in addition to the ``k_tol`` test, because k can settle while the flux shape still
+        changes. ``0`` disables it.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
     compute_balance: bool, default=False
@@ -2794,9 +2802,18 @@ WrapPIteration(py::module& slv)
     R"(
     Return True if the last :meth:`Execute` met the convergence criteria.
 
-    Convergence requires the k-eigenvalue test on ``k_tol`` to pass and, when an
-    acceleration method is attached, its own convergence check (for CMFD, the balance
-    residual) to pass. Returns False if ``max_iters`` was reached first.
+    Convergence requires the k-eigenvalue test on ``k_tol`` and the fission-source test on
+    ``fission_source_tol`` to pass and, when an acceleration method is attached, its own
+    convergence check (for CMFD, the balance residual) to pass. Returns False if ``max_iters``
+    was reached first.
+    )"
+  );
+  pi_k_eigen_solver.def(
+    "GetFissionSourceChange",
+    &PowerIterationKEigenSolver::GetFissionSourceChange,
+    R"(
+    Return the root-mean-square relative change of the normalized cell fission sources in the
+    last power iteration of :meth:`Execute`. Returns 0 when ``fission_source_tol`` is 0.
     )"
   );
   pi_k_eigen_solver.def(
