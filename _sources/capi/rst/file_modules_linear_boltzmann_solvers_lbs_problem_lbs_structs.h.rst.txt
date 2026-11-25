@@ -93,6 +93,8 @@ Enums
 -----
 
 
+- :ref:`exhale_enum_namespaceopensn_1a2767f2b37a83e63a687ff660fa99c1d4`
+
 - :ref:`exhale_enum_namespaceopensn_1adbca6961a12788281ba4908a5ede2aa2`
 
 - :ref:`exhale_enum_namespaceopensn_1a888a70b0fcfee2519583f22c144fdb85`

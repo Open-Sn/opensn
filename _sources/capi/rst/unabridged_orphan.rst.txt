@@ -2054,6 +2054,11 @@ Enums
 .. toctree::
    :maxdepth: 1
 
+   enum_namespaceopensn_1a2767f2b37a83e63a687ff660fa99c1d4.rst
+
+.. toctree::
+   :maxdepth: 1
+
    enum_namespaceopensn_1a497e0584a70f5f46177be586f7525e3d.rst
 
 .. toctree::

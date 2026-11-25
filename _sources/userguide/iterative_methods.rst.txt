@@ -466,6 +466,7 @@ The relevant problem options are:
 - ``max_ags_iterations``
 - ``ags_tolerance``
 - ``ags_convergence_check``
+- ``ags_groupset_order``
 
 What AGS does
 -------------
@@ -475,10 +476,13 @@ solution is consistent across groupset boundaries.
 
 In OpenSn, AGS:
 
-- executes each WGS solver in sequence
+- executes each WGS solver in sequence, in the order set by ``ags_groupset_order``
 - compares the new and previous full ``phi`` iterate
 - uses either an ``l2`` or ``pointwise`` convergence check
 - stops when the AGS tolerance is satisfied or the iteration limit is reached
+- stops after the first pass when the cross sections make that pass exact (see
+  `When one pass is exact`_), and otherwise logs why it iterates (see
+  `Why the AGS iterates`_)
 
 Why this matters:
 
@@ -489,6 +493,228 @@ Why this matters:
   from one groupset into another is iterated by AGS at about the multiplication
   factor of the problem per pass, which can take hundreds of passes (see
   :doc:`groupsets`)
+
+.. _iterative_ags_one_pass:
+
+When one pass is exact
+----------------------
+
+Each groupset solve uses the latest flux of every other groupset. The
+groupsets solved before it in the same pass give their new flux. The groupsets
+solved after it give the flux of the previous pass, and only these sources are
+out of date at the end of a pass. One pass over the groupsets therefore solves
+the coupling between them exactly when no groupset receives a source from a
+groupset solved after it.
+
+Groupsets are coupled through:
+
+- scattering, the transfer matrices of every Legendre moment, including
+  reactions that produce secondary particles. In an adjoint problem the
+  transfer matrices are transposed, so the coupling runs in the opposite
+  direction in energy.
+- fission, in fixed-source and time-dependent solves with fissionable
+  materials, when fission emits from one groupset into another. A power
+  iteration holds the fission source fixed during each transport solve, so
+  there only scattering counts.
+- continuous slowing down. A CSDA problem always iterates (see
+  `Why the AGS iterates`_).
+
+OpenSn checks the cross sections of every block before each transport solve.
+Only transfers between the groups the problem simulates count, so a library
+with more groups than the problem is checked on the simulated groups alone.
+Every rank holds the same cross sections and reaches the same decision.
+
+When one pass is exact, the AGS iteration stops after the first pass in which
+every groupset solve converges. It does not test the change between passes,
+since that would take a second pass that only continues the converged groupset
+solves. The accuracy of the result is then that of the groupset solves, so set
+``l_abs_tol`` for the accuracy you need. ``l_abs_tol`` bounds the residual
+relative to the whole groupset, so where the flux or the importance is many
+decades below its peak, the local error can be far larger than ``l_abs_tol``.
+In an adjoint of a thick shield whose importance falls by ten decades,
+``l_abs_tol = 1.0e-6`` left the importance in some cells far from the detector
+wrong by more than a factor of 100, while ``1.0e-10`` agreed with a much
+tighter solve to within a factor of 2 everywhere. Tighten ``l_abs_tol`` for deep-penetration
+problems and compare with a tighter solve.
+
+Common cases:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 25 35
+
+   * - Problem and cross sections
+     - Groupset order
+     - AGS passes
+   * - Forward, downscatter only
+     - ``"ascending"`` or ``"auto"``
+     - one
+   * - Forward, upscatter confined to one groupset
+     - ``"ascending"`` or ``"auto"``
+     - one
+   * - Forward, upscatter and downscatter across the same groupset boundary
+     - any
+     - iterates to ``ags_tolerance``
+   * - Adjoint, downscatter only in the forward cross sections
+     - ``"descending"`` or ``"auto"``
+     - one
+   * - Adjoint, upscatter confined to one groupset
+     - ``"descending"`` or ``"auto"``
+     - one
+   * - Adjoint, scattering between groupsets
+     - ``"ascending"``
+     - iterates, at least one pass per groupset
+   * - Fixed-source or time-dependent, fission across groupsets
+     - any
+     - iterates, slowly near criticality (see :doc:`groupsets`)
+   * - CSDA
+     - any
+     - iterates
+
+A groupset with upscatter among its own groups converges that upscatter in its
+own solve, so upscatter confined to one groupset does not prevent one pass. The
+power iteration k-eigen solver makes one AGS pass per power iteration by
+default whether or not the pass is exact (see :ref:`iterative_power_iteration`).
+
+``ags_groupset_order``
+----------------------
+
+Allowed values are:
+
+- ``"ascending"`` (the default): groupset 0 first, from high to low energy
+- ``"descending"``: the last groupset first, from low to high energy
+- ``"auto"``: ascending in forward mode and descending in adjoint mode
+
+The order decides which coupling one pass resolves. Scattering that lowers the
+energy makes a forward groupset depend on the groupsets above it in energy, so
+ascending order solves every source before it is needed. In adjoint mode the
+transfer matrices are transposed. The importance of a groupset depends on the
+groupsets below it in energy, the coupling runs the other way, and descending
+order solves every source before it is needed. Ascending order in an adjoint
+problem carries the importance up by one groupset per pass, so it needs at
+least as many passes as there are groupsets, and the AGS iteration then runs
+until ``ags_tolerance`` is met.
+
+Use ``"auto"`` for adjoint problems with several groupsets, and for problems
+that switch between forward and adjoint mode with ``SetAdjoint``: it follows
+the mode. The default is ``"ascending"`` so that existing inputs solve in the
+same order as before. ``"descending"`` is rarely useful in forward mode.
+
+.. code-block:: python
+
+   problem = DiscreteOrdinatesProblem(
+       mesh=grid,
+       num_groups=44,
+       groupsets=[
+           {"groups_from_to": (0, 11), "angular_quadrature": quad},
+           {"groups_from_to": (12, 23), "angular_quadrature": quad},
+           {"groups_from_to": (24, 35), "angular_quadrature": quad},
+           {"groups_from_to": (36, 43), "angular_quadrature": quad},
+       ],
+       xs_map=xs_map,
+       volumetric_sources=[response],
+       options={"adjoint": True, "ags_groupset_order": "auto"},
+   )
+
+Here every group that receives upscatter is in the last groupset, so the
+adjoint is solved in one pass, from groups 36-43 up to groups 0-11.
+
+.. _iterative_ags_iterates:
+
+Why the AGS iterates
+--------------------
+
+When one pass is not exact, the AGS log says why on rank 0 before the first
+pass. The message is part of the verbose AGS output, which
+``verbose_inner_iterations`` controls and which is on by default, and it
+appears only in problems with more than one groupset. The AGS solver belongs to
+the problem, so the message is printed again only when the reason changes. A
+power iteration, a sequence of time steps, or repeated ``Execute`` calls print
+it once, and a problem switched between forward and adjoint mode prints the
+reason for the new mode.
+
+The messages are:
+
+.. code-block:: text
+
+   AGS will iterate because group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass.
+   AGS will iterate because group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = "auto" for a single pass.
+   AGS will iterate because fission couples the groupsets.
+   AGS will iterate because CSDA is enabled.
+
+The first part names one transfer that prevents a single pass. Group numbers
+are problem group indices, with group 0 at the highest energy. "Group 100
+scatters into group 93 in an earlier groupset" means that the scattering source
+of group 93 comes from group 100, which is solved after it, so group 93 sees
+the group 100 flux of the previous pass. In an adjoint problem the message ends
+with "(adjoint)" and refers to the transposed transfer matrix: "group 63
+scatters into group 0" means that the importance of group 0 depends on group 63,
+because group 0 scatters into group 63 in the forward problem. The named
+transfer is the first one found and is usually one of many.
+
+The second part gives one change that removes all of them:
+
+- When the reverse order is exact with the same groupsets, the message names
+  the ``ags_groupset_order`` value that gives it. This is ``"auto"`` when the
+  reverse order is the default of the problem's mode, as for an adjoint
+  problem solved in ascending order.
+- Otherwise it lists the group ranges that must each lie in one groupset, in
+  the current order. In ascending order, a transfer up in energy, from group
+  :math:`g'` into a group :math:`g < g'`, is solved in one pass only when
+  groups :math:`g` through :math:`g'` share a groupset. Overlapping ranges are
+  merged, so each range runs from the lowest group that receives such a
+  transfer to the highest group that sends one. In descending order the same
+  holds for transfers down in energy. Several ranges read "Put groups 10-12 and
+  36-43 each in one groupset". When the ranges cover every group, the message
+  reads "Use one groupset for a single pass".
+
+The ranges are the least that one pass requires. Any groupsets that keep each
+range together give one pass, and splitting any range makes the AGS iterate
+again. The groups outside the ranges can be divided freely.
+
+Fission and CSDA are reported without a suggestion. Fission couples every group
+to every other, so no groupset split solves it in one pass. Use one groupset for
+fixed-source and time-dependent problems with fission (see :doc:`groupsets`).
+A CSDA problem always iterates. Each contiguous block of charged-particle
+groups must stay within one groupset, which problem validation enforces, and no
+other grouping is suggested for it.
+
+Iterating is not an error. The AGS iteration converges the coupling to
+``ags_tolerance`` (see :ref:`iterative_ags_tolerance`), and the message only
+says why the solve takes more than one pass and how to avoid it.
+
+.. _iterative_ags_single_pass_design:
+
+Designing groupsets for a single pass
+-------------------------------------
+
+Several groupsets solved in one exact pass give the same solution as one
+groupset. Each groupset solve keeps its Krylov vectors only while it runs, so
+the memory of a Krylov inner method is set by the largest groupset instead of
+all groups. The groupsets without upscatter also tend to converge in fewer
+iterations than the groupset with it, which can make the whole solve faster.
+To set them up:
+
+1. Find the groups that take part in upscatter: the lowest group that receives
+   upscatter and the highest group that sends it, over all materials. Put these
+   groups, and every group between them, in one groupset. In a thermal library
+   this is the thermal groupset.
+2. Divide the remaining groups into groupsets as needed for memory or for
+   different inner settings.
+3. Use ``ags_groupset_order = "auto"``. It solves forward problems from high to
+   low energy and adjoint problems from low to high energy.
+4. Run the problem. If the log says that the AGS will iterate, apply the
+   suggestion in that message.
+
+For example, in a 44-group library for water, concrete, and air, the
+highest-energy group that receives upscatter is group 36, and the upscatter
+comes from groups up to 43. Groups 36-43 must then share a groupset. The groupsets ``(0, 11)``, ``(12, 23)``, ``(24, 35)``, and
+``(36, 43)`` then give one pass in forward and adjoint mode with ``"auto"``.
+
+Keep the other groupset rules in mind. With TGDSA, keep every group that
+receives upscatter in the same groupset (see :doc:`groupsets`). With CSDA, each block of charged-particle groups must be in
+one groupset. In fixed-source and time-dependent problems with fission, use one
+groupset.
 
 ``ags_convergence_check``
 -------------------------
@@ -561,17 +787,9 @@ Compare the two in the same terms:
   ``pointwise`` check is relative.
 - The AGS test also scales ``ags_tolerance`` by :math:`1-\varrho`.
 
-One pass over the groupsets solves the coupling between them exactly when no
-groupset receives a source from a groupset solved after it: no material scatters
-from a later groupset into an earlier one (in an adjoint problem, with the
-transposed scattering), no fission is emitted from one groupset into another,
-and the problem does not use continuous slowing down. A power iteration holds
-the fission source fixed during each transport solve, so there only the
-scattering counts. The AGS iteration then stops after the first pass in which
-every groupset solve converges, without testing the change between passes. The
-accuracy of the result is then that of the groupset solves, so set ``l_abs_tol``
-for the accuracy you need. A further pass would only continue the groupset
-solves.
+When one pass is exact, the AGS iteration stops after that pass without testing
+the change between passes, and the accuracy is that of the groupset solves (see
+`When one pass is exact`_).
 
 When the groupsets are coupled and the inner error is above the AGS test, the
 AGS iteration does not stop at the inner tolerance. It runs slowly. A groupset
@@ -808,6 +1026,8 @@ settings to examine are usually:
 - the chosen groupset inner method
 - the inner tolerance
 - whether angular flux storage is enabled for the transient formulation
+
+.. _iterative_power_iteration:
 
 Power iteration k-eigen solve
 -----------------------------

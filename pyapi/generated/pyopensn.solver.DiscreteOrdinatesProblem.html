@@ -1352,6 +1352,14 @@ steady-state and transient solvers, and 1 in each power iteration of
 <a class="reference internal" href="pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a>.</p></li>
 <li><p>ags_tolerance: float, default=1.0e-6</p></li>
 <li><p>ags_convergence_check: {‘pointwise’, ‘l2’}, default=’pointwise’</p></li>
+<li><p>ags_groupset_order: {‘ascending’, ‘descending’, ‘auto’}, default=’ascending’
+Order in which the AGS iteration solves the groupsets. <code class="docutils literal notranslate"><span class="pre">'ascending'</span></code> solves
+groupset 0 first, from high to low energy, <code class="docutils literal notranslate"><span class="pre">'descending'</span></code> the last groupset first,
+and <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> ascends in forward mode and descends in adjoint mode. The iteration
+stops after one pass when no groupset receives a source from one solved after it,
+which downscatter-only cross sections give in ascending order forward and in
+descending order adjoint. Otherwise the AGS log says why it iterates and what change
+gives one pass. Use <code class="docutils literal notranslate"><span class="pre">'auto'</span></code> for adjoint problems with several groupsets.</p></li>
 <li><p>power_default_kappa: float, default=3.20435e-11</p></li>
 <li><p>field_function_prefix_option: {‘prefix’, ‘solver_name’}, default=’prefix’</p></li>
 <li><p>field_function_prefix: str, default=’’</p></li>

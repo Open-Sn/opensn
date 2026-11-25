@@ -111,6 +111,14 @@
 <span class="w">  </span><span class="n">ARBITRARY</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">4</span><span class="w">   </span><span class="c1">///&lt; Complex different for each angle and face node</span>
 <span class="p">};</span>
 
+<span class="c1">/// Order in which the across-groupset iteration solves the groupsets.</span>
+<span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">AGSGroupsetOrder</span>
+<span class="p">{</span>
+<span class="w">  </span><span class="n">ASCENDING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">,</span><span class="w">  </span><span class="c1">///&lt; Groupset 0 first, from high to low energy.</span>
+<span class="w">  </span><span class="n">DESCENDING</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span><span class="w"> </span><span class="c1">///&lt; The last groupset first, from low to high energy.</span>
+<span class="w">  </span><span class="n">AUTO</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">2</span><span class="w">        </span><span class="c1">///&lt; Ascending in forward mode and descending in adjoint mode.</span>
+<span class="p">};</span>
+
 <span class="k">enum</span><span class="w"> </span><span class="k">class</span><span class="w"> </span><span class="nc">PhiSTLOption</span>
 <span class="p">{</span>
 <span class="w">  </span><span class="n">PHI_OLD</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">,</span>
@@ -165,6 +173,7 @@
 <span class="w">  </span><span class="c1">/// solver then applies its own default.</span>
 <span class="w">  </span><span class="n">std</span><span class="o">::</span><span class="n">optional</span><span class="o">&lt;</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">int</span><span class="o">&gt;</span><span class="w"> </span><span class="n">max_ags_iterations</span><span class="p">;</span>
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">ags_tolerance</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-6</span><span class="p">;</span>
+<span class="w">  </span><span class="n">AGSGroupsetOrder</span><span class="w"> </span><span class="n">ags_groupset_order</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">AGSGroupsetOrder</span><span class="o">::</span><span class="n">ASCENDING</span><span class="p">;</span>
 
 <span class="w">  </span><span class="kt">double</span><span class="w"> </span><span class="n">power_default_kappa</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">3.20435e-11</span><span class="p">;</span><span class="w"> </span><span class="c1">// 200MeV to Joule</span>
 

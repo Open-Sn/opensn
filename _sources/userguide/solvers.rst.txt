@@ -194,6 +194,7 @@ Problem options available in Python include:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
+* ``ags_groupset_order``
 * ``field_function_prefix_option``
 * ``field_function_prefix``
 * ``fused_aao_sweep`` and ``fused_aao_lanes`` for GPU ``"AAH"`` sweeps (see

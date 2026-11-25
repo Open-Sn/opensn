@@ -851,6 +851,7 @@ iteration to converge the coupling between them.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code></p></li>
 </ul>
 <p>Practical rule:</p>
 <ul class="simple">
@@ -859,9 +860,18 @@ groupset boundaries, AGS iteration must be enabled and converged.</p></li>
 <li><p>when the groupsets are coupled, converge each groupset well below the AGS
 tolerance. Otherwise the AGS iteration runs slowly, one source iteration per
 pass (see <a class="reference internal" href="iterative_methods.html#iterative-ags-tolerance"><span class="std std-ref">ags_tolerance</span></a>).</p></li>
-<li><p>when no groupset feeds one solved before it, the AGS iteration stops after
-one pass, and the accuracy of the result is that of the groupset solves. Set
-<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> for the accuracy you need.</p></li>
+<li><p>when no groupset receives a source from one solved after it, the AGS
+iteration stops after one pass, and the accuracy of the result is that of the
+groupset solves. Set <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> for the accuracy you need (see
+<a class="reference internal" href="iterative_methods.html#iterative-ags-one-pass"><span class="std std-ref">When one pass is exact</span></a>).</p></li>
+<li><p>in adjoint mode, scattering couples a groupset to the groupsets below it in
+energy. Set <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> so that the groupsets are
+solved from low to high energy and one pass suffices when upscatter stays
+within one groupset.</p></li>
+<li><p>when the AGS iteration has to iterate, the log says why before the first
+pass and names the change that gives one pass: the <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code>
+value or the group ranges that must share a groupset (see
+<a class="reference internal" href="iterative_methods.html#iterative-ags-iterates"><span class="std std-ref">Why the AGS iterates</span></a>).</p></li>
 </ul>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
@@ -955,6 +965,10 @@ and choose between them as described in <a class="reference internal" href="#cho
 <li><p>add multiple groupsets only when there is a clear reason to split the energy
 structure,</p></li>
 <li><p>with TGDSA, keep every group that receives upscatter in the same groupset,</p></li>
+<li><p>with several groupsets, keep the groups that take part in upscatter in one
+groupset and set <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code> to <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>, so that forward and
+adjoint solves need one AGS pass (see
+<a class="reference internal" href="iterative_methods.html#iterative-ags-single-pass-design"><span class="std std-ref">Designing groupsets for a single pass</span></a>),</p></li>
 <li><p>if multiple groupsets and cross-groupset upscatter are present, enable and
 converge AGS,</p></li>
 <li><p>keep inner tolerances explicit and tighter than outer tolerances.</p></li>

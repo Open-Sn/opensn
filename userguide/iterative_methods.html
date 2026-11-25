@@ -87,9 +87,13 @@
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#across-groupset-iteration">8.5. Across-Groupset Iteration</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#what-ags-does">8.5.1. What AGS does</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ags-convergence-check">8.5.2. <code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#ags-tolerance">8.5.3. <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#max-ags-iterations">8.5.4. <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#when-one-pass-is-exact">8.5.2. When one pass is exact</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ags-groupset-order">8.5.3. <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#why-the-ags-iterates">8.5.4. Why the AGS iterates</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#designing-groupsets-for-a-single-pass">8.5.5. Designing groupsets for a single pass</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ags-convergence-check">8.5.6. <code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#ags-tolerance">8.5.7. <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#max-ags-iterations">8.5.8. <code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#dsa-options">8.6. DSA Options</a><ul>
@@ -602,6 +606,7 @@ iterations, usually abbreviated AGS.</p>
 <li><p><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></li>
 <li><p><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code></p></li>
 </ul>
 <section id="what-ags-does">
 <h3><span class="section-number">8.5.1. </span>What AGS does<a class="headerlink" href="#what-ags-does" title="Link to this heading"></a></h3>
@@ -609,10 +614,13 @@ iterations, usually abbreviated AGS.</p>
 solution is consistent across groupset boundaries.</p>
 <p>In OpenSn, AGS:</p>
 <ul class="simple">
-<li><p>executes each WGS solver in sequence</p></li>
+<li><p>executes each WGS solver in sequence, in the order set by <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code></p></li>
 <li><p>compares the new and previous full <code class="docutils literal notranslate"><span class="pre">phi</span></code> iterate</p></li>
 <li><p>uses either an <code class="docutils literal notranslate"><span class="pre">l2</span></code> or <code class="docutils literal notranslate"><span class="pre">pointwise</span></code> convergence check</p></li>
 <li><p>stops when the AGS tolerance is satisfied or the iteration limit is reached</p></li>
+<li><p>stops after the first pass when the cross sections make that pass exact (see
+<a class="reference internal" href="#when-one-pass-is-exact">When one pass is exact</a>), and otherwise logs why it iterates (see
+<a class="reference internal" href="#why-the-ags-iterates">Why the AGS iterates</a>)</p></li>
 </ul>
 <p>Why this matters:</p>
 <ul class="simple">
@@ -625,8 +633,221 @@ factor of the problem per pass, which can take hundreds of passes (see
 <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>)</p></li>
 </ul>
 </section>
+<section id="when-one-pass-is-exact">
+<span id="iterative-ags-one-pass"></span><h3><span class="section-number">8.5.2. </span>When one pass is exact<a class="headerlink" href="#when-one-pass-is-exact" title="Link to this heading"></a></h3>
+<p>Each groupset solve uses the latest flux of every other groupset. The
+groupsets solved before it in the same pass give their new flux. The groupsets
+solved after it give the flux of the previous pass, and only these sources are
+out of date at the end of a pass. One pass over the groupsets therefore solves
+the coupling between them exactly when no groupset receives a source from a
+groupset solved after it.</p>
+<p>Groupsets are coupled through:</p>
+<ul class="simple">
+<li><p>scattering, the transfer matrices of every Legendre moment, including
+reactions that produce secondary particles. In an adjoint problem the
+transfer matrices are transposed, so the coupling runs in the opposite
+direction in energy.</p></li>
+<li><p>fission, in fixed-source and time-dependent solves with fissionable
+materials, when fission emits from one groupset into another. A power
+iteration holds the fission source fixed during each transport solve, so
+there only scattering counts.</p></li>
+<li><p>continuous slowing down. A CSDA problem always iterates (see
+<a class="reference internal" href="#why-the-ags-iterates">Why the AGS iterates</a>).</p></li>
+</ul>
+<p>OpenSn checks the cross sections of every block before each transport solve.
+Only transfers between the groups the problem simulates count, so a library
+with more groups than the problem is checked on the simulated groups alone.
+Every rank holds the same cross sections and reaches the same decision.</p>
+<p>When one pass is exact, the AGS iteration stops after the first pass in which
+every groupset solve converges. It does not test the change between passes,
+since that would take a second pass that only continues the converged groupset
+solves. The accuracy of the result is then that of the groupset solves, so set
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> for the accuracy you need. <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> bounds the residual
+relative to the whole groupset, so where the flux or the importance is many
+decades below its peak, the local error can be far larger than <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>.
+In an adjoint of a thick shield whose importance falls by ten decades,
+<code class="docutils literal notranslate"><span class="pre">l_abs_tol</span> <span class="pre">=</span> <span class="pre">1.0e-6</span></code> left the importance in some cells far from the detector
+wrong by more than a factor of 100, while <code class="docutils literal notranslate"><span class="pre">1.0e-10</span></code> agreed with a much
+tighter solve to within a factor of 2 everywhere. Tighten <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> for deep-penetration
+problems and compare with a tighter solve.</p>
+<p>Common cases:</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 40.0%" />
+<col style="width: 25.0%" />
+<col style="width: 35.0%" />
+</colgroup>
+<thead>
+<tr class="row-odd"><th class="head"><p>Problem and cross sections</p></th>
+<th class="head"><p>Groupset order</p></th>
+<th class="head"><p>AGS passes</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p>Forward, downscatter only</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ascending&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p></td>
+<td><p>one</p></td>
+</tr>
+<tr class="row-odd"><td><p>Forward, upscatter confined to one groupset</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ascending&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p></td>
+<td><p>one</p></td>
+</tr>
+<tr class="row-even"><td><p>Forward, upscatter and downscatter across the same groupset boundary</p></td>
+<td><p>any</p></td>
+<td><p>iterates to <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p>Adjoint, downscatter only in the forward cross sections</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;descending&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p></td>
+<td><p>one</p></td>
+</tr>
+<tr class="row-even"><td><p>Adjoint, upscatter confined to one groupset</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;descending&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code></p></td>
+<td><p>one</p></td>
+</tr>
+<tr class="row-odd"><td><p>Adjoint, scattering between groupsets</p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">&quot;ascending&quot;</span></code></p></td>
+<td><p>iterates, at least one pass per groupset</p></td>
+</tr>
+<tr class="row-even"><td><p>Fixed-source or time-dependent, fission across groupsets</p></td>
+<td><p>any</p></td>
+<td><p>iterates, slowly near criticality (see <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>)</p></td>
+</tr>
+<tr class="row-odd"><td><p>CSDA</p></td>
+<td><p>any</p></td>
+<td><p>iterates</p></td>
+</tr>
+</tbody>
+</table>
+<p>A groupset with upscatter among its own groups converges that upscatter in its
+own solve, so upscatter confined to one groupset does not prevent one pass. The
+power iteration k-eigen solver makes one AGS pass per power iteration by
+default whether or not the pass is exact (see <a class="reference internal" href="#iterative-power-iteration"><span class="std std-ref">Power iteration k-eigen solve</span></a>).</p>
+</section>
+<section id="ags-groupset-order">
+<h3><span class="section-number">8.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code><a class="headerlink" href="#ags-groupset-order" title="Link to this heading"></a></h3>
+<p>Allowed values are:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;ascending&quot;</span></code> (the default): groupset 0 first, from high to low energy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;descending&quot;</span></code>: the last groupset first, from low to high energy</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>: ascending in forward mode and descending in adjoint mode</p></li>
+</ul>
+<p>The order decides which coupling one pass resolves. Scattering that lowers the
+energy makes a forward groupset depend on the groupsets above it in energy, so
+ascending order solves every source before it is needed. In adjoint mode the
+transfer matrices are transposed. The importance of a groupset depends on the
+groupsets below it in energy, the coupling runs the other way, and descending
+order solves every source before it is needed. Ascending order in an adjoint
+problem carries the importance up by one groupset per pass, so it needs at
+least as many passes as there are groupsets, and the AGS iteration then runs
+until <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> is met.</p>
+<p>Use <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> for adjoint problems with several groupsets, and for problems
+that switch between forward and adjoint mode with <code class="docutils literal notranslate"><span class="pre">SetAdjoint</span></code>: it follows
+the mode. The default is <code class="docutils literal notranslate"><span class="pre">&quot;ascending&quot;</span></code> so that existing inputs solve in the
+same order as before. <code class="docutils literal notranslate"><span class="pre">&quot;descending&quot;</span></code> is rarely useful in forward mode.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">problem</span> <span class="o">=</span> <span class="n">DiscreteOrdinatesProblem</span><span class="p">(</span>
+    <span class="n">mesh</span><span class="o">=</span><span class="n">grid</span><span class="p">,</span>
+    <span class="n">num_groups</span><span class="o">=</span><span class="mi">44</span><span class="p">,</span>
+    <span class="n">groupsets</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">11</span><span class="p">),</span> <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">12</span><span class="p">,</span> <span class="mi">23</span><span class="p">),</span> <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">35</span><span class="p">),</span> <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">},</span>
+        <span class="p">{</span><span class="s2">&quot;groups_from_to&quot;</span><span class="p">:</span> <span class="p">(</span><span class="mi">36</span><span class="p">,</span> <span class="mi">43</span><span class="p">),</span> <span class="s2">&quot;angular_quadrature&quot;</span><span class="p">:</span> <span class="n">quad</span><span class="p">},</span>
+    <span class="p">],</span>
+    <span class="n">xs_map</span><span class="o">=</span><span class="n">xs_map</span><span class="p">,</span>
+    <span class="n">volumetric_sources</span><span class="o">=</span><span class="p">[</span><span class="n">response</span><span class="p">],</span>
+    <span class="n">options</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;adjoint&quot;</span><span class="p">:</span> <span class="kc">True</span><span class="p">,</span> <span class="s2">&quot;ags_groupset_order&quot;</span><span class="p">:</span> <span class="s2">&quot;auto&quot;</span><span class="p">},</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+<p>Here every group that receives upscatter is in the last groupset, so the
+adjoint is solved in one pass, from groups 36-43 up to groups 0-11.</p>
+</section>
+<section id="why-the-ags-iterates">
+<span id="iterative-ags-iterates"></span><h3><span class="section-number">8.5.4. </span>Why the AGS iterates<a class="headerlink" href="#why-the-ags-iterates" title="Link to this heading"></a></h3>
+<p>When one pass is not exact, the AGS log says why on rank 0 before the first
+pass. The message is part of the verbose AGS output, which
+<code class="docutils literal notranslate"><span class="pre">verbose_inner_iterations</span></code> controls and which is on by default, and it
+appears only in problems with more than one groupset. The AGS solver belongs to
+the problem, so the message is printed again only when the reason changes. A
+power iteration, a sequence of time steps, or repeated <code class="docutils literal notranslate"><span class="pre">Execute</span></code> calls print
+it once, and a problem switched between forward and adjoint mode prints the
+reason for the new mode.</p>
+<p>The messages are:</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>AGS will iterate because group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass.
+AGS will iterate because group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = &quot;auto&quot; for a single pass.
+AGS will iterate because fission couples the groupsets.
+AGS will iterate because CSDA is enabled.
+</pre></div>
+</div>
+<p>The first part names one transfer that prevents a single pass. Group numbers
+are problem group indices, with group 0 at the highest energy. “Group 100
+scatters into group 93 in an earlier groupset” means that the scattering source
+of group 93 comes from group 100, which is solved after it, so group 93 sees
+the group 100 flux of the previous pass. In an adjoint problem the message ends
+with “(adjoint)” and refers to the transposed transfer matrix: “group 63
+scatters into group 0” means that the importance of group 0 depends on group 63,
+because group 0 scatters into group 63 in the forward problem. The named
+transfer is the first one found and is usually one of many.</p>
+<p>The second part gives one change that removes all of them:</p>
+<ul class="simple">
+<li><p>When the reverse order is exact with the same groupsets, the message names
+the <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span></code> value that gives it. This is <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> when the
+reverse order is the default of the problem’s mode, as for an adjoint
+problem solved in ascending order.</p></li>
+<li><p>Otherwise it lists the group ranges that must each lie in one groupset, in
+the current order. In ascending order, a transfer up in energy, from group
+<span class="math notranslate nohighlight">\(g'\)</span> into a group <span class="math notranslate nohighlight">\(g &lt; g'\)</span>, is solved in one pass only when
+groups <span class="math notranslate nohighlight">\(g\)</span> through <span class="math notranslate nohighlight">\(g'\)</span> share a groupset. Overlapping ranges are
+merged, so each range runs from the lowest group that receives such a
+transfer to the highest group that sends one. In descending order the same
+holds for transfers down in energy. Several ranges read “Put groups 10-12 and
+36-43 each in one groupset”. When the ranges cover every group, the message
+reads “Use one groupset for a single pass”.</p></li>
+</ul>
+<p>The ranges are the least that one pass requires. Any groupsets that keep each
+range together give one pass, and splitting any range makes the AGS iterate
+again. The groups outside the ranges can be divided freely.</p>
+<p>Fission and CSDA are reported without a suggestion. Fission couples every group
+to every other, so no groupset split solves it in one pass. Use one groupset for
+fixed-source and time-dependent problems with fission (see <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>).
+A CSDA problem always iterates. Each contiguous block of charged-particle
+groups must stay within one groupset, which problem validation enforces, and no
+other grouping is suggested for it.</p>
+<p>Iterating is not an error. The AGS iteration converges the coupling to
+<code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> (see <a class="reference internal" href="#iterative-ags-tolerance"><span class="std std-ref">ags_tolerance</span></a>), and the message only
+says why the solve takes more than one pass and how to avoid it.</p>
+</section>
+<section id="designing-groupsets-for-a-single-pass">
+<span id="iterative-ags-single-pass-design"></span><h3><span class="section-number">8.5.5. </span>Designing groupsets for a single pass<a class="headerlink" href="#designing-groupsets-for-a-single-pass" title="Link to this heading"></a></h3>
+<p>Several groupsets solved in one exact pass give the same solution as one
+groupset. Each groupset solve keeps its Krylov vectors only while it runs, so
+the memory of a Krylov inner method is set by the largest groupset instead of
+all groups. The groupsets without upscatter also tend to converge in fewer
+iterations than the groupset with it, which can make the whole solve faster.
+To set them up:</p>
+<ol class="arabic simple">
+<li><p>Find the groups that take part in upscatter: the lowest group that receives
+upscatter and the highest group that sends it, over all materials. Put these
+groups, and every group between them, in one groupset. In a thermal library
+this is the thermal groupset.</p></li>
+<li><p>Divide the remaining groups into groupsets as needed for memory or for
+different inner settings.</p></li>
+<li><p>Use <code class="docutils literal notranslate"><span class="pre">ags_groupset_order</span> <span class="pre">=</span> <span class="pre">&quot;auto&quot;</span></code>. It solves forward problems from high to
+low energy and adjoint problems from low to high energy.</p></li>
+<li><p>Run the problem. If the log says that the AGS will iterate, apply the
+suggestion in that message.</p></li>
+</ol>
+<p>For example, in a 44-group library for water, concrete, and air, the
+highest-energy group that receives upscatter is group 36, and the upscatter
+comes from groups up to 43. Groups 36-43 must then share a groupset. The groupsets <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">11)</span></code>, <code class="docutils literal notranslate"><span class="pre">(12,</span> <span class="pre">23)</span></code>, <code class="docutils literal notranslate"><span class="pre">(24,</span> <span class="pre">35)</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">(36,</span> <span class="pre">43)</span></code> then give one pass in forward and adjoint mode with <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code>.</p>
+<p>Keep the other groupset rules in mind. With TGDSA, keep every group that
+receives upscatter in the same groupset (see <a class="reference internal" href="groupsets.html"><span class="doc">Groupsets</span></a>). With CSDA, each block of charged-particle groups must be in
+one groupset. In fixed-source and time-dependent problems with fission, use one
+groupset.</p>
+</section>
 <section id="ags-convergence-check">
-<h3><span class="section-number">8.5.2. </span><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code><a class="headerlink" href="#ags-convergence-check" title="Link to this heading"></a></h3>
+<h3><span class="section-number">8.5.6. </span><code class="docutils literal notranslate"><span class="pre">ags_convergence_check</span></code><a class="headerlink" href="#ags-convergence-check" title="Link to this heading"></a></h3>
 <p>Allowed values are:</p>
 <ul class="simple">
 <li><p><code class="docutils literal notranslate"><span class="pre">&quot;pointwise&quot;</span></code> (the default)</p></li>
@@ -653,7 +874,7 @@ that the remaining error, about <span class="math notranslate nohighlight">\(\va
 change, stays near the tolerance even when the groupsets are strongly coupled.</p>
 </section>
 <section id="ags-tolerance">
-<span id="iterative-ags-tolerance"></span><h3><span class="section-number">8.5.3. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
+<span id="iterative-ags-tolerance"></span><h3><span class="section-number">8.5.7. </span><code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code><a class="headerlink" href="#ags-tolerance" title="Link to this heading"></a></h3>
 <p>This is the stopping tolerance for the AGS iteration.</p>
 <p>What it tests:</p>
 <ul class="simple">
@@ -689,17 +910,9 @@ so compare it with that relative error times the L2 norm of the flux. The
 <code class="docutils literal notranslate"><span class="pre">pointwise</span></code> check is relative.</p></li>
 <li><p>The AGS test also scales <code class="docutils literal notranslate"><span class="pre">ags_tolerance</span></code> by <span class="math notranslate nohighlight">\(1-\varrho\)</span>.</p></li>
 </ul>
-<p>One pass over the groupsets solves the coupling between them exactly when no
-groupset receives a source from a groupset solved after it: no material scatters
-from a later groupset into an earlier one (in an adjoint problem, with the
-transposed scattering), no fission is emitted from one groupset into another,
-and the problem does not use continuous slowing down. A power iteration holds
-the fission source fixed during each transport solve, so there only the
-scattering counts. The AGS iteration then stops after the first pass in which
-every groupset solve converges, without testing the change between passes. The
-accuracy of the result is then that of the groupset solves, so set <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code>
-for the accuracy you need. A further pass would only continue the groupset
-solves.</p>
+<p>When one pass is exact, the AGS iteration stops after that pass without testing
+the change between passes, and the accuracy is that of the groupset solves (see
+<a class="reference internal" href="#when-one-pass-is-exact">When one pass is exact</a>).</p>
 <p>When the groupsets are coupled and the inner error is above the AGS test, the
 AGS iteration does not stop at the inner tolerance. It runs slowly. A groupset
 whose PETSc solve starts below <code class="docutils literal notranslate"><span class="pre">l_abs_tol</span></code> takes no Krylov iteration, but the
@@ -715,7 +928,7 @@ Tighten
 solves.</p>
 </section>
 <section id="max-ags-iterations">
-<h3><span class="section-number">8.5.4. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>
+<h3><span class="section-number">8.5.8. </span><code class="docutils literal notranslate"><span class="pre">max_ags_iterations</span></code><a class="headerlink" href="#max-ags-iterations" title="Link to this heading"></a></h3>
 <p>This is the hard cap on AGS passes in one transport solve.</p>
 <p>What it tests:</p>
 <ul class="simple">
@@ -921,7 +1134,7 @@ settings to examine are usually:</p>
 </ul>
 </section>
 <section id="power-iteration-k-eigen-solve">
-<h3><span class="section-number">8.7.3. </span>Power iteration k-eigen solve<a class="headerlink" href="#power-iteration-k-eigen-solve" title="Link to this heading"></a></h3>
+<span id="iterative-power-iteration"></span><h3><span class="section-number">8.7.3. </span>Power iteration k-eigen solve<a class="headerlink" href="#power-iteration-k-eigen-solve" title="Link to this heading"></a></h3>
 <p><a class="reference internal" href="../pyapi/generated/pyopensn.solver.PowerIterationKEigenSolver.html#pyopensn.solver.PowerIterationKEigenSolver" title="pyopensn.solver.PowerIterationKEigenSolver"><code class="xref py py-class docutils literal notranslate"><span class="pre">pyopensn.solver.PowerIterationKEigenSolver</span></code></a> adds its own outer
 iteration on top of the transport solve.</p>
 <p>Relevant parameters:</p>
