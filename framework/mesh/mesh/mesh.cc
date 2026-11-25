@@ -12,10 +12,12 @@
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <limits>
 #include <set>
 #include <stdexcept>
+#include <string>
 
 namespace opensn
 {
@@ -199,35 +201,89 @@ Mesh::SetOrthogonalBoundaries()
     SetBoundaryName(bndry_id, name);
   }
 
-  const Vector3 ihat(1.0, 0.0, 0.0);
-  const Vector3 jhat(0.0, 1.0, 0.0);
-  const Vector3 khat(0.0, 0.0, 1.0);
-
-  for (auto& cell : local_cells_)
-  {
-    for (auto& face : cell->faces)
+  // The global bounding box of the vertices. A rank without cells adds nothing.
+  constexpr double inf = std::numeric_limits<double>::infinity();
+  std::array<double, 3> local_low = {inf, inf, inf};
+  std::array<double, 3> local_high = {-inf, -inf, -inf};
+  for (const auto& cell : local_cells_)
+    for (const uint64_t vid : cell->vertex_ids)
     {
-      if (not face.has_neighbor)
+      const auto& v = GlobalVertex(vid);
+      for (std::size_t a = 0; a < 3; ++a)
       {
-        Vector3& n = face.normal;
-
-        std::string boundary_name;
-        if (n.Dot(ihat) < -0.99999)
-          boundary_name = "xmin";
-        else if (n.Dot(ihat) > 0.99999)
-          boundary_name = "xmax";
-        else if (n.Dot(jhat) < -0.99999)
-          boundary_name = "ymin";
-        else if (n.Dot(jhat) > 0.99999)
-          boundary_name = "ymax";
-        else if (n.Dot(khat) < -0.99999)
-          boundary_name = "zmin";
-        else if (n.Dot(khat) > 0.99999)
-          boundary_name = "zmax";
-
-        face.neighbor_id = GetBoundaryNameMap().at(boundary_name);
+        local_low[a] = std::min(local_low[a], v[a]);
+        local_high[a] = std::max(local_high[a], v[a]);
       }
     }
+  std::array<double, 3> low{};
+  std::array<double, 3> high{};
+  mpi_comm.all_reduce(local_low.data(), 3, low.data(), mpi::op::min<double>());
+  mpi_comm.all_reduce(local_high.data(), 3, high.data(), mpi::op::max<double>());
+  double diagonal = 0.0;
+  for (std::size_t a = 0; a < 3; ++a)
+    if (high[a] > low[a])
+      diagonal += (high[a] - low[a]) * (high[a] - low[a]);
+  const double tolerance = 1.0e-8 * std::sqrt(diagonal);
+
+  // Each boundary face is named by its normal, and must lie on the face of the bounding box that
+  // the name stands for. A face without a neighbor inside the box, which a non-conforming mesh
+  // or a domain that is not a box has, would otherwise become that boundary inside the domain.
+  static const std::array<std::string, 6> names = {"xmin", "xmax", "ymin", "ymax", "zmin", "zmax"};
+  std::size_t local_off_axis = 0;
+  std::size_t local_inside = 0;
+  Vector3 first_bad_face;
+  for (auto& cell : local_cells_)
+    for (auto& face : cell->faces)
+    {
+      if (face.has_neighbor)
+        continue;
+      const Vector3& n = face.normal;
+      constexpr std::size_t none = names.size();
+      std::size_t side = none;
+      for (std::size_t a = 0; a < 3 and side == none; ++a)
+        if (n[a] < -0.99999)
+          side = 2 * a;
+        else if (n[a] > 0.99999)
+          side = 2 * a + 1;
+      bool on_box = false;
+      if (side != none)
+      {
+        const std::size_t a = side / 2;
+        const double plane = side % 2 == 0 ? low[a] : high[a];
+        on_box = std::fabs(face.centroid[a] - plane) <= tolerance;
+      }
+      if (side != none and on_box)
+      {
+        face.neighbor_id = GetBoundaryNameMap().at(names[side]);
+        continue;
+      }
+      if (local_off_axis + local_inside == 0)
+        first_bad_face = face.centroid;
+      if (side == none)
+        ++local_off_axis;
+      else
+        ++local_inside;
+    }
+  std::size_t off_axis = 0;
+  std::size_t inside = 0;
+  mpi_comm.all_reduce(local_off_axis, off_axis, mpi::op::sum<std::size_t>());
+  mpi_comm.all_reduce(local_inside, inside, mpi::op::sum<std::size_t>());
+  if (off_axis + inside > 0)
+  {
+    if (local_off_axis + local_inside > 0)
+      log.LogAllWarning() << "SetOrthogonalBoundaries: rank " << mpi_comm.rank() << " has "
+                          << local_off_axis + local_inside
+                          << " boundary faces that are not on the bounding box. The first is at "
+                          << first_bad_face.PrintStr() << ".";
+    throw std::runtime_error(
+      "SetOrthogonalBoundaries requires every boundary face to lie on the face of the mesh's "
+      "bounding box that its normal points to, but " +
+      std::to_string(off_axis) + " boundary faces have a normal along no axis and " +
+      std::to_string(inside) +
+      " lie inside the bounding box. The mesh is not a box, or it is not conforming, for example "
+      "with cells whose vertices lie inside an edge or face of a neighbor. Each rank with such "
+      "faces "
+      "logs the first one.");
   }
 
   mpi_comm.barrier();
