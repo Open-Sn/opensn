@@ -150,6 +150,8 @@ closure, fixed correction relaxation, and a transport-current balance check
 before outer power iteration is allowed to converge, against a fixed
 tolerance (<code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code>). See the description of
 <code class="docutils literal notranslate"><span class="pre">balance_residual_tolerance</span></code> below.</p>
+<p>The <a class="reference internal" href="../tutorials/numerical_methods/cmfd/index.html"><span class="doc">CMFD tutorials</span></a> show the effect of each
+option on the C5G7 benchmark core.</p>
 <p>CMFD owns the WGS update controls through <code class="docutils literal notranslate"><span class="pre">update_wgs_max_its</span></code> and
 <code class="docutils literal notranslate"><span class="pre">update_wgs_abs_tol</span></code>. The default is a one-iteration transport update before
 each CMFD correction. To make each transport update more tightly converged
@@ -205,11 +207,12 @@ group aggregation size of 91 and therefore 4 CMFD energy groups.</p>
 <p>These are the options most users should tune.</p>
 <dl>
 <dt><code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code></dt><dd><p>Coarse-mesh construction method. The default is <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.
-<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> builds connected same-block aggregates locally on
-each MPI rank. <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> builds connected same-block
-aggregates that may span MPI ranks and can reduce the coarse problem size on
-larger distributed meshes. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> creates one CMFD cell per transport
-cell and is mainly useful for debugging and method comparisons.</p>
+<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> builds connected aggregates locally on each MPI rank.
+<code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> builds connected aggregates that may span MPI ranks
+and can reduce the coarse problem size on larger distributed meshes. Both
+preserve material-block boundaries by default. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> creates one
+CMFD cell per transport cell and is mainly useful for debugging and method
+comparisons.</p>
 <p>Both aggregation modes are logical CMFD coarse-space constructions. They do
 not repartition the transport mesh, create a new mesh, or change
 the ownership of high-order transport cells. Transport sweeps, material
@@ -224,17 +227,88 @@ local fine-cell membership records so scalar fluxes, currents, and CMFD
 corrections can be restricted to and prolonged from the coarse-cell owner.</p>
 <p><code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code> currently has these restrictions:</p>
 <ul class="simple">
-<li><p>a coarse cell contains only connected fine cells from the same mesh block;</p></li>
+<li><p>a coarse cell contains only connected fine cells and, by default, stays
+within one mesh block;</p></li>
 <li><p>connectivity is based on face-neighbor adjacency;</p></li>
 <li><p>disconnected regions with the same block id become separate coarse cells;</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> is a target maximum, so boundary and disconnected
-aggregates may contain fewer fine cells;</p></li>
-<li><p>no material homogenization across different blocks is performed.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> is a target, not a maximum: an undersized aggregate is
+merged with one same-block neighbor, so a merged aggregate holds fewer than
+twice <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> fine cells, and boundary and disconnected
+aggregates may contain fewer;</p></li>
+<li><p>setting <code class="docutils literal notranslate"><span class="pre">allow_mixed_material_aggregation=True</span></code> permits cross-block
+aggregation; such coarse cells are homogenized as described below.</p></li>
 </ul>
 <p>The global mode gathers enough distributed cell and face metadata to build
 the logical coarse graph consistently on all ranks. This is usually worthwhile
 when rank-local aggregation creates too many small coarse cells, but it can
 increase setup memory and communication compared with <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code>.</p>
+<p class="rubric">Spatial homogenization</p>
+<p>CMFD coefficients are homogenized from the constituent fine cells of every
+coarse cell, whether the coarse mesh is <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code>, material pure, or
+mixed material. For a fine cell <span class="math notranslate nohighlight">\(i\)</span> and transport group <span class="math notranslate nohighlight">\(g\)</span>,
+define the integrated scalar flux</p>
+<div class="math notranslate nohighlight">
+\[\Phi_{i,g}=\int_{V_i}\phi_g(\mathbf r)\,dV,
+\qquad
+W_{C,G}=\sum_{i\in C}\sum_{g\in G}\Phi_{i,g},\]</div>
+<p>where <span class="math notranslate nohighlight">\(C\)</span> is a coarse cell and <span class="math notranslate nohighlight">\(G\)</span> is a CMFD energy group.
+OpenSn collapses a transfer coefficient, such as scattering or production, as</p>
+<div class="math notranslate nohighlight">
+\[\Sigma^C_{G\leftarrow G'} =
+\frac{\displaystyle\sum_{i\in C}\sum_{g\in G}\sum_{g'\in G'}
+\Sigma^i_{g\leftarrow g'}\Phi_{i,g'}}{W_{C,G'}}.\]</div>
+<p>The removal coefficient uses total interaction minus within-<span class="math notranslate nohighlight">\(G\)</span>
+scattering in the numerator. These signed weights preserve the fine-mesh
+reaction, transfer, and production rates of the transport iterate exactly,
+including where the scalar flux is negative, so the converged CMFD operator
+reproduces the transport balance. No sign or positivity condition is imposed
+on the collapsed coefficients; for example, transport-corrected data with a
+negative self-scatter are homogenized as given.</p>
+<p>The fine cells of <span class="math notranslate nohighlight">\(C\)</span> that share a material block <span class="math notranslate nohighlight">\(m\)</span> form one
+material region with flux integral
+<span class="math notranslate nohighlight">\(\Phi_{C,m,g}=\sum_{i\in C,\,m(i)=m}\Phi_{i,g}\)</span>. The rates above are
+linear in the flux, so they are the same summed over fine cells or over
+regions. The magnitudes below are taken after this sum, as
+<span class="math notranslate nohighlight">\(|\Phi_{C,m,g}|\)</span>.</p>
+<p><span class="math notranslate nohighlight">\(W_{C,G}\)</span> is replaced only when it is zero, non-finite, or within
+<span class="math notranslate nohighlight">\(64\epsilon\)</span> of <span class="math notranslate nohighlight">\(\sum_{m\in C}\sum_{g\in G}|\Phi_{C,m,g}|\)</span>
+(cancellation). OpenSn then uses the physical volumes
+<span class="math notranslate nohighlight">\(V_i=\sum_n V_{i,n}\)</span> in place of <span class="math notranslate nohighlight">\(\Phi_{i,g}\)</span> for that coarse group,
+and the coarse rates of that group no longer match the transport rates. OpenSn
+reports the number of coarse energy groups using this fallback once per
+execution. The operator assembled at the start of each solver <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>,
+before any transport iterate exists, uses volume weights throughout.</p>
+<p>The diffusion coefficient only sets the interface coupling that the current
+correction completes, so it uses the region magnitudes <span class="math notranslate nohighlight">\(|\Phi_{C,m,g}|\)</span>
+(equal to <span class="math notranslate nohighlight">\(\Phi_{C,m,g}\)</span> wherever that integral is positive), which keeps
+it positive. OpenSn first spatially homogenizes the transport cross section for
+each fine group, with <span class="math notranslate nohighlight">\(\Sigma_{tr,m,g}\)</span> that of material <span class="math notranslate nohighlight">\(m\)</span>,</p>
+<div class="math notranslate nohighlight">
+\[\overline{\Sigma}_{tr,C,g} =
+\frac{\sum_{m\in C}\Sigma_{tr,m,g}|\Phi_{C,m,g}|}
+     {\sum_{m\in C}|\Phi_{C,m,g}|},\]</div>
+<p>forms <span class="math notranslate nohighlight">\(D_{C,g}=1/(3\overline{\Sigma}_{tr,C,g})\)</span>, and then weights
+<span class="math notranslate nohighlight">\(D_{C,g}\)</span> by <span class="math notranslate nohighlight">\(\sum_{m\in C}|\Phi_{C,m,g}|\)</span> over the fine groups in
+<span class="math notranslate nohighlight">\(G\)</span>. This order is important: directly averaging material diffusion
+coefficients would average the inverse transport cross section and gives a
+different result in mixed materials. A zero or near-zero homogenized transport
+cross section uses the same bounded diffusion coefficient as the material
+cross-section implementation, <span class="math notranslate nohighlight">\(D=1/(3\times10^{-12})\)</span>. Each coarse cell
+has one diffusion coefficient per coarse group, and both sides of an interface
+use it.</p>
+<p>Delayed production is included when <code class="docutils literal notranslate"><span class="pre">use_precursors=True</span></code>. In adjoint mode,
+scattering and prompt and delayed production are transposed before
+homogenization. The fine-group total cross sections are unchanged, but the
+removal coefficient subtracts the within-<span class="math notranslate nohighlight">\(G\)</span> scattering of the
+transposed matrix with the adjoint flux weights. With energy collapse it
+therefore differs from the forward removal: in a coarse group of two fine
+groups with weights 0.75 and 0.25, a forward transfer of 0.3 from the first
+to the second fine group subtracts 0.225, and the transposed transfer
+subtracts 0.075. The diffusion coefficient uses the adjoint transport cross
+section, which subtracts the P1 in-scatter instead of the P1 out-scatter.</p>
+<p>Homogenization is recomputed before every active CMFD correction from the
+transport iterate of that power iteration. It does not modify the problem’s
+material cross sections or the fine-mesh transport operator.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">current_closure</span></code></dt><dd><p>Face-current closure used in the CMFD operator. Valid choices are
 <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;net&quot;</span></code>. The default is <code class="docutils literal notranslate"><span class="pre">&quot;partial&quot;</span></code>.</p>
@@ -267,7 +341,7 @@ number of power iterations, when comparing values. An aggregate that spans
 many mean free paths cannot represent the slowly converging spatial modes
 inside it, so in optically thick regions large aggregates accelerate little;
 use smaller aggregates (or <code class="docutils literal notranslate"><span class="pre">coarse_mesh=&quot;identity&quot;</span></code>) there.</p>
-<p>Aggregates never cross mesh-block boundaries, so on finely divided
+<p>By default, aggregates never cross mesh-block boundaries, so on finely divided
 heterogeneous geometry (for example, pin cells with separate fuel, clad, and
 moderator blocks) many aggregates are smaller than the target, and the
 realized number of fine cells per coarse cell (printed at initialization) can
@@ -276,6 +350,14 @@ transport sweeps varies within each aggregate, the outer convergence rate
 stalls at roughly the unaccelerated sweep rate. Smaller aggregates remove
 this limit; combining them with <code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code> keeps the direct
 coarse solve affordable.</p>
+</dd>
+<dt><code class="docutils literal notranslate"><span class="pre">allow_mixed_material_aggregation</span></code></dt><dd><p>When <code class="docutils literal notranslate"><span class="pre">True</span></code>, permits <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>
+coarse cells to cross mesh-block boundaries; their coefficients are
+homogenized as described above. The default is <code class="docutils literal notranslate"><span class="pre">False</span></code>, which keeps every
+aggregate within one mesh block. This option changes the generated coarse topology:
+for the same <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>, removing material boundaries generally
+produces fewer, larger aggregates. Retune <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> when comparing
+the two policies.</p>
 </dd>
 <dt><code class="docutils literal notranslate"><span class="pre">group_aggregation_size</span></code></dt><dd><p>Number of transport energy groups per CMFD coarse energy group. This is not
 the final number of CMFD energy groups. The default is <code class="docutils literal notranslate"><span class="pre">1</span></code>, which preserves
@@ -399,10 +481,18 @@ with the direct coarse solver).</p>
 solve for coarse systems below <code class="docutils literal notranslate"><span class="pre">coarse_direct_solve_threshold</span></code> global
 unknowns and an iterative GMRES solve preconditioned with hypre BoomerAMG
 otherwise. The default threshold
-is <code class="docutils literal notranslate"><span class="pre">20000</span></code> global unknowns. Force <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> only for small or moderate
+is <code class="docutils literal notranslate"><span class="pre">150000</span></code> global unknowns. Force <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> only for small or moderate
 coarse systems that fit comfortably in host memory. Use <code class="docutils literal notranslate"><span class="pre">&quot;iterative&quot;</span></code> when
-direct factorization is too expensive. If an iterative coarse KSP does not
-converge, CMFD skips the correction for that power iteration; increase
+direct factorization is too expensive. A coarse solve counts as converged
+only if PETSc reports convergence and the true residual norm
+<span class="math notranslate nohighlight">\(\|b - A x\|\)</span> is at most 100 times
+<span class="math notranslate nohighlight">\(\max(\texttt{l\_rel\_tol}\,\|b\|, \texttt{l\_abs\_tol})\)</span>. The
+check applies to iterative and direct solves alike. It is a safeguard against
+solves that leave a large residual, such as a direct solve of a nearly
+singular operator. It does not bound the error of the solution, which can be
+large for an ill-conditioned coarse operator even when the residual is small.
+If a coarse solve does not converge, CMFD stops the coarse power iteration
+and skips the correction for that power iteration. Then increase
 <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>, use <code class="docutils literal notranslate"><span class="pre">&quot;petsc_options&quot;</span></code> with a stronger PETSc configuration,
 reduce coarse-system stiffness with finer aggregation, or switch to
 <code class="docutils literal notranslate"><span class="pre">&quot;direct&quot;</span></code> when memory permits. If several consecutive corrections are
@@ -445,7 +535,10 @@ also reports <code class="docutils literal notranslate"><span class="pre">correc
 </div>
 <p>Set <code class="docutils literal notranslate"><span class="pre">verbose=True</span></code> on <code class="docutils literal notranslate"><span class="pre">CMFDAcceleration</span></code> to print stable <code class="docutils literal notranslate"><span class="pre">CMFD_ACCEL</span></code>
 diagnostic lines for early iterations and periodic later iterations. These are
-intended for regression tests and performance studies.</p>
+intended for regression tests and performance studies. The timing category
+reports restriction, homogenization, the neighbor coarse-flux and
+diffusion-coefficient exchange, operator assembly, coarse solve,
+prolongation/update, and transport time separately.</p>
 </section>
 <section id="correction-safeties-and-warnings">
 <h2><span class="section-number">9.6. </span>Correction Safeties And Warnings<a class="headerlink" href="#correction-safeties-and-warnings" title="Link to this heading"></a></h2>
@@ -456,18 +549,29 @@ correction, so power iteration can continue even when the low-order correction
 is temporarily unusable.</p>
 <p>The most common skip reasons are:</p>
 <dl class="simple">
-<dt><code class="docutils literal notranslate"><span class="pre">coarse_linear_solve_not_converged</span></code></dt><dd><p>One or more PETSc coarse linear solves did not converge within <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>.
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_linear_solve_not_converged</span></code></dt><dd><p>One or more PETSc coarse linear solves did not converge within <code class="docutils literal notranslate"><span class="pre">max_iters</span></code>,
+or a solve left a true residual too large to trust.
 The correction is skipped because an unconverged low-order solve can move the
 high-order problem in the wrong direction. If the coarse system is modest,
 switch to <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;direct&quot;</span></code>. If direct is too expensive,
 increase <code class="docutils literal notranslate"><span class="pre">max_iters</span></code> or use <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;petsc_options&quot;</span></code> with a
 stronger iterative PETSc configuration.</p>
 </dd>
+<dt><code class="docutils literal notranslate"><span class="pre">coarse_eigensolve_breakdown</span></code></dt><dd><p>The coarse power iteration produced a coarse fission production or
+k-eigenvalue that is not positive and finite. Signed transport iterates, most
+often in the first power iterations or in reflectors, can give coarse
+operator entries of the wrong sign, and the dominant eigenvector of such an
+operator need not be positive. Occasional early skips are harmless. If they
+persist, use finer spatial or energy aggregation, or set
+<code class="docutils literal notranslate"><span class="pre">inactive_iterations</span></code> so that CMFD starts from a smoother transport iterate.</p>
+</dd>
 <dt><code class="docutils literal notranslate"><span class="pre">sign_change_guard</span></code></dt><dd><p>Every attempted correction, after damping, would have changed the sign of the
 scalar flux in at least one coarse cell and coarse group. CMFD scales the
 transport flux of each coarse cell and coarse group by the ratio of the
-corrected to the uncorrected coarse flux, so a ratio that is not positive
-would flip the sign of that flux. Negative values the transport update
+corrected to the uncorrected coarse flux, so a negative ratio would flip the
+sign of that flux. A zero ratio is allowed. It sets the flux to zero, which is
+the coarse solution in a source-free region that no face couples to the rest
+of the problem. Negative values the transport update
 already has, which discontinuous discretizations can produce, are only
 rescaled and do not trigger the guard. First reduce <code class="docutils literal notranslate"><span class="pre">relaxation</span></code> or use
 finer spatial/energy aggregation. Repeated skips are usually a sign that the
@@ -492,7 +596,9 @@ the input should be adjusted.</p>
 <li><p>one shared all-groups CMFD coarse system applied after the AGS transport
 update,</p></li>
 <li><p>identity coarse meshes,</p></li>
-<li><p>rank-local same-material cell aggregation,</p></li>
+<li><p>rank-local and cross-rank (<code class="docutils literal notranslate"><span class="pre">global_aggregation</span></code>) cell aggregation, within
+one mesh block by default or across blocks with
+<code class="docutils literal notranslate"><span class="pre">allow_mixed_material_aggregation=True</span></code>,</p></li>
 <li><p>optional energy-group aggregation in the CMFD low-order system,</p></li>
 <li><p>reflecting and non-reflecting boundary treatment,</p></li>
 <li><p>scalar-flux correction limiting,</p></li>

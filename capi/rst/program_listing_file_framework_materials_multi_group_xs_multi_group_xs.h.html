@@ -120,6 +120,10 @@
 <span class="p">{</span>
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">STOPPING_POWER_TOLERANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Transport cross-section magnitude below which the diffusion coefficient is bounded.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">TRANSPORT_XS_TOLERANCE</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0e-12</span><span class="p">;</span>
+<span class="w">  </span><span class="c1">/// Upper bound on diffusion coefficients in void and near-void groups.</span>
+<span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="kt">double</span><span class="w"> </span><span class="n">MAX_DIFFUSION_COEFFICIENT</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mf">1.0</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="p">(</span><span class="mf">3.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">TRANSPORT_XS_TOLERANCE</span><span class="p">);</span>
 
 <span class="w">  </span><span class="n">MultiGroupXS</span><span class="p">()</span>
 <span class="w">    </span><span class="o">:</span><span class="w"> </span><span class="n">num_groups_</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span>

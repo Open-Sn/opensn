@@ -195,6 +195,16 @@ Classes and Structs
 .. toctree::
    :maxdepth: 1
 
+   structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.rst
+
+.. toctree::
+   :maxdepth: 1
+
+   structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.rst
+
+.. toctree::
+   :maxdepth: 1
+
    structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.rst
 
 .. toctree::

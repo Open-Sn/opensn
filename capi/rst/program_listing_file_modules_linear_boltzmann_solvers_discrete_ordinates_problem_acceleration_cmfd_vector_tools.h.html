@@ -122,12 +122,14 @@
 <span class="cm"> * Count the coarse values whose prolongation ratio would not preserve the sign of the fine flux.</span>
 <span class="cm"> *</span>
 <span class="cm"> * CMFDProlongateScalarFluxRatio scales the fine flux of each coarse cell and coarse group by</span>
-<span class="cm"> * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A ratio that is</span>
-<span class="cm"> * not finite and positive would change the sign of, or destroy, the fine flux it scales.</span>
+<span class="cm"> * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A negative or</span>
+<span class="cm"> * non-finite ratio would change the sign of, or destroy, the fine flux it scales. A zero ratio</span>
+<span class="cm"> * sets the fine flux to zero, which is the coarse solution of a source-free region that no face</span>
+<span class="cm"> * couples to the rest of the problem.</span>
 <span class="cm"> *</span>
 <span class="cm"> * \param coarse_phi_old Coarse scalar flux before the correction.</span>
 <span class="cm"> * \param coarse_phi_new Corrected coarse scalar flux.</span>
-<span class="cm"> * \return The number of local coarse values with a ratio that is not finite and positive.</span>
+<span class="cm"> * \return The number of local coarse values with a negative or non-finite ratio.</span>
 <span class="cm"> * \throw std::invalid_argument If the two vectors differ in size.</span>
 <span class="cm"> */</span>
 <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="nf">CMFDCountSignChangingRatios</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="kt">double</span><span class="o">&gt;&amp;</span><span class="w"> </span><span class="n">coarse_phi_old</span><span class="p">,</span>

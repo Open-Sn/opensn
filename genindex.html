@@ -670,6 +670,14 @@
       </ul></li>
       <li><a href="pyapi/generated/pyopensn.mesh.Mesh.html#pyopensn.mesh.Mesh.GetGlobalNumberOfCells">GetGlobalNumberOfCells() (pyopensn.mesh.Mesh method)</a>
 </li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetHomogenizedDiffusionCoefficient">GetHomogenizedDiffusionCoefficient() (pyopensn.solver.CMFDAcceleration method)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetHomogenizedProductionXS">GetHomogenizedProductionXS() (pyopensn.solver.CMFDAcceleration method)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS">GetHomogenizedRemovalXS() (pyopensn.solver.CMFDAcceleration method)</a>
+</li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetHomogenizedScatteringXS">GetHomogenizedScatteringXS() (pyopensn.solver.CMFDAcceleration method)</a>
+</li>
       <li><a href="pyapi/generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature.GetMomentToDiscreteOperator">GetMomentToDiscreteOperator() (pyopensn.aquad.AngularQuadrature method)</a>
 
       <ul>
@@ -790,6 +798,8 @@
         <li><a href="pyapi/generated/pyopensn.aquad.TriangularQuadrature.html#pyopensn.aquad.TriangularQuadrature.GetNumAzimuthalAngles">(pyopensn.aquad.TriangularQuadrature method)</a>
 </li>
       </ul></li>
+      <li><a href="pyapi/generated/pyopensn.solver.CMFDAcceleration.html#pyopensn.solver.CMFDAcceleration.GetNumCoarseCells">GetNumCoarseCells() (pyopensn.solver.CMFDAcceleration method)</a>
+</li>
       <li><a href="pyapi/generated/pyopensn.aquad.AngularQuadrature.html#pyopensn.aquad.AngularQuadrature.GetNumMoments">GetNumMoments() (pyopensn.aquad.AngularQuadrature method)</a>
 
       <ul>
@@ -3426,6 +3436,22 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration16CMFDAccelerationERK15InputParameters">opensn::CMFDAcceleration::CMFDAcceleration (C++ function)</a>
 </li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.html#_CPPv4N6opensn16CMFDAcceleration18CoarseCellMaterialE">opensn::CMFDAcceleration::CoarseCellMaterial (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.html#_CPPv4N6opensn16CMFDAcceleration18CoarseCellMaterial8block_idE">opensn::CMFDAcceleration::CoarseCellMaterial::block_id (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.html#_CPPv4N6opensn16CMFDAcceleration18CoarseCellMaterial6volumeE">opensn::CMFDAcceleration::CoarseCellMaterial::volume (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.html#_CPPv4N6opensn16CMFDAcceleration18CoarseCellMaterial7weightsE">opensn::CMFDAcceleration::CoarseCellMaterial::weights (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.html#_CPPv4N6opensn16CMFDAcceleration12CoarseCellXSE">opensn::CMFDAcceleration::CoarseCellXS (C++ struct)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.html#_CPPv4N6opensn16CMFDAcceleration12CoarseCellXS9diffusionE">opensn::CMFDAcceleration::CoarseCellXS::diffusion (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.html#_CPPv4N6opensn16CMFDAcceleration12CoarseCellXS9materialsE">opensn::CMFDAcceleration::CoarseCellXS::materials (C++ member)</a>
+</li>
+      <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.html#_CPPv4N6opensn16CMFDAcceleration12CoarseCellXS7removalE">opensn::CMFDAcceleration::CoarseCellXS::removal (C++ member)</a>
+</li>
       <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnosticsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics (C++ struct)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#_CPPv4N6opensn16CMFDAcceleration21CoarseMeshDiagnostics19global_coarse_cellsE">opensn::CMFDAcceleration::CoarseMeshDiagnostics::global_coarse_cells (C++ member)</a>
@@ -3464,9 +3490,19 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration13GetCoarseMeshEv">opensn::CMFDAcceleration::GetCoarseMesh (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration34GetHomogenizedDiffusionCoefficientE8uint64_t">opensn::CMFDAcceleration::GetHomogenizedDiffusionCoefficient (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedProductionXSE8uint64_t">opensn::CMFDAcceleration::GetHomogenizedProductionXS (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration23GetHomogenizedRemovalXSE8uint64_t">opensn::CMFDAcceleration::GetHomogenizedRemovalXS (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedScatteringXSE8uint64_t">opensn::CMFDAcceleration::GetHomogenizedScatteringXS (C++ function)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAcceleration18GetInputParametersEv">opensn::CMFDAcceleration::GetInputParameters (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration24GetNumAppliedCorrectionsEv">opensn::CMFDAcceleration::GetNumAppliedCorrections (C++ function)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration17GetNumCoarseCellsEv">opensn::CMFDAcceleration::GetNumCoarseCells (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4NK6opensn16CMFDAcceleration24GetNumSkippedCorrectionsEv">opensn::CMFDAcceleration::GetNumSkippedCorrections (C++ function)</a>
 </li>
@@ -3522,11 +3558,11 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMeshE">opensn::CMFDCoarseMesh (C++ class)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tE">opensn::CMFDCoarseMesh::BuildGlobalAggregation (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tEb">opensn::CMFDCoarseMesh::BuildGlobalAggregation (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh13BuildIdentityERK4Mesh">opensn::CMFDCoarseMesh::BuildIdentity (C++ function)</a>
 </li>
-      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tE">opensn::CMFDCoarseMesh::BuildLocalAggregation (C++ function)</a>
+      <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tEb">opensn::CMFDCoarseMesh::BuildLocalAggregation (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4NK6opensn14CMFDCoarseMesh19FineToCoarseCellMapEv">opensn::CMFDCoarseMesh::FineToCoarseCellMap (C++ function)</a>
 </li>
@@ -6002,6 +6038,8 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions15last_write_timeE">opensn::LBSRestartOptions::last_write_time (C++ member)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions17MarkWriteCompleteEv">opensn::LBSRestartOptions::MarkWriteComplete (C++ function)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions27read_initial_condition_pathE">opensn::LBSRestartOptions::read_initial_condition_path (C++ member)</a>
@@ -6014,8 +6052,6 @@
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions10write_pathE">opensn::LBSRestartOptions::write_path (C++ member)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions19write_time_intervalE">opensn::LBSRestartOptions::write_time_interval (C++ member)</a>
 </li>
       <li><a href="capi/rst/structopensn_1_1_l_b_s_restart_options.html#_CPPv4N6opensn17LBSRestartOptions14writes_enabledE">opensn::LBSRestartOptions::writes_enabled (C++ member)</a>
@@ -6712,6 +6748,8 @@
 </li>
       <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS14LoadFromOpenSnERKNSt6stringE">opensn::MultiGroupXS::LoadFromOpenSn (C++ function)</a>
 </li>
+      <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS25MAX_DIFFUSION_COEFFICIENTE">opensn::MultiGroupXS::MAX_DIFFUSION_COEFFICIENT (C++ member)</a>
+</li>
       <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS12MultiGroupXSEv">opensn::MultiGroupXS::MultiGroupXS (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS9PrecursorE">opensn::MultiGroupXS::Precursor (C++ struct)</a>, <a href="capi/rst/structopensn_1_1_multi_group_x_s_1_1_precursor.html#_CPPv4N6opensn12MultiGroupXS9PrecursorE">[1]</a>
@@ -6731,6 +6769,8 @@
       <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS14SetAdjointModeEb">opensn::MultiGroupXS::SetAdjointMode (C++ function)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS24STOPPING_POWER_TOLERANCEE">opensn::MultiGroupXS::STOPPING_POWER_TOLERANCE (C++ member)</a>
+</li>
+      <li><a href="capi/rst/classopensn_1_1_multi_group_x_s.html#_CPPv4N6opensn12MultiGroupXS22TRANSPORT_XS_TOLERANCEE">opensn::MultiGroupXS::TRANSPORT_XS_TOLERANCE (C++ member)</a>
 </li>
       <li><a href="capi/rst/classopensn_1_1_n_d_array.html#_CPPv4I0_iEN6opensn7NDArrayE">opensn::NDArray (C++ class)</a>
 </li>

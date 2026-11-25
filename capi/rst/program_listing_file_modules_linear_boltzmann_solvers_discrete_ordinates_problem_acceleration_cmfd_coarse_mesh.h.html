@@ -176,10 +176,36 @@
 
 <span class="k">public</span><span class="o">:</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CMFDCoarseMesh</span><span class="w"> </span><span class="n">BuildIdentity</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Build connected aggregates of local fine cells that do not cross MPI rank boundaries.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Collective.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param grid Transport mesh.</span>
+<span class="cm">   * \param target_fine_cells_per_coarse_cell Maximum number of fine cells per aggregate.</span>
+<span class="cm">   * \param allow_mixed_materials Whether an aggregate may cross material-block boundaries.</span>
+<span class="cm">   * \return The coarse mesh.</span>
+<span class="cm">   * \throw std::invalid_argument If target_fine_cells_per_coarse_cell is zero.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CMFDCoarseMesh</span><span class="w"> </span><span class="nf">BuildLocalAggregation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                                              </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">target_fine_cells_per_coarse_cell</span><span class="p">);</span>
+<span class="w">                                              </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">target_fine_cells_per_coarse_cell</span><span class="p">,</span>
+<span class="w">                                              </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_mixed_materials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
+<span class="w">  </span><span class="cm">/**</span>
+<span class="cm">   * Build connected aggregates of fine cells that may span MPI ranks.</span>
+<span class="cm">   *</span>
+<span class="cm">   * Collective.</span>
+<span class="cm">   *</span>
+<span class="cm">   * \param grid Transport mesh.</span>
+<span class="cm">   * \param target_fine_cells_per_coarse_cell Target number of fine cells per aggregate. Rank-local</span>
+<span class="cm">   *        aggregates hold at most this many. An undersized aggregate is then merged with one</span>
+<span class="cm">   *        same-block neighbor, so a merged aggregate holds fewer than twice the target.</span>
+<span class="cm">   * \param allow_mixed_materials Whether an aggregate may cross material-block boundaries.</span>
+<span class="cm">   * \return The coarse mesh.</span>
+<span class="cm">   * \throw std::invalid_argument If target_fine_cells_per_coarse_cell is zero.</span>
+<span class="cm">   */</span>
 <span class="w">  </span><span class="k">static</span><span class="w"> </span><span class="n">CMFDCoarseMesh</span><span class="w"> </span><span class="nf">BuildGlobalAggregation</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="n">Mesh</span><span class="o">&amp;</span><span class="w"> </span><span class="n">grid</span><span class="p">,</span>
-<span class="w">                                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">target_fine_cells_per_coarse_cell</span><span class="p">);</span>
+<span class="w">                                               </span><span class="n">std</span><span class="o">::</span><span class="kt">size_t</span><span class="w"> </span><span class="n">target_fine_cells_per_coarse_cell</span><span class="p">,</span>
+<span class="w">                                               </span><span class="kt">bool</span><span class="w"> </span><span class="n">allow_mixed_materials</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nb">false</span><span class="p">);</span>
 <span class="p">};</span>
 
 <span class="p">}</span><span class="w"> </span><span class="c1">// namespace opensn</span>

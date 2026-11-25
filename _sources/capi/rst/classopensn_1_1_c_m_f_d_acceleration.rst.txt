@@ -14,6 +14,8 @@ Nested Types
 ************
 
 - :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual`
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material`
+- :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s`
 - :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics`
 - :ref:`exhale_struct_structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics`
 

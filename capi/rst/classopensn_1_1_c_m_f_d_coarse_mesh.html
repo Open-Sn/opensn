@@ -153,14 +153,48 @@
 <dd></dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tE">
-<span class="target" id="classopensn_1_1_c_m_f_d_coarse_mesh_1a3c5a81041a00f82af79132bcacb2b1c6"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14CMFDCoarseMeshE" title="opensn::CMFDCoarseMesh"><span class="n"><span class="pre">CMFDCoarseMesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildLocalAggregation</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fine_cells_per_coarse_cell</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tEb">
+<span class="target" id="classopensn_1_1_c_m_f_d_coarse_mesh_1ac83317af482dcfdea8ae91a8884a3b15"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14CMFDCoarseMeshE" title="opensn::CMFDCoarseMesh"><span class="n"><span class="pre">CMFDCoarseMesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildLocalAggregation</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fine_cells_per_coarse_cell</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allow_mixed_materials</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14CMFDCoarseMesh21BuildLocalAggregationERK4MeshNSt6size_tEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Build connected aggregates of local fine cells that do not cross MPI rank boundaries. </p>
+<p>Collective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> – Transport mesh. </p></li>
+<li><p><strong>target_fine_cells_per_coarse_cell</strong> – Maximum number of fine cells per aggregate. </p></li>
+<li><p><strong>allow_mixed_materials</strong> – Whether an aggregate may cross material-block boundaries. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If target_fine_cells_per_coarse_cell is zero. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The coarse mesh. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
-<dt class="sig sig-object cpp" id="_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tE">
-<span class="target" id="classopensn_1_1_c_m_f_d_coarse_mesh_1a62e5400858cbf0d93e0931a87af18fcb"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14CMFDCoarseMeshE" title="opensn::CMFDCoarseMesh"><span class="n"><span class="pre">CMFDCoarseMesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildGlobalAggregation</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fine_cells_per_coarse_cell</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tE" title="Link to this definition"></a><br /></dt>
-<dd></dd></dl>
+<dt class="sig sig-object cpp" id="_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tEb">
+<span class="target" id="classopensn_1_1_c_m_f_d_coarse_mesh_1a47a719b36b478865df39e4004cca9a6f"></span><span class="k"><span class="pre">static</span></span><span class="w"> </span><a class="reference internal" href="#_CPPv4N6opensn14CMFDCoarseMeshE" title="opensn::CMFDCoarseMesh"><span class="n"><span class="pre">CMFDCoarseMesh</span></span></a><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">BuildGlobalAggregation</span></span></span><span class="sig-paren">(</span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_mesh.html#_CPPv4N6opensn4MeshE" title="opensn::Mesh"><span class="n"><span class="pre">Mesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="n sig-param"><span class="pre">grid</span></span>, <span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">target_fine_cells_per_coarse_cell</span></span>, <span class="kt"><span class="pre">bool</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">allow_mixed_materials</span></span><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="k"><span class="pre">false</span></span><span class="sig-paren">)</span><a class="headerlink" href="#_CPPv4N6opensn14CMFDCoarseMesh22BuildGlobalAggregationERK4MeshNSt6size_tEb" title="Link to this definition"></a><br /></dt>
+<dd><p>Build connected aggregates of fine cells that may span MPI ranks. </p>
+<p>Collective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>grid</strong> – Transport mesh. </p></li>
+<li><p><strong>target_fine_cells_per_coarse_cell</strong> – Target number of fine cells per aggregate. Rank-local aggregates hold at most this many. An undersized aggregate is then merged with one same-block neighbor, so a merged aggregate holds fewer than twice the target. </p></li>
+<li><p><strong>allow_mixed_materials</strong> – Whether an aggregate may cross material-block boundaries. </p></li>
+</ul>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If target_fine_cells_per_coarse_cell is zero. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The coarse mesh. </p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 </dd></dl>

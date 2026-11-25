@@ -118,6 +118,99 @@
 <dd><p>Construct a CMFD accelerator for the power iteration k-eigenvalue solver.</p>
 <p>Wrapper of <a class="reference internal" href="../../capi/rst/classopensn_1_1_c_m_f_d_acceleration.html#_CPPv4N6opensn16CMFDAccelerationE" title="opensn::CMFDAcceleration"><code class="xref cpp cpp-class docutils literal notranslate"><span class="pre">opensn::CMFDAcceleration</span></code></a>.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetHomogenizedDiffusionCoefficient">
+<span class="sig-name descname"><span class="pre">GetHomogenizedDiffusionCoefficient</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse_cell_global_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedDiffusionCoefficient" title="Link to this definition"></a></dt>
+<dd><p>Return the diffusion coefficients of the last assembled CMFD operator for one coarse cell.</p>
+<p>The operator lifecycle, exceptions, and collectivity are as for
+<a class="reference internal" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS" title="pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetHomogenizedRemovalXS()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> (<em>int</em>) – Global id of a coarse cell owned by the calling rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One diffusion coefficient per CMFD energy group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetHomogenizedProductionXS">
+<span class="sig-name descname"><span class="pre">GetHomogenizedProductionXS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse_cell_global_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedProductionXS" title="Link to this definition"></a></dt>
+<dd><p>Return the production matrix of the last assembled CMFD operator for one coarse cell.</p>
+<p>Delayed production is included when precursors are enabled. In adjoint mode the matrix is
+the transpose used by the adjoint operator. The operator lifecycle, exceptions, and
+collectivity are as for <a class="reference internal" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS" title="pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetHomogenizedRemovalXS()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> (<em>int</em>) – Global id of a coarse cell owned by the calling rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row-major matrix with <code class="docutils literal notranslate"><span class="pre">num_coarse_groups**2</span></code> entries; entry <code class="docutils literal notranslate"><span class="pre">[g,</span> <span class="pre">gp]</span></code> is the
+production in coarse group <code class="docutils literal notranslate"><span class="pre">g</span></code> per unit flux in coarse group <code class="docutils literal notranslate"><span class="pre">gp</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS">
+<span class="sig-name descname"><span class="pre">GetHomogenizedRemovalXS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse_cell_global_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS" title="Link to this definition"></a></dt>
+<dd><p>Return the removal coefficients of the last assembled CMFD operator for one coarse cell.</p>
+<p>Each <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> of the owning solver first assembles a volume-weighted operator. Each
+active power iteration then reassembles it from the transport iterate produced by that
+iteration’s sweep, before the CMFD correction is applied. Inactive iterations do not
+reassemble it. After <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> returns, the values are those of its last assembly.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> (<em>int</em>) – Global id of a coarse cell owned by the calling rank. Ids run from zero to
+<code class="docutils literal notranslate"><span class="pre">GetNumCoarseCells()</span> <span class="pre">-</span> <span class="pre">1</span></code>; with <code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> and <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>
+each coarse cell is owned by one rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One removal coefficient per CMFD energy group.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+<dt class="field-even">Raises<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – If the coarse cell is not owned by the calling rank.</p></li>
+<li><p><strong>RuntimeError</strong> – If called before the first <code class="docutils literal notranslate"><span class="pre">Execute()</span></code> of the owning solver.</p></li>
+</ul>
+</dd>
+</dl>
+<p class="rubric">Notes</p>
+<p>Not collective.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetHomogenizedScatteringXS">
+<span class="sig-name descname"><span class="pre">GetHomogenizedScatteringXS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">coarse_cell_global_id</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedScatteringXS" title="Link to this definition"></a></dt>
+<dd><p>Return the P0 transfer matrix of the last assembled CMFD operator for one coarse cell.</p>
+<p>The diagonal is the within-group transfer, which the operator already accounts for in the
+removal coefficient. In adjoint mode the matrix is the transpose used by the adjoint
+operator. The operator lifecycle, exceptions, and collectivity are as for
+<a class="reference internal" href="#pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS" title="pyopensn.solver.CMFDAcceleration.GetHomogenizedRemovalXS"><code class="xref py py-meth docutils literal notranslate"><span class="pre">GetHomogenizedRemovalXS()</span></code></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> (<em>int</em>) – Global id of a coarse cell owned by the calling rank.</p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>Row-major matrix with <code class="docutils literal notranslate"><span class="pre">num_coarse_groups**2</span></code> entries; entry <code class="docutils literal notranslate"><span class="pre">[g,</span> <span class="pre">gp]</span></code> is the
+transfer from coarse group <code class="docutils literal notranslate"><span class="pre">gp</span></code> to <code class="docutils literal notranslate"><span class="pre">g</span></code>.</p>
+</dd>
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>List[float]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetNumAppliedCorrections">
 <span class="sig-name descname"><span class="pre">GetNumAppliedCorrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetNumAppliedCorrections" title="Link to this definition"></a></dt>
 <dd><p>Return the number of CMFD corrections applied during the last power-iteration solve.</p>
@@ -125,13 +218,22 @@
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetNumCoarseCells">
+<span class="sig-name descname"><span class="pre">GetNumCoarseCells</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetNumCoarseCells" title="Link to this definition"></a></dt>
+<dd><p>Return the global number of CMFD coarse cells.</p>
+<p>The owning solver builds the coarse mesh at the start of each <code class="docutils literal notranslate"><span class="pre">Execute()</span></code>; before the first
+<code class="docutils literal notranslate"><span class="pre">Execute()</span></code> the count is zero.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="pyopensn.solver.CMFDAcceleration.GetNumSkippedCorrections">
 <span class="sig-name descname"><span class="pre">GetNumSkippedCorrections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#pyopensn.solver.CMFDAcceleration" title="pyopensn.solver.CMFDAcceleration"><span class="pre">pyopensn.solver.CMFDAcceleration</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#pyopensn.solver.CMFDAcceleration.GetNumSkippedCorrections" title="Link to this definition"></a></dt>
 <dd><p>Return the number of CMFD corrections skipped during the last power-iteration solve.</p>
-<p>A correction is skipped when a coarse linear solve does not converge or when every
-damping attempt is rejected; the power iteration then uses the unaccelerated transport
-update. Inactive iterations are not counted. The count is reset at the start of each
-solve.</p>
+<p>A correction is skipped when a coarse linear solve does not converge, when the coarse power
+iteration breaks down with a coarse fission production or k that is not positive and
+finite, or when every damping attempt is rejected. The power iteration then uses the
+unaccelerated transport update. Inactive iterations are not counted. The count is reset at
+the start of each solve.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -155,8 +257,8 @@ investigations and regression testing, but normally should be left at their defa
 <li><p><strong>coarse_mesh</strong> (<em>str</em><em>, </em><em>default=&quot;local_aggregation&quot;</em>) – <dl class="simple">
 <dt>Common option. Coarse-mesh construction method. Valid choices are:</dt><dd><ul>
 <li><p>’identity’ : one CMFD coarse cell per transport cell</p></li>
-<li><p>’local_aggregation’ : connected same-block fine cells aggregated locally</p></li>
-<li><p>’global_aggregation’ : connected same-block fine cells aggregated across MPI ranks</p></li>
+<li><p>’local_aggregation’ : connected fine cells aggregated locally</p></li>
+<li><p>’global_aggregation’ : connected fine cells aggregated across MPI ranks</p></li>
 </ul>
 </dd>
 </dl>
@@ -165,9 +267,10 @@ reduce the coarse problem size on larger distributed meshes. Global aggregation 
 logical CMFD coarse-space construction: it does not repartition the transport mesh or
 change fine-cell ownership. Each global coarse cell has one owning rank, while ranks
 owning member fine cells keep membership records for restriction and prolongation.
-Aggregates are connected by face adjacency, remain within one mesh block, and may be
-smaller than <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code> near boundaries or disconnected regions. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code>
-is primarily for debugging and method comparisons.</p>
+Aggregates are connected by face adjacency, remain within one mesh block unless
+<code class="docutils literal notranslate"><span class="pre">allow_mixed_material_aggregation=True</span></code>, and may be smaller than <code class="docutils literal notranslate"><span class="pre">aggregation_size</span></code>
+near boundaries or disconnected regions. <code class="docutils literal notranslate"><span class="pre">&quot;identity&quot;</span></code> is primarily for debugging and
+method comparisons.</p>
 </p></li>
 <li><p><strong>current_closure</strong> (<em>str</em><em>, </em><em>default=&quot;partial&quot;</em>) – <dl class="simple">
 <dt>Common option. CMFD face-current closure. Valid choices are:</dt><dd><ul>
@@ -188,6 +291,11 @@ iterations on some problems with optically thin coarse cells.</p>
 Larger values reduce CMFD matrix size and
 setup/solve cost, but make the spatial correction less detailed. Smaller values
 increase the coarse-system cost but may improve robustness.</p></li>
+<li><p><strong>allow_mixed_material_aggregation</strong> (<em>bool</em><em>, </em><em>default=False</em>) – Allow local or global aggregates to cross material-block boundaries. Coarse-cell
+removal, scattering, production, and diffusion coefficients are always homogenized from
+fine-cell scalar-flux integrals before every CMFD correction; this option only changes
+which fine cells may share a coarse cell. Requires <code class="docutils literal notranslate"><span class="pre">coarse_mesh</span></code> to be
+<code class="docutils literal notranslate"><span class="pre">&quot;local_aggregation&quot;</span></code> or <code class="docutils literal notranslate"><span class="pre">&quot;global_aggregation&quot;</span></code>.</p></li>
 <li><p><strong>group_aggregation_size</strong> (<em>int</em><em>, </em><em>default=1</em>) – Common option. Number of transport energy groups per CMFD coarse group, not the
 final number of coarse groups. A value of 1 preserves the full transport group
 structure in the low-order system. To target <code class="docutils literal notranslate"><span class="pre">N</span></code> total coarse groups, use
@@ -263,14 +371,18 @@ global unknowns, GMRES with hypre BoomerAMG otherwise</p></li>
 </ul>
 </dd>
 </dl>
-<p>CMFD corrections from unconverged coarse linear solves are always skipped.
+<p>CMFD corrections from unconverged coarse linear solves are always skipped. A coarse
+linear solve counts as converged only if PETSc reports convergence and its true
+residual norm is at most 100 times <code class="docutils literal notranslate"><span class="pre">max(l_rel_tol</span> <span class="pre">*</span> <span class="pre">|b|,</span> <span class="pre">l_abs_tol)</span></code>. This also
+applies to direct solves. A coarse power iteration that gives a coarse fission
+production or k that is not positive is also skipped.
 The skipped correction uses the unaccelerated transport update for that power
 iteration, including the raw transport k update so that power iteration can continue
 to move.</p>
 </p></li>
-<li><p><strong>coarse_direct_solve_threshold</strong> (<em>int</em><em>, </em><em>default=20000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
+<li><p><strong>coarse_direct_solve_threshold</strong> (<em>int</em><em>, </em><em>default=150000</em>) – Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
 solves when <code class="docutils literal notranslate"><span class="pre">coarse_solver_policy=&quot;auto&quot;</span></code>. Larger values make <code class="docutils literal notranslate"><span class="pre">&quot;auto&quot;</span></code> use
-direct solves for larger coarse systems; choose values based on available host
+direct solves for larger coarse systems. Choose values based on available host
 memory and acceptable factorization cost.</p></li>
 </ul>
 </dd>

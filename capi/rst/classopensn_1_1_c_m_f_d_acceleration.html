@@ -93,6 +93,8 @@
 <h3>Nested Types<a class="headerlink" href="#nested-types" title="Link to this heading"></a></h3>
 <ul class="simple">
 <li><p><a class="reference internal" href="structopensn_1_1_c_m_f_d_acceleration_1_1_balance_residual.html#exhale-struct-structopensn-1-1-c-m-f-d-acceleration-1-1-balance-residual"><span class="std std-ref">Struct CMFDAcceleration::BalanceResidual</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_material.html#exhale-struct-structopensn-1-1-c-m-f-d-acceleration-1-1-coarse-cell-material"><span class="std std-ref">Struct CMFDAcceleration::CoarseCellMaterial</span></a></p></li>
+<li><p><a class="reference internal" href="structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_cell_x_s.html#exhale-struct-structopensn-1-1-c-m-f-d-acceleration-1-1-coarse-cell-x-s"><span class="std std-ref">Struct CMFDAcceleration::CoarseCellXS</span></a></p></li>
 <li><p><a class="reference internal" href="structopensn_1_1_c_m_f_d_acceleration_1_1_coarse_mesh_diagnostics.html#exhale-struct-structopensn-1-1-c-m-f-d-acceleration-1-1-coarse-mesh-diagnostics"><span class="std std-ref">Struct CMFDAcceleration::CoarseMeshDiagnostics</span></a></p></li>
 <li><p><a class="reference internal" href="structopensn_1_1_c_m_f_d_acceleration_1_1_flux_update_diagnostics.html#exhale-struct-structopensn-1-1-c-m-f-d-acceleration-1-1-flux-update-diagnostics"><span class="std std-ref">Struct CMFDAcceleration::FluxUpdateDiagnostics</span></a></p></li>
 </ul>
@@ -182,6 +184,86 @@
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration13GetCoarseMeshEv">
 <span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1a7645a9c2138ca2fc326e18c1387a2354"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="k"><span class="pre">const</span></span><span class="w"> </span><a class="reference internal" href="classopensn_1_1_c_m_f_d_coarse_mesh.html#_CPPv4N6opensn14CMFDCoarseMeshE" title="opensn::CMFDCoarseMesh"><span class="n"><span class="pre">CMFDCoarseMesh</span></span></a><span class="w"> </span><span class="p"><span class="pre">&amp;</span></span><span class="sig-name descname"><span class="n"><span class="pre">GetCoarseMesh</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration13GetCoarseMeshEv" title="Link to this definition"></a><br /></dt>
 <dd></dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration17GetNumCoarseCellsEv">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1a5285752a46e1fb8aabb8e534c16fe880"></span><span class="k"><span class="pre">inline</span></span><span class="w"> </span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">size_t</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetNumCoarseCells</span></span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration17GetNumCoarseCellsEv" title="Link to this definition"></a><br /></dt>
+<dd><p>Global number of CMFD coarse cells; zero before <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1af56eceb3fd10c498cbced54e861ac64a"><span class="std std-ref">Initialize()</span></a>. </p>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration23GetHomogenizedRemovalXSE8uint64_t">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1aa59fc0da6183ef8a4f8934263812e97b"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHomogenizedRemovalXS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coarse_cell_global_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration23GetHomogenizedRemovalXSE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the removal coefficients of the last assembled CMFD operator for one coarse cell. </p>
+<p><a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1af56eceb3fd10c498cbced54e861ac64a"><span class="std std-ref">Initialize()</span></a>, which the owning solver calls at the start of each Execute(), assembles a volume-weighted operator; each active power iteration reassembles it from that iteration’s transport iterate before the correction is applied. Not collective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> – Global id of a coarse cell owned by the calling rank. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><ul class="simple">
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">invalid_argument</span></span></span> – If the coarse cell is not owned by the calling rank. </p></li>
+<li><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">logic_error</span></span></span> – If called before <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1af56eceb3fd10c498cbced54e861ac64a"><span class="std std-ref">Initialize()</span></a>. </p></li>
+</ul>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>One removal coefficient per CMFD energy group. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration34GetHomogenizedDiffusionCoefficientE8uint64_t">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1a511e66d3ed59b144303259dc4ed0ed67"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHomogenizedDiffusionCoefficient</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coarse_cell_global_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration34GetHomogenizedDiffusionCoefficientE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the diffusion coefficients of the last assembled CMFD operator for one coarse cell. </p>
+<p>The operator lifecycle and exceptions are as for <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1aa59fc0da6183ef8a4f8934263812e97b"><span class="std std-ref">GetHomogenizedRemovalXS()</span></a>. Not collective.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> – Global id of a coarse cell owned by the calling rank. </p>
+</dd>
+<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dd class="field-even"><p>One diffusion coefficient per CMFD energy group. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedScatteringXSE8uint64_t">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1adfbed65828bf26eda61234ea32269e95"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHomogenizedScatteringXS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coarse_cell_global_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedScatteringXSE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the P0 transfer matrix of the last assembled CMFD operator for one coarse cell. </p>
+<p>The operator lifecycle and exceptions are as for <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1aa59fc0da6183ef8a4f8934263812e97b"><span class="std std-ref">GetHomogenizedRemovalXS()</span></a>. Not collective.</p>
+<p>The matrix is condensed on demand from the cross-section objects of the last assembly, which the problem shares. Replacing the problem’s cross sections does not change it, but changing those objects in place does.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> – Global id of a coarse cell owned by the calling rank. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">logic_error</span></span></span> – If those objects no longer have the solver’s group count. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Row-major matrix whose entry [g, gp] is the transfer from coarse group gp to g. The diagonal is the within-group transfer, which the removal coefficient accounts for. </p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="cpp function">
+<dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedProductionXSE8uint64_t">
+<span class="target" id="classopensn_1_1_c_m_f_d_acceleration_1ad4196ecf4780d41365a6dd67f0e2dd8f"></span><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">::</span></span><span class="n"><span class="pre">vector</span></span><span class="p"><span class="pre">&lt;</span></span><span class="kt"><span class="pre">double</span></span><span class="p"><span class="pre">&gt;</span></span><span class="w"> </span><span class="sig-name descname"><span class="n"><span class="pre">GetHomogenizedProductionXS</span></span></span><span class="sig-paren">(</span><span class="n"><span class="pre">uint64_t</span></span><span class="w"> </span><span class="n sig-param"><span class="pre">coarse_cell_global_id</span></span><span class="sig-paren">)</span><span class="w"> </span><span class="k"><span class="pre">const</span></span><a class="headerlink" href="#_CPPv4NK6opensn16CMFDAcceleration26GetHomogenizedProductionXSE8uint64_t" title="Link to this definition"></a><br /></dt>
+<dd><p>Return the production matrix of the last assembled CMFD operator for one coarse cell. </p>
+<p>The operator lifecycle and exceptions are as for <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1aa59fc0da6183ef8a4f8934263812e97b"><span class="std std-ref">GetHomogenizedRemovalXS()</span></a>. Not collective.</p>
+<p>The matrix is condensed on demand, as for <a class="reference internal" href="#classopensn_1_1_c_m_f_d_acceleration_1adfbed65828bf26eda61234ea32269e95"><span class="std std-ref">GetHomogenizedScatteringXS()</span></a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>coarse_cell_global_id</strong> – Global id of a coarse cell owned by the calling rank. </p>
+</dd>
+<dt class="field-even">Throws<span class="colon">:</span></dt>
+<dd class="field-even"><p><span><span class="cpp-expr sig sig-inline cpp"><span class="n">std</span><span class="p">::</span><span class="n">logic_error</span></span></span> – If those objects no longer have the solver’s group count. </p>
+</dd>
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Row-major matrix whose entry [g, gp] is the production in coarse group g per unit flux in coarse group gp, including delayed production when precursors are enabled. </p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="cpp function">
 <dt class="sig sig-object cpp" id="_CPPv4NK6opensn16CMFDAcceleration24GetNumAppliedCorrectionsEv">

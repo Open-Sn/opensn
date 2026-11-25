@@ -47,12 +47,14 @@ Program Listing for File cmfd_vector_tools.h
     * Count the coarse values whose prolongation ratio would not preserve the sign of the fine flux.
     *
     * CMFDProlongateScalarFluxRatio scales the fine flux of each coarse cell and coarse group by
-    * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A ratio that is
-    * not finite and positive would change the sign of, or destroy, the fine flux it scales.
+    * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A negative or
+    * non-finite ratio would change the sign of, or destroy, the fine flux it scales. A zero ratio
+    * sets the fine flux to zero, which is the coarse solution of a source-free region that no face
+    * couples to the rest of the problem.
     *
     * \param coarse_phi_old Coarse scalar flux before the correction.
     * \param coarse_phi_new Corrected coarse scalar flux.
-    * \return The number of local coarse values with a ratio that is not finite and positive.
+    * \return The number of local coarse values with a negative or non-finite ratio.
     * \throw std::invalid_argument If the two vectors differ in size.
     */
    std::size_t CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
