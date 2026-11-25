@@ -1,0 +1,547 @@
+[
+  {
+    "file": "cmfd_basics.py",
+    "comment": "Pin-homogenized C5G7 core with unaccelerated power iteration, CMFD defaults and the tuned settings of the series. Every solve converges to the reference eigenvalue of the pin-homogenized model with this quadrature, 1.188819461, from a CMFD solve with an identity coarse mesh converged to k_tol=1e-11 and balance_residual_tolerance=1e-10. Tuned CMFD needs fewer than a quarter of the unaccelerated sweeps.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "power_iteration k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "power_iteration converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_defaults k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_defaults converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_tuned k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_tuned converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_coarse_mesh.py",
+    "comment": "CMFD coarse meshes on the pin-homogenized C5G7 core (identity, local and global aggregation, aggregate sizes, mixed materials). Every solve converges to the reference eigenvalue of the pin-homogenized model with this quadrature, 1.188819461, from a CMFD solve with an identity coarse mesh converged to k_tol=1e-11 and balance_residual_tolerance=1e-10.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "identity k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "identity converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_4_single_material k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_4_single_material converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_4_mixed_materials k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_4_mixed_materials converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_16_mixed_materials k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_16_mixed_materials converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_32_single_material k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_32_single_material converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "global_32_single_material k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "global_32_single_material converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_128_single_material k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "local_128_single_material converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_energy_groupsets.py",
+    "comment": "CMFD energy collapse to 7, 4, 2 and 1 coarse groups and a two-groupset problem with and without CMFD. Every solve converges to the reference eigenvalue of the pin-homogenized model with this quadrature, 1.188819461, from a CMFD solve with an identity coarse mesh converged to k_tol=1e-11 and balance_residual_tolerance=1e-10.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "7_coarse_groups k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "7_coarse_groups converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "4_coarse_groups k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "4_coarse_groups converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "2_coarse_groups k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "2_coarse_groups converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "1_coarse_group k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "1_coarse_group converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PI_two_groupsets k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PI_two_groupsets converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_two_groupsets k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "CMFD_two_groupsets converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_closure_relaxation.py",
+    "comment": "Partial and net CMFD closures on 4-, 32- and 128-cell aggregates and correction relaxation. The partial closure converges on every aggregate size to the reference eigenvalue of the pin-homogenized model with this quadrature, 1.188819461, from a CMFD solve with an identity coarse mesh converged to k_tol=1e-11 and balance_residual_tolerance=1e-10. The net closure converges on 4-cell aggregates and fails within 60 power iterations on 32- and 128-cell aggregates, also with relaxation 0.5.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_4_cells k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_4_cells converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "net,_4_cells k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "net,_4_cells converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_32_cells k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_32_cells converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "net,_32_cells converged=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_128_cells k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_128_cells converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "net,_128_cells converged=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "net,_128_cells,_relaxation_0.5 converged=",
+        "goldvalue": 0,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_4_cells,_relaxation_0.7 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "partial,_4_cells,_relaxation_0.7 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_transport_update.py",
+    "comment": "CMFD with 1, 2, 4 and 8 Richardson sweeps and 1 and 3 GMRES iterations per transport update. Every solve converges to the reference eigenvalue of the pin-homogenized model with this quadrature, 1.188819461, from a CMFD solve with an identity coarse mesh converged to k_tol=1e-11 and balance_residual_tolerance=1e-10.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_1 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_1 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_2 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_2 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_4 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_4 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_8 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Richardson_8 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_1 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_1 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_3 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_3 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "cmfd_convergence_diagnostics.py",
+    "comment": "CMFD balance check, coarse eigenvalue iterations, coarse solvers, skipped corrections and the adjoint problem. The errors are against a CMFD solve converged in the same run to k_tol=1e-11 and balance_residual_tolerance=1e-10. The script asserts that the loose balance tolerance leaves pin fission rates more than ten times less accurate and that the five-iteration GMRES update skips its first correction.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "balance_1e-2 k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "balance_1e-2 converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "balance_1e-6_(default) k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "balance_1e-6_(default) converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "coarse_PI_1_iteration k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "coarse_PI_1_iteration converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "coarse_GMRES_+_AMG k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "coarse_GMRES_+_AMG converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_5_update k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_5_update converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_5_update,_1_inactive k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "GMRES_5_update,_1_inactive converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "adjoint k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "adjoint converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "c5g7_benchmark.py",
+    "comment": "C5G7 core with equal-area square pins and eight directions, accelerated by CMFD. The eigenvalue matches 1.185125978, the eigenvalue of this square-pin model from CMFD solves with an identity coarse mesh and with mixed 9-cell aggregates converged to k_tol=1e-10 or tighter, which agree to all digits. The assembly powers and the extreme pin fission rates are within 3% of the benchmark's MCNP reference, about 1% and 2% here, the differences coming from the square pins and the quadrature.",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "ErrorCode",
+        "error_code": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7_heterogeneous k-effective error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7_heterogeneous converged=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7 inner UO2 assembly relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7 MOX assembly relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7 outer UO2 assembly relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7 maximum pin relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "C5G7 minimum pin relative difference=",
+        "goldvalue": 0.0,
+        "abs_tol": 0.03
+      }
+    ]
+  }
+]

@@ -99,6 +99,13 @@ if __name__ == "__main__":
     for rejection_options in (
         dict(max_iters=0, coarse_solver_policy="petsc_options",
              petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi"),
+        # PETSc reports this one-iteration Jacobi solve as converged because it computes no norm.
+        # Its positive but inaccurate solution passes the other correction safeties, so only the
+        # true-residual check rejects it. Without that check the result differs from the
+        # unaccelerated reference.
+        dict(coarse_solver_policy="petsc_options",
+             petsc_options="-CMFDAccelerationksp_type richardson -CMFDAccelerationksp_max_it 1 "
+                           "-CMFDAccelerationksp_norm_type none -CMFDAccelerationpc_type jacobi"),
         dict(relaxation=100.0, correction_max_attempts=2, correction_min_damping=1.0),
     ):
         phys = make_problem()
