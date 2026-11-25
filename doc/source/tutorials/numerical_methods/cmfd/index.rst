@@ -9,8 +9,19 @@ The others can be read in any order.
 
 The tutorials use a pin-homogenized model of the C5G7 core, in which every pin cell is one mesh
 cell, so that each solve takes a few seconds. The benchmark tutorial solves the same core with
-heterogeneous pins. Run each tutorial with four MPI processes. The
+heterogeneous pins. Run each tutorial with four MPI processes and the ``pyopensn`` module. The
 :doc:`CMFD user guide <../../../userguide/cmfd_acceleration>` describes every option in detail.
+
+The tutorials find the C5G7 cross sections by searching for ``test/assets/xs/c5g7`` in the
+directory of the script, or the working directory of the notebook kernel, and in its parents. Keep
+an exported script, or start the notebook kernel, inside an OpenSn checkout, for example in this
+directory. Elsewhere the tutorial stops before it builds the mesh. To run a tutorial as a script
+from this directory:
+
+.. code-block:: shell
+
+   jupyter nbconvert --to script cmfd_basics.ipynb
+   mpiexec -n 4 python cmfd_basics.py
 
 .. list-table::
    :header-rows: 1

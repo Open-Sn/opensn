@@ -3132,14 +3132,18 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
             - 'iterative' : GMRES with hypre BoomerAMG
             - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
 
-        CMFD corrections from unconverged coarse linear solves are always skipped.
+        CMFD corrections from unconverged coarse linear solves are always skipped. A coarse
+        linear solve counts as converged only if PETSc reports convergence and its true
+        residual norm is at most 100 times ``max(l_rel_tol * |b|, l_abs_tol)``. This also
+        applies to direct solves. A coarse power iteration that gives a coarse fission
+        production or k that is not positive is also skipped.
         The skipped correction uses the unaccelerated transport update for that power
         iteration, including the raw transport k update so that power iteration can continue
         to move.
-    coarse_direct_solve_threshold: int, default=20000
+    coarse_direct_solve_threshold: int, default=150000
         Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
         solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
-        direct solves for larger coarse systems; choose values based on available host
+        direct solves for larger coarse systems. Choose values based on available host
         memory and acceptable factorization cost.
     )"
   );

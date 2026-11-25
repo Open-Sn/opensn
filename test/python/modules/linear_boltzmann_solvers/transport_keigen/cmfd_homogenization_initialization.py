@@ -30,6 +30,12 @@ if "opensn_console" not in globals():
     from pyopensn.xs import MultiGroupXS
 
 
+def abs_error(actual, expected):
+    """Absolute difference, infinite if it is not finite, so that max() cannot ignore a NaN."""
+    difference = abs(actual - expected)
+    return difference if math.isfinite(difference) else math.inf
+
+
 def slab_groupset():
     return {
         "groups_from_to": (0, 0),
@@ -91,8 +97,8 @@ if __name__ == "__main__":
     _, separated = initialize_cartesian([fissile, void, near_void], None)
     maximum_diffusion = 1.0 / (3.0e-12)
     void_error = max(
-        abs(separated.GetHomogenizedDiffusionCoefficient(1)[0] - maximum_diffusion),
-        abs(separated.GetHomogenizedDiffusionCoefficient(2)[0] - maximum_diffusion),
+        abs_error(separated.GetHomogenizedDiffusionCoefficient(1)[0], maximum_diffusion),
+        abs_error(separated.GetHomogenizedDiffusionCoefficient(2)[0], maximum_diffusion),
     ) / maximum_diffusion
 
     mixed_problem, mixed = initialize_cartesian([fissile, void], [0.0, 2.0])
@@ -100,8 +106,8 @@ if __name__ == "__main__":
     material_flux = 0.5 * (phi[0] + phi[1])
     void_flux = 0.5 * (phi[2] + phi[3])
     expected_mixed_diffusion = (material_flux + void_flux) / (3.0 * material_flux)
-    mixed_error = abs(
-        mixed.GetHomogenizedDiffusionCoefficient(0)[0] - expected_mixed_diffusion
+    mixed_error = abs_error(
+        mixed.GetHomogenizedDiffusionCoefficient(0)[0], expected_mixed_diffusion
     )
 
     fallback_xs_file = "cmfd_homogenization_fallback_2g.xs"
@@ -158,8 +164,8 @@ if __name__ == "__main__":
     expected_sigma_tr = (1.0 * 1.0 + 2.0 * 2.0) / 3.0
     expected_diffusion = 1.0 / (3.0 * expected_sigma_tr)
     fallback_errors = [
-        abs(fallback_cmfd.GetHomogenizedRemovalXS(0)[1] - expected_sigma_tr),
-        abs(fallback_cmfd.GetHomogenizedDiffusionCoefficient(0)[1] - expected_diffusion),
+        abs_error(fallback_cmfd.GetHomogenizedRemovalXS(0)[1], expected_sigma_tr),
+        abs_error(fallback_cmfd.GetHomogenizedDiffusionCoefficient(0)[1], expected_diffusion),
     ]
     fallback_error = max(fallback_errors)
 

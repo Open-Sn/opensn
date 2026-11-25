@@ -292,9 +292,10 @@ TEST(CMFDCorrection, SignChangingRatiosAreCountedAndExistingSignsAreKept)
   const double inf = std::numeric_limits<double>::infinity();
   // Positive and negative uncorrected values that the correction only rescales.
   EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 3.0}, {5.0, -0.5, 1.0e-300}), 0U);
-  // Flipped signs, a zero, and non-finite corrected values change or destroy the fine flux.
-  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 3.0, 4.0, 5.0}, {-1.0, 2.0, 0.0, nan, inf}),
-            5U);
+  // Flipped signs and non-finite corrected values change or destroy the fine flux.
+  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 4.0, 5.0}, {-1.0, 2.0, nan, inf}), 4U);
+  // A zero corrected value sets the fine flux to zero without changing its sign.
+  EXPECT_EQ(CMFDCountSignChangingRatios({3.0, -3.0}, {0.0, -0.0}), 0U);
   // A negligible uncorrected value is not rescaled, so its corrected value is irrelevant.
   EXPECT_EQ(CMFDCountSignChangingRatios({0.0, 1.0e-15, -1.0e-15}, {-1.0, -1.0, 1.0}), 0U);
   // A non-finite uncorrected value has no admissible ratio.

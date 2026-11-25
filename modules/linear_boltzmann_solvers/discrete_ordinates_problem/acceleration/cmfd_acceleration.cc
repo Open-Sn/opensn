@@ -41,6 +41,9 @@ constexpr unsigned int persistent_skip_warning_count = 5;
 // from roundoff, so homogenization falls back to volume weights for that coarse group.
 constexpr double homogenization_cancellation_tolerance =
   64.0 * std::numeric_limits<double>::epsilon();
+// A coarse linear solve is accepted if its true residual is at most this factor times the
+// requested tolerance, max(l_rel_tol * |b|, l_abs_tol).
+constexpr double true_residual_factor = 100.0;
 
 // Collective check: throws on every rank if any rank reports a positive count for a failure.
 void
@@ -277,11 +280,11 @@ CMFDAcceleration::GetInputParameters()
     "specific path. CMFD corrections from unconverged coarse linear solves are always "
     "skipped.");
   params.AddOptionalParameter("coarse_direct_solve_threshold",
-                              20000,
+                              150000,
                               "[developer/debug] Maximum global CMFD unknown count for using the "
                               "direct PETSc LU path when coarse_solver_policy is auto. Larger "
-                              "values make auto use direct solves for larger coarse systems; "
-                              "choose values based on available host memory and acceptable "
+                              "values make auto use direct solves for larger coarse systems. "
+                              "Choose values based on available host memory and acceptable "
                               "factorization cost.");
   params.ConstrainParameterRange(
     "coarse_mesh",
@@ -707,24 +710,36 @@ CMFDAcceleration::PostPowerIteration()
   auto coarse_phi = coarse_phi_new_;
   double k_eff = transport_k_eff;
   double coarse_production_old = ComputeCoarseFissionProduction(coarse_phi_m);
-  OpenSnLogicalErrorIf(coarse_production_old == 0.0,
-                       "CMFDAcceleration cannot iterate with zero coarse production.");
+  // A signed transport iterate can make the coarse operator lose the M-matrix property, so that
+  // its dominant eigenvector is not positive. The coarse power iteration then breaks down with a
+  // production that is not positive, and its k and flux are unusable. The production sums are
+  // global, so every rank agrees.
+  bool coarse_eigensolve_breakdown =
+    not std::isfinite(coarse_production_old) or coarse_production_old <= 0.0;
   int coarse_pi_iterations = 0;
   bool coarse_pi_converged = false;
   ConvergenceRateEstimator rate_estimator;
   int coarse_ksp_iterations = 0;
   bool coarse_linear_solves_converged = true;
   t0 = NowSeconds();
-  for (int m = 0; m < pi_max_its_; ++m)
+  for (int m = 0; m < pi_max_its_ and not coarse_eigensolve_breakdown; ++m)
   {
     coarse_phi = SolveCoarseSystem(k_eff, coarse_phi_m);
     coarse_ksp_iterations += last_ksp_iterations_;
     coarse_linear_solves_converged = coarse_linear_solves_converged and last_ksp_converged_;
     coarse_pi_iterations = m + 1;
+    // The correction is skipped once any coarse linear solve fails, so further coarse power
+    // iterations would be wasted. The converged flag is the same on every rank.
+    if (not last_ksp_converged_)
+      break;
     const double coarse_production_new = ComputeCoarseFissionProduction(coarse_phi);
-    OpenSnLogicalErrorIf(coarse_production_new == 0.0,
-                         "CMFDAcceleration cannot update k with zero coarse production.");
     const double k_eff_new = coarse_production_new / coarse_production_old * k_eff;
+    if (not std::isfinite(coarse_production_new) or coarse_production_new <= 0.0 or
+        not std::isfinite(k_eff_new) or k_eff_new <= 0.0)
+    {
+      coarse_eigensolve_breakdown = true;
+      break;
+    }
     const double k_change = std::fabs(k_eff_new / k_eff - 1.0);
     // The eigenvalue settles much faster than the flux shape, and at a high dominance ratio rho
     // one power iteration changes the shape by only about (1 - rho) times its error. Stopping on
@@ -776,6 +791,16 @@ CMFDAcceleration::PostPowerIteration()
         warning << " Switching auto coarse solver policy to direct for subsequent corrections.";
       log.Log0Warning() << no_wrap << warning.str();
     }
+  }
+  else if (coarse_eigensolve_breakdown)
+  {
+    skipped_correction = true;
+    correction_skip_reason = "coarse_eigensolve_breakdown";
+    correction_diagnostics = AnalyzeFluxUpdate(phi_new_local_, transport_k_eff);
+    if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
+      log.Log0Warning() << no_wrap
+                        << "CMFD correction skipped because the coarse power iteration broke "
+                           "down with a coarse fission production or k that is not positive.";
   }
   else
     k_eff = ApplyFluxCorrectionWithDamping(phi_new_local_,
@@ -984,16 +1009,29 @@ CMFDAcceleration::InitializeHomogenization()
   }
 
   // Each iteration sends num_groups values per record (and the key exchange below sends two).
+  // MapAllToAll sums the counts it receives in an int, so the record counts are exchanged first
+  // and both the send and the receive sizes are checked before any keys are exchanged.
   const auto values_per_record = std::max<std::size_t>(num_groups, 2);
+  std::vector<std::size_t> send_record_counts(opensn::mpi_comm.size(), 0);
   std::size_t total_send_records = 0;
   for (const auto& [pid, count] : homogenization_send_counts_)
+  {
+    send_record_counts[pid] = count;
     total_send_records += count;
+  }
+  std::vector<std::size_t> receive_record_counts(opensn::mpi_comm.size(), 0);
+  opensn::mpi_comm.all_to_all(send_record_counts, receive_record_counts);
+  std::size_t total_receive_records = 0;
+  for (const auto count : receive_record_counts)
+    total_receive_records += count;
   ThrowIfAnyRankCounted(
     {{local_invalid_volumes, "fine cells have a non-positive or non-finite volume"},
      {local_unassigned_cells, "local fine cells belong to no coarse cell"},
      {FitsMPICount(total_send_records * values_per_record) ? 0 : 1,
-      "ranks would send more homogenization values than an MPI count can hold; use larger "
-      "group_aggregation_size or more ranks"}});
+      "ranks would send more homogenization values than an MPI count can hold; use more ranks"},
+     {FitsMPICount(total_receive_records * values_per_record) ? 0 : 1,
+      "ranks would receive more homogenization values than an MPI count can hold; use more "
+      "ranks"}});
 
   const auto received_keys = MapAllToAll(pid_keys);
   const auto received_volumes = MapAllToAll(pid_volumes);
@@ -1001,7 +1039,6 @@ CMFDAcceleration::InitializeHomogenization()
   homogenized_xs_.assign(coarse_mesh_.NumLocalCells(), {});
   homogenization_receive_targets_.clear();
   std::size_t local_invalid_records = 0;
-  std::size_t total_received_records = 0;
   for (const auto& [pid, keys] : received_keys)
   {
     const auto volumes_it = received_volumes.find(pid);
@@ -1035,7 +1072,6 @@ CMFDAcceleration::InitializeHomogenization()
       material_it->volume += volumes_it->second[r];
       targets.emplace_back(local_id,
                            static_cast<std::size_t>(std::distance(materials.begin(), material_it)));
-      ++total_received_records;
     }
   }
 
@@ -1048,10 +1084,7 @@ CMFDAcceleration::InitializeHomogenization()
   }
   ThrowIfAnyRankCounted(
     {{local_invalid_records, "received records reference an unknown coarse cell or block"},
-     {local_empty_coarse_cells, "coarse cells received no fine-cell records"},
-     {FitsMPICount(total_received_records * values_per_record) ? 0 : 1,
-      "ranks would receive more homogenization values than an MPI count can hold; use larger "
-      "group_aggregation_size or more ranks"}});
+     {local_empty_coarse_cells, "coarse cells received no fine-cell records"}});
 }
 
 void
@@ -1061,8 +1094,14 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
                           "CMFD homogenization scalar flux vector size mismatch.");
 
   const auto num_groups = static_cast<std::size_t>(num_groups_);
-  const bool adjoint = do_problem_.GetOptions().adjoint;
-  const auto& xs_map = do_problem_.GetBlockID2XSMap();
+  // The getters condense the scattering and production matrices on demand. They use the cross
+  // sections and mode of this assembly, so that all four describe one operator even after the
+  // problem's cross sections are replaced.
+  assembled_xs_map_ = do_problem_.GetBlockID2XSMap();
+  assembled_adjoint_ = do_problem_.GetOptions().adjoint;
+  assembled_delayed_production_ = UseDelayedNeutronProduction(do_problem_);
+  const bool adjoint = assembled_adjoint_;
+  const auto& xs_map = assembled_xs_map_;
   for (auto& coarse_xs : homogenized_xs_)
     for (auto& material : coarse_xs.materials)
       std::fill(material.weights.begin(), material.weights.end(), 0.0);
@@ -1217,8 +1256,8 @@ CMFDAcceleration::ComputeCoarseScattering(const CoarseCellXS& coarse_xs,
                                           std::vector<double>& matrix) const
 {
   const auto n = static_cast<std::size_t>(num_coarse_groups_);
-  const bool adjoint = do_problem_.GetOptions().adjoint;
-  const auto& xs_map = do_problem_.GetBlockID2XSMap();
+  const bool adjoint = assembled_adjoint_;
+  const auto& xs_map = assembled_xs_map_;
   matrix.assign(n * n, 0.0);
   for (const auto& material : coarse_xs.materials)
   {
@@ -1237,8 +1276,8 @@ CMFDAcceleration::ComputeCoarseProduction(const CoarseCellXS& coarse_xs,
                                           std::vector<double>& matrix) const
 {
   const auto n = static_cast<std::size_t>(num_coarse_groups_);
-  const bool adjoint = do_problem_.GetOptions().adjoint;
-  const auto& xs_map = do_problem_.GetBlockID2XSMap();
+  const bool adjoint = assembled_adjoint_;
+  const auto& xs_map = assembled_xs_map_;
   matrix.assign(n * n, 0.0);
   bool fissionable = false;
   for (const auto& material : coarse_xs.materials)
@@ -1249,7 +1288,7 @@ CMFDAcceleration::ComputeCoarseProduction(const CoarseCellXS& coarse_xs,
     fissionable = true;
     // In adjoint mode the production matrix is transposed, and so is the delayed production.
     const auto& production = xs.GetProductionMatrix(adjoint);
-    const bool include_delayed_production = UseDelayedNeutronProduction(do_problem_);
+    const bool include_delayed_production = assembled_delayed_production_;
     for (unsigned int g = 0; g < num_groups_; ++g)
     {
       const auto row = static_cast<std::size_t>(g / group_aggregation_size_) * n;
@@ -1825,7 +1864,24 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   last_ksp_iterations_ = static_cast<int>(ksp_iterations);
   KSPConvergedReason ksp_reason = KSP_CONVERGED_ITERATING;
   OpenSnPETScCall(KSPGetConvergedReason(ksp_, &ksp_reason));
-  last_ksp_converged_ = ksp_reason > 0;
+
+  // PETSc reports success for every direct solve and tests the preconditioned residual of
+  // iterative ones, so a near-singular coarse operator can pass with a useless solution. The
+  // solve is accepted only if the true residual is within true_residual_factor of the requested
+  // tolerance. The factor allows for the gap between preconditioned and true residual norms.
+  Vec residual = nullptr;
+  OpenSnPETScCall(VecDuplicate(rhs_, &residual));
+  OpenSnPETScCall(MatMult(A_, x, residual));
+  OpenSnPETScCall(VecAYPX(residual, -1.0, rhs_));
+  PetscReal residual_norm = 0.0;
+  PetscReal rhs_norm = 0.0;
+  OpenSnPETScCall(VecNorm(residual, NORM_2, &residual_norm));
+  OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
+  OpenSnPETScCall(VecDestroy(&residual));
+  const double true_residual_tolerance =
+    true_residual_factor * std::max(l_rel_tol_ * static_cast<double>(rhs_norm), l_abs_tol_);
+  last_ksp_converged_ = ksp_reason > 0 and std::isfinite(static_cast<double>(residual_norm)) and
+                        static_cast<double>(residual_norm) <= true_residual_tolerance;
 
   std::vector<int64_t> indices;
   indices.reserve(coarse_phi_new_.size());

@@ -96,8 +96,10 @@ CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
   {
     if (IsNegligibleCoarseFlux(coarse_phi_old[i]))
       continue;
+    // A zero ratio sets the fine flux to zero without changing its sign. The coarse solution is
+    // zero in a source-free region that no face couples to the rest, and zero is then right.
     const double ratio = coarse_phi_new[i] / coarse_phi_old[i];
-    if (not std::isfinite(ratio) or ratio <= 0.0)
+    if (not std::isfinite(ratio) or ratio < 0.0)
       ++count;
   }
   return count;

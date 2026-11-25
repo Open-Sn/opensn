@@ -384,10 +384,16 @@ defaults.
   solve for coarse systems below ``coarse_direct_solve_threshold`` global
   unknowns and an iterative GMRES solve preconditioned with hypre BoomerAMG
   otherwise. The default threshold
-  is ``20000`` global unknowns. Force ``"direct"`` only for small or moderate
+  is ``150000`` global unknowns. Force ``"direct"`` only for small or moderate
   coarse systems that fit comfortably in host memory. Use ``"iterative"`` when
-  direct factorization is too expensive. If an iterative coarse KSP does not
-  converge, CMFD skips the correction for that power iteration; increase
+  direct factorization is too expensive. A coarse solve counts as converged
+  only if PETSc reports convergence and the true residual norm
+  :math:`\|b - A x\|` is at most 100 times
+  :math:`\max(\texttt{l\_rel\_tol}\,\|b\|, \texttt{l\_abs\_tol})`. The
+  check also applies to direct solves, which PETSc always reports as converged,
+  so a nearly singular coarse operator cannot produce an accepted correction.
+  If a coarse solve does not converge, CMFD stops the coarse power iteration
+  and skips the correction for that power iteration. Then increase
   ``max_iters``, use ``"petsc_options"`` with a stronger PETSc configuration,
   reduce coarse-system stiffness with finer aggregation, or switch to
   ``"direct"`` when memory permits. If several consecutive corrections are
@@ -452,19 +458,31 @@ is temporarily unusable.
 The most common skip reasons are:
 
 ``coarse_linear_solve_not_converged``
-  One or more PETSc coarse linear solves did not converge within ``max_iters``.
+  One or more PETSc coarse linear solves did not converge within ``max_iters``,
+  or a solve left a true residual too large to trust.
   The correction is skipped because an unconverged low-order solve can move the
   high-order problem in the wrong direction. If the coarse system is modest,
   switch to ``coarse_solver_policy="direct"``. If direct is too expensive,
   increase ``max_iters`` or use ``coarse_solver_policy="petsc_options"`` with a
   stronger iterative PETSc configuration.
 
+``coarse_eigensolve_breakdown``
+  The coarse power iteration produced a coarse fission production or
+  k-eigenvalue that is not positive and finite. Signed transport iterates, most
+  often in the first power iterations or in reflectors, can give coarse
+  operator entries of the wrong sign, and the dominant eigenvector of such an
+  operator need not be positive. Occasional early skips are harmless. If they
+  persist, use finer spatial or energy aggregation, or set
+  ``inactive_iterations`` so that CMFD starts from a smoother transport iterate.
+
 ``sign_change_guard``
   Every attempted correction, after damping, would have changed the sign of the
   scalar flux in at least one coarse cell and coarse group. CMFD scales the
   transport flux of each coarse cell and coarse group by the ratio of the
-  corrected to the uncorrected coarse flux, so a ratio that is not positive
-  would flip the sign of that flux. Negative values the transport update
+  corrected to the uncorrected coarse flux, so a negative ratio would flip the
+  sign of that flux. A zero ratio is allowed. It sets the flux to zero, which is
+  the coarse solution in a source-free region that no face couples to the rest
+  of the problem. Negative values the transport update
   already has, which discontinuous discretizations can produce, are only
   rescaled and do not trigger the guard. First reduce ``relaxation`` or use
   finer spatial/energy aggregation. Repeated skips are usually a sign that the

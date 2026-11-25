@@ -714,20 +714,34 @@ coarse group :math:`g_c`, the removal cross section in coarse cell
    W_{I,g_c}
    } .
 
+The fine cells of a coarse cell that share a material block :math:`m`
+form one material region, whose flux integral is
+
+.. math::
+
+   \Phi_{I,m,g_f}=\sum_{i\in I,\ m(i)=m}\Phi_{i,g_f}.
+
+The removal, scattering, and production coefficients are linear in the
+flux, so they are the same whether they sum over fine cells or over
+material regions. OpenSn computes them from the region integrals.
+
 The diffusion coefficient only sets the interface coupling that the
 nonlinear current correction completes, so it does not affect the fixed
-point. OpenSn weights it with :math:`|\Phi_{i,g_f}|`, which equals
-:math:`\Phi_{i,g_f}` wherever the flux is positive and keeps the
-coefficient positive. It first homogenizes the transport cross section
-for each fine energy group,
+point. OpenSn weights it with the region magnitudes
+:math:`|\Phi_{I,m,g_f}|`. A magnitude equals the region integral wherever
+that integral is positive and keeps the coefficient positive. The
+magnitude is taken after the signed fine-cell integrals of the region are
+summed. OpenSn first homogenizes the transport cross section of each
+fine energy group, with :math:`\Sigma^{tr}_{m,g_f}` the transport cross
+section of material :math:`m`,
 
 .. math::
 
    \overline{\Sigma}^{tr}_{I,g_f}
    =
-   \frac{\displaystyle\sum_{i\in I}
-   \Sigma^{tr}_{i,g_f}|\Phi_{i,g_f}|}
-   {\displaystyle\sum_{i\in I}|\Phi_{i,g_f}|},
+   \frac{\displaystyle\sum_{m\in I}
+   \Sigma^{tr}_{m,g_f}|\Phi_{I,m,g_f}|}
+   {\displaystyle\sum_{m\in I}|\Phi_{I,m,g_f}|},
    \qquad
    D_{I,g_f}=\frac{1}{3\overline{\Sigma}^{tr}_{I,g_f}},
 
@@ -739,9 +753,9 @@ and then condenses the spatially homogenized diffusion coefficients,
    =
    \frac{
    \displaystyle \sum_{g_f \in g_c} D_{I,g_f}
-   \sum_{i\in I}|\Phi_{i,g_f}|
+   \sum_{m\in I}|\Phi_{I,m,g_f}|
    }{
-   \displaystyle \sum_{g_f \in g_c}\sum_{i\in I}|\Phi_{i,g_f}|
+   \displaystyle \sum_{g_f \in g_c}\sum_{m\in I}|\Phi_{I,m,g_f}|
    } .
 
 The order matters: averaging material diffusion coefficients first
@@ -779,16 +793,20 @@ terms are
 The production matrix includes delayed production when precursor use is
 enabled. In adjoint mode the scattering, prompt-production, and delayed-
 production operators are transposed before homogenization. The removal
-coefficient is unchanged, and the diffusion coefficient uses the adjoint
-transport cross section, which subtracts the P1 in-scatter instead of the P1
-out-scatter.
+coefficient uses the same formula with the transposed scattering matrix
+and the adjoint flux weights. With energy collapse it therefore subtracts
+the adjoint transfers between fine groups of the same coarse group, which
+differ from the forward transfers. Without energy collapse it subtracts
+only within-group scattering, which transposition leaves unchanged. The
+diffusion coefficient uses the adjoint transport cross section, which
+subtracts the P1 in-scatter instead of the P1 out-scatter.
 
 The signed weights preserve the fine-mesh rates of the transport iterate
 exactly, including where the scalar flux is negative, so no sign
 condition is imposed on the condensed coefficients. The weights of
 coarse group :math:`g_c` are replaced only when :math:`W_{I,g_c}` is
 zero, non-finite, or satisfies
-:math:`|W_{I,g_c}|\le 64\epsilon\sum_{i\in I}\sum_{g_f\in g_c}|\Phi_{i,g_f}|`,
+:math:`|W_{I,g_c}|\le 64\epsilon\sum_{m\in I}\sum_{g_f\in g_c}|\Phi_{I,m,g_f}|`,
 where :math:`\epsilon` is the double-precision machine epsilon; below
 this bound the sum is indistinguishable from roundoff. The test is
 relative, so it is invariant under rescaling of an eigenvector. The

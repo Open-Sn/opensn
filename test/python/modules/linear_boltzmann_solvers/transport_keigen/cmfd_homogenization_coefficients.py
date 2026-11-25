@@ -43,9 +43,12 @@ if "opensn_console" not in globals():
 
 
 def max_abs_difference(actual, expected):
+    """Largest absolute difference, infinite for a size mismatch or a value that is not finite."""
     if len(actual) != len(expected):
         return math.inf
-    return max(abs(a - e) for a, e in zip(actual, expected))
+    differences = [abs(a - e) for a, e in zip(actual, expected)]
+    # max() ignores a NaN that is not first, so a value that is not finite counts as infinite.
+    return max((d if math.isfinite(d) else math.inf for d in differences), default=0.0)
 
 
 def fuel_data(negative_self_scatter):

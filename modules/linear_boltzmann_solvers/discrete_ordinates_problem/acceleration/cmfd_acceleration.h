@@ -5,6 +5,7 @@
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "modules/linear_boltzmann_solvers/lbs_problem/lbs_structs.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
 #include <petscksp.h>
 #include <limits>
@@ -221,6 +222,10 @@ private:
   std::map<std::tuple<uint64_t, unsigned int>, double> coarse_phi_cache_;
   /// Homogenization data of the last assembled operator, per local coarse cell.
   std::vector<CoarseCellXS> homogenized_xs_;
+  /// Cross sections and mode of the last assembled operator.
+  BlockID2XSMap assembled_xs_map_;
+  bool assembled_adjoint_ = false;
+  bool assembled_delayed_production_ = false;
   /// Per local fine cell, the destination rank and record of its homogenization flux integrals.
   std::vector<std::pair<int, std::size_t>> homogenization_send_records_;
   /// Number of (coarse cell, block) homogenization records sent to each rank.
