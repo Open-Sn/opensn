@@ -14,6 +14,8 @@
 #include <algorithm>
 #include <cmath>
 #include <memory>
+#include <numeric>
+#include <optional>
 #include <stdexcept>
 #include <string>
 #include <vector>
@@ -49,53 +51,122 @@ ValidateFiniteScalarFlux(const LBSProblem& lbs_problem, const std::shared_ptr<Li
 }
 
 /**
- * Returns whether one pass over the groupsets, in the order of wgs_solvers, solves the coupling
- * between them exactly. A groupset receives sources from the others through scattering and, when
- * its right-hand side applies across-groupset fission, through fission. The pass is exact when no
- * groupset receives a source from one solved after it: no material scatters from a later groupset
- * into an earlier one, in the problem's mode (transposed in adjoint mode), and either no material
- * is fissionable or no groupset applies across-groupset fission. Continuous slowing down couples
- * groups through the sweep, so a CSDA problem always iterates. Every rank holds the cross
- * sections of every block, so every rank gets the same answer.
+ * Checks whether the across-groupset iteration must iterate. Returns why one pass over the
+ * groupsets, in the solve order of wgs_solvers, does not solve the coupling between them exactly,
+ * or nothing when it does. A groupset receives sources from the
+ * others through scattering and, when its right-hand side applies across-groupset fission, through
+ * fission. The pass is exact when no groupset receives a source from one solved after it: no
+ * material scatters from a later groupset into an earlier one, in the problem's mode (transposed in
+ * adjoint mode), and either no material is fissionable or no groupset applies across-groupset
+ * fission. A CSDA problem always iterates. Its reason suggests no other groupsets, since each
+ * contiguous block of charged-particle groups must stay in one groupset.
+ *
+ * When scattering blocks one pass, the reason names the first such transfer found and how to remove
+ * all of them: the reverse order, when that is exact with the same groupsets, or otherwise the
+ * group ranges that must each share a groupset in this order. A transfer from group g' into group g
+ * against the solve order, upward in energy in ascending order and downward in descending order,
+ * is solved in one pass only when g, g', and the groups between them share a groupset. Every rank
+ * holds the cross sections of every block in the same order, so every rank gets the same answer.
  */
-bool
-OnePassIsExact(const LBSProblem& lbs_problem,
-               const std::vector<std::shared_ptr<LinearSolver>>& wgs_solvers)
+std::optional<std::string>
+CheckAGSIterates(const LBSProblem& lbs_problem,
+                 const std::vector<std::shared_ptr<LinearSolver>>& wgs_solvers)
 {
   const auto& options = lbs_problem.GetOptions();
   if (options.csda_enabled)
-    return false;
+    return "CSDA is enabled.";
 
-  std::vector<size_t> groupset_of(lbs_problem.GetNumGroups(), wgs_solvers.size());
+  const size_t num_solvers = wgs_solvers.size();
+  std::vector<size_t> solve_index(lbs_problem.GetNumGroups(), num_solvers);
   bool across_groupset_fission = false;
-  for (size_t k = 0; k < wgs_solvers.size(); ++k)
+  for (size_t k = 0; k < num_solvers; ++k)
   {
     const auto context = std::dynamic_pointer_cast<WGSContext>(wgs_solvers[k]->GetContext());
     if (not context)
-      return false;
+      return "a groupset has no within-group solver.";
     for (auto g = context->groupset.first_group; g <= context->groupset.last_group; ++g)
-      groupset_of[g] = k;
+      solve_index[g] = k;
     across_groupset_fission =
       across_groupset_fission or (context->GetRHSSourceScope() & APPLY_AGS_FISSION_SOURCES);
   }
-  if (std::find(groupset_of.begin(), groupset_of.end(), wgs_solvers.size()) != groupset_of.end())
-    return false;
+  if (std::find(solve_index.begin(), solve_index.end(), num_solvers) != solve_index.end())
+    return "the groupsets do not cover every group.";
+
+  const auto& xs_map = lbs_problem.GetBlockID2XSMap();
+  if (across_groupset_fission)
+    for (const auto& [_, xs] : xs_map)
+      if (xs->IsFissionable())
+        return "fission couples the groupsets.";
 
   // Cross sections may have more groups than the problem simulates. Only transfers between
   // simulated groups couple the groupsets.
-  const size_t num_groups = groupset_of.size();
-  for (const auto& [block_id, xs] : lbs_problem.GetBlockID2XSMap())
-  {
-    if (across_groupset_fission and xs->IsFissionable())
-      return false;
+  const size_t num_groups = solve_index.size();
+  const bool ascending = solve_index.front() < solve_index.back();
+  std::optional<std::string> first_blocking;
+  bool reverse_is_exact = true;
+  // The highest group that must share a groupset with each group, from the transfers against the
+  // solve order. A transfer against the order joins two different groups, so reach[g] = g means
+  // that group g has none.
+  std::vector<size_t> reach(num_groups);
+  std::iota(reach.begin(), reach.end(), size_t{0});
+  for (const auto& [_, xs] : xs_map)
     for (const auto& transfer_matrix : xs->GetTransferMatrices(options.adjoint))
       for (size_t g = 0; g < std::min<size_t>(transfer_matrix.GetNumRows(), num_groups); ++g)
         for (const auto& [row, source_group, value] : transfer_matrix.Row(g))
-          if (value != 0.0 and source_group < num_groups and
-              groupset_of[source_group] > groupset_of[g])
-            return false;
+        {
+          if (value == 0.0 or source_group >= num_groups)
+            continue;
+          if (solve_index[source_group] > solve_index[g] and not first_blocking)
+            first_blocking = "group " + std::to_string(source_group) + " scatters into group " +
+                             std::to_string(g) + " in an earlier groupset" +
+                             (options.adjoint ? " (adjoint)." : ".");
+          if (solve_index[source_group] < solve_index[g])
+            reverse_is_exact = false;
+          if (ascending ? source_group > g : source_group < g)
+          {
+            const size_t low = std::min<size_t>(source_group, g);
+            reach[low] = std::max<size_t>({reach[low], source_group, g});
+          }
+        }
+  if (not first_blocking)
+    return std::nullopt;
+
+  if (reverse_is_exact)
+  {
+    // The reverse of the current order, which "auto" gives when it is the mode's default.
+    const bool reverse_is_descending = ascending;
+    const bool auto_is_descending = options.adjoint;
+    const std::string order = reverse_is_descending == auto_is_descending
+                                ? "auto"
+                                : (reverse_is_descending ? "descending" : "ascending");
+    return *first_blocking + " Set ags_groupset_order = \"" + order + "\" for a single pass.";
   }
-  return true;
+
+  // Merge the ranges that must share a groupset.
+  std::vector<std::pair<size_t, size_t>> shared_ranges;
+  for (size_t g = 0; g < num_groups; ++g)
+  {
+    if (reach[g] == g)
+      continue;
+    if (not shared_ranges.empty() and g <= shared_ranges.back().second)
+      shared_ranges.back().second = std::max(shared_ranges.back().second, reach[g]);
+    else
+      shared_ranges.emplace_back(g, reach[g]);
+  }
+  if (shared_ranges.size() == 1 and shared_ranges.front().first == 0 and
+      shared_ranges.front().second + 1 == num_groups)
+    return *first_blocking + " Use one groupset for a single pass.";
+  std::string ranges;
+  for (size_t i = 0; i < shared_ranges.size(); ++i)
+  {
+    if (i > 0)
+      ranges += i + 1 == shared_ranges.size() ? " and " : ", ";
+    ranges +=
+      std::to_string(shared_ranges[i].first) + "-" + std::to_string(shared_ranges[i].second);
+  }
+  return *first_blocking + " Put groups " + ranges +
+         (shared_ranges.size() == 1 ? " in one groupset" : " each in one groupset") +
+         " for a single pass.";
 }
 
 /// L2 norm of a distributed vector over all ranks.
@@ -118,6 +189,14 @@ AGSLinearSolver::Solve()
   CaliperPhaseScope cali_solve_phase("Solve", CaliperSolvePhaseDepth());
   CaliperRegionScope cali_ags("AGS", CaliperAGSScopeDepth());
   const bool is_multi_groupset = wgs_solvers_.size() > 1;
+  const auto& options = lbs_problem_.GetOptions();
+  const bool descending =
+    options.ags_groupset_order == AGSGroupsetOrder::DESCENDING or
+    (options.ags_groupset_order == AGSGroupsetOrder::AUTO and options.adjoint);
+  // The groupset solvers in the order of solution.
+  auto ordered_solvers = wgs_solvers_;
+  if (descending)
+    std::reverse(ordered_solvers.begin(), ordered_solvers.end());
   const bool print_ags_stats = verbose_ and is_multi_groupset;
   last_solve_ = {};
 
@@ -131,7 +210,20 @@ AGSLinearSolver::Solve()
 
   // Without coupling to earlier groupsets, a second pass would only continue the groupset solves
   // that already converged, so the iteration stops after the first pass in which they all do.
-  const bool one_pass_exact = is_multi_groupset and OnePassIsExact(lbs_problem_, wgs_solvers_);
+  const auto inexact_reason =
+    is_multi_groupset ? CheckAGSIterates(lbs_problem_, ordered_solvers) : std::nullopt;
+  const bool one_pass_exact = is_multi_groupset and not inexact_reason;
+  // A power iteration or time step solves many times with the same reason, so it is logged when
+  // it changes. Only a logged reason is remembered, so a later verbose solve still reports a
+  // reason that a quiet solve found.
+  if (not inexact_reason)
+    logged_inexact_reason_.clear();
+  else if (print_ags_stats and *inexact_reason != logged_inexact_reason_)
+  {
+    log.Log() << no_wrap << program_timer.GetTimeString() << " AGS will iterate because "
+              << *inexact_reason;
+    logged_inexact_reason_ = *inexact_reason;
+  }
 
   ConvergenceRateEstimator rate_estimator;
   double last_error = 0.0;
@@ -145,7 +237,7 @@ AGSLinearSolver::Solve()
     CALI_CXX_MARK_LOOP_ITERATION(ags_iteration, iter);
 
     num_iterations = iter + 1;
-    for (auto& solver : wgs_solvers_)
+    for (auto& solver : ordered_solvers)
     {
       solver->Setup();
       solver->Solve();

@@ -768,6 +768,7 @@ Problem-level AGS controls live in the LBS options block:
 * ``max_ags_iterations``
 * ``ags_tolerance``
 * ``ags_convergence_check``
+* ``ags_groupset_order``
 
 Practical rule:
 
@@ -776,9 +777,18 @@ Practical rule:
 * when the groupsets are coupled, converge each groupset well below the AGS
   tolerance. Otherwise the AGS iteration runs slowly, one source iteration per
   pass (see :ref:`iterative_ags_tolerance`).
-* when no groupset feeds one solved before it, the AGS iteration stops after
-  one pass, and the accuracy of the result is that of the groupset solves. Set
-  ``l_abs_tol`` for the accuracy you need.
+* when no groupset receives a source from one solved after it, the AGS
+  iteration stops after one pass, and the accuracy of the result is that of the
+  groupset solves. Set ``l_abs_tol`` for the accuracy you need (see
+  :ref:`iterative_ags_one_pass`).
+* in adjoint mode, scattering couples a groupset to the groupsets below it in
+  energy. Set ``ags_groupset_order`` to ``"auto"`` so that the groupsets are
+  solved from low to high energy and one pass suffices when upscatter stays
+  within one groupset.
+* when the AGS iteration has to iterate, the log says why before the first
+  pass and names the change that gives one pass: the ``ags_groupset_order``
+  value or the group ranges that must share a groupset (see
+  :ref:`iterative_ags_iterates`).
 
 .. note::
 
@@ -877,6 +887,10 @@ For most users:
 * add multiple groupsets only when there is a clear reason to split the energy
   structure,
 * with TGDSA, keep every group that receives upscatter in the same groupset,
+* with several groupsets, keep the groups that take part in upscatter in one
+  groupset and set ``ags_groupset_order`` to ``"auto"``, so that forward and
+  adjoint solves need one AGS pass (see
+  :ref:`iterative_ags_single_pass_design`),
 * if multiple groupsets and cross-groupset upscatter are present, enable and
   converge AGS,
 * keep inner tolerances explicit and tighter than outer tolerances.

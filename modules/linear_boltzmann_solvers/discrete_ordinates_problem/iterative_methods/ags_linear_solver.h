@@ -7,6 +7,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "framework/math/linear_solver/linear_system_solver.h"
 #include "framework/utils/timer.h"
+#include <string>
 #include <vector>
 
 namespace opensn
@@ -51,6 +52,9 @@ private:
   double tolerance_;
   bool verbose_;
   IterationSummary last_solve_;
+  /// Why the last solve could not stop after one pass over the groupsets (empty when it could). A
+  /// solve logs its reason only when it differs from this one.
+  std::string logged_inexact_reason_;
 };
 
 } // namespace opensn
