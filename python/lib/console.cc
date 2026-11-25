@@ -5,6 +5,7 @@
 #include "framework/utils/utils.h"
 #include "framework/logging/log.h"
 #include "framework/runtime.h"
+#include <pybind11/stl.h>
 #include <iostream>
 #include <functional>
 #include <regex>

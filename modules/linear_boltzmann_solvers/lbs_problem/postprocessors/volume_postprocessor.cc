@@ -378,6 +378,12 @@ VolumePostprocessor::Execute()
     bool any_block_has_xs = false;
     for (const auto& [block_id, xs] : lbs_problem_->GetBlockID2XSMap())
     {
+      // Only the materials of the selected blocks contribute, so only they need the cross
+      // section.
+      if (not block_ids_.empty() and
+          std::find(block_ids_.begin(), block_ids_.end(), static_cast<int>(block_id)) ==
+            block_ids_.end())
+        continue;
       const std::vector<double>* coeffs = nullptr;
       try
       {

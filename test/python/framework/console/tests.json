@@ -1,0 +1,16 @@
+[
+  {
+    "file": "mpi_allreduce.py",
+    "comment": "Console MPIAllReduce: sum, max and min of float lists in closed form, scalar int and float forms, and an empty list",
+    "num_procs": 3,
+    "weight_class": "short",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "CONSOLE_ALLREDUCE_PASSED=",
+        "goldvalue": 6,
+        "abs_tol": 0
+      }
+    ]
+  }
+]

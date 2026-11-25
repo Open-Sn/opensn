@@ -58,7 +58,8 @@ WrapPostprocessors(py::module& post)
         Materials without an optional standard cross section (``sigma_f``, ``nu_sigma_f``,
         ``chi``, ``inv_velocity``, ``energy_deposition``, or ``stopping_power``; e.g. ``sigma_f``
         of a non-fissile material) contribute zero, but at least one material in the problem
-        must have it. A custom cross section must be defined on every material. At most one of
+        must have it. A custom cross section must be defined on every material the
+        postprocessor selects, which is every material when ``block_ids`` is empty. At most one of
         ``multiplier``, ``group_multipliers``, and ``xs_multiplier`` may be given.
 
     Raises
@@ -85,9 +86,9 @@ WrapPostprocessors(py::module& post)
     Raises
     ------
     ValueError
-        If ``xs_multiplier`` is not a known cross-section name, no material in the problem has
-        that cross section, a custom cross section is missing from some material, or the cross
-        section of some material does not have one value per group.
+        If ``xs_multiplier`` is not a known cross-section name, no selected material has that
+        cross section, a custom cross section is missing from some selected material, or the
+        cross section of some material does not have one value per group.
     )"
   );
   vp.def(
