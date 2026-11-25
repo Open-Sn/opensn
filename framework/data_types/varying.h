@@ -422,10 +422,13 @@ public:
     return data_->GetBoolValue();
   }
 
-  /// Returns floating point values if able.
+  /// Returns floating point values if able. An integer is converted to the nearest floating point
+  /// value, so that an input such as `[0, 1, 2]` serves where floating point values are required.
   template <typename T>
   FloatType<T> GetValue() const
   {
+    if (type_ == VaryingDataType::INTEGER)
+      return static_cast<T>(data_->GetIntegerValue());
     CheckTypeMatch(type_, VaryingDataType::FLOAT);
 
     const double value = data_->GetFloatValue();
