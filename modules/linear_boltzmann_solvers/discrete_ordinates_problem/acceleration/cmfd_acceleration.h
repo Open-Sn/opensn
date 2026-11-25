@@ -64,9 +64,14 @@ public:
    *
    * The operator lifecycle and exceptions are as for GetHomogenizedRemovalXS(). Not collective.
    *
+   * The matrix is condensed on demand from the cross-section objects of the last assembly, which
+   * the problem shares. Replacing the problem's cross sections does not change it, but changing
+   * those objects in place does.
+   *
    * \param coarse_cell_global_id Global id of a coarse cell owned by the calling rank.
    * \return Row-major matrix whose entry [g, gp] is the transfer from coarse group gp to g. The
    *         diagonal is the within-group transfer, which the removal coefficient accounts for.
+   * \throw std::logic_error If those objects no longer have the solver's group count.
    */
   std::vector<double> GetHomogenizedScatteringXS(uint64_t coarse_cell_global_id) const;
   /**
@@ -74,9 +79,12 @@ public:
    *
    * The operator lifecycle and exceptions are as for GetHomogenizedRemovalXS(). Not collective.
    *
+   * The matrix is condensed on demand, as for GetHomogenizedScatteringXS().
+   *
    * \param coarse_cell_global_id Global id of a coarse cell owned by the calling rank.
    * \return Row-major matrix whose entry [g, gp] is the production in coarse group g per unit
    *         flux in coarse group gp, including delayed production when precursors are enabled.
+   * \throw std::logic_error If those objects no longer have the solver's group count.
    */
   std::vector<double> GetHomogenizedProductionXS(uint64_t coarse_cell_global_id) const;
   /// Number of active CMFD corrections applied during the last power-iteration solve.
@@ -143,8 +151,11 @@ private:
   void BuildCoarseFluxCache();
   void BuildFaceCurrentCache();
   void InitializeHomogenization();
-  void BuildHomogenizedXS(const std::vector<double>& phi);
+  /// Homogenize with the weights of phi, or with volume weights if use_flux is false. Collective.
+  void BuildHomogenizedXS(const std::vector<double>& phi, bool use_flux);
   const CoarseCellXS& LocalHomogenizedXS(uint64_t coarse_cell_global_id) const;
+  /// Throw if a cross-section object of the last assembly has changed its group count.
+  void CheckAssembledGroupCount(const MultiGroupXS& xs, unsigned int block_id) const;
   void ComputeCoarseScattering(const CoarseCellXS& coarse_xs, std::vector<double>& matrix) const;
   /// Condense the production matrix; return false, with a zero matrix, if nothing is fissionable.
   bool ComputeCoarseProduction(const CoarseCellXS& coarse_xs, std::vector<double>& matrix) const;

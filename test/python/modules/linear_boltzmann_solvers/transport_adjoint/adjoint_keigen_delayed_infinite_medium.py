@@ -60,6 +60,11 @@ Checks:
   ADJOINT_DELAYED_TWO_MATERIALS_FLAT_{FWD,ADJ}: the flatness of the forward and adjoint flux.
   ADJOINT_DELAYED_TWO_MATERIALS_SOURCE_PHI_{FWD,ADJ}_REL_ERR: the largest |phi - phi_ref| over
     the slab and the groups, divided by the largest phi_ref.
+  ADJOINT_DELAYED_<SCENARIO>_COARSE_PRODUCTION_{FWD,ADJ}_REL_ERR: the largest difference of the
+    CMFD coarse production of any coarse cell from F (F^T in adjoint mode), or from its collapse
+    with the eigenvector in two_materials_cmfd, divided by the largest reference entry (cmfd,
+    cmfd_no_precursors and two_materials_cmfd). These scenarios also fail unless the solve
+    converged with at least one applied correction.
 """
 
 import os
@@ -80,6 +85,11 @@ if "opensn_console" not in globals():
     from pyopensn.source import VolumetricSource
     from pyopensn.fieldfunc import FieldFunctionInterpolationVolume
     from pyopensn.logvol import RPPLogicalVolume
+
+    _mpi_ops = {"sum": MPI.SUM, "max": MPI.MAX}
+
+    def MPIAllReduce(value, op="max"):
+        return MPI.COMM_WORLD.allreduce(value, op=_mpi_ops[op])
 
 # (from-group, to-group, value)
 transfers = [(0, 0, 0.5), (0, 1, 0.3), (1, 1, 1.5)]
@@ -211,6 +221,50 @@ def production_ratio_reference(medium, adjoint, use_precursors=True):
     return production_ratio(medium, phi, adjoint, use_precursors)
 
 
+# The coarse production error of each CMFD solve, keyed FWD or ADJ.
+cmfd_production_errors = {}
+
+
+def check_cmfd(solver, acceleration, medium, adjoint, use_precursors, collapse):
+    """Require applied CMFD corrections and check the coarse production against numpy.
+
+    If every correction were skipped, plain power iteration would still reach k_inf and the flat
+    flux, so the solve must have converged with at least one applied correction. The coarse
+    production of every coarse cell is F, or F^T in adjoint mode, including the delayed part.
+    With both groups collapsed into one it is 1^T F phi / 1^T phi, with phi the eigenvector of
+    L^-1 F (of L^-T F^T in adjoint mode), because the flux is flat and the materials have the
+    same F.
+    """
+    applied = acceleration.GetNumAppliedCorrections()
+    if not solver.IsConverged() or applied == 0:
+        raise RuntimeError(f"CMFD did not converge with applied corrections (applied={applied}).")
+    L, F = infinite_medium_operators(medium, use_precursors)
+    if adjoint:
+        L, F = L.T, F.T
+    if collapse:
+        _, phi = dominant(L, F)
+        reference = np.array([np.sum(F @ phi) / np.sum(phi)])
+    else:
+        reference = F.flatten()
+    error = 0.0
+    owned = 0
+    for coarse_cell in range(acceleration.GetNumCoarseCells()):
+        try:
+            production = np.array(acceleration.GetHomogenizedProductionXS(coarse_cell))
+        except ValueError:
+            # The getter raises ValueError on a rank that does not own the coarse cell.
+            continue
+        owned += 1
+        difference = np.inf
+        if production.shape == reference.shape:
+            difference = np.abs(production - reference).max() / np.abs(reference).max()
+        error = max(error, difference if np.isfinite(difference) else np.inf)
+    # Every coarse cell must be compared on exactly one rank.
+    if MPIAllReduce(owned, "sum") != acceleration.GetNumCoarseCells():
+        raise RuntimeError("Not every CMFD coarse cell was compared exactly once.")
+    cmfd_production_errors["ADJ" if adjoint else "FWD"] = MPIAllReduce(error, "max")
+
+
 def flux_range(phys):
     """The smallest and largest scalar flux of each group, over the nodes and quadrature points."""
     everywhere = RPPLogicalVolume(infx=True, infy=True, infz=True)
@@ -303,6 +357,8 @@ def solve(grid, materials, adjoint, groupsets=1, cmfd=False, use_precursors=True
         solver = PowerIterationKEigenSolver(problem=phys, k_tol=1.0e-12)
     solver.Initialize()
     solver.Execute()
+    if cmfd and source is None:
+        check_cmfd(solver, acceleration, materials[0], adjoint, use_precursors, mixed_materials)
     k = None if source is not None else solver.GetEigenvalue()
     ratio = phys.ComputeFissionProduction("new") / phys.ComputeFissionRate("new")
     return k, ratio, flux_range(phys)
@@ -425,6 +481,9 @@ if __name__ == "__main__":
         results["RATIO_ADJ_REL_ERR="] = f"{abs(ratio_adjoint / ratio_adjoint_ref - 1.0):.6e}"
     else:
         sys.exit(f"Unknown scenario {scenario!r}.")
+
+    for name, error in cmfd_production_errors.items():
+        results[f"COARSE_PRODUCTION_{name}_REL_ERR="] = f"{error:.6e}"
 
     if rank == 0:
         for key, value in results.items():

@@ -650,6 +650,18 @@
         "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_FLAT_ADJ=",
         "goldvalue": 0.0,
         "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_COARSE_PRODUCTION_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_TWO_MATERIALS_CMFD_COARSE_PRODUCTION_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-05
       }
     ]
   },
@@ -715,6 +727,18 @@
         "key": "ADJOINT_DELAYED_CMFD_K_ADJ_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_COARSE_PRODUCTION_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_COARSE_PRODUCTION_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
       }
     ]
   },
@@ -738,6 +762,18 @@
         "key": "ADJOINT_DELAYED_CMFD_NO_PRECURSORS_K_ADJ_REL_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-05
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_NO_PRECURSORS_COARSE_PRODUCTION_FWD_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "ADJOINT_DELAYED_CMFD_NO_PRECURSORS_COARSE_PRODUCTION_ADJ_REL_ERR=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-12
       }
     ]
   },

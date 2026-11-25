@@ -114,8 +114,10 @@ These are the options most users should tune.
     within one mesh block;
   * connectivity is based on face-neighbor adjacency;
   * disconnected regions with the same block id become separate coarse cells;
-  * ``aggregation_size`` is a target maximum, so boundary and disconnected
-    aggregates may contain fewer fine cells;
+  * ``aggregation_size`` is a target, not a maximum: an undersized aggregate is
+    merged with one same-block neighbor, so a merged aggregate holds fewer than
+    twice ``aggregation_size`` fine cells, and boundary and disconnected
+    aggregates may contain fewer;
   * setting ``allow_mixed_material_aggregation=True`` permits cross-block
     aggregation; such coarse cells are homogenized as described below.
 
@@ -154,8 +156,15 @@ These are the options most users should tune.
   on the collapsed coefficients; for example, transport-corrected data with a
   negative self-scatter are homogenized as given.
 
+  The fine cells of :math:`C` that share a material block :math:`m` form one
+  material region with flux integral
+  :math:`\Phi_{C,m,g}=\sum_{i\in C,\,m(i)=m}\Phi_{i,g}`. The rates above are
+  linear in the flux, so they are the same summed over fine cells or over
+  regions. The magnitudes below are taken after this sum, as
+  :math:`|\Phi_{C,m,g}|`.
+
   :math:`W_{C,G}` is replaced only when it is zero, non-finite, or within
-  :math:`64\epsilon` of :math:`\sum_{i\in C}\sum_{g\in G}|\Phi_{i,g}|`
+  :math:`64\epsilon` of :math:`\sum_{m\in C}\sum_{g\in G}|\Phi_{C,m,g}|`
   (cancellation). OpenSn then uses the physical volumes
   :math:`V_i=\sum_n V_{i,n}` in place of :math:`\Phi_{i,g}` for that coarse group,
   and the coarse rates of that group no longer match the transport rates. OpenSn
@@ -164,19 +173,19 @@ These are the options most users should tune.
   before any transport iterate exists, uses volume weights throughout.
 
   The diffusion coefficient only sets the interface coupling that the current
-  correction completes, so it uses the weight magnitudes :math:`|\Phi_{i,g}|`
-  (equal to :math:`\Phi_{i,g}` wherever the flux is positive), which keeps it
-  positive. OpenSn first spatially homogenizes the transport cross section for
-  each fine group,
+  correction completes, so it uses the region magnitudes :math:`|\Phi_{C,m,g}|`
+  (equal to :math:`\Phi_{C,m,g}` wherever that integral is positive), which keeps
+  it positive. OpenSn first spatially homogenizes the transport cross section for
+  each fine group, with :math:`\Sigma_{tr,m,g}` that of material :math:`m`,
 
   .. math::
 
      \overline{\Sigma}_{tr,C,g} =
-     \frac{\sum_{i\in C}\Sigma_{tr,i,g}|\Phi_{i,g}|}
-          {\sum_{i\in C}|\Phi_{i,g}|},
+     \frac{\sum_{m\in C}\Sigma_{tr,m,g}|\Phi_{C,m,g}|}
+          {\sum_{m\in C}|\Phi_{C,m,g}|},
 
   forms :math:`D_{C,g}=1/(3\overline{\Sigma}_{tr,C,g})`, and then weights
-  :math:`D_{C,g}` by :math:`\sum_{i\in C}|\Phi_{i,g}|` over the fine groups in
+  :math:`D_{C,g}` by :math:`\sum_{m\in C}|\Phi_{C,m,g}|` over the fine groups in
   :math:`G`. This order is important: directly averaging material diffusion
   coefficients would average the inverse transport cross section and gives a
   different result in mixed materials. A zero or near-zero homogenized transport
@@ -187,9 +196,14 @@ These are the options most users should tune.
 
   Delayed production is included when ``use_precursors=True``. In adjoint mode,
   scattering and prompt and delayed production are transposed before
-  homogenization. The removal coefficient is unchanged, and the diffusion
-  coefficient uses the adjoint transport cross section, which subtracts the
-  P1 in-scatter instead of the P1 out-scatter.
+  homogenization. The fine-group total cross sections are unchanged, but the
+  removal coefficient subtracts the within-:math:`G` scattering of the
+  transposed matrix with the adjoint flux weights. With energy collapse it
+  therefore differs from the forward removal: in a coarse group of two fine
+  groups with weights 0.75 and 0.25, a forward transfer of 0.3 from the first
+  to the second fine group subtracts 0.225, and the transposed transfer
+  subtracts 0.075. The diffusion coefficient uses the adjoint transport cross
+  section, which subtracts the P1 in-scatter instead of the P1 out-scatter.
 
   Homogenization is recomputed before every active CMFD correction from the
   transport iterate of that power iteration. It does not modify the problem's
@@ -390,8 +404,10 @@ defaults.
   only if PETSc reports convergence and the true residual norm
   :math:`\|b - A x\|` is at most 100 times
   :math:`\max(\texttt{l\_rel\_tol}\,\|b\|, \texttt{l\_abs\_tol})`. The
-  check also applies to direct solves, which PETSc always reports as converged,
-  so a nearly singular coarse operator cannot produce an accepted correction.
+  check applies to iterative and direct solves alike. It is a safeguard against
+  solves that leave a large residual, such as a direct solve of a nearly
+  singular operator. It does not bound the error of the solution, which can be
+  large for an ill-conditioned coarse operator even when the residual is small.
   If a coarse solve does not converge, CMFD stops the coarse power iteration
   and skips the correction for that power iteration. Then increase
   ``max_iters``, use ``"petsc_options"`` with a stronger PETSc configuration,

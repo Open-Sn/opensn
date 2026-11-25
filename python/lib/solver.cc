@@ -3276,10 +3276,11 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     R"(
     Return the number of CMFD corrections skipped during the last power-iteration solve.
 
-    A correction is skipped when a coarse linear solve does not converge or when every
-    damping attempt is rejected; the power iteration then uses the unaccelerated transport
-    update. Inactive iterations are not counted. The count is reset at the start of each
-    solve.
+    A correction is skipped when a coarse linear solve does not converge, when the coarse power
+    iteration breaks down with a coarse fission production or k that is not positive and
+    finite, or when every damping attempt is rejected. The power iteration then uses the
+    unaccelerated transport update. Inactive iterations are not counted. The count is reset at
+    the start of each solve.
     )"
   );
   // clang-format on

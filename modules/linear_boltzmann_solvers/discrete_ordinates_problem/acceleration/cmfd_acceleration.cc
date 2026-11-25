@@ -498,7 +498,7 @@ CMFDAcceleration::Initialize()
   // the groupsets keep whatever WGS settings the caller configured.
   InitializeLinearSystem();
   InitializeHomogenization();
-  BuildHomogenizedXS({});
+  BuildHomogenizedXS({}, false);
   BuildCoarseFluxCache();
   AssembleOperator();
 
@@ -673,7 +673,7 @@ CMFDAcceleration::PostPowerIteration()
   }
 
   t0 = NowSeconds();
-  BuildHomogenizedXS(phi_new_local_);
+  BuildHomogenizedXS(phi_new_local_, true);
   const double homogenization_time = NowSeconds() - t0;
 
   t0 = NowSeconds();
@@ -1088,9 +1088,11 @@ CMFDAcceleration::InitializeHomogenization()
 }
 
 void
-CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
+CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi, const bool use_flux)
 {
-  OpenSnInvalidArgumentIf(not phi.empty() and phi.size() != do_problem_.GetPhiNewLocal().size(),
+  // use_flux, not the size of phi, selects the weights: a rank without cells has an empty phi but
+  // must still join the exchange and the reduction below.
+  OpenSnInvalidArgumentIf(use_flux and phi.size() != do_problem_.GetPhiNewLocal().size(),
                           "CMFD homogenization scalar flux vector size mismatch.");
 
   const auto num_groups = static_cast<std::size_t>(num_groups_);
@@ -1109,7 +1111,7 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
   // Integrate the scalar flux of each (coarse cell, block) region and gather the integrals on the
   // coarse-cell owner. Without a flux every coarse group uses volume weights below.
   std::size_t local_invalid_buffers = 0;
-  if (not phi.empty())
+  if (use_flux)
   {
     const auto& grid = *do_problem_.GetGrid();
     const auto& transport_views = do_problem_.GetCellTransportViews();
@@ -1171,7 +1173,7 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
           absolute_sum += std::fabs(material.weights[g]);
         }
       const bool flux_weighted =
-        not phi.empty() and std::isfinite(absolute_sum) and
+        use_flux and std::isfinite(absolute_sum) and
         std::fabs(signed_sum) > homogenization_cancellation_tolerance * absolute_sum;
       if (flux_weighted)
         for (auto& material : coarse_xs.materials)
@@ -1179,7 +1181,7 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
             material.weights[g] /= signed_sum;
       else
       {
-        local_fallback_groups += phi.empty() ? 0 : 1;
+        local_fallback_groups += use_flux ? 1 : 0;
         double volume_sum = 0.0;
         for (const auto& material : coarse_xs.materials)
           volume_sum += material.volume * static_cast<double>(g_end - g_begin);
@@ -1232,7 +1234,7 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
       coarse_xs.diffusion[cg] = diffusion_numerator / diffusion_denominator;
     }
 
-  if (phi.empty())
+  if (not use_flux)
     return;
 
   std::vector<std::size_t> local_counts = {local_fallback_groups, local_invalid_buffers};
@@ -1252,6 +1254,17 @@ CMFDAcceleration::BuildHomogenizedXS(const std::vector<double>& phi)
 }
 
 void
+CMFDAcceleration::CheckAssembledGroupCount(const MultiGroupXS& xs,
+                                           const unsigned int block_id) const
+{
+  // The cross-section objects of the last assembly are shared with the problem, so a caller can
+  // change them in place after a solve. The condensation loops over the solver's groups.
+  OpenSnLogicalErrorIf(xs.GetNumGroups() != num_groups_,
+                       GetName() + ": the cross sections of block " + std::to_string(block_id) +
+                         " no longer have the group count of the last CMFD assembly.");
+}
+
+void
 CMFDAcceleration::ComputeCoarseScattering(const CoarseCellXS& coarse_xs,
                                           std::vector<double>& matrix) const
 {
@@ -1261,6 +1274,7 @@ CMFDAcceleration::ComputeCoarseScattering(const CoarseCellXS& coarse_xs,
   matrix.assign(n * n, 0.0);
   for (const auto& material : coarse_xs.materials)
   {
+    CheckAssembledGroupCount(*xs_map.at(material.block_id), material.block_id);
     const auto& scattering = xs_map.at(material.block_id)->GetTransferMatrix(0, adjoint);
     for (unsigned int g = 0; g < num_groups_; ++g)
     {
@@ -1283,6 +1297,7 @@ CMFDAcceleration::ComputeCoarseProduction(const CoarseCellXS& coarse_xs,
   for (const auto& material : coarse_xs.materials)
   {
     const auto& xs = *xs_map.at(material.block_id);
+    CheckAssembledGroupCount(xs, material.block_id);
     if (not xs.IsFissionable())
       continue;
     fissionable = true;

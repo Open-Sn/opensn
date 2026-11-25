@@ -109,7 +109,9 @@ public:
    * Collective.
    *
    * \param grid Transport mesh.
-   * \param target_fine_cells_per_coarse_cell Maximum number of fine cells per aggregate.
+   * \param target_fine_cells_per_coarse_cell Target number of fine cells per aggregate. Rank-local
+   *        aggregates hold at most this many. An undersized aggregate is then merged with one
+   *        same-block neighbor, so a merged aggregate holds fewer than twice the target.
    * \param allow_mixed_materials Whether an aggregate may cross material-block boundaries.
    * \return The coarse mesh.
    * \throw std::invalid_argument If target_fine_cells_per_coarse_cell is zero.
