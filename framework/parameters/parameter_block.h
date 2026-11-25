@@ -6,6 +6,7 @@
 #include "framework/data_types/varying.h"
 #include <memory>
 #include <stdexcept>
+#include <type_traits>
 #include <vector>
 #include <string>
 #include <map>
@@ -293,28 +294,33 @@ public:
                              ": Invalid type requested for parameter of type " +
                              ParameterBlockTypeName(GetType()));
 
+    // Each entry is converted on its own, so integers may be mixed with floating point values.
     std::vector<T> vec;
-    if (parameters_.empty())
-      return vec;
-
-    // Check the first sub-param is of the right type
-    const auto& front_param = parameters_.front();
-
-    // Check that all other parameters are of the required type
-    for (const auto& param : parameters_)
-      if (param.GetType() != front_param.GetType())
-        throw std::logic_error(error_origin_scope_ + " " + std::string(__PRETTY_FUNCTION__) +
-                               ": Parameter \"" + name_ +
-                               "\", cannot construct vector from block because "
-                               "the sub_parameters do not all have the correct type. param->" +
-                               ParameterBlockTypeName(param.GetType()) + " vs param0->" +
-                               ParameterBlockTypeName(front_param.GetType()));
-
-    const size_t num_params = parameters_.size();
-    for (size_t k = 0; k < num_params; ++k)
+    vec.reserve(parameters_.size());
+    for (size_t k = 0; k < parameters_.size(); ++k)
     {
       const auto& param = GetParam(k);
-      vec.push_back(param.GetValue<T>());
+      try
+      {
+        vec.push_back(param.GetValue<T>());
+      }
+      catch (const std::exception&)
+      {
+        std::string required = "a value of another type";
+        if constexpr (std::is_same_v<T, bool>)
+          required = "BOOLEAN values";
+        else if constexpr (std::is_floating_point_v<T>)
+          required = "FLOAT or INTEGER values";
+        else if constexpr (std::is_unsigned_v<T>)
+          required = "non-negative INTEGER values";
+        else if constexpr (std::is_integral_v<T>)
+          required = "INTEGER values";
+        else if constexpr (std::is_same_v<T, std::string>)
+          required = "STRING values";
+        throw std::logic_error("Parameter \"" + name_ + "\": entry " + std::to_string(k) +
+                               " has type " + ParameterBlockTypeName(param.GetType()) +
+                               ", but this parameter requires " + required + ".");
+      }
     }
 
     return vec;

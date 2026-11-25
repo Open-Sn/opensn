@@ -4,6 +4,7 @@
 #include "framework/parameters/input_parameters.h"
 #include "framework/runtime.h"
 #include "framework/logging/log.h"
+#include <optional>
 #include <sstream>
 #include <algorithm>
 #include <utility>
@@ -267,11 +268,18 @@ InputParameters::AssignParameters(const ParameterBlock& params)
   }
 
   // Now attempt to assign values
-  for (const auto& param : params.GetParameters())
+  for (const auto& given_param : params.GetParameters())
   {
-    const auto& param_name = param.GetName();
+    const auto& param_name = given_param.GetName();
 
     auto& input_param = GetParam(param_name);
+
+    // An integer is accepted for a floating point parameter and converted to the nearest value.
+    std::optional<ParameterBlock> converted;
+    if (given_param.GetType() == ParameterBlockType::INTEGER and
+        input_param.GetType() == ParameterBlockType::FLOAT)
+      converted.emplace(param_name, static_cast<double>(given_param.GetValue<int64_t>()));
+    const auto& param = converted ? *converted : given_param;
 
     // Check types match
     if (param.GetType() != input_param.GetType())

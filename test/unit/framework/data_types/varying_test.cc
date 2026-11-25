@@ -40,3 +40,13 @@ TEST(VaryingTest, Test4)
   EXPECT_EQ(v.GetStringValue(), "Hello");
   EXPECT_EQ(v.GetValue<std::string>(), "Hello");
 }
+
+TEST(VaryingTest, IntegerServesAsFloat)
+{
+  Varying v(-3);
+  EXPECT_EQ(v.GetValue<double>(), -3.0);
+  EXPECT_EQ(v.GetValue<float>(), -3.0F);
+  // A floating point value does not serve as an integer, and a string does not serve as a float.
+  EXPECT_THROW(Varying(2.5).GetValue<int>(), std::logic_error);
+  EXPECT_THROW(Varying(std::string("1.0")).GetValue<double>(), std::logic_error);
+}

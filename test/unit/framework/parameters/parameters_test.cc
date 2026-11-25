@@ -149,3 +149,51 @@ TEST(ParametersTest, ArrayElementsKeepIndexOrder)
     names.push_back(param.GetName());
   EXPECT_EQ(names, std::vector<std::string>({"10", "9", "x"}));
 }
+
+TEST(ParametersTest, IntegerForFloatParameter)
+{
+  InputParameters params;
+  params.SetObjectType("UnitTest");
+  params.AddOptionalParameter<double>("tolerance", 1.0e-6, "Tolerance");
+  params.AddOptionalParameter<int>("count", 1, "Count");
+  params.ConstrainParameterRange("tolerance", AllowableRangeLowHighLimit::New(0.0, 10.0));
+
+  ParameterBlock input("params");
+  input.AddParameter(ParameterBlock("tolerance", 2));
+  params.AssignParameters(input);
+  EXPECT_EQ(params.GetParamValue<double>("tolerance"), 2.0);
+
+  // The range of the floating point parameter applies to the converted value.
+  ParameterBlock out_of_range("params");
+  out_of_range.AddParameter(ParameterBlock("tolerance", 20));
+  EXPECT_THROW(params.AssignParameters(out_of_range), std::invalid_argument);
+
+  // A floating point value is not converted to an integer.
+  ParameterBlock float_for_integer("params");
+  float_for_integer.AddParameter(ParameterBlock("count", 2.5));
+  EXPECT_THROW(params.AssignParameters(float_for_integer), std::invalid_argument);
+}
+
+TEST(ParametersTest, ArrayOfIntegersAndFloats)
+{
+  ParameterBlock edges("edges");
+  edges.ChangeToArray();
+  edges.AddParameter("0", 0);
+  edges.AddParameter("1", 1.5);
+  edges.AddParameter("2", 3);
+  EXPECT_EQ(edges.GetVectorValue<double>(), std::vector<double>({0.0, 1.5, 3.0}));
+  // An integer array is not read as floating point values with a fractional entry.
+  EXPECT_THROW(edges.GetVectorValue<int>(), std::logic_error);
+
+  ParameterBlock with_string("with_string");
+  with_string.ChangeToArray();
+  with_string.AddParameter("0", 1.0);
+  with_string.AddParameter("1", std::string("two"));
+  EXPECT_THROW(with_string.GetVectorValue<double>(), std::logic_error);
+
+  ParameterBlock negative("negative");
+  negative.ChangeToArray();
+  negative.AddParameter("0", 1);
+  negative.AddParameter("1", -1);
+  EXPECT_THROW(negative.GetVectorValue<unsigned int>(), std::logic_error);
+}
