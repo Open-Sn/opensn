@@ -8,6 +8,8 @@
 #include "framework/utils/timer.h"
 #include "framework/utils/error.h"
 #include <algorithm>
+#include <array>
+#include <map>
 #include <cmath>
 #include <sstream>
 #include <string>
@@ -114,6 +116,207 @@ SignedCellMeasure(const UnpartitionedMesh::LightWeightCell& cell,
   measure.value /= dimension;
   measure.scale /= dimension;
   return measure;
+}
+
+/**
+ * Two faces closer than this fraction of the mesh's bounding-box diagonal, in their plane offset
+ * and in their overlap, coincide. Vertex coordinates written with 10 to 12 digits round to well
+ * below it.
+ */
+constexpr double coincidence_tolerance = 1.0e-8;
+
+/// Faces of the mesh that overlap a face of another cell without sharing its vertices.
+struct HangingFaces
+{
+  size_t count = 0;
+  uint64_t first_cell = 0;
+  Vector3 first_center;
+};
+
+/// Returns whether point p lies strictly inside the polygon `polygon` of the plane, by winding.
+bool
+StrictlyInsidePolygon(const std::vector<std::array<double, 2>>& polygon,
+                      const std::array<double, 2>& p,
+                      const double tolerance)
+{
+  // The point must be inside, and farther than the tolerance from every edge.
+  bool inside = false;
+  const size_t n = polygon.size();
+  for (size_t i = 0, j = n - 1; i < n; j = i++)
+  {
+    const auto& a = polygon[i];
+    const auto& b = polygon[j];
+    const double ex = b[0] - a[0];
+    const double ey = b[1] - a[1];
+    const double length = std::hypot(ex, ey);
+    if (length > 0.0)
+    {
+      const double s =
+        std::clamp(((p[0] - a[0]) * ex + (p[1] - a[1]) * ey) / (length * length), 0.0, 1.0);
+      if (std::hypot(p[0] - a[0] - s * ex, p[1] - a[1] - s * ey) <= tolerance)
+        return false;
+    }
+    if (((a[1] > p[1]) != (b[1] > p[1])) and
+        (p[0] < (b[0] - a[0]) * (p[1] - a[1]) / (b[1] - a[1]) + a[0]))
+      inside = not inside;
+  }
+  return inside;
+}
+
+/**
+ * Finds the faces without a neighbor that overlap, with positive length or area, a face without a
+ * neighbor of another cell lying in the same line or plane and facing the other way. In a
+ * conforming mesh two such faces are the same face and are connected. When the vertices of one
+ * cell lie inside an edge or face of its neighbor (a hanging node or T-junction), the two faces
+ * are not equal, stay unconnected, and would become boundaries inside the domain.
+ */
+HangingFaces
+FindHangingFaces(const std::vector<std::shared_ptr<UnpartitionedMesh::LightWeightCell>>& cells,
+                 const std::vector<Vector3>& vertices)
+{
+  HangingFaces result;
+  if (vertices.empty())
+    return result;
+  Vector3 low = vertices.front();
+  Vector3 high = vertices.front();
+  for (const auto& v : vertices)
+  {
+    low = Vector3(std::min(low.x, v.x), std::min(low.y, v.y), std::min(low.z, v.z));
+    high = Vector3(std::max(high.x, v.x), std::max(high.y, v.y), std::max(high.z, v.z));
+  }
+  const double tolerance = coincidence_tolerance * (high - low).Norm();
+  if (not(tolerance > 0.0))
+    return result;
+
+  // Unconnected faces, grouped by line or plane: the normal with its first significant component
+  // made positive, and the offset of the plane along it.
+  struct Face
+  {
+    uint64_t cell = 0;
+    const UnpartitionedMesh::LightWeightFace* face = nullptr;
+    bool is_polygon = false;
+    int orientation = 1;
+    Vector3 center;
+    Vector3 normal;
+  };
+  std::map<std::array<int64_t, 4>, std::vector<Face>> planes;
+  for (uint64_t c = 0; c < cells.size(); ++c)
+  {
+    const auto& cell = *cells[c];
+    if (cell.type != CellType::POLYGON and cell.type != CellType::POLYHEDRON)
+      continue;
+    for (const auto& face : cell.faces)
+    {
+      if (face.has_neighbor)
+        continue;
+      const Vector3 area = FaceAreaVector(cell.type, face, vertices);
+      const double magnitude = area.Norm();
+      if (not(magnitude > 0.0))
+        continue;
+      Vector3 normal = area / magnitude;
+      int orientation = 1;
+      for (const double component : {normal.x, normal.y, normal.z})
+        if (std::fabs(component) > 1.0e-6)
+        {
+          orientation = component > 0.0 ? 1 : -1;
+          break;
+        }
+      normal = normal * static_cast<double>(orientation);
+      const Vector3 center = FaceCenter(face, vertices);
+      // The normal is rounded to bins of 1e-6, so that an axis normal and its rounded copy share a
+      // bin. The offset is binned with floor, and the search also looks in the next bins.
+      const auto Round = [](const double value) { return std::llround(value / 1.0e-6); };
+      planes[{Round(normal.x),
+              Round(normal.y),
+              Round(normal.z),
+              static_cast<int64_t>(std::floor(normal.Dot(center) / (4.0 * tolerance)))}]
+        .push_back({c, &face, cell.type == CellType::POLYGON, orientation, center, normal});
+    }
+  }
+
+  // Two faces of one plane, facing opposite ways, that overlap in more than the tolerance.
+  const auto Overlap = [&](const Face& a, const Face& b)
+  {
+    if (std::fabs(a.normal.Dot(a.center) - a.normal.Dot(b.center)) > tolerance)
+      return false;
+    // A basis of the plane. For a polygon's edge, which lies in the x-y plane, the edge direction.
+    Vector3 t1 = a.normal.Cross(Vector3(0.0, 0.0, 1.0));
+    if (t1.Norm() < 0.5)
+      t1 = a.normal.Cross(Vector3(1.0, 0.0, 0.0));
+    t1 = t1 / t1.Norm();
+    const Vector3 t2 = a.normal.Cross(t1);
+    const auto Project = [&](const Face& f)
+    {
+      std::vector<std::array<double, 2>> points;
+      for (const auto vid : f.face->vertex_ids)
+      {
+        const Vector3 d = vertices[vid] - a.center;
+        points.push_back({d.Dot(t1), d.Dot(t2)});
+      }
+      return points;
+    };
+    const auto pa = Project(a);
+    const auto pb = Project(b);
+    if (a.is_polygon)
+    {
+      // Edges: overlapping intervals along the edge direction.
+      const double a0 = std::min(pa[0][0], pa[1][0]);
+      const double a1 = std::max(pa[0][0], pa[1][0]);
+      const double b0 = std::min(pb[0][0], pb[1][0]);
+      const double b1 = std::max(pb[0][0], pb[1][0]);
+      return std::min(a1, b1) - std::max(a0, b0) > tolerance;
+    }
+    // Polygons: a vertex or the center of one strictly inside the other.
+    const auto Center = [](const std::vector<std::array<double, 2>>& points)
+    {
+      std::array<double, 2> center = {0.0, 0.0};
+      for (const auto& p : points)
+        for (int i = 0; i < 2; ++i)
+          center[i] += p[i] / static_cast<double>(points.size());
+      return center;
+    };
+    if (StrictlyInsidePolygon(pb, Center(pa), tolerance) or
+        StrictlyInsidePolygon(pa, Center(pb), tolerance))
+      return true;
+    for (const auto& p : pa)
+      if (StrictlyInsidePolygon(pb, p, tolerance))
+        return true;
+    for (const auto& p : pb)
+      if (StrictlyInsidePolygon(pa, p, tolerance))
+        return true;
+    return false;
+  };
+
+  // Each face against the opposite faces of its offset bin and of the two next to it, which can
+  // lie within the tolerance.
+  for (const auto& [key, faces] : planes)
+    for (const auto& a : faces)
+    {
+      bool hanging = false;
+      for (const int64_t shift : {-1, 0, 1})
+      {
+        const auto other = planes.find({key[0], key[1], key[2], key[3] + shift});
+        if (other == planes.end())
+          continue;
+        for (const auto& b : other->second)
+          if (b.cell != a.cell and b.orientation != a.orientation and Overlap(a, b))
+          {
+            hanging = true;
+            break;
+          }
+        if (hanging)
+          break;
+      }
+      if (not hanging)
+        continue;
+      if (result.count == 0)
+      {
+        result.first_cell = a.cell;
+        result.first_center = a.center;
+      }
+      ++result.count;
+    }
+  return result;
 }
 
 } // namespace
@@ -506,6 +709,14 @@ UnpartitionedMesh::BuildMeshConnectivity()
                        "first is a face of cell " +
                        std::to_string(first_shared_cell) + " at " + first_shared_center.PrintStr() +
                        ".");
+
+  if (const auto hanging = FindHangingFaces(raw_cells_, vertices_); hanging.count > 0)
+    OpenSnLogicalError(
+      "The mesh is not conforming: " + std::to_string(hanging.count) +
+      " cell faces overlap a face of another cell without sharing its vertices (a hanging node "
+      "or T-junction). The two cells are then not connected, and both faces would become "
+      "boundaries inside the domain. The first is a face of cell " +
+      std::to_string(hanging.first_cell) + " at " + hanging.first_center.PrintStr() + ".");
 
   log.Log() << program_timer.GetTimeString() << " Establishing cell boundary connectivity.";
 

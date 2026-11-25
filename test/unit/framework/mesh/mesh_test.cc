@@ -6,6 +6,7 @@
 #include "framework/runtime.h"
 #include <cmath>
 #include <filesystem>
+#include <stdexcept>
 
 using namespace opensn;
 
@@ -510,4 +511,22 @@ TEST(MeshTest, SetBoundaryIDFromInteriorLogicalVolumeSense)
   EXPECT_EQ(grid->GetBoundaryNameMap().count("inner"), 0U);
   EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 0.0), 1);
   EXPECT_EQ(CountNamedBoundaryFaces(*grid, "outer", 4.0), 1);
+}
+
+// SetOrthogonalBoundaries names each boundary face by its normal, so it needs every boundary face
+// on the face of the bounding box that the normal points to. The re-entrant faces of an L-shaped
+// domain are inside the box and are rejected on every rank. A box mesh is accepted.
+TEST(MeshTest, SetOrthogonalBoundariesRejectsFacesInsideTheBox)
+{
+  const auto l_shape = BuildMeshFromFile(std::filesystem::path(OPENSN_TEST_ROOT) / "assets" /
+                                         "mesh" / "l_shaped_quads.msh");
+  EXPECT_THROW(l_shape->SetOrthogonalBoundaries(), std::runtime_error);
+
+  const auto square = BuildSquareMesh(2.0, 4, 0.0);
+  ASSERT_NO_THROW(square->SetOrthogonalBoundaries());
+  const auto& names = square->GetBoundaryIDMap();
+  for (const auto& cell : square->GetLocalCells())
+    for (const auto& face : cell->faces)
+      if (not face.has_neighbor)
+        EXPECT_TRUE(names.contains(face.neighbor_id));
 }

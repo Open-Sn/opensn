@@ -123,3 +123,34 @@ TEST(MeshQualityTest, NeedleCellIsAccepted)
   ASSERT_NO_THROW(mesh = ReadMesh("tet_thin.msh"));
   EXPECT_EQ(mesh->GetNumberOfCells(), 1);
 }
+
+// A cell next to two smaller cells whose shared vertex lies inside its edge or face (a hanging
+// node) is not connected to them. Each cell is valid on its own, so only a comparison of the
+// unconnected faces detects the crack, which would otherwise become a boundary inside the domain.
+TEST(MeshQualityTest, HangingNodeIsRejected)
+{
+  for (const auto* file_name : {"two_quads_hanging_node.msh", "hexes_hanging_node.msh"})
+  {
+    SCOPED_TRACE(file_name);
+    EXPECT_THROW(ReadMesh(file_name), std::logic_error);
+  }
+}
+
+// The same domains with the large cell split as well are conforming: every pair of cells that
+// touch shares a face.
+TEST(MeshQualityTest, ConformingRefinementIsAccepted)
+{
+  for (const auto* file_name : {"two_quads_conforming.msh", "hexes_conforming.msh"})
+  {
+    SCOPED_TRACE(file_name);
+    std::shared_ptr<UnpartitionedMesh> mesh;
+    ASSERT_NO_THROW(mesh = ReadMesh(file_name));
+    ASSERT_EQ(mesh->GetNumberOfCells(), 4);
+    size_t num_connected_faces = 0;
+    for (const auto& cell : mesh->GetRawCells())
+      for (const auto& face : cell->faces)
+        num_connected_faces += face.has_neighbor ? 1 : 0;
+    // Four shared faces, each counted once by each of its cells.
+    EXPECT_EQ(num_connected_faces, 8);
+  }
+}
