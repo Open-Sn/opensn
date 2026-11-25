@@ -141,6 +141,415 @@
     "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_cbc"
   },
   {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "1D CMFD logical-volume overlay preserves the reference eigenvalue across ranks",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"logical_volumes\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD k-eigenvalue:",
+        "goldvalue": 0.9945456,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_logical_volume_overlay"
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "1D CMFD Cartesian overlay uses logical-volume coarse-mesh construction",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"cartesian\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD k-eigenvalue:",
+        "goldvalue": 0.9945456,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_cartesian_overlay"
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "CMFD reactor-lattice input generates the equivalent logical-volume overlay",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"reactor_lattice\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD k-eigenvalue:",
+        "goldvalue": 0.9945456,
+        "abs_tol": 5e-06
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-07
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 10,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_reactor_lattice"
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "Serial heterogeneous Cartesian overlay homogenizes a coarse cell spanning two materials and agrees with unaccelerated transport",
+    "num_procs": 1,
+    "args": [
+      "heterogeneous=True",
+      "cmfd_coarse_mesh=\"cartesian\"",
+      "cmfd_solver_max_iters=10000"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD k-eigenvalue:",
+        "goldvalue": 0.99470748,
+        "abs_tol": 5e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 5e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 10,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_heterogeneous_serial"
+  },
+  {
+    "file": "keigenvalue_transport_1d_1g_cmfd.py",
+    "comment": "Four-rank heterogeneous Cartesian overlay gives the serial homogenized result when coarse cells cross material and rank boundaries",
+    "num_procs": 4,
+    "args": [
+      "heterogeneous=True",
+      "cmfd_coarse_mesh=\"cartesian\"",
+      "cmfd_solver_max_iters=10000"
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD k-eigenvalue:",
+        "goldvalue": 0.99470748,
+        "abs_tol": 5e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 5e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 10,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD skipped corrections:",
+        "goldvalue": 0,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_heterogeneous_mpi"
+  },
+  {
+    "file": "keigenvalue_transport_2d_cmfd_overlay.py",
+    "comment": "2D 3x3 UO2 pin lattice, CMFD on a Cartesian pin overlay with mixed fuel-water coarse cells agrees with unaccelerated PI",
+    "num_procs": 1,
+    "args": [
+      "cmfd_coarse_mesh=\"cartesian\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 1.3347881123,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 9,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "CMFD overlay: 9 coarse cells. 0 of "
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_2d_cmfd_overlay_cartesian"
+  },
+  {
+    "file": "keigenvalue_transport_2d_cmfd_overlay.py",
+    "comment": "2D 3x3 UO2 pin lattice on 4 ranks, CMFD on a reactor-lattice overlay whose central pin cell spans all ranks agrees with unaccelerated PI",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"reactor_lattice\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 1.3347881123,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 9,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "CMFD overlay: 9 coarse cells. 0 of "
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_2d_cmfd_overlay_reactor_lattice"
+  },
+      {
+    "file": "keigenvalue_transport_2d_cmfd_overlay.py",
+    "comment": "2D 3x3 UO2 pin lattice on 4 ranks, CMFD on a logical-volume pin overlay agrees with unaccelerated PI",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"logical_volumes\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 1.3347881123,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 9,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_2d_cmfd_overlay_logical_volume"
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_overlay.py",
+    "comment": "3D 2x2 UO2 pin lattice with a water axial reflector, CMFD on a reactor-lattice overlay with axial planes agrees with unaccelerated PI",
+    "num_procs": 1,
+    "args": [
+      "cmfd_coarse_mesh=\"reactor_lattice\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 0.4770995626,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 12,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "CMFD overlay: 12 coarse cells. 0 of "
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_overlay_reactor_lattice_serial"
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_overlay.py",
+    "comment": "3D 2x2 UO2 pin lattice on 4 ranks, reactor-lattice overlay coarse cells span ranks in x and z, CMFD agrees with unaccelerated PI",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"reactor_lattice\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 0.4770995626,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 12,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "CMFD overlay: 12 coarse cells. 0 of "
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_overlay_reactor_lattice_mpi"
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_overlay.py",
+    "comment": "3D 2x2 UO2 pin lattice on 4 ranks, CMFD on the equivalent Cartesian overlay agrees with unaccelerated PI",
+    "num_procs": 4,
+    "args": [
+      "cmfd_coarse_mesh=\"cartesian\""
+    ],
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Python PI k-eigenvalue:",
+        "goldvalue": 0.4770995626,
+        "abs_tol": 1e-08
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD-PI k-difference:",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD coarse cells:",
+        "goldvalue": 12,
+        "abs_tol": 0
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Python CMFD converged:",
+        "goldvalue": 1,
+        "abs_tol": 0
+      },
+      {
+        "type": "StrCompare",
+        "key": "CMFD overlay: 12 coarse cells. 0 of "
+      }
+    ],
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_overlay_cartesian_mpi"
+  },
+  {
     "file": "cmfd_homogenization_coefficients.py",
     "comment": "Analytic two-material two-group check of flux-weighted reaction-rate and diffusion homogenization",
     "num_procs": 1,
@@ -308,68 +717,6 @@
     ]
   },
   {
-    "file": "keigenvalue_transport_1d_1g_cmfd_limiter.py",
-    "comment": "1D CMFD correction limiter stress test with intentionally over-relaxed corrections",
-    "num_procs": 1,
-    "checks": [
-      {
-        "type": "ErrorCode",
-        "error_code": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=skipped value=",
-        "goldvalue": 1,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=nonfinite_flux value=",
-        "goldvalue": 0,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=invalid_k value=",
-        "goldvalue": 0,
-        "abs_tol": 0
-      }
-    ]
-  },
-  {
-    "file": "keigenvalue_transport_1d_1g_cmfd_limiter.py",
-    "comment": "1D CMFD correction limiter stress test with intentionally over-relaxed corrections and CBC sweeps",
-    "num_procs": 1,
-    "args": [
-      "sweep_type=\"CBC\""
-    ],
-    "checks": [
-      {
-        "type": "ErrorCode",
-        "error_code": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=skipped value=",
-        "goldvalue": 1,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=nonfinite_flux value=",
-        "goldvalue": 0,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "CMFD_ACCEL category=correction iteration=0 metric=invalid_k value=",
-        "goldvalue": 0,
-        "abs_tol": 0
-      }
-    ],
-    "outfileprefix": "keigenvalue_transport_1d_1g_cmfd_limiter_cbc"
-  },
-  {
     "file": "keigenvalue_transport_2d_1a_qblock.py",
     "comment": "2D 2G keigenvalue test using power iteration",
     "num_procs": 4,
@@ -422,7 +769,7 @@
   },
   {
     "file": "keigenvalue_transport_2d_1a_qblock_cmfd.py",
-    "comment": "2D 2G keigenvalue test using power iteration with CMFD acceleration and CBC sweeps",
+    "comment": "One early correction may be skipped by the sign-change guard. 2D 2G keigenvalue test using power iteration with CMFD acceleration and CBC sweeps",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -443,8 +790,8 @@
       {
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
-        "goldvalue": 0,
-        "abs_tol": 0
+        "goldvalue": 1,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_cbc"
@@ -476,7 +823,7 @@
   },
   {
     "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
-    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps; no CMFD correction may be skipped: on 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux, which the CMFD correction only rescales",
+    "comment": "2D 2G keigenvalue test using power iteration with aggregated CMFD acceleration and CBC sweeps. On 4 ranks the unlagged CBC iteration history reaches an early transport iterate with negative scalar flux. A correction that only rescales it is applied, and one early correction that would flip a coarse flux sign may be skipped",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -497,48 +844,13 @@
       {
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
-        "goldvalue": 0,
-        "abs_tol": 0
+        "goldvalue": 1,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_agg_cbc"
   },
-  {
-    "file": "keigenvalue_transport_2d_1a_qblock_cmfd_agg.py",
-    "comment": "2D heterogeneous two-group benchmark with mixed-material CMFD aggregation preserves the reference eigenvalue and particle balance",
-    "num_procs": 4,
-    "args": [
-      "allow_mixed_material_aggregation=True"
-    ],
-    "checks": [
-      {
-        "type": "KeyValuePair",
-        "key": "Python k-eigenvalue:",
-        "goldvalue": 0.5969127,
-        "abs_tol": 2e-06
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Python converged:",
-        "goldvalue": 1,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Python CMFD skipped corrections:",
-        "goldvalue": 0,
-        "abs_tol": 0
-      },
-      {
-        "type": "KeyValuePair",
-        "key": "Python relative balance:",
-        "goldvalue": 0.0,
-        "abs_tol": 1e-07
-      }
-    ],
-    "outfileprefix": "keigenvalue_transport_2d_1a_qblock_cmfd_mixed_aggregation"
-  },
-  {
+    {
     "file": "keigenvalue_transport_3d_openmcxs_U235.py",
     "comment": "3D 172G keigenvalue test using OpenMX MGXS cross-sections and power iteration",
     "num_procs": 4,
@@ -1148,7 +1460,7 @@
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_agg_iterative",
     "num_procs": 4,
     "args": [
-      "cmfd_coarse_solver_policy=\"iterative\""
+      "cmfd_iterative=True"
     ],
     "checks": [
       {
@@ -1173,7 +1485,7 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_cmfd_agg.py",
-    "comment": "3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD acceleration and CBC sweeps",
+    "comment": "One early correction may be skipped: the first CBC sweep from the flat start can leave negative coarse fluxes, and the update-0 coarse eigenproblem then has no positive solution. 3D 2G heterogeneous qblock k-eigenvalue benchmark using aggregated CMFD acceleration and CBC sweeps",
     "num_procs": 4,
     "args": [
       "sweep_type=\"CBC\""
@@ -1194,8 +1506,8 @@
       {
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
-        "goldvalue": 0,
-        "abs_tol": 0
+        "goldvalue": 1,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_cmfd_agg_cbc"
@@ -1385,7 +1697,7 @@
   },
   {
     "file": "keigenvalue_transport_3d_2g_qblock_8rank_cmfd_agg.py",
-    "comment": "8-rank 3D 2G heterogeneous qblock benchmark using aggregated CMFD acceleration and CBC sweeps",
+    "comment": "One early correction may be skipped: the first CBC sweep from the flat start can leave negative coarse fluxes, and the update-0 coarse eigenproblem then has no positive solution. 8-rank 3D 2G heterogeneous qblock benchmark using aggregated CMFD acceleration and CBC sweeps",
     "num_procs": 8,
     "args": [
       "sweep_type=\"CBC\""
@@ -1418,8 +1730,8 @@
       {
         "type": "KeyValuePair",
         "key": "Python CMFD skipped corrections:",
-        "goldvalue": 0,
-        "abs_tol": 0
+        "goldvalue": 1,
+        "abs_tol": 1
       }
     ],
     "outfileprefix": "keigenvalue_transport_3d_2g_qblock_8rank_cmfd_agg_cbc"
@@ -1626,14 +1938,14 @@
   },
   {
     "file": "keigen_acceleration_requirements.py",
-    "comment": "k-eigenvalue acceleration requirements (SCDSA/SMM single groupset, SMM P0, stored psi, and vacuum/reflecting boundaries, AAH sweep count, acceleration built for another problem, NLKE DSA single groupset, CMFD and SCDSA-pwlc rejected in 1D spherical, mixed-material aggregation on an identity CMFD mesh) raise ValueError on every rank at Initialize(); neighboring valid configurations, including CMFD in RZ and SCDSA-pwld in 1D spherical, are accepted",
+    "comment": "k-eigenvalue acceleration requirements (SCDSA/SMM single groupset, SMM P0, stored psi, and vacuum/reflecting boundaries, AAH sweep count, acceleration built for another problem, NLKE DSA single groupset, CMFD and SCDSA-pwlc rejected in 1D spherical, invalid reactor-lattice overlays, and mixed-material aggregation on a non-aggregation mesh) raise ValueError on every rank at Initialize(); neighboring valid configurations, including CMFD in RZ, SCDSA-pwld in 1D spherical, and a 2-by-2 reactor lattice, are accepted",
     "num_procs": 2,
     "checks": [
       {
         "type": "FloatCompare",
         "key": "KEIGEN_ACCELERATION_REQUIREMENTS_PASSED",
         "wordnum": 1,
-        "gold": 14,
+        "gold": 18,
         "abs_tol": 1e-12
       }
     ]
@@ -1717,6 +2029,129 @@
     "checks": [
       {"type": "KeyValuePair", "key": "CMFD_IRREG_CONVERGED", "goldvalue": 1, "abs_tol": 0},
       {"type": "KeyValuePair", "key": "CMFD_IRREG_K_ERR", "goldvalue": 0, "abs_tol": 2e-08}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_materials.py",
+    "comment": "Heterogeneous reflecting cube with mixed-material CMFD aggregates must reproduce the exact solution phi = (1, 100), zero higher moments, and k = 1",
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_materials",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_APPLIED_CORRECTIONS_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_FIELD_ERROR", "goldvalue": 0, "abs_tol": 1e-06}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_materials.py",
+    "comment": "Heterogeneous reflecting cube with mixed-material CMFD aggregates must reproduce the exact solution phi = (1, 100), zero higher moments, and k = 1 (2 ranks)",
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_materials_mpi2",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_APPLIED_CORRECTIONS_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_FIELD_ERROR", "goldvalue": 0, "abs_tol": 1e-06}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_materials.py",
+    "comment": "Heterogeneous reflecting cube with mixed-material CMFD aggregates must reproduce the exact solution phi = (1, 100), zero higher moments, and k = 1 (4 ranks)",
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_materials_mpi4",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_APPLIED_CORRECTIONS_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_FIELD_ERROR", "goldvalue": 0, "abs_tol": 1e-06}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_3d_cmfd_materials.py",
+    "comment": "Heterogeneous reflecting cube with mixed-material CMFD aggregates must reproduce the exact solution phi = (1, 100), zero higher moments, and k = 1 (two fine groups per coarse group)",
+    "outfileprefix": "keigenvalue_transport_3d_cmfd_materials_energy",
+    "num_procs": 2,
+    "args": ["energy_bin=2"],
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_APPLIED_CORRECTIONS_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_CUBE_FIELD_ERROR", "goldvalue": 0, "abs_tol": 1e-06}
+    ]
+  },
+        {
+    "file": "keigenvalue_transport_2d_cmfd_conservation.py",
+    "comment": "Every column sum of the condensed CMFD loss matrix must equal the cell absorption (exact neutron balance for any trial vector)",
+    "outfileprefix": "keigenvalue_transport_2d_cmfd_conservation",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CONSERVATION_COLUMN_SUM_ERROR", "goldvalue": 0, "abs_tol": 5e-06}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_2d_cmfd_conservation.py",
+    "comment": "Every column sum of the condensed CMFD loss matrix must equal the cell absorption with the interface on an MPI boundary",
+    "outfileprefix": "keigenvalue_transport_2d_cmfd_conservation_mpi2",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_CONSERVATION_COLUMN_SUM_ERROR", "goldvalue": 0, "abs_tol": 5e-06}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_2g_cmfd_uniform_spectrum.py",
+    "comment": "Reflecting uniform two-group medium with the exact solution k = 1 and phi_2 / phi_1 = 100, starting from a flat spectrum",
+    "outfileprefix": "keigenvalue_transport_1d_2g_cmfd_uniform_spectrum",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_K_ERROR", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_RATIO_ERROR", "goldvalue": 0, "abs_tol": 1e-07},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_SPATIAL_ERROR", "goldvalue": 0, "abs_tol": 1e-07}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_2g_cmfd_uniform_spectrum.py",
+    "comment": "Reflecting uniform two-group medium with the exact solution k = 1 and phi_2 / phi_1 = 100, starting from a flat spectrum (4 ranks)",
+    "outfileprefix": "keigenvalue_transport_1d_2g_cmfd_uniform_spectrum_mpi4",
+    "num_procs": 4,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_POSITIVE", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_K_ERROR", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_RATIO_ERROR", "goldvalue": 0, "abs_tol": 1e-07},
+      {"type": "KeyValuePair", "key": "CMFD_UNIFORM_SPECTRUM_SPATIAL_ERROR", "goldvalue": 0, "abs_tol": 1e-07}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_2g_cmfd_signed_slab.py",
+    "comment": "Fuel and absorber slab with a negative exact cell-average flux must reproduce an independently assembled DG-S4 eigenpair and pass a frozen-source transport check",
+    "outfileprefix": "keigenvalue_transport_1d_2g_cmfd_signed_slab",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_NEGATIVE_LAST_CELL", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_CELL_MEAN_ERROR", "goldvalue": 0, "abs_tol": 1e-07},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_LEAKAGE_ERROR", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_FROZEN_SOURCE_DEFECT", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_FROZEN_SOURCE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-10}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_2g_cmfd_signed_slab.py",
+    "comment": "Fuel and absorber slab with a negative exact cell-average flux must reproduce an independently assembled DG-S4 eigenpair and pass a frozen-source transport check (2 ranks)",
+    "outfileprefix": "keigenvalue_transport_1d_2g_cmfd_signed_slab_mpi2",
+    "num_procs": 2,
+    "checks": [
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_CONVERGED", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_NEGATIVE_LAST_CELL", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_K_ERROR", "goldvalue": 0, "abs_tol": 1e-09},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_CELL_MEAN_ERROR", "goldvalue": 0, "abs_tol": 1e-07},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_LEAKAGE_ERROR", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_FROZEN_SOURCE_DEFECT", "goldvalue": 0, "abs_tol": 1e-08},
+      {"type": "KeyValuePair", "key": "CMFD_SIGNED_SLAB_FROZEN_SOURCE_K_ERROR", "goldvalue": 0, "abs_tol": 1e-10}
     ]
   }
 ]

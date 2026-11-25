@@ -83,10 +83,7 @@ if __name__ == "__main__":
 
     k_tolerance = 1.0e-8
 
-    cmfd = CMFDAcceleration(
-        problem=phys,
-        balance_residual_tolerance=10.0 * k_tolerance,
-    )
+    cmfd = CMFDAcceleration(problem=phys)
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
         acceleration=cmfd,

@@ -72,12 +72,7 @@ if __name__ == "__main__":
     )
     k_tolerance = 1.0e-6
 
-    cmfd = CMFDAcceleration(
-        problem=phys,
-        coarse_mesh="identity",
-        relaxation=1.0,
-        balance_residual_tolerance=10.0 * k_tolerance,
-    )
+    cmfd = CMFDAcceleration(problem=phys, coarse_mesh="identity")
     k_solver = PowerIterationKEigenSolver(
         problem=phys,
         acceleration=cmfd,

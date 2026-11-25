@@ -71,8 +71,7 @@ if __name__ == "__main__":
     )
 
     if accel == "cmfd":
-        cmfd = CMFDAcceleration(problem=problem, coarse_mesh="identity",
-                                balance_residual_tolerance=1.0e-7)
+        cmfd = CMFDAcceleration(problem=problem, coarse_mesh="identity")
         solver = PowerIterationKEigenSolver(problem=problem, acceleration=cmfd, k_tol=1.0e-8,
                                             max_iters=1000)
     else:

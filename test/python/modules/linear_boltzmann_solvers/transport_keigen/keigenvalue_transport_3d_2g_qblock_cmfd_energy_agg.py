@@ -6,7 +6,7 @@
 into one coarse CMFD group.
 
 This regression reuses the standard spatially aggregated 3D 2-group qblock
-CMFD k-eigenvalue problem, but sets group_aggregation_size=2 so both transport
+CMFD k-eigenvalue problem, but sets coarse_groups=1 so both transport
 groups collapse into one coarse CMFD energy group. It checks that energy-group
 collapse is wired into coarse-mesh setup, that the verbose coarse-mesh
 diagnostic reports one coarse energy group, and that the accelerated solve
@@ -16,7 +16,7 @@ preserves the expected k-eigenvalue.
 import os
 import runpy
 
-cmfd_group_aggregation_size = 2
+cmfd_coarse_groups = 1
 cmfd_verbose = True
 
 runpy.run_path(

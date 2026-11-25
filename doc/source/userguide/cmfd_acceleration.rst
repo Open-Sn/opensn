@@ -2,555 +2,402 @@
 CMFD Acceleration
 =================
 
-Coarse-mesh finite difference (CMFD) acceleration can be used with
+Coarse-mesh finite difference (CMFD) acceleration speeds up
 :py:class:`pyopensn.solver.PowerIterationKEigenSolver` through
 :py:class:`pyopensn.solver.CMFDAcceleration`.
 
-CMFD is a low-order scalar-flux acceleration method. The transport solve still
-handles angular fluxes, sweeps, material cross sections, and higher-order
-scattering moments. After each power-iteration transport update, CMFD restricts
-the scalar flux and face currents to a coarse system, solves a low-order
-k-eigenvalue balance equation, and prolongs a bounded scalar-flux correction
-back to the transport solution.
+Each power iteration runs a transport update, one sweep of every groupset by default. CMFD then
+restricts the transport scalar flux and the face partial currents to a coarse mesh and coarse
+energy groups. It solves the coarse k-eigenvalue problem and scales the transport scalar flux of
+each coarse cell and coarse group by the ratio of the coarse solution to the restricted flux.
+The transport sweep still handles the angular flux, the higher scattering moments and the
+material cross sections. CMFD changes only the iterative path. A converged CMFD solution is the
+converged transport solution.
 
-With CMFD, each power iteration performs a configured number of high-order WGS
-transport update iterations, then applies a bounded low-order scalar-flux
-correction. The defaults use one WGS update iteration, the partial-current
-closure, fixed correction relaxation, and a transport-current balance check
-before outer power iteration is allowed to converge, against a fixed
-tolerance (``balance_residual_tolerance``). See the description of
-``balance_residual_tolerance`` below.
+The method is fixed. Users choose only the coarse mesh and the number of coarse energy groups:
 
-The :doc:`CMFD tutorials <../tutorials/numerical_methods/cmfd/index>` show the effect of each
-option on the C5G7 benchmark core.
+* The coarse operator uses the partial-current (pCMFD) closure, which reproduces both transport
+  partial currents on every coarse face. It stays stable unrelaxed on optically thin and thick
+  coarse cells, where the net-current closure oscillates or diverges.
+* Corrections are unrelaxed. A coarse value whose correction would change the sign of the
+  transport flux keeps the transport flux, and the rest of the correction is applied. A
+  correction whose coarse linear solve fails, or whose coarse eigensolve does not converge, is
+  skipped, and that power iteration keeps the transport update.
+* The coarse eigenproblem is solved by a power iteration that starts unshifted, which always
+  finds the fundamental mode, and takes a Wielandt shift once its eigenvalue estimate is
+  reliable. Its tolerance is a fraction of the change the transport update made, so the coarse
+  solve error never limits the outer iteration.
+* The coarse linear solver is chosen from the size of the coarse system (see below).
 
-CMFD owns the WGS update controls through ``update_wgs_max_its`` and
-``update_wgs_abs_tol``. The default is a one-iteration transport update before
-each CMFD correction. To make each transport update more tightly converged
-before CMFD is applied, increase ``update_wgs_max_its`` and tighten
-``update_wgs_abs_tol``.
+The :doc:`CMFD tutorials <../tutorials/numerical_methods/cmfd/index>` show these behaviors on the
+C5G7 benchmark core.
 
 Basic Usage
 ===========
-
-Construct the transport problem as usual, then pass a CMFD acceleration object
-to the power-iteration solver:
 
 .. code-block:: python
 
    from pyopensn.solver import CMFDAcceleration, PowerIterationKEigenSolver
 
    cmfd = CMFDAcceleration(problem=phys)
-
-   solver = PowerIterationKEigenSolver(
-       problem=phys,
-       acceleration=cmfd,
-       max_iters=400,
-       k_tol=1.0e-6,
-   )
+   solver = PowerIterationKEigenSolver(problem=phys, acceleration=cmfd,
+                                       k_tol=1.0e-8, fission_source_tol=1.0e-6)
    solver.Initialize()
    solver.Execute()
 
-For large multigroup lattice problems, start by tuning only the spatial and
-energy aggregation:
+The defaults aggregate about 32 fine cells per coarse cell within each MPI rank and keep up to 16
+coarse energy groups. For lattice problems, a pin-resolved coarse mesh converges faster and
+does not depend on the partitioning:
 
 .. code-block:: python
 
    cmfd = CMFDAcceleration(
        problem=phys,
-       current_closure="partial",
-       aggregation_size=32,
-       group_aggregation_size=(num_groups + 3) // 4,  # about 4 CMFD energy groups
-       relaxation=1.0,
-       update_wgs_max_its=1,
-       update_wgs_abs_tol=1.0e-12,
-       # balance_residual_tolerance left at its default (1.0e-6); pass it explicitly only
-       # when a different fixed target is actually needed (e.g. a benchmark comparison).
+       coarse_mesh={"type": "reactor_lattice", "origin": [-10.71, -10.71],
+                    "pitch": [1.26, 1.26], "shape": [17, 17],
+                    "axial_edges": [0.0, 2.0, 4.0, 6.0]},
+       coarse_groups=16,
    )
 
-   solver = PowerIterationKEigenSolver(
-       problem=phys,
-       acceleration=cmfd,
-       k_tol=1.0e-6,
-       max_iters=400,
-   )
+Groupsets for CMFD use one sweep per transport update. Set
+``inner_linear_method="classic_richardson"``, ``l_max_its=1`` and a small ``l_abs_tol`` on each
+groupset, or leave the groupset settings as they are: CMFD sets every groupset to
+``sweeps_per_update`` iterations while the solver runs and restores the settings afterwards.
 
-The expression ``(num_groups + N - 1) // N`` chooses a
-``group_aggregation_size`` that gives approximately ``N`` total CMFD energy
-groups. For example, with 361 transport groups, ``(361 + 3) // 4`` gives a
-group aggregation size of 91 and therefore 4 CMFD energy groups.
+Choosing The Coarse Mesh
+========================
 
-Common User Options
-===================
+``coarse_mesh`` takes a string, which selects a type with its defaults, or a dict with a
+``"type"`` key and that type's parameters. Unknown types and keys are errors.
 
-These are the options most users should tune.
+``"local_aggregation"`` or ``{"type": "local_aggregation", "size": 32}``
+  Connected aggregates of about ``size`` fine cells within each MPI rank. This is the default
+  and the general choice for unstructured meshes. Aggregates may contain several materials.
+  They follow face connectivity, not axial layers, so on extruded meshes prefer a lattice or
+  Cartesian coarse mesh.
 
-``coarse_mesh``
-  Coarse-mesh construction method. The default is ``"local_aggregation"``.
-  ``"local_aggregation"`` builds connected aggregates locally on each MPI rank.
-  ``"global_aggregation"`` builds connected aggregates that may span MPI ranks
-  and can reduce the coarse problem size on larger distributed meshes. Both
-  preserve material-block boundaries by default. ``"identity"`` creates one
-  CMFD cell per transport cell and is mainly useful for debugging and method
-  comparisons.
+``{"type": "global_aggregation", "size": 32}``
+  Connected aggregates that may span MPI ranks, which reduces the number of small aggregates at
+  rank boundaries. Each coarse cell is owned by the rank holding most of its fine cells, with
+  ties going to the lower rank. Other ranks keep membership records for restriction and
+  prolongation. It gathers distributed cell and face metadata at setup, so it costs more memory
+  and communication than local aggregation. Neither aggregation type repartitions the transport
+  mesh.
 
-  Both aggregation modes are logical CMFD coarse-space constructions. They do
-  not repartition the transport mesh, create a new mesh, or change
-  the ownership of high-order transport cells. Transport sweeps, material
-  lookup, and angular-flux communication continue to use the original fine-mesh
-  partitioning.
+``{"type": "reactor_lattice", "origin": [x0, y0], "pitch": [px, py], "shape": [nx, ny], "axial_edges": [...]}``
+  One coarse cell per lattice cell and axial layer, covering
+  :math:`[x_0,x_0+n_xp_x]\times[y_0,y_0+n_yp_y]`. ``origin`` is the lower-left lattice corner,
+  not a pin center. Without ``axial_edges``, each connected column is one coarse cell.
+  Transport cells whose centroids lie outside the lattice are rejected.
 
-  With ``"global_aggregation"``, every CMFD coarse cell has a single owning MPI
-  rank even when its member fine cells span multiple ranks. Ownership is chosen
-  from the rank containing the largest number of member fine cells, with ties
-  resolved by the lower rank. Only the owner stores the full coarse cell and
-  owns the corresponding PETSc rows. Ranks that own member fine cells store
-  local fine-cell membership records so scalar fluxes, currents, and CMFD
-  corrections can be restricted to and prolonged from the coarse-cell owner.
+``{"type": "cartesian", "x_edges": [...], "y_edges": [...], "z_edges": [...]}``
+  One coarse cell per Cartesian box. Each edge list is optional and strictly increasing, and at
+  least one is required. An omitted list leaves that axis undivided. Use it for nonuniform
+  pitches, symmetry cuts through pins and assembly gaps.
 
-  ``"global_aggregation"`` currently has these restrictions:
+``{"type": "logical_volumes", "volumes": [lv, ...]}``
+  One coarse cell per connected part of each logical volume. Each transport-cell centroid must
+  lie in exactly one volume. Holes and overlaps are rejected. Rectangular logical volumes include
+  their boundaries, so do not place a boundary through a cell centroid.
 
-  * a coarse cell contains only connected fine cells and, by default, stays
-    within one mesh block;
-  * connectivity is based on face-neighbor adjacency;
-  * disconnected regions with the same block id become separate coarse cells;
-  * ``aggregation_size`` is a target, not a maximum: an undersized aggregate is
-    merged with one same-block neighbor, so a merged aggregate holds fewer than
-    twice ``aggregation_size`` fine cells, and boundary and disconnected
-    aggregates may contain fewer;
-  * setting ``allow_mixed_material_aggregation=True`` permits cross-block
-    aggregation; such coarse cells are homogenized as described below.
+``"identity"``
+  One coarse cell per transport cell. It is meant for testing and small problems.
 
-  The global mode gathers enough distributed cell and face metadata to build
-  the logical coarse graph consistently on all ranks. This is usually worthwhile
-  when rank-local aggregation creates too many small coarse cells, but it can
-  increase setup memory and communication compared with ``"local_aggregation"``.
+The lattice, Cartesian and logical-volume coarse meshes classify transport cells by centroid,
+so they do not depend on the MPI decomposition. A coarse cell may span ranks. It is owned by the
+rank owning its fine cell with the smallest global id. At setup, CMFD logs the number of coarse
+cells and the number of fine faces between coarse cells that do not lie on a coarse-mesh plane.
+A nonzero count means the transport mesh does not conform to the coarse mesh. The coarse
+currents are still exact sums of fine-face currents, but the coarse cells have ragged
+boundaries. CMFD also warns about intervals narrower than a tenth of the median width along
+their axis, which give poorly scaled coarse rows. Merge such an interval into a neighbor.
 
-  .. rubric:: Spatial homogenization
+The coarse mesh sets both the cost of the coarse solve and the convergence rate. Smaller coarse
+cells converge in fewer power iterations, down to the limit set by the transport mesh (see
+:ref:`cmfd-optically-thick`). A pin-cell coarse mesh with one coarse cell per transport axial
+layer is the recommended choice for reactor lattices.
 
-  CMFD coefficients are homogenized from the constituent fine cells of every
-  coarse cell, whether the coarse mesh is ``"identity"``, material pure, or
-  mixed material. For a fine cell :math:`i` and transport group :math:`g`,
-  define the integrated scalar flux
+Spatial homogenization
+----------------------
 
-  .. math::
+CMFD coefficients are homogenized from the constituent fine cells of every
+coarse cell, whether the coarse mesh is ``"identity"``, material pure, or
+mixed material. For a fine cell :math:`i` and transport group :math:`g`,
+define the integrated scalar flux
 
-     \Phi_{i,g}=\int_{V_i}\phi_g(\mathbf r)\,dV,
-     \qquad
-     W_{C,G}=\sum_{i\in C}\sum_{g\in G}\Phi_{i,g},
+.. math::
 
-  where :math:`C` is a coarse cell and :math:`G` is a CMFD energy group.
-  OpenSn collapses a transfer coefficient, such as scattering or production, as
+   \Phi_{i,g}=\int_{V_i}\phi_g(\mathbf r)\,dV,
+   \qquad
+   W_{C,G}=\sum_{i\in C}\sum_{g\in G}\Phi_{i,g},
 
-  .. math::
+where :math:`C` is a coarse cell and :math:`G` is a CMFD energy group.
+OpenSn collapses a transfer coefficient, such as scattering or production, as
 
-     \Sigma^C_{G\leftarrow G'} =
-     \frac{\displaystyle\sum_{i\in C}\sum_{g\in G}\sum_{g'\in G'}
-     \Sigma^i_{g\leftarrow g'}\Phi_{i,g'}}{W_{C,G'}}.
+.. math::
 
-  The removal coefficient uses total interaction minus within-:math:`G`
-  scattering in the numerator. These signed weights preserve the fine-mesh
-  reaction, transfer, and production rates of the transport iterate exactly,
-  including where the scalar flux is negative, so the converged CMFD operator
-  reproduces the transport balance. No sign or positivity condition is imposed
-  on the collapsed coefficients; for example, transport-corrected data with a
-  negative self-scatter are homogenized as given.
+   \Sigma^C_{G\leftarrow G'} =
+   \frac{\displaystyle\sum_{i\in C}\sum_{g\in G}\sum_{g'\in G'}
+   \Sigma^i_{g\leftarrow g'}\Phi_{i,g'}}{W_{C,G'}}.
 
-  The fine cells of :math:`C` that share a material block :math:`m` form one
-  material region with flux integral
-  :math:`\Phi_{C,m,g}=\sum_{i\in C,\,m(i)=m}\Phi_{i,g}`. The rates above are
-  linear in the flux, so they are the same summed over fine cells or over
-  regions. The magnitudes below are taken after this sum, as
-  :math:`|\Phi_{C,m,g}|`.
+The removal coefficient uses total interaction minus within-:math:`G`
+scattering in the numerator. These signed weights preserve the fine-mesh
+reaction, transfer, and production rates of the transport iterate exactly,
+including where the scalar flux is negative, so the converged CMFD operator
+reproduces the transport balance. No sign or positivity condition is imposed
+on the collapsed coefficients; for example, transport-corrected data with a
+negative self-scatter are homogenized as given.
 
-  :math:`W_{C,G}` is replaced only when it is zero, non-finite, or within
-  :math:`64\epsilon` of :math:`\sum_{m\in C}\sum_{g\in G}|\Phi_{C,m,g}|`
-  (cancellation). OpenSn then uses the physical volumes
-  :math:`V_i=\sum_n V_{i,n}` in place of :math:`\Phi_{i,g}` for that coarse group,
-  and the coarse rates of that group no longer match the transport rates. OpenSn
-  reports the number of coarse energy groups using this fallback once per
-  execution. The operator assembled at the start of each solver ``Execute()``,
-  before any transport iterate exists, uses volume weights throughout.
+The fine cells of :math:`C` that share a material block :math:`m` form one
+material region with flux integral
+:math:`\Phi_{C,m,g}=\sum_{i\in C,\,m(i)=m}\Phi_{i,g}`. The rates above are
+linear in the flux, so they are the same summed over fine cells or over
+regions. The magnitudes below are taken after this sum, as
+:math:`|\Phi_{C,m,g}|`.
 
-  The diffusion coefficient only sets the interface coupling that the current
-  correction completes, so it uses the region magnitudes :math:`|\Phi_{C,m,g}|`
-  (equal to :math:`\Phi_{C,m,g}` wherever that integral is positive), which keeps
-  it positive. OpenSn first spatially homogenizes the transport cross section for
-  each fine group, with :math:`\Sigma_{tr,m,g}` that of material :math:`m`,
+:math:`W_{C,G}` is replaced only when it is zero, non-finite, or within
+:math:`64\epsilon` of :math:`\sum_{m\in C}\sum_{g\in G}|\Phi_{C,m,g}|`
+(cancellation). OpenSn then uses the physical volumes
+:math:`V_i=\sum_n V_{i,n}` in place of :math:`\Phi_{i,g}` for that coarse group,
+and the coarse rates of that group no longer match the transport rates. OpenSn
+reports the number of coarse energy groups using this fallback once per
+execution. The operator assembled at the start of each solver ``Execute()``,
+before any transport iterate exists, uses volume weights throughout.
 
-  .. math::
+The diffusion coefficient only sets the interface coupling that the current
+correction completes, so it uses the region magnitudes :math:`|\Phi_{C,m,g}|`
+(equal to :math:`\Phi_{C,m,g}` wherever that integral is positive), which keeps
+it positive. OpenSn first spatially homogenizes the transport cross section for
+each fine group, with :math:`\Sigma_{tr,m,g}` that of material :math:`m`,
 
-     \overline{\Sigma}_{tr,C,g} =
-     \frac{\sum_{m\in C}\Sigma_{tr,m,g}|\Phi_{C,m,g}|}
-          {\sum_{m\in C}|\Phi_{C,m,g}|},
+.. math::
 
-  forms :math:`D_{C,g}=1/(3\overline{\Sigma}_{tr,C,g})`, and then weights
-  :math:`D_{C,g}` by :math:`\sum_{m\in C}|\Phi_{C,m,g}|` over the fine groups in
-  :math:`G`. This order is important: directly averaging material diffusion
-  coefficients would average the inverse transport cross section and gives a
-  different result in mixed materials. A zero or near-zero homogenized transport
-  cross section uses the same bounded diffusion coefficient as the material
-  cross-section implementation, :math:`D=1/(3\times10^{-12})`. Each coarse cell
-  has one diffusion coefficient per coarse group, and both sides of an interface
-  use it.
+   \overline{\Sigma}_{tr,C,g} =
+   \frac{\sum_{m\in C}\Sigma_{tr,m,g}|\Phi_{C,m,g}|}
+        {\sum_{m\in C}|\Phi_{C,m,g}|},
 
-  Delayed production is included when ``use_precursors=True``. In adjoint mode,
-  scattering and prompt and delayed production are transposed before
-  homogenization. The fine-group total cross sections are unchanged, but the
-  removal coefficient subtracts the within-:math:`G` scattering of the
-  transposed matrix with the adjoint flux weights. With energy collapse it
-  therefore differs from the forward removal: in a coarse group of two fine
-  groups with weights 0.75 and 0.25, a forward transfer of 0.3 from the first
-  to the second fine group subtracts 0.225, and the transposed transfer
-  subtracts 0.075. The diffusion coefficient uses the adjoint transport cross
-  section, which subtracts the P1 in-scatter instead of the P1 out-scatter.
+forms :math:`D_{C,g}=1/(3\overline{\Sigma}_{tr,C,g})`, and then weights
+:math:`D_{C,g}` by :math:`\sum_{m\in C}|\Phi_{C,m,g}|` over the fine groups in
+:math:`G`. This order is important: directly averaging material diffusion
+coefficients would average the inverse transport cross section and gives a
+different result in mixed materials. A zero or near-zero homogenized transport
+cross section uses the same bounded diffusion coefficient as the material
+cross-section implementation, :math:`D=1/(3\times10^{-12})`. Each coarse cell
+has one diffusion coefficient per coarse group, and both sides of an interface
+use it.
 
-  Homogenization is recomputed before every active CMFD correction from the
-  transport iterate of that power iteration. It does not modify the problem's
-  material cross sections or the fine-mesh transport operator.
+Delayed production is included when ``use_precursors=True``. In adjoint mode,
+scattering and prompt and delayed production are transposed before
+homogenization. The fine-group total cross sections are unchanged, but the
+removal coefficient subtracts the within-:math:`G` scattering of the
+transposed matrix with the adjoint flux weights. With energy collapse it
+therefore differs from the forward removal: in a coarse group of two fine
+groups with weights 0.75 and 0.25, a forward transfer of 0.3 from the first
+to the second fine group subtracts 0.225, and the transposed transfer
+subtracts 0.075. The diffusion coefficient uses the adjoint transport cross
+section, which subtracts the P1 in-scatter instead of the P1 out-scatter.
 
-``current_closure``
-  Face-current closure used in the CMFD operator. Valid choices are
-  ``"partial"`` and ``"net"``. The default is ``"partial"``.
+Homogenization is recomputed before every CMFD correction from the
+transport iterate of that power iteration. It does not modify the problem's
+material cross sections or the fine-mesh transport operator.
 
-  ``"partial"`` is the partial-current CMFD (pCMFD) closure: each outgoing
-  partial current on the two sides of a coarse face is modeled with half of the
-  diffusion coupling plus its own nonlinear correction, so both one-sided
-  transport partial currents are reproduced. ``"net"`` matches the signed
-  transport current across each coarse face using a single current-correction
-  term in the coarse diffusion operator. Both closures reproduce the
-  transport currents at convergence, so they have the same fixed point; they
-  differ in convergence rate and stability.
+Coarse Energy Groups
+====================
 
-  The partial-current closure is the recommended choice. It is typically stable
-  with an unrelaxed correction (``relaxation=1.0``) on both optically thin and
-  optically thick coarse cells. The net-current closure, like standard CMFD in
-  general, can oscillate or diverge when coarse cells are optically thick, and
-  it is not always stabilized by ``relaxation``. ``"net"`` can converge in
-  fewer iterations on some problems with optically thin coarse cells; use it
-  mainly for method comparisons or benchmark reproduction. On a face where an adjacent coarse
-  flux is essentially zero, so that the partial-current coefficients cannot be
-  formed, the partial-current closure uses the plain diffusion coupling for
-  that face.
+``coarse_groups`` sets the number of CMFD energy groups. The ``G`` transport groups are split
+into consecutive coarse groups of ``ceil(G / coarse_groups)`` groups, which can give fewer
+coarse groups than requested. The default ``"auto"`` keeps every group when ``G <= 16`` and
+targets 16 coarse groups otherwise. For example, 70 groups give 14 coarse groups of 5 and 361
+groups give 16 coarse groups of 23.
 
-``aggregation_size``
-  Target number of fine cells per aggregated CMFD coarse cell for
-  ``"local_aggregation"`` and ``"global_aggregation"``. The default is ``32``.
-  Larger values reduce the cost of the coarse solve but make the coarse
-  correction less detailed. Smaller values increase coarse-system cost but can
-  improve robustness. For lattice problems, values from roughly 8 to 64 are
-  typical exploration points. Use wall time and final k agreement, not only the
-  number of power iterations, when comparing values. An aggregate that spans
-  many mean free paths cannot represent the slowly converging spatial modes
-  inside it, so in optically thick regions large aggregates accelerate little;
-  use smaller aggregates (or ``coarse_mesh="identity"``) there.
+Fewer coarse groups make the coarse solve cheaper but couple the spectrum less tightly. On a 3D
+assembly with 8 transport groups, 8, 2 and 1 coarse groups converged in 62, 82 and more than 150
+updates. Keep at least the default unless the coarse solve dominates the run time.
 
-  By default, aggregates never cross mesh-block boundaries, so on finely divided
-  heterogeneous geometry (for example, pin cells with separate fuel, clad, and
-  moderator blocks) many aggregates are smaller than the target, and the
-  realized number of fine cells per coarse cell (printed at initialization) can
-  be well below ``aggregation_size``. When the error that remains after a few
-  transport sweeps varies within each aggregate, the outer convergence rate
-  stalls at roughly the unaccelerated sweep rate. Smaller aggregates remove
-  this limit; combining them with ``group_aggregation_size`` keeps the direct
-  coarse solve affordable.
+Convergence
+===========
 
-``allow_mixed_material_aggregation``
-  When ``True``, permits ``"local_aggregation"`` and ``"global_aggregation"``
-  coarse cells to cross mesh-block boundaries; their coefficients are
-  homogenized as described above. The default is ``False``, which keeps every
-  aggregate within one mesh block. This option changes the generated coarse topology:
-  for the same ``aggregation_size``, removing material boundaries generally
-  produces fewer, larger aggregates. Retune ``aggregation_size`` when comparing
-  the two policies.
+The power iteration solver decides convergence. It requires both of these:
 
-``group_aggregation_size``
-  Number of transport energy groups per CMFD coarse energy group. This is not
-  the final number of CMFD energy groups. The default is ``1``, which preserves
-  the full transport group structure in the low-order system. To target a
-  specific number of coarse groups, use::
+* ``k_tol``: the estimated relative error of k, which is the relative change between power
+  iterations divided by ``1 - rho``, with ``rho`` the estimated convergence rate.
+* ``fission_source_tol`` (default ``1.0e-6``): the estimated error of the fission-source shape,
+  which is the root-mean-square relative change of the normalized cell fission sources divided
+  by ``1 - rho``.
 
-     group_aggregation_size = (num_groups + target_coarse_groups - 1) // target_coarse_groups
+k settles long before the flux shape. A k-only test can stop while pin powers are still off by
+far more than ``k_tol``, so leave ``fission_source_tol`` on for any result that uses the flux.
+An update whose CMFD correction was skipped never ends the iteration.
 
-  For example, ``group_aggregation_size=16`` means 16 transport groups per CMFD
-  coarse group. By contrast, ``(num_groups + 15) // 16`` chooses an aggregation
-  size that gives about 16 total CMFD coarse groups.
+``sweeps_per_update`` on the power iteration solver sets the transport sweeps between
+corrections. The default is 1. Use 2. Two sweeps per update change the total number of sweeps
+little, with AAH and CBC sweeps alike. The C5G7 benchmark takes 33 sweeps with 1 and 40 with 2,
+and a 2D BEAVRS assembly takes 102 and 108. VERA problem 2A takes 68 and 55. Two sweeps can also
+make the power iteration converge where one sweep oscillates. A 2D BEAVRS quarter core oscillates
+with 1 and converges in 31 power iterations with 2.
 
-  A few coarse energy groups usually retain most of the acceleration while
-  reducing the coarse-system size, which can reduce the cost of each direct
-  factorization. Collapsing to a single coarse group gives up the spectral
-  coupling and can noticeably slow convergence when there is significant
-  upscattering.
+.. _cmfd-optically-thick:
 
-``relaxation``
-  Strictly positive relaxation factor for the scalar-flux correction. The default is
-  ``1.0``, the full correction, which the partial-current closure usually
-  tolerates. The correction limiter may reduce the damping for a single update or
-  skip that update if the correction would produce non-finite values or an
-  invalid k-eigenvalue, or would change the sign of the scalar flux in some
-  coarse cell and coarse group. A relaxation factor
-  :math:`\omega < 1` is more conservative and can reduce oscillation, but even an
-  ideal correction then leaves about a fraction :math:`1-\omega` of the error,
-  which increases the number of outer iterations.
-  Reduce it when the log shows repeatedly damped or skipped corrections, or when
-  using the net-current closure on optically thick coarse cells.
+Optically Thick Coarse Cells
+============================
 
-``update_wgs_max_its``
-  Maximum WGS iterations used for each transport update. The default is ``1``.
-  Increasing this can make each transport update more accurate, but also more
-  expensive. The usual fast CMFD workflow keeps this small and lets CMFD provide
-  the outer acceleration. For a tightly converged-transport workflow, increase
-  this value and set a tight ``update_wgs_abs_tol``.
+With one sweep per update, CMFD converges at a rate that approaches the scattering ratio as the
+coarse cells become optically thick. In a 1D slab with scattering ratio 0.99, the rate per
+update is:
 
-  The cost of an update also depends on the groupset ``inner_linear_method``.
-  Each ``"classic_richardson"`` iteration is one sweep, while a Krylov update
-  adds a few sweeps of fixed overhead to its iterations. Because CMFD provides the outer
-  acceleration, a few Richardson sweeps per update (for example
-  ``inner_linear_method="classic_richardson"`` with ``update_wgs_max_its`` of
-  about 4) are often the cheapest choice.
+.. list-table::
+   :header-rows: 1
 
-``update_wgs_abs_tol``
-  WGS absolute tolerance used for each transport update. The default is
-  ``1.0e-12``. When ``update_wgs_max_its=1``, this tolerance is normally not the
-  stopping criterion because only one WGS iteration is allowed. It matters when
-  ``update_wgs_max_its`` is large enough for the WGS solve to stop by residual
-  tolerance before reaching the iteration limit. Keep it well below
-  ``balance_residual_tolerance``: a transport update stopped at a loose
-  tolerance leaves an error that the correction cannot remove, and the balance
-  residual then stalls near that tolerance while the eigenvalue oscillates.
+   * - Coarse-cell thickness (mean free paths)
+     - Convergence rate per update
+   * - 1.35
+     - 0.67
+   * - 5.4
+     - 0.89
+   * - 22
+     - 0.99
 
-``balance_residual_tolerance``
-  Restricted transport-current balance residual required before CMFD permits the
-  outer power iteration to converge. This is an additional convergence check
-  beyond ``k_eff_change`` and prevents false convergence when the eigenvalue
-  appears stable but the CMFD-restricted transport balance is still
-  inconsistent.
+The coarse mesh cannot be finer than the transport mesh, so thick transport cells limit the
+rate whatever the coarse mesh. At setup CMFD computes each coarse cell's optical thickness along
+each axis from its flux-weighted transport cross section. It warns once if any coarse cell is
+thicker than 3 mean free paths, naming the thickest axis and quoting the expected rate.
 
-  This residual is a CMFD consistency guard, not an estimate of the
-  k-eigenvalue error, and it has no single correct absolute value: the
-  residual floor CMFD can actually reach depends on the coarse-mesh
-  construction, aggregation, and current closure, none of which are known in
-  advance. The default is ``1.0e-6``. A tighter value should not
-  automatically be assumed to be better: it should not be made
-  tighter than the requested outer ``k_tol`` without reason, since for large
-  3D problems an unnecessarily strict value can force iterations well past
-  the point where the eigenvalue has already reached the requested accuracy.
+The remedy is thinner transport cells along that axis: a 3D assembly with 28.75 cm axial layers
+converged at about 0.99 per update, and with 2 cm layers it converged in 62 updates.
 
-Developer And Debug Options
-===========================
+Coarse Linear Solver
+====================
 
-The following options remain available for investigations, regression tests, and
-method development. Production inputs should usually leave them at their
-defaults.
+CMFD estimates the memory of an LU factorization of the coarse operator with nested-dissection
+ordering. If it is at most 1 GiB per MPI rank, CMFD factorizes with SuperLU_DIST or MUMPS, or
+with PETSc's own LU on one rank. Otherwise it uses FGMRES with an additive Schwarz
+preconditioner and ILU(0) subdomain solves. CMFD logs the choice and the estimate at setup.
+Algebraic multigrid is not used: signed transport iterates can make the coarse operator lose the
+M-matrix property, and AMG then reports convergence for a wrong solution.
 
-``inactive_iterations``
-  Number of initial power iterations before applying CMFD corrections. The
-  default is ``0``. Inactive iterations retain the ``DiscreteOrdinatesProblem``
-  groupset WGS limits and tolerance. CMFD applies ``update_wgs_max_its`` and
-  ``update_wgs_abs_tol`` starting with the first active iteration. The power
-  iteration solver restores the problem's groupset settings when ``Execute()``
-  returns.
-  Increase this only when debugging startup behavior where
-  very early CMFD corrections are repeatedly rejected.
+A coarse solve counts as converged only if PETSc reports convergence and the true residual
+:math:`\|b - Ax\|` is small. The check applies to iterative and direct solves alike. It is a
+safeguard against solves that leave a large residual, such as a direct solve of a nearly singular
+operator. It does not bound the error of the solution, which can be large for an ill-conditioned
+coarse operator even when the residual is small. A correction whose coarse solve fails is skipped.
 
-``correction_max_attempts``, ``correction_min_damping``
-  Internal correction-limiter controls. They set how many times a rejected
-  correction is halved before it is skipped. A correction is rejected when it
-  would change the sign of the scalar flux in some coarse cell and coarse
-  group, or when it produces a non-finite flux or an invalid k-eigenvalue.
-  Leave these at their defaults unless you are debugging rejected corrections.
-  Lowering the minimum damping can hide instability; changing these should be
-  accompanied by checks of final k and scalar-flux behavior.
-
-``l_abs_tol``, ``l_rel_tol``, and ``max_iters``
-  Coarse linear solver tolerances and maximum iterations. Defaults are
-  ``1.0e-7``, ``1.0e-8``, and ``100``. An iterative coarse solve converges when
-  either the absolute or the relative residual tolerance is met; the relative
-  tolerance does not depend on the arbitrary normalization of the coarse flux.
-  These control the CMFD coarse linear solves, not the outer transport
-  convergence. CMFD corrections are not applied when a coarse
-  linear solve fails to converge, because an unconverged low-order solve can
-  produce a misleading correction. If this occurs with an iterative coarse
-  solver, use a direct coarse solve for modest coarse systems, increase
-  ``max_iters``, or provide stronger PETSc solver options. The default
-  direct-solve threshold is intended to avoid automatic LU factorization of
-  very large coarse systems; direct solves are limited by host memory and
-  factorization cost.
-
-``pi_max_its``, ``pi_k_tol``, and ``pi_phi_tol``
-  Coarse k-eigenvalue power-iteration controls. ``pi_max_its`` must be at least 1.
-  Defaults are ``50``, ``1.0e-8``, and ``1.0e-6``. These control the inner CMFD
-  coarse k solve and are separate from ``PowerIterationKEigenSolver(k_tol=...)``.
-  The coarse power iteration stops when the relative change of the coarse
-  eigenvalue is below ``pi_k_tol`` and the estimated error of the coarse flux
-  shape is below ``pi_phi_tol``, or after ``pi_max_its`` iterations. The shape
-  error is estimated as the relative L2 change of the production-normalized
-  coarse flux divided by :math:`1-\rho`, where :math:`\rho` is the convergence
-  rate estimated from successive changes, so at least two iterations are done.
-  The eigenvalue converges much faster than the shape; stopping on the
-  eigenvalue alone leaves the slowly converging fundamental mode unaccelerated,
-  and the number of power iterations then grows with the dominance ratio of the
-  problem. Each coarse iteration is one coarse linear solve (a back substitution
-  with the direct coarse solver).
-
-``coarse_solver_policy`` and ``coarse_direct_solve_threshold``
-  PETSc coarse-solver selection controls. ``"auto"`` uses a direct PETSc LU
-  solve for coarse systems below ``coarse_direct_solve_threshold`` global
-  unknowns and an iterative GMRES solve preconditioned with hypre BoomerAMG
-  otherwise. The default threshold
-  is ``150000`` global unknowns. Force ``"direct"`` only for small or moderate
-  coarse systems that fit comfortably in host memory. Use ``"iterative"`` when
-  direct factorization is too expensive. A coarse solve counts as converged
-  only if PETSc reports convergence and the true residual norm
-  :math:`\|b - A x\|` is at most 100 times
-  :math:`\max(\texttt{l\_rel\_tol}\,\|b\|, \texttt{l\_abs\_tol})`. The
-  check applies to iterative and direct solves alike. It is a safeguard against
-  solves that leave a large residual, such as a direct solve of a nearly
-  singular operator. It does not bound the error of the solution, which can be
-  large for an ill-conditioned coarse operator even when the residual is small.
-  If a coarse solve does not converge, CMFD stops the coarse power iteration
-  and skips the correction for that power iteration. Then increase
-  ``max_iters``, use ``"petsc_options"`` with a stronger PETSc configuration,
-  reduce coarse-system stiffness with finer aggregation, or switch to
-  ``"direct"`` when memory permits. If several consecutive corrections are
-  skipped, CMFD logs a warning that the power iteration is proceeding without
-  acceleration. After a solve, ``PowerIterationKEigenSolver.IsConverged()`` and
-  ``CMFDAcceleration.GetNumSkippedCorrections()`` report whether the solve
-  converged and how many corrections were skipped.
-
-``petsc_options``
-  Additional PETSc options for developer experiments. This is normally empty.
-  Options are intended for CMFD coarse-solver experiments, not for routine input
-  tuning.
+``petsc_options`` passes PETSc options to the coarse solver after the automatic choice. The
+options prefix is the accelerator ``name`` with nothing in between, for example
+``name="cmfd_"`` and ``petsc_options="-cmfd_ksp_type fgmres -cmfd_pc_type asm"``.
 
 Multi-Groupset Behavior
 =======================
 
-CMFD is constructed as one accelerator for the transport problem, not one
-accelerator per groupset. For problems with multiple groupsets, each transport
-update is one across-groupset (AGS) pass over the groupsets, or up to
-``max_ags_iterations`` passes if the problem options set it, each with
-``update_wgs_max_its`` within-group iterations; CMFD then restricts the full
-all-groups scalar flux to one shared coarse system. The coarse solve therefore
-couples all transport groups represented in the problem, regardless of how those
-groups are partitioned into groupsets, so one pass per update is enough.
+CMFD is one accelerator for the problem, not one per groupset. Each transport update is one
+across-groupset pass, or up to ``max_ags_iterations`` passes if the problem sets it, with
+``sweeps_per_update`` within-group iterations per groupset. CMFD restricts the all-groups scalar
+flux to one coarse system, which couples all transport groups whatever the groupsets are, so one
+pass per update is enough.
 
 Diagnostics
 ===========
 
-Normal outer-iteration verbosity prints compact PI and CMFD status lines. The
-PI line reports the power-iteration state. When CMFD acceleration is active, a
-separate line reports whether the CMFD-specific convergence gate is satisfied:
+The outer-iteration log line of the power iteration reports k, its change, the fission-source
+change and the sweep count. When a correction is skipped, it adds ``CMFD correction = skipped``
+with the reason. At setup, CMFD logs the coarse mesh, the coarse groups, the number of coarse
+unknowns and the coarse linear solver.
 
-.. code-block:: text
+``verbose=True`` adds stable ``CMFD_ACCEL`` lines for the first iterations and every 25th one:
 
-   PI iteration = 24, k_eff = 0.9293662, k_eff_change = 5.74378e-09; WGS = iteration_limit
-   CMFD convergence check = not_satisfied, transport-current balance residual = 2.300000e-06 (balance_residual_tolerance = 1.000000e-06)
+* the coarse-mesh statistics and the coarse-cell optical thickness along each axis,
+* a ``CMFD operator signs`` line with the number of nonpositive diagonals, positive
+  off-diagonals and negative coarse fluxes, which make the coarse operator lose the M-matrix
+  property,
+* the operator and transport-current balance residuals,
+* per-update correction metrics and the timing of restriction, homogenization, assembly, coarse
+  solve, prolongation and transport.
 
-The PI solver declares convergence only when both the eigenvalue tolerance and
-the CMFD convergence check are satisfied. If a correction is rejected, the line
-also reports ``correction = skipped`` with a reason, for example:
+Skipped Corrections
+===================
 
-.. code-block:: text
+CMFD scales the transport flux of each coarse cell and coarse group by the ratio of corrected to
+uncorrected coarse flux. A negative or non-finite ratio would flip or destroy the flux it scales,
+and where the restricted transport flux is itself negative a positive ratio of two negative
+values can be large and would amplify it. Negative restricted fluxes occur with a discontinuous
+discretization where the flux falls steeply, for example in reflectors and in long thin cells.
+Those coarse values keep the transport flux, scaled to the amplitude of the coarse solution, and the rest of
+the correction is applied. All ratios tend to one at convergence, so the converged solution does
+not depend on this. CMFD warns the first time it happens, and ``verbose=True`` reports the count
+of each update and lists where. A zero ratio is applied: the coarse solution is zero in a
+source-free region that no face couples to the rest of the problem, for example a piece of a mesh
+that does not share faces with its neighbors.
 
-   CMFD convergence check = not_satisfied, transport-current balance residual = 7.140531e-04 (balance_residual_tolerance = 1.000000e-05), correction = skipped (sign_change_guard)
+In the coarse solve itself, a coarse value whose restricted transport flux is not positive is
+held at that flux, scaled with the coarse iterate, because the partial-current closure divides by
+it. Its neighbors couple to it through their transport partial currents. The converged solution
+does not depend on this either. ``verbose=True`` prints a line with the number of negative
+restricted fluxes in each coarse group.
 
-Set ``verbose=True`` on ``CMFDAcceleration`` to print stable ``CMFD_ACCEL``
-diagnostic lines for early iterations and periodic later iterations. These are
-intended for regression tests and performance studies. The timing category
-reports restriction, homogenization, the neighbor coarse-flux and
-diffusion-coefficient exchange, operator assembly, coarse solve,
-prolongation/update, and transport time separately.
-
-Correction Safeties And Warnings
-================================
-
-CMFD never applies an untrusted coarse correction. If a safety check rejects a
-correction, the current power iteration uses the unaccelerated transport update
-and its raw transport k-eigenvalue update. This applies to every skipped
-correction, so power iteration can continue even when the low-order correction
-is temporarily unusable.
-
-The most common skip reasons are:
+CMFD never applies an untrusted correction. A skipped correction keeps the transport update and
+its raw k for that power iteration, so the power iteration continues unaccelerated. The reasons
+are:
 
 ``coarse_linear_solve_not_converged``
-  One or more PETSc coarse linear solves did not converge within ``max_iters``,
-  or a solve left a true residual too large to trust.
-  The correction is skipped because an unconverged low-order solve can move the
-  high-order problem in the wrong direction. If the coarse system is modest,
-  switch to ``coarse_solver_policy="direct"``. If direct is too expensive,
-  increase ``max_iters`` or use ``coarse_solver_policy="petsc_options"`` with a
-  stronger iterative PETSc configuration.
-
-``coarse_eigensolve_breakdown``
-  The coarse power iteration produced a coarse fission production or
-  k-eigenvalue that is not positive and finite. Signed transport iterates, most
-  often in the first power iterations or in reflectors, can give coarse
-  operator entries of the wrong sign, and the dominant eigenvector of such an
-  operator need not be positive. Occasional early skips are harmless. If they
-  persist, use finer spatial or energy aggregation, or set
-  ``inactive_iterations`` so that CMFD starts from a smoother transport iterate.
-
-``sign_change_guard``
-  Every attempted correction, after damping, would have changed the sign of the
-  scalar flux in at least one coarse cell and coarse group. CMFD scales the
-  transport flux of each coarse cell and coarse group by the ratio of the
-  corrected to the uncorrected coarse flux, so a negative ratio would flip the
-  sign of that flux. A zero ratio is allowed. It sets the flux to zero, which is
-  the coarse solution in a source-free region that no face couples to the rest
-  of the problem. Negative values the transport update
-  already has, which discontinuous discretizations can produce, are only
-  rescaled and do not trigger the guard. First reduce ``relaxation`` or use
-  finer spatial/energy aggregation. Repeated skips are usually a sign that the
-  coarse correction is too aggressive for the current transport state.
+  A coarse linear solve failed or left a large true residual. Use ``petsc_options`` for a
+  stronger solver, or reduce the coarse system with fewer coarse groups or larger coarse cells.
 
 ``invalid_k`` or ``nonfinite_flux``
-  The candidate correction produced a non-positive/non-finite k-eigenvalue or
-  non-finite scalar flux. Treat this as an unstable correction: reduce
-  ``relaxation``, use less aggressive aggregation, and check the coarse solver
-  settings.
+  The corrected flux gives a nonpositive or non-finite k or flux.
 
-Warnings about skipped corrections are actionable. Occasional early skips can
-be harmless because the unaccelerated transport update is retained. Persistent
-skips usually mean that CMFD is not accelerating the calculation effectively and
-the input should be adjusted.
+After five consecutive skips CMFD warns that the power iteration proceeds without acceleration.
+``CMFDAcceleration.GetNumSkippedCorrections()`` reports the count after a solve.
 
-Supported Scope
-===============
+Migrating From Earlier Parameters
+=================================
 
-The CMFD accelerator currently supports:
+Earlier releases exposed the method's internals as parameters. These names are still accepted
+for one release with a warning that names the replacement:
 
-* one or more groupsets,
-* one shared all-groups CMFD coarse system applied after the AGS transport
-  update,
-* identity coarse meshes,
-* rank-local and cross-rank (``global_aggregation``) cell aggregation, within
-  one mesh block by default or across blocks with
-  ``allow_mixed_material_aggregation=True``,
-* optional energy-group aggregation in the CMFD low-order system,
-* reflecting and non-reflecting boundary treatment,
-* scalar-flux correction limiting,
-* P0 CMFD acceleration for transport problems with P0 or higher-order
-  scattering.
+.. list-table::
+   :header-rows: 1
 
-The accelerator is scalar CMFD. Higher-order transport scattering is supported
-by the transport solve, but CMFD itself accelerates only the zeroth moment
-scalar-flux balance.
+   * - Earlier parameter
+     - Replacement
+   * - ``aggregation_size=n``
+     - ``coarse_mesh={"type": "local_aggregation", "size": n}``
+   * - ``group_aggregation_size=s``
+     - ``coarse_groups=ceil(G / s)``
+   * - ``update_wgs_max_its=n``
+     - ``sweeps_per_update=n`` on the power iteration solver
+   * - ``balance_residual_tolerance``
+     - ``fission_source_tol`` on the power iteration solver
+   * - ``current_closure="partial"``
+     - Remove it. ``"net"`` is an error.
+   * - ``relaxation=1``
+     - Remove it. Other values are errors.
+   * - ``inactive_iterations=0``
+     - Remove it. Other values are errors.
+   * - ``update_wgs_abs_tol``, ``correction_max_attempts``, ``correction_min_damping``
+     - Remove them.
+   * - ``coarse_solver_policy``, ``coarse_direct_solve_threshold``, ``l_abs_tol``,
+       ``l_rel_tol``, ``max_iters``
+     - Remove them, or configure the coarse solver with ``petsc_options``.
+   * - ``pi_max_its``, ``pi_k_tol``, ``pi_phi_tol``
+     - Remove them.
 
-Limitations
-===========
+Results change only through the iterative path: a converged solution is the same. Iteration
+counts change, mostly downward, because corrections are now unrelaxed and the coarse eigensolve
+is converged.
 
-Current limitations are:
+Supported Scope And Limitations
+===============================
 
-* CMFD is integrated with :py:class:`pyopensn.solver.PowerIterationKEigenSolver`,
-  not :py:class:`pyopensn.solver.NonLinearKEigenSolver`.
-* CMFD is not supported in 1D spherical geometry. The coarse balance uses mesh
-  cell volumes and face areas; in 1D spherical geometry the face areas are
-  spherical (zero at the center) but the volumes are slab lengths. RZ geometry
-  is supported.
-* Local aggregation is rank-local. Coarse cells are not formed across MPI rank
-  boundaries.
-* The CMFD coarse solve uses PETSc on the host. GPU CMFD solves are not
-  selected automatically.
-* The correction is a scalar-flux correction. Angular flux and higher scattering
-  moments remain governed by the high-order transport solve.
+CMFD supports one or more groupsets, AAH and CBC sweeps, all the coarse meshes above,
+reflecting and non-reflecting boundaries, delayed neutrons, adjoint problems, and transport with
+any scattering order. CMFD itself accelerates the scalar-flux balance.
+
+Current limitations:
+
+* CMFD works with :py:class:`pyopensn.solver.PowerIterationKEigenSolver`, not
+  :py:class:`pyopensn.solver.NonLinearKEigenSolver`.
+* CMFD is not supported in 1D spherical geometry. The coarse balance uses cell volumes and face
+  areas, and in 1D spherical geometry the face areas are spherical while the volumes are slab
+  lengths. RZ geometry is supported.
+* The coarse solve runs on the host with PETSc.
+* The correction scales the scalar flux. The angular flux and the higher scattering moments
+  follow from the next transport sweep.

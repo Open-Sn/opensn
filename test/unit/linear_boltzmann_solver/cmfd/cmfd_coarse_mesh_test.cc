@@ -1,4 +1,5 @@
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
@@ -6,11 +7,32 @@
 #include "gtest/gtest.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_vector_tools.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
+#include <functional>
 #include <limits>
 #include <stdexcept>
 
 using namespace opensn;
+
+namespace
+{
+
+class PredicateLogicalVolume : public LogicalVolume
+{
+public:
+  explicit PredicateLogicalVolume(std::function<bool(const Vector3&)> predicate)
+    : predicate_(std::move(predicate))
+  {
+  }
+
+  bool Inside(const Vector3& point) const override { return predicate_(point); }
+
+private:
+  std::function<bool(const Vector3&)> predicate_;
+};
+
+} // namespace
 
 TEST(CMFDCoarseMesh, IdentityPreservesLocalCellGeometry)
 {
@@ -263,6 +285,169 @@ TEST(CMFDCoarseMesh, MixedMaterialGlobalAggregationCanMergeAcrossRanks)
   EXPECT_EQ(mixed.NumGlobalCells(), (static_cast<std::size_t>(opensn::mpi_comm.size()) + 1) / 2);
 }
 
+TEST(CMFDCoarseMesh, LogicalVolumeOverlayMergesMaterialsAndIsDistributed)
+{
+  const auto num_fine_cells = 4U * static_cast<unsigned int>(opensn::mpi_comm.size());
+  const auto length = static_cast<double>(num_fine_cells);
+  auto grid = BuildLineMesh(length, num_fine_cells, 0.0);
+
+  const auto SetBlock = [&](Cell& cell)
+  { cell.block_id = cell.centroid.z < 0.25 * length ? 1U : 0U; };
+  for (auto& cell : grid->GetLocalCells())
+    SetBlock(*cell);
+  for (const auto ghost_id : grid->GetGhostGlobalIDs())
+    SetBlock(grid->GetGlobalCell(ghost_id));
+
+  std::vector<std::shared_ptr<LogicalVolume>> regions;
+  regions.push_back(std::make_shared<PredicateLogicalVolume>([length](const Vector3& point)
+                                                             { return point.z < 0.5 * length; }));
+  regions.push_back(std::make_shared<PredicateLogicalVolume>([length](const Vector3& point)
+                                                             { return point.z >= 0.5 * length; }));
+
+  const auto coarse_mesh = CMFDCoarseMesh::BuildLogicalVolumeOverlay(*grid, regions);
+  ASSERT_EQ(coarse_mesh.NumGlobalCells(), 2);
+  ASSERT_EQ(coarse_mesh.LocalFineCellMemberships().size(), grid->GetLocalCellCount());
+
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const uint64_t expected_coarse_id = cell->centroid.z < 0.5 * length ? 0 : 1;
+    EXPECT_EQ(coarse_mesh.MapFineCell(cell->global_id), expected_coarse_id);
+  }
+
+  const std::array<double, 2> expected_volumes = {0.5 * length, 0.5 * length};
+  for (uint64_t coarse_id = 0; coarse_id < expected_volumes.size(); ++coarse_id)
+  {
+    const double local_volume = coarse_mesh.HasLocalCoarseCell(coarse_id)
+                                  ? coarse_mesh.LocalCellFromGlobalID(coarse_id).volume
+                                  : 0.0;
+    double global_volume = 0.0;
+    opensn::mpi_comm.all_reduce(local_volume, global_volume, mpi::op::sum<double>());
+    EXPECT_DOUBLE_EQ(global_volume, expected_volumes[coarse_id]);
+  }
+
+  std::size_t local_internal_faces = 0;
+  for (const auto& coarse_cell : coarse_mesh.LocalCells())
+    local_internal_faces +=
+      static_cast<std::size_t>(std::count_if(coarse_cell.faces.begin(),
+                                             coarse_cell.faces.end(),
+                                             [](const auto& face) { return face.has_neighbor; }));
+  std::size_t global_internal_faces = 0;
+  opensn::mpi_comm.all_reduce(
+    local_internal_faces, global_internal_faces, mpi::op::sum<std::size_t>());
+  EXPECT_EQ(global_internal_faces, 2);
+}
+
+TEST(CMFDCoarseMesh, LogicalVolumeOverlayRejectsHolesAndOverlaps)
+{
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  const auto all = std::make_shared<PredicateLogicalVolume>([](const Vector3&) { return true; });
+  const auto left =
+    std::make_shared<PredicateLogicalVolume>([](const Vector3& point) { return point.z < 2.0; });
+
+  EXPECT_THROW(CMFDCoarseMesh::BuildLogicalVolumeOverlay(*grid, {all, all}), std::logic_error);
+  EXPECT_THROW(CMFDCoarseMesh::BuildLogicalVolumeOverlay(*grid, {left}), std::logic_error);
+}
+
+TEST(CMFDCoarseMesh, LogicalVolumeOverlaySplitsDisconnectedRegion)
+{
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  const auto ends = std::make_shared<PredicateLogicalVolume>(
+    [](const Vector3& point) { return point.z < 1.0 or point.z >= 3.0; });
+  const auto middle = std::make_shared<PredicateLogicalVolume>(
+    [](const Vector3& point) { return point.z >= 1.0 and point.z < 3.0; });
+
+  const auto coarse_mesh = CMFDCoarseMesh::BuildLogicalVolumeOverlay(*grid, {ends, middle});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 3);
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const auto coarse_id = coarse_mesh.MapFineCell(cell->global_id);
+    if (cell->centroid.z < 1.0)
+      EXPECT_EQ(coarse_id, 0);
+    else if (cell->centroid.z >= 3.0)
+      EXPECT_EQ(coarse_id, 1);
+    else
+      EXPECT_EQ(coarse_id, 2);
+  }
+}
+
+TEST(CMFDCoarseMesh, CartesianOverlayUsesHalfOpenIntervalsAndValidatesCoverage)
+{
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  const auto coarse_mesh = CMFDCoarseMesh::BuildCartesianOverlay(*grid, {}, {}, {0.0, 1.5, 4.0});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 2);
+  for (const auto& cell : grid->GetLocalCells())
+  {
+    const uint64_t expected_id = cell->centroid.z < 1.5 ? 0 : 1;
+    EXPECT_EQ(coarse_mesh.MapFineCell(cell->global_id), expected_id);
+  }
+
+  EXPECT_THROW(CMFDCoarseMesh::BuildCartesianOverlay(*grid, {}, {}, {}), std::invalid_argument);
+  EXPECT_THROW(CMFDCoarseMesh::BuildCartesianOverlay(*grid, {}, {}, {0.0, 1.0, 1.0}),
+               std::invalid_argument);
+  EXPECT_THROW(CMFDCoarseMesh::BuildCartesianOverlay(*grid, {}, {}, {0.0, 3.0}), std::logic_error);
+}
+
+TEST(CMFDCoarseMesh, CartesianOverlayReportsConformingInterfaces)
+{
+  // A 4x4 mesh of unit squares split into 2x2 overlay regions along x = 2 and y = 2. Each plane
+  // carries four unit-length fine faces, and every one of them lies on the plane.
+  auto grid = BuildSquareMesh(4.0, 4, 0.0);
+  const auto coarse_mesh =
+    CMFDCoarseMesh::BuildCartesianOverlay(*grid, {0.0, 2.0, 4.0}, {0.0, 2.0, 4.0}, {});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 4);
+  const auto& overlay_diagnostics = coarse_mesh.OverlayDiagnostics();
+  ASSERT_TRUE(overlay_diagnostics.has_value());
+  const auto diagnostics = overlay_diagnostics.value_or(CMFDOverlayDiagnostics{});
+  EXPECT_EQ(diagnostics.num_interface_faces, 8);
+  EXPECT_EQ(diagnostics.num_nonconforming_faces, 0);
+  EXPECT_DOUBLE_EQ(diagnostics.interface_area, 8.0);
+  EXPECT_DOUBLE_EQ(diagnostics.nonconforming_area, 0.0);
+  EXPECT_EQ(diagnostics.num_thin_intervals, 0);
+  EXPECT_DOUBLE_EQ(diagnostics.min_interval_width_ratio, 1.0);
+}
+
+TEST(CMFDCoarseMesh, CartesianOverlayReportsNonconformingInterfaces)
+{
+  // The plane x = 1.5 passes through the second column of cells. Cells are assigned by centroid,
+  // so the region interface follows the fine faces at x = 1, which do not lie on the plane.
+  auto grid = BuildSquareMesh(4.0, 4, 0.0);
+  const auto coarse_mesh = CMFDCoarseMesh::BuildCartesianOverlay(*grid, {0.0, 1.5, 4.0}, {}, {});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 2);
+  const auto& overlay_diagnostics = coarse_mesh.OverlayDiagnostics();
+  ASSERT_TRUE(overlay_diagnostics.has_value());
+  const auto diagnostics = overlay_diagnostics.value_or(CMFDOverlayDiagnostics{});
+  EXPECT_EQ(diagnostics.num_interface_faces, 4);
+  EXPECT_EQ(diagnostics.num_nonconforming_faces, 4);
+  EXPECT_DOUBLE_EQ(diagnostics.nonconforming_area, 4.0);
+  EXPECT_EQ(diagnostics.num_thin_intervals, 0);
+}
+
+TEST(CMFDCoarseMesh, CartesianOverlayReportsThinOccupiedIntervals)
+{
+  // The interval [0.45, 0.55) holds the centroid of the first cell and is 0.1 wide, against an
+  // upper-median occupied width of 3.45. The empty interval [0, 0.45) is not counted.
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  const auto coarse_mesh =
+    CMFDCoarseMesh::BuildCartesianOverlay(*grid, {}, {}, {0.0, 0.45, 0.55, 4.0});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 2);
+  const auto& overlay_diagnostics = coarse_mesh.OverlayDiagnostics();
+  ASSERT_TRUE(overlay_diagnostics.has_value());
+  const auto diagnostics = overlay_diagnostics.value_or(CMFDOverlayDiagnostics{});
+  EXPECT_EQ(diagnostics.num_thin_intervals, 1);
+  EXPECT_NEAR(diagnostics.min_interval_width_ratio, 0.1 / 3.45, 1.0e-12);
+  EXPECT_EQ(diagnostics.num_interface_faces, 1);
+  EXPECT_EQ(diagnostics.num_nonconforming_faces, 1);
+}
+
+TEST(CMFDCoarseMesh, LogicalVolumeOverlayHasNoCartesianDiagnostics)
+{
+  auto grid = BuildLineMesh(4.0, 4, 0.0);
+  const auto all = std::make_shared<PredicateLogicalVolume>([](const Vector3&) { return true; });
+  const auto coarse_mesh = CMFDCoarseMesh::BuildLogicalVolumeOverlay(*grid, {all});
+  EXPECT_EQ(coarse_mesh.NumGlobalCells(), 1);
+  EXPECT_FALSE(coarse_mesh.OverlayDiagnostics().has_value());
+}
+
 TEST(CMFDBalance, RelativeResidualIsIndependentOfFluxScale)
 {
   for (const double scale : {1.0, 1.0e-200, 1.0e200})
@@ -290,12 +475,16 @@ TEST(CMFDCorrection, SignChangingRatiosAreCountedAndExistingSignsAreKept)
 {
   const double nan = std::numeric_limits<double>::quiet_NaN();
   const double inf = std::numeric_limits<double>::infinity();
-  // Positive and negative uncorrected values that the correction only rescales.
-  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 3.0}, {5.0, -0.5, 1.0e-300}), 0U);
+  // Positive uncorrected values that the correction only rescales.
+  EXPECT_EQ(CMFDCountSignChangingRatios({1.0, 3.0}, {5.0, 1.0e-300}), 0U);
+  // A negative uncorrected value is not rescaled, even by a positive ratio, which could amplify
+  // it.
+  EXPECT_EQ(CMFDCountSignChangingRatios({-2.0, -1.0e-3}, {-0.5, -10.0}), 2U);
   // Flipped signs and non-finite corrected values change or destroy the fine flux.
   EXPECT_EQ(CMFDCountSignChangingRatios({1.0, -2.0, 4.0, 5.0}, {-1.0, 2.0, nan, inf}), 4U);
-  // A zero corrected value sets the fine flux to zero without changing its sign.
-  EXPECT_EQ(CMFDCountSignChangingRatios({3.0, -3.0}, {0.0, -0.0}), 0U);
+  // A zero corrected value sets the fine flux to zero without a sign change, as the coarse
+  // solution of a decoupled source-free region does. Negative zero is zero.
+  EXPECT_EQ(CMFDCountSignChangingRatios({3.0, 3.0}, {0.0, -0.0}), 0U);
   // A negligible uncorrected value is not rescaled, so its corrected value is irrelevant.
   EXPECT_EQ(CMFDCountSignChangingRatios({0.0, 1.0e-15, -1.0e-15}, {-1.0, -1.0, 1.0}), 0U);
   // A non-finite uncorrected value has no admissible ratio.

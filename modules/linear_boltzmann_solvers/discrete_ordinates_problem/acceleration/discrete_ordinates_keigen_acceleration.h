@@ -92,6 +92,12 @@ public:
    */
   virtual std::string GetPowerIterationConvergenceInfo() const { return {}; }
 
+  /**
+   * Return whether this method runs the owning solver's sweeps_per_update transport sweeps
+   * between its corrections. Methods that return false ignore that setting.
+   */
+  virtual bool UsesSweepsPerUpdate() const { return false; }
+
   const std::string& GetName() const { return name_; }
 
 protected:

@@ -71,8 +71,8 @@ def solve(use_cmfd):
         sweep_type=globals().get("sweep_type", "AAH"),
     )
     if use_cmfd:
-        cmfd = CMFDAcceleration(problem=problem, aggregation_size=8,
-                                balance_residual_tolerance=1.0e-7)
+        cmfd = CMFDAcceleration(problem=problem,
+                                coarse_mesh={"type": "local_aggregation", "size": 8})
         solver = PowerIterationKEigenSolver(problem=problem, acceleration=cmfd, k_tol=1.0e-8,
                                             max_iters=400)
     else:

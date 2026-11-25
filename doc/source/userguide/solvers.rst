@@ -840,7 +840,7 @@ At a high level, the solver:
    and turns around, so one is not taken as convergence. The eigenvalue can
    settle while the flux shape still changes, which the fission-source test
    detects. With an acceleration method, the method must also allow convergence
-   (for CMFD, see ``balance_residual_tolerance``)
+   (CMFD withholds it only after an update whose correction was skipped)
 6. in adjoint mode, reorients the solution: each direction's angular flux is
    swapped with that of its opposite direction and each flux moment of degree
    :math:`\ell` is multiplied by :math:`(-1)^\ell` (see :doc:`../theory/adjoint`). This happens after the final restart dump, so

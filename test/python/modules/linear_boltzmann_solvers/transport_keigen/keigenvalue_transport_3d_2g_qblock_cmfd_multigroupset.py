@@ -93,10 +93,7 @@ if __name__ == "__main__":
 
     cmfd = CMFDAcceleration(
         problem=phys,
-        aggregation_size=8,
-        group_aggregation_size=1,
-        relaxation=1.0,
-        balance_residual_tolerance=10.0 * k_tolerance,
+        coarse_mesh={"type": "local_aggregation", "size": 8},
         verbose=True,
     )
     k_solver = PowerIterationKEigenSolver(

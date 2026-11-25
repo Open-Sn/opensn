@@ -33,11 +33,8 @@ if __name__ == "__main__":
     n_azimuthal = 12
     wgs_atol = 1.0e-8
     wgs_maxits = 100
-    cmfd_mesh = "local_aggregation"
     aggregation_size = 16
     cmfd_verbose = bool(globals().get("cmfd_verbose", False))
-    cmfd_update_wgs_atol = 1.0e-4
-    cmfd_update_wgs_maxits = 5
 
     zmax = 14.0
     meshgen = ExtruderMeshGenerator(
@@ -119,12 +116,7 @@ if __name__ == "__main__":
 
     cmfd = CMFDAcceleration(
         problem=phys,
-        coarse_mesh=cmfd_mesh,
-        aggregation_size=aggregation_size,
-        update_wgs_abs_tol=cmfd_update_wgs_atol,
-        update_wgs_max_its=cmfd_update_wgs_maxits,
-        relaxation=1.0,
-        balance_residual_tolerance=10.0 * k_tolerance,
+        coarse_mesh={"type": "local_aggregation", "size": aggregation_size},
         verbose=cmfd_verbose,
     )
     k_solver = PowerIterationKEigenSolver(

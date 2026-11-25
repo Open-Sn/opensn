@@ -9,10 +9,10 @@ test independently integrates the transport iterate in each fine cell and checks
 reaction-rate preservation for the interaction matrices and transport-cross-section
 homogenization followed by energy collapse for the diffusion coefficient.
 
-One active power iteration assembles the CMFD operator from the post-sweep
-transport iterate. A negligible relaxation (1e-30) makes every prolongation ratio
-round to exactly one, so the final scalar flux is bitwise the iterate CMFD
-homogenized and the test can integrate it independently.
+One power iteration assembles the CMFD operator from the post-sweep transport
+iterate. Its coarse linear solve is made to fail, so the correction is skipped and
+the final scalar flux is bitwise the iterate CMFD homogenized. The test can then
+integrate it independently.
 
 With negative_self_scatter=True the data are put in transport-corrected P0 form
 with a negative fast-group self-scatter, which leaves removal unchanged. The
@@ -40,6 +40,12 @@ if "opensn_console" not in globals():
     from pyopensn.solver import CMFDAcceleration, DiscreteOrdinatesProblem
     from pyopensn.solver import PowerIterationKEigenSolver
     from pyopensn.xs import MultiGroupXS
+
+
+# A coarse linear solve limited to zero iterations fails, so CMFD homogenizes the transport
+# iterate and then skips its correction: the final scalar flux is the iterate it homogenized.
+SKIP_CORRECTION = ("-CMFDAccelerationksp_type gmres -CMFDAccelerationksp_max_it 0 "
+                   "-CMFDAccelerationpc_type jacobi")
 
 
 def max_abs_difference(actual, expected):
@@ -226,11 +232,10 @@ if __name__ == "__main__":
     adjoint = globals().get("adjoint", False)
     cmfd_options = {
         "problem": problem,
-        "coarse_mesh": "local_aggregation" if size == 1 else "global_aggregation",
-        "aggregation_size": 2,
-        "allow_mixed_material_aggregation": True,
-        "group_aggregation_size": 2 if collapse_energy else 1,
-        "relaxation": 1.0e-30,
+        "coarse_mesh": {"type": "local_aggregation" if size == 1 else "global_aggregation",
+                        "size": 2},
+        "coarse_groups": 1 if collapse_energy else 2,
+        "petsc_options": SKIP_CORRECTION,
     }
     cmfd = CMFDAcceleration(**cmfd_options)
     solver = PowerIterationKEigenSolver(problem=problem, acceleration=cmfd, max_iters=1)

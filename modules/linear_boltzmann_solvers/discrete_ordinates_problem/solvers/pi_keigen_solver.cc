@@ -79,6 +79,12 @@ PowerIterationKEigenSolver::GetInputParameters()
     "below fission_source_tol (1 - rho), with rho as for k_tol. This test is applied in addition "
     "to the k_tol test. Zero disables it.");
   params.ConstrainParameterRange("fission_source_tol", AllowableRangeLowLimit::New(0.0));
+  params.AddOptionalParameter(
+    "sweeps_per_update",
+    0,
+    "Number of transport sweeps (within-group iterations) between CMFD corrections. Zero, the "
+    "default, selects 1. Applies only with CMFD acceleration.");
+  params.ConstrainParameterRange("sweeps_per_update", AllowableRangeLowLimit::New(0));
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   return params;
 }
@@ -97,6 +103,7 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
     fission_source_tolerance_(params.GetParamValue<double>("fission_source_tol")),
+    sweeps_per_update_(params.GetParamValue<unsigned int>("sweeps_per_update")),
     F_prev_(1.0),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     q_moments_local_(do_problem_->GetQMomentsLocal()),
@@ -110,6 +117,8 @@ void
 PowerIterationKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
   CheckKEigenRequirements(errors);
+  if (sweeps_per_update_ > 0 and (not acceleration_ or not acceleration_->UsesSweepsPerUpdate()))
+    errors.emplace_back(GetName() + ": sweeps_per_update applies only with CMFD acceleration.");
   if (not acceleration_)
     return;
   if (&acceleration_->GetProblem() != do_problem_.get())

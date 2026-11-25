@@ -333,21 +333,13 @@ def solve(grid, materials, adjoint, groupsets=1, cmfd=False, use_precursors=True
     if source is not None:
         solver = SteadyStateSourceSolver(problem=phys)
     elif cmfd:
-        # The settings of keigenvalue_transport_1d_1g_cmfd.py.
+        # Two-cell aggregates. With two materials, four-cell aggregates that straddle the material
+        # interface and one coarse group.
         mixed_materials = len(materials) > 1
         acceleration = CMFDAcceleration(
             problem=phys,
-            current_closure="partial",
-            coarse_mesh="local_aggregation",
-            aggregation_size=4 if mixed_materials else 2,
-            allow_mixed_material_aggregation=mixed_materials,
-            group_aggregation_size=2 if mixed_materials else 1,
-            relaxation=0.5,
-            inactive_iterations=0,
-            update_wgs_max_its=1,
-            update_wgs_abs_tol=1.0e-12,
-            correction_max_attempts=10,
-            correction_min_damping=1.0e-4,
+            coarse_mesh={"type": "local_aggregation", "size": 4 if mixed_materials else 2},
+            coarse_groups=1 if mixed_materials else 2,
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )
         solver = PowerIterationKEigenSolver(

@@ -307,19 +307,11 @@ def build_keigen(grid, xs, adjoint, cmfd=False, group_aggregation_size=1):
         options=options(adjoint),
     )
     if cmfd:
-        # The settings of keigenvalue_transport_1d_1g_cmfd.py.
+        # Two-cell aggregates, with group_aggregation_size transport groups per coarse group.
         acceleration = CMFDAcceleration(
             problem=problem,
-            current_closure="partial",
-            coarse_mesh="local_aggregation",
-            aggregation_size=2,
-            group_aggregation_size=group_aggregation_size,
-            relaxation=0.5,
-            inactive_iterations=0,
-            update_wgs_max_its=1,
-            update_wgs_abs_tol=1.0e-12,
-            correction_max_attempts=10,
-            correction_min_damping=1.0e-4,
+            coarse_mesh={"type": "local_aggregation", "size": 2},
+            coarse_groups=2 // group_aggregation_size,
             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi",
         )
         solver = PowerIterationKEigenSolver(

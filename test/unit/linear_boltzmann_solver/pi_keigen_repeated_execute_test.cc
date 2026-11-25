@@ -103,18 +103,17 @@ SweepsPerOuter(PowerIterationKEigenSolver& solver)
 
 } // namespace
 
-// CMFD is inactive for the whole solve (inactive_iterations > max_iters), so every transport solve
-// uses the caller's within-group settings: classic Richardson with an unreachable tolerance does
-// exactly l_max_its sweeps per power iteration. Changing the settings between two solves of the
-// same solver must take effect in the second solve, and both solves must leave them unchanged.
-TEST(CMFDRepeatedExecuteTest, UsesCurrentWGSSettings)
+// CMFD runs sweeps_per_update within-group iterations per power iteration, whatever the caller's
+// within-group settings, and the solver restores those settings when it returns. Classic
+// Richardson with an unreachable tolerance does exactly the allowed number of sweeps. The caller's
+// settings must be unchanged after each solve, and a change between two solves must be kept.
+TEST(CMFDRepeatedExecuteTest, UsesSweepsPerUpdateAndRestoresWGSSettings)
 {
   auto problem = MakeProblem(2);
 
   ParameterBlock cmfd_params;
   cmfd_params.AddParameter("problem", std::shared_ptr<Problem>(problem));
   cmfd_params.AddParameter("coarse_mesh", std::string("identity"));
-  cmfd_params.AddParameter("inactive_iterations", 1000);
   auto cmfd = CMFDAcceleration::Create(cmfd_params);
 
   ParameterBlock pi_params;
@@ -123,15 +122,16 @@ TEST(CMFDRepeatedExecuteTest, UsesCurrentWGSSettings)
                          std::shared_ptr<DiscreteOrdinatesKEigenAcceleration>(cmfd));
   pi_params.AddParameter("max_iters", 3);
   pi_params.AddParameter("k_tol", 1.0e-14);
+  pi_params.AddParameter("sweeps_per_update", 4);
   auto solver = PowerIterationKEigenSolver::Create(pi_params);
   solver->Initialize();
 
   auto& groupset = problem->GetGroupset(0);
-  EXPECT_DOUBLE_EQ(SweepsPerOuter(*solver), 2.0);
+  EXPECT_DOUBLE_EQ(SweepsPerOuter(*solver), 4.0);
   EXPECT_EQ(groupset.max_iterations, 2U);
 
   problem->SetWGSSolveSettings(static_cast<std::size_t>(groupset.id), 3, 1.0e-14);
-  EXPECT_DOUBLE_EQ(SweepsPerOuter(*solver), 3.0);
+  EXPECT_DOUBLE_EQ(SweepsPerOuter(*solver), 4.0);
   EXPECT_EQ(groupset.max_iterations, 3U);
 }
 

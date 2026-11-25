@@ -145,11 +145,8 @@ if __name__ == "__main__":
     if mode == "timing":
         k_solver = PowerIterationKEigenSolver(problem=phys, k_tol=1.0e-18, max_iters=num_outers)
     else:
-        # Same CMFD settings as test/python/.../transport_keigen/c5g7/c5g7.py.
-        cmfd = CMFDAcceleration(problem=phys, coarse_mesh="local_aggregation",
-                                aggregation_size=16, update_wgs_max_its=4,
-                                update_wgs_abs_tol=1.0e-4, l_abs_tol=1.0e-10, max_iters=100,
-                                pi_max_its=5, pi_k_tol=1.0e-10)
+        cmfd = CMFDAcceleration(problem=phys,
+                                coarse_mesh={"type": "local_aggregation", "size": 16})
         k_solver = PowerIterationKEigenSolver(problem=phys, acceleration=cmfd, k_tol=1.0e-8)
 
     k_solver.Initialize()

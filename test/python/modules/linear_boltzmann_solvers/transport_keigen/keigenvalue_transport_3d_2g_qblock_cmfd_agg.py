@@ -100,15 +100,15 @@ if __name__ == "__main__":
 
     k_tolerance = float(get_option("k_tolerance", 1.0e-6))
 
+    # cmfd_iterative selects the iterative coarse linear solver that CMFD uses for coarse systems
+    # too large to factorize: FGMRES with additive Schwarz and ILU(0) subdomain solves.
+    iterative = get_bool_option("cmfd_iterative", False)
     cmfd = CMFDAcceleration(
         problem=phys,
-        aggregation_size=8,
-        group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 1)),
-        relaxation=1.0,
-        balance_residual_tolerance=float(
-            get_option("cmfd_balance_residual_tolerance", 10.0 * k_tolerance)
-        ),
-        coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "auto"),
+        name="cmfd_",
+        coarse_mesh={"type": "local_aggregation", "size": 8},
+        coarse_groups=int(get_option("cmfd_coarse_groups", 2)),
+        petsc_options="-cmfd_ksp_type fgmres -cmfd_pc_type asm" if iterative else "",
         verbose=get_bool_option("cmfd_verbose", False),
     )
     k_solver = PowerIterationKEigenSolver(

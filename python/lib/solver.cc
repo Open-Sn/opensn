@@ -2757,6 +2757,11 @@ WrapPIteration(py::module& slv)
         source is not positive adds nothing to the sum but counts as a cell. This test is applied
         in addition to the ``k_tol`` test, because k can settle while the flux shape still
         changes. ``0`` disables it.
+    sweeps_per_update: int, default = 0
+        Number of transport sweeps (within-group iterations of every groupset) between CMFD
+        corrections. ``0`` selects 1. Use 2: it changes the total sweeps little and can make the
+        power iteration converge where one sweep oscillates. Applies only with
+        :class:`pyopensn.solver.CMFDAcceleration`; other acceleration methods reject it.
     reset_phi0: bool, default=True
         If true, reinitializes scalar fluxes to 1.0.
     compute_balance: bool, default=False
@@ -2804,8 +2809,8 @@ WrapPIteration(py::module& slv)
 
     Convergence requires the k-eigenvalue test on ``k_tol`` and the fission-source test on
     ``fission_source_tol`` to pass and, when an acceleration method is attached, its own
-    convergence check (for CMFD, the balance residual) to pass. Returns False if ``max_iters``
-    was reached first.
+    convergence check (CMFD requires that the last correction was not skipped) to pass. Returns
+    False if ``max_iters`` was reached first.
     )"
   );
   pi_k_eigen_solver.def(
@@ -3006,162 +3011,93 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     R"(
     CMFD acceleration for the power iteration k-eigenvalue solver.
 
-    With CMFD, each power iteration performs a configured number of high-order WGS
-    transport update iterations, then applies a bounded low-order scalar-flux correction.
-    The defaults use one WGS update iteration, the partial-current closure, fixed
-    correction relaxation, and a transport-current balance gate before outer power
-    iteration is allowed to converge.
+    Each power iteration runs the solver's ``sweeps_per_update`` transport sweeps (one by
+    default), restricts the transport flux and currents to a coarse mesh, solves the coarse
+    partial-current CMFD (pCMFD) eigenproblem, and scales the transport scalar flux of each
+    coarse cell and coarse group by the ratio of the coarse solution to the restricted flux. The
+    method is fixed: the partial-current closure, unrelaxed corrections, a Wielandt-shifted
+    coarse power iteration converged to a fraction of the transport change, and an automatic
+    coarse linear solver. A coarse value whose correction would change the sign of the transport
+    flux keeps the transport flux, and the rest of the correction is applied. A correction whose
+    coarse linear solve fails, whose coarse eigensolve does not converge to a positive, finite
+    production and k, or that gives an invalid k, is skipped and the unaccelerated transport
+    update is used for that power iteration.
 
-    Most users should tune only the common controls: ``coarse_mesh``, ``current_closure``,
-    ``aggregation_size``, ``group_aggregation_size``, ``relaxation``,
-    ``update_wgs_max_its``, ``update_wgs_abs_tol``, and
-    ``balance_residual_tolerance``. Parameters marked "developer/debug" are exposed for
-    investigations and regression testing, but normally should be left at their defaults.
+    The owning solver's ``k_tol`` and ``fission_source_tol`` decide convergence. An update whose
+    correction was skipped never ends the iteration.
 
     Parameters
     ----------
     problem: pyopensn.solver.DiscreteOrdinatesProblem
         Existing DiscreteOrdinatesProblem instance.
-    coarse_mesh: str, default="local_aggregation"
-        Common option. Coarse-mesh construction method. Valid choices are:
-            - 'identity' : one CMFD coarse cell per transport cell
-            - 'local_aggregation' : connected fine cells aggregated locally
-            - 'global_aggregation' : connected fine cells aggregated across MPI ranks
+    coarse_mesh: str or dict, default="local_aggregation"
+        The coarse mesh. A string selects a type with its defaults, and a dict selects a type
+        and its parameters with a ``"type"`` key:
 
-        ``"local_aggregation"`` is the conservative default. ``"global_aggregation"`` can
-        reduce the coarse problem size on larger distributed meshes. Global aggregation is a
-        logical CMFD coarse-space construction: it does not repartition the transport mesh or
-        change fine-cell ownership. Each global coarse cell has one owning rank, while ranks
-        owning member fine cells keep membership records for restriction and prolongation.
-        Aggregates are connected by face adjacency, remain within one mesh block unless
-        ``allow_mixed_material_aggregation=True``, and may be smaller than ``aggregation_size``
-        near boundaries or disconnected regions. ``"identity"`` is primarily for debugging and
-        method comparisons.
-    current_closure: str, default="partial"
-        Common option. CMFD face-current closure. Valid choices are:
-            - 'partial' : partial-current CMFD (pCMFD); each one-sided partial current carries
-              half of the diffusion coupling plus its own transport correction
-            - 'net' : match the signed transport current across each coarse face
+        - ``"local_aggregation"`` or ``{"type": "local_aggregation", "size": 32}``: connected
+          aggregates of about ``size`` fine cells within each MPI rank. The general default for
+          unstructured meshes. It does not follow axial layers on extruded meshes.
+        - ``{"type": "global_aggregation", "size": 32}``: aggregates that may span MPI ranks.
+          It does not repartition the transport mesh.
+        - ``{"type": "reactor_lattice", "origin": [x0, y0], "pitch": [px, py],
+          "shape": [nx, ny], "axial_edges": [z0, z1, ...]}``: one coarse cell per lattice cell
+          and axial layer, covering ``[x0, x0 + nx px]`` by ``[y0, y0 + ny py]``. Without
+          ``axial_edges``, one coarse cell per connected column. The recommended coarse mesh for
+          lattice problems.
+        - ``{"type": "cartesian", "x_edges": [...], "y_edges": [...], "z_edges": [...]}``:
+          one coarse cell per Cartesian box. Each edge list is strictly increasing and optional,
+          and an omitted list leaves that axis undivided. At least one is required.
+        - ``{"type": "logical_volumes", "volumes": [lv, ...]}``: one coarse cell per connected
+          part of each logical volume. Each cell centroid must lie in exactly one volume.
+        - ``"identity"``: one coarse cell per transport cell, for testing.
 
-        ``"partial"`` is the default and is recommended for production use: it is typically
-        stable with an unrelaxed correction on both optically thin and thick coarse cells,
-        whereas the net-current closure can oscillate or diverge on optically thick coarse
-        cells. Both closures share the same fixed point. ``"net"`` can converge in fewer
-        iterations on some problems with optically thin coarse cells.
-    aggregation_size: int, default=32
-        Common option. Target number of fine cells per aggregated coarse cell for
-        ``coarse_mesh="local_aggregation"`` or ``coarse_mesh="global_aggregation"``.
-        Larger values reduce CMFD matrix size and
-        setup/solve cost, but make the spatial correction less detailed. Smaller values
-        increase the coarse-system cost but may improve robustness.
-    allow_mixed_material_aggregation: bool, default=False
-        Allow local or global aggregates to cross material-block boundaries. Coarse-cell
-        removal, scattering, production, and diffusion coefficients are always homogenized from
-        fine-cell scalar-flux integrals before every CMFD correction; this option only changes
-        which fine cells may share a coarse cell. Requires ``coarse_mesh`` to be
-        ``"local_aggregation"`` or ``"global_aggregation"``.
-    group_aggregation_size: int, default=1
-        Common option. Number of transport energy groups per CMFD coarse group, not the
-        final number of coarse groups. A value of 1 preserves the full transport group
-        structure in the low-order system. To target ``N`` total coarse groups, use
-        ``(num_groups + N - 1) // N``.
-    relaxation: float, default=1.0
-        Common option. Strictly positive relaxation factor applied to the CMFD scalar-flux correction.
-        This is the requested correction strength. The correction limiter may damp or
-        skip an individual correction if the requested update would produce an invalid
-        k-eigenvalue or non-finite flux, or would change the sign of the scalar flux in
-        some coarse cell and coarse group. The default
-        applies the full correction. A value below 1 is more conservative, but even an
-        ideal correction then leaves about ``1 - relaxation`` of the error; reduce it when
-        corrections are repeatedly damped or skipped.
-    update_wgs_max_its: int, default=1
-        Common option. Maximum WGS iterations used before each CMFD correction. The
-        default performs one transport update iteration per power iteration; larger
-        values make each transport update more accurate but more expensive.
-    update_wgs_abs_tol: float, default=1.0e-12
-        Common option. WGS absolute tolerance used before each CMFD correction. When
-        ``update_wgs_max_its=1``, this tolerance is normally not the stopping criterion
-        because only one WGS iteration is allowed. It matters when more WGS iterations
-        are allowed.
-    balance_residual_tolerance: float, default=1.0e-6
-        Common option. Restricted transport-current balance residual tolerance required
-        before CMFD permits outer power-iteration convergence. This prevents false
-        convergence when ``k_eff_change`` is small but the CMFD-restricted transport
-        balance is still inconsistent. This is a consistency guard, not an estimate of
-        the k-eigenvalue error. For large 3D cases it may need to be looser than the
-        outer ``k_tol``; choose it tight enough to prevent false convergence but not so
-        tight that it forces unnecessary asymptotic balance iterations.
-    l_abs_tol: float, default=1.0e-7
-        Developer/debug. Absolute residual tolerance for each CMFD coarse linear solve.
-        This affects the low-order linear solve, not the outer transport convergence.
-    l_rel_tol: float, default=1.0e-8
-        Developer/debug. Relative residual tolerance for each iterative CMFD coarse
-        linear solve. The solve converges when either ``l_rel_tol`` or ``l_abs_tol`` is
-        met. Unlike the absolute tolerance, it does not depend on the coarse flux
-        normalization.
-    max_iters: int, default=100
-        Developer/debug. Maximum iterations for each CMFD coarse linear solve. Increase
-        only if the coarse KSP solve is reaching its iteration limit. CMFD skips a
-        correction when any coarse linear solve fails to converge within this limit. If
-        the log reports ``correction = skipped (coarse_linear_solve_not_converged)``,
-        use a direct coarse solve for modest coarse systems, increase this limit for
-        iterative solves, or provide stronger ``petsc_options``.
+        Coarse cells may contain several materials. Their coefficients are homogenized from the
+        transport flux before every correction, preserving the reaction rates. The lattice and
+        Cartesian types log the number of fine faces between coarse cells that do not lie on a
+        coarse-mesh plane, and warn about intervals narrower than a tenth of the median width
+        along their axis.
+    coarse_groups: int or str, default="auto"
+        Number of CMFD energy groups. The ``G`` transport groups are split into consecutive
+        coarse groups of ``ceil(G / coarse_groups)`` groups each, which may give fewer coarse
+        groups than requested. ``"auto"`` keeps every group when ``G <= 16`` and targets 16
+        coarse groups otherwise.
     verbose: bool, default=False
-        Developer/debug. If true, prints CMFD diagnostic and timing metrics. These are
-        useful for regression tests and performance studies but can be noisy in production.
+        If true, prints the coarse-cell optical thickness, operator sign counts, balance
+        residuals, correction metrics and timings.
     petsc_options: str, default=""
-        Developer/debug. Additional PETSc options for the CMFD coarse solver. Used only
-        for solver experiments, especially with ``coarse_solver_policy="petsc_options"``.
-        The options reach only the coarse solver of this acceleration.
-    pi_max_its: int, default=50
-        Developer/debug. Maximum inner power iterations for the CMFD coarse k solve (at least 1).
-        Increase only if the coarse k solve is not converging enough to give useful
-        corrections.
-    pi_k_tol: float, default=1.0e-8
-        Developer/debug. Tolerance on the relative change of the coarse k-eigenvalue between
-        CMFD coarse power iterations. This is separate from the outer
-        ``PowerIterationKEigenSolver`` k tolerance.
-    pi_phi_tol: float, default=1.0e-6
-        Developer/debug. Tolerance on the estimated coarse flux-shape error of the CMFD coarse
-        power iteration: the relative L2 change of the production-normalized coarse flux divided
-        by ``1 - rho``, with the convergence rate ``rho`` estimated from successive changes. The
-        coarse power iteration stops when both ``pi_k_tol`` and ``pi_phi_tol`` are met (at least
-        two iterations) or after ``pi_max_its`` iterations.
-    correction_max_attempts: int, default=10
-        Developer/debug. Maximum CMFD correction damping attempts before skipping the
-        correction for the current transport update. Each failed attempt halves the
-        damping. If the log reports ``correction = skipped (sign_change_guard)``,
-        first reduce ``relaxation`` or use finer spatial/energy aggregation; changing
-        this option is mainly for diagnostics.
-    correction_min_damping: float, default=1.0e-4
-        Developer/debug. Minimum CMFD correction damping factor considered during correction
-        limiting. If no admissible correction is found above this damping, CMFD skips
-        the correction for that transport update.
-    inactive_iterations: int, default=0
-        Developer/debug. Number of initial power iterations before applying CMFD
-        corrections. These iterations retain the WGS settings configured on the problem.
-        CMFD applies its transport update controls starting with the first active iteration.
-    coarse_solver_policy: str, default="auto"
-        Developer/debug. Coarse solver policy. Valid choices are:
-            - 'auto' : PETSc preonly+LU below ``coarse_direct_solve_threshold``
-              global unknowns, GMRES with hypre BoomerAMG otherwise
-            - 'direct' : PETSc preonly+LU
-            - 'iterative' : GMRES with hypre BoomerAMG
-            - 'petsc_options' : allow ``petsc_options`` to override the PETSc KSP/PC setup
+        PETSc options for the coarse linear solver. They reach only the coarse solver of this
+        accelerator. Their prefix is the accelerator ``name``
+        with nothing in between, so with ``name="cmfd_"`` the KSP type is
+        ``"-cmfd_ksp_type fgmres"``. They are applied after the automatic choice and replace it
+        where they overlap.
+    name: str, default="CMFDAcceleration"
+        Name of the accelerator, and the PETSc options prefix of its coarse linear solver.
 
-        CMFD corrections from unconverged coarse linear solves are always skipped. A coarse
-        linear solve counts as converged only if PETSc reports convergence and its true
-        residual norm is at most 100 times ``max(l_rel_tol * |b|, l_abs_tol)``. This also
-        applies to direct solves. A coarse power iteration that gives a coarse fission
-        production or k that is not positive is also skipped.
-        The skipped correction uses the unaccelerated transport update for that power
-        iteration, including the raw transport k update so that power iteration can continue
-        to move.
-    coarse_direct_solve_threshold: int, default=150000
-        Developer/debug. Maximum global CMFD unknown count for automatic direct coarse
-        solves when ``coarse_solver_policy="auto"``. Larger values make ``"auto"`` use
-        direct solves for larger coarse systems. Choose values based on available host
-        memory and acceptable factorization cost.
+    Notes
+    -----
+    **Coarse linear solver.** CMFD factorizes the coarse operator with SuperLU_DIST or MUMPS
+    when the estimated memory of the factorization is at most 1 GiB per MPI rank, and otherwise
+    uses FGMRES with an additive Schwarz preconditioner and ILU(0) subdomain solves. A coarse
+    solve is accepted only if its true residual is small, so a failed iterative solve skips the
+    correction instead of applying it.
+
+    **Optically thick coarse cells.** With one sweep per update, CMFD converges at a rate that
+    approaches the scattering ratio as the coarse cells become optically thick: about 0.67 per
+    update at 1.35 transport mean free paths, 0.89 at 5.4 and 0.99 at 22, in a medium with
+    scattering ratio 0.99. CMFD warns once when coarse cells are thicker than 3 mean free paths.
+    Thinner transport cells in that direction restore fast convergence. The coarse mesh cannot
+    be finer than the transport mesh.
+
+    **Deprecated parameters.** These names are accepted with a warning for one release:
+    ``aggregation_size`` (use ``coarse_mesh={"type": "local_aggregation", "size": n}``),
+    ``group_aggregation_size`` (use ``coarse_groups``), ``update_wgs_max_its`` (use
+    ``sweeps_per_update`` of the solver; the deprecated value is used while that is
+    automatic), and ``current_closure="partial"``, ``relaxation=1``,
+    ``inactive_iterations=0``, ``update_wgs_abs_tol``, ``balance_residual_tolerance``,
+    ``correction_max_attempts``, ``correction_min_damping``, ``coarse_solver_policy``,
+    ``coarse_direct_solve_threshold``, ``l_abs_tol``, ``l_rel_tol``, ``max_iters``,
+    ``pi_max_its``, ``pi_k_tol`` and ``pi_phi_tol``, which are ignored. ``current_closure="net"``,
+    ``relaxation`` other than 1, and ``inactive_iterations`` other than 0 are errors.
     )"
   );
   cmfd_acceleration.def(
@@ -3181,9 +3117,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     Return the removal coefficients of the last assembled CMFD operator for one coarse cell.
 
     Each ``Execute()`` of the owning solver first assembles a volume-weighted operator. Each
-    active power iteration then reassembles it from the transport iterate produced by that
-    iteration's sweep, before the CMFD correction is applied. Inactive iterations do not
-    reassemble it. After ``Execute()`` returns, the values are those of its last assembly.
+    power iteration then reassembles it from the transport iterate produced by that iteration's
+    sweeps, before the CMFD correction is applied. After ``Execute()`` returns, the values are
+    those of its last assembly.
 
     Parameters
     ----------
@@ -3284,7 +3220,7 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
     R"(
     Return the number of CMFD corrections applied during the last power-iteration solve.
 
-    Inactive iterations are not counted. The count is reset at the start of each solve.
+    The count is reset at the start of each solve.
     )"
   );
   cmfd_acceleration.def(
@@ -3295,9 +3231,9 @@ WrapDiscreteOrdinatesKEigenAcceleration(py::module& slv)
 
     A correction is skipped when a coarse linear solve does not converge, when the coarse power
     iteration breaks down with a coarse fission production or k that is not positive and
-    finite, or when every damping attempt is rejected. The power iteration then uses the
-    unaccelerated transport update. Inactive iterations are not counted. The count is reset at
-    the start of each solve.
+    finite, or when the correction would give a non-finite flux or an invalid k. The power
+    iteration then uses the unaccelerated transport update. The count is reset at the start of
+    each solve.
     )"
   );
   // clang-format on

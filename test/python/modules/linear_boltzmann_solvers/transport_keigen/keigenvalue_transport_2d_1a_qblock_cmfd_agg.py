@@ -82,12 +82,7 @@ if __name__ == "__main__":
 
     cmfd = CMFDAcceleration(
         problem=phys,
-        aggregation_size=8,
-        allow_mixed_material_aggregation=globals().get(
-            "allow_mixed_material_aggregation", False
-        ),
-        relaxation=1.0,
-        balance_residual_tolerance=10.0 * k_tolerance,
+        coarse_mesh={"type": "local_aggregation", "size": 8},
     )
     k_solver = PowerIterationKEigenSolver(
         problem=phys,

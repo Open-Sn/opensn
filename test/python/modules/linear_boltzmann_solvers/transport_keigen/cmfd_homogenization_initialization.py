@@ -9,8 +9,8 @@ coarse cell. The two-group check has identically zero transport flux in its seco
 group and fine-cell volumes in a 1:2 ratio; it therefore exercises volume fallback
 and fails if fine cells are counted instead of integrated.
 
-Each case runs one active power iteration with a negligible relaxation (1e-30),
-so the final scalar flux is bitwise the transport iterate CMFD homogenized.
+Each case runs one power iteration whose CMFD correction is skipped, so the final scalar
+flux is bitwise the transport iterate CMFD homogenized.
 """
 
 import math
@@ -28,6 +28,12 @@ if "opensn_console" not in globals():
         PowerIterationKEigenSolver,
     )
     from pyopensn.xs import MultiGroupXS
+
+
+# A coarse linear solve limited to zero iterations fails, so CMFD homogenizes the transport
+# iterate and then skips its correction: the final scalar flux is the iterate it homogenized.
+SKIP_CORRECTION = ("-CMFDAccelerationksp_type gmres -CMFDAccelerationksp_max_it 0 "
+                   "-CMFDAccelerationpc_type jacobi")
 
 
 def abs_error(actual, expected):
@@ -69,14 +75,10 @@ def initialize_cartesian(materials, edges):
     cmfd_options = {
         "problem": problem,
         "coarse_mesh": "identity",
-        "relaxation": 1.0e-30,
+        "petsc_options": SKIP_CORRECTION,
     }
     if edges is not None:
-        cmfd_options.update(
-            coarse_mesh="local_aggregation",
-            aggregation_size=len(materials),
-            allow_mixed_material_aggregation=True,
-        )
+        cmfd_options.update(coarse_mesh={"type": "local_aggregation", "size": len(materials)})
     cmfd = CMFDAcceleration(**cmfd_options)
     solver = PowerIterationKEigenSolver(
         problem=problem, acceleration=cmfd, max_iters=1, reset_phi0=True
@@ -150,10 +152,8 @@ if __name__ == "__main__":
     )
     fallback_cmfd = CMFDAcceleration(
         problem=fallback_problem,
-        coarse_mesh="local_aggregation",
-        aggregation_size=2,
-        allow_mixed_material_aggregation=True,
-        relaxation=1.0e-30,
+        coarse_mesh={"type": "local_aggregation", "size": 2},
+        petsc_options=SKIP_CORRECTION,
     )
     fallback_solver = PowerIterationKEigenSolver(
         problem=fallback_problem, acceleration=fallback_cmfd, max_iters=1

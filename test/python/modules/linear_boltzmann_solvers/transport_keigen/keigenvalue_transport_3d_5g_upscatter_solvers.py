@@ -153,16 +153,7 @@ def run_solver(name):
     elif name == "PowerIterationCMFD":
         cmfd = CMFDAcceleration(
             problem=problem,
-            coarse_mesh="local_aggregation",
-            aggregation_size=2,
-            relaxation=0.4,
-            update_wgs_max_its=3,
-            update_wgs_abs_tol=1.0e-6,
-            l_abs_tol=1.0e-10,
-            max_iters=100,
-            pi_max_its=20,
-            pi_k_tol=1.0e-10,
-            balance_residual_tolerance=10.0 * k_tolerance,
+            coarse_mesh={"type": "local_aggregation", "size": 2},
         )
         solver = PowerIterationKEigenSolver(
             problem=problem, acceleration=cmfd, max_iters=200, k_tol=k_tolerance

@@ -85,6 +85,22 @@ CMFDRelativeBalanceResidual(const std::vector<std::pair<double, double>>& residu
                              : std::numeric_limits<double>::infinity();
 }
 
+bool
+CMFDRatioChangesSign(const double coarse_phi_old, const double coarse_phi_new)
+{
+  if (IsNegligibleCoarseFlux(coarse_phi_old))
+    return false;
+  // A negative transport value is not rescaled: the coarse solution there comes from a closure
+  // that divides by it, and a large positive ratio of two negative values would amplify the
+  // negative fine flux.
+  if (coarse_phi_old < 0.0)
+    return true;
+  // A zero ratio sets the fine flux to zero without changing its sign. The coarse solution is
+  // zero in a source-free region that no face couples to the rest, and zero is then right.
+  const double ratio = coarse_phi_new / coarse_phi_old;
+  return not std::isfinite(ratio) or ratio < 0.0;
+}
+
 std::size_t
 CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
                             const std::vector<double>& coarse_phi_new)
@@ -93,15 +109,8 @@ CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
                           "Old and new coarse scalar flux vector size mismatch.");
   std::size_t count = 0;
   for (std::size_t i = 0; i < coarse_phi_old.size(); ++i)
-  {
-    if (IsNegligibleCoarseFlux(coarse_phi_old[i]))
-      continue;
-    // A zero ratio sets the fine flux to zero without changing its sign. The coarse solution is
-    // zero in a source-free region that no face couples to the rest, and zero is then right.
-    const double ratio = coarse_phi_new[i] / coarse_phi_old[i];
-    if (not std::isfinite(ratio) or ratio < 0.0)
+    if (CMFDRatioChangesSign(coarse_phi_old[i], coarse_phi_new[i]))
       ++count;
-  }
   return count;
 }
 
@@ -202,18 +211,14 @@ CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_problem,
   return coarse_phi;
 }
 
-void
-CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
-                              const unsigned int first_group,
-                              const unsigned int num_groups,
-                              const unsigned int group_aggregation_size,
-                              const CMFDCoarseMesh& coarse_mesh,
-                              const std::vector<double>& coarse_phi_old,
-                              const std::vector<double>& coarse_phi_new,
-                              std::vector<double>& phi)
+std::vector<double>
+CMFDComputeFineCellRatios(const DiscreteOrdinatesProblem& do_problem,
+                          const unsigned int num_groups,
+                          const unsigned int group_aggregation_size,
+                          const CMFDCoarseMesh& coarse_mesh,
+                          const std::vector<double>& coarse_phi_old,
+                          const std::vector<double>& coarse_phi_new)
 {
-  const auto& transport_views = do_problem.GetCellTransportViews();
-
   OpenSnInvalidArgumentIf(group_aggregation_size == 0,
                           "CMFD group aggregation size must be greater than zero.");
   const unsigned int num_coarse_groups = NumCoarseGroups(num_groups, group_aggregation_size);
@@ -221,8 +226,6 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
                           "Old coarse scalar flux vector size mismatch.");
   OpenSnInvalidArgumentIf(coarse_phi_new.size() != coarse_mesh.NumLocalCells() * num_coarse_groups,
                           "New coarse scalar flux vector size mismatch.");
-  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetPhiNewLocal().size(),
-                          "Output scalar flux vector size does not match the transport problem.");
 
   std::map<int, std::set<uint64_t>> pid_request_sets;
   for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
@@ -278,29 +281,62 @@ CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
     }
   }
 
+  const auto& grid = *do_problem.GetGrid();
+  std::vector<double> fine_cell_ratios(grid.GetLocalCellCount() * num_coarse_groups, 1.0);
+  std::vector<char> has_ratio(grid.GetLocalCellCount(), 0);
   for (const auto& membership : coarse_mesh.LocalFineCellMemberships())
   {
     const auto ratios_it = coarse_cell_ratios.find(membership.coarse_cell_id);
     OpenSnLogicalErrorIf(ratios_it == coarse_cell_ratios.end(),
                          "Missing CMFD prolongation ratios for local fine-cell membership.");
-    const auto& ratios = ratios_it->second;
-
-    const auto& fine_cell = do_problem.GetGrid()->GetGlobalCell(membership.fine_cell_id);
+    const auto& fine_cell = grid.GetGlobalCell(membership.fine_cell_id);
     OpenSnInvalidArgumentIf(fine_cell.partition_id != opensn::mpi_comm.rank(),
                             "CMFD prolongation fine-cell membership is not locally owned.");
+    for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
+      fine_cell_ratios[static_cast<std::size_t>(fine_cell.local_id) * num_coarse_groups + cg] =
+        ratios_it->second[cg];
+    has_ratio[fine_cell.local_id] = 1;
+  }
+  OpenSnLogicalErrorIf(std::find(has_ratio.begin(), has_ratio.end(), 0) != has_ratio.end(),
+                       "A local fine cell has no CMFD coarse cell.");
+  return fine_cell_ratios;
+}
 
-    const auto& transport_view = transport_views[fine_cell.local_id];
+void
+CMFDApplyFineCellRatios(const DiscreteOrdinatesProblem& do_problem,
+                        const unsigned int first_group,
+                        const unsigned int num_groups,
+                        const unsigned int group_aggregation_size,
+                        const std::vector<double>& fine_cell_ratios,
+                        const bool all_moments,
+                        std::vector<double>& phi)
+{
+  OpenSnInvalidArgumentIf(group_aggregation_size == 0,
+                          "CMFD group aggregation size must be greater than zero.");
+  const unsigned int num_coarse_groups = NumCoarseGroups(num_groups, group_aggregation_size);
+  const auto& grid = *do_problem.GetGrid();
+  const auto& transport_views = do_problem.GetCellTransportViews();
+  OpenSnInvalidArgumentIf(fine_cell_ratios.size() != grid.GetLocalCellCount() * num_coarse_groups,
+                          "CMFD fine-cell ratio vector size mismatch.");
+  OpenSnInvalidArgumentIf(phi.size() != do_problem.GetPhiNewLocal().size(),
+                          "Output scalar flux vector size does not match the transport problem.");
+  const unsigned int num_moments = all_moments ? do_problem.GetNumMoments() : 1;
+
+  for (const auto& cell : grid.GetLocalCells())
+  {
+    const auto* ratios =
+      &fine_cell_ratios[static_cast<std::size_t>(cell->local_id) * num_coarse_groups];
+    const auto& transport_view = transport_views[cell->local_id];
     for (int i = 0; i < transport_view.GetNumNodes(); ++i)
-    {
-      const auto phi_map = transport_view.MapDOF(i, 0, first_group);
-      for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
+      for (unsigned int m = 0; m < num_moments; ++m)
       {
-        for (unsigned int gsg = CoarseGroupBegin(cg, group_aggregation_size);
-             gsg < CoarseGroupEnd(cg, num_groups, group_aggregation_size);
-             ++gsg)
-          phi[phi_map + gsg] *= ratios[cg];
+        const auto phi_map = transport_view.MapDOF(i, m, first_group);
+        for (unsigned int cg = 0; cg < num_coarse_groups; ++cg)
+          for (unsigned int gsg = CoarseGroupBegin(cg, group_aggregation_size);
+               gsg < CoarseGroupEnd(cg, num_groups, group_aggregation_size);
+               ++gsg)
+            phi[phi_map + gsg] *= ratios[cg];
       }
-    }
   }
 }
 
