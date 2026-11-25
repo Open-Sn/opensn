@@ -7,7 +7,10 @@
 #include <array>
 #include <cstdint>
 #include <filesystem>
+#include <limits>
 #include <string>
+#include <utility>
+#include <vector>
 #include <unistd.h>
 
 using namespace opensn;
@@ -87,6 +90,60 @@ TEST(HDFUtils, ReadAttributeRejectsArrays)
     value = 11U;
     EXPECT_TRUE(H5ReadOptionalAttribute<unsigned int>(file.Id(), "missing", value));
     EXPECT_EQ(value, 11U);
+  }
+  std::filesystem::remove(file_name);
+}
+
+/// A ranged read returns the elements of the ranges, in order, and rejects ranges that are out of
+/// order, overlap, or extend past the end of the dataset.
+TEST(HDFUtils, ReadDataset1DRanges)
+{
+  const auto file_name =
+    (std::filesystem::temp_directory_path() / ("opensn_hdf_ranges_" + std::to_string(getpid()) +
+                                               "_r" + std::to_string(mpi_comm.rank()) + ".h5"))
+      .string();
+  std::vector<double> values(10);
+  for (size_t i = 0; i < values.size(); ++i)
+    values[i] = 0.5 + static_cast<double>(i);
+  {
+    const H5FileHandle file(H5Fcreate(file_name.c_str(), H5F_ACC_TRUNC, H5P_DEFAULT, H5P_DEFAULT));
+    ASSERT_GE(file.Id(), 0);
+    ASSERT_TRUE(H5WriteDataset1D<double>(file.Id(), "values", values));
+    ASSERT_TRUE(H5WriteDataset1D<double>(file.Id(), "empty", {}));
+  }
+  {
+    const H5FileHandle file(H5Fopen(file_name.c_str(), H5F_ACC_RDONLY, H5P_DEFAULT));
+    ASSERT_GE(file.Id(), 0);
+    using Ranges = std::vector<std::pair<std::uint64_t, std::uint64_t>>;
+    std::vector<double> data;
+
+    EXPECT_TRUE(
+      H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{1, 2}, {3, 1}, {7, 3}}, data));
+    EXPECT_EQ(data, (std::vector<double>{1.5, 2.5, 3.5, 7.5, 8.5, 9.5}));
+
+    // Empty ranges are skipped, and no ranges give no elements.
+    EXPECT_TRUE(
+      H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{4, 0}, {0, 1}, {10, 0}}, data));
+    EXPECT_EQ(data, (std::vector<double>{0.5}));
+    EXPECT_TRUE(H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{}, data));
+    EXPECT_TRUE(data.empty());
+    EXPECT_TRUE(H5ReadDataset1DRanges<double>(file.Id(), "empty", Ranges{}, data));
+    EXPECT_TRUE(data.empty());
+
+    EXPECT_TRUE(H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{0, 10}}, data));
+    EXPECT_EQ(data, values);
+
+    // Out of order, overlapping, past the end, and missing datasets leave data empty.
+    EXPECT_FALSE(H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{5, 1}, {2, 1}}, data));
+    EXPECT_TRUE(data.empty());
+    EXPECT_FALSE(H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{2, 3}, {4, 1}}, data));
+    EXPECT_FALSE(H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{8, 3}}, data));
+    EXPECT_FALSE(
+      H5ReadDataset1DRanges<double>(file.Id(), "values", Ranges{{11, 0}, {12, 1}}, data));
+    EXPECT_FALSE(H5ReadDataset1DRanges<double>(
+      file.Id(), "values", Ranges{{1, std::numeric_limits<std::uint64_t>::max()}}, data));
+    EXPECT_FALSE(H5ReadDataset1DRanges<double>(file.Id(), "missing", Ranges{{0, 1}}, data));
+    EXPECT_TRUE(data.empty());
   }
   std::filesystem::remove(file_name);
 }

@@ -1504,8 +1504,10 @@ WrapLBS(py::module& slv)
         transposed scattering and production matrices. The file must match the
         current group count, mesh cell IDs, cell-node layout and coordinates,
         total cross sections, and reflecting boundary set. Its maximum moment order must be at least
-        this problem's scattering order. The same serial file may be read by
-        any MPI partitioning of the matching mesh. The first-collision source
+        this problem's scattering order. The file must list every cell of the
+        mesh exactly once. The same file may be read by any MPI partitioning of
+        the matching mesh. Each rank reads only the data of its own cells, so
+        the memory of the read follows the local mesh. The first-collision source
         replaces the fixed sources, so the problem must not also have volumetric
         or point sources or incoming-flux (isotropic or arbitrary) boundaries,
         and its cross sections cannot be replaced.

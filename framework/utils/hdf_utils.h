@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace opensn
 {
@@ -350,6 +351,84 @@ H5GetDataset1DSize(hid_t id, const std::string& name, std::uint64_t& size)
     H5Dclose(dataset);
   }
 
+  return success;
+}
+
+/**
+ * Read parts of the 1D dataset `name`. Each range is a pair of the first element and the number
+ * of elements. The ranges must be in increasing order and must not overlap. `data` receives the
+ * elements of the ranges one after the other, and only those, so a reader of a large dataset
+ * needs memory for its part only. Returns false, with `data` empty, if `name` is not a 1D
+ * dataset, the ranges are out of order, overlap, or extend past its end, or the read fails.
+ */
+template <typename T>
+bool
+H5ReadDataset1DRanges(hid_t id,
+                      const std::string& name,
+                      const std::vector<std::pair<std::uint64_t, std::uint64_t>>& ranges,
+                      std::vector<T>& data)
+{
+  static_assert(
+    !std::is_same_v<T, bool>,
+    "H5ReadDataset1DRanges does not support std::vector<bool>. Use std::vector<unsigned char>.");
+
+  data.clear();
+  auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
+  if (dataset == H5I_INVALID_HID)
+    return false;
+
+  bool success = false;
+  auto file_space = H5Dget_space(dataset);
+  if (file_space != H5I_INVALID_HID)
+  {
+    const auto npoints = H5Sget_simple_extent_npoints(file_space);
+    bool valid = H5Sget_simple_extent_ndims(file_space) == 1 and npoints >= 0 and
+                 H5Sselect_none(file_space) >= 0;
+    const auto extent = valid ? static_cast<std::uint64_t>(npoints) : 0;
+    std::uint64_t total = 0;
+    std::uint64_t end_of_previous = 0;
+    for (const auto& [first, count] : ranges)
+    {
+      if (not valid)
+        break;
+      if (count == 0)
+        continue;
+      valid = first >= end_of_previous and first <= extent and count <= extent - first;
+      if (valid)
+      {
+        const hsize_t start = first;
+        const hsize_t block = count;
+        valid =
+          H5Sselect_hyperslab(file_space, H5S_SELECT_OR, &start, nullptr, &block, nullptr) >= 0;
+      }
+      end_of_previous = first + count;
+      total += count;
+    }
+
+    if (valid and total == 0)
+      success = true;
+    else if (valid)
+    {
+      const hsize_t memory_size = total;
+      auto memory_space = H5Screate_simple(1, &memory_size, nullptr);
+      if (memory_space != H5I_INVALID_HID)
+      {
+        data.resize(static_cast<size_t>(total));
+        success =
+          H5Dread(dataset, get_datatype<T>(), memory_space, file_space, H5P_DEFAULT, data.data()) >=
+          0;
+        H5Sclose(memory_space);
+      }
+    }
+    H5Sclose(file_space);
+  }
+  H5Dclose(dataset);
+
+  if (not success)
+  {
+    data.clear();
+    data.shrink_to_fit();
+  }
   return success;
 }
 
