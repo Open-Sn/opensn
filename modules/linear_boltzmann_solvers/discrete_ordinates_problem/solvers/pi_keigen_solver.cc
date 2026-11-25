@@ -173,6 +173,17 @@ PowerIterationKEigenSolver::ExecuteSolver()
       ags_solver->SetMaxIterations(do_problem_->GetOptions().max_ags_iterations.value_or(1));
   }
 
+  // A problem setter after Initialize() can change the flux or the fission operator. SetAdjoint
+  // zeroes the flux, and SetXSMap changes the fission production of the same flux. The first
+  // eigenvalue update is therefore measured from the production of the current flux. A flux
+  // without fission production starts again from the flat guess of Initialize().
+  F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
+  if (not(F_prev_ > 0.0) or not std::isfinite(F_prev_))
+  {
+    LBSVecOps::SetPhiVectorScalarValues(*do_problem_, PhiSTLOption::PHI_OLD, 1.0);
+    F_prev_ = ComputeFissionProduction(*do_problem_, phi_old_local_);
+  }
+
   // The acceleration is built from the problem's current runtime objects for each Execute(), so a
   // problem setter between calls (e.g. SetXSMap) cannot leave it with stale operators.
   if (acceleration_)

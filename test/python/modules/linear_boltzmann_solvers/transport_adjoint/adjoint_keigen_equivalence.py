@@ -15,8 +15,9 @@ block and a moderator, reflecting xmin and xmax (xmin lags), and vacuum ymin and
 classic Richardson and GMRES inners, each with no accelerator, SCDSA (pwld), and CMFD (identity),
 and NonLinearKEigenSolver. SMM is omitted because its known O(h^2) low-order bias need not be the
 same in both modes. For each variant, k is computed by a forward problem, a fresh adjoint problem,
-a second Execute of the adjoint solver, and the forward problem after SetAdjoint(True) with a new
-solver.
+a second Execute of the adjoint solver, and the forward problem after SetAdjoint(True), both by
+another Execute of its forward solver and by a new solver. SetAdjoint zeroes the flux, so the
+Execute of the forward solver must start again from a flat flux.
   KEIGEN_ADJ_MAX_REL_DK: the largest |k / k_fwd - 1| (0 to about 1e-9).
   KEIGEN_ADJ_K_FWD: the forward k of the GMRES variant without an accelerator.
 With use_gpus=True the sweeps run on the GPU.
@@ -151,14 +152,16 @@ if __name__ == "__main__":
     for method, accel_name, kind in variants:
         accel = accelerators[accel_name]
         fwd = make_problem(False, method)
-        _, k_fwd = run(fwd, accel, kind)
+        s_fwd, k_fwd = run(fwd, accel, kind)
         adj = make_problem(True, method)
         s_adj, k_adj = run(adj, accel, kind)
         s_adj.Execute()
         k_adj_re = s_adj.GetEigenvalue()
         fwd.SetAdjoint(True)
+        s_fwd.Execute()
+        k_same_solver = s_fwd.GetEigenvalue()
         _, k_switch = run(fwd, accel, kind)
-        dks = [abs(k / k_fwd - 1.0) for k in (k_adj, k_adj_re, k_switch)]
+        dks = [abs(k / k_fwd - 1.0) for k in (k_adj, k_adj_re, k_same_solver, k_switch)]
         max_dk = max([max_dk] + dks)
         if (method, accel_name, kind) == ("petsc_gmres", "none", "pi"):
             reference_k = k_fwd
