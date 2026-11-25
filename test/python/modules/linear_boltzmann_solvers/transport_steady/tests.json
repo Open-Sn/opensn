@@ -3203,15 +3203,15 @@
       },
       {
         "type": "StrCompare",
-        "key": "AGS iterates: group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass."
+        "key": "AGS will iterate because group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass."
       },
       {
         "type": "StrCompare",
-        "key": "AGS iterates: group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = \"auto\" for a single pass."
+        "key": "AGS will iterate because group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = \"auto\" for a single pass."
       },
       {
         "type": "StrCompare",
-        "key": "AGS iterates: group 0 scatters into group 63 in an earlier groupset. Set ags_groupset_order = \"auto\" for a single pass."
+        "key": "AGS will iterate because group 0 scatters into group 63 in an earlier groupset. Set ags_groupset_order = \"auto\" for a single pass."
       }
     ]
   },

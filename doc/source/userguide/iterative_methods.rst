@@ -637,10 +637,10 @@ The messages are:
 
 .. code-block:: text
 
-   AGS iterates: group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass.
-   AGS iterates: group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = "auto" for a single pass.
-   AGS iterates: fission couples the groupsets.
-   AGS iterates: CSDA is enabled.
+   AGS will iterate because group 100 scatters into group 93 in an earlier groupset. Put groups 69-166 in one groupset for a single pass.
+   AGS will iterate because group 63 scatters into group 0 in an earlier groupset (adjoint). Set ags_groupset_order = "auto" for a single pass.
+   AGS will iterate because fission couples the groupsets.
+   AGS will iterate because CSDA is enabled.
 
 The first part names one transfer that prevents a single pass. Group numbers
 are problem group indices, with group 0 at the highest energy. "Group 100
@@ -703,8 +703,8 @@ To set them up:
    different inner settings.
 3. Use ``ags_groupset_order = "auto"``. It solves forward problems from high to
    low energy and adjoint problems from low to high energy.
-4. Run the problem. If the log shows an ``AGS iterates`` message, apply its
-   suggestion.
+4. Run the problem. If the log says that the AGS will iterate, apply the
+   suggestion in that message.
 
 For example, in a 44-group library for water, concrete, and air, the
 highest-energy group that receives upscatter is group 36, and the upscatter

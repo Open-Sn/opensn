@@ -220,7 +220,8 @@ AGSLinearSolver::Solve()
     logged_inexact_reason_.clear();
   else if (print_ags_stats and *inexact_reason != logged_inexact_reason_)
   {
-    log.Log() << no_wrap << program_timer.GetTimeString() << " AGS iterates: " << *inexact_reason;
+    log.Log() << no_wrap << program_timer.GetTimeString() << " AGS will iterate because "
+              << *inexact_reason;
     logged_inexact_reason_ = *inexact_reason;
   }
 
