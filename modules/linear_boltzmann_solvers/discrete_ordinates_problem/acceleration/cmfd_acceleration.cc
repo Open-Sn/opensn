@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/materials/multi_group_xs/multi_group_xs.h"
 #include "framework/math/petsc_utils/petsc_utils.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
@@ -18,6 +19,7 @@
 #include "modules/linear_boltzmann_solvers/lbs_problem/iterative_methods/iteration_logging.h"
 #include "modules/linear_boltzmann_solvers/lbs_problem/vecops/lbs_vecops.h"
 #include <algorithm>
+#include <array>
 #include <cmath>
 #include <iomanip>
 #include <iterator>
@@ -42,8 +44,33 @@ constexpr unsigned int persistent_skip_warning_count = 5;
 constexpr double homogenization_cancellation_tolerance =
   64.0 * std::numeric_limits<double>::epsilon();
 // A coarse linear solve is accepted if its true residual is at most this factor times the
-// requested tolerance, max(l_rel_tol * |b|, l_abs_tol).
+// requested tolerance, max(coarse_linear_rel_tol * |b|, coarse_linear_abs_tol).
 constexpr double true_residual_factor = 100.0;
+// Tolerances and iteration limit of the coarse linear solves.
+constexpr double coarse_linear_rel_tol = 1.0e-10;
+constexpr double coarse_linear_abs_tol = 1.0e-200;
+constexpr int coarse_linear_max_its = 1000;
+// The coarse eigensolve: Wielandt-shifted power iteration whose flux and k tolerances are this
+// fraction of the change the transport sweep made to the coarse flux, capped at the fixed
+// tolerances below, with at most coarse_pi_max_its iterations.
+constexpr double wielandt_shift = 0.05;
+constexpr double coarse_pi_relative_tol = 1.0e-2;
+constexpr double coarse_pi_phi_tol = 1.0e-6;
+constexpr double coarse_pi_k_tol = 1.0e-8;
+constexpr int coarse_pi_max_its = 1000;
+// A coarse flux below this fraction of the largest flux of its coarse group counts as zero.
+constexpr double zero_flux_fraction = 1.0e-14;
+// Within-group tolerance of a transport update. Small enough that each update runs its full
+// number of sweeps.
+constexpr double transport_update_abs_tol = 1.0e-12;
+// Number of coarse groups the automatic coarse_groups choice targets.
+constexpr unsigned int auto_coarse_groups = 16;
+// An LU factorization of the coarse operator is used while its estimated memory is at most this
+// many bytes per MPI rank.
+constexpr double coarse_direct_bytes_per_rank = 1.0 * 1024 * 1024 * 1024;
+// Coarse cells thicker than this many transport mean free paths in some direction make CMFD with
+// one sweep per update converge slowly.
+constexpr double optically_thick_mfp = 3.0;
 
 // Collective check: throws on every rank if any rank reports a positive count for a failure.
 void
@@ -66,6 +93,15 @@ bool
 FitsMPICount(const std::size_t count)
 {
   return count <= static_cast<std::size_t>(std::numeric_limits<int>::max());
+}
+
+std::vector<double>
+BuildUniformEdges(const double origin, const double pitch, const int count)
+{
+  std::vector<double> edges(static_cast<std::size_t>(count) + 1);
+  for (int i = 0; i <= count; ++i)
+    edges[static_cast<std::size_t>(i)] = origin + static_cast<double>(i) * pitch;
+  return edges;
 }
 
 /**
@@ -195,153 +231,107 @@ CMFDAcceleration::GetInputParameters()
 
   params.AddOptionalParameter(
     "coarse_mesh",
-    "local_aggregation",
-    "CMFD coarse-mesh construction method. The \"local_aggregation\" method builds rank-local "
-    "aggregates. The \"global_aggregation\" method builds connected aggregates that may span MPI "
-    "ranks. Both keep each aggregate within one mesh block unless "
-    "allow_mixed_material_aggregation is true. The \"identity\" method creates one CMFD cell per "
-    "transport cell and is intended mainly for debugging and method comparisons.");
+    std::string("local_aggregation"),
+    "CMFD coarse mesh. A string selects a type with its defaults, and a dict selects a type with "
+    "its parameters. The type \"local_aggregation\" (dict key \"size\", the target number of "
+    "fine cells per coarse cell, default 32) builds aggregates within each MPI rank. The type "
+    "\"global_aggregation\" (key \"size\") builds connected aggregates that may span ranks. The "
+    "type \"reactor_lattice\" (keys \"origin\" [x, y], \"pitch\" [px, py], \"shape\" [nx, ny] "
+    "and optional \"axial_edges\") gives one coarse cell per lattice cell and axial layer. The "
+    "type \"cartesian\" (keys \"x_edges\", \"y_edges\", \"z_edges\", each optional but not all "
+    "empty) gives one coarse cell per Cartesian box. The type \"logical_volumes\" (key "
+    "\"volumes\") gives one coarse cell per connected part of each volume. The type "
+    "\"identity\" gives one coarse cell per transport cell and is meant for testing. Coarse "
+    "cells may contain several materials. The coarse-cell coefficients are homogenized from "
+    "the transport flux.");
+  params.SetParameterTypeMismatchAllowed("coarse_mesh");
   params.AddOptionalParameter(
-    "current_closure",
-    "partial",
-    "CMFD face-current closure. Valid choices are \"partial\" and \"net\". The partial closure "
-    "(the default) is the partial-current CMFD (pCMFD) closure. It is typically stable unrelaxed "
-    "on both optically thin and thick coarse cells, whereas the net closure can oscillate or "
-    "diverge on optically thick coarse cells.");
+    "coarse_groups",
+    std::string("auto"),
+    "Number of CMFD energy groups, or \"auto\". The transport groups are split into consecutive "
+    "coarse groups of ceil(G / coarse_groups) fine groups each, which may give fewer coarse "
+    "groups than requested. The choice \"auto\" keeps every group when G <= 16 and targets 16 "
+    "coarse groups otherwise.");
+  params.SetParameterTypeMismatchAllowed("coarse_groups");
+
+  // Names released before the CMFD interface was simplified. Each is accepted for one release
+  // with a warning that names the replacement. Values that contradict the fixed method are errors
+  // in ParseCoarseMeshSpec or CheckRequirements.
+  params.AddOptionalParameter("aggregation_size", 32, "Deprecated. Use coarse_mesh.");
+  params.MarkParameterDeprecatedWarning(
+    "aggregation_size", R"(Use coarse_mesh={"type": "local_aggregation", "size": n}.)");
+  params.AddOptionalParameter("group_aggregation_size", 1, "Deprecated. Use coarse_groups.");
+  params.MarkParameterDeprecatedWarning("group_aggregation_size",
+                                        "Use coarse_groups = ceil(G / group_aggregation_size).");
   params.AddOptionalParameter(
-    "aggregation_size",
-    32,
-    "Target number of fine cells per aggregated CMFD coarse cell. Larger values "
-    "reduce CMFD cost but coarsen the spatial correction; smaller values increase coarse-solve "
-    "cost but can improve robustness.");
-  params.AddOptionalParameter(
-    "allow_mixed_material_aggregation",
-    false,
-    "Allow local_aggregation or global_aggregation coarse cells to cross material-block "
-    "boundaries. Coarse-cell coefficients are always flux-volume homogenized from the "
-    "constituent fine cells. This option only changes which fine cells may share a coarse "
-    "cell. The default false keeps aggregates within one material block.");
-  params.AddOptionalParameter(
-    "group_aggregation_size",
-    1,
-    "Number of transport energy groups per CMFD coarse energy group, not the final number of "
-    "coarse groups. Use (num_groups + target_coarse_groups - 1) / target_coarse_groups to target "
-    "a desired number of CMFD energy groups.");
-  params.AddOptionalParameter(
-    "relaxation",
-    1.0,
-    "Strictly positive relaxation factor for the CMFD scalar-flux correction. The correction "
-    "limiter may damp or skip an individual correction if the requested correction is not "
-    "admissible.");
-  params.AddOptionalParameter(
+    "current_closure", std::string("partial"), "Deprecated. CMFD always uses the partial closure.");
+  params.MarkParameterDeprecatedWarning(
+    "current_closure", "CMFD always uses the partial-current closure, and \"net\" is an error.");
+  params.AddOptionalParameter("relaxation", 1.0, "Deprecated. CMFD corrections are unrelaxed.");
+  params.MarkParameterDeprecatedWarning("relaxation",
+                                        "CMFD corrections are unrelaxed, and a value other "
+                                        "than 1 is an error.");
+  params.AddOptionalParameter("correction_max_attempts", 10, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning(
     "correction_max_attempts",
-    10,
-    "[developer/debug] Maximum CMFD correction damping attempts before skipping the "
-    "correction for the current transport update. Each failed attempt halves the damping.");
-  params.AddOptionalParameter(
+    "CMFD no longer damps corrections. A correction that is not admissible is skipped.");
+  params.AddOptionalParameter("correction_min_damping", 1.0e-4, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning(
     "correction_min_damping",
-    1.0e-4,
-    "[developer/debug] Minimum CMFD correction damping factor considered during correction "
-    "limiting. If no admissible correction is found above this damping, the CMFD correction is "
-    "skipped for the current transport update.");
+    "CMFD no longer damps corrections. A correction that is not admissible is skipped.");
+  params.AddOptionalParameter("inactive_iterations", 0, "Deprecated. CMFD starts at once.");
+  params.MarkParameterDeprecatedWarning(
+    "inactive_iterations", "CMFD corrects every update, and a value other than 0 is an error.");
   params.AddOptionalParameter(
-    "inactive_iterations",
-    0,
-    "[developer/debug] Number of initial power iterations before applying CMFD corrections. "
-    "These iterations keep the groupset WGS settings of the DiscreteOrdinatesProblem, not "
-    "update_wgs_max_its and update_wgs_abs_tol. CMFD applies those two settings from the first "
-    "active iteration, and the power iteration solver restores the problem's settings when its "
-    "Execute() returns.");
-  params.AddOptionalParameter(
-    "update_wgs_max_its",
-    1,
-    "Maximum WGS iterations used for each transport update before applying the CMFD "
-    "correction. The default is one transport update iteration per power iteration.");
-  params.AddOptionalParameter(
-    "update_wgs_abs_tol",
-    1.0e-12,
-    "WGS absolute tolerance used for each transport update. When update_wgs_max_its=1, "
-    "this tolerance is normally not the stopping criterion because only one WGS iteration "
-    "is allowed.");
-  params.AddOptionalParameter(
+    "update_wgs_max_its", 1, "Deprecated. Use sweeps_per_update of the power iteration solver.");
+  params.MarkParameterDeprecatedWarning("update_wgs_max_its",
+                                        "Use sweeps_per_update of PowerIterationKEigenSolver.");
+  params.AddOptionalParameter("update_wgs_abs_tol", 1.0e-12, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("update_wgs_abs_tol",
+                                        "Use sweeps_per_update of PowerIterationKEigenSolver.");
+  params.AddOptionalParameter("balance_residual_tolerance", 1.0e-6, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning(
     "balance_residual_tolerance",
-    1.0e-6,
-    "Restricted transport-current balance residual tolerance required before "
-    "CMFD allows power-iteration convergence. This is a second convergence "
-    "guard in addition to the outer k_eff tolerance, not an estimate of the "
-    "k-eigenvalue error. Large 3D problems may need a looser value than the "
-    "outer k_eff tolerance.");
-  params.AddOptionalParameter(
-    "coarse_solver_policy",
-    "auto",
-    "[developer/debug] CMFD coarse solver policy. The \"auto\" policy chooses direct PETSc LU "
-    "below coarse_direct_solve_threshold global unknowns and iterative GMRES with hypre "
-    "BoomerAMG otherwise. The \"direct\", \"iterative\", and \"petsc_options\" policies force a "
-    "specific path. CMFD corrections from unconverged coarse linear solves are always "
-    "skipped.");
-  params.AddOptionalParameter("coarse_direct_solve_threshold",
-                              150000,
-                              "[developer/debug] Maximum global CMFD unknown count for using the "
-                              "direct PETSc LU path when coarse_solver_policy is auto. Larger "
-                              "values make auto use direct solves for larger coarse systems. "
-                              "Choose values based on available host memory and acceptable "
-                              "factorization cost.");
-  params.ConstrainParameterRange(
-    "coarse_mesh",
-    AllowableRangeList::New({"identity", "local_aggregation", "global_aggregation"}));
-  params.ConstrainParameterRange("current_closure", AllowableRangeList::New({"net", "partial"}));
-  params.ConstrainParameterRange(
-    "coarse_solver_policy",
-    AllowableRangeList::New({"auto", "direct", "iterative", "petsc_options"}));
+    "Use fission_source_tol of PowerIterationKEigenSolver, which tests the converged shape.");
+  params.AddOptionalParameter("coarse_solver_policy", std::string("auto"), "Deprecated.");
+  params.MarkParameterDeprecatedWarning("coarse_solver_policy",
+                                        "CMFD chooses the coarse linear solver. Use "
+                                        "petsc_options to configure it instead.");
+  params.AddOptionalParameter("coarse_direct_solve_threshold", 150000, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning(
+    "coarse_direct_solve_threshold",
+    "CMFD chooses the coarse linear solver from its estimated memory.");
+  params.AddOptionalParameter("l_rel_tol", 1.0e-8, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("l_rel_tol",
+                                        "CMFD sets the coarse linear solver tolerances.");
+  params.ChangeExistingParamToOptional("l_abs_tol", 1.0e-7, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("l_abs_tol",
+                                        "CMFD sets the coarse linear solver tolerances.");
+  params.ChangeExistingParamToOptional("max_iters", 100, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("max_iters",
+                                        "CMFD sets the coarse linear solver iteration limit.");
+  params.ChangeExistingParamToOptional("pi_max_its", 1000, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("pi_max_its",
+                                        "CMFD converges the coarse eigenproblem itself.");
+  params.ChangeExistingParamToOptional("pi_k_tol", 1.0e-8, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("pi_k_tol",
+                                        "CMFD converges the coarse eigenproblem itself.");
+  params.AddOptionalParameter("pi_phi_tol", 1.0e-6, "Deprecated and ignored.");
+  params.MarkParameterDeprecatedWarning("pi_phi_tol",
+                                        "CMFD converges the coarse eigenproblem itself.");
+
   params.ConstrainParameterRange("aggregation_size", AllowableRangeLowLimit::New(1));
   params.ConstrainParameterRange("group_aggregation_size", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("relaxation", AllowableRangeLowLimit::New(0.0, false));
-  params.ConstrainParameterRange("pi_max_its", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("correction_max_attempts", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("correction_min_damping", AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("inactive_iterations", AllowableRangeLowLimit::New(0));
+  params.ConstrainParameterRange("current_closure", AllowableRangeList::New({"net", "partial"}));
   params.ConstrainParameterRange("update_wgs_max_its", AllowableRangeLowLimit::New(1));
-  params.ConstrainParameterRange("update_wgs_abs_tol", AllowableRangeLowLimit::New(1.0e-18));
-  params.ConstrainParameterRange("balance_residual_tolerance", AllowableRangeLowLimit::New(0.0));
-  params.ConstrainParameterRange("coarse_direct_solve_threshold", AllowableRangeLowLimit::New(1));
   params.ChangeExistingParamToOptional("name", "CMFDAcceleration");
   params.ChangeExistingParamToOptional(
-    "l_abs_tol", 1.0e-7, "[developer/debug] Absolute residual tolerance for CMFD coarse solves.");
-  params.AddOptionalParameter("l_rel_tol",
-                              1.0e-8,
-                              "[developer/debug] Relative residual tolerance for iterative CMFD "
-                              "coarse solves. An iterative solve converges when either l_rel_tol "
-                              "or l_abs_tol is met.");
-  params.ConstrainParameterRange("l_rel_tol", AllowableRangeLowLimit::New(0.0));
+    "verbose", false, "If true, prints CMFD coarse-mesh, correction and timing diagnostics.");
   params.ChangeExistingParamToOptional(
-    "max_iters",
-    100,
-    "[developer/debug] Maximum iterations for each CMFD coarse linear solve. If a coarse "
-    "linear solve does not converge within this limit, CMFD skips the correction rather than "
-    "applying an untrusted low-order update. If this happens with an iterative coarse solve, "
-    "use direct for modest systems, increase this limit, or provide stronger PETSc options.");
-  params.ChangeExistingParamToOptional(
-    "verbose", false, "[developer/debug] If true, prints detailed CMFD diagnostics and timings.");
-  params.ChangeExistingParamToOptional(
-    "petsc_options", std::string(""), "[developer/debug] Additional PETSc options.");
-  params.ChangeExistingParamToOptional(
-    "pi_max_its",
-    50,
-    "[developer/debug] Maximum inner power iterations for the CMFD coarse k solve.");
-  params.ChangeExistingParamToOptional(
-    "pi_k_tol",
-    1.0e-8,
-    "[developer/debug] Tolerance on the relative change of the coarse k-eigenvalue between CMFD "
-    "coarse power iterations.");
-  params.AddOptionalParameter(
-    "pi_phi_tol",
-    1.0e-6,
-    "[developer/debug] Tolerance on the coarse scalar-flux error of the CMFD coarse power "
-    "iteration, estimated as the relative L2 change of the production-normalized flux divided by "
-    "(1 - rho), with the convergence rate rho estimated from successive changes. The coarse power "
-    "iteration stops when both this tolerance and pi_k_tol are met, which takes at least two "
-    "iterations, or after pi_max_its iterations.");
-  params.ConstrainParameterRange("pi_phi_tol", AllowableRangeLowLimit::New(0.0, false));
+    "petsc_options",
+    std::string(""),
+    "PETSc options for the coarse linear solver, prefixed by the accelerator name. Options "
+    "that set the KSP or PC type replace the automatic choice of the coarse linear solver.");
 
   return params;
 }
@@ -352,30 +342,153 @@ CMFDAcceleration::Create(const ParameterBlock& params)
   return CreateObject<CMFDAcceleration>("lbs::CMFDAcceleration", params);
 }
 
+namespace
+{
+
+bool
+WasGiven(const InputParameters& params, const std::string& name)
+{
+  return params.GetParametersAtAssignment().Has(name);
+}
+
+std::vector<double>
+OptionalDoubles(const ParameterBlock& block, const std::string& key)
+{
+  return block.Has(key) ? block.GetParamVectorValue<double>(key) : std::vector<double>{};
+}
+
+} // namespace
+
+CMFDAcceleration::CoarseMeshSpec
+CMFDAcceleration::ParseCoarseMeshSpec(const InputParameters& params)
+{
+  CoarseMeshSpec spec;
+  const auto& coarse_mesh = params.GetParam("coarse_mesh");
+  const auto Fail = [](const std::string& message)
+  { throw std::invalid_argument("CMFDAcceleration coarse_mesh: " + message); };
+
+  if (coarse_mesh.GetType() == ParameterBlockType::STRING)
+    spec.type = coarse_mesh.GetValue().GetStringValue();
+  else if (coarse_mesh.GetType() == ParameterBlockType::BLOCK)
+  {
+    if (not coarse_mesh.Has("type"))
+      Fail("a dict needs a \"type\" key.");
+    spec.type = coarse_mesh.GetParamValue<std::string>("type");
+  }
+  else
+    Fail("expected a string or a dict.");
+
+  const std::map<std::string, std::set<std::string>> allowed_keys = {
+    {"identity", {"type"}},
+    {"local_aggregation", {"type", "size"}},
+    {"global_aggregation", {"type", "size"}},
+    {"reactor_lattice", {"type", "origin", "pitch", "shape", "axial_edges"}},
+    {"cartesian", {"type", "x_edges", "y_edges", "z_edges"}},
+    {"logical_volumes", {"type", "volumes"}}};
+  const auto allowed = allowed_keys.find(spec.type);
+  if (allowed == allowed_keys.end())
+    Fail("unknown type \"" + spec.type +
+         "\". Valid types are identity, local_aggregation, global_aggregation, "
+         "reactor_lattice, cartesian, and logical_volumes.");
+
+  if (coarse_mesh.GetType() == ParameterBlockType::BLOCK)
+  {
+    for (const auto& entry : coarse_mesh.GetParameters())
+      if (allowed->second.count(entry.GetName()) == 0)
+        Fail("type \"" + spec.type + "\" does not take the key \"" + entry.GetName() + "\".");
+    if (coarse_mesh.Has("size"))
+      spec.size = coarse_mesh.GetParamValue<int>("size");
+    spec.x_edges = OptionalDoubles(coarse_mesh, "x_edges");
+    spec.y_edges = OptionalDoubles(coarse_mesh, "y_edges");
+    spec.z_edges = OptionalDoubles(coarse_mesh, "z_edges");
+    spec.lattice_origin = OptionalDoubles(coarse_mesh, "origin");
+    spec.lattice_pitch = OptionalDoubles(coarse_mesh, "pitch");
+    spec.lattice_axial_edges = OptionalDoubles(coarse_mesh, "axial_edges");
+    if (coarse_mesh.Has("shape"))
+      spec.lattice_shape = coarse_mesh.GetParamVectorValue<int>("shape");
+    if (coarse_mesh.Has("volumes"))
+      spec.logical_volumes =
+        coarse_mesh.GetParamVectorValue<std::shared_ptr<LogicalVolume>>("volumes");
+    if (spec.type == "reactor_lattice" and
+        (spec.lattice_origin.empty() or spec.lattice_pitch.empty() or spec.lattice_shape.empty()))
+      Fail(R"(type "reactor_lattice" needs "origin", "pitch", and "shape".)");
+    if (spec.type == "logical_volumes" and spec.logical_volumes.empty())
+      Fail(R"(type "logical_volumes" needs a nonempty "volumes" list.)");
+    if (spec.type == "cartesian" and spec.x_edges.empty() and spec.y_edges.empty() and
+        spec.z_edges.empty())
+      Fail(R"(type "cartesian" needs at least one of "x_edges", "y_edges", "z_edges".)");
+  }
+  else if (spec.type == "reactor_lattice" or spec.type == "cartesian" or
+           spec.type == "logical_volumes")
+    Fail("type \"" + spec.type + "\" needs a dict with its geometry.");
+
+  if (WasGiven(params, "aggregation_size"))
+  {
+    if (spec.type != "local_aggregation" and spec.type != "global_aggregation")
+      Fail("the deprecated aggregation_size applies only to the aggregation types.");
+    if (coarse_mesh.GetType() == ParameterBlockType::BLOCK and coarse_mesh.Has("size"))
+      Fail("give the aggregation size once, as the \"size\" key.");
+    spec.size = params.GetParamValue<int>("aggregation_size");
+  }
+  if (spec.size < 1)
+    Fail("the aggregation \"size\" must be at least 1.");
+  return spec;
+}
+
+unsigned int
+CMFDAcceleration::ParseGroupAggregationSize(const InputParameters& params,
+                                            const unsigned int num_groups)
+{
+  const auto& coarse_groups = params.GetParam("coarse_groups");
+  const bool given = WasGiven(params, "coarse_groups");
+  if (WasGiven(params, "group_aggregation_size"))
+  {
+    if (given)
+      throw std::invalid_argument("CMFDAcceleration: give coarse_groups or the deprecated "
+                                  "group_aggregation_size, not both.");
+    return static_cast<unsigned int>(params.GetParamValue<int>("group_aggregation_size"));
+  }
+  unsigned int target = 0;
+  if (coarse_groups.GetType() == ParameterBlockType::STRING)
+  {
+    if (coarse_groups.GetValue().GetStringValue() != "auto")
+      throw std::invalid_argument(
+        "CMFDAcceleration coarse_groups: expected a positive integer or \"auto\".");
+    target = num_groups <= auto_coarse_groups ? num_groups : auto_coarse_groups;
+  }
+  else if (coarse_groups.GetType() == ParameterBlockType::INTEGER)
+  {
+    const auto value = coarse_groups.GetValue().GetIntegerValue();
+    if (value < 1)
+      throw std::invalid_argument("CMFDAcceleration coarse_groups: must be at least 1.");
+    target = static_cast<unsigned int>(std::min<int64_t>(value, num_groups));
+  }
+  else
+    throw std::invalid_argument(
+      "CMFDAcceleration coarse_groups: expected a positive integer or \"auto\".");
+  return (num_groups + target - 1) / target;
+}
+
 CMFDAcceleration::CMFDAcceleration(const InputParameters& params)
   : DiscreteOrdinatesKEigenAcceleration(params),
-    coarse_mesh_type_(params.GetParamValue<std::string>("coarse_mesh")),
-    current_closure_(params.GetParamValue<std::string>("current_closure")),
-    aggregation_size_(params.GetParamValue<int>("aggregation_size")),
-    allow_mixed_material_aggregation_(
-      params.GetParamValue<bool>("allow_mixed_material_aggregation")),
-    group_aggregation_size_(
-      static_cast<unsigned int>(params.GetParamValue<int>("group_aggregation_size"))),
-    relaxation_(params.GetParamValue<double>("relaxation")),
-    correction_max_attempts_(params.GetParamValue<unsigned int>("correction_max_attempts")),
-    correction_min_damping_(params.GetParamValue<double>("correction_min_damping")),
-    inactive_iterations_(params.GetParamValue<unsigned int>("inactive_iterations")),
-    update_wgs_max_its_(params.GetParamValue<unsigned int>("update_wgs_max_its")),
-    update_wgs_abs_tol_(params.GetParamValue<double>("update_wgs_abs_tol")),
-    balance_residual_tolerance_(params.GetParamValue<double>("balance_residual_tolerance")),
-    l_rel_tol_(params.GetParamValue<double>("l_rel_tol")),
-    pi_phi_tol_(params.GetParamValue<double>("pi_phi_tol")),
-    coarse_solver_policy_(params.GetParamValue<std::string>("coarse_solver_policy")),
-    coarse_direct_solve_threshold_(
-      static_cast<std::size_t>(params.GetParamValue<int>("coarse_direct_solve_threshold"))),
+    coarse_mesh_spec_(ParseCoarseMeshSpec(params)),
+    legacy_update_wgs_max_its_(
+      WasGiven(params, "update_wgs_max_its")
+        ? static_cast<unsigned int>(params.GetParamValue<int>("update_wgs_max_its"))
+        : 0),
     num_groups_(do_problem_.GetNumGroups()),
+    group_aggregation_size_(ParseGroupAggregationSize(params, num_groups_)),
     num_coarse_groups_((num_groups_ + group_aggregation_size_ - 1) / group_aggregation_size_)
 {
+  const auto Reject = [](const std::string& message)
+  { throw std::invalid_argument("CMFDAcceleration: " + message); };
+  if (params.GetParamValue<std::string>("current_closure") != "partial")
+    Reject("current_closure=\"net\" is no longer supported. CMFD uses the partial-current "
+           "closure.");
+  if (params.GetParamValue<double>("relaxation") != 1.0)
+    Reject("relaxation is fixed at 1. Remove the parameter.");
+  if (params.GetParamValue<int>("inactive_iterations") != 0)
+    Reject("inactive_iterations is no longer supported. Remove the parameter.");
 }
 
 CMFDAcceleration::~CMFDAcceleration()
@@ -386,6 +499,8 @@ CMFDAcceleration::~CMFDAcceleration()
     OpenSnPETScCall(VecDestroy(&rhs_));
   if (A_)
     OpenSnPETScCall(MatDestroy(&A_));
+  if (A_shift_)
+    OpenSnPETScCall(MatDestroy(&A_shift_));
 }
 
 const CMFDAcceleration::CoarseCellXS&
@@ -441,10 +556,61 @@ CMFDAcceleration::CheckRequirements(std::vector<std::string>& errors) const
   if (do_problem_.GetGeometryType() == GeometryType::ONED_SPHERICAL)
     errors.emplace_back(GetName() + " is not supported in 1D spherical geometry.");
 
-  if (allow_mixed_material_aggregation_ and coarse_mesh_type_ != "local_aggregation" and
-      coarse_mesh_type_ != "global_aggregation")
-    errors.emplace_back(GetName() + " accepts allow_mixed_material_aggregation=true only with "
-                                    "local_aggregation or global_aggregation.");
+  const auto& spec = coarse_mesh_spec_;
+  const auto CheckEdges = [&](const std::vector<double>& edges, const std::string& name)
+  {
+    if (edges.empty())
+      return;
+    if (edges.size() < 2)
+    {
+      errors.emplace_back(GetName() + " requires at least two " + name + " values.");
+      return;
+    }
+    for (std::size_t i = 0; i < edges.size(); ++i)
+    {
+      if (not std::isfinite(edges[i]))
+      {
+        errors.emplace_back(GetName() + " requires finite " + name + " values.");
+        return;
+      }
+      if (i > 0 and edges[i] <= edges[i - 1])
+      {
+        errors.emplace_back(GetName() + " requires strictly increasing " + name + ".");
+        return;
+      }
+    }
+  };
+  if (spec.type == "cartesian")
+  {
+    CheckEdges(spec.x_edges, "x_edges");
+    CheckEdges(spec.y_edges, "y_edges");
+    CheckEdges(spec.z_edges, "z_edges");
+  }
+  else if (spec.type == "reactor_lattice")
+  {
+    if (spec.lattice_origin.size() != 2)
+      errors.emplace_back(GetName() + " requires two reactor_lattice origin values (x and y).");
+    if (spec.lattice_pitch.size() != 2 or
+        std::any_of(spec.lattice_pitch.begin(),
+                    spec.lattice_pitch.end(),
+                    [](const double value) { return not std::isfinite(value) or value <= 0.0; }))
+      errors.emplace_back(GetName() + " requires two finite positive reactor_lattice pitches.");
+    if (spec.lattice_shape.size() != 2 or std::any_of(spec.lattice_shape.begin(),
+                                                      spec.lattice_shape.end(),
+                                                      [](const int value) { return value <= 0; }))
+      errors.emplace_back(GetName() + " requires two positive reactor_lattice shape values.");
+    if (std::any_of(spec.lattice_origin.begin(),
+                    spec.lattice_origin.end(),
+                    [](const double value) { return not std::isfinite(value); }))
+      errors.emplace_back(GetName() + " requires finite reactor_lattice origin values.");
+    if (spec.lattice_origin.size() == 2 and spec.lattice_pitch.size() == 2 and
+        spec.lattice_shape.size() == 2)
+      for (std::size_t d = 0; d < 2; ++d)
+        if (not std::isfinite(spec.lattice_origin[d] +
+                              spec.lattice_pitch[d] * static_cast<double>(spec.lattice_shape[d])))
+          errors.emplace_back(GetName() + " reactor_lattice extent must be finite.");
+    CheckEdges(spec.lattice_axial_edges, "reactor_lattice axial_edges");
+  }
 
   const bool adjoint = do_problem_.GetOptions().adjoint;
   for (const auto& [block_id, xs] : do_problem_.GetBlockID2XSMap())
@@ -477,30 +643,55 @@ CMFDAcceleration::Initialize()
   coarse_phi_old_.clear();
   coarse_phi_new_.clear();
 
-  if (coarse_mesh_type_ == "identity")
-    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(*do_problem_.GetGrid());
-  else if (coarse_mesh_type_ == "local_aggregation")
-    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(
-      *do_problem_.GetGrid(), aggregation_size_, allow_mixed_material_aggregation_);
-  else if (coarse_mesh_type_ == "global_aggregation")
-    coarse_mesh_ = CMFDCoarseMesh::BuildGlobalAggregation(
-      *do_problem_.GetGrid(), aggregation_size_, allow_mixed_material_aggregation_);
+  // Every coarse-mesh type may combine materials in one coarse cell. Homogenization weights each
+  // material by its transport flux, so that the coarse cell preserves the reaction rates.
+  const auto& spec = coarse_mesh_spec_;
+  const auto& grid = *do_problem_.GetGrid();
+  if (spec.type == "identity")
+    coarse_mesh_ = CMFDCoarseMesh::BuildIdentity(grid);
+  else if (spec.type == "local_aggregation")
+    coarse_mesh_ = CMFDCoarseMesh::BuildLocalAggregation(grid, spec.size, true);
+  else if (spec.type == "global_aggregation")
+    coarse_mesh_ = CMFDCoarseMesh::BuildGlobalAggregation(grid, spec.size, true);
+  else if (spec.type == "logical_volumes")
+    coarse_mesh_ = CMFDCoarseMesh::BuildLogicalVolumeOverlay(grid, spec.logical_volumes);
+  else if (spec.type == "cartesian")
+    coarse_mesh_ =
+      CMFDCoarseMesh::BuildCartesianOverlay(grid, spec.x_edges, spec.y_edges, spec.z_edges);
+  else if (spec.type == "reactor_lattice")
+    coarse_mesh_ = CMFDCoarseMesh::BuildCartesianOverlay(
+      grid,
+      BuildUniformEdges(
+        spec.lattice_origin.at(0), spec.lattice_pitch.at(0), spec.lattice_shape.at(0)),
+      BuildUniformEdges(
+        spec.lattice_origin.at(1), spec.lattice_pitch.at(1), spec.lattice_shape.at(1)),
+      spec.lattice_axial_edges);
+  else
+    OpenSnLogicalError("Unknown CMFD coarse mesh type " + spec.type + ".");
 
-  if (update_wgs_max_its_ > 1 and update_wgs_abs_tol_ > balance_residual_tolerance_)
-    log.Log0Warning() << "CMFD update_wgs_abs_tol (" << update_wgs_abs_tol_
-                      << ") is looser than balance_residual_tolerance ("
-                      << balance_residual_tolerance_
-                      << "). Transport updates that stop at this tolerance can keep the balance "
-                         "residual from reaching its tolerance.";
+  if (const auto& diagnostics = coarse_mesh_.OverlayDiagnostics())
+  {
+    const double area_fraction = diagnostics->interface_area > 0.0
+                                   ? diagnostics->nonconforming_area / diagnostics->interface_area
+                                   : 0.0;
+    log.Log() << "CMFD overlay: " << coarse_mesh_.NumGlobalCells() << " coarse cells. "
+              << diagnostics->num_nonconforming_faces << " of " << diagnostics->num_interface_faces
+              << " coarse-interface fine faces do not lie on an overlay plane (area fraction "
+              << area_fraction << ").";
+    if (diagnostics->num_thin_intervals > 0)
+      log.Log0Warning() << "CMFD overlay has " << diagnostics->num_thin_intervals
+                        << " occupied intervals narrower than "
+                        << CMFDCoarseMesh::overlay_sliver_fraction
+                        << " of the median occupied width of their axis (smallest ratio "
+                        << diagnostics->min_interval_width_ratio
+                        << "). Thin coarse cells give poorly scaled coarse-operator rows.";
+  }
 
-  // update_wgs_max_its_/update_wgs_abs_tol_ are NOT applied here. PrePowerIteration applies them
-  // for the first time exactly when outer_iteration_ reaches inactive_iterations_. Until then,
-  // the groupsets keep whatever WGS settings the caller configured.
   InitializeLinearSystem();
   InitializeHomogenization();
   BuildHomogenizedXS({}, false);
   BuildCoarseFluxCache();
-  AssembleOperator();
+  AssembleOperator(false);
 
   CoarseMeshDiagnostics diagnostics;
   diagnostics.local_coarse_cells = coarse_mesh_.NumLocalCells();
@@ -509,7 +700,7 @@ CMFDAcceleration::Initialize()
   {
     diagnostics.local_fine_cells += coarse_cell.fine_cell_ids.size();
     diagnostics.local_faces_per_coarse_cell_sum += static_cast<double>(coarse_cell.faces.size());
-    if (coarse_cell.fine_cell_ids.size() < static_cast<std::size_t>(aggregation_size_))
+    if (coarse_cell.fine_cell_ids.size() < static_cast<std::size_t>(spec.size))
       ++diagnostics.local_undersized_coarse_cells;
     diagnostics.local_max_fine_cells_per_coarse_cell =
       std::max(diagnostics.local_max_fine_cells_per_coarse_cell, coarse_cell.fine_cell_ids.size());
@@ -566,14 +757,6 @@ CMFDAcceleration::Initialize()
   }
 }
 
-bool
-CMFDAcceleration::EvaluateBalanceConvergence(
-  const BalanceResidual& transport_current_balance_residual, const bool skipped_correction) const
-{
-  return transport_current_balance_residual.relative_l2 <= balance_residual_tolerance_ and
-         not skipped_correction;
-}
-
 void
 CMFDAcceleration::PreExecute()
 {
@@ -587,9 +770,14 @@ CMFDAcceleration::PreExecute()
   consecutive_skipped_corrections_ = 0;
   warned_persistent_skips_ = false;
   warned_homogenization_fallback_ = false;
-  // The owning solver starts each Execute() with the caller's WGS settings and restores them
-  // afterward, so the inactive phase leaves them untouched. PrePowerIteration switches to
-  // update_wgs_max_its_/update_wgs_abs_tol_ when the active phase begins.
+  warned_coarse_pi_limit_ = false;
+  warned_kept_coarse_values_ = false;
+  last_kept_coarse_values_ = 0;
+  checked_optical_thickness_ = false;
+  num_closure_fallbacks_ = 0;
+  sweeps_per_update_ = legacy_update_wgs_max_its_ > 0 and solver_->IsSweepsPerUpdateAutomatic()
+                         ? legacy_update_wgs_max_its_
+                         : solver_->GetSweepsPerUpdate();
   last_restrict_old_time_ = 0.0;
   transport_start_time_ = 0.0;
   old_fission_production_ = 0.0;
@@ -598,17 +786,15 @@ CMFDAcceleration::PreExecute()
 void
 CMFDAcceleration::PrePowerIteration()
 {
-  // Executes exactly once, immediately before the sweep for the first active iteration
-  // (outer_iteration_ == inactive_iterations_ covers both inactive_iterations_ == 0, where this
-  // is the very first call, and inactive_iterations_ > 0). Before this point the groupsets are
-  // left exactly as the caller configured them.
-  if (outer_iteration_ == inactive_iterations_)
+  // The owning solver starts each Execute() with the caller's WGS settings and restores them
+  // when Execute() returns. Every transport update between CMFD corrections is
+  // sweeps_per_update_ within-group iterations.
+  if (outer_iteration_ == 0)
   {
-    ConfigureTransportSolve(update_wgs_max_its_, update_wgs_abs_tol_);
+    ConfigureTransportSolve(sweeps_per_update_, transport_update_abs_tol);
     log.Log() << no_wrap << program_timer.GetTimeString() << " CMFD switching " << groupsets_.size()
-              << " groupset WGS solver(s) to max iterations = " << update_wgs_max_its_
-              << ", absolute tolerance = " << update_wgs_abs_tol_
-              << " (inactive_iterations = " << inactive_iterations_ << ").";
+              << " groupset WGS solver(s) to " << sweeps_per_update_
+              << " iteration(s) per transport update.";
   }
 
   const double t0 = NowSeconds();
@@ -639,8 +825,8 @@ CMFDAcceleration::PostPowerIteration()
   const double F_transport_new = ComputeFissionProduction(do_problem_, phi_new_local_);
   const double raw_transport_k_eff =
     F_transport_new / old_fission_production_ * solver_->GetEigenvalue();
-  // Active CMFD corrections use the post-WGS production for their normalization. Keep this
-  // separate from the pre-sweep production used by inactive and rejected transport updates.
+  // Corrections use the post-WGS production for their normalization. Keep this separate from the
+  // pre-sweep production used by a skipped correction.
   const double cmfd_reference_fission_production =
     ComputeFissionProduction(do_problem_, phi_old_local_);
   OpenSnLogicalErrorIf(cmfd_reference_fission_production == 0.0,
@@ -648,29 +834,6 @@ CMFDAcceleration::PostPowerIteration()
   const double transport_k_eff =
     F_transport_new / cmfd_reference_fission_production * solver_->GetEigenvalue();
   const double fission_time = NowSeconds() - t0;
-
-  if (outer_iteration_ < inactive_iterations_)
-  {
-    for (const auto& groupset : groupsets_)
-      LBSVecOps::GSScopedCopyPrimarySTLvectors(
-        do_problem_, groupset, phi_new_local_, phi_old_local_);
-    last_update_allows_convergence_ = false;
-    last_balance_residual_known_ = false;
-    last_correction_skipped_ = false;
-    last_correction_skip_reason_.clear();
-    if (do_problem_.GetOptions().verbose_outer_iterations)
-    {
-      std::ostringstream iter_info;
-      iter_info << program_timer.GetTimeString() << " CMFD iteration = " << outer_iteration_;
-      AppendNumericField(iter_info, "k_eff", raw_transport_k_eff, Fixed(7));
-      iter_info << ", status = inactive";
-      AppendNumericField(iter_info, "inactive_iterations", inactive_iterations_);
-      log.Log() << no_wrap << iter_info.str();
-    }
-
-    ++outer_iteration_;
-    return raw_transport_k_eff;
-  }
 
   t0 = NowSeconds();
   BuildHomogenizedXS(phi_new_local_, true);
@@ -684,60 +847,168 @@ CMFDAcceleration::PostPowerIteration()
   BuildFaceCurrentCache();
   const double face_current_cache_time = NowSeconds() - t0;
 
-  t0 = NowSeconds();
-  AssembleOperator();
-  const double assemble_time = NowSeconds() - t0;
+  if (not checked_optical_thickness_)
+  {
+    CheckOpticalThickness();
+    checked_optical_thickness_ = true;
+  }
 
   t0 = NowSeconds();
-  const auto transport_balance_residual =
-    ComputeBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
-  const auto transport_current_balance_residual =
-    ComputeTransportCurrentBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
-  last_balance_residual_known_ = true;
-  last_transport_current_balance_relative_l2_ = transport_current_balance_residual.relative_l2;
+  const auto sign_counts = AssembleOperator(true);
+  const double assemble_time = NowSeconds() - t0;
+  if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
+  {
+    // Signed transport iterates can give the coarse operator entries of the wrong sign for an
+    // M-matrix, which is what makes coarse solves unreliable. These counts help diagnose that.
+    const std::array<std::size_t, 3> local_counts = {
+      sign_counts.nonpositive_diagonals,
+      sign_counts.positive_off_diagonals,
+      static_cast<std::size_t>(std::count_if(
+        coarse_phi_new_.begin(), coarse_phi_new_.end(), [](double phi) { return phi < 0.0; }))};
+    std::array<std::size_t, 3> global_counts = {0, 0, 0};
+    for (std::size_t i = 0; i < local_counts.size(); ++i)
+      mpi_comm.all_reduce(local_counts[i], global_counts[i], mpi::op::sum<std::size_t>());
+    log.Log() << no_wrap << program_timer.GetTimeString()
+              << " CMFD operator signs: nonpositive_diagonals = " << global_counts[0]
+              << ", positive_off_diagonals = " << global_counts[1]
+              << ", negative_coarse_fluxes = " << global_counts[2]
+              << ", rows = " << GlobalUnknownCount();
+    // Negative restricted transport fluxes by coarse group, with the most negative value relative
+    // to the group's largest flux.
+    std::vector<double> local_group(2 * static_cast<std::size_t>(num_coarse_groups_), 0.0);
+    for (std::size_t i = 0; i < coarse_phi_new_.size(); ++i)
+    {
+      const auto cg = i % num_coarse_groups_;
+      if (coarse_phi_new_[i] < 0.0)
+        local_group[cg] += 1.0;
+      local_group[num_coarse_groups_ + cg] =
+        std::max(local_group[num_coarse_groups_ + cg], std::fabs(coarse_phi_new_[i]));
+    }
+    std::vector<double> local_min(num_coarse_groups_, 0.0);
+    for (std::size_t i = 0; i < coarse_phi_new_.size(); ++i)
+      local_min[i % num_coarse_groups_] =
+        std::min(local_min[i % num_coarse_groups_], coarse_phi_new_[i]);
+    std::vector<double> global_min(num_coarse_groups_, 0.0);
+    std::vector<double> counts_only(local_group.begin(), local_group.begin() + num_coarse_groups_);
+    std::vector<double> max_only(local_group.begin() + num_coarse_groups_, local_group.end());
+    std::vector<double> global_counts_g(num_coarse_groups_, 0.0);
+    std::vector<double> global_max_g(num_coarse_groups_, 0.0);
+    mpi_comm.all_reduce(counts_only.data(),
+                        static_cast<int>(num_coarse_groups_),
+                        global_counts_g.data(),
+                        mpi::op::sum<double>());
+    mpi_comm.all_reduce(max_only.data(),
+                        static_cast<int>(num_coarse_groups_),
+                        global_max_g.data(),
+                        mpi::op::max<double>());
+    mpi_comm.all_reduce(local_min.data(),
+                        static_cast<int>(num_coarse_groups_),
+                        global_min.data(),
+                        mpi::op::min<double>());
+    std::ostringstream by_group;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      by_group << " " << cg << ":" << static_cast<std::size_t>(global_counts_g[cg]) << "("
+               << std::setprecision(2) << global_min[cg] / std::max(global_max_g[cg], 1.0e-300)
+               << ")";
+    log.Log() << no_wrap << program_timer.GetTimeString()
+              << " CMFD negative coarse fluxes by coarse group (count and most negative relative "
+                 "to the group maximum):"
+              << by_group.str();
+  }
+
+  t0 = NowSeconds();
+  BalanceResidual transport_balance_residual;
+  BalanceResidual transport_current_balance_residual;
+  if (verbose_)
+  {
+    transport_balance_residual =
+      ComputeBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
+    transport_current_balance_residual =
+      ComputeTransportCurrentBalanceResidual(transport_k_eff, coarse_phi_new_, coarse_phi_old_);
+    last_balance_residual_known_ = true;
+    last_transport_current_balance_relative_l2_ = transport_current_balance_residual.relative_l2;
+    if (outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
+    {
+      log.Log() << no_wrap << program_timer.GetTimeString()
+                << " CMFD operator balance residual: max_abs = "
+                << transport_balance_residual.max_abs
+                << ", relative_l2 = " << transport_balance_residual.relative_l2;
+      log.Log() << no_wrap << program_timer.GetTimeString()
+                << " CMFD transport-current balance residual: max_abs = "
+                << transport_current_balance_residual.max_abs
+                << ", relative_l2 = " << transport_current_balance_residual.relative_l2;
+    }
+  }
   const double residual_time = NowSeconds() - t0;
-  if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
-    log.Log() << no_wrap << program_timer.GetTimeString()
-              << " CMFD operator balance residual: max_abs = " << transport_balance_residual.max_abs
-              << ", relative_l2 = " << transport_balance_residual.relative_l2;
-  if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
-    log.Log() << no_wrap << program_timer.GetTimeString()
-              << " CMFD transport-current balance residual: max_abs = "
-              << transport_current_balance_residual.max_abs
-              << ", relative_l2 = " << transport_current_balance_residual.relative_l2;
 
   auto coarse_phi_m = coarse_phi_new_;
   auto coarse_phi = coarse_phi_new_;
   double k_eff = transport_k_eff;
   double coarse_production_old = ComputeCoarseFissionProduction(coarse_phi_m);
-  // A signed transport iterate can make the coarse operator lose the M-matrix property, so that
-  // its dominant eigenvector is not positive. The coarse power iteration then breaks down with a
-  // production that is not positive, and its k and flux are unusable. The production sums are
-  // global, so every rank agrees.
-  bool coarse_eigensolve_breakdown =
+  const double initial_coarse_production = coarse_production_old;
+  // The coarse eigensolve breaks down when the coarse production or k of an iterate is not a
+  // positive finite number. The correction is then skipped. The production is a global sum, so
+  // every rank takes the same branch.
+  bool coarse_eigensolve_failed =
     not std::isfinite(coarse_production_old) or coarse_production_old <= 0.0;
+  // Tolerances of this coarse eigensolve: a fraction of the change the transport sweep made to the
+  // production-normalized coarse flux, capped at fixed values. A fixed tolerance alone would add
+  // an error of its size to every correction, so the outer iteration would stall once its own
+  // error reached that level.
+  const double transport_coarse_change =
+    NormalizedCoarseFluxChange(coarse_phi_old_,
+                               ComputeCoarseFissionProduction(coarse_phi_old_),
+                               coarse_phi_new_,
+                               coarse_production_old);
+  const double coarse_phi_tolerance =
+    std::min(coarse_pi_phi_tol, coarse_pi_relative_tol * transport_coarse_change);
+  const double coarse_k_tolerance =
+    std::min(coarse_pi_k_tol, coarse_pi_relative_tol * transport_coarse_change);
   int coarse_pi_iterations = 0;
   bool coarse_pi_converged = false;
   ConvergenceRateEstimator rate_estimator;
   int coarse_ksp_iterations = 0;
   bool coarse_linear_solves_converged = true;
   t0 = NowSeconds();
-  for (int m = 0; m < pi_max_its_ and not coarse_eigensolve_breakdown; ++m)
+  // Wielandt-shifted power iteration: each iterate solves (A - F/k_s) x = (1/k - 1/k_s) F phi,
+  // which converges by (1/k_0 - 1/k_s) / (1/k_1 - 1/k_s) per iteration instead of the coarse
+  // dominance ratio k_1 / k_0. It converges to the fundamental mode only if k_s is above the
+  // fundamental eigenvalue k_0; with k_s below k_0 it converges to another mode. So the solve
+  // starts unshifted (k_s infinite), which converges to the fundamental mode from any start, and
+  // takes the shift k_s = k (1 + wielandt_shift) once the extrapolated error of the k estimate,
+  // its change / (1 - rho), is below half the margin, which puts k_s above k_0. The estimate of a
+  // poor transport iterate, as in early updates, can be far from k_0. The shift is then raised if
+  // the estimate comes within half the margin, so that the shifted operator stays nonsingular.
+  double k_shift = std::numeric_limits<double>::infinity();
+  int shifted_iterations = 0;
+  if (not coarse_eigensolve_failed)
+    SetShiftedOperator(k_shift);
+  for (int m = 0; m < coarse_pi_max_its and not coarse_eigensolve_failed; ++m)
   {
-    coarse_phi = SolveCoarseSystem(k_eff, coarse_phi_m);
+    const double k_source = 1.0 / (1.0 / k_eff - 1.0 / k_shift);
+    // Held values scale with the production of the iterate relative to the transport iterate,
+    // which keeps the coarse problem homogeneous in the iterate.
+    coarse_phi =
+      SolveCoarseSystem(k_source, coarse_phi_m, coarse_production_old / initial_coarse_production);
     coarse_ksp_iterations += last_ksp_iterations_;
     coarse_linear_solves_converged = coarse_linear_solves_converged and last_ksp_converged_;
     coarse_pi_iterations = m + 1;
     // The correction is skipped once any coarse linear solve fails, so further coarse power
-    // iterations would be wasted. The converged flag is the same on every rank.
+    // iterations would be wasted. The converged reason is the same on every rank.
     if (not last_ksp_converged_)
       break;
     const double coarse_production_new = ComputeCoarseFissionProduction(coarse_phi);
-    const double k_eff_new = coarse_production_new / coarse_production_old * k_eff;
-    if (not std::isfinite(coarse_production_new) or coarse_production_new <= 0.0 or
-        not std::isfinite(k_eff_new) or k_eff_new <= 0.0)
+    if (not std::isfinite(coarse_production_new) or coarse_production_new <= 0.0)
     {
-      coarse_eigensolve_breakdown = true;
+      coarse_eigensolve_failed = true;
+      break;
+    }
+    const double k_eff_new =
+      1.0 / (1.0 / k_shift +
+             (1.0 / k_eff - 1.0 / k_shift) * coarse_production_old / coarse_production_new);
+    if (not std::isfinite(k_eff_new) or k_eff_new <= 0.0)
+    {
+      coarse_eigensolve_failed = true;
       break;
     }
     const double k_change = std::fabs(k_eff_new / k_eff - 1.0);
@@ -746,17 +1017,65 @@ CMFDAcceleration::PostPowerIteration()
     // either change alone ends the coarse solve while the fundamental-mode shape is still
     // unconverged, so the change is compared with the tolerance scaled by (1 - rho), with rho
     // estimated from successive changes; the first change has no rate estimate yet.
-    rate_estimator.Update(NormalizedCoarseFluxChange(
+    const double rate = rate_estimator.Update(NormalizedCoarseFluxChange(
       coarse_phi_m, coarse_production_old, coarse_phi, coarse_production_new));
 
     k_eff = k_eff_new;
     coarse_phi_m = coarse_phi;
     coarse_production_old = coarse_production_new;
+    if (std::isfinite(k_shift))
+      ++shifted_iterations;
 
-    if (m > 0 and k_change < pi_k_tol_ and rate_estimator.Converged(pi_phi_tol_))
+    // Unshifted iterations count toward convergence too; shifted ones need one after the switch.
+    if ((std::isinf(k_shift) ? m > 0 : shifted_iterations > 1) and k_change < coarse_k_tolerance and
+        rate_estimator.Converged(coarse_phi_tolerance))
     {
       coarse_pi_converged = true;
       break;
+    }
+    if (std::isinf(k_shift))
+    {
+      // The rate estimate needs three iterates.
+      if (m >= 2 and k_change < 0.5 * wielandt_shift * (1.0 - rate))
+      {
+        k_shift = k_eff * (1.0 + wielandt_shift);
+        SetShiftedOperator(k_shift);
+        // The shifted iteration converges at another rate.
+        rate_estimator = ConvergenceRateEstimator();
+      }
+    }
+    else if (k_eff > k_shift / (1.0 + 0.5 * wielandt_shift))
+    {
+      k_shift = k_eff * (1.0 + wielandt_shift);
+      SetShiftedOperator(k_shift);
+    }
+  }
+  // The correction and the k handed to the next sweep depend on the amplitude of the coarse
+  // solution. The unshifted power iteration ends with production P_0 k / k_0, so that the
+  // corrected flux reproduces the coarse k. The shifted iteration scales differently on the way,
+  // so restore that amplitude.
+  if (coarse_linear_solves_converged and not coarse_eigensolve_failed)
+  {
+    const double target = initial_coarse_production * k_eff / transport_k_eff;
+    const double scale = target / coarse_production_old;
+    for (auto& value : coarse_phi)
+      value *= scale;
+  }
+  // A coarse eigensolve that has not converged gives no valid correction. Its iterate need not be
+  // near the fundamental mode: in adjoint mode the coarse operator lacks the diagonal dominance in
+  // energy that makes it an M-matrix whatever the closure, and the closure of a poor early
+  // transport iterate can give it no positive fundamental mode at all.
+  if (not coarse_pi_converged and coarse_linear_solves_converged and not coarse_eigensolve_failed)
+  {
+    coarse_eigensolve_failed = true;
+    if (not warned_coarse_pi_limit_)
+    {
+      warned_coarse_pi_limit_ = true;
+      log.Log0Warning() << no_wrap << "CMFD coarse power iteration stopped after "
+                        << coarse_pi_max_its << " iterations before meeting its tolerances (flux "
+                        << coarse_phi_tolerance << ", k " << coarse_k_tolerance << ") at update "
+                        << outer_iteration_
+                        << ", so its correction is skipped. This warning is not repeated.";
     }
   }
   const double coarse_pi_time = NowSeconds() - t0;
@@ -764,8 +1083,6 @@ CMFDAcceleration::PostPowerIteration()
   const double coarse_k_eff = k_eff;
 
   t0 = NowSeconds();
-  double applied_damping = 0.0;
-  unsigned int correction_attempts = 0;
   FluxUpdateDiagnostics correction_diagnostics;
   bool skipped_correction = false;
   std::string correction_skip_reason;
@@ -774,44 +1091,30 @@ CMFDAcceleration::PostPowerIteration()
     skipped_correction = true;
     correction_skip_reason = "coarse_linear_solve_not_converged";
     correction_diagnostics = AnalyzeFluxUpdate(phi_new_local_, transport_k_eff);
-    const bool can_switch_to_direct = coarse_solver_policy_ == "auto" and
-                                      not using_direct_coarse_solver_ and
-                                      GlobalUnknownCount() <= coarse_direct_solve_threshold_;
-    if (can_switch_to_direct)
-    {
-      ConfigureCoarseLinearSolver(true);
-      using_direct_coarse_solver_ = true;
-    }
     if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
-    {
-      std::ostringstream warning;
-      warning << "CMFD correction skipped because one or more coarse linear solves did not "
-                 "converge.";
-      if (can_switch_to_direct)
-        warning << " Switching auto coarse solver policy to direct for subsequent corrections.";
-      log.Log0Warning() << no_wrap << warning.str();
-    }
+      log.Log0Warning() << no_wrap
+                        << "CMFD correction skipped because a coarse linear solve did not "
+                           "converge.";
   }
-  else if (coarse_eigensolve_breakdown)
+  else if (coarse_eigensolve_failed)
   {
     skipped_correction = true;
-    correction_skip_reason = "coarse_eigensolve_breakdown";
+    correction_skip_reason = "coarse_eigensolve_failed";
     correction_diagnostics = AnalyzeFluxUpdate(phi_new_local_, transport_k_eff);
     if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
       log.Log0Warning() << no_wrap
-                        << "CMFD correction skipped because the coarse power iteration broke "
-                           "down with a coarse fission production or k that is not positive.";
+                        << "CMFD correction skipped because the coarse eigensolve did not "
+                           "converge to a positive finite production and k.";
   }
   else
-    k_eff = ApplyFluxCorrectionWithDamping(phi_new_local_,
-                                           coarse_phi,
-                                           cmfd_reference_fission_production,
-                                           transport_k_eff,
-                                           applied_damping,
-                                           correction_attempts,
-                                           correction_diagnostics,
-                                           skipped_correction,
-                                           correction_skip_reason);
+    k_eff = ApplyFluxCorrection(phi_new_local_,
+                                coarse_phi,
+                                k_eff / transport_k_eff,
+                                cmfd_reference_fission_production,
+                                transport_k_eff,
+                                correction_diagnostics,
+                                skipped_correction,
+                                correction_skip_reason);
   if (skipped_correction)
     k_eff = raw_transport_k_eff;
   last_correction_skipped_ = skipped_correction;
@@ -824,19 +1127,20 @@ CMFDAcceleration::PostPowerIteration()
     std::ostringstream warning;
     warning << "CMFD skipped the last " << consecutive_skipped_corrections_
             << " corrections (last reason: " << correction_skip_reason
-            << "); power iteration is proceeding without CMFD acceleration.";
+            << "). Power iteration is proceeding without CMFD acceleration.";
     if (correction_skip_reason == "coarse_linear_solve_not_converged")
-      warning << " Use coarse_solver_policy=\"direct\" for moderate coarse systems, increase "
-                 "max_iters, or reduce the coarse system with aggregation_size or "
-                 "group_aggregation_size.";
+      warning << " Configure a stronger coarse linear solver with petsc_options, or reduce the "
+                 "coarse system with a coarser coarse_mesh or fewer coarse_groups.";
     else
-      warning << " Reduce relaxation or use smaller aggregates.";
+      warning << " Use smaller coarse cells.";
     log.Log0Warning() << no_wrap << warning.str();
   }
   last_correction_skip_reason_ = skipped_correction ? correction_skip_reason : std::string();
   const double accelerated_k_change = std::fabs(k_eff - solver_->GetEigenvalue()) / k_eff;
-  last_update_allows_convergence_ =
-    EvaluateBalanceConvergence(transport_current_balance_residual, skipped_correction);
+  // An update whose correction was skipped is unaccelerated, so its changes do not measure the
+  // convergence of the accelerated iteration. The owning solver's k and fission-source tests
+  // decide convergence otherwise.
+  last_update_allows_convergence_ = not skipped_correction;
   for (const auto& groupset : groupsets_)
     LBSVecOps::GSScopedCopyPrimarySTLvectors(do_problem_, groupset, phi_new_local_, phi_old_local_);
   const double update_time = NowSeconds() - t0;
@@ -855,9 +1159,6 @@ CMFDAcceleration::PostPowerIteration()
   {
     const auto LogMetric = [this](const std::string& metric, const auto value)
     { LogCMFDAcceleratorMetric("correction", outer_iteration_, metric, MetricValue(value)); };
-    LogMetric("relaxation", relaxation_);
-    LogMetric("damping", applied_damping);
-    LogMetric("attempts", correction_attempts);
     LogMetric("skipped", skipped_correction ? 1 : 0);
     LogMetric("min_scalar_flux", correction_diagnostics.min_scalar_flux);
     LogMetric("nonfinite_flux", correction_diagnostics.has_nonfinite_flux ? 1 : 0);
@@ -866,6 +1167,8 @@ CMFDAcceleration::PostPowerIteration()
     LogMetric("coarse_k_eff", coarse_k_eff);
     LogMetric("applied_k_eff", k_eff);
     LogMetric("coarse_phi_change", coarse_phi_change);
+    LogMetric("closure_fallbacks", num_closure_fallbacks_);
+    LogMetric("kept_coarse_values", last_kept_coarse_values_);
   }
 
   if (verbose_ and (outer_iteration_ < 5 or outer_iteration_ % 25 == 0))
@@ -890,8 +1193,6 @@ CMFDAcceleration::PostPowerIteration()
     LogMetric("coarse_linear_solves_converged", coarse_linear_solves_converged ? 1 : 0);
     LogMetric("operator_balance_residual", transport_balance_residual.relative_l2);
     LogMetric("transport_current_balance_residual", transport_current_balance_residual.relative_l2);
-    LogMetric("balance_residual_tolerance", balance_residual_tolerance_);
-    LogMetric("balance_allows_convergence", last_update_allows_convergence_ ? 1 : 0);
     LogMetric("accelerated_k_change", accelerated_k_change);
   }
 
@@ -902,20 +1203,15 @@ CMFDAcceleration::PostPowerIteration()
 std::string
 CMFDAcceleration::GetPowerIterationConvergenceInfo() const
 {
-  if (not last_balance_residual_known_)
-    return {};
-
   std::ostringstream out;
-  out << "CMFD convergence check = "
-      << (last_update_allows_convergence_ ? "satisfied" : "not_satisfied")
-      << ", transport-current balance residual = " << std::scientific << std::setprecision(6)
-      << last_transport_current_balance_relative_l2_;
-  out << std::defaultfloat;
-  out << " (balance_residual_tolerance = " << std::scientific << std::setprecision(6)
-      << balance_residual_tolerance_ << std::defaultfloat << ")";
+  if (last_balance_residual_known_)
+    out << "CMFD transport-current balance residual = " << std::scientific << std::setprecision(6)
+        << last_transport_current_balance_relative_l2_ << std::defaultfloat;
   if (last_correction_skipped_)
   {
-    out << ", correction = skipped";
+    if (last_balance_residual_known_)
+      out << ", ";
+    out << "CMFD correction = skipped";
     if (not last_correction_skip_reason_.empty())
       out << " (" << last_correction_skip_reason_ << ")";
   }
@@ -1330,6 +1626,8 @@ CMFDAcceleration::InitializeLinearSystem()
     OpenSnPETScCall(VecDestroy(&rhs_));
   if (A_)
     OpenSnPETScCall(MatDestroy(&A_));
+  if (A_shift_)
+    OpenSnPETScCall(MatDestroy(&A_shift_));
 
   const auto local_unknowns = static_cast<PetscInt>(LocalUnknownCount());
   const auto global_unknowns = static_cast<PetscInt>(GlobalUnknownCount());
@@ -1353,43 +1651,71 @@ CMFDAcceleration::InitializeLinearSystem()
   OpenSnPETScCall(KSPCreate(opensn::mpi_comm, &ksp_));
   OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
   OpenSnPETScCall(KSPSetOptionsPrefix(ksp_, GetName().c_str()));
-  const bool petsc_options_policy = coarse_solver_policy_ == "petsc_options";
-  using_direct_coarse_solver_ =
-    coarse_solver_policy_ == "direct" or
-    (coarse_solver_policy_ == "auto" and GlobalUnknownCount() <= coarse_direct_solve_threshold_);
-  if (not petsc_options_policy)
-    ConfigureCoarseLinearSolver(using_direct_coarse_solver_);
-  OpenSnPETScCall(KSPSetTolerances(ksp_, l_rel_tol_, l_abs_tol_, PETSC_DEFAULT, max_iters_));
-  if ((petsc_options_policy or petsc_options_ != "ssss") and not petsc_options_.empty())
+  ConfigureCoarseLinearSolver();
+  OpenSnPETScCall(KSPSetTolerances(
+    ksp_, coarse_linear_rel_tol, coarse_linear_abs_tol, PETSC_DEFAULT, coarse_linear_max_its));
+  // The options are in the global database only while a scope of petsc_options_db_ exists, around
+  // the calls of the coarse solver that read them: KSPSetFromOptions, KSPSetUp and KSPSolve.
+  coarse_solver_from_options_ = not petsc_options_.empty();
+  if (coarse_solver_from_options_)
     petsc_options_db_->Insert(petsc_options_);
   const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
   OpenSnPETScCall(KSPSetFromOptions(ksp_));
 }
 
 void
-CMFDAcceleration::ConfigureCoarseLinearSolver(const bool direct)
+CMFDAcceleration::ConfigureCoarseLinearSolver()
 {
+  // Estimated memory of an LU factorization with nested-dissection ordering. A mesh-like graph of
+  // n coarse cells fills in to about n entries in 1D, 4 n log2(n) in 2D and 6 n^(4/3) in 3D, each
+  // a dense G x G block, at about 12 bytes per stored entry for L and U.
+  const auto num_cells = static_cast<double>(coarse_mesh_.NumGlobalCells());
+  const auto groups = static_cast<double>(num_coarse_groups_);
+  const auto dimension = do_problem_.GetGrid()->GetDimension();
+  const double cell_fill = dimension <= 1   ? 3.0 * num_cells
+                           : dimension == 2 ? 4.0 * num_cells * std::log2(std::max(num_cells, 2.0))
+                                            : 6.0 * std::pow(num_cells, 4.0 / 3.0);
+  const double lu_bytes = 2.0 * 12.0 * groups * groups * cell_fill;
+  const double budget = coarse_direct_bytes_per_rank * static_cast<double>(opensn::mpi_comm.size());
+  bool direct = lu_bytes <= budget;
+
   PC pc = nullptr;
   OpenSnPETScCall(KSPGetPC(ksp_, &pc));
+  std::string solver_name;
   if (direct)
   {
     OpenSnPETScCall(KSPSetType(ksp_, KSPPREONLY));
     OpenSnPETScCall(PCSetType(pc, PCLU));
+#ifdef PETSC_HAVE_SUPERLU_DIST
+    OpenSnPETScCall(PCFactorSetMatSolverType(pc, MATSOLVERSUPERLU_DIST));
+    solver_name = "LU (SuperLU_DIST)";
+#elif defined(PETSC_HAVE_MUMPS)
+    OpenSnPETScCall(PCFactorSetMatSolverType(pc, MATSOLVERMUMPS));
+    solver_name = "LU (MUMPS)";
+#else
+    // PETSc's own LU is sequential.
+    direct = opensn::mpi_comm.size() == 1;
+    solver_name = "LU (PETSc)";
+#endif
   }
-  else
+  if (not direct)
   {
-    // Jacobi-preconditioned GMRES rarely converges within max_iters for realistic coarse
-    // systems, which makes every correction be skipped. Algebraic multigrid handles the
-    // diffusion-like coarse operator.
-    OpenSnPETScCall(KSPSetType(ksp_, KSPGMRES));
-    OpenSnPETScCall(PCSetType(pc, PCHYPRE));
-    OpenSnPETScCall(PCHYPRESetType(pc, "boomeramg"));
-    const std::vector<std::string> pc_options = {"pc_hypre_boomeramg_coarsen_type HMIS",
-                                                 "pc_hypre_boomeramg_interp_type ext+i",
-                                                 "pc_hypre_boomeramg_strong_threshold 0.5"};
-    for (const auto& option : pc_options)
-      petsc_options_db_->Insert("-" + GetName() + option);
+    // Algebraic multigrid can report convergence on coarse operators that are not M-matrices,
+    // which signed transport iterates produce. Additive Schwarz with ILU subdomain solves needs no
+    // M-matrix, and the true-residual test in SolveCoarseSystem rejects a failed solve.
+    OpenSnPETScCall(KSPSetType(ksp_, KSPFGMRES));
+    OpenSnPETScCall(KSPGMRESSetRestart(ksp_, 100));
+    OpenSnPETScCall(PCSetType(pc, PCASM));
+    OpenSnPETScCall(PCASMSetOverlap(pc, 1));
+    solver_name = "FGMRES with additive Schwarz and ILU(0)";
   }
+  using_direct_coarse_solver_ = direct;
+  log.Log() << no_wrap << program_timer.GetTimeString()
+            << " CMFD coarse linear solver: " << solver_name << " (estimated LU memory "
+            << lu_bytes / (1024.0 * 1024.0 * 1024.0) << " GiB, budget "
+            << coarse_direct_bytes_per_rank / (1024.0 * 1024.0 * 1024.0) << " GiB per rank, "
+            << budget / (1024.0 * 1024.0 * 1024.0) << " GiB in total)"
+            << (petsc_options_.empty() ? "." : ", then petsc_options.");
 }
 
 void
@@ -1398,6 +1724,17 @@ CMFDAcceleration::ConfigureTransportSolve(const unsigned int max_iterations,
 {
   for (std::size_t gsid = 0; gsid < do_problem_.GetNumGroupsets(); ++gsid)
     do_problem_.SetWGSSolveSettings(gsid, max_iterations, residual_tolerance);
+}
+
+double
+CMFDAcceleration::CachedCoarseFlux(const std::size_t local_index) const
+{
+  // A value held in the previous coarse solve stays held, and its neighbors see that from a
+  // non-positive cached flux. The closure reads the flux of a free neighbor only.
+  const double phi = coarse_phi_new_[local_index];
+  if (held_.size() == coarse_phi_new_.size() and held_[local_index])
+    return std::min(phi, 0.0);
+  return phi;
 }
 
 void
@@ -1416,7 +1753,7 @@ CMFDAcceleration::BuildCoarseFluxCache()
       const auto key = std::make_tuple(coarse_cell.global_id, cg);
       diffusion_coefficient_cache_[key] = homogenized_xs_[coarse_cell.local_id].diffusion[cg];
       if (has_coarse_phi)
-        coarse_phi_cache_[key] = coarse_phi_new_[offset + cg];
+        coarse_phi_cache_[key] = CachedCoarseFlux(offset + cg);
     }
   }
 
@@ -1470,7 +1807,7 @@ CMFDAcceleration::BuildCoarseFluxCache()
       response_keys.push_back(cg);
       response_values.push_back(homogenized_xs_[coarse_local_id].diffusion[cg]);
       if (has_coarse_phi)
-        response_values.push_back(coarse_phi_new_[coarse_local_id * num_coarse_groups_ + cg]);
+        response_values.push_back(CachedCoarseFlux(coarse_local_id * num_coarse_groups_ + cg));
     }
   }
 
@@ -1624,13 +1961,55 @@ CMFDAcceleration::BuildFaceCurrentCache()
   }
 }
 
-void
-CMFDAcceleration::AssembleOperator()
+CMFDAcceleration::OperatorSignCounts
+CMFDAcceleration::AssembleOperator(const bool from_transport_iterate)
 {
-  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
   OpenSnPETScCall(MatZeroEntries(A_));
 
+  // A coarse flux this small relative to the largest flux of its coarse group is zero for the
+  // closure, whose current corrections divide by it. The flag, not the local coarse flux, decides
+  // the collectives: a rank may own no coarse cells.
+  std::vector<double> zero_flux(num_coarse_groups_, 0.0);
+  if (from_transport_iterate)
+  {
+    std::vector<double> local_max(num_coarse_groups_, 0.0);
+    for (std::size_t i = 0; i < coarse_phi_new_.size(); ++i)
+      local_max[i % num_coarse_groups_] =
+        std::max(local_max[i % num_coarse_groups_], std::fabs(coarse_phi_new_[i]));
+    opensn::mpi_comm.all_reduce(local_max.data(),
+                                static_cast<int>(num_coarse_groups_),
+                                zero_flux.data(),
+                                mpi::op::max<double>());
+    for (auto& value : zero_flux)
+      value *= zero_flux_fraction;
+  }
+
+  // A coarse value whose restricted transport flux is not positive is held at that flux times the
+  // amplitude of the coarse iterate (see AssembleRHS). The partial-current closure divides by the
+  // coarse flux, so with a negative flux it gives the operator entries of the wrong sign, and the
+  // coarse solution near such values is unreliable. A free value next to a held one models its
+  // outgoing partial current by the ratio to its own flux and receives the held value's outgoing
+  // partial current as a source, scaled like the held value. At the transport solution both
+  // reproduce the transport partial currents, so the fixed point is unchanged.
+  // A value is held only while its restricted transport flux is not positive. A held value fixes
+  // a source in the coarse eigenproblem, so a value held after its flux has become positive again
+  // keeps an early iterate's flux in every later coarse solve.
+  held_.assign(LocalUnknownCount(), 0);
+  held_source_.assign(LocalUnknownCount(), 0.0);
+  if (from_transport_iterate)
+    for (std::size_t i = 0; i < coarse_phi_new_.size(); ++i)
+      if (coarse_phi_new_[i] <= zero_flux[i % num_coarse_groups_])
+      {
+        held_[i] = 1;
+        held_source_[i] = coarse_phi_new_[i];
+      }
+
+  OperatorSignCounts sign_counts;
+  std::size_t local_fallbacks = 0;
   std::vector<double> scattering;
+  // Face couplings to one neighbor can arrive from several coarse faces, so the row's
+  // off-diagonal entries are summed here before their signs are counted.
+  std::vector<std::pair<int64_t, double>> row_face_entries;
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
     const auto& xs = homogenized_xs_.at(coarse_cell.local_id);
@@ -1639,85 +2018,82 @@ CMFDAcceleration::AssembleOperator()
     for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
     {
       const auto row = MapDOF(coarse_cell.global_id, cg);
+      const auto local_index = coarse_cell.local_id * num_coarse_groups_ + cg;
+      if (held_[local_index])
+      {
+        OpenSnPETScCall(MatSetValue(A_, row, row, 1.0, ADD_VALUES));
+        continue;
+      }
       double diag = xs.removal[cg] * coarse_cell.volume;
+      row_face_entries.clear();
 
       for (std::size_t f = 0; f < coarse_cell.faces.size(); ++f)
       {
         const auto& face = coarse_cell.faces[f];
         if (face.has_neighbor)
         {
-          // Diffusion coupling (D-tilde). The transport closure term reproduces the transport
-          // currents whatever the coupling, so a face without a usable two-point coupling is closed
-          // by that term alone.
+          // Diffusion coupling (D-tilde). Before a transport iterate exists, or where a coarse
+          // flux is zero, the face is closed by this coupling alone.
           const double coeff = InterfaceDiffusionCoefficient(
             HalfTransmissibility(xs.diffusion[cg], coarse_cell.centroid, face.centroid, face.area),
             HalfTransmissibility(diffusion_coefficient_cache_.at({face.neighbor_id, cg}),
                                  face.neighbor_centroid,
                                  face.centroid,
                                  face.area));
-          const bool partial_closure = current_closure_ == "partial";
-          bool partial_current_closure_available = false;
-          double partial_diag = 0.0;
-          double partial_offdiag = 0.0;
-          double current_correction = 0.0;
-          if (not coarse_phi_new_.empty())
+          double face_diag = coeff;
+          double face_offdiag = -coeff;
+          if (from_transport_iterate and
+              coarse_phi_cache_.at(std::make_tuple(face.neighbor_id, cg)) <= zero_flux[cg])
           {
-            const auto neighbor_coarse_gid = face.neighbor_id;
-            const auto phi_owner = coarse_phi_new_[coarse_cell.local_id * num_coarse_groups_ + cg];
-            const auto phi_neighbor_it =
-              coarse_phi_cache_.find(std::make_tuple(neighbor_coarse_gid, cg));
-            if (phi_neighbor_it != coarse_phi_cache_.end())
+            // The neighbor is held: the outgoing partial current is the ratio form, and the
+            // incoming one is a source.
+            const auto phi_owner = coarse_phi_new_[local_index];
+            const auto [owner_partial_current, neighbor_partial_current] =
+              ComputePartialOutwardCurrents(coarse_cell, f, cg);
+            diag += owner_partial_current / phi_owner;
+            held_source_[local_index] += neighbor_partial_current;
+            continue;
+          }
+          if (from_transport_iterate)
+          {
+            const auto phi_owner = coarse_phi_new_[local_index];
+            const auto phi_neighbor = coarse_phi_cache_.at(std::make_tuple(face.neighbor_id, cg));
+            // pCMFD closure: each partial current carries half of the diffusion coupling,
+            // J+ = D/2 (phi_owner - phi_neighbor) + Dhat+ phi_owner and
+            // J- = D/2 (phi_neighbor - phi_owner) + Dhat- phi_neighbor, with Dhat+- chosen so
+            // that J+- reproduce the transport partial currents.
+            bool closed = false;
+            if (std::fabs(phi_owner) > zero_flux[cg] and std::fabs(phi_neighbor) > zero_flux[cg])
             {
-              const auto phi_neighbor = phi_neighbor_it->second;
-              // pCMFD closure: each partial current carries half of the diffusion coupling,
-              // J+ = D/2 (phi_owner - phi_neighbor) + Dhat+ phi_owner and
-              // J- = D/2 (phi_neighbor - phi_owner) + Dhat- phi_neighbor, with Dhat+- chosen so
-              // that J+- reproduce the transport partial currents.
-              if (partial_closure and std::fabs(phi_owner) > 1.0e-14 and
-                  std::fabs(phi_neighbor) > 1.0e-14)
+              const auto [owner_partial_current, neighbor_partial_current] =
+                ComputePartialOutwardCurrents(coarse_cell, f, cg);
+              const double half_coeff = 0.5 * coeff;
+              const double owner_dhat =
+                (owner_partial_current - half_coeff * (phi_owner - phi_neighbor)) / phi_owner;
+              const double neighbor_dhat =
+                (neighbor_partial_current - half_coeff * (phi_neighbor - phi_owner)) / phi_neighbor;
+              if (std::isfinite(owner_dhat) and std::isfinite(neighbor_dhat))
               {
-                const auto [owner_partial_current, neighbor_partial_current] =
-                  ComputePartialOutwardCurrents(coarse_cell, f, cg);
-                const double half_coeff = 0.5 * coeff;
-                const double owner_dhat =
-                  (owner_partial_current - half_coeff * (phi_owner - phi_neighbor)) / phi_owner;
-                const double neighbor_dhat =
-                  (neighbor_partial_current - half_coeff * (phi_neighbor - phi_owner)) /
-                  phi_neighbor;
-                if (std::isfinite(owner_dhat) and std::isfinite(neighbor_dhat))
-                {
-                  partial_diag = coeff + owner_dhat;
-                  partial_offdiag = -coeff - neighbor_dhat;
-                  partial_current_closure_available = true;
-                }
-              }
-
-              if (not partial_closure)
-              {
-                const auto phi_sum = phi_owner + phi_neighbor;
-                if (std::fabs(phi_sum) > 1.0e-14)
-                {
-                  const double transport_current = ComputeOutwardCurrent(coarse_cell, f, cg);
-                  current_correction =
-                    (transport_current - coeff * (phi_owner - phi_neighbor)) / phi_sum;
-                }
+                face_diag = coeff + owner_dhat;
+                face_offdiag = -coeff - neighbor_dhat;
+                closed = true;
               }
             }
-          }
-
-          const double net_diag = coeff + current_correction;
-          const double net_offdiag = -coeff + current_correction;
-          double face_diag = net_diag;
-          double face_offdiag = net_offdiag;
-          if (partial_current_closure_available)
-          {
-            face_diag = partial_diag;
-            face_offdiag = partial_offdiag;
+            if (not closed)
+              ++local_fallbacks;
           }
 
           diag += face_diag;
           const auto col = MapDOF(face.neighbor_id, cg);
           OpenSnPETScCall(MatSetValue(A_, row, col, face_offdiag, ADD_VALUES));
+          const auto entry =
+            std::find_if(row_face_entries.begin(),
+                         row_face_entries.end(),
+                         [col](const std::pair<int64_t, double>& e) { return e.first == col; });
+          if (entry == row_face_entries.end())
+            row_face_entries.emplace_back(col, face_offdiag);
+          else
+            entry->second += face_offdiag;
         }
         else
         {
@@ -1726,13 +2102,17 @@ CMFDAcceleration::AssembleOperator()
                                   bc_it->second.type == LBSBoundaryType::REFLECTING;
           if (not reflective)
           {
+            // Marshak coupling until a transport iterate exists. Afterwards the coefficient
+            // reproduces the transport outgoing current.
             double boundary_coeff = 0.5 * face.area;
-            if (not coarse_phi_new_.empty())
+            if (from_transport_iterate)
             {
               const auto phi_owner =
                 coarse_phi_new_[coarse_cell.local_id * num_coarse_groups_ + cg];
-              if (std::fabs(phi_owner) > 1.0e-14)
+              if (std::fabs(phi_owner) > zero_flux[cg])
                 boundary_coeff = ComputeOutwardCurrent(coarse_cell, f, cg) / phi_owner;
+              else
+                ++local_fallbacks;
             }
             diag += boundary_coeff;
           }
@@ -1745,16 +2125,37 @@ CMFDAcceleration::AssembleOperator()
           const auto sigma_s = scattering[cg * num_coarse_groups_ + cgp];
           const auto col = MapDOF(coarse_cell.global_id, cgp);
           OpenSnPETScCall(MatSetValue(A_, row, col, -sigma_s * coarse_cell.volume, ADD_VALUES));
+          if (-sigma_s * coarse_cell.volume > 0.0)
+            ++sign_counts.positive_off_diagonals;
         }
 
       OpenSnPETScCall(MatSetValue(A_, row, row, diag, ADD_VALUES));
+      if (not(diag > 0.0))
+        ++sign_counts.nonpositive_diagonals;
+      for (const auto& entry : row_face_entries)
+        if (entry.second > 0.0)
+          ++sign_counts.positive_off_diagonals;
     }
   }
 
   OpenSnPETScCall(MatAssemblyBegin(A_, MAT_FINAL_ASSEMBLY));
   OpenSnPETScCall(MatAssemblyEnd(A_, MAT_FINAL_ASSEMBLY));
   OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
-  OpenSnPETScCall(KSPSetUp(ksp_));
+
+  if (from_transport_iterate)
+  {
+    std::size_t global_fallbacks = 0;
+    opensn::mpi_comm.all_reduce(local_fallbacks, global_fallbacks, mpi::op::sum<std::size_t>());
+    if (global_fallbacks > 0 and num_closure_fallbacks_ == 0)
+      log.Log0Warning() << no_wrap << "CMFD closed " << global_fallbacks
+                        << " coarse faces by the diffusion coupling alone at update "
+                        << outer_iteration_
+                        << " because a coarse flux next to them is zero. The coarse currents "
+                           "there do not reproduce the transport currents. This warning is not "
+                           "repeated.";
+    num_closure_fallbacks_ += global_fallbacks;
+  }
+  return sign_counts;
 }
 
 double
@@ -1844,14 +2245,15 @@ CMFDAcceleration::ComputePartialOutwardCurrents(const CMFDCoarseCell& coarse_cel
 
 std::vector<double>
 CMFDAcceleration::SolveCoarseSystem(const double k_eff,
-                                    const std::vector<double>& coarse_source_phi) const
+                                    const std::vector<double>& coarse_source_phi,
+                                    const double held_scale) const
 {
   OpenSnInvalidArgumentIf(coarse_source_phi.size() !=
                             coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse source scalar flux vector size mismatch.");
   const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
 
-  AssembleRHS(rhs_, k_eff, coarse_source_phi);
+  AssembleRHS(rhs_, k_eff, coarse_source_phi, held_scale);
 
   Vec x = nullptr;
   OpenSnPETScCall(VecDuplicate(rhs_, &x));
@@ -1884,9 +2286,11 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   // iterative ones, so a near-singular coarse operator can pass with a useless solution. The
   // solve is accepted only if the true residual is within true_residual_factor of the requested
   // tolerance. The factor allows for the gap between preconditioned and true residual norms.
+  Mat ksp_operator = nullptr;
+  OpenSnPETScCall(KSPGetOperators(ksp_, &ksp_operator, nullptr));
   Vec residual = nullptr;
   OpenSnPETScCall(VecDuplicate(rhs_, &residual));
-  OpenSnPETScCall(MatMult(A_, x, residual));
+  OpenSnPETScCall(MatMult(ksp_operator, x, residual));
   OpenSnPETScCall(VecAYPX(residual, -1.0, rhs_));
   PetscReal residual_norm = 0.0;
   PetscReal rhs_norm = 0.0;
@@ -1894,7 +2298,8 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
   OpenSnPETScCall(VecNorm(rhs_, NORM_2, &rhs_norm));
   OpenSnPETScCall(VecDestroy(&residual));
   const double true_residual_tolerance =
-    true_residual_factor * std::max(l_rel_tol_ * static_cast<double>(rhs_norm), l_abs_tol_);
+    true_residual_factor *
+    std::max(coarse_linear_rel_tol * static_cast<double>(rhs_norm), coarse_linear_abs_tol);
   last_ksp_converged_ = ksp_reason > 0 and std::isfinite(static_cast<double>(residual_norm)) and
                         static_cast<double>(residual_norm) <= true_residual_tolerance;
 
@@ -1914,13 +2319,26 @@ CMFDAcceleration::SolveCoarseSystem(const double k_eff,
 void
 CMFDAcceleration::AssembleRHS(Vec rhs,
                               const double k_eff,
-                              const std::vector<double>& coarse_source_phi) const
+                              const std::vector<double>& coarse_source_phi,
+                              const double held_scale) const
 {
   OpenSnInvalidArgumentIf(coarse_source_phi.size() !=
                             coarse_mesh_.NumLocalCells() * num_coarse_groups_,
                           "Coarse source scalar flux vector size mismatch.");
 
   OpenSnPETScCall(VecSet(rhs, 0.0));
+  // A held value's row is its restricted transport flux, and a free value next to held ones
+  // receives their outgoing partial currents, both times the amplitude of the coarse iterate.
+  const bool has_held = held_.size() == coarse_source_phi.size();
+  if (has_held)
+    for (const auto& coarse_cell : coarse_mesh_.LocalCells())
+      for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+      {
+        const auto i = coarse_cell.local_id * num_coarse_groups_ + cg;
+        if (held_source_[i] != 0.0)
+          OpenSnPETScCall(VecSetValue(
+            rhs, MapDOF(coarse_cell.global_id, cg), held_scale * held_source_[i], ADD_VALUES));
+      }
   std::vector<double> production;
   for (const auto& coarse_cell : coarse_mesh_.LocalCells())
   {
@@ -1930,6 +2348,8 @@ CMFDAcceleration::AssembleRHS(Vec rhs,
     const auto coarse_offset = coarse_cell.local_id * num_coarse_groups_;
     for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
     {
+      if (has_held and held_[coarse_offset + cg])
+        continue;
       double rhs_value = 0.0;
       for (unsigned int cgp = 0; cgp < num_coarse_groups_; ++cgp)
         rhs_value +=
@@ -1969,7 +2389,7 @@ CMFDAcceleration::ComputeBalanceResidual(const double k_eff,
   OpenSnPETScCall(VecAssemblyBegin(x));
   OpenSnPETScCall(VecAssemblyEnd(x));
 
-  AssembleRHS(rhs, k_eff, coarse_source_phi);
+  AssembleRHS(rhs, k_eff, coarse_source_phi, 1.0);
   OpenSnPETScCall(MatMult(A_, x, residual));
   OpenSnPETScCall(VecAXPY(residual, -1.0, rhs));
 
@@ -2117,94 +2537,220 @@ CMFDAcceleration::AnalyzeFluxUpdate(const std::vector<double>& phi, const double
 }
 
 double
-CMFDAcceleration::ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
-                                                 const std::vector<double>& coarse_phi,
-                                                 const double old_fission_production,
-                                                 const double transport_k_eff,
-                                                 double& applied_damping,
-                                                 unsigned int& attempts,
-                                                 FluxUpdateDiagnostics& diagnostics,
-                                                 bool& skipped_correction,
-                                                 std::string& skip_reason)
+CMFDAcceleration::ApplyFluxCorrection(const std::vector<double>& transport_phi_new,
+                                      const std::vector<double>& coarse_phi,
+                                      const double coarse_amplitude,
+                                      const double old_fission_production,
+                                      const double transport_k_eff,
+                                      FluxUpdateDiagnostics& diagnostics,
+                                      bool& skipped_correction,
+                                      std::string& skip_reason)
 {
-  std::vector<double> unrelaxed_coarse_delta_phi(coarse_phi.size(), 0.0);
-  for (size_t i = 0; i < coarse_phi.size(); ++i)
-    unrelaxed_coarse_delta_phi[i] = coarse_phi[i] - coarse_phi_new_[i];
-
-  double damping = relaxation_;
-  attempts = 0;
   skipped_correction = false;
   skip_reason.clear();
-  applied_damping = 0.0;
-  std::string rejection_reason = "correction_damping_exhausted";
   const auto transport_diagnostics = AnalyzeFluxUpdate(transport_phi_new, transport_k_eff);
   OpenSnLogicalErrorIf(transport_diagnostics.has_invalid_k,
                        "CMFD input transport update has an invalid k-eigenvalue.");
   OpenSnLogicalErrorIf(transport_diagnostics.has_nonfinite_flux,
                        "CMFD input transport update has non-finite scalar flux values.");
 
-  for (; attempts < correction_max_attempts_; ++attempts)
+  const auto Skip = [&](const std::string& reason)
   {
-    if (attempts > 0 and damping < correction_min_damping_)
-      break;
+    diagnostics = transport_diagnostics;
+    phi_new_local_ = transport_phi_new;
+    skipped_correction = true;
+    skip_reason = reason;
+    if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
+      log.Log0Warning() << no_wrap << "CMFD correction skipped (" << reason
+                        << "). Using the unaccelerated transport update.";
+    return transport_k_eff;
+  };
 
-    std::vector<double> coarse_delta_phi(unrelaxed_coarse_delta_phi.size(), 0.0);
-    for (size_t i = 0; i < unrelaxed_coarse_delta_phi.size(); ++i)
-      coarse_delta_phi[i] = damping * unrelaxed_coarse_delta_phi[i];
-    std::vector<double> candidate_coarse_phi(coarse_phi_new_.size(), 0.0);
-    for (size_t i = 0; i < candidate_coarse_phi.size(); ++i)
-      candidate_coarse_phi[i] = coarse_phi_new_[i] + coarse_delta_phi[i];
-
-    // The correction scales the fine flux by these coarse ratios. A ratio that is not finite and
-    // positive would change the sign of the transport flux, so damp the correction instead. Signs
-    // the transport update already has are kept: the ratios only rescale them.
-    std::size_t sign_changing_ratios = 0;
-    opensn::mpi_comm.all_reduce(CMFDCountSignChangingRatios(coarse_phi_new_, candidate_coarse_phi),
-                                sign_changing_ratios,
-                                mpi::op::sum<std::size_t>());
-    if (sign_changing_ratios > 0)
+  // The correction scales the fine flux of each coarse cell and coarse group by a coarse ratio. A
+  // negative or non-finite ratio would change the sign of the transport flux it scales, which
+  // happens where the transport iterate or the coarse solution has the wrong sign, for example in
+  // elongated cells of a discontinuous discretization. Such a coarse value keeps the transport
+  // iterate, scaled to the amplitude of the coarse solution, and the other values are corrected.
+  // The ratios tend to one at convergence, so the fixed point is unchanged.
+  auto admissible_phi = coarse_phi;
+  std::size_t local_kept = 0;
+  for (const auto& coarse_cell : coarse_mesh_.LocalCells())
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
     {
-      rejection_reason = "sign_change_guard";
-      damping *= 0.5;
-      continue;
+      const auto i = coarse_cell.local_id * num_coarse_groups_ + cg;
+      if (not CMFDRatioChangesSign(coarse_phi_new_[i], coarse_phi[i]))
+        continue;
+      if (verbose_ and local_kept < 3)
+        log.LogAll() << no_wrap << "CMFD keeps the transport flux at coarse cell "
+                     << coarse_cell.global_id << " (" << coarse_cell.centroid.x << ", "
+                     << coarse_cell.centroid.y << ", " << coarse_cell.centroid.z
+                     << "), coarse group " << cg << ": transport " << coarse_phi_new_[i]
+                     << ", coarse " << coarse_phi[i];
+      admissible_phi[i] = coarse_phi_new_[i] * coarse_amplitude;
+      ++local_kept;
     }
-
-    auto candidate_phi_new = transport_phi_new;
-    CMFDProlongateScalarFluxRatio(do_problem_,
-                                  first_group_,
-                                  num_groups_,
-                                  group_aggregation_size_,
-                                  coarse_mesh_,
-                                  coarse_phi_new_,
-                                  candidate_coarse_phi,
-                                  candidate_phi_new);
-    const double candidate_fission_production =
-      ComputeFissionProduction(do_problem_, candidate_phi_new);
-    const double candidate_k_eff =
-      candidate_fission_production / old_fission_production * solver_->GetEigenvalue();
-    diagnostics = AnalyzeFluxUpdate(candidate_phi_new, candidate_k_eff);
-    if (not diagnostics.has_invalid_k and not diagnostics.has_nonfinite_flux)
-    {
-      phi_new_local_ = std::move(candidate_phi_new);
-      applied_damping = damping;
-      ++attempts;
-      return candidate_k_eff;
-    }
-
-    rejection_reason = diagnostics.has_invalid_k ? "invalid_k" : "nonfinite_flux";
-
-    damping *= 0.5;
+  opensn::mpi_comm.all_reduce(local_kept, last_kept_coarse_values_, mpi::op::sum<std::size_t>());
+  if (last_kept_coarse_values_ > 0 and not warned_kept_coarse_values_)
+  {
+    warned_kept_coarse_values_ = true;
+    log.Log0Warning() << no_wrap << "CMFD kept the transport flux in " << last_kept_coarse_values_
+                      << " of " << GlobalUnknownCount() << " coarse values at update "
+                      << outer_iteration_
+                      << " because the restricted transport flux or the coarse solution there is "
+                         "negative, so the correction would change or amplify the sign of the "
+                         "flux. This happens in early updates and where a discontinuous solution "
+                         "dips below zero, for example in reflectors. verbose=True lists where. "
+                         "This warning is not repeated.";
   }
 
-  diagnostics = transport_diagnostics;
-  phi_new_local_ = transport_phi_new;
-  skipped_correction = true;
-  skip_reason = rejection_reason;
-  if (verbose_ or outer_iteration_ < 5 or outer_iteration_ % 25 == 0)
-    log.Log0Warning() << no_wrap << "CMFD correction rejected after " << attempts
-                      << " damping attempts; using the unaccelerated transport update. "
-                      << "Transport minimum scalar flux = " << diagnostics.min_scalar_flux << ".";
-  return transport_k_eff;
+  auto candidate_phi_new = transport_phi_new;
+  const auto fine_cell_ratios = CMFDComputeFineCellRatios(do_problem_,
+                                                          num_groups_,
+                                                          group_aggregation_size_,
+                                                          coarse_mesh_,
+                                                          coarse_phi_new_,
+                                                          admissible_phi);
+  CMFDApplyFineCellRatios(do_problem_,
+                          first_group_,
+                          num_groups_,
+                          group_aggregation_size_,
+                          fine_cell_ratios,
+                          false,
+                          candidate_phi_new);
+  const double candidate_fission_production =
+    ComputeFissionProduction(do_problem_, candidate_phi_new);
+  const double candidate_k_eff =
+    candidate_fission_production / old_fission_production * solver_->GetEigenvalue();
+  diagnostics = AnalyzeFluxUpdate(candidate_phi_new, candidate_k_eff);
+  if (diagnostics.has_invalid_k)
+    return Skip("invalid_k");
+  if (diagnostics.has_nonfinite_flux)
+    return Skip("nonfinite_flux");
+  phi_new_local_ = std::move(candidate_phi_new);
+  return candidate_k_eff;
+}
+
+void
+CMFDAcceleration::SetShiftedOperator(const double k_shift)
+{
+  OpenSnLogicalErrorIf(not(k_shift > 0.0), "CMFD Wielandt shift must be positive.");
+  // An infinite shift is the unshifted operator.
+  if (std::isinf(k_shift))
+  {
+    OpenSnPETScCall(KSPSetOperators(ksp_, A_, A_));
+    const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
+    OpenSnPETScCall(KSPSetUp(ksp_));
+    return;
+  }
+  if (A_shift_)
+    OpenSnPETScCall(MatDestroy(&A_shift_));
+  OpenSnPETScCall(MatDuplicate(A_, MAT_COPY_VALUES, &A_shift_));
+  OpenSnPETScCall(MatSetOption(A_shift_, MAT_NEW_NONZERO_ALLOCATION_ERR, PETSC_FALSE));
+
+  // The operator couples homogenized coarse cells, so the shift subtracts the homogenized
+  // production of each coarse cell, the same matrix the right-hand side uses.
+  std::vector<double> production;
+  for (const auto& coarse_cell : coarse_mesh_.LocalCells())
+  {
+    if (not ComputeCoarseProduction(homogenized_xs_.at(coarse_cell.local_id), production))
+      continue;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+    {
+      if (not held_.empty() and held_[coarse_cell.local_id * num_coarse_groups_ + cg])
+        continue;
+      const auto row = MapDOF(coarse_cell.global_id, cg);
+      for (unsigned int cgp = 0; cgp < num_coarse_groups_; ++cgp)
+        if (const double value = production[cg * num_coarse_groups_ + cgp]; value != 0.0)
+          OpenSnPETScCall(MatSetValue(A_shift_,
+                                      row,
+                                      MapDOF(coarse_cell.global_id, cgp),
+                                      -value * coarse_cell.volume / k_shift,
+                                      ADD_VALUES));
+    }
+  }
+  OpenSnPETScCall(MatAssemblyBegin(A_shift_, MAT_FINAL_ASSEMBLY));
+  OpenSnPETScCall(MatAssemblyEnd(A_shift_, MAT_FINAL_ASSEMBLY));
+  OpenSnPETScCall(KSPSetOperators(ksp_, A_shift_, A_shift_));
+  const PETScOptionsDatabase::Scope petsc_options_scope(*petsc_options_db_);
+  OpenSnPETScCall(KSPSetUp(ksp_));
+}
+
+void
+CMFDAcceleration::CheckOpticalThickness()
+{
+  // One-group transport cross section of each coarse cell, weighted by the coarse-group fluxes,
+  // times the cell's extent along each axis. The extent is the spread of the face centroids,
+  // which is exact for boxes and a fair measure for other cells.
+  double local_max[3] = {0.0, 0.0, 0.0};
+  std::size_t local_thick = 0;
+  for (const auto& coarse_cell : coarse_mesh_.LocalCells())
+  {
+    const auto& xs = homogenized_xs_.at(coarse_cell.local_id);
+    double weighted = 0.0;
+    double weight = 0.0;
+    for (unsigned int cg = 0; cg < num_coarse_groups_; ++cg)
+    {
+      const double phi = std::fabs(coarse_phi_new_[coarse_cell.local_id * num_coarse_groups_ + cg]);
+      if (xs.diffusion[cg] > 0.0)
+      {
+        weighted += phi / (3.0 * xs.diffusion[cg]);
+        weight += phi;
+      }
+    }
+    if (weight <= 0.0 or coarse_cell.faces.empty())
+      continue;
+    const double sigma_tr = weighted / weight;
+    std::array<double, 3> low = {std::numeric_limits<double>::max(),
+                                 std::numeric_limits<double>::max(),
+                                 std::numeric_limits<double>::max()};
+    std::array<double, 3> high = {std::numeric_limits<double>::lowest(),
+                                  std::numeric_limits<double>::lowest(),
+                                  std::numeric_limits<double>::lowest()};
+    for (const auto& face : coarse_cell.faces)
+      for (int d = 0; d < 3; ++d)
+      {
+        low[d] = std::min(low[d], face.centroid[d]);
+        high[d] = std::max(high[d], face.centroid[d]);
+      }
+    bool thick = false;
+    for (int d = 0; d < 3; ++d)
+    {
+      const double tau = sigma_tr * (high[d] - low[d]);
+      local_max[d] = std::max(local_max[d], tau);
+      thick = thick or tau > optically_thick_mfp;
+    }
+    if (thick)
+      ++local_thick;
+  }
+  double global_max[3] = {0.0, 0.0, 0.0};
+  opensn::mpi_comm.all_reduce(local_max, 3, global_max, mpi::op::max<double>());
+  std::size_t global_thick = 0;
+  opensn::mpi_comm.all_reduce(local_thick, global_thick, mpi::op::sum<std::size_t>());
+  const int axis = static_cast<int>(std::max_element(global_max, global_max + 3) - global_max);
+  const double tau = global_max[axis];
+  if (verbose_)
+    log.Log() << no_wrap << program_timer.GetTimeString()
+              << " CMFD coarse-cell optical thickness: max x = " << global_max[0]
+              << ", y = " << global_max[1] << ", z = " << global_max[2] << " mean free paths.";
+  if (global_thick == 0)
+    return;
+  // Convergence rate per update of CMFD with one sweep per update on a 1D slab of coarse cells of
+  // thickness tau with scattering ratio 0.99: 0.67 at 1.35, 0.89 at 5.4 and 0.99 at 22 mean free
+  // paths. Interpolated in log(tau).
+  const double rate =
+    tau <= 5.4 ? 0.67 + (0.89 - 0.67) * std::log(tau / 1.35) / std::log(5.4 / 1.35)
+               : std::min(0.99, 0.89 + (0.99 - 0.89) * std::log(tau / 5.4) / std::log(22.0 / 5.4));
+  const char axis_name = static_cast<char>('x' + axis);
+  log.Log0Warning() << no_wrap << "CMFD: " << global_thick << " of "
+                    << coarse_mesh_.NumGlobalCells() << " coarse cells are thicker than "
+                    << optically_thick_mfp << " transport mean free paths (largest " << tau
+                    << " along " << axis_name
+                    << "). CMFD with one sweep per update converges slowly on optically thick "
+                       "coarse cells, about "
+                    << rate
+                    << " per update in a scattering medium at this thickness. Refine the "
+                       "transport mesh or the coarse mesh along "
+                    << axis_name << ".";
 }
 
 } // namespace opensn

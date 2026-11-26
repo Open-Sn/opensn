@@ -173,7 +173,7 @@ def solve(deterministic, save_angular_flux=False):
         solver.Execute()
     else:
         cmfd = CMFDAcceleration(
-            problem=problem, coarse_mesh="local_aggregation", aggregation_size=8
+            problem=problem, coarse_mesh={"type": "local_aggregation", "size": 8}
         )
         solver = PowerIterationKEigenSolver(
             problem=problem, acceleration=cmfd, k_tol=1.0e-10, max_iters=200

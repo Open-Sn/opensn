@@ -218,7 +218,7 @@
   },
   {
     "file": "cmfd.py",
-    "comment": "Two-group fuel-water eigenvalue comparison with and without CMFD",
+    "comment": "Two-group fuel-water eigenvalue comparison with and without CMFD. Both eigenvalues match 0.5963819396, the eigenvalue of unaccelerated power iteration converged to k_tol=1e-11 and fission_source_tol=1e-9, which a CMFD solve with an identity coarse mesh converged to the same tolerances reproduces to 1e-11",
     "num_procs": 4,
     "checks": [
       {
@@ -228,13 +228,13 @@
       {
         "type": "KeyValuePair",
         "key": "Unaccelerated CMFD comparison k-effective=",
-        "goldvalue": 5.963819047666e-01,
+        "goldvalue": 5.963819395567e-01,
         "rel_tol": 1.0e-6
       },
       {
         "type": "KeyValuePair",
         "key": "CMFD k-effective=",
-        "goldvalue": 5.963819432789e-01,
+        "goldvalue": 5.963819395567e-01,
         "rel_tol": 1.0e-6
       },
       {

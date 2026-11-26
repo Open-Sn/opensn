@@ -32,32 +32,59 @@ std::vector<double> CMFDRestrictScalarFlux(const DiscreteOrdinatesProblem& do_pr
                                            const std::vector<double>& phi);
 
 /**
+ * Return whether the prolongation ratio `coarse_phi_new / coarse_phi_old` of one coarse value is
+ * not admissible: the old value is not negligible, and it is negative, or the ratio is negative
+ * or not finite. A negative old value is not rescaled, because a positive ratio of two negative
+ * values can be large and would amplify the negative fine flux. See CMFDCountSignChangingRatios.
+ */
+bool CMFDRatioChangesSign(double coarse_phi_old, double coarse_phi_new);
+
+/**
  * Count the coarse values whose prolongation ratio would not preserve the sign of the fine flux.
  *
- * CMFDProlongateScalarFluxRatio scales the fine flux of each coarse cell and coarse group by
+ * CMFDApplyFineCellRatios scales the fine flux of each coarse cell and coarse group by
  * `coarse_phi_new / coarse_phi_old`, or by one where the old value is negligible. A negative or
- * non-finite ratio would change the sign of, or destroy, the fine flux it scales. A zero ratio
- * sets the fine flux to zero, which is the coarse solution of a source-free region that no face
- * couples to the rest of the problem.
+ * non-finite ratio would change the sign of, or destroy, the fine flux it scales, and a negative
+ * old value is not rescaled at all (see CMFDRatioChangesSign). A zero ratio sets the fine flux to
+ * zero, which is the coarse solution of a source-free region that no face couples to the rest of
+ * the problem.
  *
  * \param coarse_phi_old Coarse scalar flux before the correction.
  * \param coarse_phi_new Corrected coarse scalar flux.
- * \return The number of local coarse values with a negative or non-finite ratio.
+ * \return The number of local coarse values with an inadmissible ratio.
  * \throw std::invalid_argument If the two vectors differ in size.
  */
 std::size_t CMFDCountSignChangingRatios(const std::vector<double>& coarse_phi_old,
                                         const std::vector<double>& coarse_phi_new);
 
 /**
- * Scale fine scalar-flux moments by coarse-cell, coarse-group ratios.
+ * Compute the CMFD correction ratio coarse_phi_new / coarse_phi_old of every local fine cell.
+ *
+ * The ratio of a fine cell is that of its coarse cell and coarse group, or one where the old
+ * coarse value is negligible. Coarse cells owned by other ranks send their ratios, so the
+ * operation is collective.
+ *
+ * \return Ratios indexed by `fine cell local id * num_coarse_groups + coarse group`.
  */
-void CMFDProlongateScalarFluxRatio(const DiscreteOrdinatesProblem& do_problem,
-                                   unsigned int first_group,
-                                   unsigned int num_groups,
-                                   unsigned int group_aggregation_size,
-                                   const CMFDCoarseMesh& coarse_mesh,
-                                   const std::vector<double>& coarse_phi_old,
-                                   const std::vector<double>& coarse_phi_new,
-                                   std::vector<double>& phi);
+std::vector<double> CMFDComputeFineCellRatios(const DiscreteOrdinatesProblem& do_problem,
+                                              unsigned int num_groups,
+                                              unsigned int group_aggregation_size,
+                                              const CMFDCoarseMesh& coarse_mesh,
+                                              const std::vector<double>& coarse_phi_old,
+                                              const std::vector<double>& coarse_phi_new);
+
+/**
+ * Scale the fine flux moments by the fine-cell ratios of CMFDComputeFineCellRatios.
+ *
+ * Only the scalar moment is scaled unless `all_moments` is true. Scaling every moment by the same
+ * ratio scales the angular flux of the cell, so the moments keep their ratios to one another.
+ */
+void CMFDApplyFineCellRatios(const DiscreteOrdinatesProblem& do_problem,
+                             unsigned int first_group,
+                             unsigned int num_groups,
+                             unsigned int group_aggregation_size,
+                             const std::vector<double>& fine_cell_ratios,
+                             bool all_moments,
+                             std::vector<double>& phi);
 
 } // namespace opensn

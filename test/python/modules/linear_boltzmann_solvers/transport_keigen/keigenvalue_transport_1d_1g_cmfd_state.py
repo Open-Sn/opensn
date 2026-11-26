@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Check CMFD inactive/rejected updates against PI and preserve WGS settings on reinitialization."""
+"""Check the CMFD input contract and that skipped CMFD corrections reproduce unaccelerated PI."""
 
 import os
 import sys
@@ -78,39 +78,87 @@ if __name__ == "__main__":
         assert abs(actual[0] - expected[0]) < 1.0e-12, (actual, expected)
         assert actual[1] == expected[1], (actual, expected)
 
-    phys = make_problem()
-    for option, value in (("relaxation", 0.0), ("pi_max_its", 0)):
+    def assert_rejected(description, construct):
         try:
-            CMFDAcceleration(problem=phys, **{option: value})
-        except (ValueError, RuntimeError) as error:
-            assert option in str(error), str(error)
-        else:
-            raise AssertionError(f"CMFD accepted {option}=0, which can freeze k_eff")
+            construct()
+        except (ValueError, RuntimeError, TypeError) as error:
+            return str(error)
+        raise AssertionError(f"CMFD accepted {description}")
 
-    reference = execute(make_problem())
+    # Values that contradict the fixed method, and malformed coarse-mesh and coarse-group input,
+    # are rejected when the accelerator is constructed.
     phys = make_problem()
-    cmfd = CMFDAcceleration(problem=phys, inactive_iterations=1)
-    assert_same(execute(phys, cmfd), reference)
-    # Reach the active phase, then initialize a new executor on the same problem/acceleration.
-    execute(phys, cmfd, iterations=2)
-    assert_same(execute(phys, cmfd), reference)
+    for description, options in (
+        ("the net closure", dict(current_closure="net")),
+        ("a relaxation other than 1", dict(relaxation=0.5)),
+        ("inactive iterations", dict(inactive_iterations=1)),
+        ("an unknown coarse-mesh type", dict(coarse_mesh="octree")),
+        ("an unknown coarse-mesh key",
+         dict(coarse_mesh={"type": "local_aggregation", "pitch": [1.0, 1.0]})),
+        ("a lattice without its geometry", dict(coarse_mesh="reactor_lattice")),
+        ("an aggregation size given twice",
+         dict(coarse_mesh={"type": "local_aggregation", "size": 4}, aggregation_size=4)),
+        ("zero coarse groups", dict(coarse_groups=0)),
+        ("a coarse-group string other than auto", dict(coarse_groups="all")),
+        ("both coarse_groups and group_aggregation_size",
+         dict(coarse_groups=1, group_aggregation_size=1)),
+    ):
+        assert_rejected(description, lambda: CMFDAcceleration(problem=phys, **options))
 
+    # The solver rejects sweeps_per_update without CMFD.
+    for description, options in (
+        ("sweeps_per_update without CMFD", dict(sweeps_per_update=2)),
+    ):
+        def construct_and_initialize():
+            solver = PowerIterationKEigenSolver(problem=phys, **options)
+            solver.Initialize()
+        assert_rejected(description, construct_and_initialize)
+
+    # Each deprecated name maps to its replacement: the same coarse mesh, coarse groups and
+    # transport sweeps give the same iterates.
+    def cmfd_result(cmfd_options, solver_options=None):
+        phys = make_problem()
+        cmfd = CMFDAcceleration(problem=phys, **cmfd_options)
+        solver = PowerIterationKEigenSolver(problem=phys, acceleration=cmfd, max_iters=6,
+                                            k_tol=1.0e-10, **(solver_options or {}))
+        solver.Initialize()
+        solver.Execute()
+        return solver.GetEigenvalue(), solver.GetNumSweeps(), cmfd.GetNumCoarseCells()
+
+    for deprecated, replacement, solver_options in (
+        (dict(aggregation_size=5), dict(coarse_mesh={"type": "local_aggregation", "size": 5}),
+         None),
+        (dict(group_aggregation_size=1), dict(coarse_groups=1), None),
+        (dict(update_wgs_max_its=2), dict(), dict(sweeps_per_update=2)),
+    ):
+        old = cmfd_result(deprecated)
+        new = cmfd_result(replacement, solver_options)
+        assert abs(old[0] - new[0]) < 1.0e-12 and old[1:] == new[1:], (deprecated, old, new)
+
+    # A correction whose coarse linear solve fails is skipped, so the iterates are those of the
+    # unaccelerated power iteration with the same number of sweeps per update.
     reference = execute(make_problem(1, 1.0e-12), iterations=3)
-    for rejection_options in (
-        dict(max_iters=0, coarse_solver_policy="petsc_options",
-             petsc_options="-CMFDAccelerationksp_type gmres -CMFDAccelerationpc_type jacobi"),
+    for petsc_options in (
+        "-CMFDAccelerationksp_type gmres -CMFDAccelerationksp_max_it 0 "
+        "-CMFDAccelerationpc_type jacobi",
         # PETSc reports this one-iteration Jacobi solve as converged because it computes no norm.
         # Its positive but inaccurate solution passes the other correction safeties, so only the
         # true-residual check rejects it. Without that check the result differs from the
         # unaccelerated reference.
-        dict(coarse_solver_policy="petsc_options",
-             petsc_options="-CMFDAccelerationksp_type richardson -CMFDAccelerationksp_max_it 1 "
-                           "-CMFDAccelerationksp_norm_type none -CMFDAccelerationpc_type jacobi"),
-        dict(relaxation=100.0, correction_max_attempts=2, correction_min_damping=1.0),
+        "-CMFDAccelerationksp_type richardson -CMFDAccelerationksp_max_it 1 "
+        "-CMFDAccelerationksp_norm_type none -CMFDAccelerationpc_type jacobi",
     ):
         phys = make_problem()
-        cmfd = CMFDAcceleration(problem=phys, **rejection_options)
+        cmfd = CMFDAcceleration(problem=phys, petsc_options=petsc_options)
         assert_same(execute(phys, cmfd, iterations=3), reference)
+        assert cmfd.GetNumSkippedCorrections() == 3, cmfd.GetNumSkippedCorrections()
+
+    # petsc_options configure only the accelerator that was given them. An accelerator with the
+    # same name created afterwards, without options, applies its corrections.
+    phys = make_problem()
+    cmfd = CMFDAcceleration(problem=phys)
+    execute(phys, cmfd, iterations=3)
+    assert cmfd.GetNumSkippedCorrections() == 0, cmfd.GetNumSkippedCorrections()
 
     if rank == 0:
         print("CMFD transport state checks passed")

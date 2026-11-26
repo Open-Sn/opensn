@@ -154,24 +154,9 @@ if __name__ == "__main__":
         # convergence check; this test compares only the eigenvalue.
         cmfd = CMFDAcceleration(
             problem=phys,
-            current_closure=get_option("cmfd_current_closure", "partial"),
-            coarse_mesh=get_option("cmfd_coarse_mesh", "local_aggregation"),
-            aggregation_size=int(get_option("cmfd_aggregation_size", 2)),
-            group_aggregation_size=int(get_option("cmfd_group_aggregation_size", 3)),
-            update_wgs_max_its=int(get_option("cmfd_update_wgs_max_its", 4)),
-            update_wgs_abs_tol=float(get_option("cmfd_update_wgs_abs_tol", 1.0e-10)),
-            relaxation=float(get_option("cmfd_relaxation", 1.0)),
-            inactive_iterations=int(get_option("cmfd_inactive_iterations", 1)),
-            l_abs_tol=float(get_option("cmfd_l_abs_tol", 1.0e-10)),
-            max_iters=int(get_option("cmfd_l_max_its", 100)),
-            pi_max_its=int(get_option("cmfd_pi_max_its", 10)),
-            pi_k_tol=float(get_option("cmfd_pi_k_tol", 1.0e-10)),
-            coarse_solver_policy=get_option("cmfd_coarse_solver_policy", "direct"),
-            correction_max_attempts=int(get_option("cmfd_correction_max_attempts", 10)),
-            correction_min_damping=float(get_option("cmfd_correction_min_damping", 1.0e-4)),
-            balance_residual_tolerance=float(
-                get_option("cmfd_balance_residual_tolerance", 1.0e-6)
-            ),
+            coarse_mesh={"type": get_option("cmfd_coarse_mesh", "local_aggregation"),
+                         "size": int(get_option("cmfd_aggregation_size", 2))},
+            coarse_groups=int(get_option("cmfd_coarse_groups", 3)),
             verbose=get_bool_option("cmfd_verbose", False),
         )
         k_solver = PowerIterationKEigenSolver(

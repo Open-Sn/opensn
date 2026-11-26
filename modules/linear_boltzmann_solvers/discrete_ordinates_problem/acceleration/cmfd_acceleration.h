@@ -19,6 +19,7 @@ namespace opensn
 {
 
 class MultiGroupXS;
+class LogicalVolume;
 
 class CMFDAcceleration : public DiscreteOrdinatesKEigenAcceleration
 {
@@ -33,6 +34,7 @@ public:
   double PostPowerIteration() final;
   bool AllowsPowerIterationConvergence() const final { return last_update_allows_convergence_; }
   std::string GetPowerIterationConvergenceInfo() const final;
+  bool UsesSweepsPerUpdate() const final { return true; }
 
   const CMFDCoarseMesh& GetCoarseMesh() const { return coarse_mesh_; }
   /// Global number of CMFD coarse cells; zero before Initialize().
@@ -115,6 +117,13 @@ private:
     double global_faces_per_coarse_cell_sum = 0.0;
   };
 
+  /// Local counts of coarse operator entries whose sign is not that of an M-matrix.
+  struct OperatorSignCounts
+  {
+    std::size_t nonpositive_diagonals = 0;
+    std::size_t positive_off_diagonals = 0;
+  };
+
   struct FluxUpdateDiagnostics
   {
     double min_scalar_flux = std::numeric_limits<double>::max();
@@ -141,14 +150,41 @@ private:
     std::vector<double> diffusion;
   };
 
-  bool EvaluateBalanceConvergence(const BalanceResidual& transport_current_balance_residual,
-                                  bool skipped_correction) const;
+  /// The coarse mesh selected by the coarse_mesh parameter.
+  struct CoarseMeshSpec
+  {
+    /// One of identity, local_aggregation, global_aggregation, reactor_lattice, cartesian, or
+    /// logical_volumes.
+    std::string type;
+    /// Target fine cells per coarse cell of an aggregation.
+    int size = 32;
+    std::vector<double> x_edges;
+    std::vector<double> y_edges;
+    std::vector<double> z_edges;
+    std::vector<std::shared_ptr<LogicalVolume>> logical_volumes;
+    std::vector<double> lattice_origin;
+    std::vector<double> lattice_pitch;
+    std::vector<int> lattice_shape;
+    std::vector<double> lattice_axial_edges;
+  };
+
+  /// Parses the coarse_mesh parameter and the deprecated aggregation_size. Throws on input that
+  /// does not match the schema of the selected type.
+  static CoarseMeshSpec ParseCoarseMeshSpec(const InputParameters& params);
+  /// Number of fine groups per coarse group for the coarse_groups parameter and the deprecated
+  /// group_aggregation_size.
+  static unsigned int ParseGroupAggregationSize(const InputParameters& params,
+                                                unsigned int num_groups);
   void InitializeLinearSystem();
-  void ConfigureCoarseLinearSolver(bool direct);
+  /// Chooses the coarse linear solver: LU while its estimated memory is small, FGMRES with an
+  /// additive Schwarz preconditioner otherwise. Collective.
+  void ConfigureCoarseLinearSolver();
   void ConfigureTransportSolve(unsigned int max_iterations, double residual_tolerance);
   /// Cache the diffusion coefficient and, once a transport iterate exists, the coarse flux of
   /// every local and face-neighbor coarse cell.
   void BuildCoarseFluxCache();
+  /// The coarse flux a neighbor's closure sees: non-positive for a held value.
+  double CachedCoarseFlux(std::size_t local_index) const;
   void BuildFaceCurrentCache();
   void InitializeHomogenization();
   /// Homogenize with the weights of phi, or with volume weights if use_flux is false. Collective.
@@ -159,10 +195,27 @@ private:
   void ComputeCoarseScattering(const CoarseCellXS& coarse_xs, std::vector<double>& matrix) const;
   /// Condense the production matrix; return false, with a zero matrix, if nothing is fissionable.
   bool ComputeCoarseProduction(const CoarseCellXS& coarse_xs, std::vector<double>& matrix) const;
-  void AssembleOperator();
-  void AssembleRHS(Vec rhs, double k_eff, const std::vector<double>& coarse_source_phi) const;
+  /**
+   * Assemble the coarse operator without setting up the coarse linear solver. Before a transport
+   * iterate exists the faces are closed by the diffusion coupling and the boundaries by the
+   * Marshak condition. Collective.
+   */
+  OperatorSignCounts AssembleOperator(bool from_transport_iterate);
+  /// Sets A_shift_ = A_ - F / k_shift and makes it the operator of the coarse solves. Collective.
+  void SetShiftedOperator(double k_shift);
+  /**
+   * Warns once if coarse cells are optically thick. CMFD with one sweep per update converges at
+   * a rate that approaches the scattering ratio as the coarse cells thicken. Collective.
+   */
+  void CheckOpticalThickness();
+  /// Production right-hand side, plus the held values and their sources times `held_scale`.
+  void AssembleRHS(Vec rhs,
+                   double k_eff,
+                   const std::vector<double>& coarse_source_phi,
+                   double held_scale) const;
   std::vector<double> SolveCoarseSystem(double k_eff,
-                                        const std::vector<double>& coarse_source_phi) const;
+                                        const std::vector<double>& coarse_source_phi,
+                                        double held_scale) const;
   BalanceResidual ComputeBalanceResidual(double k_eff,
                                          const std::vector<double>& coarse_phi,
                                          const std::vector<double>& coarse_source_phi) const;
@@ -183,36 +236,33 @@ private:
   unsigned int FineGroupBegin(unsigned int coarse_group) const;
   unsigned int FineGroupEnd(unsigned int coarse_group) const;
   FluxUpdateDiagnostics AnalyzeFluxUpdate(const std::vector<double>& phi, double k_eff) const;
-  double ApplyFluxCorrectionWithDamping(const std::vector<double>& transport_phi_new,
-                                        const std::vector<double>& coarse_phi,
-                                        double old_fission_production,
-                                        double transport_k_eff,
-                                        double& applied_damping,
-                                        unsigned int& attempts,
-                                        FluxUpdateDiagnostics& diagnostics,
-                                        bool& skipped_correction,
-                                        std::string& skip_reason);
+  /**
+   * Prolongs the coarse solution onto the transport iterate. A coarse value whose ratio would
+   * change the sign of the fine flux keeps the transport iterate, scaled by `coarse_amplitude`,
+   * the ratio of the coarse solution's amplitude to the transport iterate's. A correction that
+   * gives a non-finite flux or an invalid k is skipped and the transport iterate is kept. Returns
+   * the k of the iterate that is kept. Collective.
+   */
+  double ApplyFluxCorrection(const std::vector<double>& transport_phi_new,
+                             const std::vector<double>& coarse_phi,
+                             double coarse_amplitude,
+                             double old_fission_production,
+                             double transport_k_eff,
+                             FluxUpdateDiagnostics& diagnostics,
+                             bool& skipped_correction,
+                             std::string& skip_reason);
 
-  const std::string coarse_mesh_type_;
-  const std::string current_closure_;
-  const int aggregation_size_;
-  const bool allow_mixed_material_aggregation_;
-  const unsigned int group_aggregation_size_;
-  const double relaxation_;
-  const unsigned int correction_max_attempts_;
-  const double correction_min_damping_;
-  const unsigned int inactive_iterations_;
-  const unsigned int update_wgs_max_its_;
-  const double update_wgs_abs_tol_;
-  const double balance_residual_tolerance_;
-  const double l_rel_tol_;
-  const double pi_phi_tol_;
-  const std::string coarse_solver_policy_;
-  const std::size_t coarse_direct_solve_threshold_;
+  const CoarseMeshSpec coarse_mesh_spec_;
+  /// The deprecated update_wgs_max_its when given, which then overrides the sweeps of the owning
+  /// solver's automatic choice.
+  const unsigned int legacy_update_wgs_max_its_;
   const unsigned int first_group_ = 0;
   const unsigned int num_groups_;
+  const unsigned int group_aggregation_size_;
   const unsigned int num_coarse_groups_;
   unsigned int outer_iteration_ = 0;
+  /// Transport sweeps per update, from the owning solver at each Execute().
+  unsigned int sweeps_per_update_ = 1;
   bool last_update_allows_convergence_ = true;
   bool last_balance_residual_known_ = false;
   bool last_correction_skipped_ = false;
@@ -221,12 +271,28 @@ private:
   unsigned int consecutive_skipped_corrections_ = 0;
   bool warned_persistent_skips_ = false;
   bool warned_homogenization_fallback_ = false;
+  bool warned_coarse_pi_limit_ = false;
+  bool warned_kept_coarse_values_ = false;
+  /// Per local coarse value, 1 if the coarse solve holds it at its restricted transport flux (see
+  /// AssembleOperator).
+  std::vector<char> held_;
+  /// Per local coarse value: a held value's restricted transport flux, or a free value's incoming
+  /// partial currents from held neighbors.
+  std::vector<double> held_source_;
+  /// Global number of coarse values that kept the transport flux in the last correction.
+  std::size_t last_kept_coarse_values_ = 0;
+  bool checked_optical_thickness_ = false;
+  /// Global count of face closures that fell back to the diffusion coupling alone because a
+  /// coarse flux was zero, over the last solve.
+  std::size_t num_closure_fallbacks_ = 0;
   std::string last_correction_skip_reason_;
   double last_transport_current_balance_relative_l2_ = std::numeric_limits<double>::infinity();
   double last_restrict_old_time_ = 0.0;
   double transport_start_time_ = 0.0;
   double old_fission_production_ = 0.0;
   bool using_direct_coarse_solver_ = false;
+  /// Whether petsc_options configure the coarse linear solver instead of the automatic choice.
+  bool coarse_solver_from_options_ = false;
   CMFDCoarseMesh coarse_mesh_;
   std::vector<double> coarse_phi_old_;
   std::vector<double> coarse_phi_new_;
@@ -247,6 +313,8 @@ private:
   std::map<std::tuple<uint64_t, std::size_t, uint64_t, unsigned int>, double> face_current_cache_;
 
   Mat A_ = nullptr;
+  /// A_ minus the coarse production matrix over the Wielandt shift, for the coarse solves.
+  Mat A_shift_ = nullptr;
   Vec rhs_ = nullptr;
   KSP ksp_ = nullptr;
   /// Options of the coarse solver, which are in the global database only while it uses them.

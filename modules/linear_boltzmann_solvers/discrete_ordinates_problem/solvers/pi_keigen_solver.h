@@ -25,6 +25,23 @@ public:
   unsigned int GetNumPowerIterations() const { return num_power_iterations_; }
   /// Return true if the last Execute() met its convergence criteria before max_iters.
   bool IsConverged() const { return converged_; }
+  /// Return the fission-source tolerance. Zero means the fission-source test is disabled.
+  double GetFissionSourceTolerance() const { return fission_source_tolerance_; }
+  /**
+   * Return the root-mean-square relative change of the normalized cell fission sources in the
+   * last power iteration. Zero when the fission-source test is disabled.
+   */
+  double GetFissionSourceChange() const { return fission_source_change_; }
+  /**
+   * Return the number of transport sweeps between acceleration corrections: sweeps_per_update
+   * when it is set, otherwise 1.
+   */
+  unsigned int GetSweepsPerUpdate() const
+  {
+    return sweeps_per_update_ > 0 ? sweeps_per_update_ : 1;
+  }
+  /// Return true if sweeps_per_update was left to the automatic choice.
+  bool IsSweepsPerUpdateAutomatic() const { return sweeps_per_update_ == 0; }
 
   BalanceTable ComputeBalanceTable() const;
 
@@ -46,6 +63,10 @@ protected:
   unsigned int max_iters_;
   double k_eff_;
   double k_tolerance_;
+  double fission_source_tolerance_;
+  double fission_source_change_ = 0.0;
+  /// Transport sweeps between acceleration corrections. Zero selects the automatic choice.
+  const unsigned int sweeps_per_update_;
   double F_prev_;
   bool reset_phi0_;
   unsigned int num_power_iterations_ = 0;

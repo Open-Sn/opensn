@@ -26,6 +26,9 @@ namespace opensn
 namespace
 {
 
+/// Default of the fission_source_tol parameter.
+constexpr double FISSION_SOURCE_TOL_DEFAULT = 1.0e-6;
+
 /**
  * Relative L2 change between two flux iterates, each normalized by its fission production so that
  * the arbitrary eigenvector scale of power iteration does not enter.
@@ -68,6 +71,20 @@ PowerIterationKEigenSolver::GetInputParameters()
     "rho is the convergence rate of the power iteration, estimated from the change of the "
     "production-normalized flux between iterations. Values below 1.0e-12 are treated as "
     "1.0e-12.");
+  params.AddOptionalParameter(
+    "fission_source_tol",
+    FISSION_SOURCE_TOL_DEFAULT,
+    "Tolerance on the estimated error of the fission-source shape: the root-mean-square relative "
+    "change of the cell fission sources, each divided by the total fission production, must be "
+    "below fission_source_tol (1 - rho), with rho as for k_tol. This test is applied in addition "
+    "to the k_tol test. Zero disables it.");
+  params.ConstrainParameterRange("fission_source_tol", AllowableRangeLowLimit::New(0.0));
+  params.AddOptionalParameter(
+    "sweeps_per_update",
+    0,
+    "Number of transport sweeps (within-group iterations) between CMFD corrections. Zero, the "
+    "default, selects 1. Applies only with CMFD acceleration.");
+  params.ConstrainParameterRange("sweeps_per_update", AllowableRangeLowLimit::New(0));
   params.AddOptionalParameter("reset_phi0", true, "If true, reinitializes scalar fluxes to 1.0");
   return params;
 }
@@ -85,6 +102,8 @@ PowerIterationKEigenSolver::PowerIterationKEigenSolver(const InputParameters& pa
     max_iters_(params.GetParamValue<unsigned int>("max_iters")),
     k_eff_(1.0),
     k_tolerance_(params.GetParamValue<double>("k_tol")),
+    fission_source_tolerance_(params.GetParamValue<double>("fission_source_tol")),
+    sweeps_per_update_(params.GetParamValue<unsigned int>("sweeps_per_update")),
     F_prev_(1.0),
     reset_phi0_(params.GetParamValue<bool>("reset_phi0")),
     q_moments_local_(do_problem_->GetQMomentsLocal()),
@@ -98,6 +117,8 @@ void
 PowerIterationKEigenSolver::CheckRequirements(std::vector<std::string>& errors) const
 {
   CheckKEigenRequirements(errors);
+  if (sweeps_per_update_ > 0 and (not acceleration_ or not acceleration_->UsesSweepsPerUpdate()))
+    errors.emplace_back(GetName() + ": sweeps_per_update applies only with CMFD acceleration.");
   if (not acceleration_)
     return;
   if (&acceleration_->GetProblem() != do_problem_.get())
@@ -190,6 +211,11 @@ PowerIterationKEigenSolver::ExecuteSolver()
   bool previous_k_change_converged = false;
   ConvergenceRateEstimator rate_estimator;
   std::vector<double> phi_previous;
+  const bool test_fission_source = fission_source_tolerance_ > 0.0;
+  std::vector<double> fission_source_previous;
+  if (test_fission_source)
+    fission_source_previous = ComputeNormalizedCellFissionSources(*do_problem_, phi_old_local_);
+  fission_source_change_ = 0.0;
 
   // Start power iterations
   unsigned int nit = 0;
@@ -265,7 +291,19 @@ PowerIterationKEigenSolver::ExecuteSolver()
                            ComputeFissionProduction(*do_problem_, phi_new_local_)));
     const bool k_change_converged =
       rate_estimator.Passes(k_eff_change, std::max(k_tolerance_, 1.0e-12));
-    converged = k_change_converged and previous_k_change_converged and
+    // The k-eigenvalue can settle before the flux shape: in a large, loosely coupled core a
+    // shape error can leave k nearly unchanged. The fission-source test checks the shape directly.
+    bool fission_source_converged = true;
+    if (test_fission_source)
+    {
+      auto fission_source = ComputeNormalizedCellFissionSources(*do_problem_, phi_new_local_);
+      fission_source_change_ =
+        ComputeFissionSourceRMSChange(fission_source_previous, fission_source);
+      fission_source_previous = std::move(fission_source);
+      fission_source_converged =
+        rate_estimator.Passes(fission_source_change_, fission_source_tolerance_);
+    }
+    converged = k_change_converged and previous_k_change_converged and fission_source_converged and
                 (not acceleration_ or acceleration_->AllowsPowerIterationConvergence());
     previous_k_change_converged = k_change_converged;
 
@@ -294,7 +332,10 @@ PowerIterationKEigenSolver::ExecuteSolver()
                                               reactivity * 1.0e5,
                                               ags_summary,
                                               wgs_summaries,
-                                              outer_status);
+                                              outer_status,
+                                              test_fission_source
+                                                ? std::optional<double>(fission_source_change_)
+                                                : std::nullopt);
       log.Log() << no_wrap << iter_info.str();
       if (acceleration_)
       {

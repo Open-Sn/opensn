@@ -7,12 +7,14 @@
 #include <cstddef>
 #include <cstdint>
 #include <map>
+#include <memory>
 #include <optional>
 #include <vector>
 
 namespace opensn
 {
 class Mesh;
+class LogicalVolume;
 
 struct CMFDFineFace
 {
@@ -55,6 +57,29 @@ struct CMFDLocalFineCellMembership
   int coarse_cell_partition_id = 0;
 };
 
+/**
+ * Global geometry diagnostics of a Cartesian or reactor-lattice overlay coarse mesh.
+ *
+ * Every rank holds the same values. An interface fine face separates fine cells assigned to
+ * different overlay regions. It conforms when the two regions differ by one interval along one axis
+ * and every face vertex lies on the overlay plane between them.
+ */
+struct CMFDOverlayDiagnostics
+{
+  /// Fine faces that separate two different overlay regions.
+  std::size_t num_interface_faces = 0;
+  /// Interface fine faces that do not lie on an overlay plane.
+  std::size_t num_nonconforming_faces = 0;
+  /// Total area of the interface fine faces.
+  double interface_area = 0.0;
+  /// Total area of the nonconforming interface fine faces.
+  double nonconforming_area = 0.0;
+  /// Occupied overlay intervals narrower than the sliver fraction of their axis median.
+  std::size_t num_thin_intervals = 0;
+  /// Smallest ratio of an occupied interval width to the median occupied width of its axis.
+  double min_interval_width_ratio = 1.0;
+};
+
 class CMFDCoarseMesh
 {
 public:
@@ -73,6 +98,14 @@ public:
 
   size_t NumLocalCells() const { return local_cells_.size(); }
   size_t NumGlobalCells() const { return num_global_cells_; }
+  /// Geometry diagnostics of a Cartesian or reactor-lattice overlay. Empty for other coarse meshes.
+  const std::optional<CMFDOverlayDiagnostics>& OverlayDiagnostics() const
+  {
+    return overlay_diagnostics_;
+  }
+
+  /// Occupied overlay intervals narrower than this fraction of their axis median are reported.
+  static constexpr double overlay_sliver_fraction = 0.1;
 
 private:
   void AddLocalCell(CMFDCoarseCell&& coarse_cell);
@@ -80,12 +113,15 @@ private:
                                   uint64_t coarse_cell_id,
                                   int coarse_cell_partition_id);
   void BuildExteriorFaces(const Mesh& grid);
+  static CMFDCoarseMesh BuildOverlay(const Mesh& grid,
+                                     const std::map<uint64_t, uint64_t>& local_cell_keys);
 
   std::vector<CMFDCoarseCell> local_cells_;
   std::vector<CMFDLocalFineCellMembership> local_fine_cell_memberships_;
   std::map<uint64_t, uint64_t> fine_to_coarse_cell_;
   std::map<uint64_t, uint32_t> coarse_to_local_cell_;
   std::size_t num_global_cells_ = 0;
+  std::optional<CMFDOverlayDiagnostics> overlay_diagnostics_;
 
 public:
   static CMFDCoarseMesh BuildIdentity(const Mesh& grid);
@@ -119,6 +155,31 @@ public:
   static CMFDCoarseMesh BuildGlobalAggregation(const Mesh& grid,
                                                std::size_t target_fine_cells_per_coarse_cell,
                                                bool allow_mixed_materials = false);
+  /**
+   * Builds decomposition-independent coarse regions from logical volumes.
+   *
+   * Fine cells are classified by centroid and must match exactly one volume. Each logical-volume
+   * region is split only by face-connected component. A region may contain several material block
+   * IDs, whose coefficients CMFDAcceleration homogenizes. Collective.
+   */
+  static CMFDCoarseMesh
+  BuildLogicalVolumeOverlay(const Mesh& grid,
+                            const std::vector<std::shared_ptr<LogicalVolume>>& logical_volumes);
+  /**
+   * Build decomposition-independent coarse regions from Cartesian intervals.
+   *
+   * A fine cell belongs to the interval that contains its centroid. Intervals are half open, except
+   * that the last interval of an axis includes its upper edge. An empty edge array leaves that axis
+   * unbounded. Each region is split only by face-connected component. The result carries
+   * OverlayDiagnostics(). Collective.
+   *
+   * \throw std::invalid_argument If no edge array is given, an edge array is invalid, or a
+   * fine-cell centroid lies outside the overlay.
+   */
+  static CMFDCoarseMesh BuildCartesianOverlay(const Mesh& grid,
+                                              const std::vector<double>& x_edges,
+                                              const std::vector<double>& y_edges,
+                                              const std::vector<double>& z_edges);
 };
 
 } // namespace opensn

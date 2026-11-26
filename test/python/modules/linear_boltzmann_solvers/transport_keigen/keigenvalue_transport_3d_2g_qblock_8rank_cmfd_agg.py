@@ -119,9 +119,7 @@ if __name__ == "__main__":
         if use_cmfd:
             acceleration = CMFDAcceleration(
                 problem=phys,
-                aggregation_size=aggregation_size,
-                relaxation=1.0,
-                balance_residual_tolerance=10.0 * k_tolerance,
+                coarse_mesh={"type": "local_aggregation", "size": aggregation_size},
                 verbose=cmfd_verbose,
             )
         solver_options = {

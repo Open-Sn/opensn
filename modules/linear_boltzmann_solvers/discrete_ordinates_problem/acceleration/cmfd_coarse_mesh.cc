@@ -2,12 +2,15 @@
 // SPDX-License-Identifier: MIT
 
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_coarse_mesh.h"
+#include "framework/mesh/logical_volume/logical_volume.h"
 #include "framework/mesh/mesh/mesh.h"
 #include "framework/mesh/mesh/cell.h"
 #include "framework/mpi/mpi_utils.h"
 #include "framework/runtime.h"
 #include "framework/utils/error.h"
 #include <algorithm>
+#include <cstddef>
+#include <array>
 #include <cmath>
 #include <deque>
 #include <optional>
@@ -478,6 +481,256 @@ struct FinalNodeSummary
   Vector3 centroid;
 };
 
+using OverlayKey = uint64_t;
+using OverlayComponentKey = std::pair<uint64_t, uint64_t>;
+
+struct OverlayFragmentNode
+{
+  uint64_t global_id = 0;
+  int partition_id = 0;
+  OverlayKey key = 0;
+  uint64_t minimum_fine_cell_id = 0;
+  double volume = 0.0;
+  Vector3 centroid;
+  std::vector<uint64_t> neighbor_ids;
+};
+
+std::vector<OverlayFragmentNode>
+GatherOverlayFragmentTopology(const CMFDCoarseMesh& provisional,
+                              const std::vector<uint64_t>& local_region_ids)
+{
+  OpenSnLogicalErrorIf(local_region_ids.size() != provisional.NumLocalCells(),
+                       "CMFD overlay region metadata size mismatch.");
+
+  std::vector<uint64_t> local_keys;
+  std::vector<double> local_values;
+  for (const auto& coarse_cell : provisional.LocalCells())
+  {
+    std::vector<uint64_t> neighbor_ids;
+    for (const auto& face : coarse_cell.faces)
+      if (face.has_neighbor)
+        neighbor_ids.push_back(face.neighbor_id);
+
+    local_keys.push_back(coarse_cell.global_id);
+    local_keys.push_back(static_cast<uint64_t>(coarse_cell.partition_id));
+    local_keys.push_back(local_region_ids.at(coarse_cell.local_id));
+    local_keys.push_back(
+      *std::min_element(coarse_cell.fine_cell_ids.begin(), coarse_cell.fine_cell_ids.end()));
+    local_keys.push_back(static_cast<uint64_t>(neighbor_ids.size()));
+    local_keys.insert(local_keys.end(), neighbor_ids.begin(), neighbor_ids.end());
+
+    local_values.push_back(coarse_cell.volume);
+    local_values.push_back(coarse_cell.centroid.x);
+    local_values.push_back(coarse_cell.centroid.y);
+    local_values.push_back(coarse_cell.centroid.z);
+  }
+
+  const int local_key_count = static_cast<int>(local_keys.size());
+  const int local_value_count = static_cast<int>(local_values.size());
+  std::vector<int> key_counts(opensn::mpi_comm.size(), 0);
+  std::vector<int> value_counts(opensn::mpi_comm.size(), 0);
+  opensn::mpi_comm.all_gather(local_key_count, key_counts);
+  opensn::mpi_comm.all_gather(local_value_count, value_counts);
+
+  std::vector<uint64_t> global_keys;
+  std::vector<double> global_values;
+  opensn::mpi_comm.all_gather(local_keys, global_keys, key_counts, BuildDisplacements(key_counts));
+  opensn::mpi_comm.all_gather(
+    local_values, global_values, value_counts, BuildDisplacements(value_counts));
+
+  std::vector<OverlayFragmentNode> topology;
+  std::size_t key_index = 0;
+  std::size_t value_index = 0;
+  while (key_index < global_keys.size())
+  {
+    OpenSnLogicalErrorIf(key_index + 5 > global_keys.size() or
+                           value_index + 4 > global_values.size(),
+                         "Invalid CMFD overlay-topology buffer.");
+    OverlayFragmentNode node;
+    node.global_id = global_keys[key_index++];
+    node.partition_id = static_cast<int>(global_keys[key_index++]);
+    node.key = global_keys[key_index++];
+    node.minimum_fine_cell_id = global_keys[key_index++];
+    const auto num_neighbors = static_cast<std::size_t>(global_keys[key_index++]);
+    OpenSnLogicalErrorIf(key_index + num_neighbors > global_keys.size(),
+                         "Invalid CMFD overlay neighbor buffer.");
+    node.neighbor_ids.assign(global_keys.begin() + static_cast<std::ptrdiff_t>(key_index),
+                             global_keys.begin() +
+                               static_cast<std::ptrdiff_t>(key_index + num_neighbors));
+    key_index += num_neighbors;
+
+    node.volume = global_values[value_index++];
+    node.centroid = Vector3(
+      global_values[value_index], global_values[value_index + 1], global_values[value_index + 2]);
+    value_index += 3;
+    topology.push_back(std::move(node));
+  }
+  OpenSnLogicalErrorIf(value_index != global_values.size(), "Unused CMFD overlay-topology values.");
+  return topology;
+}
+
+void
+ValidateCartesianEdges(const std::vector<double>& edges, const std::string& name)
+{
+  if (edges.empty())
+    return;
+  OpenSnInvalidArgumentIf(edges.size() < 2,
+                          "CMFD Cartesian overlay requires at least two " + name + " values.");
+  for (std::size_t i = 0; i < edges.size(); ++i)
+  {
+    OpenSnInvalidArgumentIf(not std::isfinite(edges[i]),
+                            "CMFD Cartesian overlay requires finite " + name + " values.");
+    OpenSnInvalidArgumentIf(i > 0 and edges[i] <= edges[i - 1],
+                            "CMFD Cartesian overlay requires strictly increasing " + name + ".");
+  }
+}
+
+std::optional<std::size_t>
+FindCartesianInterval(const double value, const std::vector<double>& edges)
+{
+  if (edges.empty())
+    return 0;
+  if (value < edges.front() or value > edges.back())
+    return std::nullopt;
+  if (value == edges.back())
+    return edges.size() - 2;
+  return static_cast<std::size_t>(std::upper_bound(edges.begin(), edges.end(), value) -
+                                  edges.begin() - 1);
+}
+
+/// Overlay interval indices of a point. Assumes the point lies inside the overlay.
+std::array<std::size_t, 3>
+CartesianIntervals(const Vector3& point, const std::array<const std::vector<double>*, 3>& edges)
+{
+  std::array<std::size_t, 3> intervals{};
+  for (std::size_t axis = 0; axis < 3; ++axis)
+    intervals[axis] = FindCartesianInterval(point[axis], *edges[axis]).value_or(0);
+  return intervals;
+}
+
+/**
+ * Fine-face conformity and interval-width diagnostics of a Cartesian overlay.
+ *
+ * Each interface fine face is counted by the side with the smaller fine-cell global ID, so a face
+ * shared across ranks is counted once. A face conforms when the two regions differ by one interval
+ * along a single axis and every vertex lies on the plane between them within a millionth of the
+ * narrower adjacent interval. Generated and imported meshes place vertices on such planes far more
+ * accurately than that, while a cell that straddles the plane misses it by a fraction of its own
+ * size. Collective.
+ */
+CMFDOverlayDiagnostics
+ComputeCartesianOverlayDiagnostics(const Mesh& grid,
+                                   const std::array<const std::vector<double>*, 3>& edges)
+{
+  constexpr double plane_tolerance_fraction = 1.0e-6;
+
+  std::array<std::size_t, 3> num_intervals{};
+  std::size_t total_intervals = 0;
+  for (std::size_t axis = 0; axis < 3; ++axis)
+  {
+    num_intervals[axis] = edges[axis]->empty() ? 0 : edges[axis]->size() - 1;
+    total_intervals += num_intervals[axis];
+  }
+  std::vector<int> local_occupied(total_intervals, 0);
+  const auto OccupancyIndex = [&](const std::size_t axis, const std::size_t interval)
+  {
+    std::size_t offset = 0;
+    for (std::size_t a = 0; a < axis; ++a)
+      offset += num_intervals[a];
+    return offset + interval;
+  };
+
+  std::size_t local_counts[2] = {0, 0};
+  double local_areas[2] = {0.0, 0.0};
+  for (const auto& cell : grid.GetLocalCells())
+  {
+    const auto cell_intervals = CartesianIntervals(cell->centroid, edges);
+    for (std::size_t axis = 0; axis < 3; ++axis)
+      if (num_intervals[axis] > 0)
+        local_occupied[OccupancyIndex(axis, cell_intervals[axis])] = 1;
+
+    for (const auto& face : cell->faces)
+    {
+      if (not face.has_neighbor or face.neighbor_id < cell->global_id)
+        continue;
+      const auto& neighbor = grid.GetGlobalCell(face.neighbor_id);
+      const auto neighbor_intervals = CartesianIntervals(neighbor.centroid, edges);
+      if (neighbor_intervals == cell_intervals)
+        continue;
+
+      ++local_counts[0];
+      local_areas[0] += face.area;
+
+      std::size_t num_different_axes = 0;
+      std::size_t plane_axis = 0;
+      for (std::size_t axis = 0; axis < 3; ++axis)
+        if (neighbor_intervals[axis] != cell_intervals[axis])
+        {
+          ++num_different_axes;
+          plane_axis = axis;
+        }
+      const auto lower = std::min(cell_intervals[plane_axis], neighbor_intervals[plane_axis]);
+      const auto upper = std::max(cell_intervals[plane_axis], neighbor_intervals[plane_axis]);
+      bool conforming = num_different_axes == 1 and upper == lower + 1;
+      if (conforming)
+      {
+        const auto& axis_edges = *edges[plane_axis];
+        const double plane = axis_edges[upper];
+        const double narrower_width = std::min(axis_edges[upper] - axis_edges[lower],
+                                               axis_edges[upper + 1] - axis_edges[upper]);
+        const double tolerance = plane_tolerance_fraction * narrower_width;
+        for (const auto vertex_id : face.vertex_ids)
+          if (std::abs(grid.GlobalVertex(vertex_id)[plane_axis] - plane) > tolerance)
+          {
+            conforming = false;
+            break;
+          }
+      }
+      if (not conforming)
+      {
+        ++local_counts[1];
+        local_areas[1] += face.area;
+      }
+    }
+  }
+
+  std::size_t global_counts[2] = {0, 0};
+  double global_areas[2] = {0.0, 0.0};
+  opensn::mpi_comm.all_reduce(local_counts, 2, global_counts, mpi::op::sum<std::size_t>());
+  opensn::mpi_comm.all_reduce(local_areas, 2, global_areas, mpi::op::sum<double>());
+  std::vector<int> occupied(total_intervals, 0);
+  if (total_intervals > 0)
+    opensn::mpi_comm.all_reduce(local_occupied, occupied, mpi::op::max<int>());
+
+  CMFDOverlayDiagnostics diagnostics;
+  diagnostics.num_interface_faces = global_counts[0];
+  diagnostics.num_nonconforming_faces = global_counts[1];
+  diagnostics.interface_area = global_areas[0];
+  diagnostics.nonconforming_area = global_areas[1];
+  for (std::size_t axis = 0; axis < 3; ++axis)
+  {
+    std::vector<double> widths;
+    for (std::size_t i = 0; i < num_intervals[axis]; ++i)
+      if (occupied[OccupancyIndex(axis, i)] != 0)
+        widths.push_back((*edges[axis])[i + 1] - (*edges[axis])[i]);
+    if (widths.size() < 2)
+      continue;
+    auto sorted = widths;
+    std::nth_element(sorted.begin(),
+                     sorted.begin() + static_cast<std::ptrdiff_t>(sorted.size() / 2),
+                     sorted.end());
+    const double median = sorted[sorted.size() / 2];
+    for (const auto width : widths)
+    {
+      const double ratio = width / median;
+      diagnostics.min_interval_width_ratio = std::min(diagnostics.min_interval_width_ratio, ratio);
+      if (ratio < CMFDCoarseMesh::overlay_sliver_fraction)
+        ++diagnostics.num_thin_intervals;
+    }
+  }
+  return diagnostics;
+}
+
 } // namespace
 
 void
@@ -941,6 +1194,330 @@ CMFDCoarseMesh::BuildGlobalAggregation(const Mesh& grid,
       local_fine_cell->global_id, final_id, final_summaries.at(final_id).partition_id);
   }
 
+  return coarse_mesh;
+}
+
+CMFDCoarseMesh
+CMFDCoarseMesh::BuildLogicalVolumeOverlay(
+  const Mesh& grid, const std::vector<std::shared_ptr<LogicalVolume>>& logical_volumes)
+{
+  OpenSnInvalidArgumentIf(logical_volumes.empty(),
+                          "CMFD logical-volume overlay requires at least one logical volume.");
+  OpenSnInvalidArgumentIf(std::any_of(logical_volumes.begin(),
+                                      logical_volumes.end(),
+                                      [](const auto& volume) { return volume == nullptr; }),
+                          "CMFD logical-volume overlay contains a null logical volume.");
+
+  std::map<uint64_t, OverlayKey> local_cell_keys;
+  std::size_t local_unassigned = 0;
+  std::size_t local_overlapping = 0;
+  for (const auto& cell : grid.GetLocalCells())
+  {
+    uint64_t region_id = 0;
+    std::size_t num_matches = 0;
+    for (std::size_t i = 0; i < logical_volumes.size(); ++i)
+      if (logical_volumes[i]->Inside(cell->centroid))
+      {
+        if (num_matches == 0)
+          region_id = i;
+        ++num_matches;
+      }
+
+    if (num_matches == 0)
+      ++local_unassigned;
+    else if (num_matches > 1)
+      ++local_overlapping;
+    else
+      local_cell_keys[cell->global_id] = region_id;
+  }
+  ThrowIfAnyRankCounted(local_unassigned, "fine cells are not assigned to a logical-volume region");
+  ThrowIfAnyRankCounted(local_overlapping,
+                        "fine cells are assigned to multiple logical-volume regions");
+
+  return BuildOverlay(grid, local_cell_keys);
+}
+
+CMFDCoarseMesh
+CMFDCoarseMesh::BuildCartesianOverlay(const Mesh& grid,
+                                      const std::vector<double>& x_edges,
+                                      const std::vector<double>& y_edges,
+                                      const std::vector<double>& z_edges)
+{
+  OpenSnInvalidArgumentIf(x_edges.empty() and y_edges.empty() and z_edges.empty(),
+                          "CMFD Cartesian overlay requires at least one nonempty edge array.");
+  ValidateCartesianEdges(x_edges, "x_edges");
+  ValidateCartesianEdges(y_edges, "y_edges");
+  ValidateCartesianEdges(z_edges, "z_edges");
+
+  const auto nx = x_edges.empty() ? std::size_t{1} : x_edges.size() - 1;
+  const auto ny = y_edges.empty() ? std::size_t{1} : y_edges.size() - 1;
+  const auto nz = z_edges.empty() ? std::size_t{1} : z_edges.size() - 1;
+  OpenSnInvalidArgumentIf(nx > std::numeric_limits<uint64_t>::max() / ny or
+                            nx * ny > std::numeric_limits<uint64_t>::max() / nz,
+                          "CMFD Cartesian overlay region count exceeds uint64_t range.");
+
+  std::map<uint64_t, OverlayKey> local_cell_keys;
+  std::size_t local_unassigned = 0;
+  for (const auto& cell : grid.GetLocalCells())
+  {
+    const auto ix = FindCartesianInterval(cell->centroid.x, x_edges);
+    const auto iy = FindCartesianInterval(cell->centroid.y, y_edges);
+    const auto iz = FindCartesianInterval(cell->centroid.z, z_edges);
+    if (not ix or not iy or not iz)
+    {
+      ++local_unassigned;
+      continue;
+    }
+    local_cell_keys[cell->global_id] = (*iz * ny + *iy) * nx + *ix;
+  }
+  ThrowIfAnyRankCounted(local_unassigned,
+                        "fine cells are not assigned to a Cartesian overlay region");
+  auto coarse_mesh = BuildOverlay(grid, local_cell_keys);
+  coarse_mesh.overlay_diagnostics_ =
+    ComputeCartesianOverlayDiagnostics(grid, {&x_edges, &y_edges, &z_edges});
+  return coarse_mesh;
+}
+
+CMFDCoarseMesh
+CMFDCoarseMesh::BuildOverlay(const Mesh& grid, const std::map<uint64_t, uint64_t>& local_cell_keys)
+{
+  OpenSnLogicalErrorIf(local_cell_keys.size() != grid.GetLocalCells().size(),
+                       "CMFD overlay key count does not match the local fine-cell count.");
+
+  // Build rank-local connected fragments. A final overlay cell can span ranks, but constructing
+  // connected fragments first lets BuildExteriorFaces use only locally available fine cells.
+  CMFDCoarseMesh provisional;
+  std::vector<uint64_t> local_region_ids;
+  std::set<uint64_t> assigned;
+  std::size_t local_degenerate_cells = 0;
+  for (const auto& seed_cell : grid.GetLocalCells())
+  {
+    if (assigned.count(seed_cell->global_id) > 0)
+      continue;
+
+    const auto seed_key = local_cell_keys.at(seed_cell->global_id);
+    CMFDCoarseCell fragment;
+    fragment.partition_id = opensn::mpi_comm.rank();
+    // Overlay cells may contain several materials. Their transport coefficients are
+    // homogenized by CMFDAcceleration instead of being selected through this diagnostic ID.
+    fragment.block_id = 0;
+
+    std::deque<uint64_t> queue{seed_cell->global_id};
+    assigned.insert(seed_cell->global_id);
+    while (not queue.empty())
+    {
+      const auto fine_cell_id = queue.front();
+      queue.pop_front();
+      const auto& fine_cell = grid.GetGlobalCell(fine_cell_id);
+      fragment.fine_cell_ids.push_back(fine_cell_id);
+      fragment.volume += fine_cell.volume;
+      fragment.centroid += fine_cell.centroid * fine_cell.volume;
+
+      for (const auto& face : fine_cell.faces)
+      {
+        if (not face.has_neighbor or not grid.IsCellLocal(face.neighbor_id) or
+            assigned.count(face.neighbor_id) > 0)
+          continue;
+        if (local_cell_keys.at(face.neighbor_id) != seed_key)
+          continue;
+        assigned.insert(face.neighbor_id);
+        queue.push_back(face.neighbor_id);
+      }
+    }
+
+    if (fragment.volume <= 0.0)
+      ++local_degenerate_cells;
+    else
+      fragment.centroid = fragment.centroid / fragment.volume;
+    local_region_ids.push_back(seed_key);
+    provisional.AddLocalCell(std::move(fragment));
+  }
+  ThrowIfAnyRankCounted(local_degenerate_cells, "overlay fragments have non-positive volume");
+
+  const auto provisional_extents =
+    BuildLocationExtents(provisional.local_cells_.size(), opensn::mpi_comm);
+  provisional.num_global_cells_ = provisional_extents.back();
+  provisional.fine_to_coarse_cell_.clear();
+  provisional.local_fine_cell_memberships_.clear();
+  provisional.coarse_to_local_cell_.clear();
+  for (auto& fragment : provisional.local_cells_)
+  {
+    fragment.global_id = provisional_extents[opensn::mpi_comm.rank()] + fragment.local_id;
+    provisional.coarse_to_local_cell_[fragment.global_id] = fragment.local_id;
+    for (const auto fine_cell_id : fragment.fine_cell_ids)
+      provisional.AddLocalFineCellMembership(
+        fine_cell_id, fragment.global_id, fragment.partition_id);
+  }
+  provisional.BuildExteriorFaces(grid);
+
+  const auto topology = GatherOverlayFragmentTopology(provisional, local_region_ids);
+  std::map<uint64_t, const OverlayFragmentNode*> node_of;
+  std::map<OverlayKey, std::vector<uint64_t>> fragments_by_key;
+  for (const auto& node : topology)
+  {
+    node_of[node.global_id] = &node;
+    fragments_by_key[node.key].push_back(node.global_id);
+  }
+
+  // Split each logical-volume region into global face-connected components. Including the
+  // minimum fine-cell global ID in the component key makes final numbering independent of how
+  // those components were split into rank-local fragments.
+  std::map<OverlayComponentKey, std::vector<uint64_t>> fragments_by_component;
+  for (const auto& [key, fragment_ids] : fragments_by_key)
+  {
+    std::set<uint64_t> remaining(fragment_ids.begin(), fragment_ids.end());
+    while (not remaining.empty())
+    {
+      std::vector<uint64_t> component;
+      std::deque<uint64_t> queue{*remaining.begin()};
+      remaining.erase(queue.front());
+      uint64_t minimum_fine_cell_id = std::numeric_limits<uint64_t>::max();
+      while (not queue.empty())
+      {
+        const auto id = queue.front();
+        queue.pop_front();
+        component.push_back(id);
+        minimum_fine_cell_id = std::min(minimum_fine_cell_id, node_of.at(id)->minimum_fine_cell_id);
+        for (const auto neighbor_id : node_of.at(id)->neighbor_ids)
+        {
+          const auto neighbor_it = node_of.find(neighbor_id);
+          if (neighbor_it == node_of.end() or neighbor_it->second->key != key or
+              remaining.count(neighbor_id) == 0)
+            continue;
+          remaining.erase(neighbor_id);
+          queue.push_back(neighbor_id);
+        }
+      }
+      fragments_by_component[{key, minimum_fine_cell_id}] = std::move(component);
+    }
+  }
+
+  std::vector<OverlayComponentKey> final_keys;
+  final_keys.reserve(fragments_by_component.size());
+  for (const auto& [key, _] : fragments_by_component)
+    final_keys.push_back(key);
+
+  std::map<uint64_t, uint64_t> final_id_of_fragment;
+  std::vector<FinalNodeSummary> final_summaries(final_keys.size());
+  for (std::size_t final_id = 0; final_id < final_keys.size(); ++final_id)
+  {
+    const auto& fragment_ids = fragments_by_component.at(final_keys[final_id]);
+    const OverlayFragmentNode* owner = nullptr;
+    double volume = 0.0;
+    Vector3 weighted_centroid;
+    for (const auto fragment_id : fragment_ids)
+    {
+      const auto& node = *node_of.at(fragment_id);
+      final_id_of_fragment[fragment_id] = final_id;
+      volume += node.volume;
+      weighted_centroid += node.centroid * node.volume;
+      if (owner == nullptr or node.minimum_fine_cell_id < owner->minimum_fine_cell_id)
+        owner = &node;
+    }
+    OpenSnLogicalErrorIf(owner == nullptr or volume <= 0.0,
+                         "Invalid CMFD logical-volume overlay cell.");
+    final_summaries[final_id] = {owner->partition_id, 0, volume, weighted_centroid / volume};
+  }
+
+  std::map<int, std::vector<uint64_t>> fragment_requests;
+  for (std::size_t final_id = 0; final_id < final_keys.size(); ++final_id)
+  {
+    const auto owner_rank = final_summaries[final_id].partition_id;
+    if (owner_rank != opensn::mpi_comm.rank())
+      continue;
+    for (const auto fragment_id : fragments_by_component.at(final_keys[final_id]))
+      if (node_of.at(fragment_id)->partition_id != opensn::mpi_comm.rank())
+        fragment_requests[node_of.at(fragment_id)->partition_id].push_back(fragment_id);
+  }
+  const auto fetched_fragments = FetchProvisionalCoarseCells(provisional, fragment_requests);
+
+  CMFDCoarseMesh coarse_mesh;
+  coarse_mesh.num_global_cells_ = final_keys.size();
+  for (std::size_t final_id = 0; final_id < final_keys.size(); ++final_id)
+  {
+    const auto& summary = final_summaries[final_id];
+    if (summary.partition_id != opensn::mpi_comm.rank())
+      continue;
+
+    CMFDCoarseCell final_cell;
+    final_cell.global_id = final_id;
+    final_cell.partition_id = summary.partition_id;
+    final_cell.block_id = summary.block_id;
+    final_cell.volume = summary.volume;
+    final_cell.centroid = summary.centroid;
+    std::map<CoarseFaceKey, CMFDCoarseFace> face_map;
+
+    for (const auto fragment_id : fragments_by_component.at(final_keys[final_id]))
+    {
+      const auto& node = *node_of.at(fragment_id);
+      const auto& fragment = node.partition_id == opensn::mpi_comm.rank()
+                               ? provisional.LocalCellFromGlobalID(fragment_id)
+                               : fetched_fragments.at(fragment_id);
+      final_cell.fine_cell_ids.insert(final_cell.fine_cell_ids.end(),
+                                      fragment.fine_cell_ids.begin(),
+                                      fragment.fine_cell_ids.end());
+
+      for (auto face : fragment.faces)
+      {
+        if (face.has_neighbor)
+        {
+          const auto neighbor_final_id = final_id_of_fragment.at(face.neighbor_id);
+          if (neighbor_final_id == final_id)
+            continue;
+          const auto& neighbor_summary = final_summaries.at(neighbor_final_id);
+          face.neighbor_id = neighbor_final_id;
+          face.neighbor_partition_id = neighbor_summary.partition_id;
+          face.neighbor_block_id = neighbor_summary.block_id;
+          face.neighbor_centroid = neighbor_summary.centroid;
+        }
+        else
+        {
+          face.neighbor_partition_id = final_cell.partition_id;
+          face.neighbor_block_id = final_cell.block_id;
+          face.neighbor_centroid = final_cell.centroid;
+        }
+
+        const auto face_key = MakeCoarseFaceKey(face.has_neighbor, face.neighbor_id, face.normal);
+        auto& accumulated = face_map[face_key];
+        if (accumulated.area == 0.0)
+        {
+          accumulated.has_neighbor = face.has_neighbor;
+          accumulated.neighbor_id = face.neighbor_id;
+          accumulated.neighbor_partition_id = face.neighbor_partition_id;
+          accumulated.neighbor_block_id = face.neighbor_block_id;
+          accumulated.neighbor_centroid = face.neighbor_centroid;
+        }
+        accumulated.normal += face.normal * face.area;
+        accumulated.centroid += face.centroid * face.area;
+        accumulated.area += face.area;
+        accumulated.fine_faces.insert(
+          accumulated.fine_faces.end(), face.fine_faces.begin(), face.fine_faces.end());
+      }
+    }
+
+    std::sort(final_cell.fine_cell_ids.begin(), final_cell.fine_cell_ids.end());
+    final_cell.faces.reserve(face_map.size());
+    for (auto& [_, face] : face_map)
+    {
+      OpenSnLogicalErrorIf(face.area <= 0.0,
+                           "CMFD logical-volume overlay face has non-positive area.");
+      face.centroid = face.centroid / face.area;
+      face.normal = face.normal.Normalized();
+      final_cell.faces.push_back(std::move(face));
+    }
+
+    final_cell.local_id = static_cast<uint32_t>(coarse_mesh.local_cells_.size());
+    coarse_mesh.coarse_to_local_cell_[final_id] = final_cell.local_id;
+    coarse_mesh.local_cells_.push_back(std::move(final_cell));
+  }
+
+  for (const auto& fine_cell : grid.GetLocalCells())
+  {
+    const auto provisional_id = provisional.MapFineCell(fine_cell->global_id);
+    const auto final_id = final_id_of_fragment.at(provisional_id);
+    coarse_mesh.AddLocalFineCellMembership(
+      fine_cell->global_id, final_id, final_summaries[final_id].partition_id);
+  }
   return coarse_mesh;
 }
 

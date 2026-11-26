@@ -647,7 +647,13 @@ coarse face :math:`f` is formed by merging all fine faces
 between the same pair of coarse cells, or between a coarse cell and the
 same boundary id. The coarse-face area, centroid, normal, neighbor id,
 and neighbor material data are computed from the underlying fine faces.
-The aggregated coarse grid inherits the transport-mesh topology.
+The default aggregated coarse grid inherits the transport-mesh topology.
+Logical-volume, Cartesian and reactor-lattice overlays instead assign each
+fine cell to a user-defined region by its centroid. A region is split into its
+face-connected parts, may contain several materials and may span MPI ranks.
+Its interfaces are still built from the underlying fine faces, so the coarse
+net currents are sums of transport face currents even where the region
+boundary does not follow a mesh plane.
 
 This section describes the method at the level used by OpenSn rather
 than as pseudocode for the implementation. The important implementation
@@ -944,8 +950,7 @@ This uncorrected diffusion current is cheap and compact, but, by itself,
 is not guaranteed to equal the net current produced by the high-order
 transport sweep.
 Traditional CMFD fixes this by adding a nonlinear current correction
-:cite:t:`openmoc_cmfd`.
-OpenSn writes the corrected current in the form
+:cite:t:`openmoc_cmfd`. In the net-current form of standard CMFD, the corrected current is
 
 .. math::
 
@@ -992,8 +997,8 @@ neighbor's opposing outflow. If the neighbor cell is on another MPI rank,
 the needed neighbor outflow is exchanged before the CMFD operator is
 assembled.
 
-OpenSn also implements the partial-current CMFD (pCMFD) closure of
-:cite:t:`cho2003pcmfd`. Let :math:`P_{I\rightarrow J,g_c}` be the restricted
+OpenSn uses the partial-current CMFD (pCMFD) closure of :cite:t:`cho2003pcmfd`
+instead. Let :math:`P_{I\rightarrow J,g_c}` be the restricted
 outgoing partial current from coarse cell :math:`I` through the face shared
 with :math:`J`, and let :math:`P_{J\rightarrow I,g_c}` be the opposing outgoing
 partial current from :math:`J`. Each partial current is modeled with half of
@@ -1039,19 +1044,30 @@ multiplying :math:`\Phi_{J,g_c}` is
 this form reproduces the latest transport net current, so the CMFD fixed point
 is unchanged. It differs in how the coarse operator responds to a change of the
 coarse flux: the diffusion coupling is retained in both one-sided currents. If
-either one-sided scalar flux is too small, or if the resulting coefficients are
-not finite, the partial-current closure is not used on that face.
+either one-sided scalar flux is below :math:`10^{-14}` times the largest coarse flux of its
+coarse group, or if the resulting coefficients are not finite, the face uses the diffusion
+coupling without the current correction. OpenSn counts these faces and warns once.
 
-The partial-current closure is the default. The net-current closure, as in
-standard CMFD, can make the coarse correction oscillate or diverge when the
-coarse cells are optically thick. The partial-current closure remains stable
-with a full (unrelaxed) correction over a much wider range of coarse-cell
-optical thickness. Dropping the diffusion coupling from the partial currents,
+The closure divides by the restricted coarse fluxes. Where a discontinuous transport solution
+dips below zero, typically deep in a reflector, a restricted flux :math:`\Phi_{I,g_c}` can be
+negative, and the corrections would then give the coarse operator entries of the wrong sign. Such
+a coarse value is held in the coarse solve: its row is replaced by
+:math:`\Phi_{I,g_c} = s\,\Phi^{\text{HO}}_{I,g_c}`, where
+:math:`s = P(\Phi)/P(\Phi^{\text{HO}})` is the production of the coarse iterate relative to the
+transport iterate, so the coarse problem stays homogeneous in its iterate. A free neighbor
+:math:`J` models its outgoing partial current into :math:`I` by the ratio
+:math:`(P_{J\rightarrow I,g_c}/\Phi^{\text{HO}}_{J,g_c})\,\Phi_{J,g_c}` and receives
+:math:`s\,P_{I\rightarrow J,g_c}` as a source. At the transport solution, :math:`s = 1` and both
+reproduce the transport partial currents, so the fixed point is unchanged. The Wielandt shift
+skips held rows.
+
+The net-current closure, as in standard CMFD, can make the coarse correction oscillate or
+diverge when the coarse cells are optically thick. The partial-current closure remains stable
+with a full (unrelaxed) correction over a much wider range of coarse-cell optical thickness,
+and it was never slower in OpenSn's tests, so it is the only closure OpenSn implements. Dropping the diffusion coupling from the partial currents,
 which reduces the closure to partial-current coarse-mesh rebalance, is not
 equivalent: rebalance can diverge on optically thin coarse cells unless the
-correction is strongly relaxed. If the partial-current coefficients cannot be
-formed on a face (an adjacent coarse flux is essentially zero), that face uses
-the diffusion coupling without the current correction. The closure affects
+correction is strongly relaxed. The closure affects
 only the CMFD operator; it does not alter the high-order transport equation.
 
 This current matching is what distinguishes CMFD from simply solving an
@@ -1077,33 +1093,21 @@ boundaries are exchanged, the transport net currents are reconstructed,
 and the nonlinear CMFD operator is reassembled before solving the coarse
 problem.
 
-Two residuals are used to characterize the coarse balance. The
-assembled-operator residual is
+Two residuals characterize the coarse balance. The assembled-operator residual is
 
 .. math::
 
    r_A = A(\Phi^{\text{HO}})\Phi^{\text{HO}}
          - \frac{1}{k}F(\Phi^{\text{HO}})\Phi^{\text{old}},
 
-where :math:`A` includes the selected current closure. The
-transport-current residual has the same removal, scattering, and fission
-terms, but replaces the matrix face currents by the directly restricted
-transport currents. OpenSn normalizes the Euclidean norm of each residual
-by the Euclidean norm of the corresponding fission right-hand side. The
-transport-current residual is the consistency gate used by the
-accelerated power iteration: the outer iteration is not allowed to
-declare convergence until this restricted transport-current balance is
-sufficiently small and the current CMFD correction has not been skipped.
-
-What counts as "sufficiently small" is user-selectable via a fixed
-transport-current residual tolerance, against which the outer iteration is
-gated directly. Because the achievable residual floor depends on the
-coarse-mesh construction and current closure, and is not known in advance,
-a value that is too tight can force iterations well past the point where
-the eigenvalue has already reached the requested accuracy; a value that is
-too loose can let the outer iteration declare convergence before the
-low-order correction is actually consistent with transport. Either way,
-the gate also requires the current correction to not have been skipped.
+where :math:`A` includes the current closure. The transport-current residual has the same
+removal, scattering, and fission terms, but replaces the matrix face currents by the directly
+restricted transport currents. OpenSn normalizes the Euclidean norm of each residual by the
+Euclidean norm of the corresponding fission right-hand side and reports both with
+``verbose=True``. They are diagnostics: the power iteration decides convergence with its
+eigenvalue and fission-source tests, which do not depend on the coarse mesh. CMFD only withholds
+convergence after an update whose correction was skipped, because such an update is
+unaccelerated.
 
 Matrix form and coarse solve
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1123,27 +1127,53 @@ stored contiguously. The spatial off-diagonal entries couple neighboring
 coarse cells in the same coarse group; the cell-local block couples
 coarse groups through scattering and fission production.
 
-OpenSn solves the coarse k-eigenvalue problem with a small number of
-coarse power iterations. The coarse operator is fixed during these
-iterations; it is assembled from the latest high-order transport
-iterate. Each coarse power iteration solves
+OpenSn solves the coarse k-eigenvalue problem with a power iteration that is unshifted at first
+and Wielandt-shifted after. The coarse operator is fixed during these iterations; it is
+assembled from the latest high-order transport iterate. With a shift :math:`k_s`, each iteration
+solves
 
 .. math::
 
-   A\Phi^{(m+1)}
+   \left(A - \frac{1}{k_s}F\right)\Phi^{(m+1)}
    =
-   \frac{1}{k^{(m)}}F\Phi^{(m)}
+   \left(\frac{1}{k^{(m)}} - \frac{1}{k_s}\right)F\Phi^{(m)} ,
 
-with a PETSc linear solver. Small coarse systems use a direct LU solve
-when the automatic coarse-solver policy selects the direct path. Larger
-coarse systems use GMRES preconditioned with algebraic multigrid (hypre
-BoomerAMG) unless another PETSc configuration is supplied; an iterative solve
-converges when either a relative or an absolute residual tolerance is met. Iterative coarse solves are initialized
-with the latest restricted transport scalar flux. If any coarse linear
-solve fails to converge, the low-order correction from that outer
-iteration is not applied. In the automatic coarse-solver policy, an
-unconverged iterative coarse solve on a small enough system switches
-subsequent coarse solves to the direct path.
+which converges by :math:`(1/k_0 - 1/k_s)/(1/k_1 - 1/k_s)` per iteration instead of by the
+dominance ratio :math:`k_1/k_0`, which is close to one in large problems. It converges to the
+fundamental mode only if :math:`k_s` is above the fundamental eigenvalue :math:`k_0`; below it,
+the iteration converges to another mode. The estimate from a poor transport iterate, as in early
+updates, can be far below :math:`k_0`. So the iteration starts unshifted (:math:`k_s = \infty`),
+which converges to the fundamental mode from any start. After at least three iterations, once
+the extrapolated error of the estimate, its relative change divided by :math:`1-\rho`, is below
+half the margin, OpenSn sets :math:`k_s = 1.05\,k`. It raises :math:`k_s` whenever the estimate
+comes within half that margin, so the shifted operator stays nonsingular. The iteration stops
+when the change of the production-normalized coarse flux, divided by :math:`1-\rho` with :math:`\rho` its
+estimated convergence rate, and the relative change of :math:`k` are both below
+:math:`\min(10^{-6},\,10^{-2}\,\delta)` and :math:`\min(10^{-8},\,10^{-2}\,\delta)`, where
+:math:`\delta` is the relative change that the transport update made to the normalized coarse
+flux. A fixed tolerance would add an error of its size to every correction and stall the outer
+iteration once its own error reached that level. At most 1000 iterations are done. A coarse solve
+that reaches that limit, or whose production or eigenvalue is not a positive finite number, gives
+no correction: that update is skipped, with a one-time warning.
+
+In adjoint mode this matters early in the iteration. The forward coarse operator is diagonally
+dominant by columns in space and in energy, because removal covers out-scattering, so it is an
+M-matrix whatever the closure. In adjoint mode the scattering is transposed, and a group's
+adjoint out-scattering is its forward in-scattering, which can exceed its removal. The closure
+of a poor early transport iterate can then give a coarse operator without a positive fundamental
+mode, and its power iteration does not converge.
+
+The shifted iteration changes the amplitude of the coarse solution, so OpenSn rescales it to the
+amplitude the unshifted iteration would reach.
+
+The coarse linear solves use a PETSc direct LU factorization (SuperLU_DIST or MUMPS) when
+the estimated memory of the factorization, from the nested-dissection fill of the coarse
+graph, is at most 1 GiB per MPI rank, and FGMRES with an additive Schwarz preconditioner and
+ILU(0) subdomain solves otherwise. Algebraic multigrid is not used, because signed transport
+iterates can make the coarse operator lose the M-matrix property and AMG then reports
+convergence for a wrong solution. A coarse solve is accepted only if its true residual is
+small. If any coarse linear solve fails, the correction from that outer iteration is not
+applied.
 
 The updated coarse eigenvalue is computed from the ratio of coarse
 fission production rates. Define
@@ -1167,30 +1197,13 @@ Then
 
 The production sum is reduced globally over all MPI ranks.
 
-Prolongation and damping
-~~~~~~~~~~~~~~~~~~~~~~~~
+Prolongation and admissibility
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-After the coarse solve, OpenSn applies a multiplicative scalar-flux
-correction to the high-order transport iterate. First, the coarse
-solution is relaxed toward the restricted post-transport coarse flux.
-If :math:`\Phi^{\text{HO}}_{I,g_c}` is the restricted scalar flux after
-the transport update and :math:`\Phi^{\text{CMFD}}_{I,g_c}` is the
-coarse solution, the candidate corrected coarse flux is
-
-.. math::
-
-   \Phi^{\text{corr}}_{I,g_c}
-   =
-   \Phi^{\text{HO}}_{I,g_c}
-   +
-   \omega
-   \left(\Phi^{\text{CMFD}}_{I,g_c}-\Phi^{\text{HO}}_{I,g_c}\right),
-
-where :math:`\omega` is the current damping factor. The starting damping
-factor is the configured relaxation factor. If a candidate correction is
-not admissible, the damping factor is halved and the correction is
-retried until either an admissible correction is found or the damping
-attempts are exhausted.
+After the coarse solve, OpenSn applies a multiplicative scalar-flux correction to the
+high-order transport iterate. If :math:`\Phi^{\text{HO}}_{I,g_c}` is the restricted scalar flux
+after the transport update and :math:`\Phi^{\text{CMFD}}_{I,g_c}` is the coarse solution, the
+correction is unrelaxed, :math:`\Phi^{\text{corr}}_{I,g_c} = \Phi^{\text{CMFD}}_{I,g_c}`.
 
 For every fine cell and node inside coarse cell :math:`I`, and for every
 fine transport group :math:`g_f` belonging to coarse group :math:`g_c`,
@@ -1205,18 +1218,19 @@ the accepted candidate is prolonged as a ratio:
         {\Phi^{\text{HO}}_{I,g_c}} .
 
 If :math:`\Phi^{\text{HO}}_{I,g_c}` is too small, the ratio is taken to
-be one. A candidate correction is rejected if it produces non-finite
-scalar fluxes or a non-finite or non-positive k-eigenvalue, or if any
-other ratio is non-finite or non-positive. Such a ratio would change the
-sign of the scalar flux in coarse cell :math:`I` and coarse group
-:math:`g_c`; negative values already present in
-:math:`\phi^{\text{HO}}` are only rescaled. Damping moves every ratio
-toward one, so a sufficiently damped correction passes this check. If no
-acceptable correction is
-found, OpenSn keeps the unaccelerated transport update for that outer
-iteration. The starting damping factor is fixed from one outer iteration
-to the next; there is no adaptive relaxation history in the current
-implementation.
+be one. A non-finite or negative ratio would change the sign of the scalar flux in coarse cell
+:math:`I` and coarse group :math:`g_c`, and where :math:`\Phi^{\text{HO}}_{I,g_c}` is itself
+negative a positive ratio of two negative values can be large and would amplify the negative
+fine flux. Such a coarse value instead keeps the transport flux,
+:math:`\Phi^{\text{corr}}_{I,g_c} = (k^{\text{CMFD}}/k^{\text{HO}})\,\Phi^{\text{HO}}_{I,g_c}`,
+scaled to the amplitude of the coarse solution, so its ratio is
+:math:`k^{\text{CMFD}}/k^{\text{HO}}`. All ratios tend to one at convergence, so the fixed point
+is unchanged.
+The whole correction is skipped, keeping the unaccelerated transport update for that outer
+iteration, if it produces non-finite scalar fluxes or a non-finite or non-positive k-eigenvalue.
+The correction is not damped: damping never reduced the number of iterations in OpenSn's tests,
+and it moves every value toward the transport iterate, where the local fallback moves only the
+values that need it.
 
 The eigenvalue returned to the outer power iteration is consistent with
 the accepted fine-mesh scalar flux. OpenSn computes the old fine-mesh
@@ -1238,10 +1252,8 @@ iteration:
 #. The previous fine-mesh scalar flux is restricted to the CMFD mesh.
    This gives the coarse reference state for the new outer iteration.
 #. The transport solver advances the high-order problem through the
-   normal across-groupset process. The CMFD accelerator sets the
-   within-groupset iteration controls used for this transport update, so
-   the transport step can be a deliberately loose update rather than a
-   fully converged inner solve.
+   normal across-groupset process with ``sweeps_per_update`` within-group iterations (one by
+   default) rather than a converged inner solve.
 #. The new all-groups scalar flux is restricted to the CMFD mesh. The
    fine-group restricted flux is used for cross-section condensation, and
    the coarse-group restricted flux defines the current CMFD iterate.
@@ -1250,16 +1262,18 @@ iteration:
    low-order current agree with the high-order current at the current
    iterate.
 #. The nonlinear CMFD operator is assembled from the condensed material
-   data, TPFA diffusion coupling, boundary leakage treatment, and
-   selected transport-current closure.
-#. A small number of coarse power iterations solves the low-order
-   k-eigenvalue problem.
-#. The coarse solution is damped if needed, prolonged as a multiplicative
-   ratio to the fine-mesh scalar flux, and checked for admissibility.
-#. The accepted fine-mesh scalar flux and corresponding fission-production
-   ratio define the next power-iteration state. The restricted
-   transport-current balance residual determines whether CMFD permits the
-   outer power iteration to declare convergence.
+   data, TPFA diffusion coupling, boundary leakage treatment, and the
+   partial-current closure.
+#. A coarse power iteration, unshifted until its eigenvalue estimate is reliable and
+   Wielandt-shifted after, solves the low-order k-eigenvalue problem to a tolerance relative to
+   the transport change. A coarse solve that does not converge to a positive, finite production
+   and eigenvalue within 1000 iterations gives no correction.
+#. The coarse solution is prolonged as a multiplicative ratio to the fine-mesh scalar flux,
+   unless the correction is inadmissible, in which case it is skipped.
+#. The corrected fine-mesh scalar flux and corresponding fission-production
+   ratio define the next power-iteration state. The power iteration's eigenvalue and
+   fission-source tests decide convergence; an update with a skipped correction cannot end the
+   iteration.
 
 Thus, the current implementation is not one accelerator per groupset. It
 operates after the AGS transport update for the current outer iteration
