@@ -1715,5 +1715,36 @@
       {"type": "KeyValuePair", "key": "CMFD_IRREG_CONVERGED", "goldvalue": 1, "abs_tol": 0},
       {"type": "KeyValuePair", "key": "CMFD_IRREG_K_ERR", "goldvalue": 0, "abs_tol": 2e-08}
     ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_4g_energy_deposition_data_only.py",
+    "comment": "ENERGY_DEPOSITION in OpenSn cross-section files is data only: a 1D four-group (two neutron, two photon groups) fuel-reflector slab solved by power iteration from files with and without the section gives the same k, flux moments and iteration count, and the energy_deposition field function equals sum_g ED_g phi_g in each region",
+    "num_procs": 1,
+    "checks": [
+      {"type": "KeyValuePair", "key": "KHET_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-14},
+      {"type": "KeyValuePair", "key": "KHET_PHI_MAX_REL_DIFF=", "goldvalue": 0, "abs_tol": 1e-14},
+      {"type": "KeyValuePair", "key": "KHET_ITS_DIFF=", "goldvalue": 0, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_FUEL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_REFL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_ABSENT_MAX=", "goldvalue": 0, "abs_tol": 0}
+    ]
+  },
+  {
+    "file": "keigenvalue_transport_1d_4g_energy_deposition_data_only.py",
+    "comment": "Same as keigenvalue_transport_1d_4g_energy_deposition_data_only on two ranks with deterministic sweeps, so k and the flux moments agree bitwise",
+    "outfileprefix": "keigenvalue_transport_1d_4g_energy_deposition_data_only_np2",
+    "num_procs": 2,
+    "args": [
+      "deterministic_sweeps=True"
+    ],
+    "checks": [
+      {"type": "KeyValuePair", "key": "KHET_DETERMINISTIC_SWEEPS=", "goldvalue": 1, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_K_REL_DIFF=", "goldvalue": 0, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_PHI_MAX_REL_DIFF=", "goldvalue": 0, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_ITS_DIFF=", "goldvalue": 0, "abs_tol": 0},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_FUEL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_REFL_REL_ERR=", "goldvalue": 0, "abs_tol": 1e-12},
+      {"type": "KeyValuePair", "key": "KHET_EDEP_ABSENT_MAX=", "goldvalue": 0, "abs_tol": 0}
+    ]
   }
 ]

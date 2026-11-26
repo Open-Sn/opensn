@@ -3270,5 +3270,68 @@
         "abs_tol": 1e-08
       }
     ]
+  },
+  {
+    "file": "transport_1d_energy_deposition_native_xs.py",
+    "comment": "1D infinite medium (reflecting slab), neutron and photon groups, ENERGY_DEPOSITION read from an OpenSn cross-section file: the energy_deposition field function integral (0.35) and average (0.035) and the group fluxes (2, 7.5) against the exact values, within 1e-10 of each",
+    "num_procs": 1,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_INTEGRAL=",
+        "goldvalue": 0.35,
+        "abs_tol": 3.5e-11
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_AVG=",
+        "goldvalue": 0.035,
+        "abs_tol": 3.5e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_0_AVG=",
+        "goldvalue": 2.0,
+        "abs_tol": 2e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_1_AVG=",
+        "goldvalue": 7.5,
+        "abs_tol": 7.5e-10
+      }
+    ]
+  },
+  {
+    "file": "transport_1d_energy_deposition_native_xs.py",
+    "comment": "Same as transport_1d_energy_deposition_native_xs on two ranks",
+    "outfileprefix": "transport_1d_energy_deposition_native_xs_np2",
+    "num_procs": 2,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_INTEGRAL=",
+        "goldvalue": 0.35,
+        "abs_tol": 3.5e-11
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "EDEP_AVG=",
+        "goldvalue": 0.035,
+        "abs_tol": 3.5e-12
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_0_AVG=",
+        "goldvalue": 2.0,
+        "abs_tol": 2e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "PHI_1_AVG=",
+        "goldvalue": 7.5,
+        "abs_tol": 7.5e-10
+      }
+    ]
   }
 ]

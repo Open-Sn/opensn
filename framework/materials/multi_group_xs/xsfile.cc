@@ -7,6 +7,7 @@
 #include "framework/logging/log.h"
 #include "framework/utils/caliper_scopes.h"
 
+#include <cctype>
 #include <cmath>
 #include <unordered_set>
 
@@ -223,6 +224,19 @@ XSFile::Read()
           nu_sigma_f_.clear();
         }
       } // if nu_sigma_f
+
+      //
+      // Read energy deposition data
+      //
+
+      if (fw == "ENERGY_DEPOSITION_BEGIN")
+      {
+        require_num_groups();
+        mark_unique_section("ENERGY_DEPOSITION");
+        Read1DData("ENERGY_DEPOSITION", energy_deposition_, num_groups_, f, ls, ln);
+        OpenSnLogicalErrorIf(not IsFiniteVector(energy_deposition_),
+                             "Energy deposition values must be finite.");
+      } // if energy_deposition
 
       //
       // Read neutrons per fission data
@@ -486,7 +500,8 @@ XSFile::Read()
         fw == "NU_DELAYED_BEGIN" or fw == "BETA_BEGIN" or fw == "CHI_BEGIN" or
         fw == "CHI_PROMPT_BEGIN" or fw == "CHI_DELAYED_BEGIN" or
         fw == "PRECURSOR_DECAY_CONSTANTS_BEGIN" or fw == "PRECURSOR_FRACTIONAL_YIELDS_BEGIN" or
-        fw == "TRANSFER_MOMENTS_BEGIN" or fw == "PRODUCTION_MATRIX_BEGIN";
+        fw == "TRANSFER_MOMENTS_BEGIN" or fw == "PRODUCTION_MATRIX_BEGIN" or
+        fw == "ENERGY_DEPOSITION_BEGIN";
       OpenSnLogicalErrorIf(not recognized and not fw.empty() and fw.front() != '#',
                            "Unknown top-level token \"" + fw + "\" encountered.");
     } // try
@@ -645,7 +660,12 @@ XSFile::Read1DData(const std::string& keyword,
         double value = 0.0;
         try
         {
-          i = static_cast<std::size_t>(std::stoul(first_token));
+          // The index must be the whole token: no sign, no fraction.
+          OpenSnLogicalErrorIf(not std::isdigit(static_cast<unsigned char>(first_token.front())),
+                               "Index does not start with a digit.");
+          std::size_t pos = 0;
+          i = static_cast<std::size_t>(std::stoul(first_token, &pos));
+          OpenSnLogicalErrorIf(pos != first_token.size(), "Index is not an integer.");
           OpenSnLogicalErrorIf(not(static_cast<bool>(line_stream >> value)),
                                "Failed parsing indexed 1D data line.");
         }
