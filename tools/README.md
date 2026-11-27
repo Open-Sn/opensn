@@ -15,6 +15,7 @@ A description of the files or sub-directory is given in the table below.
 |--------------------|------------------------------------------------------------------------------------------------|
 | `lsan.supp`        | Leak sanitizer suppression file (used in git workflows)                                        |
 | `ignorelist.txt`   | List of source-level entities that should be ignored by sanitizers (used in CMakepresets.json) |
+| `check-spack-floors.cmake` | Checks that the Spack recipe's dependency floors are at least those in `cmake/OpenSnDependencyVersions.cmake` (used in git workflows) |
 
 ### Scaling Studies
 

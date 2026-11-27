@@ -4,6 +4,7 @@
 # https://www.sphinx-doc.org/en/master/usage/configuration.html
 
 import logging
+import re
 import sys
 from pathlib import Path
 
@@ -51,6 +52,16 @@ if pyopensn.__version__ != release:
     raise RuntimeError(
         f"The pyopensn build is version {pyopensn.__version__}, but VERSION.txt contains {release}"
     )
+
+# Dependency floors come from the file CMake reads, as |min_petsc| and so on.
+_floors_text = (project_dir / "cmake" / "OpenSnDependencyVersions.cmake").read_text()
+_floor_lines = re.findall(r"^\s*set\(OPENSN_MIN_", _floors_text, re.MULTILINE)
+_floors = re.findall(r"^set\(OPENSN_MIN_(\w+)_VERSION ([0-9.]+)\)", _floors_text, re.MULTILINE)
+if not _floors or len(_floors) != len(_floor_lines):
+    raise RuntimeError("Could not read every floor in cmake/OpenSnDependencyVersions.cmake")
+rst_prolog = "\n".join(
+    f".. |min_{name.lower()}| replace:: {version}" for name, version in _floors
+)
 
 # -- General configuration ---------------------------------------------------
 

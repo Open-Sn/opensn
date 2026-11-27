@@ -17,7 +17,7 @@ support moving meshes, and supports only Cartesian meshes.
 Building
 --------
 
-The adapter requires preCICE 3.4 or newer, built with MPI support, which is the
+The adapter requires preCICE |min_precice| or newer, built with MPI support, which is the
 preCICE default; OpenSn passes its MPI communicator to preCICE. Configure OpenSn
 with the preCICE installation on ``CMAKE_PREFIX_PATH``:
 
