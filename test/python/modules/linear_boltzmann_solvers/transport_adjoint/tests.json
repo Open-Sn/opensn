@@ -1427,9 +1427,9 @@
       },
       {
         "type": "KeyValuePair",
-        "key": "RESP_PARTITION_REJECTED=",
-        "goldvalue": 1,
-        "abs_tol": 0
+        "key": "RESP_PARTITION_REL_DIFF=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-09
       },
       {
         "type": "KeyValuePair",
@@ -1798,6 +1798,63 @@
         "key": "MODE_SWITCH_SRC_MOMENTS_ADJ_ERR=",
         "goldvalue": 0.0,
         "abs_tol": 1e-09
+      }
+    ]
+  },
+  {
+    "file": "response_2d_repartition_write.py",
+    "comment": "Writes 4-file adjoint flux-moment and angular-flux sets read on 3 ranks by response_2d_repartition_read.py",
+    "num_procs": 4,
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "REPARTITION_WRITE_DONE=",
+        "goldvalue": 1,
+        "abs_tol": 0
+      }
+    ]
+  },
+  {
+    "file": "response_2d_repartition_read.py",
+    "comment": "Boundary- and material-source adjoint responses on 3 ranks from adjoint data written on 4 ranks equal the forward QoIs",
+    "num_procs": 3,
+    "dependency": "response_2d_repartition_write.py",
+    "checks": [
+      {
+        "type": "KeyValuePair",
+        "key": "Boundary forward QoI=",
+        "goldvalue": 1.10891372e-02,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Boundary adjoint QoI=",
+        "goldvalue": 1.10891372e-02,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Boundary identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Material forward QoI=",
+        "goldvalue": 3.79593306e-03,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Material adjoint QoI=",
+        "goldvalue": 3.79593306e-03,
+        "rel_tol": 1e-6
+      },
+      {
+        "type": "KeyValuePair",
+        "key": "Material identity error=",
+        "goldvalue": 0.0,
+        "abs_tol": 1e-10
       }
     ]
   }

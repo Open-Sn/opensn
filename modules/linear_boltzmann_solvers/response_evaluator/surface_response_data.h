@@ -147,16 +147,22 @@ int SurfaceFaceOwner(const DiscreteOrdinatesProblemIO::FaceCentroidKey& key, int
  * Each file is read with `DiscreteOrdinatesProblemIO::ReadSurfaceAngularFluxes`, which does not
  * check the data against a problem. The files `<file_base>0.h5`, ...,
  * `<file_base>(N-1).h5` are found from the `num_partitions` attribute of the first file. N need not
- * equal the size of `comm`, and the data need not match the partitioning of any current mesh. File
- * k is read by rank k modulo the size of `comm`, one file per rank at a time, and its faces are
- * sent to their owner ranks (see SurfaceFaceOwner) in exchanges in which each rank sends at most
- * `max_send_bytes` packed bytes (at least one face), before the next file is read. The peak memory
- * of a rank is therefore one file's requested surfaces, as returned by the reader, plus its owned
- * faces and one exchange. A rank receives from every rank in an exchange, so its receive buffer is
- * bounded by the number of ranks times `max_send_bytes`; faces spread evenly over owners, so it is
- * typically about `max_send_bytes`. Every file must contain every requested tag, possibly
- * without faces. Any rank may read any file, so the files must be on a file system that every rank
- * of `comm` can access; `file_base` is used only by the calling rank.
+ * equal the size of `comm`, and the data need not match the partitioning of any current mesh; N
+ * must be at most INT_MAX. File k is read by rank k modulo the size P of `comm`, one file per rank
+ * at a time (see RunFileSetPasses), and its faces are sent to their owner ranks (see
+ * SurfaceFaceOwner) in exchanges in which each rank sends at most `max_send_bytes` packed bytes (at
+ * least one face), before the next file is read. The budget used is min(`max_send_bytes`,
+ * 8 * floor(INT_MAX / P)) bytes (with the default, the second term is the smaller on more than 256
+ * ranks), so that no rank receives more than the MPI int count range in one exchange while every
+ * face fits the budget. The peak memory of a rank is therefore
+ * one file's requested surfaces, as returned by the reader, plus its owned faces and one exchange.
+ * A rank receives from every rank in an exchange, so when every face fits the budget its receive
+ * buffer is bounded by P times the budget; each sender may instead send one face larger than the
+ * budget, which it sends alone. Faces spread evenly over owners, so the buffer is typically about
+ * the budget. Every file must
+ * contain every requested tag, possibly without faces. A rank may read files that other ranks
+ * wrote, so the files must be on a file system that every rank of `comm` can access, or each file
+ * staged where the rank that reads it can open it; `file_base` is used only by the calling rank.
  *
  * \param file_base File name base.
  * \param surfaces Surface names to read. Must be non-empty and unique. A boundary name reads that
@@ -169,7 +175,10 @@ int SurfaceFaceOwner(const DiscreteOrdinatesProblemIO::FaceCentroidKey& key, int
  *
  * Collective over `comm`. Throws, on all ranks, `std::invalid_argument` for invalid arguments,
  * including names that resolve to the same tag twice, and `std::logic_error` for missing,
- * inconsistent, or malformed files, for a tag with no faces in any file, and for duplicate faces.
+ * inconsistent, or malformed files, for a tag with no faces in any file, for duplicate faces, and
+ * for a rank-local failure, such as an allocation, on any rank. A rank that cannot allocate a
+ * broadcast buffer, or rebuild the broadcast surface tags, raises std::runtime_error on all
+ * ranks.
  */
 DistributedSurfaceData
 DistributeSurfaceAngularFluxes(const std::string& file_base,

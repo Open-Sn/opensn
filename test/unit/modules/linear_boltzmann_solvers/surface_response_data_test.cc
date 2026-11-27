@@ -548,6 +548,21 @@ TEST_F(SurfaceResponseDataTest, RejectsFileOfAnotherSet)
                std::logic_error);
 }
 
+TEST_F(SurfaceResponseDataTest, RejectsAnImpossibleFileCount)
+{
+  // A recorded count above INT_MAX cannot come from an MPI run, so rank 0 rejects it when it reads
+  // file 0. Without that check the read would still fail, at the first missing partition, so this
+  // test guards the rejection, not its reason.
+  auto spec = ForwardSpec();
+  spec.recorded_partitions = std::numeric_limits<std::uint64_t>::max();
+  EXPECT_THROW(DistributeSurfaceAngularFluxes(Write("huge_count", spec), ALL_TAGS, mpi_comm),
+               std::logic_error);
+  // Every rank left the read, so a following collective completes.
+  int count = 1;
+  mpi_comm.all_reduce(count, mpi::op::sum<int>());
+  EXPECT_EQ(count, mpi_comm.size());
+}
+
 TEST_F(SurfaceResponseDataTest, RejectsQuadratureDifferingAcrossFiles)
 {
   // File 3 of the five has other quadrature weights, so it was not written with the rest.

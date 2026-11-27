@@ -5,9 +5,11 @@
 
 #include "hdf5.h"
 #include <cstdint>
+#include <optional>
 #include <vector>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 namespace opensn
 {
@@ -49,6 +51,37 @@ private:
 
   hid_t file_id_ = H5I_INVALID_HID;
 };
+
+/// Closes an HDF5 identifier with `close`, such as H5Dclose, when it goes out of scope.
+class H5IdGuard
+{
+public:
+  H5IdGuard(const hid_t id, herr_t (*close)(hid_t)) : id_(id), close_(close) {}
+
+  H5IdGuard(const H5IdGuard&) = delete;
+  H5IdGuard& operator=(const H5IdGuard&) = delete;
+  H5IdGuard(H5IdGuard&&) = delete;
+  H5IdGuard& operator=(H5IdGuard&&) = delete;
+
+  ~H5IdGuard()
+  {
+    if (id_ >= 0)
+      close_(id_);
+  }
+
+  hid_t Id() const { return id_; }
+
+private:
+  hid_t id_;
+  herr_t (*close_)(hid_t);
+};
+
+/// Name of file `partition` of a set written one file per rank: `<file_base><partition>.h5`.
+inline std::string
+PartitionFileName(const std::string& file_base, const std::uint64_t partition)
+{
+  return file_base + std::to_string(partition) + ".h5";
+}
 
 template <typename T>
 hid_t get_datatype();
@@ -251,80 +284,79 @@ H5CreateAttribute(hid_t id, const std::string& name, const T& data)
   return success;
 }
 
+/**
+ * Read the 1D dataset `name`, or, if no link of that name exists, the attribute `name`, into
+ * `data`. If `expected_size` is given, an extent of any other size is rejected before `data` is
+ * allocated. Returns false, with `data` empty, if the link is not a readable 1D dataset of the
+ * expected size, or, without a link, if the attribute cannot be read. The HDF5 identifiers it opens
+ * are closed even when allocating `data` throws.
+ */
 template <typename T>
 bool
-H5ReadDataset1D(hid_t id, const std::string& name, std::vector<T>& data)
+H5ReadDataset1D(hid_t id,
+                const std::string& name,
+                std::vector<T>& data,
+                const std::optional<std::uint64_t> expected_size = std::nullopt)
 {
   static_assert(
     !std::is_same_v<T, bool>,
     "H5ReadDataset1D does not support std::vector<bool>. Use std::vector<unsigned char>.");
 
-  bool success = false;
-
   data.clear();
-
-  auto dataset = H5Dopen2(id, name.c_str(), H5P_DEFAULT);
-  if (dataset != H5I_INVALID_HID)
+  const auto size_is_valid = [&](const hssize_t npoints)
   {
-    auto dataspace = H5Dget_space(dataset);
-    if (dataspace != H5I_INVALID_HID)
+    return npoints >= 0 and
+           (not expected_size.has_value() or std::cmp_equal(npoints, *expected_size));
+  };
+
+  // A dataset of that name is read or rejected; the attribute is read only if there is none, so
+  // a dataset of the wrong size is never replaced by an attribute of the same name.
+  if (H5Lexists(id, name.c_str(), H5P_DEFAULT) > 0)
+  {
+    const H5IdGuard dataset(H5Dopen2(id, name.c_str(), H5P_DEFAULT), H5Dclose);
+    if (dataset.Id() != H5I_INVALID_HID)
     {
-      const int rank = H5Sget_simple_extent_ndims(dataspace);
-      if (rank == 1)
+      const H5IdGuard dataspace(H5Dget_space(dataset.Id()), H5Sclose);
+      if (dataspace.Id() != H5I_INVALID_HID and H5Sget_simple_extent_ndims(dataspace.Id()) == 1)
       {
-        const auto npoints = H5Sget_simple_extent_npoints(dataspace);
-        if (npoints >= 0)
+        const auto npoints = H5Sget_simple_extent_npoints(dataspace.Id());
+        if (size_is_valid(npoints))
         {
           data.resize(static_cast<size_t>(npoints));
           if (npoints == 0 or
-              H5Dread(dataset, get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) >= 0)
-          {
-            success = true;
-          }
-          else
-          {
-            data.clear();
-            data.shrink_to_fit();
-          }
+              H5Dread(
+                dataset.Id(), get_datatype<T>(), H5S_ALL, H5S_ALL, H5P_DEFAULT, data.data()) >= 0)
+            return true;
+          data.clear();
+          data.shrink_to_fit();
         }
       }
-      H5Sclose(dataspace);
     }
-    H5Dclose(dataset);
-
-    if (success)
-      return true;
+    return false;
   }
 
   if (H5Aexists(id, name.c_str()) > 0)
   {
-    auto attribute = H5Aopen(id, name.c_str(), H5P_DEFAULT);
-    if (attribute != H5I_INVALID_HID)
+    const H5IdGuard attribute(H5Aopen(id, name.c_str(), H5P_DEFAULT), H5Aclose);
+    if (attribute.Id() != H5I_INVALID_HID)
     {
-      auto aspace = H5Aget_space(attribute);
-      if (aspace != H5I_INVALID_HID)
+      const H5IdGuard aspace(H5Aget_space(attribute.Id()), H5Sclose);
+      if (aspace.Id() != H5I_INVALID_HID)
       {
-        const auto npoints = H5Sget_simple_extent_npoints(aspace);
-        if (npoints >= 0)
+        const auto npoints = H5Sget_simple_extent_npoints(aspace.Id());
+        if (size_is_valid(npoints))
         {
           data.resize(static_cast<size_t>(npoints));
-          if (npoints == 0 or H5Aread(attribute, get_datatype<T>(), data.data()) >= 0)
-          {
-            success = true;
-          }
-          else
-          {
-            data.clear();
-            data.shrink_to_fit();
-          }
+          if (npoints == 0 or H5Aread(attribute.Id(), get_datatype<T>(), data.data()) >= 0)
+            return true;
+          data.clear();
+          data.shrink_to_fit();
         }
-        H5Sclose(aspace);
       }
-      H5Aclose(attribute);
     }
   }
 
-  return success;
+  return false;
 }
 
 /// Get the number of elements in the 1D dataset `name`. Returns false if it is not a 1D dataset.

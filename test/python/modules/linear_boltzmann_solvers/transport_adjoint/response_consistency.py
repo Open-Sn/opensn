@@ -15,12 +15,14 @@ the forward QoI of that source to the solver tolerance (1e-12):
 - RESP_FORWARD_DATA_REL_DIFF: the forward flux used as a data set, folded against the QoI
   source, which gives the forward QoI directly.
 
+- RESP_PARTITION_REL_DIFF: the same adjoint flux moments read on a different partition of the same
+  mesh and rank count, where each cell's values must reach the rank that owns it there.
+
 Data sets that do not match the problem are rejected on every rank (each flag is 1 only if every
 rank raised the error):
 
 - RESP_QUADRATURE_REJECTED: angular fluxes from a different quadrature with the same number of
   directions.
-- RESP_PARTITION_REJECTED: flux moments written with a different mesh partition.
 - RESP_MISSING_FILE_REJECTED: a flux-moment file missing on one rank only.
 - RESP_INPUT_REJECTED: unknown data sets, duplicate boundary sources, nonexistent blocks, and
   nonfinite source strengths.
@@ -162,15 +164,14 @@ if __name__ == "__main__":
         RuntimeError,
     )
 
-    # Same mesh and rank count, different partition.
+    # Same mesh and rank count, different partition: the files are redistributed to their owners.
     other_partition = make_problem(make_grid("y"), xs, 4, 8, [])
-    partition_rejected = raises_on_all_ranks(
-        lambda: ResponseEvaluator(problem=other_partition).SetOptions(
-            data=[{"name": "phi",
-                   "file_prefixes": {"flux_moments": "response_consistency_phi"}}]
-        ),
-        RuntimeError,
+    partition_evaluator = ResponseEvaluator(problem=other_partition)
+    partition_evaluator.SetOptions(
+        data=[{"name": "phi", "file_prefixes": {"flux_moments": "response_consistency_phi"}}],
+        sources={"volumetric": [func_source]},
     )
+    partition_rel_diff = abs(partition_evaluator.EvaluateResponse("phi") / forward_qoi - 1.0)
 
     # A file that exists on every rank but the last.
     if rank == size - 1:
@@ -214,7 +215,7 @@ if __name__ == "__main__":
         print(f"RESP_WINDOW_REL_DIFF={window_rel_diff:.6e}")
         print(f"RESP_FORWARD_DATA_REL_DIFF={forward_data_rel_diff:.6e}")
         print(f"RESP_QUADRATURE_REJECTED={quadrature_rejected}")
-        print(f"RESP_PARTITION_REJECTED={partition_rejected}")
+        print(f"RESP_PARTITION_REL_DIFF={partition_rel_diff:.6e}")
         print(f"RESP_MISSING_FILE_REJECTED={missing_file_rejected}")
         input_rejected = (
             unknown_data_rejected

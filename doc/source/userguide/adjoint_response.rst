@@ -135,18 +135,25 @@ sources as the forward solve does:
   ``save_angular_flux=True``.
 * In RZ geometry the result includes the :math:`2\pi` azimuthal factor.
 
-Flux-moment and angular-flux files must have been written with the same rank
-count and partition as the problem, and angular-flux files with its quadrature.
-A data set may also hold a forward solution, for example to integrate a forward
-flux against a material source.
+Flux-moment and angular-flux file sets that record their number of files
+(``num_partitions``) may come from any rank count and partition of the same
+mesh. Sets written before that number was recorded must be read with the rank
+count that wrote them. File k of a set is read on rank k mod P, so the files
+must be on a file system that every rank can access, or each file staged where
+the rank that reads it can open it. Angular-flux files must also match the
+problem's quadrature. All files of a set must come from one write: a set whose
+files record different write identifiers or different solution provenance is
+rejected. A data set may also
+hold a forward solution, for example to integrate a forward flux against a
+material source.
 
 The evaluator also pairs forward and adjoint angular fluxes on boundaries and
 interior surfaces written with
 :py:meth:`pyopensn.solver.DiscreteOrdinatesProblem.WriteSurfaceAngularFluxes`.
 These data sets use the ``surface_angular_fluxes`` prefix and are evaluated with
 :py:meth:`pyopensn.response.ResponseEvaluator.EvaluateSurfaceResponse`, which
-gives the response carried across each surface. Surface files may come from any
-rank count and partition. See
+gives the response carried across each surface. Surface files may also come
+from any rank count and partition. See
 :doc:`../tutorials/applications/detector_response/surface_response/surface_resp`.
 
 Example

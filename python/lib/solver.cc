@@ -6,6 +6,7 @@
 #include "framework/logging/log.h"
 #include <pybind11/stl.h>
 #include "framework/runtime.h"
+#include "framework/utils/collective_error.h"
 #include "framework/field_functions/field_function_grid_based.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/discrete_ordinates_keigen_acceleration.h"
 #include "modules/linear_boltzmann_solvers/discrete_ordinates_problem/acceleration/cmfd_acceleration.h"
@@ -449,12 +450,25 @@ WrapLBS(py::module& slv)
       LBSSolverIO::WriteFluxMoments(self, file_base);
     },
     R"(
-    Write flux moments to file.
+    Write flux moments to one file per rank, ``<file_base><rank>.h5``.
+
+    Each file records the number of files in the set, so the set can be read on any number of
+    ranks with any partitioning of the same mesh.
 
     Parameters
     ----------
     file_base: str
         File basename.
+
+    Notes
+    -----
+    Every rank writes its own file, so every rank must call this with the same ``file_base``. This
+    call is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if any rank fails to write its file.
     )",
     py::arg("file_base")
   );
@@ -462,11 +476,19 @@ WrapLBS(py::module& slv)
     "CreateAndWriteSourceMoments",
     [](LBSProblem& self, const std::string& file_base)
     {
-      std::vector<double> source_moments = self.MakeSourceMomentsFromPhi();
+      // The writer is collective, so a rank that fails to make its source moments reports it on
+      // every rank before any rank enters the write.
+      std::vector<double> source_moments;
+      ThrowIfAnyRankFailed(opensn::mpi_comm,
+                           CaptureError([&] { source_moments = self.MakeSourceMomentsFromPhi(); }),
+                           "Making source moments for " + file_base);
       LBSSolverIO::WriteFluxMoments(self, file_base, source_moments);
     },
     R"(
-    Write source moments from latest flux iterate to file.
+    Write source moments from latest flux iterate to one file per rank, ``<file_base><rank>.h5``.
+
+    The files have the layout of :py:meth:`WriteFluxMoments` and can be read on any number of
+    ranks.
 
     Source moments are in the solver orientation that :py:meth:`LBSProblem.ReadSourceMoments`
     expects: after an adjoint solve, the moments are made from the adjoint flux mapped back from
@@ -476,6 +498,16 @@ WrapLBS(py::module& slv)
     ----------
     file_base: str
         File basename.
+
+    Notes
+    -----
+    Every rank writes its own file, so every rank must call this with the same ``file_base``. This
+    call is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if any rank fails to make its source moments or to write its file.
     )",
     py::arg("file_base")
   );
@@ -510,9 +542,28 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True to read the single file ``<file_base>.h5`` instead of the per-rank file
-        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
-        before any file is opened.
+        True to read the single file ``<file_base>.h5`` instead of the file set
+        ``<file_base><k>.h5``. A single file is read on rank 0 and its cells sent to the ranks
+        that own them, so it can be read on any number of ranks; it must not record a set of more
+        than one file.
+
+    Notes
+    -----
+    The files may have been written by any number of ranks with any partitioning of the same
+    mesh: file k is read on rank k mod P, and each cell's values are sent to the rank that owns
+    it, so every rank receives exactly its own cells. A rank may therefore read files that other
+    nodes wrote, so the files must be on a file system that every rank can access, or each file
+    staged where the rank that reads it can open it. Numbered files written before the number of
+    files was recorded form a set of as many files as this run has ranks; a single file
+    (``single_file_flag=True``) is always one file. This call is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if a file is missing, malformed, or does not match the problem, if the
+        files of the set record different write identifiers or solution provenance
+        (roles, adjoint orientations, or whether they record them), or if a local cell is in no
+        file.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")
@@ -537,9 +588,28 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True to read the single file ``<file_base>.h5`` instead of the per-rank file
-        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
-        before any file is opened.
+        True to read the single file ``<file_base>.h5`` instead of the file set
+        ``<file_base><k>.h5``. A single file is read on rank 0 and its cells sent to the ranks
+        that own them, so it can be read on any number of ranks; it must not record a set of more
+        than one file.
+
+    Notes
+    -----
+    The files may have been written by any number of ranks with any partitioning of the same
+    mesh: file k is read on rank k mod P, and each cell's values are sent to the rank that owns
+    it, so every rank receives exactly its own cells. A rank may therefore read files that other
+    nodes wrote, so the files must be on a file system that every rank can access, or each file
+    staged where the rank that reads it can open it. Numbered files written before the number of
+    files was recorded form a set of as many files as this run has ranks; a single file
+    (``single_file_flag=True``) is always one file. This call is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if a file is missing, malformed, or does not match the problem, if the
+        files of the set record different write identifiers or solution provenance
+        (roles, adjoint orientations, or whether they record them), or if a local cell is in no
+        file.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")
@@ -558,9 +628,28 @@ WrapLBS(py::module& slv)
     file_base: str
         File basename.
     single_file_flag: bool
-        True to read the single file ``<file_base>.h5`` instead of the per-rank file
-        ``<file_base><rank>.h5``. Serial runs only: a multi-rank run raises ``ValueError``
-        before any file is opened.
+        True to read the single file ``<file_base>.h5`` instead of the file set
+        ``<file_base><k>.h5``. A single file is read on rank 0 and its cells sent to the ranks
+        that own them, so it can be read on any number of ranks; it must not record a set of more
+        than one file.
+
+    Notes
+    -----
+    The files may have been written by any number of ranks with any partitioning of the same
+    mesh: file k is read on rank k mod P, and each cell's values are sent to the rank that owns
+    it, so every rank receives exactly its own cells. A rank may therefore read files that other
+    nodes wrote, so the files must be on a file system that every rank can access, or each file
+    staged where the rank that reads it can open it. Numbered files written before the number of
+    files was recorded form a set of as many files as this run has ranks; a single file
+    (``single_file_flag=True``) is always one file. This call is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if a file is missing, malformed, or does not match the problem, if the
+        files of the set record different write identifiers or solution provenance
+        (roles, adjoint orientations, or whether they record them), or if a local cell is in no
+        file.
     )",
     py::arg("file_base"),
     py::arg("single_file_flag")
@@ -572,18 +661,28 @@ WrapLBS(py::module& slv)
       DiscreteOrdinatesProblemIO::WriteAngularFluxes(self, file_base);
     },
     R"(
-    Write angular flux data to file.
+    Write angular flux data to one file per rank, ``<file_base><rank>.h5``.
+
+    Each file records the number of files in the set and the quadrature of each groupset, so the
+    set can be read on any number of ranks with any partitioning of the same mesh.
 
     Parameters
     ----------
     file_base: str
         File basename.
 
+    Notes
+    -----
+    Every rank writes its own file, so every rank must call this with the same ``file_base``. This
+    call is collective.
+
     Raises
     ------
     ValueError
         If the problem has an uncollided flux, whose stored angular flux holds only the collided
         part.
+    RuntimeError
+        On every rank, if any rank fails to write its file.
     )",
     py::arg("file_base")
   );
@@ -594,12 +693,32 @@ WrapLBS(py::module& slv)
       DiscreteOrdinatesProblemIO::ReadAngularFluxes(self, file_base);
     },
     R"(
-    Read angular fluxes from file.
+    Read angular fluxes from the file set ``<file_base><k>.h5`` written by
+    :py:meth:`WriteAngularFluxes`.
 
     Parameters
     ----------
     file_base: str
         File basename.
+
+    Notes
+    -----
+    The files may have been written by any number of ranks with any partitioning of the same
+    mesh: file k is read on rank k mod P, and each cell's values are sent to the rank that owns
+    it, so every rank receives exactly its own cells. A rank may therefore read files that other
+    nodes wrote, so the files must be on a file system that every rank can access, or each file
+    staged where the rank that reads it can open it. Files written before the number of files was
+    recorded form a set of as many files as this run has ranks. The quadrature must match the
+    problem's; files that record the number of files must also record their quadrature. This call
+    is collective.
+
+    Raises
+    ------
+    RuntimeError
+        On every rank, if a file is missing, malformed, or does not match the problem, if the
+        files of the set record different write identifiers or solution provenance
+        (roles, adjoint orientations, or whether they record them), or if a local cell is in no
+        file.
     )",
     py::arg("file_base")
   );

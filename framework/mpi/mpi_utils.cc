@@ -26,4 +26,42 @@ BuildLocationExtents(uint64_t local_size, const mpi::Communicator& comm)
   return extents;
 }
 
+void
+BroadcastStrings(const mpi::Communicator& comm, std::vector<std::string>& strings, const int root)
+{
+  std::vector<std::uint64_t> lengths;
+  std::vector<char> chars;
+  // The root packs inside CaptureError, so that a failure there is raised on every rank.
+  ThrowIfAnyRankFailed(comm,
+                       CaptureError(
+                         [&]
+                         {
+                           if (comm.rank() != root)
+                             return;
+                           for (const auto& string : strings)
+                           {
+                             lengths.push_back(string.size());
+                             chars.insert(chars.end(), string.begin(), string.end());
+                           }
+                         }),
+                       "Broadcasting strings");
+  BroadcastVector(comm, lengths, root);
+  BroadcastVector(comm, chars, root);
+  ThrowIfAnyRankFailed(comm,
+                       CaptureError(
+                         [&]
+                         {
+                           strings.clear();
+                           std::uint64_t offset = 0;
+                           for (const auto length : lengths)
+                           {
+                             strings.emplace_back(
+                               chars.begin() + static_cast<std::ptrdiff_t>(offset),
+                               chars.begin() + static_cast<std::ptrdiff_t>(offset + length));
+                             offset += length;
+                           }
+                         }),
+                       "Broadcasting strings");
+}
+
 } // namespace opensn
